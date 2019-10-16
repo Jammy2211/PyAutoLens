@@ -13,7 +13,6 @@ class MetaImagingFit(data.MetaDataFit):
             mask_function=None,
             inner_mask_radii=None,
             pixel_scale_interpolation_grid=None,
-            pixel_scale_binned_cluster_grid=None,
             inversion_uses_border=True,
             inversion_pixel_limit=None,
             psf_shape=None,
@@ -28,7 +27,6 @@ class MetaImagingFit(data.MetaDataFit):
             mask_function=mask_function,
             inner_mask_radii=inner_mask_radii,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-            pixel_scale_binned_cluster_grid=pixel_scale_binned_cluster_grid,
             inversion_uses_border=inversion_uses_border,
             inversion_pixel_limit=inversion_pixel_limit,
         )

@@ -196,9 +196,6 @@ class HyperGalaxyPhase(HyperPhase):
             pixel_scale_interpolation_grid=cast(
                 imaging.PhaseImaging, phase
             ).meta_data_fit.pixel_scale_interpolation_grid,
-            pixel_scale_binned_grid=cast(
-                imaging.PhaseImaging, phase
-            ).meta_data_fit.pixel_scale_binned_cluster_grid,
             inversion_pixel_limit=cast(
                 imaging.PhaseImaging, phase
             ).meta_data_fit.inversion_pixel_limit,
@@ -355,9 +352,6 @@ class HyperGalaxyAllPhase(HyperPhase):
             pixel_scale_interpolation_grid=cast(
                 imaging.PhaseImaging, phase
             ).meta_data_fit.pixel_scale_interpolation_grid,
-            pixel_scale_binned_grid=cast(
-                imaging.PhaseImaging, phase
-            ).meta_data_fit.pixel_scale_binned_cluster_grid,
             inversion_pixel_limit=cast(
                 imaging.PhaseImaging, phase
             ).meta_data_fit.inversion_pixel_limit,

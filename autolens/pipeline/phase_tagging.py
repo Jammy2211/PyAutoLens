@@ -6,7 +6,6 @@ def phase_tag_from_phase_settings(
     positions_threshold,
     inner_mask_radii,
     pixel_scale_interpolation_grid,
-    pixel_scale_binned_cluster_grid,
 ):
 
     sub_size_tag = sub_size_tag_from_sub_size(sub_size=sub_size)
@@ -26,9 +25,6 @@ def phase_tag_from_phase_settings(
     pixel_scale_interpolation_grid_tag = pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
         pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
     )
-    pixel_scale_binned_cluster_grid_tag = pixel_scale_binned_cluster_grid_tag_from_pixel_scale_binned_cluster_grid(
-        pixel_scale_binned_cluster_grid=pixel_scale_binned_cluster_grid
-    )
 
     return (
         "phase_tag"
@@ -39,7 +35,6 @@ def phase_tag_from_phase_settings(
         + positions_threshold_tag
         + inner_mask_radii_tag
         + pixel_scale_interpolation_grid_tag
-        + pixel_scale_binned_cluster_grid_tag
     )
 
 
@@ -153,21 +148,3 @@ def pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
         return ""
     else:
         return "__interp_{0:.3f}".format(pixel_scale_interpolation_grid)
-
-
-def pixel_scale_binned_cluster_grid_tag_from_pixel_scale_binned_cluster_grid(
-    pixel_scale_binned_cluster_grid
-):
-    """Generate an clusterolation pixel scale tag, to customize phase names based on the resolution of the clusterolation \
-    grid that deflection angles are computed on before clusterolating to the and sub aa.
-
-    This changes the phase name 'phase_name' as follows:
-
-    pixel_scale_binned_cluster_grid = 1 -> phase_name
-    pixel_scale_binned_cluster_grid = 2 -> phase_name_pixel_scale_binned_cluster_grid_2
-    pixel_scale_binned_cluster_grid = 2 -> phase_name_pixel_scale_binned_cluster_grid_2
-    """
-    if pixel_scale_binned_cluster_grid is None:
-        return ""
-    else:
-        return "__cluster_{0:.3f}".format(pixel_scale_binned_cluster_grid)

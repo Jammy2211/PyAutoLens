@@ -385,10 +385,10 @@ class VoronoiBrightnessImage(Voronoi):
             hyper_image=hyper_image
         )
 
-        sparse_to_grid = aa.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
+        sparse_to_grid = aa.SparseToGrid.from_total_pixels_grid_and_weight_map(
             total_pixels=self.pixels,
-            binned_grid=cluster_grid,
-            binned_weight_map=cluster_weight_map,
+            grid=cluster_grid,
+            weight_map=cluster_weight_map,
             seed=seed,
         )
 

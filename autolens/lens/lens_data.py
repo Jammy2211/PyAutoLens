@@ -26,14 +26,6 @@ class AbstractLensData(object):
 
         self.grid = aa.Grid.from_mask(mask=mask)
 
-        self.pixel_scale_binned_grid = pixel_scale_binned_grid
-
-        if pixel_scale_binned_grid is not None:
-            binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
-                mask=mask, pixel_scale_binned_grid=pixel_scale_binned_grid
-            )
-            self.grid.binned = binned_grid
-
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
 
         if pixel_scale_interpolation_grid is not None:
@@ -111,9 +103,6 @@ class LensImagingData(AbstractLensData):
         inversion_pixel_limit : int or None
             The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
             up run.
-        pixel_scale_binned_cluster_grid : float or None
-            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned up to this higher \
-            pixel scale to speed up the KMeans clustering algorithm.
         """
 
         self.imaging_data = imaging_data
@@ -290,9 +279,6 @@ class LensUVPlaneData(AbstractLensData):
         inversion_pixel_limit : int or None
             The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
             up run.
-        pixel_scale_binned_cluster_grid : float or None
-            If *True*, the hyper_galaxies image used to generate the cluster'grids weight map will be binned up to this higher \
-            pixel scale to speed up the KMeans clustering algorithm.
         """
 
         self.uv_plane_data = uv_plane_data

@@ -15,7 +15,6 @@ class MetaDataFit:
             mask_function=None,
             inner_mask_radii=None,
             pixel_scale_interpolation_grid=None,
-            pixel_scale_binned_cluster_grid=None,
             inversion_uses_border=True,
             inversion_pixel_limit=None,
             is_hyper_phase=False
@@ -28,7 +27,6 @@ class MetaDataFit:
         self.mask_function = mask_function
         self.inner_mask_radii = inner_mask_radii
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
-        self.pixel_scale_binned_cluster_grid = pixel_scale_binned_cluster_grid
         self.inversion_uses_border = inversion_uses_border
         self.inversion_pixel_limit = (
                 inversion_pixel_limit or
@@ -71,48 +69,6 @@ class MetaDataFit:
                 "You have specified for a phase to use positions, but not input positions to the "
                 "pipeline when you ran it."
             )
-
-    def pixel_scale_binned_grid_from_mask(
-            self,
-            mask
-    ):
-
-        if self.pixel_scale_binned_cluster_grid is None:
-
-            pixel_scale_binned_cluster_grid = mask.pixel_scales
-
-        else:
-
-            pixel_scale_binned_cluster_grid = self.pixel_scale_binned_cluster_grid
-
-        if pixel_scale_binned_cluster_grid > mask.pixel_scales:
-
-            bin_up_factor = int(
-                self.pixel_scale_binned_cluster_grid / mask.pixel_scales
-            )
-
-        else:
-
-            bin_up_factor = 1
-
-        binned_mask = mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
-
-        while binned_mask.pixels_in_mask < self.inversion_pixel_limit:
-
-            if bin_up_factor == 1:
-                raise exc.DataException(
-                    f"The pixelization {self.pixelization} uses a KMeans clustering algorithm which uses "
-                    f"a hyper model image to adapt the pixelization. This hyper model image must have "
-                    f"more pixels than inversion pixels. Current, the inversion_pixel_limit exceeds the "
-                    f"data-points in the image.\n\n To rectify this image, manually set the inversion "
-                    f"pixel limit in the pipeline phases or change the inversion_pixel_limit_overall "
-                    f"parameter in general.ini "
-                )
-
-            bin_up_factor -= 1
-            binned_mask = mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
-
-        return mask.pixel_scales * bin_up_factor
 
     @property
     def pixelization(self):

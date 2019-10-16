@@ -12,7 +12,6 @@ class TestPhaseTag:
             inner_mask_radii=0.3,
             positions_threshold=2.0,
             pixel_scale_interpolation_grid=None,
-            pixel_scale_binned_cluster_grid=None,
         )
 
         assert phase_tag == "phase_tag__sub_2__snr_2__pos_2.00__inner_mask_0.30"
@@ -25,7 +24,6 @@ class TestPhaseTag:
             inner_mask_radii=None,
             positions_threshold=None,
             pixel_scale_interpolation_grid=0.2,
-            pixel_scale_binned_cluster_grid=0.3,
         )
 
         assert (
@@ -131,22 +129,3 @@ class TestPhaseTaggers:
             pixel_scale_interpolation_grid=0.234
         )
         assert tag == "__interp_0.234"
-
-    def test__pixel_scale_binned_cluster_grid_tagger(self):
-
-        tag = al.phase_tagging.pixel_scale_binned_cluster_grid_tag_from_pixel_scale_binned_cluster_grid(
-            pixel_scale_binned_cluster_grid=None
-        )
-        assert tag == ""
-        tag = al.phase_tagging.pixel_scale_binned_cluster_grid_tag_from_pixel_scale_binned_cluster_grid(
-            pixel_scale_binned_cluster_grid=0.5
-        )
-        assert tag == "__cluster_0.500"
-        tag = al.phase_tagging.pixel_scale_binned_cluster_grid_tag_from_pixel_scale_binned_cluster_grid(
-            pixel_scale_binned_cluster_grid=0.25
-        )
-        assert tag == "__cluster_0.250"
-        tag = al.phase_tagging.pixel_scale_binned_cluster_grid_tag_from_pixel_scale_binned_cluster_grid(
-            pixel_scale_binned_cluster_grid=0.234
-        )
-        assert tag == "__cluster_0.234"
