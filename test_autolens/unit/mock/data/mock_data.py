@@ -158,10 +158,10 @@ class MockUVWavelengths(np.ndarray):
 
 class MockUVPlaneData(al.UVPlaneData):
     def __init__(
-        self, shape, visibilities, pixel_scales, primary_beam, noise_map, uv_wavelengths
+        self, shape_2d, visibilities, pixel_scales, primary_beam, noise_map, uv_wavelengths
     ):
         super(MockUVPlaneData, self).__init__(
-            shape=shape,
+            shape_2d=shape_2d,
             visibilities=visibilities,
             pixel_scales=pixel_scales,
             primary_beam=primary_beam,

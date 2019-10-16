@@ -143,7 +143,7 @@ def make_uv_plane_data_7(
     visibilities_7, visibilities_noise_map_7, primary_beam_3x3, uv_wavelengths_7
 ):
     return mock_data.MockUVPlaneData(
-        shape=(7, 7),
+        shape_2d=(7, 7),
         visibilities=visibilities_7,
         pixel_scales=1.0,
         noise_map=visibilities_noise_map_7,

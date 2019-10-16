@@ -331,8 +331,8 @@ class LensUVPlaneData(AbstractLensData):
 
     def new_lens_imaging_data_with_modified_visibilities(self, modified_visibilities):
 
-        uv_plane_data_with_modified_visibilities = self.uv_plane_data.modified_visibilities_data_from_modified_visibilities(
-            modified_visibilities=modified_visibilities
+        uv_plane_data_with_modified_visibilities = self.uv_plane_data.modified_visibilities_from_visibilities(
+            visibilities=modified_visibilities
         )
 
         return LensUVPlaneData(

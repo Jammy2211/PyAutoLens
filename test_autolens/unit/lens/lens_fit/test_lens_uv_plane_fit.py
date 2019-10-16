@@ -72,7 +72,7 @@ class TestLikelihood:
         uv_wavelengths = np.array([[0.0, 0.0]])
 
         uv_plane_data = al.UVPlaneData(
-            shape=(1, 2),
+            shape_2d=(1, 2),
             visibilities=5.0 * np.ones((1, 2)),
             pixel_scales=1.0,
             noise_map=np.ones((1,)),
@@ -140,7 +140,7 @@ class TestLikelihood:
         # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
         uv_plane_data = al.UVPlaneData(
-            shape=(1, 2),
+            shape_2d=(1, 2),
             visibilities=5.0 * np.ones((3, 2)),
             pixel_scales=1.0,
             noise_map=2.0 * np.ones((3,)),

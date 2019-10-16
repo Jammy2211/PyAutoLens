@@ -65,6 +65,14 @@ class ImagingData(abstract_data.AbstractData):
         return self.data
 
     @property
+    def pixel_scales(self):
+        return self.data.pixel_scales
+
+    @property
+    def pixel_scale(self):
+        return self.data.pixel_scale
+
+    @property
     def shape(self):
         return self.image.in_2d.shape
 
@@ -152,7 +160,7 @@ class ImagingData(abstract_data.AbstractData):
             name=self.name,
         )
 
-    def resized_psf_data_from_new_shape(self, new_shape):
+    def resized_psf_from_new_shape(self, new_shape):
         psf = self.psf.resized_from_new_shape(new_shape=new_shape)
         return ImagingData(
             image=self.image,
@@ -165,7 +173,7 @@ class ImagingData(abstract_data.AbstractData):
             name=self.name,
         )
 
-    def modified_image_data_from_image(self, image):
+    def modified_image_from_image(self, image):
 
         return ImagingData(
             image=image,
@@ -932,7 +940,7 @@ def load_imaging_data_from_fits(
         )
 
     if resized_psf_shape is not None:
-        imaging_data = imaging_data.resized_psf_data_from_new_shape(
+        imaging_data = imaging_data.resized_psf_from_new_shape(
             new_shape=resized_psf_shape
         )
 

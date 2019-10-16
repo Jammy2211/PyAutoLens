@@ -448,7 +448,7 @@ class TestLensUVPlaneData(object):
     ):
         primary_beam = al.PrimaryBeam(np.ones((7, 7)), 1)
         uv_plane_data = al.UVPlaneData(
-            shape=(2, 2),
+            shape_2d=(2, 2),
             visibilities=np.ones((19, 2)),
             pixel_scales=3.0,
             primary_beam=primary_beam,

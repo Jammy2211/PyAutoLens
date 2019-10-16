@@ -14,20 +14,24 @@ logger = logging.getLogger(__name__)
 class UVPlaneData(abstract_data.AbstractData):
     def __init__(
         self,
-        shape,
-        visibilities,
+        shape_2d,
         pixel_scales,
+        visibilities,
         noise_map,
         uv_wavelengths,
         primary_beam,
         exposure_time_map=None,
     ):
 
-        self.shape = shape
+        self.shape = shape_2d
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
+        self.pixel_scales = pixel_scales
 
         super(UVPlaneData, self).__init__(
             data=visibilities,
-            pixel_scales=pixel_scales,
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
         )
@@ -42,25 +46,25 @@ class UVPlaneData(abstract_data.AbstractData):
     def visibilities(self):
         return self.data
 
-    def modified_visibilities_data_from_modified_visibilities(self, modified_visibilities):
+    def modified_visibilities_from_visibilities(self, visibilities):
 
         return UVPlaneData(
-            shape=self.shape,
-            visibilities=modified_visibilities,
+            shape_2d=self.shape,
             pixel_scales=self.pixel_scales,
+            visibilities=visibilities,
             noise_map=self.noise_map,
             uv_wavelengths=self.uv_wavelengths,
             primary_beam=self.primary_beam,
             exposure_time_map=self.exposure_time_map,
         )
 
-    def resized_primary_beam_data_from_new_shape(self, new_shape):
+    def resized_primary_beam_from_new_shape(self, new_shape):
 
         primary_beam = self.primary_beam.resized_from_new_shape(
             new_shape=new_shape
         )
         return UVPlaneData(
-            shape=self.shape,
+            shape_2d=self.shape,
             visibilities=self.data,
             pixel_scales=self.pixel_scales,
             noise_map=self.noise_map,
@@ -81,7 +85,7 @@ class UVPlaneData(abstract_data.AbstractData):
         noise_map = self.array_from_counts_to_electrons_per_second(array=self.noise_map)
 
         return UVPlaneData(
-            shape=self.shape,
+            shape_2d=self.shape,
             visibilities=visibilities,
             pixel_scales=self.pixel_scales,
             noise_map=noise_map,
@@ -105,7 +109,7 @@ class UVPlaneData(abstract_data.AbstractData):
         )
 
         return UVPlaneData(
-            shape=self.shape,
+            shape_2d=self.shape,
             visibilities=visibilities,
             pixel_scales=self.pixel_scales,
             noise_map=noise_map,
@@ -115,21 +119,12 @@ class UVPlaneData(abstract_data.AbstractData):
         )
 
 
-class NoiseMap(abstract_data.AbstractNoiseMap):
-
-    pass
-
-
-class PrimaryBeam(aa.Kernel):
-
-    pass
-
 class SimulatedUVPlaneData(UVPlaneData):
     def __init__(
         self,
-        shape,
-        visibilities,
+        shape_2d,
         pixel_scales,
+        visibilities,
         noise_map,
         uv_wavelengths,
         primary_beam,
@@ -139,7 +134,7 @@ class SimulatedUVPlaneData(UVPlaneData):
     ):
 
         super(SimulatedUVPlaneData, self).__init__(
-            shape=shape,
+            shape_2d=shape_2d,
             visibilities=visibilities,
             pixel_scales=pixel_scales,
             noise_map=noise_map,
@@ -300,19 +295,19 @@ class SimulatedUVPlaneData(UVPlaneData):
 
         image += background_sky_map
 
-        visibilities = transformer.visibilities_from_image(image=image_1d)
+        visibilities = transformer.visibilities_from_image(image=image)
 
         if noise_sigma is not None:
             noise_map_realization = gaussian_noise_map_from_shape_and_sigma(
                 shape=visibilities.shape, sigma=noise_sigma, noise_seed=noise_seed
             )
             visibilities = visibilities + noise_map_realization
-            noise_map = NoiseMap.from_single_value_shape_pixel_scale_and_sub_size(
-                value=noise_sigma, shape=visibilities.shape, pixel_scales=pixel_scales
+            noise_map = aa.array.full(
+                fill_value=noise_sigma, shape=visibilities.shape, pixel_scales=pixel_scales
             )
         else:
-            noise_map = NoiseMap.from_single_value_shape_pixel_scale_and_sub_size(
-                value=noise_if_add_noise_false,
+            noise_map = aa.array.full(
+                fill_value=noise_if_add_noise_false,
                 shape=visibilities.shape,
                 pixel_scales=pixel_scales,
             )
@@ -327,7 +322,7 @@ class SimulatedUVPlaneData(UVPlaneData):
         image -= background_sky_map
 
         return SimulatedUVPlaneData(
-            shape=image.shape,
+            shape_2d=image.shape,
             visibilities=visibilities,
             pixel_scales=pixel_scales,
             noise_map=noise_map,
@@ -342,7 +337,7 @@ class SimulatedUVPlaneData(UVPlaneData):
     def __array_finalize__(self, obj):
         if isinstance(obj, SimulatedUVPlaneData):
             try:
-                self.image = obj.image
+                self.data = obj.data
                 self.pixel_scales = obj.pixel_scales
                 self.psf = obj.psf
                 self.noise_map = obj.noise_map
@@ -537,7 +532,7 @@ def load_uv_plane_data_from_fits(
     )
 
     uv_plane_data = UVPlaneData(
-        shape=shape,
+        shape_2d=shape,
         visibilities=visibilities,
         pixel_scales=pixel_scales,
         primary_beam=primary_beam,
@@ -547,7 +542,7 @@ def load_uv_plane_data_from_fits(
     )
 
     if resized_primary_beam_shape is not None:
-        uv_plane_data = uv_plane_data.resized_primary_beam_data_from_new_shape(
+        uv_plane_data = uv_plane_data.resized_primary_beam_from_new_shape(
             new_shape=resized_primary_beam_shape
         )
 
@@ -590,14 +585,9 @@ def load_primary_beam(
     renormalize : bool
         If True, the PrimaryBeam is renoralized such that all elements sum to 1.0.
     """
-    if renormalize:
-        return PrimaryBeam.from_fits(
-            file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scales=pixel_scales
-        )
-    if not renormalize:
-        return PrimaryBeam.from_fits(
-            file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scales=pixel_scales
-        )
+    return aa.kernel.from_fits(
+        file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scales=pixel_scales, renormalize=renormalize
+    )
 
 
 def output_uv_plane_data_to_fits(

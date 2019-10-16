@@ -36,14 +36,6 @@ class AbstractData(object):
         self.exposure_time_map = exposure_time_map
 
     @property
-    def pixel_scales(self):
-        return self.data.pixel_scales
-
-    @property
-    def pixel_scale(self):
-        return self.data.pixel_scale
-
-    @property
     def mapping(self):
         return self.data.mask.mapping
 
