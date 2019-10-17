@@ -185,6 +185,10 @@ If you have any suggestions or would like to contribute please get in touch.
 
 The following papers use **PyAutoLens**:
 
+[Likelihood-free MCMC with Amortized Approximate Likelihood Ratios](https://arxiv.org/abs/1903.04057)
+
+[Deep Learning the Morphology of Dark Matter Substructure](https://arxiv.org/abs/1909.07346)
+
 [The molecular-gas properties in the gravitationally lensed merger HATLAS J142935.3-002836](https://arxiv.org/abs/1904.00307)
 
 [Galaxy structure with strong gravitational lensing: decomposing the internal mass distribution of massive elliptical galaxies](https://arxiv.org/abs/1901.07801)
