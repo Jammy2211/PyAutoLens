@@ -1,6 +1,6 @@
-import autoarray as aa
+from autoarray.fit import fit
 
-class UVPlaneFit(aa.DataFit):
+class UVPlaneFit(fit.DataFit):
     def __init__(
         self, visibilities, noise_map, mask, model_visibilities, mapping, inversion
     ):

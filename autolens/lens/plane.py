@@ -3,6 +3,7 @@ from astropy import cosmology as cosmo
 from skimage import measure
 
 import autoarray as aa
+from autoarray.structures import arrays
 import autofit as af
 from autolens import exc, dimensions as dim
 from autolens.lens.util import lens_util
@@ -927,7 +928,7 @@ class PlanePositions(object):
         )
 
 
-class PlaneImage(aa.Array):
+class PlaneImage(arrays.Array):
     def __init__(self, array, pixel_scales, grid, origin=(0.0, 0.0)):
         self.grid = grid
         super(PlaneImage, self).__init__(

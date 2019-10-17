@@ -11,7 +11,7 @@ from numba.types import intc, CPointer, float64
 from scipy import LowLevelCallable
 from scipy import special
 
-import autoarray as aa
+from autoarray.structures import grids
 import autofit as af
 from autolens import dimensions as dim
 from autolens import decorator_util
@@ -587,7 +587,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
         return potential_grid
 
-    @aa.grid_interpolate
+    @grids.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -767,7 +767,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
             scale_radius=scale_radius,
         )
 
-    @aa.grid_interpolate
+    @grids.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -1168,7 +1168,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         return potential_grid
 
-    @aa.grid_interpolate
+    @grids.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum

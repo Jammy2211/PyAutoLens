@@ -1,7 +1,7 @@
 import autofit as af
 import autoarray as aa
 
-from autolens.data import imaging
+from autoarray.data import imaging
 from autolens.lens import ray_tracing
 from autolens.data.plotters import imaging_plotters
 

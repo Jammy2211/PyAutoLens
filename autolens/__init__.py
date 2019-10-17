@@ -10,25 +10,6 @@ from autolens.dimensions import (
     Position,
     convert_units_to_input_units,
 )
-from autolens.data import uv_plane
-from autolens.data.imaging import (
-    ImagingData,
-    NoiseMap,
-    PoissonNoiseMap,
-    SimulatedImagingData,
-    generate_poisson_noise,
-    load_imaging_data_from_fits,
-    load_noise_map,
-    load_psf,
-    output_imaging_data_to_fits,
-)
-from autolens.data.uv_plane import (
-    UVPlaneData,
-    SimulatedUVPlaneData,
-    load_uv_plane_data_from_fits,
-    output_uv_plane_data_to_fits,
-    gaussian_noise_map_from_shape_and_sigma,
-)
 from autolens.data.plotters import data_plotters, imaging_plotters, uv_plane_plotters
 from autolens.lens import ray_tracing
 from autolens.lens.lens_data import AbstractLensData, LensImagingData, LensUVPlaneData
