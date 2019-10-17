@@ -122,7 +122,6 @@ class TestObservation:
         imaging_data = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
             tracer=tracer,
             grid=grid,
-            pixel_scales=pixel_scales,
             exposure_time=exposure_time,
             psf=psf,
             background_sky_level=background_sky_level,
@@ -147,7 +146,7 @@ class TestObservation:
 
         assert (imaging_data.image == observation_imaging_data.image).all()
         assert (imaging_data.psf == observation_imaging_data.psf).all()
-        assert observation_imaging_data.noise_map == 0.2 * np.ones((11, 11))
+        assert (observation_imaging_data.noise_map.in_2d == 0.2 * np.ones((11, 11))).all()
         assert imaging_data.noise_map == observation_imaging_data.noise_map
         assert (
             imaging_data.background_noise_map
@@ -167,7 +166,6 @@ class TestObservation:
         imaging_data = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
             tracer=tracer,
             grid=grid,
-            pixel_scales=pixel_scales,
             exposure_time=exposure_time,
             psf=psf,
             background_sky_level=background_sky_level,
@@ -236,7 +234,6 @@ class TestObservation:
         imaging_data = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
             tracer=tracer,
             grid=grid,
-            pixel_scales=pixel_scales,
             exposure_time=exposure_time,
             psf=psf,
             background_sky_level=background_sky_level,
@@ -285,7 +282,7 @@ class TestObservation:
 
         assert (imaging_data.image == observation_imaging_data_loaded.image).all()
         assert (imaging_data.psf == observation_imaging_data_loaded.psf).all()
-        assert imaging_data.noise_map == 0.2 * np.ones((11, 11))
+        assert (imaging_data.noise_map.in_2d == 0.2 * np.ones((11, 11))).all()
         assert imaging_data.noise_map == observation_imaging_data_loaded.noise_map
         assert (
             imaging_data.background_noise_map
