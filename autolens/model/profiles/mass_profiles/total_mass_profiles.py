@@ -4,7 +4,7 @@ from pyquad import quad_grid
 import numpy as np
 from astropy import cosmology as cosmo
 
-import autoarray as aa
+from autoarray.structures import grids
 import autofit as af
 from autolens import dimensions as dim
 from autolens.model.profiles import geometry_profiles
@@ -134,7 +134,7 @@ class EllipticalCoredPowerLaw(mp.EllipticalMassProfile, mp.MassProfile):
 
         return self.einstein_radius_rescaled * self.axis_ratio * potential_grid
 
-    @aa.grid_interpolate
+    @grids.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -733,7 +733,7 @@ class EllipticalIsothermalKormann(mp.EllipticalMassProfile, mp.MassProfile):
             + grid[:, 0] * np.arcsinh((f_prime / self.axis_ratio) * cos_phi)
         )
 
-    @aa.grid_interpolate
+    @grids.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum

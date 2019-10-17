@@ -1,7 +1,6 @@
 import numpy as np
 from astropy import cosmology as cosmo
 
-import autoarray as aa
 import autofit as af
 from autolens import dimensions as dim
 from autolens.model.profiles import geometry_profiles

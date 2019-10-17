@@ -2,7 +2,7 @@ from pyquad import quad_grid
 
 import numpy as np
 
-import autoarray as aa
+from autoarray.structures import grids
 import autofit as af
 from autolens import dimensions as dim
 from autolens.model.profiles import geometry_profiles
@@ -145,7 +145,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
             / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
         )
 
-    @aa.grid_interpolate
+    @grids.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -439,7 +439,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         """
         return self.convergence_func(self.grid_to_eccentric_radii(grid))
 
-    @aa.grid_interpolate
+    @grids.grid_interpolate
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum

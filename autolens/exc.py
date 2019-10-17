@@ -1,33 +1,6 @@
 import autofit as af
 
 
-class MaskException(Exception):
-    pass
-
-
-class ScaledException(Exception):
-    pass
-
-
-class GridException(Exception):
-    pass
-
-
-class MappingException(Exception):
-    pass
-
-
-class DataException(Exception):
-    pass
-
-
-class ConvolutionException(Exception):
-    pass
-
-
-class MaskException(Exception):
-    pass
-
 
 class CosmologyException(Exception):
     pass

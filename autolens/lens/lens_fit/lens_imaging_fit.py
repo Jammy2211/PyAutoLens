@@ -1,10 +1,10 @@
 import numpy as np
 
-import autoarray as aa
+from autoarray.fit import fit
 from autolens.model.galaxy import galaxy as g
 
 
-class ImagingFit(aa.DataFit):
+class ImagingFit(fit.DataFit):
     def __init__(self, image, noise_map, mask, model_image, mapping, inversion):
 
         super().__init__(
