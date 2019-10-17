@@ -6,8 +6,7 @@ import numpy as np
 
 import autoarray as aa
 from autolens import exc
-from autolens.data import abstract_data
-from autolens.model.profiles.light_profiles import EllipticalGaussian
+from autoarray.data import abstract_data
 
 logger = logging.getLogger(__name__)
 
