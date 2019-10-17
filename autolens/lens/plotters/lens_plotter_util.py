@@ -4,8 +4,6 @@ import autoarray as aa
 def plot_image(
     fit,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     grid=None,
     as_subplot=False,
@@ -53,9 +51,7 @@ def plot_image(
     aa.plot_array(
         array=image,
         grid=grid,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -90,8 +86,6 @@ def plot_image(
 def plot_noise_map(
     fit,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -136,9 +130,7 @@ def plot_noise_map(
 
     aa.plot_array(
         array=noise_map,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -172,8 +164,6 @@ def plot_noise_map(
 def plot_signal_to_noise_map(
     fit,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -218,9 +208,7 @@ def plot_signal_to_noise_map(
 
     aa.plot_array(
         array=signal_to_noise_map,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -254,8 +242,6 @@ def plot_signal_to_noise_map(
 def plot_model_data(
     fit,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     plot_mass_profile_centres=True,
     as_subplot=False,
@@ -305,9 +291,7 @@ def plot_model_data(
 
     aa.plot_array(
         array=model_image,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         centres=centres,
         as_subplot=as_subplot,
@@ -342,8 +326,6 @@ def plot_model_data(
 def plot_residual_map(
     fit,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -388,9 +370,7 @@ def plot_residual_map(
 
     aa.plot_array(
         array=residual_map,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -424,8 +404,6 @@ def plot_residual_map(
 def plot_normalized_residual_map(
     fit,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -470,9 +448,7 @@ def plot_normalized_residual_map(
 
     aa.plot_array(
         array=normalized_residual_map,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -506,8 +482,6 @@ def plot_normalized_residual_map(
 def plot_chi_squared_map(
     fit,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -552,9 +526,7 @@ def plot_chi_squared_map(
 
     aa.plot_array(
         array=chi_squared_map,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -589,8 +561,6 @@ def plot_subtracted_image_of_plane(
     fit,
     plane_index,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -656,7 +626,7 @@ def plot_subtracted_image_of_plane(
 
     aa.plot_array(
         array=subtracted_image,
-        mask=mask,
+        mask_overlay=mask,
         extract_array_from_mask=extract_array_from_mask,
         grid=image_plane_pix_grid,
         zoom_around_mask=zoom_around_mask,
@@ -694,8 +664,6 @@ def plot_model_image_of_plane(
     fit,
     plane_index,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     plot_mass_profile_centres=True,
     as_subplot=False,
@@ -745,9 +713,7 @@ def plot_model_image_of_plane(
 
     aa.plot_array(
         array=fit.model_images_of_planes(return_in_2d=True)[plane_index],
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         centres=centres,
         as_subplot=as_subplot,
@@ -782,8 +748,6 @@ def plot_model_image_of_plane(
 def plot_contribution_maps(
     fit,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -831,9 +795,7 @@ def plot_contribution_maps(
 
     aa.plot_array(
         array=contribution_map,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,

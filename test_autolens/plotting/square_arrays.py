@@ -45,8 +45,6 @@ fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=trac
 lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
-    extract_array_from_mask=True,
-    zoom_around_mask=True,
     should_plot_image_plane_pix=True,
     aspect="auto",
 )
@@ -54,8 +52,6 @@ lens_imaging_fit_plotters.plot_fit_subplot(
 lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
-    extract_array_from_mask=True,
-    zoom_around_mask=True,
     should_plot_image_plane_pix=True,
     aspect="equal",
 )
@@ -63,8 +59,6 @@ lens_imaging_fit_plotters.plot_fit_subplot(
 lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
-    extract_array_from_mask=True,
-    zoom_around_mask=True,
     should_plot_image_plane_pix=True,
     aspect="square",
 )

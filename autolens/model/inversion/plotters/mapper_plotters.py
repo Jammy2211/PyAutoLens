@@ -12,7 +12,7 @@ from scipy.spatial import Voronoi
 import autoarray as aa
 from autoarray.plotters import grid_plotters
 from autolens.model.inversion import mappers
-from autolens.data.plotters import imaging_plotters
+from autoarray.data.plotters import imaging_plotters
 
 
 def plot_image_and_mapper(

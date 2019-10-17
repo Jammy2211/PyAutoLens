@@ -14,8 +14,6 @@ def make_hyper_plotter_setup():
 def test__plot_hyper_model_image(hyper_model_image_7x7, hyper_plotter_path, plot_patch):
     al.hyper_plotters.plot_hyper_model_image(
         hyper_model_image=hyper_model_image_7x7,
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
@@ -30,8 +28,6 @@ def test__plot_hyper_galaxy_image(
 ):
     al.hyper_plotters.plot_hyper_galaxy_image(
         hyper_galaxy_image=hyper_galaxy_image_0_7x7,
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
@@ -44,8 +40,6 @@ def test__plot_hyper_galaxy_image(
 def test__plot_contribution_map(contribution_map_7x7, hyper_plotter_path, plot_patch):
     al.hyper_plotters.plot_contribution_map(
         contribution_map=contribution_map_7x7,
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
@@ -58,8 +52,6 @@ def test__plot_contribution_map(contribution_map_7x7, hyper_plotter_path, plot_p
 def test__plot_hyper_noise_map(hyper_noise_map_7x7, hyper_plotter_path, plot_patch):
     al.hyper_plotters.plot_hyper_noise_map(
         hyper_noise_map=hyper_noise_map_7x7,
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
@@ -76,8 +68,6 @@ def test__plot_chi_squared_map(
         chi_squared_map=lens_imaging_fit_x1_plane_7x7.chi_squared_map(
             return_in_2d=True
         ),
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
@@ -94,8 +84,6 @@ def test__plot_hyper_chi_squared_map(
         hyper_chi_squared_map=lens_imaging_fit_x1_plane_7x7.chi_squared_map(
             return_in_2d=True
         ),
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
@@ -125,8 +113,6 @@ def test__plot_hyper_galaxy(
         hyper_chi_squared_map=lens_imaging_fit_x1_plane_7x7.chi_squared_map(
             return_in_2d=True
         ),
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
@@ -152,8 +138,6 @@ def test__plot_hyper_galaxy_images(
         hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
         mask=mask_7x7,
         should_plot_mask=True,
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
@@ -166,8 +150,6 @@ def test__plot_hyper_galaxy_images(
         hyper_galaxy_cluster_image_path_dict=hyper_galaxy_image_path_dict,
         mask=mask_7x7,
         should_plot_mask=True,
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,

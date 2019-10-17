@@ -24,8 +24,6 @@ def test__fit_sub_plot__all_types_of_galaxy_fit(
     al.galaxy_fit_plotters.plot_fit_subplot(
         fit=gal_fit_7x7_image,
         should_plot_mask=True,
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         positions=positions_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -38,8 +36,6 @@ def test__fit_sub_plot__all_types_of_galaxy_fit(
     al.galaxy_fit_plotters.plot_fit_subplot(
         fit=gal_fit_7x7_convergence,
         should_plot_mask=True,
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         positions=positions_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -52,8 +48,6 @@ def test__fit_sub_plot__all_types_of_galaxy_fit(
     al.galaxy_fit_plotters.plot_fit_subplot(
         fit=gal_fit_7x7_potential,
         should_plot_mask=True,
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         positions=positions_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -66,8 +60,6 @@ def test__fit_sub_plot__all_types_of_galaxy_fit(
     al.galaxy_fit_plotters.plot_fit_subplot(
         fit=gal_fit_7x7_deflections_y,
         should_plot_mask=True,
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         positions=positions_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -80,8 +72,6 @@ def test__fit_sub_plot__all_types_of_galaxy_fit(
     al.galaxy_fit_plotters.plot_fit_subplot(
         fit=gal_fit_7x7_deflections_x,
         should_plot_mask=True,
-        extract_array_from_mask=True,
-        zoom_around_mask=True,
         positions=positions_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],

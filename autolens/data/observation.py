@@ -3,7 +3,7 @@ import autoarray as aa
 
 from autoarray.data import imaging
 from autolens.lens import ray_tracing
-from autolens.data.plotters import imaging_plotters
+from autoarray.data.plotters import imaging_plotters
 
 
 class ImagingObservation(object):

@@ -10,7 +10,6 @@ from autolens.dimensions import (
     Position,
     convert_units_to_input_units,
 )
-from autolens.data.plotters import data_plotters, imaging_plotters, uv_plane_plotters
 from autolens.lens import ray_tracing
 from autolens.lens.lens_data import AbstractLensData, LensImagingData, LensUVPlaneData
 from autolens.lens.lens_fit import (

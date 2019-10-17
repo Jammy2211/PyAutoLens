@@ -1,5 +1,5 @@
 import autofit as af
-from autolens.data.plotters import imaging_plotters
+from autoarray.data.plotters import imaging_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.lens.plotters import lens_imaging_fit_plotters
 from autolens.model.inversion.plotters import inversion_plotters
@@ -32,9 +32,7 @@ def plot_imaging_for_phase(
 
         imaging_plotters.plot_imaging_subplot(
             imaging_data=imaging_data,
-            mask=mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
+            mask_overlay=mask,
             positions=positions,
             units=units,
             output_path=subplot_path,
@@ -44,8 +42,6 @@ def plot_imaging_for_phase(
     imaging_plotters.plot_imaging_individual(
         imaging_data=imaging_data,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         positions=positions,
         should_plot_image=should_plot_image,
         should_plot_noise_map=should_plot_noise_map,
@@ -89,8 +85,6 @@ def plot_ray_tracing_for_phase(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             positions=positions,
             units=units,
             output_path=subplot_path,
@@ -101,8 +95,6 @@ def plot_ray_tracing_for_phase(
         tracer=tracer,
         grid=grid,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         positions=positions,
         should_plot_profile_image=should_plot_image,
         should_plot_source_plane=should_plot_source_plane,
@@ -122,8 +114,6 @@ def plot_ray_tracing_for_phase(
                 tracer=tracer,
                 grid=grid,
                 mask=mask,
-                extract_array_from_mask=extract_array_from_mask,
-                zoom_around_mask=zoom_around_mask,
                 positions=positions,
                 should_plot_profile_image=True,
                 should_plot_source_plane=True,
@@ -145,8 +135,6 @@ def plot_ray_tracing_for_phase(
                 tracer=tracer,
                 grid=grid,
                 mask=mask,
-                extract_array_from_mask=extract_array_from_mask,
-                zoom_around_mask=zoom_around_mask,
                 positions=positions,
                 should_plot_profile_image=True,
                 should_plot_source_plane=True,
@@ -199,8 +187,6 @@ def plot_lens_imaging_fit_for_phase(
         lens_imaging_fit_plotters.plot_fit_subplot(
             fit=fit,
             should_plot_mask=should_plot_mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             positions=positions,
             should_plot_image_plane_pix=should_plot_image_plane_pix,
             units=units,
@@ -213,8 +199,6 @@ def plot_lens_imaging_fit_for_phase(
         lens_imaging_fit_plotters.plot_fit_subplot_of_planes(
             fit=fit,
             should_plot_mask=should_plot_mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             positions=positions,
             should_plot_image_plane_pix=should_plot_image_plane_pix,
             units=units,
@@ -228,8 +212,6 @@ def plot_lens_imaging_fit_for_phase(
             inversion=fit.inversion,
             mask=fit.mask,
             positions=positions,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             output_path=subplot_path,
             output_format="png",
         )
@@ -237,8 +219,6 @@ def plot_lens_imaging_fit_for_phase(
     lens_imaging_fit_plotters.plot_fit_individuals(
         fit=fit,
         should_plot_mask=should_plot_mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         positions=positions,
         should_plot_image_plane_pix=should_plot_image_plane_pix,
         should_plot_image=should_plot_image,
@@ -267,8 +247,6 @@ def plot_lens_imaging_fit_for_phase(
             lens_imaging_fit_plotters.plot_fit_individuals(
                 fit=fit,
                 should_plot_mask=should_plot_mask,
-                extract_array_from_mask=extract_array_from_mask,
-                zoom_around_mask=zoom_around_mask,
                 positions=positions,
                 should_plot_image_plane_pix=should_plot_image_plane_pix,
                 should_plot_image=True,
@@ -299,8 +277,6 @@ def plot_lens_imaging_fit_for_phase(
             lens_imaging_fit_plotters.plot_fit_individuals(
                 fit=fit,
                 should_plot_mask=should_plot_mask,
-                extract_array_from_mask=extract_array_from_mask,
-                zoom_around_mask=zoom_around_mask,
                 positions=positions,
                 should_plot_image_plane_pix=should_plot_image_plane_pix,
                 should_plot_image=True,
@@ -346,8 +322,6 @@ def plot_hyper_images_for_phase(
         hyper_plotters.plot_hyper_model_image(
             hyper_model_image=hyper_model_image_2d,
             mask=mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path,
             output_format="png",
@@ -358,8 +332,6 @@ def plot_hyper_images_for_phase(
         hyper_plotters.plot_hyper_galaxy_images_subplot(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_2d_path_dict,
             mask=mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path,
             output_format="png",
@@ -373,8 +345,6 @@ def plot_hyper_images_for_phase(
         hyper_plotters.plot_binned_hyper_galaxy_images_subplot(
             hyper_galaxy_cluster_image_path_dict=binned_hyper_galaxy_image_2d_path_dict,
             mask=binned_grid.mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path,
             output_format="png",

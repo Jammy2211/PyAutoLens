@@ -239,7 +239,7 @@ class LensImagingData(AbstractLensData):
 class LensUVPlaneData(AbstractLensData):
     def __init__(
             self,
-            uv_plane_data,
+            interferometer_data,
             mask,
             positions=None,
             positions_threshold=None,
@@ -281,7 +281,7 @@ class LensUVPlaneData(AbstractLensData):
             up run.
         """
 
-        self.uv_plane_data = uv_plane_data
+        self.interferometer_data = interferometer_data
 
         super(LensUVPlaneData, self).__init__(
             mask=mask,
@@ -303,40 +303,40 @@ class LensUVPlaneData(AbstractLensData):
             self.trimmed_primary_beam_shape = trimmed_primary_beam_shape
 
         self.transformer = Transformer(
-            uv_wavelengths=uv_plane_data.uv_wavelengths,
+            uv_wavelengths=interferometer_data.uv_wavelengths,
             grid_radians=self.grid.in_radians,
         )
 
     def visibilities(self):
-        return self.uv_plane_data.visibilities
+        return self.interferometer_data.visibilities
 
     def noise_map(self, return_x2=False):
         if not return_x2:
-            return self.uv_plane_data.noise_map
+            return self.interferometer_data.noise_map
         else:
             return np.stack(
-                (self.uv_plane_data.noise_map, self.uv_plane_data.noise_map), axis=-1
+                (self.interferometer_data.noise_map, self.interferometer_data.noise_map), axis=-1
             )
 
     @property
     def visibilities_mask(self):
-        return np.full(fill_value=False, shape=self.uv_plane_data.uv_wavelengths.shape)
+        return np.full(fill_value=False, shape=self.interferometer_data.uv_wavelengths.shape)
 
     @property
     def primary_beam(self):
-        return self.uv_plane_data.primary_beam
+        return self.interferometer_data.primary_beam
 
     def signal_to_noise_map(self):
-        return self.uv_plane_data.visibilities / self.uv_plane_data.noise_map
+        return self.interferometer_data.visibilities / self.interferometer_data.noise_map
 
     def new_lens_imaging_data_with_modified_visibilities(self, modified_visibilities):
 
-        uv_plane_data_with_modified_visibilities = self.uv_plane_data.modified_visibilities_from_visibilities(
+        interferometer_data_with_modified_visibilities = self.interferometer_data.modified_visibilities_from_visibilities(
             visibilities=modified_visibilities
         )
 
         return LensUVPlaneData(
-            uv_plane_data=uv_plane_data_with_modified_visibilities,
+            interferometer_data=interferometer_data_with_modified_visibilities,
             mask=self.mask,
             positions=self.positions,
             positions_threshold=self.positions_threshold,

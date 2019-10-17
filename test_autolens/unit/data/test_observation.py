@@ -445,7 +445,7 @@ def test__uv_from_deflections_and_galaxies__same_as_manual_calculation_using_tra
 
     deflections = tracer.deflections_from_grid(grid=grid)
 
-    uv_plane_data_simulated_via_deflections = aa.interferometer.from_deflections_galaxies_and_exposure_arrays(
+    interferometer_data_simulated_via_deflections = aa.interferometer.from_deflections_galaxies_and_exposure_arrays(
         deflections=deflections,
         pixel_scales=1.0,
         galaxies=[g1],
@@ -458,7 +458,7 @@ def test__uv_from_deflections_and_galaxies__same_as_manual_calculation_using_tra
 
     tracer_profile_image = tracer.profile_image_from_grid(grid=grid)
 
-    uv_plane_data_simulated = aa.interferometer.simulate(
+    interferometer_data_simulated = aa.interferometer.simulate(
         image=tracer_profile_image,
         pixel_scales=1.0,
         exposure_time=10000.0,
@@ -469,17 +469,17 @@ def test__uv_from_deflections_and_galaxies__same_as_manual_calculation_using_tra
     )
 
     assert (
-        uv_plane_data_simulated_via_deflections.exposure_time_map
-        == uv_plane_data_simulated.exposure_time_map
+        interferometer_data_simulated_via_deflections.exposure_time_map
+        == interferometer_data_simulated.exposure_time_map
     ).all()
     assert (
-        uv_plane_data_simulated_via_deflections.visibilities
-        == uv_plane_data_simulated.visibilities
+        interferometer_data_simulated_via_deflections.visibilities
+        == interferometer_data_simulated.visibilities
     ).all()
 
     assert (
-        uv_plane_data_simulated_via_deflections.noise_map
-        == uv_plane_data_simulated.noise_map
+        interferometer_data_simulated_via_deflections.noise_map
+        == interferometer_data_simulated.noise_map
     ).all()
 
 def test__uv_from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
@@ -500,7 +500,7 @@ def test__uv_from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    uv_plane_data_simulated_via_tracer = aa.interferometer.from_tracer_grid_and_exposure_arrays(
+    interferometer_data_simulated_via_tracer = aa.interferometer.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         grid=grid,
         pixel_scales=0.1,
@@ -511,7 +511,7 @@ def test__uv_from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
         noise_seed=1,
     )
 
-    uv_plane_data_simulated = aa.interferometer.simulate(
+    interferometer_data_simulated = aa.interferometer.simulate(
         image=tracer.profile_image_from_grid(grid=grid),
         pixel_scales=0.1,
         exposure_time=10000.0,
@@ -522,15 +522,15 @@ def test__uv_from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
     )
 
     assert (
-        uv_plane_data_simulated_via_tracer.exposure_time_map
-        == uv_plane_data_simulated.exposure_time_map
+        interferometer_data_simulated_via_tracer.exposure_time_map
+        == interferometer_data_simulated.exposure_time_map
     ).all()
     assert (
-        uv_plane_data_simulated_via_tracer.visibilities
-        == uv_plane_data_simulated.visibilities
+        interferometer_data_simulated_via_tracer.visibilities
+        == interferometer_data_simulated.visibilities
     ).all()
 
     assert (
-        uv_plane_data_simulated_via_tracer.noise_map
-        == uv_plane_data_simulated.noise_map
+        interferometer_data_simulated_via_tracer.noise_map
+        == interferometer_data_simulated.noise_map
     ).all()
