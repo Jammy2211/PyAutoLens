@@ -62,14 +62,14 @@ def simulate_image_from_galaxies_and_output_to_fits(
         overwrite=True,
     )
 
-    al.imaging_plotters.plot_imaging_subplot(
+    autoarray.data.plotters.imaging_plotters.plot_imaging_subplot(
         imaging_data=imaging_data,
         output_filename="imaging_data",
         output_path=data_path,
         output_format="png",
     )
 
-    al.imaging_plotters.plot_imaging_individual(
+    autoarray.data.plotters.imaging_plotters.plot_imaging_individual(
         imaging_data=imaging_data,
         should_plot_image=True,
         should_plot_noise_map=True,

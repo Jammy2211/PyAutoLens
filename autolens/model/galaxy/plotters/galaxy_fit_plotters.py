@@ -13,8 +13,6 @@ from autolens.lens.plotters import lens_plotter_util
 def plot_fit_subplot(
     fit,
     should_plot_mask=True,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -58,8 +56,6 @@ def plot_fit_subplot(
     plot_galaxy_data_array(
         galaxy_data=fit.galaxy_data,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         positions=positions,
         as_subplot=True,
         units=units,
@@ -94,8 +90,6 @@ def plot_fit_subplot(
     lens_plotter_util.plot_model_data(
         fit=fit,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         positions=positions,
         as_subplot=True,
         units=units,
@@ -130,8 +124,6 @@ def plot_fit_subplot(
     lens_plotter_util.plot_residual_map(
         fit=fit,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -164,8 +156,6 @@ def plot_fit_subplot(
     lens_plotter_util.plot_chi_squared_map(
         fit=fit,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -205,8 +195,6 @@ def plot_fit_subplot(
 def plot_fit_individuals(
     fit,
     should_plot_mask=True,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     should_plot_image=False,
     should_plot_noise_map=False,
@@ -227,8 +215,6 @@ def plot_fit_individuals(
         plot_galaxy_data_array(
             galaxy_data=fit.galaxy_data,
             mask=mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             positions=positions,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
@@ -241,8 +227,6 @@ def plot_fit_individuals(
         lens_plotter_util.plot_noise_map(
             fit=fit,
             mask=mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             positions=positions,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
@@ -255,8 +239,6 @@ def plot_fit_individuals(
         lens_plotter_util.plot_model_data(
             fit=fit,
             mask=mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             positions=positions,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
@@ -269,8 +251,6 @@ def plot_fit_individuals(
         lens_plotter_util.plot_residual_map(
             fit=fit,
             mask=mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -282,8 +262,6 @@ def plot_fit_individuals(
         lens_plotter_util.plot_chi_squared_map(
             fit=fit,
             mask=mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -294,8 +272,6 @@ def plot_fit_individuals(
 def plot_galaxy_data_array(
     galaxy_data,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -342,9 +318,7 @@ def plot_galaxy_data_array(
 
     aa.plot_array(
         array=galaxy_data.image(return_in_2d=True),
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,

@@ -5,8 +5,6 @@ def plot_image(
     light_profile,
     grid,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -51,9 +49,7 @@ def plot_image(
 
     aa.plot_array(
         array=image,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -155,8 +151,6 @@ def plot_convergence(
     mass_profile,
     grid,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     plot_critical_curves=False,
     plot_caustics=False,
@@ -211,9 +205,7 @@ def plot_convergence(
 
     aa.plot_array(
         array=convergence,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         lines=lines,
         as_subplot=as_subplot,
@@ -250,8 +242,6 @@ def plot_potential(
     mass_profile,
     grid,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     as_subplot=False,
     plot_critical_curves=False,
@@ -305,9 +295,7 @@ def plot_potential(
 
     aa.plot_array(
         array=potential,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         lines=lines,
         as_subplot=as_subplot,
@@ -344,8 +332,6 @@ def plot_deflections_y(
     mass_profile,
     grid,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     plot_critical_curves=False,
     plot_caustics=False,
@@ -401,9 +387,7 @@ def plot_deflections_y(
 
     aa.plot_array(
         array=deflections_y,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         lines=lines,
         as_subplot=as_subplot,
@@ -440,8 +424,6 @@ def plot_deflections_x(
     mass_profile,
     grid,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     plot_critical_curves=False,
     plot_caustics=False,
@@ -496,9 +478,7 @@ def plot_deflections_x(
 
     aa.plot_array(
         array=deflections_x,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         lines=lines,
         as_subplot=as_subplot,
@@ -535,8 +515,6 @@ def plot_magnification(
     mass_profile,
     grid,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     as_subplot=False,
     plot_critical_curves=False,
@@ -590,9 +568,7 @@ def plot_magnification(
 
     aa.plot_array(
         array=magnification,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         positions=positions,
         lines=lines,
         as_subplot=as_subplot,

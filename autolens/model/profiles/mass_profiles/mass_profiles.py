@@ -459,7 +459,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         if len(tangential_critical_curve_indices) == 0:
             return []
 
-        return grid.mask.mapping.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+        return grid.mask.geometry.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
             grid_pixels_1d=tangential_critical_curve_indices[0],
             shape=tangential_eigen_values.in_2d.shape,
         )
@@ -475,7 +475,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         if len(radial_critical_curve_indices) == 0:
             return []
 
-        return grid.mask.mapping.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+        return grid.mask.geometry.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
             grid_pixels_1d=radial_critical_curve_indices[0],
             shape=radial_eigen_values.in_2d.shape,
         )

@@ -7,7 +7,6 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autolens.data.plotters import data_plotters
 
 
 def plot_hyper_galaxy_subplot(
@@ -18,8 +17,6 @@ def plot_hyper_galaxy_subplot(
     chi_squared_map,
     hyper_chi_squared_map,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     units="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
@@ -60,8 +57,6 @@ def plot_hyper_galaxy_subplot(
     plot_hyper_galaxy_image(
         hyper_galaxy_image=hyper_galaxy_image,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -91,11 +86,9 @@ def plot_hyper_galaxy_subplot(
 
     plt.subplot(rows, columns, 2)
 
-    data_plotters.plot_noise_map(
+    aa.data_plotters.plot_noise_map(
         noise_map=noise_map,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -127,8 +120,6 @@ def plot_hyper_galaxy_subplot(
     plot_hyper_noise_map(
         hyper_noise_map=hyper_noise_map,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -161,8 +152,6 @@ def plot_hyper_galaxy_subplot(
     plot_contribution_map(
         contribution_map=contribution_map,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -195,8 +184,6 @@ def plot_hyper_galaxy_subplot(
     plot_chi_squared_map(
         chi_squared_map=chi_squared_map,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -228,8 +215,6 @@ def plot_hyper_galaxy_subplot(
     plot_hyper_chi_squared_map(
         hyper_chi_squared_map=hyper_chi_squared_map,
         mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -269,8 +254,6 @@ def plot_binned_hyper_galaxy_images_subplot(
     hyper_galaxy_cluster_image_path_dict,
     mask,
     should_plot_mask=True,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     units="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
@@ -301,8 +284,6 @@ def plot_binned_hyper_galaxy_images_subplot(
         hyper_galaxy_image_path_dict=hyper_galaxy_cluster_image_path_dict,
         mask=mask,
         should_plot_mask=should_plot_mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         figsize=figsize,
@@ -334,8 +315,6 @@ def plot_hyper_galaxy_images_subplot(
     hyper_galaxy_image_path_dict,
     mask,
     should_plot_mask=True,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     units="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
@@ -385,8 +364,6 @@ def plot_hyper_galaxy_images_subplot(
         plot_hyper_galaxy_image(
             hyper_galaxy_image=hyper_galaxy_image,
             mask=mask,
-            extract_array_from_mask=extract_array_from_mask,
-            zoom_around_mask=zoom_around_mask,
             as_subplot=True,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
@@ -427,8 +404,6 @@ def plot_hyper_galaxy_images_subplot(
 def plot_hyper_model_image(
     hyper_model_image,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -473,9 +448,7 @@ def plot_hyper_model_image(
 
     aa.plot_array(
         array=hyper_model_image,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -511,8 +484,6 @@ def plot_hyper_model_image(
 def plot_hyper_galaxy_image(
     hyper_galaxy_image,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -557,9 +528,7 @@ def plot_hyper_galaxy_image(
 
     aa.plot_array(
         array=hyper_galaxy_image,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -595,8 +564,6 @@ def plot_hyper_galaxy_image(
 def plot_contribution_map(
     contribution_map,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -641,9 +608,7 @@ def plot_contribution_map(
 
     aa.plot_array(
         array=contribution_map,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -679,8 +644,6 @@ def plot_contribution_map(
 def plot_hyper_noise_map(
     hyper_noise_map,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -725,9 +688,7 @@ def plot_hyper_noise_map(
 
     aa.plot_array(
         array=hyper_noise_map,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -763,8 +724,6 @@ def plot_hyper_noise_map(
 def plot_chi_squared_map(
     chi_squared_map,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -809,9 +768,7 @@ def plot_chi_squared_map(
 
     aa.plot_array(
         array=chi_squared_map,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -847,8 +804,6 @@ def plot_chi_squared_map(
 def plot_hyper_chi_squared_map(
     hyper_chi_squared_map,
     mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -893,9 +848,7 @@ def plot_hyper_chi_squared_map(
 
     aa.plot_array(
         array=hyper_chi_squared_map,
-        mask=mask,
-        extract_array_from_mask=extract_array_from_mask,
-        zoom_around_mask=zoom_around_mask,
+        mask_overlay=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,

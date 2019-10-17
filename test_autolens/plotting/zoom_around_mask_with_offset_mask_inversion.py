@@ -55,8 +55,6 @@ fit = fit_with_offset_centre(centre=(1.0, 1.0))
 lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
-    extract_array_from_mask=True,
-    zoom_around_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
@@ -67,8 +65,6 @@ fit = fit_with_offset_centre(centre=(1.05, 1.05))
 lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
-    extract_array_from_mask=True,
-    zoom_around_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
@@ -78,8 +74,6 @@ fit = fit_with_offset_centre(centre=(1.1, 1.1))
 lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
-    extract_array_from_mask=True,
-    zoom_around_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
@@ -89,8 +83,6 @@ fit = fit_with_offset_centre(centre=(0.95, 0.95))
 lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
-    extract_array_from_mask=True,
-    zoom_around_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
@@ -100,8 +92,6 @@ fit = fit_with_offset_centre(centre=(5.9, 5.9))
 lens_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
-    extract_array_from_mask=True,
-    zoom_around_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )

@@ -6,7 +6,7 @@ from test_autolens.unit.mock.model.mock_profiles import MockLightProfile
 
 
 class TestFitProperties:
-    def test__total_inversions(self, lens_uv_plane_data_7):
+    def test__total_inversions(self, lens_interferometer_data_7):
 
         g0 = al.Galaxy(redshift=0.5)
 
@@ -17,7 +17,7 @@ class TestFitProperties:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
-            lens_data=lens_uv_plane_data_7, tracer=tracer
+            lens_data=lens_interferometer_data_7, tracer=tracer
         )
 
         assert fit.total_inversions == 0
@@ -31,7 +31,7 @@ class TestFitProperties:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
-            lens_data=lens_uv_plane_data_7, tracer=tracer
+            lens_data=lens_interferometer_data_7, tracer=tracer
         )
 
         assert fit.total_inversions == 1
@@ -57,7 +57,7 @@ class TestFitProperties:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
-            lens_data=lens_uv_plane_data_7, tracer=tracer
+            lens_data=lens_interferometer_data_7, tracer=tracer
         )
 
         assert fit.total_inversions == 3
@@ -71,7 +71,7 @@ class TestLikelihood:
 
         uv_wavelengths = np.array([[0.0, 0.0]])
 
-        uv_plane_data = al.UVPlaneData(
+        interferometer_data = al.UVPlaneData(
             shape_2d=(1, 2),
             visibilities=5.0 * np.ones((1, 2)),
             pixel_scales=1.0,
@@ -79,7 +79,7 @@ class TestLikelihood:
             uv_wavelengths=uv_wavelengths,
             primary_beam=None,
         )
-        uv_plane_data.visibilities[0, 1] = 4.0
+        interferometer_data.visibilities[0, 1] = 4.0
 
         mask = aa.Mask(
             array_2d=np.array(
@@ -93,8 +93,8 @@ class TestLikelihood:
             sub_size=1,
         )
 
-        lens_uv_plane_data_7 = al.LensUVPlaneData(
-            uv_plane_data=uv_plane_data, mask=mask
+        lens_interferometer_data_7 = al.LensUVPlaneData(
+            interferometer_data=interferometer_data, mask=mask
         )
 
         # Setup as a ray trace instance, using a light profile for the lens
@@ -103,7 +103,7 @@ class TestLikelihood:
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
-            lens_data=lens_uv_plane_data_7, tracer=tracer
+            lens_data=lens_interferometer_data_7, tracer=tracer
         )
 
         assert (fit._mask == np.array([False, False])).all()
@@ -139,7 +139,7 @@ class TestLikelihood:
 
         # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
-        uv_plane_data = al.UVPlaneData(
+        interferometer_data = al.UVPlaneData(
             shape_2d=(1, 2),
             visibilities=5.0 * np.ones((3, 2)),
             pixel_scales=1.0,
@@ -160,8 +160,8 @@ class TestLikelihood:
             sub_size=1,
         )
 
-        lens_uv_plane_data_7 = al.LensUVPlaneData(
-            uv_plane_data=uv_plane_data, mask=mask
+        lens_interferometer_data_7 = al.LensUVPlaneData(
+            interferometer_data=interferometer_data, mask=mask
         )
 
         # Setup as a ray trace instance, using a light profile for the lens
@@ -171,7 +171,7 @@ class TestLikelihood:
             light_profile=al.light_profiles.EllipticalSersic(intensity=0.001),
         )
 
-        profile_image = g0.profile_image_from_grid(grid=lens_uv_plane_data_7.grid)
+        profile_image = g0.profile_image_from_grid(grid=lens_interferometer_data_7.grid)
         model_visibilities_manual = transformer.visibilities_from_image(
             image=profile_image
         )
@@ -179,7 +179,7 @@ class TestLikelihood:
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
-            lens_data=lens_uv_plane_data_7, tracer=tracer
+            lens_data=lens_interferometer_data_7, tracer=tracer
         )
 
         assert (fit._mask == np.array([False, False])).all()
@@ -260,7 +260,7 @@ class TestLikelihood:
 
 
 class TestCompareToManualProfilesOnly:
-    def test___all_lens_fit_quantities__no_hyper_methods(self, lens_uv_plane_data_7):
+    def test___all_lens_fit_quantities__no_hyper_methods(self, lens_interferometer_data_7):
 
         g0 = al.Galaxy(
             redshift=0.5,
@@ -276,23 +276,23 @@ class TestCompareToManualProfilesOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.LensUVPlaneFit.from_lens_data_and_tracer(
-            lens_data=lens_uv_plane_data_7, tracer=tracer
+            lens_data=lens_interferometer_data_7, tracer=tracer
         )
 
-        assert lens_uv_plane_data_7.noise_map(return_x2=True) == pytest.approx(
+        assert lens_interferometer_data_7.noise_map(return_x2=True) == pytest.approx(
             fit.noise_map()
         )
 
         model_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
-            grid=lens_uv_plane_data_7.grid, transformer=lens_uv_plane_data_7.transformer
+            grid=lens_interferometer_data_7.grid, transformer=lens_interferometer_data_7.transformer
         )
 
         assert model_visibilities == pytest.approx(fit._model_data, 1e-4)
         assert model_visibilities == pytest.approx(fit.model_visibilities(), 1e-4)
 
         residual_map = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
-            data=lens_uv_plane_data_7.visibilities(),
-            mask=lens_uv_plane_data_7.visibilities_mask,
+            data=lens_interferometer_data_7.visibilities(),
+            mask=lens_interferometer_data_7.visibilities_mask,
             model_data=model_visibilities,
         )
 
@@ -301,8 +301,8 @@ class TestCompareToManualProfilesOnly:
 
         normalized_residual_map = autoarray.fit.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map,
-            mask=lens_uv_plane_data_7.visibilities_mask,
-            noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
+            mask=lens_interferometer_data_7.visibilities_mask,
+            noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
         )
 
         assert normalized_residual_map == pytest.approx(
@@ -314,8 +314,8 @@ class TestCompareToManualProfilesOnly:
 
         chi_squared_map = autoarray.fit.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map,
-            mask=lens_uv_plane_data_7.visibilities_mask,
-            noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
+            mask=lens_interferometer_data_7.visibilities_mask,
+            noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
         )
 
         assert chi_squared_map == pytest.approx(fit._chi_squared_map, 1e-4)
@@ -323,12 +323,12 @@ class TestCompareToManualProfilesOnly:
 
         chi_squared = autoarray.fit.fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=fit._chi_squared_map,
-            mask=lens_uv_plane_data_7.visibilities_mask,
+            mask=lens_interferometer_data_7.visibilities_mask,
         )
 
         noise_normalization = autoarray.fit.fit_util.noise_normalization_from_noise_map_and_mask(
-            noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
-            mask=lens_uv_plane_data_7.visibilities_mask,
+            noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
+            mask=lens_interferometer_data_7.visibilities_mask,
         )
 
         likelihood = autoarray.fit.fit_util.likelihood_from_chi_squared_and_noise_normalization(
@@ -339,7 +339,7 @@ class TestCompareToManualProfilesOnly:
         assert likelihood == fit.figure_of_merit
 
     # def test___lens_fit_galaxy_image_dict__corresponds_to_galaxy_images(
-    #     self, lens_uv_plane_data_7
+    #     self, lens_interferometer_data_7
     # ):
     #     g0 = al.Galaxy(
     #         redshift=0.5,
@@ -354,15 +354,15 @@ class TestCompareToManualProfilesOnly:
     #
     #     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
     #
-    #     fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-    #         lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+    #     fit = al.LensUVPlaneFit.from_lens_interferometer_data_and_tracer(
+    #         lens_interferometer_data=lens_interferometer_data_7, tracer=tracer
     #     )
     #
     #     traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-    #         grid=lens_uv_plane_data_7.grid
+    #         grid=lens_interferometer_data_7.grid
     #     )
     #     traced_blurring_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-    #         grid=lens_uv_plane_data_7.blurring_grid
+    #         grid=lens_interferometer_data_7.blurring_grid
     #     )
     #
     #     g0_profile_image_1d = g0.profile_image_from_grid(
@@ -374,7 +374,7 @@ class TestCompareToManualProfilesOnly:
     #
     #     )
     #
-    #     g0_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(
+    #     g0_blurred_profile_image_1d = lens_interferometer_data_7.convolver.convolve_image(
     #         image_array=g0_profile_image_1d,
     #         blurring_array=g0_blurring_image_1d,
     #     )
@@ -388,7 +388,7 @@ class TestCompareToManualProfilesOnly:
     #
     #     )
     #
-    #     g1_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(
+    #     g1_blurred_profile_image_1d = lens_interferometer_data_7.convolver.convolve_image(
     #         image_array=g1_profile_image_1d,
     #         blurring_array=g1_blurring_image_1d,
     #     )
@@ -405,10 +405,10 @@ class TestCompareToManualProfilesOnly:
     #         fit.galaxy_model_visibilities_dict[g0] + fit.galaxy_model_visibilities_dict[g1], 1.0e-4
     #     )
     #
-    #     g0_blurred_profile_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+    #     g0_blurred_profile_image_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
     #         array_1d=g0_blurred_profile_image_1d
     #     )
-    #     g1_blurred_profile_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+    #     g1_blurred_profile_image_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
     #         array_1d=g1_blurred_profile_image_1d
     #     )
     #
@@ -424,7 +424,7 @@ class TestCompareToManualProfilesOnly:
     #     )
     #
     # def test___model_image_and_model_visibilitiess_of_planes_and_unmasked_blurred_profile_image_properties(
-    #     self, lens_uv_plane_data_7
+    #     self, lens_interferometer_data_7
     # ):
     #
     #     g0 = al.Galaxy(
@@ -440,13 +440,13 @@ class TestCompareToManualProfilesOnly:
     #
     #     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
     #
-    #     fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-    #         lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+    #     fit = al.LensUVPlaneFit.from_lens_interferometer_data_and_tracer(
+    #         lens_interferometer_data=lens_interferometer_data_7, tracer=tracer
     #     )
     #
     #     blurred_profile_image_2d_of_planes = tracer.blurred_profile_images_of_planes_from_grid_and_convolver(
-    #         grid=lens_uv_plane_data_7.grid,
-    #         convolver=lens_uv_plane_data_7.convolver,
+    #         grid=lens_interferometer_data_7.grid,
+    #         convolver=lens_interferometer_data_7.convolver,
     #         return_x2=True,
     #     )
     #
@@ -460,7 +460,7 @@ class TestCompareToManualProfilesOnly:
     #     )
     #
     #     unmasked_blurred_profile_image = tracer.unmasked_blurred_profile_image_from_grid_and_psf(
-    #         grid=lens_uv_plane_data_7.grid, psf=lens_uv_plane_data_7.psf
+    #         grid=lens_interferometer_data_7.grid, psf=lens_interferometer_data_7.psf
     #     )
     #
     #     assert (
@@ -468,7 +468,7 @@ class TestCompareToManualProfilesOnly:
     #     ).all()
     #
     #     unmasked_blurred_profile_image_of_planes = tracer.unmasked_blurred_profile_image_of_planes_from_grid_and_psf(
-    #         grid=lens_uv_plane_data_7.grid, psf=lens_uv_plane_data_7.psf
+    #         grid=lens_interferometer_data_7.grid, psf=lens_interferometer_data_7.psf
     #     )
     #
     #     assert (
@@ -481,7 +481,7 @@ class TestCompareToManualProfilesOnly:
     #     ).all()
     #
     #     unmasked_blurred_profile_image_of_galaxies = tracer.unmasked_blurred_profile_image_of_planes_and_galaxies_from_grid_and_psf(
-    #         grid=lens_uv_plane_data_7.grid, psf=lens_uv_plane_data_7.psf
+    #         grid=lens_interferometer_data_7.grid, psf=lens_interferometer_data_7.psf
     #     )
     #
     #     assert (
@@ -496,7 +496,7 @@ class TestCompareToManualProfilesOnly:
 
 #
 # class TestCompareToManualInversionOnly:
-#     def test___all_lens_fit_quantities__no_hyper_methods(self, lens_uv_plane_data_7):
+#     def test___all_lens_fit_quantities__no_hyper_methods(self, lens_interferometer_data_7):
 #
 #         pix = al.pixelizations.Rectangular(shape=(3, 3))
 #         reg = al.regularization.Constant(coefficient=1.0)
@@ -505,19 +505,19 @@ class TestCompareToManualProfilesOnly:
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 #
-#         fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-#             lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+#         fit = al.LensUVPlaneFit.from_lens_interferometer_data_and_tracer(
+#             lens_interferometer_data=lens_interferometer_data_7, tracer=tracer
 #         )
 #
 #         mapper = pix.mapper_from_grid_and_pixelization_grid(
-#             grid=lens_uv_plane_data_7.grid, pixelization_grid=None
+#             grid=lens_interferometer_data_7.grid, pixelization_grid=None
 #         )
 #         inversion = al.Inversion.from_data_1d_mapper_and_regularization(
 #             mapper=mapper,
 #             regularization=reg,
-#             image_1d=lens_uv_plane_data_7.visibilities(),
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
-#             convolver=lens_uv_plane_data_7.convolver,
+#             image_1d=lens_interferometer_data_7.visibilities(),
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
+#             convolver=lens_interferometer_data_7.convolver,
 #         )
 #
 #         assert inversion.reconstructed_data_1d == pytest.approx(
@@ -526,11 +526,11 @@ class TestCompareToManualProfilesOnly:
 #         assert inversion.reconstructed_data_2d == fit.model_visibilities(return_x2=True)
 #
 #         residual_map = af.fit_util.residual_map_from_data_mask_and_model_data(
-#             data=lens_uv_plane_data_7.visibilities(),
-#             mask=lens_uv_plane_data_7.visibilities_mask,
+#             data=lens_interferometer_data_7.visibilities(),
+#             mask=lens_interferometer_data_7.visibilities_mask,
 #             model_data=inversion.reconstructed_data_1d,
 #         )
-#         residual_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         residual_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=residual_map
 #         )
 #
@@ -539,11 +539,11 @@ class TestCompareToManualProfilesOnly:
 #
 #         normalized_residual_map = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
 #             residual_map=residual_map,
-#             mask=lens_uv_plane_data_7.visibilities_mask,
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
+#             mask=lens_interferometer_data_7.visibilities_mask,
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
 #         )
 #
-#         normalized_residual_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         normalized_residual_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=normalized_residual_map
 #         )
 #
@@ -556,10 +556,10 @@ class TestCompareToManualProfilesOnly:
 #
 #         chi_squared_map = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
 #             residual_map=residual_map,
-#             mask=lens_uv_plane_data_7.visibilities_mask,
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
+#             mask=lens_interferometer_data_7.visibilities_mask,
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
 #         )
-#         chi_squared_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         chi_squared_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=chi_squared_map
 #         )
 #
@@ -569,12 +569,12 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #         chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-#             chi_squared_map=chi_squared_map_2d, mask=lens_uv_plane_data_7.visibilities_mask
+#             chi_squared_map=chi_squared_map_2d, mask=lens_interferometer_data_7.visibilities_mask
 #         )
 #
 #         noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
-#             mask=lens_uv_plane_data_7.visibilities_mask,
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
+#             mask=lens_interferometer_data_7.visibilities_mask,
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
 #         )
 #
 #         likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
@@ -605,7 +605,7 @@ class TestCompareToManualProfilesOnly:
 #         assert evidence == fit.figure_of_merit
 #
 #     def test___lens_fit_galaxy_image_dict__has_inversion_reconstructed_data(
-#         self, lens_uv_plane_data_7
+#         self, lens_interferometer_data_7
 #     ):
 #         pix = al.pixelizations.Rectangular(shape=(3, 3))
 #         reg = al.regularization.Constant(coefficient=1.0)
@@ -615,20 +615,20 @@ class TestCompareToManualProfilesOnly:
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 #
-#         fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-#             lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+#         fit = al.LensUVPlaneFit.from_lens_interferometer_data_and_tracer(
+#             lens_interferometer_data=lens_interferometer_data_7, tracer=tracer
 #         )
 #
 #         mapper = pix.mapper_from_grid_and_pixelization_grid(
-#             grid=lens_uv_plane_data_7.grid, pixelization_grid=None
+#             grid=lens_interferometer_data_7.grid, pixelization_grid=None
 #         )
 #
 #         inversion = al.Inversion.from_data_1d_mapper_and_regularization(
 #             mapper=mapper,
 #             regularization=reg,
-#             image_1d=lens_uv_plane_data_7.visibilities(),
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
-#             convolver=lens_uv_plane_data_7.convolver,
+#             image_1d=lens_interferometer_data_7.visibilities(),
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
+#             convolver=lens_interferometer_data_7.convolver,
 #         )
 #
 #         assert (fit.galaxy_image_1d_dict[g0] == np.zeros(9)).all()
@@ -649,21 +649,21 @@ class TestCompareToManualProfilesOnly:
 #             fit.galaxy_image_2d_dict[g1], 1.0e-4
 #         )
 #
-#     def test___all_lens_fit_quantities__include_hyper_methods(self, lens_uv_plane_data_7):
+#     def test___all_lens_fit_quantities__include_hyper_methods(self, lens_interferometer_data_7):
 #
 #         hyper_noise_map_max = 0.2
-#         lens_uv_plane_data_7.hyper_noise_map_max = hyper_noise_map_max
+#         lens_interferometer_data_7.hyper_noise_map_max = hyper_noise_map_max
 #
 #         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 #
 #         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 #
 #         image_1d = hyper_image_sky.image_scaled_sky_from_image(
-#             image=lens_uv_plane_data_7.visibilities()
+#             image=lens_interferometer_data_7.visibilities()
 #         )
 #
 #         hyper_noise_map_background_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True)
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True)
 #         )
 #
 #         pix = al.pixelizations.Rectangular(shape=(3, 3))
@@ -683,36 +683,36 @@ class TestCompareToManualProfilesOnly:
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 #
-#         fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-#             lens_uv_plane_data=lens_uv_plane_data_7,
+#         fit = al.LensUVPlaneFit.from_lens_interferometer_data_and_tracer(
+#             lens_interferometer_data=lens_interferometer_data_7,
 #             tracer=tracer,
 #             hyper_image_sky=hyper_image_sky,
 #             hyper_background_noise=hyper_background_noise,
 #         )
 #
 #         hyper_noise_1d = tracer.hyper_noise_map_from_noise_map(
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True)
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True)
 #         )
 #         hyper_noise_map = hyper_noise_map_background_1d + hyper_noise_1d
 #         hyper_noise_map[
 #             hyper_noise_map > hyper_noise_map_max
 #         ] = hyper_noise_map_max
 #
-#         hyper_noise_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         hyper_noise_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=hyper_noise_map
 #         )
 #         assert hyper_noise_map == pytest.approx(fit._noise_map, 1e-4)
 #         assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_x2=True, return_masked=True))
 #
 #         mapper = pix.mapper_from_grid_and_pixelization_grid(
-#             grid=lens_uv_plane_data_7.grid, inversion_uses_border=False
+#             grid=lens_interferometer_data_7.grid, inversion_uses_border=False
 #         )
 #         inversion = al.Inversion.from_data_1d_mapper_and_regularization(
 #             mapper=mapper,
 #             regularization=reg,
 #             image_1d=image_1d,
 #             noise_map=hyper_noise_map,
-#             convolver=lens_uv_plane_data_7.convolver,
+#             convolver=lens_interferometer_data_7.convolver,
 #         )
 #
 #         assert inversion.reconstructed_data_1d == pytest.approx(
@@ -722,10 +722,10 @@ class TestCompareToManualProfilesOnly:
 #
 #         residual_map = af.fit_util.residual_map_from_data_mask_and_model_data(
 #             data=image_1d,
-#             mask=lens_uv_plane_data_7.visibilities_mask,
+#             mask=lens_interferometer_data_7.visibilities_mask,
 #             model_data=inversion.reconstructed_data_1d,
 #         )
-#         residual_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         residual_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=residual_map
 #         )
 #
@@ -734,11 +734,11 @@ class TestCompareToManualProfilesOnly:
 #
 #         normalized_residual_map = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
 #             residual_map=residual_map,
-#             mask=lens_uv_plane_data_7.visibilities_mask,
+#             mask=lens_interferometer_data_7.visibilities_mask,
 #             noise_map=hyper_noise_map,
 #         )
 #
-#         normalized_residual_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         normalized_residual_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=normalized_residual_map
 #         )
 #
@@ -751,10 +751,10 @@ class TestCompareToManualProfilesOnly:
 #
 #         chi_squared_map = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
 #             residual_map=residual_map,
-#             mask=lens_uv_plane_data_7.visibilities_mask,
+#             mask=lens_interferometer_data_7.visibilities_mask,
 #             noise_map=hyper_noise_map,
 #         )
-#         chi_squared_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         chi_squared_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=chi_squared_map
 #         )
 #
@@ -764,11 +764,11 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #         chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-#             chi_squared_map=chi_squared_map_2d, mask=lens_uv_plane_data_7.visibilities_mask
+#             chi_squared_map=chi_squared_map_2d, mask=lens_interferometer_data_7.visibilities_mask
 #         )
 #
 #         noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
-#             mask=lens_uv_plane_data_7.visibilities_mask, noise_map=hyper_noise_map_2d
+#             mask=lens_interferometer_data_7.visibilities_mask, noise_map=hyper_noise_map_2d
 #         )
 #
 #         likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
@@ -799,7 +799,7 @@ class TestCompareToManualProfilesOnly:
 #         assert evidence == fit.figure_of_merit
 #
 #     def test___blurred_and_model_visibilitiess_of_planes_and_unmasked_blurred_profile_image_properties(
-#         self, lens_uv_plane_data_7
+#         self, lens_interferometer_data_7
 #     ):
 #
 #         pix = al.pixelizations.Rectangular(shape=(3, 3))
@@ -809,20 +809,20 @@ class TestCompareToManualProfilesOnly:
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 #
-#         fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-#             lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+#         fit = al.LensUVPlaneFit.from_lens_interferometer_data_and_tracer(
+#             lens_interferometer_data=lens_interferometer_data_7, tracer=tracer
 #         )
 #
 #         mapper = pix.mapper_from_grid_and_pixelization_grid(
-#             grid=lens_uv_plane_data_7.grid, inversion_uses_border=False
+#             grid=lens_interferometer_data_7.grid, inversion_uses_border=False
 #         )
 #
 #         inversion = al.Inversion.from_data_1d_mapper_and_regularization(
 #             mapper=mapper,
 #             regularization=reg,
-#             image_1d=lens_uv_plane_data_7.visibilities(),
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
-#             convolver=lens_uv_plane_data_7.convolver,
+#             image_1d=lens_interferometer_data_7.visibilities(),
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
+#             convolver=lens_interferometer_data_7.convolver,
 #         )
 #
 #         model_visibilitiess_of_planes = fit.model_visibilitiess_of_planes(return_x2=True)
@@ -834,7 +834,7 @@ class TestCompareToManualProfilesOnly:
 #
 #
 # class TestCompareToManualProfilesAndInversion:
-#     def test___all_lens_fit_quantities__no_hyper_methods(self, lens_uv_plane_data_7):
+#     def test___all_lens_fit_quantities__no_hyper_methods(self, lens_interferometer_data_7):
 #         galaxy_light = al.Galaxy(
 #             redshift=0.5,
 #             light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
@@ -846,17 +846,17 @@ class TestCompareToManualProfilesOnly:
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 #
-#         fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-#             lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+#         fit = al.LensUVPlaneFit.from_lens_interferometer_data_and_tracer(
+#             lens_interferometer_data=lens_interferometer_data_7, tracer=tracer
 #         )
 #
 #         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
-#             grid=lens_uv_plane_data_7.grid,
-#             convolver=lens_uv_plane_data_7.convolver,
+#             grid=lens_interferometer_data_7.grid,
+#             convolver=lens_interferometer_data_7.convolver,
 #
 #         )
 #
-#         blurred_profile_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         blurred_profile_image_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=blurred_profile_image_1d
 #         )
 #
@@ -868,9 +868,9 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #         profile_subtracted_image_1d = (
-#             lens_uv_plane_data_7.visibilities() - blurred_profile_image_1d
+#             lens_interferometer_data_7.visibilities() - blurred_profile_image_1d
 #         )
-#         profile_subtracted_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         profile_subtracted_image_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=profile_subtracted_image_1d
 #         )
 #
@@ -882,19 +882,19 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #         mapper = pix.mapper_from_grid_and_pixelization_grid(
-#             grid=lens_uv_plane_data_7.grid, inversion_uses_border=False
+#             grid=lens_interferometer_data_7.grid, inversion_uses_border=False
 #         )
 #
 #         inversion = al.Inversion.from_data_1d_mapper_and_regularization(
 #             image_1d=profile_subtracted_image_1d,
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
-#             convolver=lens_uv_plane_data_7.convolver,
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
+#             convolver=lens_interferometer_data_7.convolver,
 #             mapper=mapper,
 #             regularization=reg,
 #         )
 #
 #         model_visibilities = blurred_profile_image_1d + inversion.reconstructed_data_1d
-#         model_visibilities_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         model_visibilities_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=model_visibilities
 #         )
 #
@@ -902,11 +902,11 @@ class TestCompareToManualProfilesOnly:
 #         assert model_visibilities_2d == pytest.approx(fit.model_visibilities(return_x2=True))
 #
 #         residual_map = af.fit_util.residual_map_from_data_mask_and_model_data(
-#             data=lens_uv_plane_data_7.visibilities(),
-#             mask=lens_uv_plane_data_7.visibilities_mask,
+#             data=lens_interferometer_data_7.visibilities(),
+#             mask=lens_interferometer_data_7.visibilities_mask,
 #             model_data=model_visibilities,
 #         )
-#         residual_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         residual_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=residual_map
 #         )
 #
@@ -915,11 +915,11 @@ class TestCompareToManualProfilesOnly:
 #
 #         normalized_residual_map = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
 #             residual_map=residual_map,
-#             mask=lens_uv_plane_data_7.visibilities_mask,
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
+#             mask=lens_interferometer_data_7.visibilities_mask,
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
 #         )
 #
-#         normalized_residual_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         normalized_residual_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=normalized_residual_map
 #         )
 #
@@ -932,10 +932,10 @@ class TestCompareToManualProfilesOnly:
 #
 #         chi_squared_map = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
 #             residual_map=residual_map,
-#             mask=lens_uv_plane_data_7.visibilities_mask,
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
+#             mask=lens_interferometer_data_7.visibilities_mask,
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
 #         )
-#         chi_squared_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         chi_squared_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=chi_squared_map
 #         )
 #
@@ -945,12 +945,12 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #         chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-#             chi_squared_map=chi_squared_map_2d, mask=lens_uv_plane_data_7.visibilities_mask
+#             chi_squared_map=chi_squared_map_2d, mask=lens_interferometer_data_7.visibilities_mask
 #         )
 #
 #         noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
-#             mask=lens_uv_plane_data_7.visibilities_mask,
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
+#             mask=lens_interferometer_data_7.visibilities_mask,
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
 #         )
 #
 #         likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
@@ -981,7 +981,7 @@ class TestCompareToManualProfilesOnly:
 #         assert evidence == fit.figure_of_merit
 #
 #     def test___lens_fit_galaxy_image_dict__has_blurred_profile_images_and_inversion_reconstructed_data(
-#         self, lens_uv_plane_data_7
+#         self, lens_interferometer_data_7
 #     ):
 #
 #         g0 = al.Galaxy(
@@ -1000,15 +1000,15 @@ class TestCompareToManualProfilesOnly:
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 #
-#         fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-#             lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+#         fit = al.LensUVPlaneFit.from_lens_interferometer_data_and_tracer(
+#             lens_interferometer_data=lens_interferometer_data_7, tracer=tracer
 #         )
 #
 #         traced_grids = tracer.traced_grids_of_planes_from_grid(
-#             grid=lens_uv_plane_data_7.grid
+#             grid=lens_interferometer_data_7.grid
 #         )
 #         traced_blurring_grids = tracer.traced_grids_of_planes_from_grid(
-#             grid=lens_uv_plane_data_7.blurring_grid
+#             grid=lens_interferometer_data_7.blurring_grid
 #         )
 #
 #         g0_profile_image_1d = g0.profile_image_from_grid(
@@ -1018,7 +1018,7 @@ class TestCompareToManualProfilesOnly:
 #             grid=traced_blurring_grids[0]
 #         )
 #
-#         g0_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(
+#         g0_blurred_profile_image_1d = lens_interferometer_data_7.convolver.convolve_image(
 #             image_array=g0_profile_image_1d,
 #             blurring_array=g0_blurring_image_1d,
 #         )
@@ -1030,7 +1030,7 @@ class TestCompareToManualProfilesOnly:
 #             grid=traced_blurring_grids[1]
 #         )
 #
-#         g1_blurred_profile_image_1d = lens_uv_plane_data_7.convolver.convolve_image(
+#         g1_blurred_profile_image_1d = lens_interferometer_data_7.convolver.convolve_image(
 #             image_array=g1_profile_image_1d,
 #             blurring_array=g1_blurring_image_1d,
 #         )
@@ -1040,16 +1040,16 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #         profile_subtracted_image_1d = (
-#             lens_uv_plane_data_7.visibilities() - blurred_profile_image_1d
+#             lens_interferometer_data_7.visibilities() - blurred_profile_image_1d
 #         )
 #         mapper = pix.mapper_from_grid_and_pixelization_grid(
-#             grid=lens_uv_plane_data_7.grid, inversion_uses_border=False
+#             grid=lens_interferometer_data_7.grid, inversion_uses_border=False
 #         )
 #
 #         inversion = al.Inversion.from_data_1d_mapper_and_regularization(
 #             image_1d=profile_subtracted_image_1d,
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
-#             convolver=lens_uv_plane_data_7.convolver,
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
+#             convolver=lens_interferometer_data_7.convolver,
 #             mapper=mapper,
 #             regularization=reg,
 #         )
@@ -1072,10 +1072,10 @@ class TestCompareToManualProfilesOnly:
 #             1.0e-4,
 #         )
 #
-#         g0_blurred_profile_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         g0_blurred_profile_image_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=g0_blurred_profile_image_1d
 #         )
-#         g1_blurred_profile_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         g1_blurred_profile_image_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=g1_blurred_profile_image_1d
 #         )
 #
@@ -1096,21 +1096,21 @@ class TestCompareToManualProfilesOnly:
 #             1.0e-4,
 #         )
 #
-#     def test___all_lens_fit_quantities__include_hyper_methods(self, lens_uv_plane_data_7):
+#     def test___all_lens_fit_quantities__include_hyper_methods(self, lens_interferometer_data_7):
 #
 #         hyper_noise_map_max = 0.2
-#         lens_uv_plane_data_7.hyper_noise_map_max = hyper_noise_map_max
+#         lens_interferometer_data_7.hyper_noise_map_max = hyper_noise_map_max
 #
 #         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 #
 #         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 #
 #         image_1d = hyper_image_sky.image_scaled_sky_from_image(
-#             image=lens_uv_plane_data_7.visibilities()
+#             image=lens_interferometer_data_7.visibilities()
 #         )
 #
 #         hyper_noise_map_background_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True)
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True)
 #         )
 #
 #         galaxy_light = al.Galaxy(
@@ -1130,22 +1130,22 @@ class TestCompareToManualProfilesOnly:
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 #
-#         fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-#             lens_uv_plane_data=lens_uv_plane_data_7,
+#         fit = al.LensUVPlaneFit.from_lens_interferometer_data_and_tracer(
+#             lens_interferometer_data=lens_interferometer_data_7,
 #             tracer=tracer,
 #             hyper_image_sky=hyper_image_sky,
 #             hyper_background_noise=hyper_background_noise,
 #         )
 #
 #         hyper_noise_1d = tracer.hyper_noise_map_from_noise_map(
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True)
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True)
 #         )
 #         hyper_noise_map = hyper_noise_map_background_1d + hyper_noise_1d
 #         hyper_noise_map[
 #             hyper_noise_map > hyper_noise_map_max
 #         ] = hyper_noise_map_max
 #
-#         hyper_noise_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         hyper_noise_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=hyper_noise_map
 #         )
 #
@@ -1153,12 +1153,12 @@ class TestCompareToManualProfilesOnly:
 #         assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_x2=True, return_masked=True))
 #
 #         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
-#             grid=lens_uv_plane_data_7.grid,
-#             convolver=lens_uv_plane_data_7.convolver,
+#             grid=lens_interferometer_data_7.grid,
+#             convolver=lens_interferometer_data_7.convolver,
 #
 #         )
 #
-#         blurred_profile_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         blurred_profile_image_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=blurred_profile_image_1d
 #         )
 #
@@ -1170,7 +1170,7 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #         profile_subtracted_image_1d = image_1d - blurred_profile_image_1d
-#         profile_subtracted_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         profile_subtracted_image_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=profile_subtracted_image_1d
 #         )
 #
@@ -1182,19 +1182,19 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #         mapper = pix.mapper_from_grid_and_pixelization_grid(
-#             grid=lens_uv_plane_data_7.grid, inversion_uses_border=False
+#             grid=lens_interferometer_data_7.grid, inversion_uses_border=False
 #         )
 #
 #         inversion = al.Inversion.from_data_1d_mapper_and_regularization(
 #             image_1d=profile_subtracted_image_1d,
 #             noise_map=hyper_noise_map,
-#             convolver=lens_uv_plane_data_7.convolver,
+#             convolver=lens_interferometer_data_7.convolver,
 #             mapper=mapper,
 #             regularization=reg,
 #         )
 #
 #         model_visibilities = blurred_profile_image_1d + inversion.reconstructed_data_1d
-#         model_visibilities_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         model_visibilities_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=model_visibilities
 #         )
 #
@@ -1202,10 +1202,10 @@ class TestCompareToManualProfilesOnly:
 #         assert model_visibilities_2d == pytest.approx(fit.model_visibilities(return_x2=True))
 #
 #         residual_map = af.fit_util.residual_map_from_data_mask_and_model_data(
-#             data=image_1d, mask=lens_uv_plane_data_7.visibilities_mask, model_data=model_visibilities
+#             data=image_1d, mask=lens_interferometer_data_7.visibilities_mask, model_data=model_visibilities
 #         )
 #
-#         residual_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         residual_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=residual_map
 #         )
 #
@@ -1214,11 +1214,11 @@ class TestCompareToManualProfilesOnly:
 #
 #         normalized_residual_map = af.fit_util.normalized_residual_map_from_residual_map_noise_map_and_mask(
 #             residual_map=residual_map,
-#             mask=lens_uv_plane_data_7.visibilities_mask,
+#             mask=lens_interferometer_data_7.visibilities_mask,
 #             noise_map=hyper_noise_map,
 #         )
 #
-#         normalized_residual_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         normalized_residual_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=normalized_residual_map
 #         )
 #
@@ -1231,11 +1231,11 @@ class TestCompareToManualProfilesOnly:
 #
 #         chi_squared_map = af.fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
 #             residual_map=residual_map,
-#             mask=lens_uv_plane_data_7.visibilities_mask,
+#             mask=lens_interferometer_data_7.visibilities_mask,
 #             noise_map=hyper_noise_map,
 #         )
 #
-#         chi_squared_map_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         chi_squared_map_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=chi_squared_map
 #         )
 #
@@ -1245,11 +1245,11 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #         chi_squared = af.fit_util.chi_squared_from_chi_squared_map_and_mask(
-#             chi_squared_map=chi_squared_map_2d, mask=lens_uv_plane_data_7.visibilities_mask
+#             chi_squared_map=chi_squared_map_2d, mask=lens_interferometer_data_7.visibilities_mask
 #         )
 #
 #         noise_normalization = af.fit_util.noise_normalization_from_noise_map_and_mask(
-#             mask=lens_uv_plane_data_7.visibilities_mask, noise_map=hyper_noise_map_2d
+#             mask=lens_interferometer_data_7.visibilities_mask, noise_map=hyper_noise_map_2d
 #         )
 #
 #         likelihood = af.fit_util.likelihood_from_chi_squared_and_noise_normalization(
@@ -1280,7 +1280,7 @@ class TestCompareToManualProfilesOnly:
 #         assert evidence == fit.figure_of_merit
 #
 #     def test___blurred_and_model_visibilitiess_of_planes_and_unmasked_blurred_profile_image_properties(
-#         self, lens_uv_plane_data_7
+#         self, lens_interferometer_data_7
 #     ):
 #         galaxy_light = al.Galaxy(
 #             redshift=0.5,
@@ -1293,32 +1293,32 @@ class TestCompareToManualProfilesOnly:
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 #
-#         fit = al.LensUVPlaneFit.from_lens_uv_plane_data_and_tracer(
-#             lens_uv_plane_data=lens_uv_plane_data_7, tracer=tracer
+#         fit = al.LensUVPlaneFit.from_lens_interferometer_data_and_tracer(
+#             lens_interferometer_data=lens_interferometer_data_7, tracer=tracer
 #         )
 #
 #         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
-#             grid=lens_uv_plane_data_7.grid,
-#             convolver=lens_uv_plane_data_7.convolver,
+#             grid=lens_interferometer_data_7.grid,
+#             convolver=lens_interferometer_data_7.convolver,
 #
 #         )
 #
-#         blurred_profile_image_2d = lens_uv_plane_data_7.mapping.scaled_array_2d_from_array_1d(
+#         blurred_profile_image_2d = lens_interferometer_data_7.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=blurred_profile_image_1d
 #         )
 #
 #         profile_subtracted_image_1d = (
-#             lens_uv_plane_data_7.visibilities() - blurred_profile_image_1d
+#             lens_interferometer_data_7.visibilities() - blurred_profile_image_1d
 #         )
 #
 #         mapper = pix.mapper_from_grid_and_pixelization_grid(
-#             grid=lens_uv_plane_data_7.grid, inversion_uses_border=False
+#             grid=lens_interferometer_data_7.grid, inversion_uses_border=False
 #         )
 #
 #         inversion = al.Inversion.from_data_1d_mapper_and_regularization(
 #             image_1d=profile_subtracted_image_1d,
-#             noise_map=lens_uv_plane_data_7.noise_map(return_x2=True),
-#             convolver=lens_uv_plane_data_7.convolver,
+#             noise_map=lens_interferometer_data_7.noise_map(return_x2=True),
+#             convolver=lens_interferometer_data_7.convolver,
 #             mapper=mapper,
 #             regularization=reg,
 #         )

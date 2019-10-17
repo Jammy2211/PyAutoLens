@@ -13,9 +13,9 @@ def make_lens_imaging_data_6x6(imaging_data_6x6, mask_6x6):
     return al.LensImagingData(imaging_data=imaging_data_6x6, mask=mask_6x6)
 
 
-@pytest.fixture(name="lens_uv_plane_data_7")
-def make_lens_uv_plane_data_7(uv_plane_data_7, sub_mask_7x7):
-    return al.LensUVPlaneData(uv_plane_data=uv_plane_data_7, mask=sub_mask_7x7)
+@pytest.fixture(name="lens_interferometer_data_7")
+def make_lens_interferometer_data_7(interferometer_data_7, sub_mask_7x7):
+    return al.LensUVPlaneData(interferometer_data=interferometer_data_7, mask=sub_mask_7x7)
 
 
 class TestAbstractLensData(object):
@@ -402,52 +402,52 @@ class TestLensImagingData(object):
 
 
 class TestLensUVPlaneData(object):
-    def test__attributes(self, uv_plane_data_7, lens_uv_plane_data_7, sub_mask_7x7):
+    def test__attributes(self, interferometer_data_7, lens_interferometer_data_7, sub_mask_7x7):
 
-        assert lens_uv_plane_data_7.pixel_scales == uv_plane_data_7.pixel_scales
-        assert lens_uv_plane_data_7.pixel_scales == (1.0, 1.0)
+        assert lens_interferometer_data_7.pixel_scales == interferometer_data_7.pixel_scales
+        assert lens_interferometer_data_7.pixel_scales == (1.0, 1.0)
 
         assert (
-            lens_uv_plane_data_7.visibilities() == uv_plane_data_7.visibilities
+            lens_interferometer_data_7.visibilities() == interferometer_data_7.visibilities
         ).all()
-        assert (lens_uv_plane_data_7.visibilities() == np.ones((7, 2))).all()
+        assert (lens_interferometer_data_7.visibilities() == np.ones((7, 2))).all()
 
-        assert (lens_uv_plane_data_7.noise_map() == uv_plane_data_7.noise_map).all()
-        assert (lens_uv_plane_data_7.noise_map() == 2.0 * np.ones((7))).all()
+        assert (lens_interferometer_data_7.noise_map() == interferometer_data_7.noise_map).all()
+        assert (lens_interferometer_data_7.noise_map() == 2.0 * np.ones((7))).all()
         assert (
-            lens_uv_plane_data_7.noise_map(return_x2=True)[:, 0] == 2.0 * np.ones((7))
+            lens_interferometer_data_7.noise_map(return_x2=True)[:, 0] == 2.0 * np.ones((7))
         ).all()
         assert (
-            lens_uv_plane_data_7.noise_map(return_x2=True)[:, 1] == 2.0 * np.ones((7))
+            lens_interferometer_data_7.noise_map(return_x2=True)[:, 1] == 2.0 * np.ones((7))
         ).all()
 
         assert (
-            lens_uv_plane_data_7.visibilities_mask
+            lens_interferometer_data_7.visibilities_mask
             == np.full(fill_value=False, shape=(7, 2))
         ).all()
 
-        assert (lens_uv_plane_data_7.primary_beam == uv_plane_data_7.primary_beam).all()
-        assert (lens_uv_plane_data_7.primary_beam == np.ones((3, 3))).all()
-        assert lens_uv_plane_data_7.trimmed_primary_beam_shape == (3, 3)
+        assert (lens_interferometer_data_7.primary_beam == interferometer_data_7.primary_beam).all()
+        assert (lens_interferometer_data_7.primary_beam == np.ones((3, 3))).all()
+        assert lens_interferometer_data_7.trimmed_primary_beam_shape == (3, 3)
 
         assert (
-            lens_uv_plane_data_7.uv_plane_data.uv_wavelengths
-            == uv_plane_data_7.uv_wavelengths
+            lens_interferometer_data_7.interferometer_data.uv_wavelengths
+            == interferometer_data_7.uv_wavelengths
         ).all()
-        assert lens_uv_plane_data_7.uv_plane_data.uv_wavelengths[0, 0] == -55636.4609375
+        assert lens_interferometer_data_7.interferometer_data.uv_wavelengths[0, 0] == -55636.4609375
 
-    def test__grids(self, lens_uv_plane_data_7, grid_7x7, sub_grid_7x7):
-        assert (lens_uv_plane_data_7.grid.unlensed_unsubbed_1d == grid_7x7).all()
-        assert (lens_uv_plane_data_7.grid == sub_grid_7x7).all()
+    def test__grids(self, lens_interferometer_data_7, grid_7x7, sub_grid_7x7):
+        assert (lens_interferometer_data_7.grid.unlensed_unsubbed_1d == grid_7x7).all()
+        assert (lens_interferometer_data_7.grid == sub_grid_7x7).all()
 
-    def test__transformer(self, lens_uv_plane_data_7):
-        assert type(lens_uv_plane_data_7.transformer) == al.Transformer
+    def test__transformer(self, lens_interferometer_data_7):
+        assert type(lens_interferometer_data_7.transformer) == al.Transformer
 
-    def test__different_uv_plane_data_without_mock_objects__customize_constructor_inputs(
+    def test__different_interferometer_data_without_mock_objects__customize_constructor_inputs(
         self
     ):
         primary_beam = al.PrimaryBeam(np.ones((7, 7)), 1)
-        uv_plane_data = al.UVPlaneData(
+        interferometer_data = al.UVPlaneData(
             shape_2d=(2, 2),
             visibilities=np.ones((19, 2)),
             pixel_scales=3.0,
@@ -460,32 +460,32 @@ class TestLensUVPlaneData(object):
         )
         mask[9, 9] = False
 
-        lens_uv_plane_data_7 = al.LensUVPlaneData(
-            uv_plane_data=uv_plane_data,
+        lens_interferometer_data_7 = al.LensUVPlaneData(
+            interferometer_data=interferometer_data,
             mask=mask,
             trimmed_primary_beam_shape=(7, 7),
             positions=[np.array([[1.0, 1.0]])],
             positions_threshold=1.0,
         )
 
-        assert (lens_uv_plane_data_7.visibilities() == np.ones((19, 2))).all()
-        assert (lens_uv_plane_data_7.noise_map() == 2.0 * np.ones((19,))).all()
+        assert (lens_interferometer_data_7.visibilities() == np.ones((19, 2))).all()
+        assert (lens_interferometer_data_7.noise_map() == 2.0 * np.ones((19,))).all()
         assert (
-            lens_uv_plane_data_7.uv_plane_data.uv_wavelengths == 3.0 * np.ones((19, 2))
+            lens_interferometer_data_7.interferometer_data.uv_wavelengths == 3.0 * np.ones((19, 2))
         ).all()
-        assert (lens_uv_plane_data_7.primary_beam == np.ones((7, 7))).all()
+        assert (lens_interferometer_data_7.primary_beam == np.ones((7, 7))).all()
 
-        assert lens_uv_plane_data_7.sub_size == 8
-        assert (lens_uv_plane_data_7.positions[0] == np.array([[1.0, 1.0]])).all()
-        assert lens_uv_plane_data_7.positions_threshold == 1.0
+        assert lens_interferometer_data_7.sub_size == 8
+        assert (lens_interferometer_data_7.positions[0] == np.array([[1.0, 1.0]])).all()
+        assert lens_interferometer_data_7.positions_threshold == 1.0
 
-        assert lens_uv_plane_data_7.trimmed_primary_beam_shape == (7, 7)
+        assert lens_interferometer_data_7.trimmed_primary_beam_shape == (7, 7)
 
-    def test__lens_uv_plane_data_7_with_modified_visibilities(
-        self, lens_uv_plane_data_7
+    def test__lens_interferometer_data_7_with_modified_visibilities(
+        self, lens_interferometer_data_7
     ):
-        lens_uv_plane_data_7 = lens_uv_plane_data_7.new_lens_imaging_data_with_modified_visibilities(
+        lens_interferometer_data_7 = lens_interferometer_data_7.new_lens_imaging_data_with_modified_visibilities(
             modified_visibilities=8.0 * np.ones((7, 2))
         )
 
-        assert (lens_uv_plane_data_7.visibilities() == 8.0 * np.ones((7, 2))).all()
+        assert (lens_interferometer_data_7.visibilities() == 8.0 * np.ones((7, 2))).all()

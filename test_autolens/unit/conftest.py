@@ -138,8 +138,8 @@ def make_uv_wavelengths_7():
     return mock_data.MockUVWavelengths(shape=7, value=3.0)
 
 
-@pytest.fixture(name="uv_plane_data_7")
-def make_uv_plane_data_7(
+@pytest.fixture(name="interferometer_data_7")
+def make_interferometer_data_7(
     visibilities_7, visibilities_noise_map_7, primary_beam_3x3, uv_wavelengths_7
 ):
     return mock_data.MockUVPlaneData(
@@ -475,12 +475,12 @@ def make_lens_imaging_data_7x7(
     )
 
 
-@pytest.fixture(name="lens_uv_plane_data_7")
-def make_lens_uv_plane_data_7(
-    uv_plane_data_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
+@pytest.fixture(name="lens_interferometer_data_7")
+def make_lens_interferometer_data_7(
+    interferometer_data_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
 ):
     return mock_lens_data.MockLensUVPlaneData(
-        uv_plane_data=uv_plane_data_7,
+        interferometer_data=interferometer_data_7,
         mask=mask_7x7,
         grid=sub_grid_7x7,
         transformer=transformer_7x7_7,
