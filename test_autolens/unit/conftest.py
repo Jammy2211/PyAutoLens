@@ -156,7 +156,7 @@ def make_uv_plane_data_7(
 def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
     return mock_data.MockTransformer(
         uv_wavelengths=uv_wavelengths_7,
-        grid_radians=grid_7x7.mask.masked_grid.in_radians,
+        grid_radians=grid_7x7.mask.geometry.masked_grid.in_radians,
     )
 
 
@@ -177,7 +177,7 @@ def make_mask_7x7():
         ]
     )
 
-    return mask.Mask(array_2d=array, pixel_scales=(1.0, 1.0), sub_size=1)
+    return aa.mask.manual(mask_2d=array, pixel_scales=(1.0, 1.0), sub_size=1)
 
 
 @pytest.fixture(name="sub_mask_7x7")
@@ -265,12 +265,12 @@ def make_noise_map_1d_7x7(noise_map_7x7, mask_7x7):
 
 @pytest.fixture(name="grid_7x7")
 def make_grid_7x7(mask_7x7):
-    return aa.Grid.from_mask(mask=mask_7x7)
+    return aa.grid_masked.from_mask(mask=mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7")
 def make_sub_grid_7x7(sub_mask_7x7):
-    return aa.Grid.from_mask(mask=sub_mask_7x7)
+    return aa.grid_masked.from_mask(mask=sub_mask_7x7.sub_mask_2d)
 
 
 @pytest.fixture(name="sub_grid_7x7_simple")

@@ -449,10 +449,8 @@ class SimulatedImagingData(ImagingData):
         name=None,
     ):
 
-        shape = (deflections.mask.shape[0], deflections.mask.shape[1])
-
         grid = aa.grid.uniform(
-            shape_2d=shape, pixel_scales=pixel_scales, sub_size=1
+            shape_2d=deflections.shape_2d, pixel_scales=pixel_scales, sub_size=1
         )
 
         deflected_grid_1d = grid.in_1d - deflections.in_1d
@@ -578,14 +576,14 @@ class SimulatedImagingData(ImagingData):
         if exposure_time_map is None:
 
             exposure_time_map = aa.array.full(
-                fill_value=exposure_time, shape_2d=image.mask.shape,
+                fill_value=exposure_time, shape_2d=image.shape_2d,
             )
 
         if background_sky_map is None:
 
             background_sky_map = aa.array.full(
                 fill_value=background_sky_level,
-                shape_2d=image.mask.shape,
+                shape_2d=image.shape_2d,
             )
 
         image += background_sky_map
@@ -596,13 +594,13 @@ class SimulatedImagingData(ImagingData):
 
         if image_needs_trimming:
             image = image.trimmed_from_kernel_shape(
-                kernel_shape=psf.mask.shape
+                kernel_shape=psf.shape_2d
             )
             exposure_time_map = exposure_time_map.trimmed_from_kernel_shape(
-                kernel_shape=psf.mask.shape
+                kernel_shape=psf.shape_2d
             )
             background_sky_map = background_sky_map.trimmed_from_kernel_shape(
-                kernel_shape=psf.mask.shape
+                kernel_shape=psf.shape_2d
             )
 
         if add_noise is True:
@@ -616,7 +614,7 @@ class SimulatedImagingData(ImagingData):
         else:
             noise_map = aa.array.full(
                 fill_value=noise_if_add_noise_false,
-                shape_2d=image.mask.shape,
+                shape_2d=image.shape_2d,
             )
             noise_realization = None
 
@@ -640,7 +638,7 @@ class SimulatedImagingData(ImagingData):
         image_counts = np.multiply(image, exposure_time_map)
         poisson_noise_map = np.divide(np.sqrt(np.abs(image_counts)), exposure_time_map)
 
-        mask = aa.mask.unmasked(shape_2d=image.in_2d.shape, pixel_scales=image.pixel_scales)
+        mask = aa.mask.unmasked(shape_2d=image.shape_2d, pixel_scales=image.pixel_scales)
 
         image = aa.array_masked.manual_1d(array=image, mask=mask)
         background_noise_map = aa.array_masked.manual_1d(

@@ -162,10 +162,8 @@ class SimulatedUVPlaneData(UVPlaneData):
         noise_seed=-1,
     ):
 
-        shape = (deflections.shape[0], deflections.shape[1])
-
         grid = aa.grid.uniform(
-            shape_2d=shape, pixel_scales=pixel_scales, sub_size=1
+            shape_2d=deflections.shape_2d, pixel_scales=pixel_scales, sub_size=1
         )
 
         deflected_grid_1d = grid.in_1d - deflections.in_1d
@@ -284,13 +282,13 @@ class SimulatedUVPlaneData(UVPlaneData):
         if exposure_time_map is None:
 
             exposure_time_map = aa.array.full(
-                fill_value=exposure_time, shape_2d=image.shape, pixel_scales=pixel_scales
+                fill_value=exposure_time, shape_2d=image.shape_2d, pixel_scales=pixel_scales
             )
 
         if background_sky_map is None:
 
             background_sky_map = aa.array.full(
-                fill_value=background_sky_level, shape_2d=image.shape, pixel_scales=pixel_scales
+                fill_value=background_sky_level, shape_2d=image.shape_2d, pixel_scales=pixel_scales
             )
 
         image += background_sky_map
@@ -302,14 +300,13 @@ class SimulatedUVPlaneData(UVPlaneData):
                 shape=visibilities.shape, sigma=noise_sigma, noise_seed=noise_seed
             )
             visibilities = visibilities + noise_map_realization
-            noise_map = aa.array.full(
-                fill_value=noise_sigma, shape=visibilities.shape, pixel_scales=pixel_scales
+            noise_map = np.full(
+                fill_value=noise_sigma, shape=visibilities.shape,
             )
         else:
-            noise_map = aa.array.full(
+            noise_map = np.full(
                 fill_value=noise_if_add_noise_false,
                 shape=visibilities.shape,
-                pixel_scales=pixel_scales,
             )
             noise_map_realization = None
 
@@ -467,8 +464,8 @@ def load_uv_plane_data_from_fits(
         If True, the Poisson noise-map loaded from the .fits file is converted from an inverse noise-map to a \
         noise-map (see *NoiseMap.from_inverse_noise_map).
     exposure_time_map_path : str
-        The path to the exposure_time_map .fits file containing the exposure time map \ 
-        (e.g. '/path/to/exposure_time_map.fits')        
+        The path to the exposure_time_map .fits file containing the exposure time map \
+        (e.g. '/path/to/exposure_time_map.fits')
     exposure_time_map_hdu : int
         The hdu the exposure_time_map is contained in the .fits file specified by *exposure_time_map_path*.
     exposure_time_map_from_single_value : float
@@ -502,14 +499,11 @@ def load_uv_plane_data_from_fits(
 
     visibilities = np.stack((real_visibilities, imaginary_visibilities), axis=-1)
 
-    exposure_time_map = abstract_data.load_exposure_time_map(
+    exposure_time_map = load_exposure_time_map(
         exposure_time_map_path=exposure_time_map_path,
         exposure_time_map_hdu=exposure_time_map_hdu,
-        pixel_scales=pixel_scales,
-        shape=real_visibilities.shape,
+        shape_1d=real_visibilities.shape,
         exposure_time=exposure_time_map_from_single_value,
-        exposure_time_map_from_inverse_noise_map=False,
-        inverse_noise_map=None,
     )
 
     noise_map = load_visibilities_noise_map(
@@ -590,6 +584,54 @@ def load_primary_beam(
     )
 
 
+def load_exposure_time_map(
+    exposure_time_map_path,
+    exposure_time_map_hdu,
+    shape_1d=None,
+    exposure_time=None,
+):
+    """Factory for loading the exposure time map from a .fits file.
+
+    This factory also includes a number of routines for computing the exposure-time map from other unblurred_image_1d \
+    (e.g. the background noise-map).
+
+    Parameters
+    ----------
+    exposure_time_map_path : str
+        The path to the exposure_time_map .fits file containing the exposure time map \
+        (e.g. '/path/to/exposure_time_map.fits')
+    exposure_time_map_hdu : int
+        The hdu the exposure_time_map is contained in the .fits file specified by *exposure_time_map_path*.
+    pixel_scales : float
+        The size of each pixel in arc seconds.
+    shape_1d : (int, int)
+        The shape of the image, required if a single value is used to calculate the exposure time map.
+    exposure_time : float
+        The exposure-time used to compute the expsure-time map if only a single value is used.
+    exposure_time_map_from_inverse_noise_map : bool
+        If True, the exposure-time map is computed from the background noise_map map \
+        (see *ExposureTimeMap.from_background_noise_map*)
+    inverse_noise_map : ndarray
+        The background noise-map, which the Poisson noise-map can be calculated using.
+    """
+
+    if exposure_time is not None and exposure_time_map_path is not None:
+        raise exc.DataException(
+            "You have supplied both a exposure_time_map_path to an exposure time map and an exposure time. Only"
+            "one quantity should be supplied."
+        )
+
+    if exposure_time is not None and exposure_time_map_path is None:
+        return np.full(
+            fill_value=exposure_time, shape=shape_1d
+        )
+    elif exposure_time is None and exposure_time_map_path is not None:
+        return aa.array_util.numpy_array_1d_from_fits(
+            file_path=exposure_time_map_path,
+            hdu=exposure_time_map_hdu,
+        )
+
+
 def output_uv_plane_data_to_fits(
     uv_plane_data,
     real_visibilities_path=None,
@@ -604,7 +646,7 @@ def output_uv_plane_data_to_fits(
 
     if primary_beam_path is not None:
         aa.array_util.numpy_array_2d_to_fits(
-            array_2d=uv_plane_data.primary_beam,
+            array_2d=uv_plane_data.primary_beam.in_2d,
             file_path=primary_beam_path,
             overwrite=overwrite,
         )
@@ -613,8 +655,8 @@ def output_uv_plane_data_to_fits(
         uv_plane_data.exposure_time_map is not None
         and exposure_time_map_path is not None
     ):
-        aa.array_util.numpy_array_2d_to_fits(
-            array_2d=uv_plane_data.exposure_time_map,
+        aa.array_util.numpy_array_1d_to_fits(
+            array_1d=uv_plane_data.exposure_time_map,
             file_path=exposure_time_map_path,
             overwrite=overwrite,
         )
