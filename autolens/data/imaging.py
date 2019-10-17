@@ -79,7 +79,7 @@ class ImagingData(abstract_data.AbstractData):
     def binned_data_from_bin_up_factor(self, bin_up_factor):
 
         image = self.image.binned_from_bin_up_factor(
-            scaled_array=self.image, bin_up_factor=bin_up_factor, method="mean"
+            bin_up_factor=bin_up_factor, method="mean"
         )
         psf = self.psf.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=1.0 / bin_up_factor, renormalize=True
@@ -111,7 +111,6 @@ class ImagingData(abstract_data.AbstractData):
 
         return ImagingData(
             image=image,
-            pixel_scales=self.pixel_scales * bin_up_factor,
             psf=psf,
             noise_map=noise_map,
             background_noise_map=background_noise_map,
@@ -266,6 +265,8 @@ class ImagingData(abstract_data.AbstractData):
             np.abs(self.image) / signal_to_noise_limit,
             self.noise_map,
         )
+
+        noise_map_limit = aa.array_masked.manual_1d(array=noise_map_limit, mask=self.image.mask)
 
         return ImagingData(
             image=self.image,

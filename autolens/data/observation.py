@@ -25,6 +25,10 @@ class ImagingObservation(object):
         background_sky_level : float
             The level of the background sky of an observationg using this data_type.
         """
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
         self.shape = shape
         self.pixel_scales = pixel_scales
         self.psf = psf
@@ -64,7 +68,6 @@ class ImagingObservation(object):
         imaging_data = imaging.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
             tracer=tracer,
             grid=grid,
-            pixel_scales=self.pixel_scales,
             exposure_time=self.exposure_time,
             psf=self.psf,
             background_sky_level=self.background_sky_level,
@@ -142,7 +145,7 @@ class ImagingObservation(object):
         """Default settings for an observation with the Large Synotpic Survey Telescope.
 
         This can be customized by over-riding the default input values."""
-        psf = imaging.PSF.from_gaussian(
+        psf = aa.kernel.from_gaussian(
             shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
@@ -166,7 +169,7 @@ class ImagingObservation(object):
         """Default settings for an observation with the Euclid space satellite.
 
         This can be customized by over-riding the default input values."""
-        psf = imaging.PSF.from_gaussian(
+        psf = aa.kernel.from_gaussian(
             shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
@@ -190,7 +193,7 @@ class ImagingObservation(object):
         """Default settings for an observation with the Hubble Space Telescope.
 
         This can be customized by over-riding the default input values."""
-        psf = imaging.PSF.from_gaussian(
+        psf = aa.kernel.from_gaussian(
             shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
@@ -215,7 +218,7 @@ class ImagingObservation(object):
         pixel-scale to better sample the PSF.
 
         This can be customized by over-riding the default input values."""
-        psf = imaging.PSF.from_gaussian(
+        psf = aa.kernel.from_gaussian(
             shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
@@ -239,7 +242,7 @@ class ImagingObservation(object):
         """Default settings for an observation using Keck Adaptive Optics imaging.
 
         This can be customized by over-riding the default input values."""
-        psf = imaging.PSF.from_gaussian(
+        psf = aa.kernel.from_gaussian(
             shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
