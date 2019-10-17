@@ -1,12 +1,10 @@
 import logging
 import numpy as np
-import scipy.signal
-from skimage.transform import resize, rescale
 
 import autoarray as aa
 
 from autolens import exc
-from autolens.data import abstract_data
+from autoarray.data import abstract_data
 
 logger = logging.getLogger(__name__)
 

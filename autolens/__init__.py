@@ -10,17 +10,7 @@ from autolens.dimensions import (
     Position,
     convert_units_to_input_units,
 )
-from autolens.data import abstract_data
 from autolens.data import uv_plane
-from autolens.data.abstract_data import (
-    AbstractData,
-    AbstractNoiseMap,
-    ExposureTimeMap,
-    load_image,
-    load_exposure_time_map,
-    load_positions,
-    output_positions,
-)
 from autolens.data.imaging import (
     ImagingData,
     NoiseMap,
