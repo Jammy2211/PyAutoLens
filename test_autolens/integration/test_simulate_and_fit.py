@@ -96,7 +96,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
 def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
-    psf = aa.kernel.from_gaussian(shape=(3, 3), pixel_scales=0.2, sigma=0.75)
+    psf = aa.kernel.from_gaussian(shape_2d=(3, 3), pixel_scales=0.2, sigma=0.75)
 
     grid = aa.grid.uniform(
         shape_2d=(11, 11), pixel_scales=0.2, sub_size=1

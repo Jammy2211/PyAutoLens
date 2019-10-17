@@ -22,7 +22,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
 
     # Simulate a simple Gaussian PSF for the image.
     psf = aa.kernel.from_gaussian(
-        shape=psf_shape, sigma=pixel_scales, pixel_scales=pixel_scales
+        shape_2d=psf_shape, sigma=pixel_scales, pixel_scales=pixel_scales
     )
 
     # Setup the image-plane al.ogrid of the Imaging array which will be used for generating the image of the
