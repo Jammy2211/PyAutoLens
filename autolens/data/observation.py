@@ -143,7 +143,7 @@ class ImagingObservation(object):
 
         This can be customized by over-riding the default input values."""
         psf = imaging.PSF.from_gaussian(
-            shape=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
+            shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
             shape=shape,
@@ -167,7 +167,7 @@ class ImagingObservation(object):
 
         This can be customized by over-riding the default input values."""
         psf = imaging.PSF.from_gaussian(
-            shape=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
+            shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
             shape=shape,
@@ -191,7 +191,7 @@ class ImagingObservation(object):
 
         This can be customized by over-riding the default input values."""
         psf = imaging.PSF.from_gaussian(
-            shape=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
+            shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
             shape=shape,
@@ -216,7 +216,7 @@ class ImagingObservation(object):
 
         This can be customized by over-riding the default input values."""
         psf = imaging.PSF.from_gaussian(
-            shape=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
+            shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
             shape=shape,
@@ -240,7 +240,7 @@ class ImagingObservation(object):
 
         This can be customized by over-riding the default input values."""
         psf = imaging.PSF.from_gaussian(
-            shape=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
+            shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingObservation(
             shape=shape,
