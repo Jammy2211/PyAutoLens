@@ -12,10 +12,10 @@ def make_phase_plotter_setup():
 
 
 def test__plot_imaging_for_phase(
-    imaging_data_7x7, mask_7x7, general_config, phase_plotter_path, plot_patch
+    imaging_7x7, mask_7x7, general_config, phase_plotter_path, plot_patch
 ):
     al.phase_plotters.plot_imaging_for_phase(
-        imaging_data=imaging_data_7x7,
+        imaging=imaging_7x7,
         mask=mask_7x7,
         positions=None,
         units="arcsec",
@@ -32,7 +32,7 @@ def test__plot_imaging_for_phase(
         subplot_path=phase_plotter_path,
     )
 
-    assert phase_plotter_path + "imaging_data.png" in plot_patch.paths
+    assert phase_plotter_path + "imaging.png" in plot_patch.paths
     assert phase_plotter_path + "imaging/imaging_image.png" in plot_patch.paths
     assert phase_plotter_path + "imaging/imaging_noise_map.png" not in plot_patch.paths
     assert phase_plotter_path + "imaging/imaging_psf.png" in plot_patch.paths

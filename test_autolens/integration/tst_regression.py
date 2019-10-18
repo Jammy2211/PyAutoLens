@@ -118,7 +118,7 @@ class TestPhaseModelMapper(object):
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        imaging_data = al.load_imaging_data_from_fits(
+        imaging = al.load_imaging_from_fits(
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
@@ -142,7 +142,7 @@ class TestPhaseModelMapper(object):
         )
 
         initial_total_priors = phase.variable.prior_count
-        phase.make_analysis(data=imaging_data)
+        phase.make_analysis(data=imaging)
 
         assert phase.galaxies[0].sersic.intensity == al.Galaxies[0].sersic.axis_ratio
         assert initial_total_priors - 1 == phase.variable.prior_count
@@ -191,7 +191,7 @@ class TestPhaseModelMapper(object):
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        imaging_data = al.load_imaging_data_from_fits(
+        imaging = al.load_imaging_from_fits(
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
@@ -219,7 +219,7 @@ class TestPhaseModelMapper(object):
         phase.optimizer.n_live_points = 20
         phase.optimizer.sampling_efficiency = 0.8
 
-        phase.make_analysis(data=imaging_data)
+        phase.make_analysis(data=imaging)
 
         sersic = phase.variable.galaxies[0].sersic
 

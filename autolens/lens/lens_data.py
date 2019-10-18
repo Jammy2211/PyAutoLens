@@ -63,7 +63,7 @@ class AbstractLensData(object):
 class LensImagingData(AbstractLensData):
     def __init__(
             self,
-            imaging_data,
+            imaging,
             mask,
             positions=None,
             positions_threshold=None,
@@ -84,7 +84,7 @@ class LensImagingData(AbstractLensData):
 
         Parameters
         ----------
-        imaging_data: im.Imaging
+        imaging: im.Imaging
             The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
         mask: msk.Mask
             The 2D mask that is applied to the image.
@@ -105,7 +105,7 @@ class LensImagingData(AbstractLensData):
             up run.
         """
 
-        self.imaging_data = imaging_data
+        self.imaging = imaging
 
         super(LensImagingData, self).__init__(
             mask=mask,
@@ -150,29 +150,29 @@ class LensImagingData(AbstractLensData):
 
 
     def image(self):
-        return self.imaging_data.image
+        return self.imaging.image
 
 
     def noise_map(self):
-        return self.imaging_data.noise_map
+        return self.imaging.noise_map
 
     @property
     def psf(self):
-        return self.imaging_data.psf
+        return self.imaging.psf
 
 
     def signal_to_noise_map(self):
-        return self.imaging_data.image / self.imaging_data.noise_map
+        return self.imaging.image / self.imaging.noise_map
 
-    def new_lens_imaging_data_with_binned_up_imaging_data_and_mask(self, bin_up_factor):
+    def new_lens_imaging_with_binned_up_imaging_and_mask(self, bin_up_factor):
 
-        binned_up_imaging_data = self.imaging_data.binned_data_from_bin_up_factor(
+        binned_up_imaging = self.imaging.binned_data_from_bin_up_factor(
             bin_up_factor=bin_up_factor
         )
         binned_up_mask = self.mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
 
         return LensImagingData(
-            imaging_data=binned_up_imaging_data,
+            imaging=binned_up_imaging,
             mask=binned_up_mask,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
@@ -185,14 +185,14 @@ class LensImagingData(AbstractLensData):
             preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes,
         )
 
-    def new_lens_imaging_data_with_signal_to_noise_limit(self, signal_to_noise_limit):
+    def new_lens_imaging_with_signal_to_noise_limit(self, signal_to_noise_limit):
 
-        imaging_data_with_signal_to_noise_limit = self.imaging_data.signal_to_noise_limited_data_from_signal_to_noise_limit(
+        imaging_with_signal_to_noise_limit = self.imaging.signal_to_noise_limited_data_from_signal_to_noise_limit(
             signal_to_noise_limit=signal_to_noise_limit
         )
 
         return LensImagingData(
-            imaging_data=imaging_data_with_signal_to_noise_limit,
+            imaging=imaging_with_signal_to_noise_limit,
             mask=self.mask,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
@@ -239,7 +239,7 @@ class LensImagingData(AbstractLensData):
 class LensUVPlaneData(AbstractLensData):
     def __init__(
             self,
-            interferometer_data,
+            interferometer,
             mask,
             positions=None,
             positions_threshold=None,
@@ -260,7 +260,7 @@ class LensUVPlaneData(AbstractLensData):
 
         Parameters
         ----------
-        imaging_data: im.Imaging
+        imaging: im.Imaging
             The imaging data_type all in 2D (the image, noise-map, primary_beam, etc.)
         mask: msk.Mask
             The 2D mask that is applied to the image.
@@ -281,7 +281,7 @@ class LensUVPlaneData(AbstractLensData):
             up run.
         """
 
-        self.interferometer_data = interferometer_data
+        self.interferometer = interferometer
 
         super(LensUVPlaneData, self).__init__(
             mask=mask,
@@ -303,40 +303,40 @@ class LensUVPlaneData(AbstractLensData):
             self.trimmed_primary_beam_shape = trimmed_primary_beam_shape
 
         self.transformer = Transformer(
-            uv_wavelengths=interferometer_data.uv_wavelengths,
+            uv_wavelengths=interferometer.uv_wavelengths,
             grid_radians=self.grid.in_radians,
         )
 
     def visibilities(self):
-        return self.interferometer_data.visibilities
+        return self.interferometer.visibilities
 
     def noise_map(self, return_x2=False):
         if not return_x2:
-            return self.interferometer_data.noise_map
+            return self.interferometer.noise_map
         else:
             return np.stack(
-                (self.interferometer_data.noise_map, self.interferometer_data.noise_map), axis=-1
+                (self.interferometer.noise_map, self.interferometer.noise_map), axis=-1
             )
 
     @property
     def visibilities_mask(self):
-        return np.full(fill_value=False, shape=self.interferometer_data.uv_wavelengths.shape)
+        return np.full(fill_value=False, shape=self.interferometer.uv_wavelengths.shape)
 
     @property
     def primary_beam(self):
-        return self.interferometer_data.primary_beam
+        return self.interferometer.primary_beam
 
     def signal_to_noise_map(self):
-        return self.interferometer_data.visibilities / self.interferometer_data.noise_map
+        return self.interferometer.visibilities / self.interferometer.noise_map
 
-    def new_lens_imaging_data_with_modified_visibilities(self, modified_visibilities):
+    def new_lens_imaging_with_modified_visibilities(self, modified_visibilities):
 
-        interferometer_data_with_modified_visibilities = self.interferometer_data.modified_visibilities_from_visibilities(
+        interferometer_with_modified_visibilities = self.interferometer.modified_visibilities_from_visibilities(
             visibilities=modified_visibilities
         )
 
         return LensUVPlaneData(
-            interferometer_data=interferometer_data_with_modified_visibilities,
+            interferometer=interferometer_with_modified_visibilities,
             mask=self.mask,
             positions=self.positions,
             positions_threshold=self.positions_threshold,

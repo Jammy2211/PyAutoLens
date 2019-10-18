@@ -5,13 +5,13 @@ from autolens.pipeline import visualizer
 
 
 class Analysis(af.Analysis):
-    def __init__(self, lens_imaging_data, cosmology, image_path=None, results=None):
+    def __init__(self, lens_imaging, cosmology, image_path=None, results=None):
         self.cosmology = cosmology
         self.visualizer = visualizer.PhaseImagingVisualizer(
-            lens_imaging_data, image_path
+            lens_imaging, image_path
         )
 
-        self.lens_data = lens_imaging_data
+        self.lens_data = lens_imaging
 
         if results is not None and results.last is not None:
             last_results = results.last
@@ -25,7 +25,7 @@ class Analysis(af.Analysis):
             self.hyper_model_image_1d = last_results.hyper_model_image_1d
 
             self.binned_hyper_galaxy_image_1d_path_dict = last_results.binned_hyper_galaxy_image_1d_path_dict(
-                binned_grid=lens_imaging_data.grid.binned
+                binned_grid=lens_imaging.grid.binned
             )
 
             self.visualizer.plot_hyper_images(last_results)

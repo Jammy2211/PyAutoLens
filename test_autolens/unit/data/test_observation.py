@@ -104,7 +104,7 @@ def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer
 
     deflections = tracer.deflections_from_grid(grid=grid)
 
-    imaging_data_simulated_via_deflections = imaging.SimulatedImaging.from_deflections_galaxies_and_exposure_arrays(
+    imaging_simulated_via_deflections = imaging.SimulatedImaging.from_deflections_galaxies_and_exposure_arrays(
         deflections=deflections,
         pixel_scales=1.0,
         galaxies=[g1],
@@ -116,7 +116,7 @@ def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer
 
     tracer_profile_image = tracer.profile_image_from_grid(grid=grid)
 
-    imaging_data_simulated = imaging.SimulatedImaging.simulate(
+    imaging_simulated = imaging.SimulatedImaging.simulate(
         image=tracer_profile_image,
         exposure_time=10000.0,
         background_sky_level=100.0,
@@ -125,23 +125,23 @@ def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer
     )
 
     assert (
-        imaging_data_simulated_via_deflections.image == imaging_data_simulated.image
+        imaging_simulated_via_deflections.image == imaging_simulated.image
     ).all()
     assert (
-        imaging_data_simulated_via_deflections.psf
-        == imaging_data_simulated.psf
+        imaging_simulated_via_deflections.psf
+        == imaging_simulated.psf
     ).all()
     assert (
-        imaging_data_simulated_via_deflections.noise_map
-        == imaging_data_simulated.noise_map
+        imaging_simulated_via_deflections.noise_map
+        == imaging_simulated.noise_map
     ).all()
     assert (
-        imaging_data_simulated_via_deflections.background_sky_map
-        == imaging_data_simulated.background_sky_map
+        imaging_simulated_via_deflections.background_sky_map
+        == imaging_simulated.background_sky_map
     ).all()
     assert (
-        imaging_data_simulated_via_deflections.exposure_time_map
-        == imaging_data_simulated.exposure_time_map
+        imaging_simulated_via_deflections.exposure_time_map
+        == imaging_simulated.exposure_time_map
     ).all()
 
 def test__from_tracer__same_as_manual_tracer_input(self):
@@ -166,7 +166,7 @@ def test__from_tracer__same_as_manual_tracer_input(self):
 
     tracer = imaging.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    imaging_data_simulated_via_tracer = imaging.SimulatedImaging.from_tracer_grid_and_exposure_arrays(
+    imaging_simulated_via_tracer = imaging.SimulatedImaging.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         grid=grid,
         exposure_time=10000.0,
@@ -176,7 +176,7 @@ def test__from_tracer__same_as_manual_tracer_input(self):
         noise_seed=1,
     )
 
-    imaging_data_simulated = imaging.SimulatedImaging.simulate(
+    imaging_simulated = imaging.SimulatedImaging.simulate(
         image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
             grid=grid, psf_shape=(3, 3)
         ),
@@ -188,25 +188,25 @@ def test__from_tracer__same_as_manual_tracer_input(self):
     )
 
     assert (
-        imaging_data_simulated_via_tracer.image == imaging_data_simulated.image
+        imaging_simulated_via_tracer.image == imaging_simulated.image
     ).all()
     assert (
-        imaging_data_simulated_via_tracer.psf == imaging_data_simulated.psf
+        imaging_simulated_via_tracer.psf == imaging_simulated.psf
     ).all()
     assert (
-        imaging_data_simulated_via_tracer.noise_map
-        == imaging_data_simulated.noise_map
+        imaging_simulated_via_tracer.noise_map
+        == imaging_simulated.noise_map
     ).all()
     assert (
-        imaging_data_simulated_via_tracer.background_sky_map
-        == imaging_data_simulated.background_sky_map
+        imaging_simulated_via_tracer.background_sky_map
+        == imaging_simulated.background_sky_map
     ).all()
     assert (
-        imaging_data_simulated_via_tracer.exposure_time_map
-        == imaging_data_simulated.exposure_time_map
+        imaging_simulated_via_tracer.exposure_time_map
+        == imaging_simulated.exposure_time_map
     ).all()
 
-def test__simulate_imaging_data_from_lens__source_galaxy__compare_to_manual_imaging_data(
+def test__simulate_imaging_from_lens__source_galaxy__compare_to_manual_imaging(
     self
 ):
 
@@ -241,7 +241,7 @@ def test__simulate_imaging_data_from_lens__source_galaxy__compare_to_manual_imag
     exposure_time = 100.0
     background_sky_level = 1.0
 
-    imaging_data = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
+    imaging = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         grid=grid,
         exposure_time=exposure_time,
@@ -259,33 +259,33 @@ def test__simulate_imaging_data_from_lens__source_galaxy__compare_to_manual_imag
         background_sky_level=background_sky_level,
     )
 
-    observation_imaging_data = observation.simulate_imaging_data_from_galaxies(
+    observation_imaging = observation.simulate_imaging_from_galaxies(
         galaxies=[lens_galaxy, source_galaxy],
         sub_size=1,
         add_noise=False,
         noise_if_add_noise_false=0.2,
     )
 
-    assert (imaging_data.image == observation_imaging_data.image).all()
-    assert (imaging_data.psf == observation_imaging_data.psf).all()
-    assert (observation_imaging_data.noise_map.in_2d == 0.2 * np.ones((11, 11))).all()
-    assert imaging_data.noise_map == observation_imaging_data.noise_map
+    assert (imaging.image == observation_imaging.image).all()
+    assert (imaging.psf == observation_imaging.psf).all()
+    assert (observation_imaging.noise_map.in_2d == 0.2 * np.ones((11, 11))).all()
+    assert imaging.noise_map == observation_imaging.noise_map
     assert (
-        imaging_data.background_noise_map
-        == observation_imaging_data.background_noise_map
+        imaging.background_noise_map
+        == observation_imaging.background_noise_map
     )
     assert (
-        imaging_data.poisson_noise_map == observation_imaging_data.poisson_noise_map
+        imaging.poisson_noise_map == observation_imaging.poisson_noise_map
     )
     assert (
-        imaging_data.exposure_time_map == observation_imaging_data.exposure_time_map
+        imaging.exposure_time_map == observation_imaging.exposure_time_map
     ).all()
     assert (
-        imaging_data.background_sky_map
-        == observation_imaging_data.background_sky_map
+        imaging.background_sky_map
+        == observation_imaging.background_sky_map
     ).all()
 
-    imaging_data = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
+    imaging = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         grid=grid,
         exposure_time=exposure_time,
@@ -295,32 +295,32 @@ def test__simulate_imaging_data_from_lens__source_galaxy__compare_to_manual_imag
         noise_seed=1,
     )
 
-    observation_imaging_data = observation.simulate_imaging_data_from_galaxies(
+    observation_imaging = observation.simulate_imaging_from_galaxies(
         galaxies=[lens_galaxy, source_galaxy],
         sub_size=1,
         add_noise=True,
         noise_seed=1,
     )
 
-    assert (imaging_data.image == observation_imaging_data.image).all()
-    assert (imaging_data.psf == observation_imaging_data.psf).all()
-    assert (imaging_data.noise_map == observation_imaging_data.noise_map).all()
+    assert (imaging.image == observation_imaging.image).all()
+    assert (imaging.psf == observation_imaging.psf).all()
+    assert (imaging.noise_map == observation_imaging.noise_map).all()
     assert (
-        imaging_data.background_noise_map
-        == observation_imaging_data.background_noise_map
+        imaging.background_noise_map
+        == observation_imaging.background_noise_map
     ).all()
     assert (
-        imaging_data.poisson_noise_map == observation_imaging_data.poisson_noise_map
+        imaging.poisson_noise_map == observation_imaging.poisson_noise_map
     ).all()
     assert (
-        imaging_data.exposure_time_map == observation_imaging_data.exposure_time_map
+        imaging.exposure_time_map == observation_imaging.exposure_time_map
     ).all()
     assert (
-        imaging_data.background_sky_map
-        == observation_imaging_data.background_sky_map
+        imaging.background_sky_map
+        == observation_imaging.background_sky_map
     ).all()
 
-def test__simulate_imaging_data_from_lens__source_galaxy__and_write_to_fits(self):
+def test__simulate_imaging_from_lens__source_galaxy__and_write_to_fits(self):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
@@ -353,7 +353,7 @@ def test__simulate_imaging_data_from_lens__source_galaxy__and_write_to_fits(self
     exposure_time = 100.0
     background_sky_level = 1.0
 
-    imaging_data = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
+    imaging = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         grid=grid,
         exposure_time=exposure_time,
@@ -379,7 +379,7 @@ def test__simulate_imaging_data_from_lens__source_galaxy__and_write_to_fits(self
 
     os.makedirs(output_data_dir)
 
-    observation.simulate_imaging_data_from_galaxies_and_write_to_fits(
+    observation.simulate_imaging_from_galaxies_and_write_to_fits(
         galaxies=[lens_galaxy, source_galaxy],
         data_path=output_data_dir,
         data_name="observation",
@@ -390,7 +390,7 @@ def test__simulate_imaging_data_from_lens__source_galaxy__and_write_to_fits(self
 
     output_data_dir += "observation/"
 
-    observation_imaging_data_loaded = al.load_imaging_data_from_fits(
+    observation_imaging_loaded = al.load_imaging_from_fits(
         image_path=output_data_dir + "image.fits",
         pixel_scales=0.2,
         psf_path=output_data_dir + "psf.fits",
@@ -402,25 +402,25 @@ def test__simulate_imaging_data_from_lens__source_galaxy__and_write_to_fits(self
         renormalize_psf=False,
     )
 
-    assert (imaging_data.image == observation_imaging_data_loaded.image).all()
-    assert (imaging_data.psf == observation_imaging_data_loaded.psf).all()
-    assert (imaging_data.noise_map.in_2d == 0.2 * np.ones((11, 11))).all()
-    assert imaging_data.noise_map == observation_imaging_data_loaded.noise_map
+    assert (imaging.image == observation_imaging_loaded.image).all()
+    assert (imaging.psf == observation_imaging_loaded.psf).all()
+    assert (imaging.noise_map.in_2d == 0.2 * np.ones((11, 11))).all()
+    assert imaging.noise_map == observation_imaging_loaded.noise_map
     assert (
-        imaging_data.background_noise_map
-        == observation_imaging_data_loaded.background_noise_map
+        imaging.background_noise_map
+        == observation_imaging_loaded.background_noise_map
     )
     assert (
-        imaging_data.poisson_noise_map
-        == observation_imaging_data_loaded.poisson_noise_map
+        imaging.poisson_noise_map
+        == observation_imaging_loaded.poisson_noise_map
     )
     assert (
-        imaging_data.exposure_time_map
-        == observation_imaging_data_loaded.exposure_time_map
+        imaging.exposure_time_map
+        == observation_imaging_loaded.exposure_time_map
     ).all()
     assert (
-        imaging_data.background_sky_map
-        == observation_imaging_data_loaded.background_sky_map
+        imaging.background_sky_map
+        == observation_imaging_loaded.background_sky_map
     ).all()
 
 
@@ -445,7 +445,7 @@ def test__uv_from_deflections_and_galaxies__same_as_manual_calculation_using_tra
 
     deflections = tracer.deflections_from_grid(grid=grid)
 
-    interferometer_data_simulated_via_deflections = aa.interferometer.from_deflections_galaxies_and_exposure_arrays(
+    interferometer_simulated_via_deflections = aa.interferometer.from_deflections_galaxies_and_exposure_arrays(
         deflections=deflections,
         pixel_scales=1.0,
         galaxies=[g1],
@@ -458,7 +458,7 @@ def test__uv_from_deflections_and_galaxies__same_as_manual_calculation_using_tra
 
     tracer_profile_image = tracer.profile_image_from_grid(grid=grid)
 
-    interferometer_data_simulated = aa.interferometer.simulate(
+    interferometer_simulated = aa.interferometer.simulate(
         image=tracer_profile_image,
         pixel_scales=1.0,
         exposure_time=10000.0,
@@ -469,17 +469,17 @@ def test__uv_from_deflections_and_galaxies__same_as_manual_calculation_using_tra
     )
 
     assert (
-        interferometer_data_simulated_via_deflections.exposure_time_map
-        == interferometer_data_simulated.exposure_time_map
+        interferometer_simulated_via_deflections.exposure_time_map
+        == interferometer_simulated.exposure_time_map
     ).all()
     assert (
-        interferometer_data_simulated_via_deflections.visibilities
-        == interferometer_data_simulated.visibilities
+        interferometer_simulated_via_deflections.visibilities
+        == interferometer_simulated.visibilities
     ).all()
 
     assert (
-        interferometer_data_simulated_via_deflections.noise_map
-        == interferometer_data_simulated.noise_map
+        interferometer_simulated_via_deflections.noise_map
+        == interferometer_simulated.noise_map
     ).all()
 
 def test__uv_from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
@@ -500,7 +500,7 @@ def test__uv_from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    interferometer_data_simulated_via_tracer = aa.interferometer.from_tracer_grid_and_exposure_arrays(
+    interferometer_simulated_via_tracer = aa.interferometer.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         grid=grid,
         pixel_scales=0.1,
@@ -511,7 +511,7 @@ def test__uv_from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
         noise_seed=1,
     )
 
-    interferometer_data_simulated = aa.interferometer.simulate(
+    interferometer_simulated = aa.interferometer.simulate(
         image=tracer.profile_image_from_grid(grid=grid),
         pixel_scales=0.1,
         exposure_time=10000.0,
@@ -522,15 +522,15 @@ def test__uv_from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
     )
 
     assert (
-        interferometer_data_simulated_via_tracer.exposure_time_map
-        == interferometer_data_simulated.exposure_time_map
+        interferometer_simulated_via_tracer.exposure_time_map
+        == interferometer_simulated.exposure_time_map
     ).all()
     assert (
-        interferometer_data_simulated_via_tracer.visibilities
-        == interferometer_data_simulated.visibilities
+        interferometer_simulated_via_tracer.visibilities
+        == interferometer_simulated.visibilities
     ).all()
 
     assert (
-        interferometer_data_simulated_via_tracer.noise_map
-        == interferometer_data_simulated.noise_map
+        interferometer_simulated_via_tracer.noise_map
+        == interferometer_simulated.noise_map
     ).all()

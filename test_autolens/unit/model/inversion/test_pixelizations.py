@@ -499,7 +499,7 @@ class TestVoronoiBrightness:
         assert (cluster_weight_map == np.array([3.0, 3.5, 4.0])).all()
 
     def test__pixelization_grid_returns_same_as_computed_from_grids_module(
-        self, sub_grid_7x7, lens_imaging_data_7x7
+        self, sub_grid_7x7, lens_imaging_7x7
     ):
 
         pix = al.pixelizations.VoronoiBrightnessImage(
@@ -511,7 +511,7 @@ class TestVoronoiBrightness:
         pixelization_grid = pix.pixelization_grid_from_grid(
             grid=sub_grid_7x7,
             hyper_image=hyper_image,
-            cluster_grid=lens_imaging_data_7x7.grid.binned,
+            cluster_grid=lens_imaging_7x7.grid.binned,
             seed=1,
         )
 
@@ -521,7 +521,7 @@ class TestVoronoiBrightness:
 
         sparse_to_grid = al.SparseToGrid.from_total_pixels_grid_and_weight_map(
             total_pixels=pix.pixels,
-            grid=lens_imaging_data_7x7.grid.binned,
+            grid=lens_imaging_7x7.grid.binned,
             weight_map=cluster_weight_map,
             seed=1,
         )

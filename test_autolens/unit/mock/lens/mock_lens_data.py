@@ -1,11 +1,11 @@
 import numpy as np
 
 class MockLensImagingData(object):
-    def __init__(self, imaging_data, mask, grid, blurring_grid, convolver, binned_grid):
-        self.imaging_data = imaging_data
-        self.pixel_scales = imaging_data.pixel_scales
+    def __init__(self, imaging, mask, grid, blurring_grid, convolver, binned_grid):
+        self.imaging = imaging
+        self.pixel_scales = imaging.pixel_scales
 
-        self.psf = imaging_data.psf
+        self.psf = imaging.psf
 
         self.mapping = mask.mapping
         self.mask = mask
@@ -17,10 +17,10 @@ class MockLensImagingData(object):
         self.convolver = convolver
 
         self._image_1d = self.mask.mapping.array_from_array_2d(
-            array_2d=imaging_data.image
+            array_2d=imaging.image
         )
         self._noise_map_1d = self.mask.mapping.array_from_array_2d(
-            array_2d=imaging_data.noise_map
+            array_2d=imaging.noise_map
         )
 
         self.positions = None
@@ -51,10 +51,10 @@ class MockLensImagingData(object):
 
 
 class MockLensUVPlaneData(object):
-    def __init__(self, interferometer_data, mask, grid, transformer, binned_grid):
+    def __init__(self, interferometer, mask, grid, transformer, binned_grid):
 
-        self.interferometer_data = interferometer_data
-        self.pixel_scales = interferometer_data.pixel_scales
+        self.interferometer = interferometer
+        self.pixel_scales = interferometer.pixel_scales
 
         self.mask = mask
         self._mask_1d = self.mask.mapping.array_from_array_2d(array_2d=self.mask)
@@ -75,23 +75,23 @@ class MockLensUVPlaneData(object):
         self.preload_pixelization_grids_of_planes = None
 
     def visibilities(self):
-        return self.interferometer_data.visibilities
+        return self.interferometer.visibilities
 
     @property
     def visibilities_mask(self):
-        return np.full(fill_value=False, shape=self.interferometer_data.uv_wavelengths.shape)
+        return np.full(fill_value=False, shape=self.interferometer.uv_wavelengths.shape)
 
     def noise_map(self, return_x2=False):
         if not return_x2:
-            return self.interferometer_data.noise_map
+            return self.interferometer.noise_map
         else:
             return np.stack(
-                (self.interferometer_data.noise_map, self.interferometer_data.noise_map), axis=-1
+                (self.interferometer.noise_map, self.interferometer.noise_map), axis=-1
             )
 
     @property
     def primary_beam(self):
-        return self.interferometer_data.primary_beam
+        return self.interferometer.primary_beam
 
     def signal_to_noise_map(self):
-        return self.interferometer_data.visibilities / self.interferometer_data.noise_map
+        return self.interferometer.visibilities / self.interferometer.noise_map

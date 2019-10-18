@@ -3,7 +3,7 @@ import autoarray as aa
 
 from autoarray.data import imaging
 from autolens.lens import ray_tracing
-from autoarray.data.plotters import imaging_plotters
+from autoarray.plotters import imaging_plotters
 
 
 class ImagingObservation(object):
@@ -35,14 +35,14 @@ class ImagingObservation(object):
         self.exposure_time = exposure_time
         self.background_sky_level = background_sky_level
 
-    def simulate_imaging_data_from_galaxies(
+    def simulate_imaging_from_galaxies(
         self,
         galaxies,
         sub_size=16,
         add_noise=True,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
-        should_plot_imaging_data=False,
+        should_plot_imaging=False,
     ):
         """Simulate Imaging data_type for this data_type, as follows:
 
@@ -65,7 +65,7 @@ class ImagingObservation(object):
 
         tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
 
-        imaging_data = imaging.SimulatedImaging.from_tracer_grid_and_exposure_arrays(
+        imaging = imaging.SimulatedImaging.from_tracer_grid_and_exposure_arrays(
             tracer=tracer,
             grid=grid,
             exposure_time=self.exposure_time,
@@ -76,10 +76,10 @@ class ImagingObservation(object):
             noise_seed=noise_seed,
         )
 
-        if should_plot_imaging_data:
-            imaging_plotters.plot_imaging_subplot(imaging_data=imaging_data)
+        if should_plot_imaging:
+            imaging_plotters.plot_imaging_subplot(imaging=imaging)
 
-        return imaging_data
+        return imaging
 
     @classmethod
     def lsst(
@@ -202,7 +202,7 @@ class ImagingObservation(object):
             background_sky_level=background_sky_level,
         )
 
-    def simulate_imaging_data_from_galaxies_and_write_to_fits(
+    def simulate_imaging_from_galaxies_and_write_to_fits(
         self,
         galaxies,
         data_path,
@@ -211,7 +211,7 @@ class ImagingObservation(object):
         add_noise=True,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
-        should_plot_imaging_data=False,
+        should_plot_imaging=False,
     ):
         """Simulate Imaging data_type for this data_type, as follows:
 
@@ -228,13 +228,13 @@ class ImagingObservation(object):
         5) Output the data to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
-        imaging_data = self.simulate_imaging_data_from_galaxies(
+        imaging = self.simulate_imaging_from_galaxies(
             galaxies=galaxies,
             sub_size=sub_size,
             add_noise=add_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,
-            should_plot_imaging_data=should_plot_imaging_data,
+            should_plot_imaging=should_plot_imaging,
         )
 
         data_output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
@@ -242,7 +242,7 @@ class ImagingObservation(object):
         )
 
         imaging.output_to_fits(
-            imaging_data=imaging_data,
+            imaging=imaging,
             image_path=data_output_path + "image.fits",
             psf_path=data_output_path + "psf.fits",
             noise_map_path=data_output_path + "noise_map.fits",

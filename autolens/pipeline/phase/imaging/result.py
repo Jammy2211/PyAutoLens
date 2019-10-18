@@ -127,7 +127,7 @@ class Result(data.Result):
         binned_image_1d_dict = {}
 
         for galaxy, galaxy_image_2d in self.image_galaxy_2d_dict.items():
-            binned_image_2d = aa.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+            binned_image_2d = aa.util.binning.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                 array_2d=galaxy_image_2d, bin_up_factor=binned_grid.bin_up_factor
             )
 
