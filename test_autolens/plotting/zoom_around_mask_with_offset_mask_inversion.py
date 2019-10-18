@@ -1,7 +1,7 @@
 from autolens.lens.plotters import lens_imaging_fit_plotters
 from test import simulation_util
 
-imaging_data = simulation_util.load_test_imaging_data(
+imaging = simulation_util.load_test_imaging(
     data_type="lens_sis__source_smooth__offset_centre", data_resolution="LSST"
 )
 
@@ -9,8 +9,8 @@ imaging_data = simulation_util.load_test_imaging_data(
 def fit_with_offset_centre(centre):
 
     mask = aa.Mask.elliptical(
-        shape=imaging_data.shape,
-        pixel_scales=imaging_data.pixel_scales,
+        shape=imaging.shape,
+        pixel_scales=imaging.pixel_scales,
         major_axis_radius_arcsec=3.0,
         axis_ratio=1.0,
         phi=0.0,
@@ -31,7 +31,7 @@ def fit_with_offset_centre(centre):
         regularization=al.regularization.Constant(coefficient=1.0),
     )
 
-    lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
+    lens_data = al.LensData(imaging=imaging, mask=mask)
 
     pixelization_grid = source_galaxy.pixelization.traced_pixelization_grids_of_planes_from_grid(
         grid=lens_data.grid

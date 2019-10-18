@@ -10,13 +10,12 @@ import itertools
 from scipy.spatial import Voronoi
 
 import autoarray as aa
-from autoarray.plotters import grid_plotters
+from autoarray.plotters import grid_plotters, imaging_plotters
 from autolens.model.inversion import mappers
-from autoarray.data.plotters import imaging_plotters
 
 
 def plot_image_and_mapper(
-    imaging_data,
+    imaging,
     mapper,
     mask=None,
     positions=None,
@@ -38,8 +37,8 @@ def plot_image_and_mapper(
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    imaging_plotters.plot_image(
-        imaging_data=imaging_data,
+    imaging_plotters.image(
+        imaging=imaging,
         mask=mask,
         positions=positions,
         as_subplot=True,

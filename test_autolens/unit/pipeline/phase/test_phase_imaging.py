@@ -38,23 +38,23 @@ def clean_images():
 
 class TestPhase(object):
     def test__make_analysis(
-        self, phase_imaging_7x7, imaging_data_7x7, lens_imaging_data_7x7
+        self, phase_imaging_7x7, imaging_7x7, lens_imaging_7x7
     ):
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
         assert (
             analysis.lens_data.image(return_in_2d=True, return_masked=False)
-            == imaging_data_7x7.image
+            == imaging_7x7.image
         )
         assert (
             analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
-            == imaging_data_7x7.noise_map
+            == imaging_7x7.noise_map
         )
 
     def test__make_analysis__phase_info_is_made(
-        self, phase_imaging_7x7, imaging_data_7x7
+        self, phase_imaging_7x7, imaging_7x7
     ):
-        phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
         file_phase_info = "{}/{}".format(
             phase_imaging_7x7.optimizer.phase_output_path, "phase.info"
@@ -82,7 +82,7 @@ class TestPhase(object):
         )
         assert auto_link_priors == "Auto Link Priors = False \n"
 
-    def test__fit_using_imaging(self, imaging_data_7x7, mask_function_7x7):
+    def test__fit_using_imaging(self, imaging_7x7, mask_function_7x7):
         clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -99,14 +99,14 @@ class TestPhase(object):
             phase_name="test_phase_test_fit",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_data_7x7)
+        result = phase_imaging_7x7.run(data=imaging_7x7)
         assert isinstance(result.constant.galaxies[0], al.Galaxy)
         assert isinstance(result.constant.galaxies[0], al.Galaxy)
 
-    def test_modify_image(self, mask_function_7x7, imaging_data_7x7):
+    def test_modify_image(self, mask_function_7x7, imaging_7x7):
         class MyPhase(al.PhaseImaging):
             def modify_image(self, image, results):
-                assert imaging_data_7x7.image.shape == image.shape
+                assert imaging_7x7.image.shape == image.shape
                 image = 20.0 * np.ones(shape=(5, 5))
                 return image
 
@@ -114,7 +114,7 @@ class TestPhase(object):
             phase_name="phase_imaging_7x7", mask_function=mask_function_7x7
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
             analysis.lens_data.image(return_in_2d=True, return_masked=False)
             == 20.0 * np.ones(shape=(5, 5))
@@ -122,9 +122,9 @@ class TestPhase(object):
         assert (analysis.lens_data._image_1d == 20.0 * np.ones(shape=9)).all()
 
     def test__lens_data_signal_to_noise_limit(
-        self, imaging_data_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
+        self, imaging_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
     ):
-        imaging_data_snr_limit = imaging_data_7x7.signal_to_noise_limited_data_from_signal_to_noise_limit(
+        imaging_snr_limit = imaging_7x7.signal_to_noise_limited_data_from_signal_to_noise_limit(
             signal_to_noise_limit=1.0
         )
 
@@ -134,17 +134,17 @@ class TestPhase(object):
             mask_function=mask_function_7x7_1_pix,
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
             analysis.lens_data.image(return_in_2d=True, return_masked=False)
-            == imaging_data_snr_limit.image
+            == imaging_snr_limit.image
         ).all()
         assert (
             analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
-            == imaging_data_snr_limit.noise_map
+            == imaging_snr_limit.noise_map
         ).all()
 
-        imaging_data_snr_limit = imaging_data_7x7.signal_to_noise_limited_data_from_signal_to_noise_limit(
+        imaging_snr_limit = imaging_7x7.signal_to_noise_limited_data_from_signal_to_noise_limit(
             signal_to_noise_limit=0.1
         )
 
@@ -154,20 +154,20 @@ class TestPhase(object):
             mask_function=mask_function_7x7_1_pix,
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
             analysis.lens_data.image(return_in_2d=True, return_masked=False)
-            == imaging_data_snr_limit.image
+            == imaging_snr_limit.image
         ).all()
         assert (
             analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
-            == imaging_data_snr_limit.noise_map
+            == imaging_snr_limit.noise_map
         ).all()
 
     def test__lens_data_is_binned_up(
-        self, imaging_data_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
+        self, imaging_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
     ):
-        binned_up_imaging_data = imaging_data_7x7.binned_data_from_bin_up_factor(
+        binned_up_imaging = imaging_7x7.binned_data_from_bin_up_factor(
             bin_up_factor=2
         )
 
@@ -179,24 +179,24 @@ class TestPhase(object):
             mask_function=mask_function_7x7_1_pix,
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
             analysis.lens_data.image(return_in_2d=True, return_masked=False)
-            == binned_up_imaging_data.image
+            == binned_up_imaging.image
         ).all()
-        assert (analysis.lens_data.psf == binned_up_imaging_data.psf).all()
+        assert (analysis.lens_data.psf == binned_up_imaging.psf).all()
         assert (
             analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
-            == binned_up_imaging_data.noise_map
+            == binned_up_imaging.noise_map
         ).all()
 
         assert (analysis.lens_data.mask == binned_up_mask).all()
 
         lens_data = al.LensImagingData(
-            imaging_data=imaging_data_7x7, mask=mask_7x7_1_pix
+            imaging=imaging_7x7, mask=mask_7x7_1_pix
         )
 
-        binned_up_lens_data = lens_data.new_lens_imaging_data_with_binned_up_imaging_data_and_mask(
+        binned_up_lens_data = lens_data.new_lens_imaging_with_binned_up_imaging_and_mask(
             bin_up_factor=2
         )
 
@@ -218,7 +218,7 @@ class TestPhase(object):
         ).all()
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
-        self, imaging_data_7x7, mask_function_7x7
+        self, imaging_7x7, mask_function_7x7
     ):
         # noinspection PyTypeChecker
 
@@ -233,14 +233,14 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
 
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.mask_function(image=imaging_data_7x7.image, sub_size=2)
-        lens_data = al.LensImagingData(imaging_data=imaging_data_7x7, mask=mask)
+        mask = phase_imaging_7x7.mask_function(image=imaging_7x7.image, sub_size=2)
+        lens_data = al.LensImagingData(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImagingFit.from_lens_data_and_tracer(
             lens_data=lens_data, tracer=tracer
@@ -297,7 +297,7 @@ class TestPhase(object):
         assert type(phase_extended.hyper_phases[1]) == al.InversionPhase
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
-        self, imaging_data_7x7, mask_function_7x7
+        self, imaging_7x7, mask_function_7x7
     ):
         lens_galaxy = al.Galaxy(
             redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=0.1)
@@ -310,12 +310,12 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_data_7x7.image, sub_size=2)
-        lens_data = al.LensImagingData(imaging_data=imaging_data_7x7, mask=mask)
+        mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
+        lens_data = al.LensImagingData(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImagingFit.from_lens_data_and_tracer(
             lens_data=lens_data, tracer=tracer
@@ -324,7 +324,7 @@ class TestPhase(object):
         assert fit.likelihood == fit_figure_of_merit
 
     def test__fit_figure_of_merit__includes_hyper_image_and_noise__matches_fit(
-        self, imaging_data_7x7, mask_function_7x7
+        self, imaging_7x7, mask_function_7x7
     ):
         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
@@ -342,12 +342,12 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_data_7x7.image, sub_size=2)
-        lens_data = al.LensImagingData(imaging_data=imaging_data_7x7, mask=mask)
+        mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
+        lens_data = al.LensImagingData(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImagingFit.from_lens_data_and_tracer(
             lens_data=lens_data,

@@ -1,5 +1,5 @@
 import autofit as af
-from autoarray.data.plotters import imaging_plotters
+from autoarray.plotters import imaging_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.lens.plotters import lens_imaging_fit_plotters
 from autolens.model.inversion.plotters import inversion_plotters
@@ -7,7 +7,7 @@ from autolens.pipeline.plotters import hyper_plotters
 
 
 def plot_imaging_for_phase(
-    imaging_data,
+    imaging,
     mask,
     positions,
     extract_array_from_mask,
@@ -31,7 +31,7 @@ def plot_imaging_for_phase(
     if should_plot_as_subplot:
 
         imaging_plotters.plot_imaging_subplot(
-            imaging_data=imaging_data,
+            imaging=imaging,
             mask_overlay=mask,
             positions=positions,
             units=units,
@@ -39,8 +39,8 @@ def plot_imaging_for_phase(
             output_format="png",
         )
 
-    imaging_plotters.plot_imaging_individual(
-        imaging_data=imaging_data,
+    imaging_plotters.individual(
+        imaging=imaging,
         mask=mask,
         positions=positions,
         should_plot_image=should_plot_image,

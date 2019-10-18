@@ -20,7 +20,7 @@ def run(
     af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    imaging_data = simulation_util.load_test_imaging_data(
+    imaging = simulation_util.load_test_imaging(
         data_type=module.data_type, data_resolution=module.data_resolution
     )
 
@@ -28,7 +28,7 @@ def run(
         name=test_name,
         phase_folders=[module.test_type, test_name],
         optimizer_class=optimizer_class,
-    ).run(data=imaging_data, positions=positions)
+    ).run(data=imaging, positions=positions)
 
 
 def run_a_mock(module):

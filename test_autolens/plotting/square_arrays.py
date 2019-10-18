@@ -6,23 +6,23 @@ from test import simulation_util
 # Lets take another look at the rectangular grid, and think about its weakness.
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
-imaging_data = simulation_util.load_test_imaging_data(
+imaging = simulation_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
 mask = aa.Mask.elliptical(
-    shape=imaging_data.shape,
-    pixel_scales=imaging_data.pixel_scales,
+    shape=imaging.shape,
+    pixel_scales=imaging.pixel_scales,
     major_axis_radius_arcsec=3.0,
     axis_ratio=1.0,
     phi=0.0,
     centre=(0.0, 0.0),
 )
 
-# imaging_plotters.plot_imaging_subplot(imaging_data=imaging_data, mask=mask, zoom_around_mask=True, aspect='equal')
-# imaging_plotters.plot_imaging_subplot(imaging_data=imaging_data, mask=mask, zoom_around_mask=True, aspect='auto')
+# imaging_plotters.plot_imaging_subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
+# imaging_plotters.plot_imaging_subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='auto')
 
-# imaging_plotters.plot_image(imaging_data=imaging_data, mask=mask, zoom_around_mask=True, aspect='square')
-# imaging_plotters.plot_image(imaging_data=imaging_data, mask=mask, zoom_around_mask=True, aspect='equal')
+# imaging_plotters.plot_image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='square')
+# imaging_plotters.plot_image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
 
 # The lines of code below do everything we're used to, that is, setup an image and its al.ogrid, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
@@ -36,7 +36,7 @@ source_galaxy = al.Galaxy(
     regularization=al.regularization.Constant(coefficient=1.0),
 )
 
-lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
+lens_data = al.LensData(imaging=imaging, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)

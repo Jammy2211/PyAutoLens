@@ -2,7 +2,6 @@ import numpy as np
 from astropy import cosmology as cosmo
 from skimage import measure
 
-import autoarray as aa
 from autoarray.structures import arrays
 import autofit as af
 from autolens import exc, dimensions as dim

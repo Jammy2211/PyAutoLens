@@ -72,8 +72,8 @@ def make_positions_7x7():
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
 
-@pytest.fixture(name="imaging_data_7x7")
-def make_imaging_data_7x7(
+@pytest.fixture(name="imaging_7x7")
+def make_imaging_7x7(
     image_7x7,
     psf_3x3,
     noise_map_7x7,
@@ -91,12 +91,12 @@ def make_imaging_data_7x7(
         poisson_noise_map=poisson_noise_map_7x7,
         exposure_time_map=exposure_time_map_7x7,
         background_sky_map=background_sky_map_7x7,
-        name="mock_imaging_data_7x7",
+        name="mock_imaging_7x7",
     )
 
 
-@pytest.fixture(name="imaging_data_6x6")
-def make_imaging_data_6x6():
+@pytest.fixture(name="imaging_6x6")
+def make_imaging_6x6():
     image = mock_data.MockImage(shape=(6, 6), value=1.0)
     psf = mock_data.MockPSF(shape=(3, 3), value=1.0)
     noise_map = mock_data.MockNoiseMap(shape=(6, 6), value=2.0)
@@ -114,7 +114,7 @@ def make_imaging_data_6x6():
         poisson_noise_map=poisson_noise_map,
         exposure_time_map=exposure_time_map,
         background_sky_map=background_sky_map,
-        name="mock_imaging_data_6x6",
+        name="mock_imaging_6x6",
     )
 
 
@@ -138,8 +138,8 @@ def make_uv_wavelengths_7():
     return mock_data.MockUVWavelengths(shape=7, value=3.0)
 
 
-@pytest.fixture(name="interferometer_data_7")
-def make_interferometer_data_7(
+@pytest.fixture(name="interferometer_7")
+def make_interferometer_7(
     visibilities_7, visibilities_noise_map_7, primary_beam_3x3, uv_wavelengths_7
 ):
     return mock_data.MockUVPlaneData(
@@ -456,9 +456,9 @@ def make_gal_fit_7x7_deflections_x(gal_fit_data_7x7_deflections_x, gal_x1_mp):
 # Lens Data #
 
 
-@pytest.fixture(name="lens_imaging_data_7x7")
-def make_lens_imaging_data_7x7(
-    imaging_data_7x7,
+@pytest.fixture(name="lens_imaging_7x7")
+def make_lens_imaging_7x7(
+    imaging_7x7,
     mask_7x7,
     sub_grid_7x7,
     blurring_grid_7x7,
@@ -466,7 +466,7 @@ def make_lens_imaging_data_7x7(
     binned_grid_7x7,
 ):
     return mock_lens_data.MockLensImagingData(
-        imaging_data=imaging_data_7x7,
+        imaging=imaging_7x7,
         mask=mask_7x7,
         grid=sub_grid_7x7,
         blurring_grid=blurring_grid_7x7,
@@ -475,12 +475,12 @@ def make_lens_imaging_data_7x7(
     )
 
 
-@pytest.fixture(name="lens_interferometer_data_7")
-def make_lens_interferometer_data_7(
-    interferometer_data_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
+@pytest.fixture(name="lens_interferometer_7")
+def make_lens_interferometer_7(
+    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
 ):
     return mock_lens_data.MockLensUVPlaneData(
-        interferometer_data=interferometer_data_7,
+        interferometer=interferometer_7,
         mask=mask_7x7,
         grid=sub_grid_7x7,
         transformer=transformer_7x7_7,
@@ -515,16 +515,16 @@ def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp):
 
 
 @pytest.fixture(name="lens_imaging_fit_x1_plane_7x7")
-def make_lens_imaging_fit_x1_plane_7x7(lens_imaging_data_7x7, tracer_x1_plane_7x7):
+def make_lens_imaging_fit_x1_plane_7x7(lens_imaging_7x7, tracer_x1_plane_7x7):
     return al.LensImagingFit.from_lens_data_and_tracer(
-        lens_data=lens_imaging_data_7x7, tracer=tracer_x1_plane_7x7
+        lens_data=lens_imaging_7x7, tracer=tracer_x1_plane_7x7
     )
 
 
 @pytest.fixture(name="lens_imaging_fit_x2_plane_7x7")
-def make_lens_imaging_fit_x2_plane_7x7(lens_imaging_data_7x7, tracer_x2_plane_7x7):
+def make_lens_imaging_fit_x2_plane_7x7(lens_imaging_7x7, tracer_x2_plane_7x7):
     return al.LensImagingFit.from_lens_data_and_tracer(
-        lens_data=lens_imaging_data_7x7, tracer=tracer_x2_plane_7x7
+        lens_data=lens_imaging_7x7, tracer=tracer_x2_plane_7x7
     )
 
 

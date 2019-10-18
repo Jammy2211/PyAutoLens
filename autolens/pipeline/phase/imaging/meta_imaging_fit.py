@@ -57,8 +57,8 @@ class MetaImagingFit(data.MetaDataFit):
             results=results
         )
 
-        lens_imaging_data = ld.LensImagingData(
-            imaging_data=data.modified_image_from_image(
+        lens_imaging = ld.LensImagingData(
+            imaging=data.modified_image_from_image(
                 modified_image
             ),
             mask=mask,
@@ -74,13 +74,13 @@ class MetaImagingFit(data.MetaDataFit):
         )
 
         if self.signal_to_noise_limit is not None:
-            lens_imaging_data = lens_imaging_data.new_lens_imaging_data_with_signal_to_noise_limit(
+            lens_imaging = lens_imaging.new_lens_imaging_with_signal_to_noise_limit(
                 signal_to_noise_limit=self.signal_to_noise_limit
             )
 
         if self.bin_up_factor is not None:
-            lens_imaging_data = lens_imaging_data.new_lens_imaging_data_with_binned_up_imaging_data_and_mask(
+            lens_imaging = lens_imaging.new_lens_imaging_with_binned_up_imaging_and_mask(
                 bin_up_factor=self.bin_up_factor
             )
 
-        return lens_imaging_data
+        return lens_imaging

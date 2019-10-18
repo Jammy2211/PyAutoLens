@@ -6,12 +6,12 @@ from test import simulation_util
 # Lets take another look at the rectangular grid, and think about its weakness.
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
-imaging_data = simulation_util.load_test_imaging_data(
+imaging = simulation_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
 mask = aa.Mask.circular(
-    shape=imaging_data.shape,
-    pixel_scales=imaging_data.pixel_scales,
+    shape=imaging.shape,
+    pixel_scales=imaging.pixel_scales,
     radius_arcsec=3.0,
     centre=(1.0, 1.0),
 )
@@ -25,7 +25,7 @@ lens_galaxy = al.Galaxy(
     ),
 )
 
-lens_data = al.LensData(imaging_data=imaging_data, mask=mask)
+lens_data = al.LensData(imaging=imaging, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
 fit = al.LensImageFit.from_lens_data_and_tracer(lens_data=lens_data, tracer=tracer)

@@ -3,7 +3,6 @@ import autoarray as aa
 import numpy as np
 
 from autolens import exc
-from autoarray.util import mask_util
 
 
 class MockMask(aa.Mask):
@@ -50,7 +49,7 @@ class MockMask(aa.Mask):
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
             raise exc.MaskException("psf_size of exterior region must be odd")
 
-        blurring_mask = aa.Mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             self, kernel_shape
         )
 

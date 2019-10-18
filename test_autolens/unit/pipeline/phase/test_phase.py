@@ -46,7 +46,7 @@ class TestPhase(object):
         ]
 
     def test__customize(
-        self, mask_function_7x7, results_7x7, results_collection_7x7, imaging_data_7x7
+        self, mask_function_7x7, results_7x7, results_collection_7x7, imaging_7x7
     ):
         class MyPlanePhaseAnd(al.PhaseImaging):
             def customize_priors(self, results):
@@ -65,7 +65,7 @@ class TestPhase(object):
         )
 
         phase_imaging_7x7.make_analysis(
-            data=imaging_data_7x7, results=results_collection_7x7
+            data=imaging_7x7, results=results_collection_7x7
         )
         phase_imaging_7x7.customize_priors(results_collection_7x7)
 
@@ -88,7 +88,7 @@ class TestPhase(object):
         )
 
         phase_imaging_7x7.make_analysis(
-            data=imaging_data_7x7, results=results_collection_7x7
+            data=imaging_7x7, results=results_collection_7x7
         )
         phase_imaging_7x7.customize_priors(results_collection_7x7)
 
@@ -108,18 +108,18 @@ class TestPhase(object):
 
     #
     # def test__uses_pixelization_preload_grids_if_possible(
-    #     self, imaging_data_7x7, mask_function_7x7
+    #     self, imaging_7x7, mask_function_7x7
     # ):
     #     phase_imaging_7x7 = al.PhaseImaging(
     #         phase_name="test_phase", mask_function=mask_function_7x7
     #     )
     #
-    #     analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+    #     analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
     #
     #     galaxy = al.Galaxy(redshift=0.5)
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
-    #         galaxies=[galaxy, galaxy], grid=analysis.lens_imaging_data.grid
+    #         galaxies=[galaxy, galaxy], grid=analysis.lens_imaging.grid
     #     )
     #
     #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
@@ -130,7 +130,7 @@ class TestPhase(object):
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
     #         galaxies=[galaxy_pix_which_doesnt_use_pix_grid],
-    #         grid=analysis.lens_imaging_data.grid,
+    #         grid=analysis.lens_imaging.grid,
     #     )
     #
     #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
@@ -143,7 +143,7 @@ class TestPhase(object):
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
     #         galaxies=[galaxy_pix_which_uses_pix_grid],
-    #         grid=analysis.lens_imaging_data.grid,
+    #         grid=analysis.lens_imaging.grid,
     #     )
     #
     #     assert (
@@ -186,11 +186,11 @@ class TestPhase(object):
     #         mask_function=mask_function_7x7,
     #     )
     #
-    #     analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+    #     analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
     #         galaxies=[galaxy_pix_which_uses_brightness],
-    #         grid=analysis.lens_imaging_data.grid,
+    #         grid=analysis.lens_imaging.grid,
     #     )
     #
     #     assert (
@@ -211,7 +211,7 @@ class TestPhase(object):
     #     ).all()
 
     def test__tracer_for_instance__includes_cosmology(
-        self, imaging_data_7x7, mask_function_7x7
+        self, imaging_7x7, mask_function_7x7
     ):
         lens_galaxy = al.Galaxy(redshift=0.5)
         source_galaxy = al.Galaxy(redshift=0.5)
@@ -223,7 +223,7 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
@@ -237,7 +237,7 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(imaging_data_7x7)
+        analysis = phase_imaging_7x7.make_analysis(imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
 
@@ -256,7 +256,7 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_data_7x7)
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance)
 
@@ -381,7 +381,7 @@ class TestPhase(object):
 
 class TestResult(object):
     def test__results_of_phase_are_available_as_properties(
-        self, imaging_data_7x7, mask_function_7x7
+        self, imaging_7x7, mask_function_7x7
     ):
         clean_images()
 
@@ -397,12 +397,12 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_data_7x7)
+        result = phase_imaging_7x7.run(data=imaging_7x7)
 
         assert isinstance(result, al.AbstractPhase.Result)
 
     def test__most_likely_tracer_available_as_result(
-        self, imaging_data_7x7, mask_function_7x7
+        self, imaging_7x7, mask_function_7x7
     ):
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -421,7 +421,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_data_7x7)
+        result = phase_imaging_7x7.run(data=imaging_7x7)
 
         assert isinstance(result.most_likely_tracer, al.Tracer)
         assert result.most_likely_tracer.galaxies[0].light.intensity == 1.0
@@ -431,7 +431,7 @@ class TestResult(object):
 class TestPhasePickle(object):
 
     # noinspection PyTypeChecker
-    def test_assertion_failure(self, imaging_data_7x7, mask_function_7x7):
+    def test_assertion_failure(self, imaging_7x7, mask_function_7x7):
         def make_analysis(*args, **kwargs):
             return mock_pipeline.MockAnalysis(1, 1)
 
@@ -448,7 +448,7 @@ class TestPhasePickle(object):
 
         phase_imaging_7x7.make_analysis = make_analysis
         result = phase_imaging_7x7.run(
-            data=imaging_data_7x7, results=None, mask=None, positions=None
+            data=imaging_7x7, results=None, mask=None, positions=None
         )
         assert result is not None
 
@@ -465,7 +465,7 @@ class TestPhasePickle(object):
 
         phase_imaging_7x7.make_analysis = make_analysis
         result = phase_imaging_7x7.run(
-            data=imaging_data_7x7, results=None, mask=None, positions=None
+            data=imaging_7x7, results=None, mask=None, positions=None
         )
         assert result is not None
 
@@ -486,4 +486,4 @@ class TestPhasePickle(object):
         phase_imaging_7x7.make_analysis = make_analysis
 
         # with pytest.raises(af.exc.PipelineException):
-        #     phase_imaging_7x7.run(data_type=imaging_data_7x7, results=None, mask=None, positions=None)
+        #     phase_imaging_7x7.run(data_type=imaging_7x7, results=None, mask=None, positions=None)

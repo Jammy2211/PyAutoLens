@@ -146,7 +146,7 @@ class PhaseImaging(data.PhaseData):
             results=results,
         )
 
-        lens_imaging_data = self.meta_data_fit.data_fit_from(
+        lens_imaging = self.meta_data_fit.data_fit_from(
             data=data,
             mask=mask,
             positions=positions,
@@ -157,7 +157,7 @@ class PhaseImaging(data.PhaseData):
         self.output_phase_info()
 
         analysis = self.Analysis(
-            lens_imaging_data=lens_imaging_data,
+            lens_imaging=lens_imaging,
             cosmology=self.cosmology,
             image_path=self.optimizer.image_path,
             results=results,

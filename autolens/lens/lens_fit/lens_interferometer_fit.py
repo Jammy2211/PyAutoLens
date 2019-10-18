@@ -122,12 +122,12 @@ class LensUVPlaneFit(UVPlaneFit):
         # else:
         #
         #     inversion = tracer.inversion_from_grid_visibilities_1d_noise_map_1d_and_convolver(
-        #         grid=lens_interferometer_data.grid,
+        #         grid=lens_interferometer.grid,
         #         visibilities_1d=profile_subtracted_visibilities_1d,
         #         noise_map_1d=noise_map_1d,
-        #         convolver=lens_interferometer_data.convolver,
-        #         inversion_uses_border=lens_interferometer_data.inversion_uses_border,
-        #         preload_pixelization_grids_of_planes=lens_interferometer_data.preload_pixelization_grids_of_planes,
+        #         convolver=lens_interferometer.convolver,
+        #         inversion_uses_border=lens_interferometer.inversion_uses_border,
+        #         preload_pixelization_grids_of_planes=lens_interferometer.preload_pixelization_grids_of_planes,
         #     )
         #
         #     model_visibilities_1d = blurred_profile_visibilities_1d + inversion.reconstructed_data_1d
