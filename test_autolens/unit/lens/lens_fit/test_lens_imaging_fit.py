@@ -6,7 +6,7 @@ from autolens.lens.lens_fit.lens_imaging_fit import (
     likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization,
 )
 from autolens.lens.lens_fit.lens_imaging_fit import evidence_from_inversion_terms
-from test_autolens.unit.mock.model.mock_profiles import MockLightProfile
+from test_autolens.mock import MockLightProfile
 
 
 class TestInversionEvidence:

@@ -2,7 +2,7 @@ import autolens as al
 import numpy as np
 import pytest
 
-from test_autolens.unit.mock.model.mock_profiles import MockLightProfile
+from test_autolens.mock import MockLightProfile
 
 
 class TestFitProperties:

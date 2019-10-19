@@ -1,28 +1,11 @@
 import autofit as af
 
 
-
-class CosmologyException(Exception):
-    pass
-
-
-class GalaxyException(Exception):
-    pass
-
-
 class RayTracingException(af.exc.FitException):
     pass
 
 
-class PixelizationException(af.exc.FitException):
-    pass
-
-
-class InversionException(af.exc.FitException):
-    pass
-
-
-class FittingException(Exception):
+class FitException(Exception):
     pass
 
 
@@ -31,8 +14,4 @@ class PlottingException(Exception):
 
 
 class PhaseException(Exception):
-    pass
-
-
-class UnitsException(Exception):
     pass

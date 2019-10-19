@@ -4,9 +4,6 @@ import pytest
 from astropy import cosmology as cosmo
 
 
-from test_autolens.unit.mock.model import mock_inversion
-
-
 class TestAbstractTracer(object):
     class TestProperties:
         def test__total_planes(self):
