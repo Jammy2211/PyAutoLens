@@ -11,7 +11,6 @@ class AbstractLensData(object):
             positions=None,
             positions_threshold=None,
             pixel_scale_interpolation_grid=None,
-            pixel_scale_binned_grid=None,
             inversion_pixel_limit=None,
             inversion_uses_border=True,
             hyper_noise_map_max=None,
