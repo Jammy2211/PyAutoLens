@@ -29,29 +29,9 @@ from autolens.lens.plotters import (
 from autolens.lens.ray_tracing import Tracer
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
-from autolens.model.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
-from autolens.model.galaxy.galaxy_data import GalaxyData, GalaxyFitData
 from autolens.model.galaxy.galaxy_fit import GalaxyFit
-from autolens.model.galaxy.galaxy_model import GalaxyModel
-from autolens.model.galaxy.plotters import galaxy_fit_plotters, galaxy_plotters
 from autolens.model.hyper.hyper_data import HyperImageSky, HyperBackgroundNoise
 from autolens.model.inversion.inversions import Inversion
-from autolens.model.inversion.mappers import Mapper, RectangularMapper, VoronoiMapper
-from autolens.model.inversion import pixelizations, regularization
-from autolens.model.inversion.plotters import inversion_plotters, mapper_plotters
-from autolens.model.inversion.util import (
-    inversion_util,
-    mapper_util,
-    pixelization_util,
-    regularization_util,
-)
-from autolens.model.profiles import (
-    geometry_profiles,
-    light_profiles,
-    mass_profiles,
-    light_and_mass_profiles,
-)
-from autolens.model.profiles.plotters import profile_plotters
 from autolens.pipeline import phase_tagging, pipeline_tagging
 from autolens.pipeline.phase.abstract import phase
 from autolens.pipeline.phase.abstract.phase import AbstractPhase
