@@ -46,7 +46,7 @@ def plot_image(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    image = fit.image(return_in_2d=True)
+    image = fit.image.in_2d
 
     aa.plot_array(
         array=image,
@@ -126,7 +126,7 @@ def plot_noise_map(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    noise_map = fit.noise_map(return_in_2d=True)
+    noise_map = fit.noise_map.in_2d
 
     aa.plot_array(
         array=noise_map,
@@ -204,7 +204,7 @@ def plot_signal_to_noise_map(
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    signal_to_noise_map = fit.signal_to_noise_map(return_in_2d=True)
+    signal_to_noise_map = fit.signal_to_noise_map.in_2d
 
     aa.plot_array(
         array=signal_to_noise_map,
@@ -287,7 +287,7 @@ def plot_model_data(
         plot_mass_profile_centres=plot_mass_profile_centres, fit=fit
     )
 
-    model_image = fit.model_image(return_in_2d=True)
+    model_image = fit.model_image.in_2d
 
     aa.plot_array(
         array=model_image,
@@ -366,7 +366,7 @@ def plot_residual_map(
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
 
-    residual_map = fit.residual_map(return_in_2d=True)
+    residual_map = fit.residual_map.in_2d
 
     aa.plot_array(
         array=residual_map,
@@ -444,7 +444,7 @@ def plot_normalized_residual_map(
         The index of the datas in the datas-set of which the normalized_residual_map are plotted.
     """
 
-    normalized_residual_map = fit.normalized_residual_map(return_in_2d=True)
+    normalized_residual_map = fit.normalized_residual_map.in_2d
 
     aa.plot_array(
         array=normalized_residual_map,
@@ -522,7 +522,7 @@ def plot_chi_squared_map(
         The index of the datas in the datas-set of which the chi-squareds are plotted.
     """
 
-    chi_squared_map = fit.chi_squared_map(return_in_2d=True)
+    chi_squared_map = fit.chi_squared_map.in_2d
 
     aa.plot_array(
         array=chi_squared_map,
@@ -611,18 +611,18 @@ def plot_subtracted_image_of_plane(
         other_planes_model_images_2d = [
             model_image_2d
             for i, model_image_2d in enumerate(
-                fit.model_images_of_planes(return_in_2d=True)
+                fit.model_images_of_planes.in_2d
             )
             if i != plane_index
         ]
 
-        subtracted_image = fit.image(return_in_2d=True) - sum(
+        subtracted_image = fit.image.in_2d - sum(
             other_planes_model_images_2d
         )
 
     else:
 
-        subtracted_image = fit.image(return_in_2d=True)
+        subtracted_image = fit.image.in_2d
 
     aa.plot_array(
         array=subtracted_image,
@@ -712,7 +712,7 @@ def plot_model_image_of_plane(
     )
 
     aa.plot_array(
-        array=fit.model_images_of_planes(return_in_2d=True)[plane_index],
+        array=fit.model_images_of_planes.in_2d[plane_index],
         mask_overlay=mask,
         positions=positions,
         centres=centres,

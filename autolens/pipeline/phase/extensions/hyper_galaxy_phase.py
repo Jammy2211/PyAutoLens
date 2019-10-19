@@ -59,8 +59,8 @@ class Analysis(af.Analysis):
             )
 
             fit_normal = lens_imaging_fit.ImagingFit(
-                image=self.lens_data._image_1d,
-                noise_map=self.lens_data._noise_map_1d,
+                image=self.lens_data.image.in_1d,
+                noise_map=self.lens_data.noise_map.in_1d,
                 mask=self.lens_data._mask_1d,
                 model_image=self.hyper_model_image_1d,
                 mapping=self.lens_data.mapping,
@@ -76,10 +76,10 @@ class Analysis(af.Analysis):
             self.visualizer.hyper_galaxy_subplot(
                 hyper_galaxy_image=hyper_galaxy_image_2d,
                 contribution_map=contribution_map_2d,
-                noise_map=self.lens_data.noise_map(return_in_2d=True),
-                hyper_noise_map=fit.noise_map(return_in_2d=True),
-                chi_squared_map=fit_normal.chi_squared_map(return_in_2d=True),
-                hyper_chi_squared_map=fit.chi_squared_map(return_in_2d=True),
+                noise_map=self.lens_data.noise_map.in_2d,
+                hyper_noise_map=fit.noise_map.in_2d,
+                chi_squared_map=fit_normal.chi_squared_map.in_2d,
+                hyper_chi_squared_map=fit.chi_squared_map.in_2d,
             )
 
     def fit(self, instance):
@@ -128,15 +128,15 @@ class Analysis(af.Analysis):
 
         if hyper_background_noise is not None:
             noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
-                noise_map=self.lens_data._noise_map_1d
+                noise_map=self.lens_data.noise_map.in_1d
             )
         else:
-            noise_map_1d = self.lens_data._noise_map_1d
+            noise_map_1d = self.lens_data.noise_map.in_1d
 
         hyper_noise_map_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
             hyper_model_image=self.hyper_model_image_1d,
             hyper_galaxy_image=self.hyper_galaxy_image_1d,
-            noise_map=self.lens_data._noise_map_1d,
+            noise_map=self.lens_data.noise_map.in_1d,
         )
 
         noise_map_1d = noise_map_1d + hyper_noise_map_1d

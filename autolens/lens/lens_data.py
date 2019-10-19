@@ -118,13 +118,13 @@ class LensImagingData(AbstractLensData):
             preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
         )
 
-        self._image_1d = self.image(return_in_2d=False)
-        self._noise_map_1d = self.noise_map(return_in_2d=False)
+        self.image.in_1d = self.image(return_in_2d=False)
+        self.noise_map.in_1d = self.noise_map(return_in_2d=False)
 
         ### PSF TRIMMING + CONVOLVER ###
 
         if trimmed_psf_shape is None:
-            self.trimmed_psf_shape = self.psf.in_2d.shape
+            self.trimmed_psf_shape = self.psf.shape_2d
         else:
             self.trimmed_psf_shape = trimmed_psf_shape
 

@@ -308,7 +308,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             sub_grid_2d=np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
         )
 
-    def lensing_jacobian_a11_from_grid(self, grid):
+    def jacobian_a11_from_grid(self, grid):
 
         deflections = self.deflections_from_grid(grid=grid)
 
@@ -317,7 +317,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             - np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
         )
 
-    def lensing_jacobian_a12_from_grid(self, grid):
+    def jacobian_a12_from_grid(self, grid):
 
         deflections = self.deflections_from_grid(grid=grid)
 
@@ -326,7 +326,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             * np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
         )
 
-    def lensing_jacobian_a21_from_grid(self, grid):
+    def jacobian_a21_from_grid(self, grid):
 
         deflections = self.deflections_from_grid(grid=grid)
 
@@ -335,7 +335,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             * np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
         )
 
-    def lensing_jacobian_a22_from_grid(self, grid):
+    def jacobian_a22_from_grid(self, grid):
 
         deflections = self.deflections_from_grid(grid=grid)
 
@@ -344,21 +344,21 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             - np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
         )
 
-    def lensing_jacobian_from_grid(self, grid):
+    def jacobian_from_grid(self, grid):
 
-        a11 = self.lensing_jacobian_a11_from_grid(grid=grid)
+        a11 = self.jacobian_a11_from_grid(grid=grid)
 
-        a12 = self.lensing_jacobian_a12_from_grid(grid=grid)
+        a12 = self.jacobian_a12_from_grid(grid=grid)
 
-        a21 = self.lensing_jacobian_a21_from_grid(grid=grid)
+        a21 = self.jacobian_a21_from_grid(grid=grid)
 
-        a22 = self.lensing_jacobian_a22_from_grid(grid=grid)
+        a22 = self.jacobian_a22_from_grid(grid=grid)
 
         return [[a11, a12], [a21, a22]]
 
     def convergence_via_jacobian_from_grid(self, grid):
 
-        jacobian = self.lensing_jacobian_from_grid(grid=grid)
+        jacobian = self.jacobian_from_grid(grid=grid)
 
         convergence = 1 - 0.5 * (jacobian[0][0] + jacobian[1][1])
 
@@ -366,7 +366,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
     def shear_via_jacobian_from_grid(self, grid):
 
-        jacobian = self.lensing_jacobian_from_grid(grid=grid)
+        jacobian = self.jacobian_from_grid(grid=grid)
 
         gamma_1 = 0.5 * (jacobian[1][1] - jacobian[0][0])
         gamma_2 = -0.5 * (jacobian[0][1] + jacobian[1][0])
@@ -397,7 +397,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
     def magnification_from_grid(self, grid):
 
-        jacobian = self.lensing_jacobian_from_grid(grid=grid)
+        jacobian = self.jacobian_from_grid(grid=grid)
 
         det_jacobian = jacobian[0][0] * jacobian[1][1] - jacobian[0][1] * jacobian[1][0]
 
@@ -414,9 +414,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         if len(tangential_critical_curve_indices) == 0:
             return []
 
-        return grid.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+        return grid.geometry.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
             grid_pixels_1d=tangential_critical_curve_indices[0],
-            shape=tangential_eigen_values.in_2d.shape,
+            shape_2d=tangential_eigen_values.sub_shape_2d,
         )
 
     def radial_critical_curve_from_grid(self, grid):
@@ -430,9 +430,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         if len(radial_critical_curve_indices) == 0:
             return []
 
-        return grid.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+        return grid.geometry.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
             grid_pixels_1d=radial_critical_curve_indices[0],
-            shape=radial_eigen_values.in_2d.shape,
+            shape_2d=radial_eigen_values.sub_shape_2d,
         )
 
     def tangential_caustic_from_grid(self, grid):
