@@ -473,7 +473,7 @@ class TestPhase(object):
             ),
         )
 
-        assert len(lens_data._image_1d) == 9
+        assert len(lens_data.image.in_1d) == 9
 
     def test__check_if_phase_uses_cluster_inversion(self, mask_function_7x7):
         phase_imaging_7x7 = al.PhaseImaging(

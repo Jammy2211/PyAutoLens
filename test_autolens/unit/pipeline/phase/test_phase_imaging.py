@@ -119,7 +119,7 @@ class TestPhase(object):
             analysis.lens_data.image(return_in_2d=True, return_masked=False)
             == 20.0 * np.ones(shape=(5, 5))
         ).all()
-        assert (analysis.lens_data._image_1d == 20.0 * np.ones(shape=9)).all()
+        assert (analysis.lens_data.image.in_1d == 20.0 * np.ones(shape=9)).all()
 
     def test__lens_data_signal_to_noise_limit(
         self, imaging_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
@@ -201,20 +201,20 @@ class TestPhase(object):
         )
 
         assert (
-            analysis.lens_data.image(return_in_2d=True)
-            == binned_up_lens_data.image(return_in_2d=True)
+            analysis.lens_data.image.in_2d
+            == binned_up_lens_data.image.in_2d
         ).all()
         assert (analysis.lens_data.psf == binned_up_lens_data.psf).all()
         assert (
-            analysis.lens_data.noise_map(return_in_2d=True)
-            == binned_up_lens_data.noise_map(return_in_2d=True)
+            analysis.lens_data.noise_map.in_2d
+            == binned_up_lens_data.noise_map.in_2d
         ).all()
 
         assert (analysis.lens_data.mask == binned_up_lens_data.mask).all()
 
-        assert (analysis.lens_data._image_1d == binned_up_lens_data._image_1d).all()
+        assert (analysis.lens_data.image.in_1d == binned_up_lens_data.image.in_1d).all()
         assert (
-            analysis.lens_data._noise_map_1d == binned_up_lens_data._noise_map_1d
+            analysis.lens_data.noise_map.in_1d == binned_up_lens_data.noise_map.in_1d
         ).all()
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(

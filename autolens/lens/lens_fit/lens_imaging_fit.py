@@ -256,9 +256,9 @@ class LensImagingFit(ImagingFit):
 def image_1d_from_lens_data_and_hyper_image_sky(lens_data, hyper_image_sky):
 
     if hyper_image_sky is not None:
-        return hyper_image_sky.image_scaled_sky_from_image(image=lens_data._image_1d)
+        return hyper_image_sky.image_scaled_sky_from_image(image=lens_data.image.in_1d)
     else:
-        return lens_data._image_1d
+        return lens_data.image.in_1d
 
 
 def noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(
@@ -267,13 +267,13 @@ def noise_map_1d_from_lens_data_tracer_and_hyper_backkground_noise(
 
     if hyper_background_noise is not None:
         noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
-            noise_map=lens_data._noise_map_1d
+            noise_map=lens_data.noise_map.in_1d
         )
     else:
-        noise_map_1d = lens_data._noise_map_1d
+        noise_map_1d = lens_data.noise_map.in_1d
 
     hyper_noise_map_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
-        noise_map_1d=lens_data._noise_map_1d
+        noise_map_1d=lens_data.noise_map.in_1d
     )
 
     if hyper_noise_map_1d is not None:

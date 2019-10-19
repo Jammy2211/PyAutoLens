@@ -333,7 +333,7 @@ class ImagingObservation(object):
 
         if psf is not None:
             image_2d = tracer.padded_profile_image_2d_from_grid_and_psf_shape(
-                grid=grid, psf_shape=psf.in_2d.shape
+                grid=grid, psf_shape=psf.shape_2d
             )
         else:
             image_2d = tracer.profile_image_from_grid(grid=grid)

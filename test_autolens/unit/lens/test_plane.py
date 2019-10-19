@@ -11,11 +11,11 @@ planck = cosmo.Planck15
 
 
 def critical_curve_via_magnification_from_plane_and_grid(plane, grid):
-    magnification_2d = plane.magnification_from_grid(grid=grid)
+    magnification = plane.magnification_from_grid(grid=grid)
 
-    inverse_magnification_2d = 1 / magnification_2d
+    inverse_magnification = 1 / magnification
 
-    critical_curves_indices = measure.find_contours(inverse_magnification_2d, 0)
+    critical_curves_indices = measure.find_contours(inverse_magnification.in_2d, 0)
 
     no_critical_curves = len(critical_curves_indices)
     contours = []
@@ -26,8 +26,8 @@ def critical_curve_via_magnification_from_plane_and_grid(plane, grid):
         contour_x, contour_y = contours[jj].T
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-        critical_curve = grid.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
-            grid_pixels_1d=pixel_coord, shape=magnification_2d.shape
+        critical_curve = grid.geometry.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+            grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
         )
 
         critical_curves.append(critical_curve)
@@ -1042,7 +1042,7 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            jacobian = plane.lensing_jacobian_from_grid(grid=grid)
+            jacobian = plane.jacobian_from_grid(grid=grid)
 
             A_12 = jacobian[0, 1]
             A_21 = jacobian[1, 0]
@@ -1051,7 +1051,7 @@ class TestAbstractPlaneLensing(object):
 
             assert mean_error < 1e-4
 
-            jacobian = plane.lensing_jacobian_from_grid(grid=grid)
+            jacobian = plane.jacobian_from_grid(grid=grid)
 
             A_12 = jacobian[0, 1]
             A_21 = jacobian[1, 0]
@@ -1081,10 +1081,10 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            jacobian_binned_reg_grid = plane.lensing_jacobian_from_grid(grid=grid)
+            jacobian_binned_reg_grid = plane.jacobian_from_grid(grid=grid)
             a11_binned_reg_grid = jacobian_binned_reg_grid[0, 0]
 
-            jacobian_sub_grid = plane.lensing_jacobian_from_grid(grid=grid)
+            jacobian_sub_grid = plane.jacobian_from_grid(grid=grid)
             a11_sub_grid = jacobian_sub_grid[0, 0]
 
             pixel_1_reg_grid = a11_binned_reg_grid[0]

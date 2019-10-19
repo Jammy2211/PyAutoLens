@@ -16,10 +16,10 @@ class MockLensImagingData(object):
         self.sub_size = self.grid.sub_size
         self.convolver = convolver
 
-        self._image_1d = self.mask.mapping.array_from_array_2d(
+        self.image.in_1d = self.mask.mapping.array_from_array_2d(
             array_2d=imaging.image
         )
-        self._noise_map_1d = self.mask.mapping.array_from_array_2d(
+        self.noise_map.in_1d = self.mask.mapping.array_from_array_2d(
             array_2d=imaging.noise_map
         )
 
@@ -35,13 +35,13 @@ class MockLensImagingData(object):
         self.preload_pixelization_grids_of_planes = None
 
     def image(self):
-        return self._image_1d
+        return self.image.in_1d
 
     def noise_map(self):
-        return self._noise_map_1d
+        return self.noise_map.in_1d
 
     def signal_to_noise_map(self):
-        return self._image_1d / self._noise_map_1d
+        return self.image.in_1d / self.noise_map.in_1d
 
     def check_positions_trace_within_threshold_via_tracer(self, tracer):
         pass
