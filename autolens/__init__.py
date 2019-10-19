@@ -1,15 +1,4 @@
 from autolens import text_util
-from autolens.dimensions import (
-    DimensionsProfile,
-    Length,
-    Luminosity,
-    Mass,
-    MassOverLuminosity,
-    MassOverLength2,
-    MassOverLength3,
-    Position,
-    convert_units_to_input_units,
-)
 from autolens.lens import ray_tracing
 from autolens.lens.lens_data import AbstractLensData, LensImagingData, LensUVPlaneData
 from autolens.lens.lens_fit import (
@@ -28,10 +17,6 @@ from autolens.lens.plotters import (
 )
 from autolens.lens.ray_tracing import Tracer
 from autolens.lens.util import lens_util
-from autolens.model import cosmology_util
-from autolens.model.galaxy.galaxy_fit import GalaxyFit
-from autolens.model.hyper.hyper_data import HyperImageSky, HyperBackgroundNoise
-from autolens.model.inversion.inversions import Inversion
 from autolens.pipeline import phase_tagging, pipeline_tagging
 from autolens.pipeline.phase.abstract import phase
 from autolens.pipeline.phase.abstract.phase import AbstractPhase

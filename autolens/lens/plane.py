@@ -4,7 +4,8 @@ from skimage import measure
 
 from autoarray.structures import arrays
 import autofit as af
-from autolens import exc, dimensions as dim
+from autolens import exc
+from PyAutoModel.automodel import dimensions as dim
 from autolens.lens.util import lens_util
 from autolens.model import cosmology_util
 
