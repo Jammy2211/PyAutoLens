@@ -1136,21 +1136,21 @@ class TestCompareToManualInversionOnly:
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=lens_imaging_7x7.grid, pixelization_grid=None
         )
-        inversion = al.Inversion.from_data_1d_mapper_and_regularization(
+        inversion = al.Inversion.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
-            image_1d=lens_imaging_7x7.image.in_1d,
-            noise_map_1d=lens_imaging_7x7.noise_map.in_1d,
+            image=lens_imaging_7x7.image.in_1d,
+            noise_map=lens_imaging_7x7.noise_map.in_1d,
             convolver=lens_imaging_7x7.convolver,
         )
 
-        assert inversion.reconstructed_data_1d == pytest.approx(fit._model_data, 1e-4)
+        assert inversion.reconstructed_image == pytest.approx(fit._model_data, 1e-4)
         assert inversion.reconstructed_data_2d == fit.model_image.in_2d
 
         residual_map_1d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=lens_imaging_7x7.image.in_1d,
             mask=lens_imaging_7x7._mask_1d,
-            model_data=inversion.reconstructed_data_1d,
+            model_data=inversion.reconstructed_image,
         )
         residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=residual_map_1d
@@ -1245,18 +1245,18 @@ class TestCompareToManualInversionOnly:
             grid=lens_imaging_7x7.grid, pixelization_grid=None
         )
 
-        inversion = al.Inversion.from_data_1d_mapper_and_regularization(
+        inversion = al.Inversion.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
-            image_1d=lens_imaging_7x7.image.in_1d,
-            noise_map_1d=lens_imaging_7x7.noise_map.in_1d,
+            image=lens_imaging_7x7.image.in_1d,
+            noise_map=lens_imaging_7x7.noise_map.in_1d,
             convolver=lens_imaging_7x7.convolver,
         )
 
         assert (fit.galaxy_model_image_1d_dict[g0] == np.zeros(9)).all()
 
         assert fit.galaxy_model_image_1d_dict[g1] == pytest.approx(
-            inversion.reconstructed_data_1d, 1.0e-4
+            inversion.reconstructed_image, 1.0e-4
         )
 
         assert fit._model_data == pytest.approx(
@@ -1331,21 +1331,21 @@ class TestCompareToManualInversionOnly:
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=lens_imaging_7x7.grid, inversion_uses_border=False
         )
-        inversion = al.Inversion.from_data_1d_mapper_and_regularization(
+        inversion = al.Inversion.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
-            image_1d=image_1d,
-            noise_map_1d=hyper_noise_map_1d,
+            image=image_1d,
+            noise_map=hyper_noise_map_1d,
             convolver=lens_imaging_7x7.convolver,
         )
 
-        assert inversion.reconstructed_data_1d == pytest.approx(fit._model_data, 1e-4)
+        assert inversion.reconstructed_image == pytest.approx(fit._model_data, 1e-4)
         assert inversion.reconstructed_data_2d == fit.model_image.in_2d
 
         residual_map_1d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=image_1d,
             mask=lens_imaging_7x7._mask_1d,
-            model_data=inversion.reconstructed_data_1d,
+            model_data=inversion.reconstructed_image,
         )
         residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=residual_map_1d
@@ -1439,11 +1439,11 @@ class TestCompareToManualInversionOnly:
             grid=lens_imaging_7x7.grid, inversion_uses_border=False
         )
 
-        inversion = al.Inversion.from_data_1d_mapper_and_regularization(
+        inversion = al.Inversion.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
-            image_1d=lens_imaging_7x7.image.in_1d,
-            noise_map_1d=lens_imaging_7x7.noise_map.in_1d,
+            image=lens_imaging_7x7.image.in_1d,
+            noise_map=lens_imaging_7x7.noise_map.in_1d,
             convolver=lens_imaging_7x7.convolver,
         )
 
@@ -1507,15 +1507,15 @@ class TestCompareToManualProfilesAndInversion:
             grid=lens_imaging_7x7.grid, inversion_uses_border=False
         )
 
-        inversion = al.Inversion.from_data_1d_mapper_and_regularization(
-            image_1d=profile_subtracted_image_1d,
-            noise_map_1d=lens_imaging_7x7.noise_map.in_1d,
+        inversion = al.Inversion.from_data_mapper_and_regularization(
+            image=profile_subtracted_image_1d,
+            noise_map=lens_imaging_7x7.noise_map.in_1d,
             convolver=lens_imaging_7x7.convolver,
             mapper=mapper,
             regularization=reg,
         )
 
-        model_image_1d = blurred_profile_image_1d + inversion.reconstructed_data_1d
+        model_image_1d = blurred_profile_image_1d + inversion.reconstructed_image
         model_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=model_image_1d
         )
@@ -1656,9 +1656,9 @@ class TestCompareToManualProfilesAndInversion:
             grid=lens_imaging_7x7.grid, inversion_uses_border=False
         )
 
-        inversion = al.Inversion.from_data_1d_mapper_and_regularization(
-            image_1d=profile_subtracted_image_1d,
-            noise_map_1d=lens_imaging_7x7.noise_map.in_1d,
+        inversion = al.Inversion.from_data_mapper_and_regularization(
+            image=profile_subtracted_image_1d,
+            noise_map=lens_imaging_7x7.noise_map.in_1d,
             convolver=lens_imaging_7x7.convolver,
             mapper=mapper,
             regularization=reg,
@@ -1672,7 +1672,7 @@ class TestCompareToManualProfilesAndInversion:
         )
         assert (fit.galaxy_model_image_1d_dict[g2] == np.zeros(9)).all()
         assert fit.galaxy_model_image_1d_dict[galaxy_pix] == pytest.approx(
-            inversion.reconstructed_data_1d, 1.0e-4
+            inversion.reconstructed_image, 1.0e-4
         )
 
         assert fit._model_data == pytest.approx(
@@ -1797,15 +1797,15 @@ class TestCompareToManualProfilesAndInversion:
             grid=lens_imaging_7x7.grid, inversion_uses_border=False
         )
 
-        inversion = al.Inversion.from_data_1d_mapper_and_regularization(
-            image_1d=profile_subtracted_image_1d,
-            noise_map_1d=hyper_noise_map_1d,
+        inversion = al.Inversion.from_data_mapper_and_regularization(
+            image=profile_subtracted_image_1d,
+            noise_map=hyper_noise_map_1d,
             convolver=lens_imaging_7x7.convolver,
             mapper=mapper,
             regularization=reg,
         )
 
-        model_image_1d = blurred_profile_image_1d + inversion.reconstructed_data_1d
+        model_image_1d = blurred_profile_image_1d + inversion.reconstructed_image
         model_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=model_image_1d
         )
@@ -1929,9 +1929,9 @@ class TestCompareToManualProfilesAndInversion:
             grid=lens_imaging_7x7.grid, inversion_uses_border=False
         )
 
-        inversion = al.Inversion.from_data_1d_mapper_and_regularization(
-            image_1d=profile_subtracted_image_1d,
-            noise_map_1d=lens_imaging_7x7.noise_map.in_1d,
+        inversion = al.Inversion.from_data_mapper_and_regularization(
+            image=profile_subtracted_image_1d,
+            noise_map=lens_imaging_7x7.noise_map.in_1d,
             convolver=lens_imaging_7x7.convolver,
             mapper=mapper,
             regularization=reg,

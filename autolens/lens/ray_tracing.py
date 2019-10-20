@@ -622,9 +622,9 @@ class AbstractTracerData(AbstractTracerLensing):
             preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
         )
 
-        return inv.Inversion.from_data_1d_mapper_and_regularization(
-            image_1d=image_1d,
-            noise_map_1d=noise_map_1d,
+        return inv.Inversion.from_data_mapper_and_regularization(
+            image=image_1d,
+            noise_map=noise_map_1d,
             convolver=convolver,
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],
