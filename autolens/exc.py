@@ -15,3 +15,11 @@ class PlottingException(Exception):
 
 class PhaseException(Exception):
     pass
+
+
+class PixelizationException(af.exc.FitException):
+    pass
+
+
+class InversionException(af.exc.FitException):
+    pass
