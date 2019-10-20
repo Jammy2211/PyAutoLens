@@ -147,7 +147,7 @@ class LensImagingFit(ImagingFit):
                 preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
             )
 
-            model_image_1d = blurred_profile_image_1d + inversion.reconstructed_image
+            model_image_1d = blurred_profile_image_1d + inversion.mapped_reconstructed_image
 
         return cls(
             tracer=tracer,
@@ -189,7 +189,7 @@ class LensImagingFit(ImagingFit):
                 {
                     self.tracer.planes[plane_index].galaxies[
                         0
-                    ]: self.inversion.reconstructed_image
+                    ]: self.inversion.mapped_reconstructed_image
                 }
             )
 
@@ -226,7 +226,7 @@ class LensImagingFit(ImagingFit):
             else:
                 model_images_of_planes[
                     plane_index
-                ] += self.inversion.reconstructed_image
+                ] += self.inversion.mapped_reconstructed_image
 
         return model_images_of_planes
 

@@ -1144,13 +1144,13 @@ class TestCompareToManualInversionOnly:
             convolver=lens_imaging_7x7.convolver,
         )
 
-        assert inversion.reconstructed_image == pytest.approx(fit._model_data, 1e-4)
+        assert inversion.mapped_reconstructed_image == pytest.approx(fit._model_data, 1e-4)
         assert inversion.reconstructed_data_2d == fit.model_image.in_2d
 
         residual_map_1d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=lens_imaging_7x7.image.in_1d,
             mask=lens_imaging_7x7._mask_1d,
-            model_data=inversion.reconstructed_image,
+            model_data=inversion.mapped_reconstructed_image,
         )
         residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=residual_map_1d
@@ -1256,7 +1256,7 @@ class TestCompareToManualInversionOnly:
         assert (fit.galaxy_model_image_1d_dict[g0] == np.zeros(9)).all()
 
         assert fit.galaxy_model_image_1d_dict[g1] == pytest.approx(
-            inversion.reconstructed_image, 1.0e-4
+            inversion.mapped_reconstructed_image, 1.0e-4
         )
 
         assert fit._model_data == pytest.approx(
@@ -1339,13 +1339,13 @@ class TestCompareToManualInversionOnly:
             convolver=lens_imaging_7x7.convolver,
         )
 
-        assert inversion.reconstructed_image == pytest.approx(fit._model_data, 1e-4)
+        assert inversion.mapped_reconstructed_image == pytest.approx(fit._model_data, 1e-4)
         assert inversion.reconstructed_data_2d == fit.model_image.in_2d
 
         residual_map_1d = autoarray.fit.fit_util.residual_map_from_data_mask_and_model_data(
             data=image_1d,
             mask=lens_imaging_7x7._mask_1d,
-            model_data=inversion.reconstructed_image,
+            model_data=inversion.mapped_reconstructed_image,
         )
         residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=residual_map_1d
@@ -1515,7 +1515,7 @@ class TestCompareToManualProfilesAndInversion:
             regularization=reg,
         )
 
-        model_image_1d = blurred_profile_image_1d + inversion.reconstructed_image
+        model_image_1d = blurred_profile_image_1d + inversion.mapped_reconstructed_image
         model_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=model_image_1d
         )
@@ -1672,7 +1672,7 @@ class TestCompareToManualProfilesAndInversion:
         )
         assert (fit.galaxy_model_image_1d_dict[g2] == np.zeros(9)).all()
         assert fit.galaxy_model_image_1d_dict[galaxy_pix] == pytest.approx(
-            inversion.reconstructed_image, 1.0e-4
+            inversion.mapped_reconstructed_image, 1.0e-4
         )
 
         assert fit._model_data == pytest.approx(
@@ -1805,7 +1805,7 @@ class TestCompareToManualProfilesAndInversion:
             regularization=reg,
         )
 
-        model_image_1d = blurred_profile_image_1d + inversion.reconstructed_image
+        model_image_1d = blurred_profile_image_1d + inversion.mapped_reconstructed_image
         model_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=model_image_1d
         )

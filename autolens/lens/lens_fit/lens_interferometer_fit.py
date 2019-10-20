@@ -201,7 +201,7 @@ class LensUVPlaneFit(UVPlaneFit):
 
             model_visibilities_of_planes[
                 plane_index
-            ] += self.inversion.reconstructed_image
+            ] += self.inversion.mapped_reconstructed_image
 
         return model_visibilities_of_planes
 
