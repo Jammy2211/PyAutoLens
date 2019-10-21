@@ -16,7 +16,7 @@ af.conf.instance = af.conf.Config(
 dirpath = os.path.dirname(dirpath)
 output_path = "{}/output".format(dirpath)
 
-test_name = "test"
+test_name = "tests"
 
 
 def simulate_integration_image(test_name, pixel_scales, galaxies):
