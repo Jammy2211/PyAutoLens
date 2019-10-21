@@ -125,10 +125,10 @@ Install multinest:
 conda install -c conda-forge multinest
 ```
 
-Install autolens (build v0.30.0 recommended):
+Install autolens (build v0.30.0 recommended, there have also been astropy compatibility issues the command below fixes):
 
 ```
-pip install autolens==0.30.0
+pip install autolens==0.30.0 --ignore-installed astropy
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment variable:
