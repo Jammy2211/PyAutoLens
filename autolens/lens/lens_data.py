@@ -130,7 +130,7 @@ class LensImagingData(AbstractLensData):
 
         self.convolver = Convolver(
             mask=mask,
-            blurring_mask=mask.blurring_mask_from_psf_shape(
+            blurring_mask=mask.blurring_mask_from_kernel_shape(
                 psf_shape=self.trimmed_psf_shape
             ),
             psf=self.psf.resized_scaled_array_from_array(
@@ -165,7 +165,7 @@ class LensImagingData(AbstractLensData):
 
     def new_lens_imaging_with_binned_up_imaging_and_mask(self, bin_up_factor):
 
-        binned_up_imaging = self.imaging.binned_data_from_bin_up_factor(
+        binned_up_imaging = self.imaging.binned_from_bin_up_factor(
             bin_up_factor=bin_up_factor
         )
         binned_up_mask = self.mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
@@ -186,7 +186,7 @@ class LensImagingData(AbstractLensData):
 
     def new_lens_imaging_with_signal_to_noise_limit(self, signal_to_noise_limit):
 
-        imaging_with_signal_to_noise_limit = self.imaging.signal_to_noise_limited_data_from_signal_to_noise_limit(
+        imaging_with_signal_to_noise_limit = self.imaging.signal_to_noise_limited_from_signal_to_noise_limit(
             signal_to_noise_limit=signal_to_noise_limit
         )
 
