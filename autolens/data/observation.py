@@ -52,7 +52,7 @@ class ImagingObservation(object):
            the simulated Imaging data_type.
 
         3) Simulate the Imaging data_type, using a special image which ensures edge-effects don't
-           degrade simulation of the telescope optics (e.g. the PSF convolution).
+           degrade simulate of the telescope optics (e.g. the PSF convolution).
 
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
 
@@ -221,7 +221,7 @@ class ImagingObservation(object):
            the simulated Imaging data_type.
 
         3) Simulate the Imaging data_type, using a special image which ensures edge-effects don't
-           degrade simulation of the telescope optics (e.g. the PSF convolution).
+           degrade simulate of the telescope optics (e.g. the PSF convolution).
 
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
 
