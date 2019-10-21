@@ -163,47 +163,6 @@ class LensImagingData(AbstractLensData):
     def signal_to_noise_map(self):
         return self.imaging.image / self.imaging.noise_map
 
-    def new_lens_imaging_with_binned_up_imaging_and_mask(self, bin_up_factor):
-
-        binned_up_imaging = self.imaging.binned_from_bin_up_factor(
-            bin_up_factor=bin_up_factor
-        )
-        binned_up_mask = self.mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
-
-        return LensImagingData(
-            imaging=binned_up_imaging,
-            mask=binned_up_mask,
-            positions=self.positions,
-            positions_threshold=self.positions_threshold,
-            trimmed_psf_shape=self.trimmed_psf_shape,
-            pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
-            pixel_scale_binned_grid=self.pixel_scale_binned_grid,
-            inversion_pixel_limit=self.inversion_pixel_limit,
-            inversion_uses_border=self.inversion_uses_border,
-            hyper_noise_map_max=self.hyper_noise_map_max,
-            preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes,
-        )
-
-    def new_lens_imaging_with_signal_to_noise_limit(self, signal_to_noise_limit):
-
-        imaging_with_signal_to_noise_limit = self.imaging.signal_to_noise_limited_from_signal_to_noise_limit(
-            signal_to_noise_limit=signal_to_noise_limit
-        )
-
-        return LensImagingData(
-            imaging=imaging_with_signal_to_noise_limit,
-            mask=self.mask,
-            positions=self.positions,
-            positions_threshold=self.positions_threshold,
-            trimmed_psf_shape=self.trimmed_psf_shape,
-            pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
-            pixel_scale_binned_grid=self.pixel_scale_binned_grid,
-            inversion_pixel_limit=self.inversion_pixel_limit,
-            inversion_uses_border=self.inversion_uses_border,
-            hyper_noise_map_max=self.hyper_noise_map_max,
-            preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes,
-        )
-
     def check_positions_trace_within_threshold_via_tracer(self, tracer):
 
         if (
