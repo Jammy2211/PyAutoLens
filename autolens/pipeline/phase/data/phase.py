@@ -28,9 +28,7 @@ class PhaseData(abstract.AbstractPhase):
 
     def __init__(
             self,
-            phase_name,
-            phase_tag,
-            phase_folders=tuple(),
+            paths,
             galaxies=None,
             optimizer_class=af.MultiNest,
             cosmology=cosmo.Planck15,
@@ -48,9 +46,7 @@ class PhaseData(abstract.AbstractPhase):
         """
 
         super(PhaseData, self).__init__(
-            phase_name=phase_name,
-            phase_tag=phase_tag,
-            phase_folders=phase_folders,
+            paths,
             optimizer_class=optimizer_class,
             auto_link_priors=auto_link_priors,
         )
