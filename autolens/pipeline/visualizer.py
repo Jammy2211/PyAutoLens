@@ -1,7 +1,7 @@
 import os
 
 import autofit as af
-from automodel.plotters import galaxy_fit_plotters
+from autoastro.plotters import galaxy_fit_plotters
 from autolens.pipeline.plotters import phase_plotters, hyper_plotters
 
 
