@@ -37,11 +37,11 @@ def clean_images():
 class TestPhase(object):
     def test__set_constants(self, phase_data_7x7):
         phase_data_7x7.galaxies = [al.Galaxy(redshift=0.5)]
-        assert phase_data_7x7.optimizer.variable.galaxies == [al.Galaxy(redshift=0.5)]
+        assert phase_data_7x7.variable.galaxies == [al.Galaxy(redshift=0.5)]
 
     def test__set_variables(self, phase_data_7x7):
         phase_data_7x7.galaxies = [al.GalaxyModel(redshift=0.5)]
-        assert phase_data_7x7.optimizer.variable.galaxies == [
+        assert phase_data_7x7.variable.galaxies == [
             al.GalaxyModel(redshift=0.5)
         ]
 

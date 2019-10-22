@@ -111,15 +111,11 @@ class LensImagingData(AbstractLensData):
             positions=positions,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-            pixel_scale_binned_grid=pixel_scale_binned_grid,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
             hyper_noise_map_max=hyper_noise_map_max,
             preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
         )
-
-        self.image.in_1d = self.image(return_in_2d=False)
-        self.noise_map.in_1d = self.noise_map(return_in_2d=False)
 
         ### PSF TRIMMING + CONVOLVER ###
 
