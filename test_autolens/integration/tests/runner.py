@@ -1,9 +1,9 @@
 import os
 
 import autofit as af
-from test import integration_util
+from test_autolens.integration import integration_util
 from autofit.optimize.non_linear.mock_nlo import MockNLO
-from test import simulation_util
+from test_autolens.simulate import simulate_util
 
 
 def run(
@@ -20,7 +20,7 @@ def run(
     af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    imaging = simulation_util.load_test_imaging(
+    imaging = simulate_util.load_test_imaging(
         data_type=module.data_type, data_resolution=module.data_resolution
     )
 

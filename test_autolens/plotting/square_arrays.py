@@ -9,7 +9,7 @@ from test import simulation_util
 imaging = simulation_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
-mask = aa.Mask.elliptical(
+mask = aa.mask.elliptical(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius_arcsec=3.0,

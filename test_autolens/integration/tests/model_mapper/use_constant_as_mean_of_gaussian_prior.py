@@ -1,6 +1,6 @@
 import autofit as af
 import autolens as al
-from test import runner
+from test_autolens.integration.tests import runner
 
 test_type = "model_mapper"
 test_name = "use_constant_as_mean_of_gaussian_prior"

@@ -6,7 +6,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 import autolens as al
-from test import mock_pipeline
+from test_autolens.mock.pipeline import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "

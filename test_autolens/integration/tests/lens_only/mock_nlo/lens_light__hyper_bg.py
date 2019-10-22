@@ -1,5 +1,5 @@
-from test import lens_light__hyper_bg
-from test import run_a_mock
+from test_autolens.integration.tests.lens_only import lens_light__hyper_bg
+from test_autolens.integration.tests.runner import run_a_mock
 
 
 class TestCase:

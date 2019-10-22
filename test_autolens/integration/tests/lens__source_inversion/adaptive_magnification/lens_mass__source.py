@@ -1,6 +1,6 @@
 import autofit as af
 import autolens as al
-from test import runner
+from test_autolens.integration.tests import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_adaptive_magnification"

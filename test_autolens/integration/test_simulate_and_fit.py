@@ -4,9 +4,8 @@ import numpy as np
 import pytest
 import shutil
 
+import autoarray as aa
 import autolens as al
-from autolens import array_util
-
 
 def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noise_normalization_correct():
     psf = aa.kernel(
@@ -65,14 +64,14 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     )
     aa.util.array.numpy_array_2d_to_fits(array_2d=psf, file_path=path + "/psf.fits")
 
-    imaging = al.load_imaging_from_fits(
+    imaging = aa.imaging.from_fits(
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
         pixel_scales=0.2,
     )
 
-    mask = aa.Mask.circular(
+    mask = aa.mask.circular(
         shape=imaging.image.shape, pixel_scales=0.2, sub_size=2, radius_arcsec=0.8
     )
 
@@ -147,14 +146,14 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     )
     aa.util.array.numpy_array_2d_to_fits(array_2d=psf, file_path=path + "/psf.fits")
 
-    imaging = al.load_imaging_from_fits(
+    imaging = aa.imaging.from_fits(
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
         pixel_scales=0.2,
     )
 
-    mask = aa.Mask.circular(
+    mask = aa.mask.circular(
         shape=imaging.image.shape, pixel_scales=0.2, sub_size=1, radius_arcsec=0.8
     )
 

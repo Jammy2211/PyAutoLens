@@ -11,7 +11,7 @@ imaging = simulation_util.load_test_imaging(
 )
 array = imaging.image
 
-mask = aa.Mask.circular(
+mask = aa.mask.circular(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     radius_arcsec=5.0,
@@ -31,7 +31,7 @@ imaging = simulation_util.load_test_imaging(
 )
 array = imaging.image
 
-mask = aa.Mask.circular(
+mask = aa.mask.circular(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     radius_arcsec=5.0,

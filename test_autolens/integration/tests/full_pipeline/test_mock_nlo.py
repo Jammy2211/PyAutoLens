@@ -1,9 +1,9 @@
-from test import decomposed_lens_light_and_dark
-from test import hyper_no_lens_light_bg
-from test import hyper_with_lens_light
-from test import hyper_with_lens_light_bg
-from test import hyper_with_lens_light_bg_new_api
-from test import run_a_mock
+from test_autolens.integration.tests.full_pipeline import decomposed_lens_light_and_dark
+from test_autolens.integration.tests.full_pipeline import hyper_no_lens_light_bg
+from test_autolens.integration.tests.full_pipeline import hyper_with_lens_light
+from test_autolens.integration.tests.full_pipeline import hyper_with_lens_light_bg
+from test_autolens.integration.tests.full_pipeline import hyper_with_lens_light_bg_new_api
+from test_autolens.integration.tests.runner import run_a_mock
 
 
 class TestCase:

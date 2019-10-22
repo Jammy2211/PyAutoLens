@@ -2,7 +2,7 @@ import autolens as al
 import numpy as np
 import pytest
 
-from test_autolens.mock import MockLightProfile
+from test_autoastro.mock.mock_profiles import MockLightProfile
 
 
 class TestFitProperties:
@@ -81,7 +81,7 @@ class TestLikelihood:
         )
         interferometer.visibilities[0, 1] = 4.0
 
-        mask = aa.Mask(
+        mask = aa.mask.manual(
             array_2d=np.array(
                 [
                     [True, True, True, True],
@@ -148,7 +148,7 @@ class TestLikelihood:
             primary_beam=None,
         )
 
-        mask = aa.Mask(
+        mask = aa.mask.manual(
             array_2d=np.array(
                 [
                     [True, True, True, True, True],

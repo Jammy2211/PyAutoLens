@@ -1,5 +1,5 @@
 from test import image_psf_shape
-from test import run_a_mock
+from test_autolens.integration.tests.runner import run_a_mock
 
 
 class TestCase:

@@ -1,5 +1,5 @@
-from test import lens_x2_light__hyper
-from test import run_a_mock
+from test_autolens.integration.tests.lens_only import lens_x2_light__hyper
+from test_autolens.integration.tests.runner import run_a_mock
 
 
 class TestCase:

@@ -11,7 +11,7 @@ imaging = simulation_util.load_test_imaging(
 )
 array = imaging.image
 
-mask = aa.Mask.elliptical(
+mask = aa.mask.elliptical(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius_arcsec=3.0,

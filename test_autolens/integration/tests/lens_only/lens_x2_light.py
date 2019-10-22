@@ -1,6 +1,6 @@
 import autofit as af
 import autolens as al
-from test import runner
+from test_autolens.integration.tests import runner
 
 test_type = "lens_only"
 test_name = "lens_x2_light"
@@ -18,7 +18,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             self.galaxies.lens_1.light.centre_1 = 1.0
 
     def mask_function(image):
-        return aa.Mask.circular(
+        return aa.mask.circular(
             shape=image.shape, pixel_scales=image.pixel_scales, radius_arcsec=5.0
         )
 

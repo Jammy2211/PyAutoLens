@@ -80,7 +80,7 @@ def load_test_imaging(
         path=test_path, folder_names=["data", data_type, data_resolution]
     )
 
-    return al.load_imaging_from_fits(
+    return aa.imaging.from_fits(
         image_path=data_path + "/image.fits",
         psf_path=data_path + "/psf.fits",
         noise_map_path=data_path + "/noise_map.fits",

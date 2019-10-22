@@ -4,7 +4,7 @@ import pytest
 from astropy import cosmology as cosmo
 
 import autofit as af
-from test import mock_pipeline
+from test_autolens.mock.pipeline import mock_pipeline
 
 
 @pytest.fixture(name="lens_galaxy")
