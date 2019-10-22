@@ -25,7 +25,7 @@ def galaxy_fit_phase():
 
     galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.light_profiles.SphericalExponential(
+        light=al.lp.SphericalExponential(
             centre=(0.0, 0.0), intensity=1.0, effective_radius=0.5
         ),
     )
@@ -40,7 +40,7 @@ def galaxy_fit_phase():
         phase_name=test_name + "/",
         galaxies=dict(
             gal=al.GalaxyModel(
-                redshift=0.5, light=al.light_profiles.SphericalExponential
+                redshift=0.5, light=al.lp.SphericalExponential
             )
         ),
         use_image=True,

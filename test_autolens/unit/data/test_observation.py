@@ -212,14 +212,14 @@ def test__simulate_imaging_from_lens__source_galaxy__compare_to_manual_imaging(
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mass_profiles.EllipticalIsothermal(
+        mass=al.mp.EllipticalIsothermal(
             centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
         ),
     )
 
     source_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.light_profiles.EllipticalSersic(
+        light=al.lp.EllipticalSersic(
             centre=(0.1, 0.1),
             axis_ratio=0.8,
             phi=60.0,
@@ -324,14 +324,14 @@ def test__simulate_imaging_from_lens__source_galaxy__and_write_to_fits(self):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mass_profiles.EllipticalIsothermal(
+        mass=al.mp.EllipticalIsothermal(
             centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
         ),
     )
 
     source_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.light_profiles.EllipticalSersic(
+        light=al.lp.EllipticalSersic(
             centre=(0.1, 0.1),
             axis_ratio=0.8,
             phi=60.0,
@@ -434,11 +434,11 @@ def test__uv_from_deflections_and_galaxies__same_as_manual_calculation_using_tra
 
     g0 = al.Galaxy(
         redshift=0.5,
-        mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+        mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
     )
 
     g1 = al.Galaxy(
-        redshift=1.0, light=al.light_profiles.SphericalSersic(intensity=1.0)
+        redshift=1.0, light=al.lp.SphericalSersic(intensity=1.0)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
@@ -490,12 +490,12 @@ def test__uv_from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.light_profiles.EllipticalSersic(intensity=1.0),
-        mass=al.mass_profiles.EllipticalIsothermal(einstein_radius=1.6),
+        light=al.lp.EllipticalSersic(intensity=1.0),
+        mass=al.mp.EllipticalIsothermal(einstein_radius=1.6),
     )
 
     source_galaxy = al.Galaxy(
-        redshift=1.0, light=al.light_profiles.EllipticalSersic(intensity=0.3)
+        redshift=1.0, light=al.lp.EllipticalSersic(intensity=0.3)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])

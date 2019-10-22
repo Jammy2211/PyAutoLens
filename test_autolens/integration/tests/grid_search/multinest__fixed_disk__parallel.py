@@ -59,8 +59,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                bulge=al.light_profiles.EllipticalSersic,
-                disk=al.light_profiles.EllipticalExponential,
+                bulge=al.lp.EllipticalSersic,
+                disk=al.lp.EllipticalExponential,
             )
         ),
         optimizer_class=optimizer_class,
@@ -106,8 +106,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                bulge=al.light_profiles.EllipticalSersic,
-                disk=al.light_profiles.EllipticalExponential,
+                bulge=al.lp.EllipticalSersic,
+                disk=al.lp.EllipticalExponential,
             )
         ),
         number_of_steps=6,

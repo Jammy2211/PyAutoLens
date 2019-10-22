@@ -12,8 +12,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class SourcePix(al.PhaseImaging):
         def customize_priors(self, results):
 
-            self.galaxies.lens.mass.mask_centre.centre_0 = 0.0
-            self.galaxies.lens.mass.mask_centre.centre_1 = 0.0
+            self.galaxies.lens.mass.centre.centre_0 = 0.0
+            self.galaxies.lens.mass.centre.centre_1 = 0.0
             self.galaxies.lens.mass.einstein_radius_in_units = 1.6
             self.galaxies.source.pixelization.shape_0 = 20.0
             self.galaxies.source.pixelization.shape_1 = 20.0
@@ -24,13 +24,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.SphericalDevVaucouleurs,
-                mass=al.mass_profiles.EllipticalIsothermal,
+                light=al.lp.SphericalDevVaucouleurs,
+                mass=al.mp.EllipticalIsothermal,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pixelizations.Rectangular,
-                regularization=al.regularization.Constant,
+                pixelization=al.pix.Rectangular,
+                regularization=al.reg.Constant,
             ),
         ),
         optimizer_class=optimizer_class,

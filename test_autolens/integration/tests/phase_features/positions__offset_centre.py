@@ -30,10 +30,10 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mass_profiles.SphericalIsothermal
+                redshift=0.5, mass=al.mp.SphericalIsothermal
             ),
             source=al.GalaxyModel(
-                redshift=1.0, light=al.light_profiles.EllipticalSersic
+                redshift=1.0, light=al.lp.EllipticalSersic
             ),
         ),
         mask_function=mask_function,

@@ -76,7 +76,7 @@ class TestAdvancedModelMapper(object):
     def test_fully_qualified_paramnames(self):
         mapper = af.ModelMapper()
         galaxy_model = al.GalaxyModel(
-            redshift=0.5, light_profile=al.light_profiles.EllipticalLightProfile
+            redshift=0.5, light_profile=al.lp.EllipticalLightProfile
         )
         light_profile = galaxy_model.light_profile
         mapper.galaxy_model = galaxy_model
@@ -134,7 +134,7 @@ class TestPhaseModelMapper(object):
         phase = MMPhase(
             galaxies=dict(
                 lens=al.GalaxyModel(
-                    redshift=0.5, sersic=al.light_profiles.EllipticalSersic
+                    redshift=0.5, sersic=al.lp.EllipticalSersic
                 )
             ),
             optimizer_class=af.MultiNest,
@@ -209,7 +209,7 @@ class TestPhaseModelMapper(object):
         phase = MMPhase(
             galaxies=dict(
                 lens=al.GalaxyModel(
-                    redshift=0.5, sersic=al.light_profiles.EllipticalSersic
+                    redshift=0.5, sersic=al.lp.EllipticalSersic
                 )
             ),
             optimizer_class=af.MultiNest,

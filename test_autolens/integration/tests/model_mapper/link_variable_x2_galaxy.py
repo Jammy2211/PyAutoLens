@@ -17,10 +17,10 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens_0=al.GalaxyModel(
-                redshift=0.5, light=al.light_profiles.EllipticalSersic
+                redshift=0.5, light=al.lp.EllipticalSersic
             ),
             lens_1=al.GalaxyModel(
-                redshift=0.5, light=al.light_profiles.EllipticalSersic
+                redshift=0.5, light=al.lp.EllipticalSersic
             ),
         ),
         optimizer_class=optimizer_class,
@@ -41,10 +41,10 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens_0=al.GalaxyModel(
-                redshift=0.5, light=al.light_profiles.EllipticalSersic
+                redshift=0.5, light=al.lp.EllipticalSersic
             ),
             lens_1=al.GalaxyModel(
-                redshift=0.5, light=al.light_profiles.EllipticalSersic
+                redshift=0.5, light=al.lp.EllipticalSersic
             ),
         ),
         optimizer_class=optimizer_class,

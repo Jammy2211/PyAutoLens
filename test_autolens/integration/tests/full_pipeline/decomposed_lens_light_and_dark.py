@@ -51,7 +51,7 @@ def make_pipeline(
         phase_name="phase_1__lens_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)
+            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic)
         ),
         optimizer_class=optimizer_class,
     )
@@ -83,7 +83,7 @@ def make_pipeline(
 
             ## Lens Mass, Move centre priors to centre of lens light ###
 
-            self.galaxies.lens.mass.mask_centre = (
+            self.galaxies.lens.mass.centre = (
                 results.from_phase("phase_1__lens_sersic")
                 .variable_absolute(a=0.1)
                 .galaxies.lens.light.centre
@@ -95,12 +95,12 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                light=al.lp.EllipticalSersic,
+                mass=al.mp.EllipticalIsothermal,
+                shear=al.mp.ExternalShear,
             ),
             source=al.GalaxyModel(
-                redshift=1.0, light=al.light_profiles.EllipticalSersic
+                redshift=1.0, light=al.lp.EllipticalSersic
             ),
         ),
         optimizer_class=optimizer_class,
@@ -148,12 +148,12 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                light=al.lp.EllipticalSersic,
+                mass=al.mp.EllipticalIsothermal,
+                shear=al.mp.ExternalShear,
             ),
             source=al.GalaxyModel(
-                redshift=1.0, light=al.light_profiles.EllipticalSersic
+                redshift=1.0, light=al.lp.EllipticalSersic
             ),
         ),
         optimizer_class=optimizer_class,
@@ -178,7 +178,7 @@ def make_pipeline(
 
             ### Lens Light, Sersic -> Sersic ###
 
-            self.galaxies.lens.light_mass.mask_centre = results.from_phase(
+            self.galaxies.lens.light_mass.centre = results.from_phase(
                 "phase_3__lens_sersic_sie__source_sersic"
             ).variable.galaxies.lens.light.centre
 
@@ -206,16 +206,16 @@ def make_pipeline(
 
             if pipeline_align_light_dark_centre:
 
-                self.galaxies.lens.dark.mask_centre = (
-                    self.galaxies.light_mass.mask_centre
+                self.galaxies.lens.dark.centre = (
+                    self.galaxies.light_mass.centre
                 )
 
             elif not pipeline_align_light_dark_centre:
 
-                self.galaxies.lens.dark.mask_centre = (
+                self.galaxies.lens.dark.centre = (
                     results.from_phase("phase_3__lens_sersic_sie__source_sersic")
                     .variable_absolute(a=0.05)
-                    .galaxies.lens.mass.mask_centre
+                    .galaxies.lens.mass.centre
                 )
 
             ### Lens Shear, Shear -> Shear ###
@@ -236,12 +236,12 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light_mass=al.light_and_mass_profiles.EllipticalSersic,
-                dark=al.mass_profiles.SphericalNFW,
-                shear=al.mass_profiles.ExternalShear,
+                light_mass=al.lmp.EllipticalSersic,
+                dark=al.mp.SphericalNFW,
+                shear=al.mp.ExternalShear,
             ),
             source=al.GalaxyModel(
-                redshift=1.0, light=al.light_profiles.EllipticalSersic
+                redshift=1.0, light=al.lp.EllipticalSersic
             ),
         ),
         optimizer_class=optimizer_class,

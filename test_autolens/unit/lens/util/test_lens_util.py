@@ -10,7 +10,7 @@ class TestPlaneImageFromGrid:
         self
     ):
         galaxy = al.Galaxy(
-            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=1.0)
+            redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
         )
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
@@ -50,7 +50,7 @@ class TestPlaneImageFromGrid:
         self
     ):
         galaxy = al.Galaxy(
-            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=1.0)
+            redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
         )
 
         grid = np.array(
@@ -97,7 +97,7 @@ class TestPlaneImageFromGrid:
 
     def test__2x3_grid__shape_change_correct_and_coordinates_shift(self):
         galaxy = al.Galaxy(
-            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=1.0)
+            redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
         )
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
@@ -132,7 +132,7 @@ class TestPlaneImageFromGrid:
 
     def test__3x2_grid__shape_change_correct_and_coordinates_shift(self):
         galaxy = al.Galaxy(
-            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=1.0)
+            redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
         )
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
@@ -167,7 +167,7 @@ class TestPlaneImageFromGrid:
 
     def test__3x3_grid__buffer_aligns_two_grids(self):
         galaxy = al.Galaxy(
-            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=1.0)
+            redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
         )
 
         grid_without_buffer = np.array([[-1.48, -1.48], [1.48, 1.48]])

@@ -125,7 +125,7 @@ class TestPhase(object):
     #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
     #
     #     galaxy_pix_which_doesnt_use_pix_grid = al.Galaxy(
-    #         redshift=0.5, pixelization=al.pixelizations.Rectangular(), regularization=al.regularization.Constant()
+    #         redshift=0.5, pixelization=al.pix.Rectangular(), regularization=al.reg.Constant()
     #     )
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
@@ -137,8 +137,8 @@ class TestPhase(object):
     #
     #     galaxy_pix_which_uses_pix_grid = al.Galaxy(
     #         redshift=0.5,
-    #         pixelization=al.pixelizations.VoronoiMagnification(),
-    #         regularization=al.regularization.Constant(),
+    #         pixelization=al.pix.VoronoiMagnification(),
+    #         regularization=al.reg.Constant(),
     #     )
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
@@ -165,8 +165,8 @@ class TestPhase(object):
     #
     #     galaxy_pix_which_uses_brightness = al.Galaxy(
     #         redshift=0.5,
-    #         pixelization=al.pixelizations.VoronoiBrightnessImage(pixels=9),
-    #         regularization=al.regularization.Constant(),
+    #         pixelization=al.pix.VoronoiBrightnessImage(pixels=9),
+    #         regularization=al.reg.Constant(),
     #     )
     #
     #     galaxy_pix_which_uses_brightness.hyper_galaxy_cluster_image_1d = np.array(
@@ -178,8 +178,8 @@ class TestPhase(object):
     #         galaxies=dict(
     #             lens=al.GalaxyModel(
     #                 redshift=0.5,
-    #                 pixelization=al.pixelizations.VoronoiBrightnessImage,
-    #                 regularization=al.regularization.Constant,
+    #                 pixelization=al.pix.VoronoiBrightnessImage,
+    #                 regularization=al.reg.Constant,
     #             )
     #         ),
     #         inversion_pixel_limit=5,
@@ -269,12 +269,12 @@ class TestPhase(object):
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
                 lens=al.GalaxyModel(
-                    sersic=al.light_profiles.EllipticalSersic,
-                    sis=al.mass_profiles.SphericalIsothermal,
+                    sersic=al.lp.EllipticalSersic,
+                    sis=al.mp.SphericalIsothermal,
                     redshift=al.Redshift,
                 ),
                 lens1=al.GalaxyModel(
-                    sis=al.mass_profiles.SphericalIsothermal, redshift=al.Redshift
+                    sis=al.mp.SphericalIsothermal, redshift=al.Redshift
                 ),
             ),
             optimizer_class=af.MultiNest,
@@ -289,19 +289,19 @@ class TestPhase(object):
         lens_1_sis = phase_imaging_7x7.variable.galaxies[1].sis
 
         arguments = {
-            sersic.mask_centre[0]: 0.2,
-            sersic.mask_centre[1]: 0.2,
+            sersic.centre[0]: 0.2,
+            sersic.centre[1]: 0.2,
             sersic.axis_ratio: 0.0,
             sersic.phi: 0.1,
             sersic.effective_radius.priors[0]: 0.2,
             sersic.sersic_index: 0.6,
             sersic.intensity.priors[0]: 0.6,
-            sis.mask_centre[0]: 0.1,
-            sis.mask_centre[1]: 0.2,
+            sis.centre[0]: 0.1,
+            sis.centre[1]: 0.2,
             sis.einstein_radius.priors[0]: 0.3,
             phase_imaging_7x7.variable.galaxies[0].redshift.priors[0]: 0.4,
-            lens_1_sis.mask_centre[0]: 0.6,
-            lens_1_sis.mask_centre[1]: 0.5,
+            lens_1_sis.centre[0]: 0.6,
+            lens_1_sis.centre[1]: 0.5,
             lens_1_sis.einstein_radius.priors[0]: 0.7,
             phase_imaging_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
         }
@@ -310,13 +310,13 @@ class TestPhase(object):
             arguments=arguments
         )
 
-        assert instance.galaxies[0].sersic.mask_centre[0] == 0.2
-        assert instance.galaxies[0].sis.mask_centre[0] == 0.1
-        assert instance.galaxies[0].sis.mask_centre[1] == 0.2
+        assert instance.galaxies[0].sersic.centre[0] == 0.2
+        assert instance.galaxies[0].sis.centre[0] == 0.1
+        assert instance.galaxies[0].sis.centre[1] == 0.2
         assert instance.galaxies[0].sis.einstein_radius == 0.3
         assert instance.galaxies[0].redshift == 0.4
-        assert instance.galaxies[1].sis.mask_centre[0] == 0.6
-        assert instance.galaxies[1].sis.mask_centre[1] == 0.5
+        assert instance.galaxies[1].sis.centre[0] == 0.6
+        assert instance.galaxies[1].sis.centre[1] == 0.5
         assert instance.galaxies[1].sis.einstein_radius == 0.7
         assert instance.galaxies[1].redshift == 0.8
 
@@ -328,12 +328,12 @@ class TestPhase(object):
         phase_imaging_7x7 = LensPlanePhase2(
             galaxies=dict(
                 lens=al.GalaxyModel(
-                    sersic=al.light_profiles.EllipticalSersic,
-                    sis=al.mass_profiles.SphericalIsothermal,
+                    sersic=al.lp.EllipticalSersic,
+                    sis=al.mp.SphericalIsothermal,
                     redshift=al.Redshift,
                 ),
                 lens1=al.GalaxyModel(
-                    sis=al.mass_profiles.SphericalIsothermal, redshift=al.Redshift
+                    sis=al.mp.SphericalIsothermal, redshift=al.Redshift
                 ),
             ),
             optimizer_class=af.MultiNest,
@@ -348,18 +348,18 @@ class TestPhase(object):
         lens_1_sis = phase_imaging_7x7.variable.galaxies[1].sis
 
         arguments = {
-            sersic.mask_centre[0]: 0.01,
-            sersic.mask_centre[1]: 0.2,
+            sersic.centre[0]: 0.01,
+            sersic.centre[1]: 0.2,
             sersic.axis_ratio: 0.0,
             sersic.phi: 0.1,
             sersic.effective_radius.priors[0]: 0.2,
             sersic.sersic_index: 0.6,
             sersic.intensity.priors[0]: 0.6,
-            sis.mask_centre[0]: 0.1,
-            sis.mask_centre[1]: 0.2,
+            sis.centre[0]: 0.1,
+            sis.centre[1]: 0.2,
             phase_imaging_7x7.variable.galaxies[0].redshift.priors[0]: 0.4,
-            lens_1_sis.mask_centre[0]: 0.6,
-            lens_1_sis.mask_centre[1]: 0.5,
+            lens_1_sis.centre[0]: 0.6,
+            lens_1_sis.centre[1]: 0.5,
             lens_1_sis.einstein_radius.priors[0]: 0.7,
             phase_imaging_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
         }
@@ -368,13 +368,13 @@ class TestPhase(object):
             arguments
         )
 
-        assert instance.galaxies[0].sersic.mask_centre[0] == 0.01
-        assert instance.galaxies[0].sis.mask_centre[0] == 0.1
-        assert instance.galaxies[0].sis.mask_centre[1] == 0.2
+        assert instance.galaxies[0].sersic.centre[0] == 0.01
+        assert instance.galaxies[0].sis.centre[0] == 0.1
+        assert instance.galaxies[0].sis.centre[1] == 0.2
         assert instance.galaxies[0].sis.einstein_radius == 10.0
         assert instance.galaxies[0].redshift == 0.4
-        assert instance.galaxies[1].sis.mask_centre[0] == 0.6
-        assert instance.galaxies[1].sis.mask_centre[1] == 0.5
+        assert instance.galaxies[1].sis.centre[0] == 0.6
+        assert instance.galaxies[1].sis.centre[1] == 0.5
         assert instance.galaxies[1].sis.einstein_radius == 0.7
         assert instance.galaxies[1].redshift == 0.8
 
@@ -391,7 +391,7 @@ class TestResult(object):
             galaxies=[
                 al.Galaxy(
                     redshift=0.5,
-                    light=al.light_profiles.EllipticalSersic(intensity=1.0),
+                    light=al.lp.EllipticalSersic(intensity=1.0),
                 )
             ],
             phase_name="test_phase_2",
@@ -411,11 +411,11 @@ class TestResult(object):
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5,
-                    light=al.light_profiles.EllipticalSersic(intensity=1.0),
+                    light=al.lp.EllipticalSersic(intensity=1.0),
                 ),
                 source=al.Galaxy(
                     redshift=1.0,
-                    light=al.light_profiles.EllipticalCoreSersic(intensity=2.0),
+                    light=al.lp.EllipticalCoreSersic(intensity=2.0),
                 ),
             ),
             phase_name="test_phase_2",
@@ -441,7 +441,7 @@ class TestPhasePickle(object):
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(
-                    light=al.light_profiles.EllipticalLightProfile, redshift=1
+                    light=al.lp.EllipticalLightProfile, redshift=1
                 )
             ),
         )
@@ -458,7 +458,7 @@ class TestPhasePickle(object):
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(
-                    light=al.light_profiles.EllipticalLightProfile, redshift=1
+                    light=al.lp.EllipticalLightProfile, redshift=1
                 )
             ),
         )
@@ -471,7 +471,7 @@ class TestPhasePickle(object):
 
         class CustomPhase(al.PhaseImaging):
             def customize_priors(self, results):
-                self.galaxies.lens.light = al.light_profiles.EllipticalLightProfile()
+                self.galaxies.lens.light = al.lp.EllipticalLightProfile()
 
         phase_imaging_7x7 = CustomPhase(
             phase_name="phase_name",
@@ -479,7 +479,7 @@ class TestPhasePickle(object):
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(
-                    light=al.light_profiles.EllipticalLightProfile, redshift=1
+                    light=al.lp.EllipticalLightProfile, redshift=1
                 )
             ),
         )

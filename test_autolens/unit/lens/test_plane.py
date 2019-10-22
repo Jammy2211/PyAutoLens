@@ -3,9 +3,13 @@ import pytest
 from astropy import cosmology as cosmo
 from skimage import measure
 
+import autoarray as aa
+import automodel as am
 import autolens as al
 from autolens import exc
+
 from test_autoarray.mock import mock_inversion
+from test_automodel.mock.mock_cosmology import MockCosmology
 
 planck = cosmo.Planck15
 
@@ -63,7 +67,7 @@ class TestAbstractPlane(object):
             plane = al.Plane(
                 galaxies=[
                     al.Galaxy(
-                        redshift=0.5, light_profile=al.light_profiles.LightProfile()
+                        redshift=0.5, light_profile=al.lp.LightProfile()
                     )
                 ],
                 redshift=None,
@@ -73,7 +77,7 @@ class TestAbstractPlane(object):
             plane = al.Plane(
                 galaxies=[
                     al.Galaxy(
-                        redshift=0.5, light_profile=al.light_profiles.LightProfile()
+                        redshift=0.5, light_profile=al.lp.LightProfile()
                     ),
                     al.Galaxy(redshift=0.5),
                 ],
@@ -87,7 +91,7 @@ class TestAbstractPlane(object):
 
             plane = al.Plane(
                 galaxies=[
-                    al.Galaxy(redshift=0.5, mass_profile=al.mass_profiles.MassProfile())
+                    al.Galaxy(redshift=0.5, mass_profile=al.mp.MassProfile())
                 ],
                 redshift=None,
             )
@@ -96,7 +100,7 @@ class TestAbstractPlane(object):
             plane = al.Plane(
                 galaxies=[
                     al.Galaxy(
-                        redshift=0.5, mass_profile=al.mass_profiles.MassProfile()
+                        redshift=0.5, mass_profile=al.mp.MassProfile()
                     ),
                     al.Galaxy(redshift=0.5),
                 ],
@@ -110,8 +114,8 @@ class TestAbstractPlane(object):
 
             galaxy_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Regularization(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Regularization(),
             )
 
             plane = al.Plane(galaxies=[galaxy_pix], redshift=None)
@@ -128,8 +132,8 @@ class TestAbstractPlane(object):
 
             galaxy_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Regularization(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Regularization(),
             )
 
             plane = al.Plane(galaxies=[galaxy_pix], redshift=None)
@@ -152,34 +156,34 @@ class TestAbstractPlane(object):
             plane = al.Plane(galaxies=[galaxy, al.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_hyper_galaxy is True
 
-        def test__binned_hyper_image_of_galaxy_with_pixelization(self):
+        def test__hyper_image_of_galaxy_with_pixelization(self):
             galaxy_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Regularization(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Regularization(),
             )
 
             plane = al.Plane(galaxies=[galaxy_pix], redshift=None)
             assert (
-                plane.binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization is None
+                plane.hyper_galaxy_image_1d_of_galaxy_with_pixelization is None
             )
 
             galaxy_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Regularization(),
-                binned_hyper_galaxy_image_1d=1,
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Regularization(),
+                hyper_galaxy_image_1d=1,
             )
 
             plane = al.Plane(
                 galaxies=[galaxy_pix, al.Galaxy(redshift=0.5)], redshift=None
             )
-            assert plane.binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization == 1
+            assert plane.hyper_galaxy_image_1d_of_galaxy_with_pixelization == 1
 
             plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
 
             assert (
-                plane.binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization is None
+                plane.hyper_galaxy_image_1d_of_galaxy_with_pixelization is None
             )
 
     class TestPixelization:
@@ -282,16 +286,16 @@ class TestAbstractPlane(object):
         def test__extract_centres_of_all_mass_profiles_of_all_galaxies(self):
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(centre=(1.0, 1.0)),
+                mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0)),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(centre=(2.0, 2.0)),
+                mass=al.mp.SphericalIsothermal(centre=(2.0, 2.0)),
             )
             g2 = al.Galaxy(
                 redshift=0.5,
-                mass0=al.mass_profiles.SphericalIsothermal(centre=(3.0, 3.0)),
-                mass1=al.mass_profiles.SphericalIsothermal(centre=(4.0, 4.0)),
+                mass0=al.mp.SphericalIsothermal(centre=(3.0, 3.0)),
+                mass1=al.mp.SphericalIsothermal(centre=(4.0, 4.0)),
             )
 
             plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
@@ -327,15 +331,15 @@ class TestAbstractPlane(object):
 
         def test__extracts_axis_ratio_of_all_mass_profiles_of_all_galaxies(self):
             g0 = al.Galaxy(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal(axis_ratio=0.9)
+                redshift=0.5, mass=al.mp.EllipticalIsothermal(axis_ratio=0.9)
             )
             g1 = al.Galaxy(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal(axis_ratio=0.8)
+                redshift=0.5, mass=al.mp.EllipticalIsothermal(axis_ratio=0.8)
             )
             g2 = al.Galaxy(
                 redshift=0.5,
-                mass0=al.mass_profiles.EllipticalIsothermal(axis_ratio=0.7),
-                mass1=al.mass_profiles.EllipticalIsothermal(axis_ratio=0.6),
+                mass0=al.mp.EllipticalIsothermal(axis_ratio=0.7),
+                mass1=al.mp.EllipticalIsothermal(axis_ratio=0.6),
             )
 
             plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
@@ -371,15 +375,15 @@ class TestAbstractPlane(object):
 
         def test__extracts_phi_of_all_mass_profiles_of_all_galaxies(self):
             g0 = al.Galaxy(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal(phi=0.9)
+                redshift=0.5, mass=al.mp.EllipticalIsothermal(phi=0.9)
             )
             g1 = al.Galaxy(
-                redshift=0.5, mass=al.mass_profiles.EllipticalIsothermal(phi=0.8)
+                redshift=0.5, mass=al.mp.EllipticalIsothermal(phi=0.8)
             )
             g2 = al.Galaxy(
                 redshift=0.5,
-                mass0=al.mass_profiles.EllipticalIsothermal(phi=0.7),
-                mass1=al.mass_profiles.EllipticalIsothermal(phi=0.6),
+                mass0=al.mp.EllipticalIsothermal(phi=0.7),
+                mass1=al.mp.EllipticalIsothermal(phi=0.6),
             )
 
             plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
@@ -416,21 +420,21 @@ class TestAbstractPlaneCosmology(object):
 
         assert (
             plane.arcsec_per_kpc
-            == al.cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(
+            == am.util.cosmo.arcsec_per_kpc_from_redshift_and_cosmology(
                 redshift=0.1, cosmology=planck
             )
         )
 
         assert (
             plane.kpc_per_arcsec
-            == al.cosmology_util.kpc_per_arcsec_from_redshift_and_cosmology(
+            == am.util.cosmo.kpc_per_arcsec_from_redshift_and_cosmology(
                 redshift=0.1, cosmology=planck
             )
         )
 
         assert plane.angular_diameter_distance_to_earth_in_units(
             unit_length="arcsec"
-        ) == al.cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+        ) == am.util.cosmo.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
             redshift=0.1, cosmology=planck, unit_length="arcsec"
         )
 
@@ -438,7 +442,7 @@ class TestAbstractPlaneCosmology(object):
 
         assert plane.angular_diameter_distance_to_earth_in_units(
             unit_length="kpc"
-        ) == al.cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+        ) == am.util.cosmo.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
             redshift=0.1, cosmology=planck, unit_length="kpc"
         )
 
@@ -446,21 +450,21 @@ class TestAbstractPlaneCosmology(object):
 
         assert (
             plane.arcsec_per_kpc
-            == al.cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(
+            == am.util.cosmo.arcsec_per_kpc_from_redshift_and_cosmology(
                 redshift=1.0, cosmology=planck
             )
         )
 
         assert (
             plane.kpc_per_arcsec
-            == al.cosmology_util.kpc_per_arcsec_from_redshift_and_cosmology(
+            == am.util.cosmo.kpc_per_arcsec_from_redshift_and_cosmology(
                 redshift=1.0, cosmology=planck
             )
         )
 
         assert plane.angular_diameter_distance_to_earth_in_units(
             unit_length="arcsec"
-        ) == al.cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+        ) == am.util.cosmo.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
             redshift=1.0, cosmology=planck, unit_length="arcsec"
         )
 
@@ -468,7 +472,7 @@ class TestAbstractPlaneCosmology(object):
 
         assert plane.angular_diameter_distance_to_earth_in_units(
             unit_length="kpc"
-        ) == al.cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+        ) == am.util.cosmo.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
             redshift=1.0, cosmology=planck, unit_length="kpc"
         )
 
@@ -476,7 +480,7 @@ class TestAbstractPlaneCosmology(object):
 
         assert plane.cosmic_average_density_in_units(
             unit_length="arcsec", unit_mass="solMass"
-        ) == al.cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
+        ) == am.util.cosmo.cosmic_average_density_from_redshift_and_cosmology(
             redshift=0.6, cosmology=planck, unit_length="arcsec", unit_mass="solMass"
         )
 
@@ -484,7 +488,7 @@ class TestAbstractPlaneCosmology(object):
 
         assert plane.cosmic_average_density_in_units(
             unit_length="kpc", unit_mass="solMass"
-        ) == al.cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
+        ) == am.util.cosmo.cosmic_average_density_from_redshift_and_cosmology(
             redshift=0.6, cosmology=planck, unit_length="kpc", unit_mass="solMass"
         )
 
@@ -496,34 +500,29 @@ class TestAbstractPlaneLensing(object):
         ):
             light_profile = gal_x1_lp.light_profiles[0]
 
-            lp_sub_image_1d = light_profile.profile_image_from_grid(grid=sub_grid_7x7)
+            lp_image = light_profile.profile_image_from_grid(grid=sub_grid_7x7)
 
             # Perform sub gridding average manually
             lp_image_pixel_0 = (
-                lp_sub_image_1d[0]
-                + lp_sub_image_1d[1]
-                + lp_sub_image_1d[2]
-                + lp_sub_image_1d[3]
+                lp_image[0]
+                + lp_image[1]
+                + lp_image[2]
+                + lp_image[3]
             ) / 4
             lp_image_pixel_1 = (
-                lp_sub_image_1d[4]
-                + lp_sub_image_1d[5]
-                + lp_sub_image_1d[6]
-                + lp_sub_image_1d[7]
+                lp_image[4]
+                + lp_image[5]
+                + lp_image[6]
+                + lp_image[7]
             ) / 4
 
             plane = al.Plane(galaxies=[gal_x1_lp], redshift=None)
 
-            profile_image_1d = plane.profile_image_from_grid(grid=sub_grid_7x7)
+            profile_image = plane.profile_image_from_grid(grid=sub_grid_7x7)
 
-            assert (profile_image_1d[0] == lp_image_pixel_0).all()
-            assert (profile_image_1d[1] == lp_image_pixel_1).all()
-
-            lp_sub_image_2d = light_profile.profile_image_from_grid(grid=sub_grid_7x7)
-
-            profile_image_2d = plane.profile_image_from_grid(grid=sub_grid_7x7)
-
-            assert (profile_image_2d == lp_sub_image_2d).all()
+            assert (profile_image.in_1d_binned[0] == lp_image_pixel_0).all()
+            assert (profile_image.in_1d_binned[1] == lp_image_pixel_1).all()
+            assert (profile_image == lp_image).all()
 
         def test__profile_image_from_grid__same_as_its_galaxy_image(
             self, sub_grid_7x7, gal_x1_lp
@@ -532,9 +531,9 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.Plane(galaxies=[gal_x1_lp], redshift=None)
 
-            profile_image_1d = plane.profile_image_from_grid(grid=sub_grid_7x7)
+            profile_image = plane.profile_image_from_grid(grid=sub_grid_7x7)
 
-            assert profile_image_1d == pytest.approx(galaxy_image, 1.0e-4)
+            assert profile_image == pytest.approx(galaxy_image, 1.0e-4)
 
         def test__profile_images_of_galaxies(self, sub_grid_7x7):
             # Overwrite one value so intensity in each pixel is different
@@ -542,53 +541,53 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             lp0 = g0.light_profiles[0]
             lp1 = g1.light_profiles[0]
 
-            lp0_sub_image = lp0.profile_image_from_grid(grid=sub_grid_7x7)
-            lp1_sub_image = lp1.profile_image_from_grid(grid=sub_grid_7x7)
+            lp0_image = lp0.profile_image_from_grid(grid=sub_grid_7x7)
+            lp1_image = lp1.profile_image_from_grid(grid=sub_grid_7x7)
 
             # Perform sub gridding average manually
             lp0_image_pixel_0 = (
-                lp0_sub_image[0]
-                + lp0_sub_image[1]
-                + lp0_sub_image[2]
-                + lp0_sub_image[3]
+                lp0_image[0]
+                + lp0_image[1]
+                + lp0_image[2]
+                + lp0_image[3]
             ) / 4
             lp0_image_pixel_1 = (
-                lp0_sub_image[4]
-                + lp0_sub_image[5]
-                + lp0_sub_image[6]
-                + lp0_sub_image[7]
+                lp0_image[4]
+                + lp0_image[5]
+                + lp0_image[6]
+                + lp0_image[7]
             ) / 4
             lp1_image_pixel_0 = (
-                lp1_sub_image[0]
-                + lp1_sub_image[1]
-                + lp1_sub_image[2]
-                + lp1_sub_image[3]
+                lp1_image[0]
+                + lp1_image[1]
+                + lp1_image[2]
+                + lp1_image[3]
             ) / 4
             lp1_image_pixel_1 = (
-                lp1_sub_image[4]
-                + lp1_sub_image[5]
-                + lp1_sub_image[6]
-                + lp1_sub_image[7]
+                lp1_image[4]
+                + lp1_image[5]
+                + lp1_image[6]
+                + lp1_image[7]
             ) / 4
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
             profile_image = plane.profile_image_from_grid(grid=sub_grid_7x7)
 
-            assert profile_image[0] == pytest.approx(
+            assert profile_image.in_1d_binned[0] == pytest.approx(
                 lp0_image_pixel_0 + lp1_image_pixel_0, 1.0e-4
             )
-            assert profile_image[1] == pytest.approx(
+            assert profile_image.in_1d_binned[1] == pytest.approx(
                 lp0_image_pixel_1 + lp1_image_pixel_1, 1.0e-4
             )
 
@@ -596,10 +595,10 @@ class TestAbstractPlaneLensing(object):
                 grid=sub_grid_7x7
             )
 
-            assert profile_image_of_galaxies[0][0] == lp0_image_pixel_0
-            assert profile_image_of_galaxies[0][1] == lp0_image_pixel_1
-            assert profile_image_of_galaxies[1][0] == lp1_image_pixel_0
-            assert profile_image_of_galaxies[1][1] == lp1_image_pixel_1
+            assert profile_image_of_galaxies[0].in_1d_binned[0] == lp0_image_pixel_0
+            assert profile_image_of_galaxies[0].in_1d_binned[1] == lp0_image_pixel_1
+            assert profile_image_of_galaxies[1].in_1d_binned[0] == lp1_image_pixel_0
+            assert profile_image_of_galaxies[1].in_1d_binned[1] == lp1_image_pixel_1
 
         def test__same_as_above__use_multiple_galaxies(self, sub_grid_7x7):
             # Overwrite one value so intensity in each pixel is different
@@ -607,11 +606,11 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             g0_image = g0.profile_image_from_grid(grid=sub_grid_7x7)
@@ -631,9 +630,9 @@ class TestAbstractPlaneLensing(object):
 
             profile_image = plane.profile_image_from_grid(grid=sub_grid_7x7)
 
-            assert profile_image.shape == (7, 7)
-            assert (profile_image[1, 1] == 0.0).all()
-            assert (profile_image[1, 2] == 0.0).all()
+            assert profile_image.shape_2d == (7, 7)
+            assert (profile_image[0] == 0.0).all()
+            assert (profile_image[1] == 0.0).all()
 
     class TestConvergence:
         def test__convergence_same_as_multiple_galaxies__include_reshape_mapping(
@@ -646,13 +645,13 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     einstein_radius=1.0, centre=(1.0, 0.0)
                 ),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     einstein_radius=2.0, centre=(1.0, 1.0)
                 ),
             )
@@ -684,19 +683,19 @@ class TestAbstractPlaneLensing(object):
 
             convergence = plane.convergence_from_grid(grid=sub_grid_7x7)
 
-            assert convergence[2, 2] == pytest.approx(mp_convergence_pixel_0, 1.0e-4)
-            assert convergence[2, 3] == pytest.approx(mp_convergence_pixel_1, 1.0e-4)
+            assert convergence.in_2d_binned[2, 2] == pytest.approx(mp_convergence_pixel_0, 1.0e-4)
+            assert convergence.in_2d_binned[2, 3] == pytest.approx(mp_convergence_pixel_1, 1.0e-4)
 
         def test__same_as_above_galaxies___use_galaxy_to_compute_convergence(
             self, sub_grid_7x7
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             g0_convergence = g0.convergence_from_grid(grid=sub_grid_7x7)
@@ -720,11 +719,11 @@ class TestAbstractPlaneLensing(object):
 
             convergence = plane.convergence_from_grid(grid=sub_grid_7x7)
 
-            assert convergence.shape == (14, 14)
+            assert convergence.sub_shape_2d == (14, 14)
 
             convergence = plane.convergence_from_grid(grid=sub_grid_7x7)
 
-            assert convergence.shape == (7, 7)
+            assert convergence.shape_2d == (7, 7)
 
     class TestPotential:
         def test__potential_same_as_multiple_galaxies__include_reshape_mapping(
@@ -737,13 +736,13 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     einstein_radius=1.0, centre=(1.0, 0.0)
                 ),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     einstein_radius=2.0, centre=(1.0, 1.0)
                 ),
             )
@@ -775,19 +774,19 @@ class TestAbstractPlaneLensing(object):
 
             potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
-            assert potential[2, 2] == pytest.approx(mp_potential_pixel_0, 1.0e-4)
-            assert potential[2, 3] == pytest.approx(mp_potential_pixel_1, 1.0e-4)
+            assert potential.in_2d_binned[2, 2] == pytest.approx(mp_potential_pixel_0, 1.0e-4)
+            assert potential.in_2d_binned[2, 3] == pytest.approx(mp_potential_pixel_1, 1.0e-4)
 
         def test__same_as_above_galaxies___use_galaxy_to_compute_potential(
             self, sub_grid_7x7
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             g0_potential = g0.potential_from_grid(grid=sub_grid_7x7)
@@ -811,11 +810,11 @@ class TestAbstractPlaneLensing(object):
 
             potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
-            assert potential.shape == (14, 14)
+            assert potential.sub_shape_2d == (14, 14)
 
             potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
-            assert potential.shape == (7, 7)
+            assert potential.shape_2d == (7, 7)
 
     class TestDeflections:
         def test__deflections_from_plane__same_as_the_galaxy_mass_profiles(
@@ -826,84 +825,84 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_image = mp0.deflections_from_grid(grid=sub_grid_7x7)
-            mp1_sub_image = mp1.deflections_from_grid(grid=sub_grid_7x7)
+            mp0_image = mp0.deflections_from_grid(grid=sub_grid_7x7)
+            mp1_image = mp1.deflections_from_grid(grid=sub_grid_7x7)
 
             # Perform sub gridding average manually
             mp0_image_pixel_0x = (
-                mp0_sub_image[0, 0]
-                + mp0_sub_image[1, 0]
-                + mp0_sub_image[2, 0]
-                + mp0_sub_image[3, 0]
+                mp0_image[0, 0]
+                + mp0_image[1, 0]
+                + mp0_image[2, 0]
+                + mp0_image[3, 0]
             ) / 4
             mp0_image_pixel_1x = (
-                mp0_sub_image[4, 0]
-                + mp0_sub_image[5, 0]
-                + mp0_sub_image[6, 0]
-                + mp0_sub_image[7, 0]
+                mp0_image[4, 0]
+                + mp0_image[5, 0]
+                + mp0_image[6, 0]
+                + mp0_image[7, 0]
             ) / 4
             mp0_image_pixel_0y = (
-                mp0_sub_image[0, 1]
-                + mp0_sub_image[1, 1]
-                + mp0_sub_image[2, 1]
-                + mp0_sub_image[3, 1]
+                mp0_image[0, 1]
+                + mp0_image[1, 1]
+                + mp0_image[2, 1]
+                + mp0_image[3, 1]
             ) / 4
             mp0_image_pixel_1y = (
-                mp0_sub_image[4, 1]
-                + mp0_sub_image[5, 1]
-                + mp0_sub_image[6, 1]
-                + mp0_sub_image[7, 1]
+                mp0_image[4, 1]
+                + mp0_image[5, 1]
+                + mp0_image[6, 1]
+                + mp0_image[7, 1]
             ) / 4
 
             mp1_image_pixel_0x = (
-                mp1_sub_image[0, 0]
-                + mp1_sub_image[1, 0]
-                + mp1_sub_image[2, 0]
-                + mp1_sub_image[3, 0]
+                mp1_image[0, 0]
+                + mp1_image[1, 0]
+                + mp1_image[2, 0]
+                + mp1_image[3, 0]
             ) / 4
             mp1_image_pixel_1x = (
-                mp1_sub_image[4, 0]
-                + mp1_sub_image[5, 0]
-                + mp1_sub_image[6, 0]
-                + mp1_sub_image[7, 0]
+                mp1_image[4, 0]
+                + mp1_image[5, 0]
+                + mp1_image[6, 0]
+                + mp1_image[7, 0]
             ) / 4
             mp1_image_pixel_0y = (
-                mp1_sub_image[0, 1]
-                + mp1_sub_image[1, 1]
-                + mp1_sub_image[2, 1]
-                + mp1_sub_image[3, 1]
+                mp1_image[0, 1]
+                + mp1_image[1, 1]
+                + mp1_image[2, 1]
+                + mp1_image[3, 1]
             ) / 4
             mp1_image_pixel_1y = (
-                mp1_sub_image[4, 1]
-                + mp1_sub_image[5, 1]
-                + mp1_sub_image[6, 1]
-                + mp1_sub_image[7, 1]
+                mp1_image[4, 1]
+                + mp1_image[5, 1]
+                + mp1_image[6, 1]
+                + mp1_image[7, 1]
             ) / 4
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
             deflections = plane.deflections_from_grid(grid=sub_grid_7x7)
 
-            assert deflections[0, 0] == pytest.approx(
+            assert deflections.in_1d_binned[0, 0] == pytest.approx(
                 mp0_image_pixel_0x + mp1_image_pixel_0x, 1.0e-4
             )
-            assert deflections[1, 0] == pytest.approx(
+            assert deflections.in_1d_binned[1, 0] == pytest.approx(
                 mp0_image_pixel_1x + mp1_image_pixel_1x, 1.0e-4
             )
-            assert deflections[0, 1] == pytest.approx(
+            assert deflections.in_1d_binned[0, 1] == pytest.approx(
                 mp0_image_pixel_0y + mp1_image_pixel_0y, 1.0e-4
             )
-            assert deflections[1, 1] == pytest.approx(
+            assert deflections.in_1d_binned[1, 1] == pytest.approx(
                 mp0_image_pixel_1y + mp1_image_pixel_1y, 1.0e-4
             )
 
@@ -915,11 +914,11 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             g0_deflections = g0.deflections_from_grid(grid=sub_grid_7x7)
@@ -958,11 +957,11 @@ class TestAbstractPlaneLensing(object):
 
             deflections = plane.deflections_from_grid(grid=sub_grid_7x7)
 
-            assert deflections.shape == (7, 7, 2)
-            assert (deflections[0, 0] == 0.0).all()
-            assert (deflections[0, 1] == 0.0).all()
-            assert (deflections[1, 0] == 0.0).all()
-            assert (deflections[1, 1] == 0.0).all()
+            assert deflections.shape_2d == (7, 7)
+            assert (deflections.in_1d_binned[0, 0] == 0.0).all()
+            assert (deflections.in_1d_binned[0, 1] == 0.0).all()
+            assert (deflections.in_1d_binned[1, 0] == 0.0).all()
+            assert (deflections.in_1d_binned[0] == 0.0).all()
 
     class TestDeflectionAnglesviaPotential(object):
         def test__compare_plane_deflections_via_potential_and_calculation(self):
@@ -972,12 +971,12 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
@@ -1003,11 +1002,11 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             g0_deflections = g0.deflections_via_potential_from_grid(grid=grid)
@@ -1028,14 +1027,14 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0
                 ),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(1.0, 1.0), einstein_radius=2.0
                 ),
             )
@@ -1044,8 +1043,8 @@ class TestAbstractPlaneLensing(object):
 
             jacobian = plane.jacobian_from_grid(grid=grid)
 
-            A_12 = jacobian[0, 1]
-            A_21 = jacobian[1, 0]
+            A_12 = jacobian[0][1]
+            A_21 = jacobian[1][0]
 
             mean_error = np.mean(A_12 - A_21)
 
@@ -1053,157 +1052,12 @@ class TestAbstractPlaneLensing(object):
 
             jacobian = plane.jacobian_from_grid(grid=grid)
 
-            A_12 = jacobian[0, 1]
-            A_21 = jacobian[1, 0]
+            A_12 = jacobian[0][1]
+            A_21 = jacobian[1][0]
 
             mean_error = np.mean(A_12 - A_21)
 
             assert mean_error < 1e-4
-
-        def test__jacobian_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = aa.grid.uniform(
-                shape_2d=(10, 10), pixel_scales=0.05, sub_size=2
-            )
-
-            g0 = al.Galaxy(
-                redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = al.Galaxy(
-                redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.Plane(galaxies=[g0, g1], redshift=None)
-
-            jacobian_binned_reg_grid = plane.jacobian_from_grid(grid=grid)
-            a11_binned_reg_grid = jacobian_binned_reg_grid[0, 0]
-
-            jacobian_sub_grid = plane.jacobian_from_grid(grid=grid)
-            a11_sub_grid = jacobian_sub_grid[0, 0]
-
-            pixel_1_reg_grid = a11_binned_reg_grid[0]
-            first_pixel_binned_up = (
-                a11_sub_grid[0] + a11_sub_grid[1] + a11_sub_grid[2] + a11_sub_grid[3]
-            ) / 4
-
-            assert jacobian_binned_reg_grid.shape == (2, 2, 100)
-            assert jacobian_sub_grid.shape == (2, 2, 400)
-            assert pixel_1_reg_grid == pytest.approx(first_pixel_binned_up, 1e-4)
-
-            last_pixel_binned_up = a11_binned_reg_grid[99]
-
-            pixel_10000_from_av_sub_grid = (
-                a11_sub_grid[399]
-                + a11_sub_grid[398]
-                + a11_sub_grid[397]
-                + a11_sub_grid[396]
-            ) / 4
-
-            assert last_pixel_binned_up == pytest.approx(
-                pixel_10000_from_av_sub_grid, 1e-4
-            )
-
-        def test_lambda_t_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = aa.grid.uniform(
-                shape_2d=(10, 10), pixel_scales=0.05, sub_size=2
-            )
-
-            g0 = al.Galaxy(
-                redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = al.Galaxy(
-                redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.Plane(galaxies=[g0, g1], redshift=None)
-
-            lambda_t_binned_reg_grid = plane.tangential_eigen_value_from_grid(grid=grid)
-
-            lambda_t_sub_grid = plane.tangential_eigen_value_from_grid(grid=grid)
-
-            pixel_1_reg_grid = lambda_t_binned_reg_grid[0]
-            first_pixel_binned_up = (
-                lambda_t_sub_grid[0]
-                + lambda_t_sub_grid[1]
-                + lambda_t_sub_grid[2]
-                + lambda_t_sub_grid[3]
-            ) / 4
-
-            assert pixel_1_reg_grid == pytest.approx(first_pixel_binned_up, 1e-4)
-
-            last_pixel_binned_up = lambda_t_binned_reg_grid[99]
-
-            pixel_10000_from_av_sub_grid = (
-                lambda_t_sub_grid[399]
-                + lambda_t_sub_grid[398]
-                + lambda_t_sub_grid[397]
-                + lambda_t_sub_grid[396]
-            ) / 4
-
-            assert last_pixel_binned_up == pytest.approx(
-                pixel_10000_from_av_sub_grid, 1e-4
-            )
-
-        def test_lambda_r_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = aa.grid.uniform(
-                shape_2d=(10, 10), pixel_scales=0.05, sub_size=2
-            )
-
-            g0 = al.Galaxy(
-                redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = al.Galaxy(
-                redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.Plane(galaxies=[g0, g1], redshift=None)
-
-            lambda_r_binned_reg_grid = plane.radial_eigen_value_from_grid(grid=grid)
-
-            lambda_r_sub_grid = plane.radial_eigen_value_from_grid(grid=grid)
-
-            pixel_1_reg_grid = lambda_r_binned_reg_grid[0]
-            first_pixel_binned_up = (
-                lambda_r_sub_grid[0]
-                + lambda_r_sub_grid[1]
-                + lambda_r_sub_grid[2]
-                + lambda_r_sub_grid[3]
-            ) / 4
-
-            assert pixel_1_reg_grid == pytest.approx(first_pixel_binned_up, 1e-4)
-
-            last_pixel_binned_up = lambda_r_binned_reg_grid[99]
-
-            pixel_10000_from_av_sub_grid = (
-                lambda_r_sub_grid[399]
-                + lambda_r_sub_grid[398]
-                + lambda_r_sub_grid[397]
-                + lambda_r_sub_grid[396]
-            ) / 4
-
-            assert last_pixel_binned_up == pytest.approx(
-                pixel_10000_from_av_sub_grid, 1e-4
-            )
 
     class TestConvergenceviaJacobian(object):
         def test__compare_plane_convergence_via_jacobian_and_calculation(self):
@@ -1213,14 +1067,14 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0
                 ),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(1.0, 1.0), einstein_radius=2.0
                 ),
             )
@@ -1244,47 +1098,45 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0
                 ),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(1.0, 1.0), einstein_radius=2.0
                 ),
             )
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            convergence_binned_reg_grid = plane.convergence_via_jacobian_from_grid(
+            convergence = plane.convergence_via_jacobian_from_grid(
                 grid=grid
             )
 
-            convergence_sub_grid = plane.convergence_via_jacobian_from_grid(grid=grid)
-
-            pixel_1_reg_grid = convergence_binned_reg_grid[0]
-            first_pixel_binned_up = (
-                convergence_sub_grid[0]
-                + convergence_sub_grid[1]
-                + convergence_sub_grid[2]
-                + convergence_sub_grid[3]
+            pixel_first_binned = convergence.in_1d_binned[0]
+            pixel_first_binned_manual = (
+                convergence[0]
+                + convergence[1]
+                + convergence[2]
+                + convergence[3]
             ) / 4
 
-            assert pixel_1_reg_grid == pytest.approx(first_pixel_binned_up, 1e-4)
+            assert pixel_first_binned == pytest.approx(pixel_first_binned_manual, 1e-4)
 
-            last_pixel_binned_up = convergence_binned_reg_grid[99]
+            last_pixel_binned = convergence.in_1d_binned[99]
 
-            pixel_10000_from_av_sub_grid = (
-                convergence_sub_grid[399]
-                + convergence_sub_grid[398]
-                + convergence_sub_grid[397]
-                + convergence_sub_grid[396]
+            last_pixel_binned_manual = (
+                convergence[399]
+                + convergence[398]
+                + convergence[397]
+                + convergence[396]
             ) / 4
 
-            assert last_pixel_binned_up == pytest.approx(
-                pixel_10000_from_av_sub_grid, 1e-4
+            assert last_pixel_binned == pytest.approx(
+                last_pixel_binned_manual, 1e-4
             )
 
             convergence_via_calculation = plane.convergence_from_grid(grid=grid)
@@ -1295,7 +1147,7 @@ class TestAbstractPlaneLensing(object):
 
             mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
 
-            assert convergence_via_jacobian.shape == (400,)
+            assert convergence_via_jacobian.in_1d_binned.shape == (400,)
             assert mean_error < 1e-1
 
         def test__plane_convergence_via_jacobian_same_as_multiple_galaxies(self):
@@ -1305,11 +1157,11 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             g0_convergence = g0.convergence_via_jacobian_from_grid(grid=grid)
@@ -1330,45 +1182,43 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0
                 ),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(1.0, 1.0), einstein_radius=2.0
                 ),
             )
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
 
-            shear_binned_reg_grid = plane.shear_via_jacobian_from_grid(grid=grid)
+            shear = plane.shear_via_jacobian_from_grid(grid=grid)
 
-            shear_sub_grid = plane.shear_via_jacobian_from_grid(grid=grid)
-
-            pixel_1_reg_grid = shear_binned_reg_grid[0]
-            first_pixel_binned_up = (
-                shear_sub_grid[0]
-                + shear_sub_grid[1]
-                + shear_sub_grid[2]
-                + shear_sub_grid[3]
+            first_pixel_binned = shear.in_1d_binned[0]
+            first_pixel_binned_manual = (
+                shear[0]
+                + shear[1]
+                + shear[2]
+                + shear[3]
             ) / 4
 
-            assert pixel_1_reg_grid == pytest.approx(first_pixel_binned_up, 1e-4)
+            assert first_pixel_binned == pytest.approx(first_pixel_binned_manual, 1e-4)
 
-            last_pixel_binned_up = shear_binned_reg_grid[99]
+            last_pixel_binned = shear.in_1d_binned[99]
 
-            pixel_10000_from_av_sub_grid = (
-                shear_sub_grid[399]
-                + shear_sub_grid[398]
-                + shear_sub_grid[397]
-                + shear_sub_grid[396]
+            last_pixel_binned_manual = (
+                shear[399]
+                + shear[398]
+                + shear[397]
+                + shear[396]
             ) / 4
 
-            assert last_pixel_binned_up == pytest.approx(
-                pixel_10000_from_av_sub_grid, 1e-4
+            assert last_pixel_binned == pytest.approx(
+                last_pixel_binned_manual, 1e-4
             )
 
         def test__plane_shear_via_jacobian_same_as_multiple_galaxies(self):
@@ -1378,11 +1228,11 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             g0_shear = g0.shear_via_jacobian_from_grid(grid=grid)
@@ -1405,14 +1255,14 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0
                 ),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(1.0, 1.0), einstein_radius=2.0
                 ),
             )
@@ -1466,14 +1316,14 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0
                 ),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(1.0, 1.0), einstein_radius=2.0
                 ),
             )
@@ -1528,14 +1378,14 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.EllipticalIsothermal(
+                mass_profile=al.mp.EllipticalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
                 ),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(1.0, 1.0), einstein_radius=2.0
                 ),
             )
@@ -1585,14 +1435,14 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.EllipticalIsothermal(
+                mass_profile=al.mp.EllipticalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
                 ),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(1.0, 1.0), einstein_radius=2.0
                 ),
             )
@@ -1642,14 +1492,14 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.EllipticalIsothermal(
+                mass_profile=al.mp.EllipticalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
                 ),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(1.0, 1.0), einstein_radius=2.0
                 ),
             )
@@ -1693,14 +1543,14 @@ class TestAbstractPlaneLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.EllipticalIsothermal(
+                mass_profile=al.mp.EllipticalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
                 ),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(1.0, 1.0), einstein_radius=2.0
                 ),
             )
@@ -1725,14 +1575,14 @@ class TestAbstractPlaneLensing(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                luminosity=al.light_profiles.SphericalSersic(intensity=1.0),
+                luminosity=al.lp.SphericalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                luminosity=al.light_profiles.SphericalSersic(intensity=2.0),
+                luminosity=al.lp.SphericalSersic(intensity=2.0),
             )
 
-            radius = al.Length(1.0, "arcsec")
+            radius = am.dim.Length(1.0, "arcsec")
 
             g0_luminosity = g0.luminosity_within_circle_in_units(
                 radius=radius, unit_luminosity="eps"
@@ -1767,14 +1617,14 @@ class TestAbstractPlaneLensing(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                luminosity=al.light_profiles.SphericalSersic(intensity=1.0),
+                luminosity=al.lp.SphericalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                luminosity=al.light_profiles.SphericalSersic(intensity=2.0),
+                luminosity=al.lp.SphericalSersic(intensity=2.0),
             )
 
-            radius = al.Length(1.0, "arcsec")
+            radius = am.dim.Length(1.0, "arcsec")
 
             g0_luminosity = g0.luminosity_within_circle_in_units(radius=radius)
             g1_luminosity = g1.luminosity_within_circle_in_units(radius=radius)
@@ -1787,7 +1637,7 @@ class TestAbstractPlaneLensing(object):
             assert plane_luminosities[0] == g0_luminosity
             assert plane_luminosities[1] == g1_luminosity
 
-            radius = al.Length(1.0, "kpc")
+            radius = am.dim.Length(1.0, "kpc")
 
             plane = al.Plane(galaxies=[g0, g1], redshift=0.5)
             g0_luminosity = g0.luminosity_within_circle_in_units(radius=radius)
@@ -1805,14 +1655,14 @@ class TestAbstractPlaneLensing(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                luminosity=al.light_profiles.SphericalSersic(intensity=1.0),
+                luminosity=al.lp.SphericalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                luminosity=al.light_profiles.SphericalSersic(intensity=2.0),
+                luminosity=al.lp.SphericalSersic(intensity=2.0),
             )
 
-            major_axis = al.Length(1.0, "arcsec")
+            major_axis = am.dim.Length(1.0, "arcsec")
 
             g0_luminosity = g0.luminosity_within_ellipse_in_units(
                 major_axis=major_axis, unit_luminosity="eps"
@@ -1847,14 +1697,14 @@ class TestAbstractPlaneLensing(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                luminosity=al.light_profiles.SphericalSersic(intensity=1.0),
+                luminosity=al.lp.SphericalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                luminosity=al.light_profiles.SphericalSersic(intensity=2.0),
+                luminosity=al.lp.SphericalSersic(intensity=2.0),
             )
 
-            major_axis = al.Length(1.0, "arcsec")
+            major_axis = am.dim.Length(1.0, "arcsec")
 
             g0_luminosity = g0.luminosity_within_ellipse_in_units(major_axis=major_axis)
             g1_luminosity = g1.luminosity_within_ellipse_in_units(major_axis=major_axis)
@@ -1866,7 +1716,7 @@ class TestAbstractPlaneLensing(object):
             assert plane_luminosities[0] == g0_luminosity
             assert plane_luminosities[1] == g1_luminosity
 
-            major_axis = al.Length(1.0, "kpc")
+            major_axis = am.dim.Length(1.0, "kpc")
 
             plane = al.Plane(galaxies=[g0, g1], redshift=0.5)
 
@@ -1884,14 +1734,14 @@ class TestAbstractPlaneLensing(object):
         def test__within_circle_different_mass_units__same_as_galaxy_masses(self):
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            radius = al.Length(1.0, "arcsec")
+            radius = am.dim.Length(1.0, "arcsec")
 
             g0_mass = g0.mass_within_circle_in_units(radius=radius, unit_mass="angular")
             g1_mass = g1.mass_within_circle_in_units(radius=radius, unit_mass="angular")
@@ -1922,15 +1772,15 @@ class TestAbstractPlaneLensing(object):
             assert plane_masses[1] == g1_mass
 
         def test__within_circle_different_distance_units__same_as_galaxy_masses(self):
-            radius = al.Length(1.0, "arcsec")
+            radius = am.dim.Length(1.0, "arcsec")
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             g0_mass = g0.mass_within_circle_in_units(radius=radius, redshift_source=1.0)
@@ -1944,7 +1794,7 @@ class TestAbstractPlaneLensing(object):
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
 
-            radius = al.Length(1.0, "kpc")
+            radius = am.dim.Length(1.0, "kpc")
 
             plane = al.Plane(galaxies=[g0, g1], redshift=0.5)
             g0_mass = g0.mass_within_circle_in_units(
@@ -1964,14 +1814,14 @@ class TestAbstractPlaneLensing(object):
         def test__within_ellipse_different_mass_units__same_as_galaxy_masses(self):
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            major_axis = al.Length(1.0, "arcsec")
+            major_axis = am.dim.Length(1.0, "arcsec")
 
             g0_mass = g0.mass_within_ellipse_in_units(
                 major_axis=major_axis, unit_mass="angular"
@@ -2005,14 +1855,14 @@ class TestAbstractPlaneLensing(object):
         def test__within_ellipse_different_distance_units__same_as_galaxy_masses(self):
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            major_axis = al.Length(1.0, "arcsec")
+            major_axis = am.dim.Length(1.0, "arcsec")
 
             g0_mass = g0.mass_within_ellipse_in_units(
                 major_axis=major_axis, redshift_source=1.0
@@ -2028,7 +1878,7 @@ class TestAbstractPlaneLensing(object):
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
 
-            major_axis = al.Length(1.0, "kpc")
+            major_axis = am.dim.Length(1.0, "kpc")
 
             plane = al.Plane(galaxies=[g0, g1], redshift=0.5)
             g0_mass = g0.mass_within_ellipse_in_units(
@@ -2058,11 +1908,11 @@ class TestAbstractPlaneLensing(object):
 
             sis_0 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             sis_1 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             plane = al.Plane(galaxies=[sis_0], redshift=0.5, cosmology=cosmology)
@@ -2115,11 +1965,11 @@ class TestAbstractPlaneLensing(object):
         ):
             sis_0 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             sis_1 = al.Galaxy(
                 redshift=0.5,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
             g0 = al.Galaxy(redshift=0.5)
 
@@ -2174,11 +2024,11 @@ class TestAbstractPlaneData(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             blurred_g0_image = g0.blurred_profile_image_from_grid_and_convolver(
@@ -2212,11 +2062,11 @@ class TestAbstractPlaneData(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             blurred_g0_image = g0.blurred_profile_image_from_grid_and_psf(
@@ -2254,11 +2104,11 @@ class TestAbstractPlaneData(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             blurred_g0_image = g0.blurred_profile_image_from_grid_and_convolver(
@@ -2294,11 +2144,11 @@ class TestAbstractPlaneData(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             blurred_g0_image = g0.blurred_profile_image_from_grid_and_convolver(
@@ -2343,13 +2193,13 @@ class TestAbstractPlaneData(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
 
-            image_1d = g0.profile_image_from_grid(grid=sub_grid_7x7)
+            image = g0.profile_image_from_grid(grid=sub_grid_7x7)
 
             visibilities = transformer_7x7_7.visibilities_from_image(
-                image=image_1d
+                image=image
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0])
@@ -2362,15 +2212,15 @@ class TestAbstractPlaneData(object):
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
-            image_1d = g0.profile_image_from_grid(
+            image = g0.profile_image_from_grid(
                 grid=sub_grid_7x7
             ) + g1.profile_image_from_grid(grid=sub_grid_7x7)
 
             visibilities = transformer_7x7_7.visibilities_from_image(
-                image=image_1d
+                image=image
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0, g1])
@@ -2386,24 +2236,24 @@ class TestAbstractPlaneData(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
 
             g1 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
-            g0_image_1d = g0.profile_image_from_grid(grid=sub_grid_7x7)
+            g0_image = g0.profile_image_from_grid(grid=sub_grid_7x7)
 
-            g1_image_1d = g1.profile_image_from_grid(grid=sub_grid_7x7)
+            g1_image = g1.profile_image_from_grid(grid=sub_grid_7x7)
 
             g0_visibilities = transformer_7x7_7.visibilities_from_image(
-                image=g0_image_1d
+                image=g0_image
             )
 
             g1_visibilities = transformer_7x7_7.visibilities_from_image(
-                image=g1_image_1d
+                image=g1_image
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[g0, g1])
@@ -2464,7 +2314,7 @@ class TestAbstractPlaneData(object):
                     value=1, grid=np.array([[1.0, 1.0]])
                 ),
                 regularization=mock_inversion.MockRegularization(matrix_shape=(1, 1)),
-                binned_hyper_galaxy_image_1d=2,
+                hyper_galaxy_image_1d=2,
             )
 
             plane = al.Plane(galaxies=[galaxy_pix], redshift=0.5)
@@ -2569,33 +2419,33 @@ class TestAbstractPlaneData(object):
             sub_grid_7x7[1] = np.array([2.0, 2.0])
 
             galaxy = al.Galaxy(
-                redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=1.0)
+                redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
             )
 
             plane = al.Plane(galaxies=[galaxy], redshift=None)
 
             plane_image_from_func = al.lens_util.plane_image_of_galaxies_from_grid(
-                shape=(7, 7), grid=sub_grid_7x7.unlensed_unsubbed_1d, galaxies=[galaxy]
+                shape=(7, 7), grid=sub_grid_7x7.geometry.unmasked_grid, galaxies=[galaxy]
             )
 
             plane_image_from_plane = plane.plane_image_from_grid(grid=sub_grid_7x7)
 
-            assert (plane_image_from_func == plane_image_from_plane).all()
+            assert (plane_image_from_func.array == plane_image_from_plane.array).all()
 
         def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self,):
             # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
             # -1.6, -0.8, 0.0, 0.8, 1.6. The origin -1.6, -1.6 of the model_galaxy means its brighest pixel should be
             # index 0 of the 1D grid and (0,0) of the 2d plane datas_.
 
-            mask = aa.Mask(
-                array_2d=np.full((5, 5), False), pixel_scales=1.0, sub_size=1
+            mask = aa.mask.unmasked(
+                shape_2d=(5, 5), pixel_scales=1.0, sub_size=1
             )
 
-            grid = aa.Grid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=mask)
+            grid = aa.masked_grid.from_mask(mask=mask)
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(
+                light_profile=al.lp.EllipticalSersic(
                     centre=(1.6, -1.6), intensity=1.0
                 ),
             )
@@ -2603,12 +2453,12 @@ class TestAbstractPlaneData(object):
 
             plane_image = plane.plane_image_from_grid(grid=grid)
 
-            assert plane_image.shape == (5, 5)
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0, 0)
+            assert plane_image.array.shape_2d == (5, 5)
+            assert np.unravel_index(plane_image.array.in_2d.argmax(), plane_image.array.in_2d.shape) == (0, 0)
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(
+                light_profile=al.lp.EllipticalSersic(
                     centre=(1.6, 1.6), intensity=1.0
                 ),
             )
@@ -2616,11 +2466,11 @@ class TestAbstractPlaneData(object):
 
             plane_image = plane.plane_image_from_grid(grid=grid)
 
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0, 4)
+            assert np.unravel_index(plane_image.array.in_2d.argmax(), plane_image.array.in_2d.shape) == (0, 4)
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(
+                light_profile=al.lp.EllipticalSersic(
                     centre=(-1.6, -1.6), intensity=1.0
                 ),
             )
@@ -2628,11 +2478,11 @@ class TestAbstractPlaneData(object):
 
             plane_image = plane.plane_image_from_grid(grid=grid)
 
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4, 0)
+            assert np.unravel_index(plane_image.array.in_2d.argmax(), plane_image.array.in_2d.shape) == (4, 0)
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(
+                light_profile=al.lp.EllipticalSersic(
                     centre=(-1.6, 1.6), intensity=1.0
                 ),
             )
@@ -2640,7 +2490,7 @@ class TestAbstractPlaneData(object):
 
             plane_image = plane.plane_image_from_grid(grid=grid)
 
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4, 4)
+            assert np.unravel_index(plane_image.array.in_2d.argmax(), plane_image.array.in_2d.shape) == (4, 4)
 
     class TestContributionMaps:
         def test__x2_hyper_galaxy__use_numerical_values_for_noise_scaling(self):
@@ -2651,7 +2501,7 @@ class TestAbstractPlaneData(object):
                 contribution_factor=1.0, noise_factor=0.0, noise_power=1.0
             )
 
-            hyper_model_image_1d = np.array([0.5, 1.0, 1.5])
+            hyper_model_image = np.array([0.5, 1.0, 1.5])
 
             hyper_galaxy_image_0 = np.array([0.5, 1.0, 1.5])
             hyper_galaxy_image_1 = np.array([0.5, 1.0, 1.5])
@@ -2659,14 +2509,14 @@ class TestAbstractPlaneData(object):
             galaxy_0 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_0,
-                hyper_model_image_1d=hyper_model_image_1d,
+                hyper_model_image_1d=hyper_model_image,
                 hyper_galaxy_image_1d=hyper_galaxy_image_0,
             )
 
             galaxy_1 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_1,
-                hyper_model_image_1d=hyper_model_image_1d,
+                hyper_model_image_1d=hyper_model_image,
                 hyper_galaxy_image_1d=hyper_galaxy_image_1,
             )
 
@@ -2681,34 +2531,34 @@ class TestAbstractPlaneData(object):
             ).all()
 
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
-            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
-            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
+            hyper_model_image = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image = np.array([1.0, 5.0, 8.0])
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
 
             contribution_map_1d_0 = hyper_galaxy_0.contribution_map_from_hyper_images(
-                hyper_model_image=hyper_model_image_1d,
-                hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
             )
 
             contribution_map_1d_1 = hyper_galaxy_1.contribution_map_from_hyper_images(
-                hyper_model_image=hyper_model_image_1d,
-                hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
             )
 
             galaxy_0 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_0,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d,
+                hyper_model_image_1d=hyper_model_image,
+                hyper_galaxy_image_1d=hyper_galaxy_image,
             )
 
             galaxy_1 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_1,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d,
+                hyper_model_image_1d=hyper_model_image,
+                hyper_galaxy_image_1d=hyper_galaxy_image,
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[galaxy_0])
@@ -2733,21 +2583,21 @@ class TestAbstractPlaneData(object):
             ).all()
 
         def test__contriution_maps_are_none_for_galaxy_without_hyper_galaxy(self):
-            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
-            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
+            hyper_model_image = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image = np.array([1.0, 5.0, 8.0])
 
             hyper_galaxy = al.HyperGalaxy(contribution_factor=5.0)
 
             contribution_map_1d = hyper_galaxy.contribution_map_from_hyper_images(
-                hyper_model_image=hyper_model_image_1d,
-                hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
             )
 
             galaxy = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d,
+                hyper_model_image_1d=hyper_model_image,
+                hyper_galaxy_image_1d=hyper_galaxy_image,
             )
 
             plane = al.Plane(
@@ -2774,23 +2624,23 @@ class TestAbstractPlaneData(object):
                 contribution_factor=3.0, noise_factor=1.0, noise_power=2.0
             )
 
-            hyper_model_image_1d = np.array([0.5, 1.0, 1.5])
+            hyper_model_image = np.array([0.5, 1.0, 1.5])
 
-            hyper_galaxy_image_1d_0 = np.array([0.0, 1.0, 1.5])
-            hyper_galaxy_image_1d_1 = np.array([1.0, 1.0, 1.5])
+            hyper_galaxy_image_0 = np.array([0.0, 1.0, 1.5])
+            hyper_galaxy_image_1 = np.array([1.0, 1.0, 1.5])
 
             galaxy_0 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_0,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d_0,
+                hyper_model_image_1d=hyper_model_image,
+                hyper_galaxy_image_1d=hyper_galaxy_image_0,
             )
 
             galaxy_1 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_1,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d_1,
+                hyper_model_image_1d=hyper_model_image,
+                hyper_galaxy_image_1d=hyper_galaxy_image_1,
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[galaxy_0, galaxy_1])
@@ -2807,20 +2657,20 @@ class TestAbstractPlaneData(object):
         def test__hyper_noise_maps_1d_are_same_as_hyper_galaxy_calculation(self):
             noise_map_1d = np.array([5.0, 3.0, 1.0])
 
-            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
-            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
+            hyper_model_image = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image = np.array([1.0, 5.0, 8.0])
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
 
             contribution_map_1d_0 = hyper_galaxy_0.contribution_map_from_hyper_images(
-                hyper_model_image=hyper_model_image_1d,
-                hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
             )
 
             contribution_map_1d_1 = hyper_galaxy_1.contribution_map_from_hyper_images(
-                hyper_model_image=hyper_model_image_1d,
-                hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
             )
 
             hyper_noise_map_1d_0 = hyper_galaxy_0.hyper_noise_map_from_contribution_map(
@@ -2834,15 +2684,15 @@ class TestAbstractPlaneData(object):
             galaxy_0 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_0,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d,
+                hyper_model_image_1d=hyper_model_image,
+                hyper_galaxy_image_1d=hyper_galaxy_image,
             )
 
             galaxy_1 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_1,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d,
+                hyper_model_image_1d=hyper_model_image,
+                hyper_galaxy_image_1d=hyper_galaxy_image,
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[galaxy_0])
@@ -2870,20 +2720,20 @@ class TestAbstractPlaneData(object):
         def test__hyper_noise_maps_1d_are_none_for_galaxy_without_hyper_galaxy(self):
             noise_map_1d = np.array([5.0, 3.0, 1.0])
 
-            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
-            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
+            hyper_model_image = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image = np.array([1.0, 5.0, 8.0])
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
 
             contribution_map_1d_0 = hyper_galaxy_0.contribution_map_from_hyper_images(
-                hyper_model_image=hyper_model_image_1d,
-                hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
             )
 
             contribution_map_1d_1 = hyper_galaxy_1.contribution_map_from_hyper_images(
-                hyper_model_image=hyper_model_image_1d,
-                hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
             )
 
             hyper_noise_map_1d_0 = hyper_galaxy_0.hyper_noise_map_from_contribution_map(
@@ -2897,15 +2747,15 @@ class TestAbstractPlaneData(object):
             galaxy_0 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_0,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d,
+                hyper_model_image_1d=hyper_model_image,
+                hyper_galaxy_image_1d=hyper_galaxy_image,
             )
 
             galaxy_1 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_1,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d,
+                hyper_model_image_1d=hyper_model_image,
+                hyper_galaxy_image_1d=hyper_galaxy_image,
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[galaxy_0, al.Galaxy(redshift=0.5)])
@@ -2947,20 +2797,20 @@ class TestAbstractPlaneData(object):
         ):
             noise_map_1d = np.array([5.0, 3.0, 1.0])
 
-            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
-            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
+            hyper_model_image = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image = np.array([1.0, 5.0, 8.0])
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
 
             contribution_map_1d_0 = hyper_galaxy_0.contribution_map_from_hyper_images(
-                hyper_model_image=hyper_model_image_1d,
-                hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
             )
 
             contribution_map_1d_1 = hyper_galaxy_1.contribution_map_from_hyper_images(
-                hyper_model_image=hyper_model_image_1d,
-                hyper_galaxy_image=hyper_galaxy_image_1d,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
             )
 
             hyper_noise_map_1d_0 = hyper_galaxy_0.hyper_noise_map_from_contribution_map(
@@ -2974,15 +2824,15 @@ class TestAbstractPlaneData(object):
             galaxy_0 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_0,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d,
+                hyper_model_image_1d=hyper_model_image,
+                hyper_galaxy_image_1d=hyper_galaxy_image,
             )
 
             galaxy_1 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_1,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d,
+                hyper_model_image_1d=hyper_model_image,
+                hyper_galaxy_image_1d=hyper_galaxy_image,
             )
 
             plane = al.Plane(redshift=0.5, galaxies=[galaxy_0])
@@ -3047,11 +2897,11 @@ class TestPlane(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             g0_deflections = g0.deflections_from_grid(grid=sub_grid_7x7)
@@ -3128,15 +2978,15 @@ class TestPlane(object):
 
     class TestSummarize:
         def test__plane_x2_galaxies__summarize_is_correct(self):
-            sersic_0 = al.light_profiles.SphericalSersic(
+            sersic_0 = al.lp.SphericalSersic(
                 intensity=1.0, effective_radius=2.0, sersic_index=2.0
             )
-            sersic_1 = al.light_profiles.SphericalSersic(
+            sersic_1 = al.lp.SphericalSersic(
                 intensity=2.0, effective_radius=2.0, sersic_index=2.0
             )
 
-            sis_0 = al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
-            sis_1 = al.mass_profiles.SphericalIsothermal(einstein_radius=2.0)
+            sis_0 = al.mp.SphericalIsothermal(einstein_radius=1.0)
+            sis_1 = al.mp.SphericalIsothermal(einstein_radius=2.0)
 
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -3151,7 +3001,7 @@ class TestPlane(object):
             plane = al.Plane(galaxies=[g0, g1], redshift=0.6)
 
             summary_text = plane.summarize_in_units(
-                radii=[al.Length(10.0), al.Length(500.0)],
+                radii=[am.dim.Length(10.0), am.dim.Length(500.0)],
                 whitespace=50,
                 unit_length="arcsec",
                 unit_luminosity="eps",
@@ -3388,44 +3238,57 @@ class TestPlane(object):
 
 class TestPlaneImage:
     def test__compute_xticks_from_grid_correctly(self):
-        plane_image = al.PlaneImage(
-            array=np.ones((3, 3)), pixel_scales=(5.0, 1.0), grid=None
+
+        array = aa.array.ones(shape_2d=(3,3), pixel_scales=(5.0, 1.0))
+
+        plane_image = al.PlaneImage(array=array, grid=None
         )
         assert plane_image.xticks == pytest.approx(
             np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3
         )
 
+        array = aa.array.ones(shape_2d=(3,3), pixel_scales=(5.0, 0.5))
+
         plane_image = al.PlaneImage(
-            array=np.ones((3, 3)), pixel_scales=(5.0, 0.5), grid=None
+            array=array, grid=None
         )
         assert plane_image.xticks == pytest.approx(
             np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3
         )
 
+        array = aa.array.ones(shape_2d=(1,6), pixel_scales=(5.0, 1.0))
+
         plane_image = al.PlaneImage(
-            array=np.ones((1, 6)), pixel_scales=(5.0, 1.0), grid=None
+            array=array, grid=None
         )
         assert plane_image.xticks == pytest.approx(
             np.array([-3.0, -1.0, 1.0, 3.0]), 1e-2
         )
 
     def test__compute_yticks_from_grid_correctly(self):
+
+        array = aa.array.ones(shape_2d=(3,3), pixel_scales=(1.0, 5.0))
+
         plane_image = al.PlaneImage(
-            array=np.ones((3, 3)), pixel_scales=(1.0, 5.0), grid=None
+            array=array, grid=None
         )
         assert plane_image.yticks == pytest.approx(
             np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3
         )
 
+        array = aa.array.ones(shape_2d=(3,3), pixel_scales=(0.5, 5.0))
+
         plane_image = al.PlaneImage(
-            array=np.ones((3, 3)), pixel_scales=(0.5, 5.0), grid=None
+            array=array, grid=None
         )
         assert plane_image.yticks == pytest.approx(
             np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3
         )
 
+        array = aa.array.ones(shape_2d=(6,1), pixel_scales=(1.0, 5.0))
+
         plane_image = al.PlaneImage(
-            array=np.ones((6, 1)), pixel_scales=(1.0, 5.0), grid=None
+            array=array, grid=None
         )
         assert plane_image.yticks == pytest.approx(
             np.array([-3.0, -1.0, 1.0, 3.0]), 1e-2
