@@ -1,17 +1,10 @@
-from os import path
-
-import numpy as np
-import pytest
-
-import autoarray as aa
 import autofit as af
 import autolens as al
-
-from test_autolens.mock.lens import mock_lens_data
-from test_autolens.mock.pipeline import mock_pipeline
+from autofit.optimize.non_linear.non_linear import Paths
 from test_autoarray.unit.conftest import *
 from test_autoastro.unit.conftest import *
-from test_autoarray.mock import mock_data, mock_convolution, mock_mask
+from test_autolens.mock.lens import mock_lens_data
+from test_autolens.mock.pipeline import mock_pipeline
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -22,6 +15,7 @@ def set_config_path():
         path.join(directory, "test_files/config"), path.join(directory, "output")
     )
 
+
 ############
 # LENS #
 ############
@@ -31,12 +25,12 @@ def set_config_path():
 
 @pytest.fixture(name="lens_imaging_7x7")
 def make_lens_imaging_7x7(
-    imaging_7x7,
-    mask_7x7,
-    sub_grid_7x7,
-    blurring_grid_7x7,
-    convolver_7x7,
-    binned_grid_7x7,
+        imaging_7x7,
+        mask_7x7,
+        sub_grid_7x7,
+        blurring_grid_7x7,
+        convolver_7x7,
+        binned_grid_7x7,
 ):
     return mock_lens_data.MockLensImagingData(
         imaging=imaging_7x7,
@@ -50,7 +44,7 @@ def make_lens_imaging_7x7(
 
 @pytest.fixture(name="lens_interferometer_7")
 def make_lens_interferometer_7(
-    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
+        interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
 ):
     return mock_lens_data.MockLensUVPlaneData(
         interferometer=interferometer_7,
@@ -146,7 +140,11 @@ def make_mask_function_7x7():
 @pytest.fixture(name="phase_data_7x7")
 def make_phase_data(mask_function_7x7):
     return al.PhaseData(
-        optimizer_class=mock_pipeline.MockNLO, phase_tag="", phase_name="test_phase"
+        optimizer_class=mock_pipeline.MockNLO,
+        paths=Paths(
+            phase_tag="",
+            phase_name="test_phase"
+        )
     )
 
 
@@ -155,7 +153,9 @@ def make_phase_imaging_7x7(mask_function_7x7):
     return al.PhaseImaging(
         optimizer_class=mock_pipeline.MockNLO,
         mask_function=mask_function_7x7,
-        phase_name="test_phase",
+        paths=Paths(
+            phase_name="test_phase",
+        )
     )
 
 
@@ -176,7 +176,7 @@ def make_hyper_galaxy_image_1_7x7(grid_7x7):
 
 @pytest.fixture(name="contribution_map_7x7")
 def make_contribution_map_7x7(
-    hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy
+        hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy
 ):
     return hyper_galaxy.contribution_map_from_hyper_images(
         hyper_model_image=hyper_model_image_7x7,
@@ -194,7 +194,7 @@ def make_hyper_noise_map_7x7(noise_map_7x7, contribution_map_7x7, hyper_galaxy):
 
 @pytest.fixture(name="results_7x7")
 def make_results(
-    mask_7x7, hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
+        mask_7x7, hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
 ):
     return mock_pipeline.MockResults(
         model_image=hyper_model_image_7x7,

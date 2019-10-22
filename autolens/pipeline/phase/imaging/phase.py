@@ -1,6 +1,7 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
+from autofit.optimize.non_linear.non_linear import Paths
 from autolens.pipeline import phase_tagging
 from autolens.pipeline.phase import data
 from autolens.pipeline.phase import extensions
@@ -19,8 +20,9 @@ class PhaseImaging(data.PhaseData):
 
     def __init__(
             self,
-            phase_name,
+            phase_name=None,
             phase_folders=tuple(),
+            paths=None,
             galaxies=None,
             hyper_image_sky=None,
             hyper_background_noise=None,
@@ -61,11 +63,21 @@ class PhaseImaging(data.PhaseData):
             inner_mask_radii=inner_mask_radii,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
         )
+        if paths is not None:
+            paths = Paths(
+                phase_name=paths.phase_name,
+                phase_tag=phase_tag,
+                phase_folders=paths.phase_folders,
+            )
+        else:
+            paths = Paths(
+                phase_name=phase_name,
+                phase_tag=phase_tag,
+                phase_folders=phase_folders,
+            )
 
         super().__init__(
-            phase_name=phase_name,
-            phase_tag=phase_tag,
-            phase_folders=phase_folders,
+            paths=paths,
             galaxies=galaxies,
             optimizer_class=optimizer_class,
             cosmology=cosmology,

@@ -10,9 +10,7 @@ class AbstractPhase(af.AbstractPhase):
 
     def __init__(
             self,
-            phase_name,
-            phase_tag=None,
-            phase_folders=tuple(),
+            paths,
             optimizer_class=af.MultiNest,
             auto_link_priors=False,
     ):
@@ -24,14 +22,10 @@ class AbstractPhase(af.AbstractPhase):
         ----------
         optimizer_class: class
             The class of a non_linear optimizer
-        phase_name: str
-            The name of this phase
         """
 
         super().__init__(
-            phase_name=phase_name,
-            phase_tag=phase_tag,
-            phase_folders=phase_folders,
+            paths,
             optimizer_class=optimizer_class,
             auto_link_priors=auto_link_priors,
         )
