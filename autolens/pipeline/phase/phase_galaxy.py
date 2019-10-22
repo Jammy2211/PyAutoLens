@@ -1,7 +1,7 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-from automodel.galaxy import galaxy_fit, galaxy_data as gd
+from autoastro.galaxy import galaxy_fit, galaxy_data as gd
 from autolens.pipeline import visualizer
 
 

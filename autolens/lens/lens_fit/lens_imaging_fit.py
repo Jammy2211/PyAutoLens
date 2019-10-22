@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray.fit import fit
-from automodel.galaxy import galaxy as g
+from autoastro.galaxy import galaxy as g
 
 
 class ImagingFit(fit.DataFit):
