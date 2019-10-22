@@ -1,5 +1,6 @@
 import autoarray as aa
 import autolens as al
+import autoastro as astr
 from autolens.data import observation as obs
 
 import numpy as np
@@ -91,20 +92,20 @@ def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer
         shape_2d=(10, 10), pixel_scales=1.0, sub_size=1
     )
 
-    g0 = imaging.Galaxy(
+    g0 = astr.Galaxy(
         redshift=0.5,
-        mass_profile=imaging.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+        mass_profile=astr.mp.SphericalIsothermal(einstein_radius=1.0),
     )
 
-    g1 = imaging.Galaxy(
-        redshift=1.0, light=imaging.light_profiles.SphericalSersic(intensity=1.0)
+    g1 = astr.Galaxy(
+        redshift=1.0, light=astr.lp.SphericalSersic(intensity=1.0)
     )
 
-    tracer = imaging.Tracer.from_galaxies(galaxies=[g0, g1])
+    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
     deflections = tracer.deflections_from_grid(grid=grid)
 
-    imaging_simulated_via_deflections = imaging.SimulatedImaging.from_deflections_galaxies_and_exposure_arrays(
+    imaging_simulated_via_deflections = aa.SimulatedImaging.from_deflections_galaxies_and_exposure_arrays(
         deflections=deflections,
         pixel_scales=1.0,
         galaxies=[g1],
@@ -116,7 +117,7 @@ def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer
 
     tracer_profile_image = tracer.profile_image_from_grid(grid=grid)
 
-    imaging_simulated = imaging.SimulatedImaging.simulate(
+    imaging_simulated = aa.SimulatedImaging.simulate(
         image=tracer_profile_image,
         exposure_time=10000.0,
         background_sky_level=100.0,
@@ -154,19 +155,19 @@ def test__from_tracer__same_as_manual_tracer_input():
         shape_2d=(20, 20), pixel_scales=0.05, sub_size=1
     )
 
-    lens_galaxy = imaging.Galaxy(
+    lens_galaxy = astr.Galaxy(
         redshift=0.5,
-        light=imaging.light_profiles.EllipticalSersic(intensity=1.0),
-        mass=imaging.mass_profiles.EllipticalIsothermal(einstein_radius=1.6),
+        light=astr.lp.EllipticalSersic(intensity=1.0),
+        mass=astr.mp.EllipticalIsothermal(einstein_radius=1.6),
     )
 
-    source_galaxy = imaging.Galaxy(
-        redshift=1.0, light=imaging.light_profiles.EllipticalSersic(intensity=0.3)
+    source_galaxy = astr.Galaxy(
+        redshift=1.0, light=astr.lp.EllipticalSersic(intensity=0.3)
     )
 
-    tracer = imaging.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    imaging_simulated_via_tracer = imaging.SimulatedImaging.from_tracer_grid_and_exposure_arrays(
+    imaging_simulated_via_tracer = aa.SimulatedImaging.from_tracer_grid_and_exposure_arrays(
         tracer=tracer,
         grid=grid,
         exposure_time=10000.0,
@@ -176,7 +177,7 @@ def test__from_tracer__same_as_manual_tracer_input():
         noise_seed=1,
     )
 
-    imaging_simulated = imaging.SimulatedImaging.simulate(
+    imaging_simulated = aa.SimulatedImaging.simulate(
         image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
             grid=grid, psf_shape=(3, 3)
         ),

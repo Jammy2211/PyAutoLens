@@ -18,7 +18,7 @@ class AbstractLensData(object):
     ):
 
         self.mask = mask
-        self._mask_1d = mask.mapping.array_1d_from_array_2d(array_2d=mask)
+        self._mask_1d = mask.mapping.array_from_array_2d(array_2d=mask)
         self.sub_size = mask.sub_size
 
         ### GRIDS ###
