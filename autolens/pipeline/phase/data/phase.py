@@ -8,8 +8,8 @@ from autolens.pipeline.phase.data.result import Result
 
 
 def default_mask_function(image):
-    return aa.Mask.circular(
-        shape=image.shape, pixel_scales=image.pixel_scales, sub_size=1, radius_arcsec=3.0
+    return aa.mask.circular(
+        shape_2d=image.shape, pixel_scales=image.pixel_scales, sub_size=1, radius_arcsec=3.0
     )
 
 
@@ -45,7 +45,7 @@ class PhaseData(abstract.AbstractPhase):
             The class of a non_linear optimizer
         """
 
-        super(PhaseData, self).__init__(
+        super().__init__(
             paths,
             optimizer_class=optimizer_class,
             auto_link_priors=auto_link_priors,
