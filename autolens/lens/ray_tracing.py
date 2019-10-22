@@ -110,7 +110,7 @@ class AbstractTracer(object):
     @property
     def hyper_galaxy_image_1d_of_planes_with_pixelizations(self):
         return [
-            plane.binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization
+            plane.hyper_galaxy_image_1d_of_galaxy_with_pixelization
             for plane in self.planes
         ]
 
@@ -272,8 +272,9 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             for plane_index in range(
                 self.upper_plane_index_with_light_profile, self.total_planes - 1
             ):
+
                 profile_images_of_planes.append(
-                    np.zeros(shape=profile_images_of_planes[0].shape)
+                    grid.mask.mapping.array_from_sub_array_1d(sub_array_1d=np.zeros(shape=profile_images_of_planes[0].shape))
                 )
 
         return profile_images_of_planes
