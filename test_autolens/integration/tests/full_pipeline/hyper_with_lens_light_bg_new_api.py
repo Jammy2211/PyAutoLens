@@ -1,6 +1,6 @@
 import autofit as af
 import autolens as al
-from test import runner
+from test_autolens.integration.tests import runner
 
 test_type = "full_pipeline"
 test_name = "hyper_with_lens_light_bg"

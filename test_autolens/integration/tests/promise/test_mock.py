@@ -1,5 +1,5 @@
-from test import lens_mass__source_x2
-from test import run_a_mock
+from test_autolens.integration.tests.lens__source import lens_mass__source_x2
+from test_autolens.integration.tests.runner import run_a_mock
 
 
 class TestCase:

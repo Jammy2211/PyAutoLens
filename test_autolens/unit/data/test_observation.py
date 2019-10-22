@@ -390,7 +390,7 @@ def test__simulate_imaging_from_lens__source_galaxy__and_write_to_fits(self):
 
     output_data_dir += "observation/"
 
-    observation_imaging_loaded = al.load_imaging_from_fits(
+    observation_imaging_loaded = aa.imaging.from_fits(
         image_path=output_data_dir + "image.fits",
         pixel_scales=0.2,
         psf_path=output_data_dir + "psf.fits",

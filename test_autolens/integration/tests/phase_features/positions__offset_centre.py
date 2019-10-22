@@ -1,6 +1,6 @@
 import autofit as af
 import autolens as al
-from test import runner
+from test_autolens.integration.tests import runner
 
 test_type = "phase_features"
 test_name = "positions__offset_centre"
@@ -10,7 +10,7 @@ data_resolution = "LSST"
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     def mask_function(image):
-        return aa.Mask.circular(
+        return aa.mask.circular(
             shape=image.shape,
             pixel_scales=image.pixel_scales,
             radius_arcsec=3.0,

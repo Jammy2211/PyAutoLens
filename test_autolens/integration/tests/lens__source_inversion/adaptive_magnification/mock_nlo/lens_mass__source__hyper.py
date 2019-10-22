@@ -1,5 +1,5 @@
-from test import lens_mass__source__hyper
-from test import run_a_mock
+from test_autolens.integration.tests.lens__source_inversion.adaptive_magnification import lens_mass__source__hyper
+from test_autolens.integration.tests.runner import run_a_mock
 
 
 class TestCase:

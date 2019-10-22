@@ -271,7 +271,7 @@ class TestLensImagingData(object):
     ):
 
         psf = aa.kernel(np.ones((7, 7)), 1)
-        imaging = al.ImagingData(
+        imaging = aa.imaging(
             np.ones((19, 19)),
             pixel_scales=3.0,
             psf=psf,
