@@ -138,10 +138,10 @@ class LensImagingFit(ImagingFit):
 
         else:
 
-            inversion = tracer.inversion_from_grid_image_1d_noise_map_1d_and_convolver(
+            inversion = tracer.inversion_imaging_from_grid_and_data(
                 grid=lens_data.grid,
-                image_1d=profile_subtracted_image_1d,
-                noise_map_1d=noise_map_1d,
+                image=profile_subtracted_image_1d,
+                noise_map=noise_map_1d,
                 convolver=lens_data.convolver,
                 inversion_uses_border=lens_data.inversion_uses_border,
                 preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
@@ -207,7 +207,7 @@ class LensImagingFit(ImagingFit):
 
             galaxy_model_image_2d_dict[
                 galalxy
-            ] = self.grid.mask.mapping.scaled_array_2d_from_array_1d(array_1d=galaxy_image)
+            ] = self.grid.mapping.scaled_array_2d_from_array_1d(array_1d=galaxy_image)
 
         return galaxy_model_image_2d_dict
 

@@ -212,11 +212,11 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                     self.galaxies,
                 )
             )
-            return grid.mask.mapping.array_from_sub_array_1d(
+            return grid.mapping.array_from_sub_array_1d(
                 sub_array_1d=profile_image.in_1d
             )
         else:
-            return grid.mask.mapping.array_from_sub_array_1d(
+            return grid.mapping.array_from_sub_array_1d(
                 sub_array_1d=np.zeros((grid.shape[0],))
             )
 
@@ -247,9 +247,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             convergence = sum(
                 map(lambda g: g.convergence_from_grid(grid=grid), self.galaxies)
             )
-            return grid.mask.mapping.array_from_sub_array_1d(sub_array_1d=convergence)
+            return grid.mapping.array_from_sub_array_1d(sub_array_1d=convergence)
         else:
-            return grid.mask.mapping.array_from_sub_array_1d(
+            return grid.mapping.array_from_sub_array_1d(
                 sub_array_1d=np.full((grid.shape[0]), 0.0)
             )
 
@@ -275,9 +275,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             potential = sum(
                 map(lambda g: g.potential_from_grid(grid=grid), self.galaxies)
             )
-            return grid.mask.mapping.array_from_sub_array_1d(sub_array_1d=potential)
+            return grid.mapping.array_from_sub_array_1d(sub_array_1d=potential)
         else:
-            return grid.mask.mapping.array_from_sub_array_1d(
+            return grid.mapping.array_from_sub_array_1d(
                 sub_array_1d=np.full((grid.shape[0]), 0.0)
             )
 
@@ -286,9 +286,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             deflections = sum(
                 map(lambda g: g.deflections_from_grid(grid=grid), self.galaxies)
             )
-            return grid.mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=deflections)
+            return grid.mapping.grid_from_sub_grid_1d(sub_grid_1d=deflections)
         else:
-            return grid.mask.mapping.grid_from_sub_grid_1d(
+            return grid.mapping.grid_from_sub_grid_1d(
                 sub_grid_1d=np.full((grid.shape[0], 2), 0.0)
             )
 
@@ -296,7 +296,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
 
         traced_grid = grid - self.deflections_from_grid(grid=grid)
-        return grid.mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=traced_grid)
+        return grid.mapping.grid_from_sub_grid_1d(sub_grid_1d=traced_grid)
 
     def deflections_via_potential_from_grid(self, grid):
         potential = self.potential_from_grid(grid=grid)
@@ -304,7 +304,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         deflections_y_2d = np.gradient(potential.in_2d, grid.in_2d[:, 0, 0], axis=0)
         deflections_x_2d = np.gradient(potential.in_2d, grid.in_2d[0, :, 1], axis=1)
 
-        return grid.mask.mapping.grid_from_sub_grid_2d(
+        return grid.mapping.grid_from_sub_grid_2d(
             sub_grid_2d=np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
         )
 
@@ -312,7 +312,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         deflections = self.deflections_from_grid(grid=grid)
 
-        return grid.mask.mapping.array_from_sub_array_2d(
+        return grid.mapping.array_from_sub_array_2d(
             sub_array_2d=1.0
             - np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
         )
@@ -321,7 +321,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         deflections = self.deflections_from_grid(grid=grid)
 
-        return grid.mask.mapping.array_from_sub_array_2d(
+        return grid.mapping.array_from_sub_array_2d(
             sub_array_2d=-1.0
             * np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
         )
@@ -330,7 +330,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         deflections = self.deflections_from_grid(grid=grid)
 
-        return grid.mask.mapping.array_from_sub_array_2d(
+        return grid.mapping.array_from_sub_array_2d(
             sub_array_2d=-1.0
             * np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
         )
@@ -339,7 +339,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         deflections = self.deflections_from_grid(grid=grid)
 
-        return grid.mask.mapping.array_from_sub_array_2d(
+        return grid.mapping.array_from_sub_array_2d(
             sub_array_2d=1
             - np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
         )
@@ -362,7 +362,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         convergence = 1 - 0.5 * (jacobian[0][0] + jacobian[1][1])
 
-        return grid.mask.mapping.array_from_sub_array_1d(sub_array_1d=convergence)
+        return grid.mapping.array_from_sub_array_1d(sub_array_1d=convergence)
 
     def shear_via_jacobian_from_grid(self, grid):
 
@@ -371,7 +371,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         gamma_1 = 0.5 * (jacobian[1][1] - jacobian[0][0])
         gamma_2 = -0.5 * (jacobian[0][1] + jacobian[1][0])
 
-        return grid.mask.mapping.array_from_sub_array_1d(
+        return grid.mapping.array_from_sub_array_1d(
             sub_array_1d=(gamma_1 ** 2 + gamma_2 ** 2) ** 0.5
         )
 
@@ -381,7 +381,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         shear = self.shear_via_jacobian_from_grid(grid=grid)
 
-        return grid.mask.mapping.array_from_sub_array_1d(
+        return grid.mapping.array_from_sub_array_1d(
             sub_array_1d=1 - convergence - shear
         )
 
@@ -391,7 +391,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         shear = self.shear_via_jacobian_from_grid(grid=grid)
 
-        return grid.mask.mapping.array_from_sub_array_1d(
+        return grid.mapping.array_from_sub_array_1d(
             sub_array_1d=1 - convergence + shear
         )
 
@@ -401,7 +401,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         det_jacobian = jacobian[0][0] * jacobian[1][1] - jacobian[0][1] * jacobian[1][0]
 
-        return grid.mask.mapping.array_from_sub_array_1d(sub_array_1d=1 / det_jacobian)
+        return grid.mapping.array_from_sub_array_1d(sub_array_1d=1 / det_jacobian)
 
     def tangential_critical_curve_from_grid(self, grid):
 
@@ -705,7 +705,6 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
         return self.pixelization.pixelization_grid_from_grid(
             grid=grid,
-            cluster_grid=grid.binned,
             hyper_image=hyper_galaxy_image_1d,
         )
 

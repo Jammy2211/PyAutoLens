@@ -185,7 +185,7 @@ class LensUVPlaneFit(UVPlaneFit):
     #
     #     for galalxy, galaxy_visibilities in self.galaxy_visibilities_1d_dict.items():
     #
-    #         galaxy_visibilities_2d_dict[galalxy] = self.grid.mask.mapping.scaled_array_2d_from_array_1d(
+    #         galaxy_visibilities_2d_dict[galalxy] = self.grid.mapping.scaled_array_2d_from_array_1d(
     #             array_1d=galaxy_visibilities
     #         )
     #

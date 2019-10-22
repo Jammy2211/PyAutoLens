@@ -133,7 +133,7 @@ class Result(data.Result):
 
             binned_image_1d_dict[
                 galaxy
-            ] = binned_grid.mask.mapping.array_1d_from_array_2d(
+            ] = binned_grid.mapping.array_1d_from_array_2d(
                 array_2d=binned_image_2d
             )
 
@@ -186,7 +186,7 @@ class Result(data.Result):
             for path, galaxy in self.path_galaxy_tuples:
                 binned_hyper_galaxy_image_2d_path_dict[
                     path
-                ] = binned_grid.mask.mapping.scaled_array_2d_from_array_1d(
+                ] = binned_grid.mapping.scaled_array_2d_from_array_1d(
                     array_1d=binned_hyper_galaxy_image_1d_path_dict[path]
                 )
 
