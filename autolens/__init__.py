@@ -1,3 +1,4 @@
+from automodel.galaxy import Galaxy, GalaxyModel
 from autolens.lens import ray_tracing
 from autolens.lens.lens_data import AbstractLensData, LensImagingData, LensUVPlaneData
 from autolens.lens.lens_fit import (

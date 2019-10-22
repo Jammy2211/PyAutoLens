@@ -1,7 +1,7 @@
 import autofit as af
 from autolens import exc
-from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
+from autoarray.operators.inversion import pixelizations as pix
+from autoarray.operators.inversion import regularization as reg
 
 
 class PipelineSettings(object):
