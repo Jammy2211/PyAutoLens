@@ -6,8 +6,8 @@ from typing import cast
 import autofit as af
 from autolens.lens import lens_data as ld
 from autolens.lens.lens_fit import lens_imaging_fit
-from automodel.galaxy import galaxy as g
-from automodel.hyper import hyper_data as hd
+from autoastro.galaxy import galaxy as g
+from autoastro.hyper import hyper_data as hd
 from autolens.pipeline.phase import imaging
 from autolens.pipeline import visualizer
 from .hyper_phase import HyperPhase
