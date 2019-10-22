@@ -37,8 +37,8 @@ mask = aa.Mask.circular(shape=imaging.shape, pixel_scales=imaging.pixel_scales, 
 
 # We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) & our source galaxy 
 # a light profile (an elliptical Sersic).
-lens_mass_profile = al.mass_profiles.EllipticalIsothermal
-source_light_profile = al.light_profiles.EllipticalSersic
+lens_mass_profile = al.mp.EllipticalIsothermal
+source_light_profile = al.lp.EllipticalSersic
 
 # To setup our model galaxies, we use the GalaxyModel class, which represents a galaxy whose parameters 
 # are variable & fitted for by PyAutoLens. The galaxies are also assigned redshifts.

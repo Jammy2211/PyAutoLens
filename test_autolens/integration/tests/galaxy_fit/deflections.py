@@ -27,7 +27,7 @@ def galaxy_fit_phase():
 
     galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mass_profiles.SphericalIsothermal(
+        mass=al.mp.SphericalIsothermal(
             centre=(0.0, 0.0), einstein_radius=1.0
         ),
     )
@@ -48,7 +48,7 @@ def galaxy_fit_phase():
     phase1 = al.PhaseGalaxy(
         phase_name=test_name + "/",
         galaxies=dict(
-            gal=al.GalaxyModel(redshift=0.5, light=al.mass_profiles.SphericalIsothermal)
+            gal=al.GalaxyModel(redshift=0.5, light=al.mp.SphericalIsothermal)
         ),
         use_deflections=True,
         sub_size=4,

@@ -89,10 +89,10 @@ class TestPhase(object):
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.GalaxyModel(
-                    redshift=0.5, light=al.light_profiles.EllipticalSersic
+                    redshift=0.5, light=al.lp.EllipticalSersic
                 ),
                 source=al.GalaxyModel(
-                    redshift=1.0, light=al.light_profiles.EllipticalSersic
+                    redshift=1.0, light=al.lp.EllipticalSersic
                 ),
             ),
             mask_function=mask_function_7x7,
@@ -223,7 +223,7 @@ class TestPhase(object):
         # noinspection PyTypeChecker
 
         lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=0.1)
+            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -300,7 +300,7 @@ class TestPhase(object):
         self, imaging_7x7, mask_function_7x7
     ):
         lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=0.1)
+            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -330,7 +330,7 @@ class TestPhase(object):
         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
         lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=0.1)
+            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
         phase_imaging_7x7 = al.PhaseImaging(

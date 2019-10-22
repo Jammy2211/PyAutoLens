@@ -21,14 +21,14 @@ def fit_with_offset_centre(centre):
     # via a tracer, setup the rectangular mapper, etc.
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mass_profiles.EllipticalIsothermal(
+        mass=al.mp.EllipticalIsothermal(
             centre=(1.0, 1.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
         ),
     )
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pixelizations.VoronoiMagnification(shape=(20, 20)),
-        regularization=al.regularization.Constant(coefficient=1.0),
+        pixelization=al.pix.VoronoiMagnification(shape=(20, 20)),
+        regularization=al.reg.Constant(coefficient=1.0),
     )
 
     lens_data = al.LensData(imaging=imaging, mask=mask)

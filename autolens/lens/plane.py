@@ -98,10 +98,10 @@ class AbstractPlane(object):
             )
 
     @property
-    def binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization(self):
+    def hyper_galaxy_image_1d_of_galaxy_with_pixelization(self):
         galaxies_with_pixelization = self.galaxies_with_pixelization
         if galaxies_with_pixelization:
-            return galaxies_with_pixelization[0].binned_hyper_galaxy_image_1d
+            return galaxies_with_pixelization[0].hyper_galaxy_image_1d
 
     @property
     def has_hyper_galaxy(self):
@@ -118,7 +118,7 @@ class AbstractPlane(object):
 
         for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
             mass_profile_centres[galaxy_index] = [
-                profile.mask_centre for profile in galaxy.mass_profiles
+                profile.centre for profile in galaxy.mass_profiles
             ]
         return mass_profile_centres
 
@@ -680,9 +680,9 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
     def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
-        profile_image_1d = self.profile_image_from_grid(grid=grid)
+        profile_image = self.profile_image_from_grid(grid=grid)
 
-        return transformer.visibilities_from_image(image=profile_image_1d)
+        return transformer.visibilities_from_image(image=profile_image)
 
     def profile_visibilities_of_galaxies_from_grid_and_transformer(
         self, grid, transformer
@@ -699,14 +699,14 @@ class AbstractPlaneData(AbstractPlaneLensing):
         if not self.has_pixelization:
             return None
 
-        binned_hyper_galaxy_image_1d = (
-            self.binned_hyper_galaxy_image_1d_of_galaxy_with_pixelization
+        hyper_galaxy_image_1d = (
+            self.hyper_galaxy_image_1d_of_galaxy_with_pixelization
         )
 
         return self.pixelization.pixelization_grid_from_grid(
             grid=grid,
             cluster_grid=grid.binned,
-            hyper_image=binned_hyper_galaxy_image_1d,
+            hyper_image=hyper_galaxy_image_1d,
         )
 
     def mapper_from_grid_and_pixelization_grid(
@@ -737,7 +737,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
     def plane_image_from_grid(self, grid):
         return lens_util.plane_image_of_galaxies_from_grid(
-            shape=grid.mask.shape, grid=grid.unmasked_grid, galaxies=self.galaxies
+            shape=grid.mask.shape, grid=grid.geometry.unmasked_grid, galaxies=self.galaxies
         )
 
     def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
@@ -928,9 +928,15 @@ class PlanePositions(object):
         )
 
 
-class PlaneImage(arrays.Array):
-    def __init__(self, array, pixel_scales, grid, origin=(0.0, 0.0)):
+class PlaneImage(object):
+    def __init__(self, array, grid):
+        self.array = array
         self.grid = grid
-        super(PlaneImage, self).__init__(
-            array=array, pixel_scales=pixel_scales, origin=origin
-        )
+
+    @property
+    def xticks(self):
+        return self.array.mask.geometry.xticks
+
+    @property
+    def yticks(self):
+        return self.array.mask.geometry.yticks

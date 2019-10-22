@@ -42,10 +42,10 @@ class TestAbstractTracer(object):
 
             gal = al.Galaxy(redshift=0.5)
             gal_lp = al.Galaxy(
-                redshift=0.5, light_profile=al.light_profiles.LightProfile()
+                redshift=0.5, light_profile=al.lp.LightProfile()
             )
             gal_mp = al.Galaxy(
-                redshift=0.5, mass_profile=al.mass_profiles.SphericalIsothermal()
+                redshift=0.5, mass_profile=al.mp.SphericalIsothermal()
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
@@ -81,10 +81,10 @@ class TestAbstractTracer(object):
         def test__has_galaxy_with_mass_profile(self, sub_grid_7x7):
             gal = al.Galaxy(redshift=0.5)
             gal_lp = al.Galaxy(
-                redshift=0.5, light_profile=al.light_profiles.LightProfile()
+                redshift=0.5, light_profile=al.lp.LightProfile()
             )
             gal_mp = al.Galaxy(
-                redshift=0.5, mass_profile=al.mass_profiles.SphericalIsothermal()
+                redshift=0.5, mass_profile=al.mp.SphericalIsothermal()
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
@@ -112,8 +112,8 @@ class TestAbstractTracer(object):
             gal = al.Galaxy(redshift=0.5)
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Constant(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Constant(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
@@ -126,8 +126,8 @@ class TestAbstractTracer(object):
 
             gal_pix = al.Galaxy(
                 redshift=1.0,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Constant(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Constant(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal])
@@ -136,14 +136,14 @@ class TestAbstractTracer(object):
 
             gal_pix_0 = al.Galaxy(
                 redshift=0.6,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Constant(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Constant(),
             )
 
             gal_pix_1 = al.Galaxy(
                 redshift=2.0,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Constant(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Constant(),
             )
 
             gal0 = al.Galaxy(redshift=0.25)
@@ -159,12 +159,12 @@ class TestAbstractTracer(object):
         def test__has_galaxy_with_pixelization(self, sub_grid_7x7):
             gal = al.Galaxy(redshift=0.5)
             gal_lp = al.Galaxy(
-                redshift=0.5, light_profile=al.light_profiles.LightProfile()
+                redshift=0.5, light_profile=al.lp.LightProfile()
             )
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Constant(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Constant(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
@@ -190,12 +190,12 @@ class TestAbstractTracer(object):
         def test__has_galaxy_with_regularization(self, sub_grid_7x7):
             gal = al.Galaxy(redshift=0.5)
             gal_lp = al.Galaxy(
-                redshift=0.5, light_profile=al.light_profiles.LightProfile()
+                redshift=0.5, light_profile=al.lp.LightProfile()
             )
             gal_reg = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Constant(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Constant(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
@@ -222,7 +222,7 @@ class TestAbstractTracer(object):
 
             gal = al.Galaxy(redshift=0.5)
             gal_lp = al.Galaxy(
-                redshift=0.5, light_profile=al.light_profiles.LightProfile()
+                redshift=0.5, light_profile=al.lp.LightProfile()
             )
             gal_hyper = al.Galaxy(redshift=0.5, hyper_galaxy=al.HyperGalaxy())
 
@@ -254,16 +254,16 @@ class TestAbstractTracer(object):
             g3 = al.Galaxy(redshift=3.0)
 
             g0_lp = al.Galaxy(
-                redshift=0.5, light_profile=al.light_profiles.LightProfile()
+                redshift=0.5, light_profile=al.lp.LightProfile()
             )
             g1_lp = al.Galaxy(
-                redshift=1.0, light_profile=al.light_profiles.LightProfile()
+                redshift=1.0, light_profile=al.lp.LightProfile()
             )
             g2_lp = al.Galaxy(
-                redshift=2.0, light_profile=al.light_profiles.LightProfile()
+                redshift=2.0, light_profile=al.lp.LightProfile()
             )
             g3_lp = al.Galaxy(
-                redshift=3.0, light_profile=al.light_profiles.LightProfile()
+                redshift=3.0, light_profile=al.lp.LightProfile()
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0_lp])
@@ -305,8 +305,8 @@ class TestAbstractTracer(object):
             gal = al.Galaxy(redshift=0.5)
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Constant(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Constant(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
@@ -319,8 +319,8 @@ class TestAbstractTracer(object):
 
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Constant(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Constant(),
                 binned_hyper_galaxy_image_1d=1,
             )
 
@@ -334,15 +334,15 @@ class TestAbstractTracer(object):
 
             gal_pix0 = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Constant(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Constant(),
                 binned_hyper_galaxy_image_1d=1,
             )
 
             gal_pix1 = al.Galaxy(
                 redshift=2.0,
-                pixelization=al.pixelizations.Pixelization(),
-                regularization=al.regularization.Constant(),
+                pixelization=al.pix.Pixelization(),
+                regularization=al.reg.Constant(),
                 binned_hyper_galaxy_image_1d=2,
             )
 
@@ -908,27 +908,27 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=2.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=2.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g2 = al.Galaxy(
                 redshift=0.1,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g3 = al.Galaxy(
                 redshift=3.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g4 = al.Galaxy(
                 redshift=1.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g5 = al.Galaxy(
                 redshift=3.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -1020,27 +1020,27 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=2.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=2.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g2 = al.Galaxy(
                 redshift=0.1,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g3 = al.Galaxy(
                 redshift=3.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g4 = al.Galaxy(
                 redshift=1.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g5 = al.Galaxy(
                 redshift=3.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -1102,15 +1102,15 @@ class TestAbstractTracerLensing(object):
         def test__x1_plane__single_plane_tracer(self, sub_grid_7x7):
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
             g2 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=3.0),
+                light_profile=al.lp.EllipticalSersic(intensity=3.0),
             )
 
             image_plane = al.Plane(galaxies=[g0, g1, g2])
@@ -1131,11 +1131,11 @@ class TestAbstractTracerLensing(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             image_plane = al.Plane(galaxies=[g0])
@@ -1157,12 +1157,12 @@ class TestAbstractTracerLensing(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             image_plane = al.Plane(galaxies=[g0])
@@ -1184,15 +1184,15 @@ class TestAbstractTracerLensing(object):
         def test__x2_planes__image__compare_to_galaxy_images(self, sub_grid_7x7):
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
             g2 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=3.0),
+                light_profile=al.lp.EllipticalSersic(intensity=3.0),
             )
 
             g0_image = g0.profile_image_from_grid(grid=sub_grid_7x7)
@@ -1212,14 +1212,14 @@ class TestAbstractTracerLensing(object):
         def test__x2_planes__returns_image_of_each_plane(self, sub_grid_7x7):
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
 
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
 
             image_plane = al.Plane(galaxies=[g0])
@@ -1243,15 +1243,15 @@ class TestAbstractTracerLensing(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.1,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.1),
+                light_profile=al.lp.EllipticalSersic(intensity=0.1),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.2),
+                light_profile=al.lp.EllipticalSersic(intensity=0.2),
             )
             g2 = al.Galaxy(
                 redshift=2.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.3),
+                light_profile=al.lp.EllipticalSersic(intensity=0.3),
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -1282,15 +1282,15 @@ class TestAbstractTracerLensing(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.1,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.1),
+                light_profile=al.lp.EllipticalSersic(intensity=0.1),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.2),
+                light_profile=al.lp.EllipticalSersic(intensity=0.2),
             )
             g2 = al.Galaxy(
                 redshift=2.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.3),
+                light_profile=al.lp.EllipticalSersic(intensity=0.3),
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -1319,23 +1319,23 @@ class TestAbstractTracerLensing(object):
         def test__x3_planes__same_as_above_more_galaxies(self, sub_grid_7x7):
             g0 = al.Galaxy(
                 redshift=0.1,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.1),
+                light_profile=al.lp.EllipticalSersic(intensity=0.1),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.2),
+                light_profile=al.lp.EllipticalSersic(intensity=0.2),
             )
             g2 = al.Galaxy(
                 redshift=2.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.3),
+                light_profile=al.lp.EllipticalSersic(intensity=0.3),
             )
             g3 = al.Galaxy(
                 redshift=0.1,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.4),
+                light_profile=al.lp.EllipticalSersic(intensity=0.4),
             )
             g4 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.5),
+                light_profile=al.lp.EllipticalSersic(intensity=0.5),
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -1367,11 +1367,11 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.1,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.1),
+                light_profile=al.lp.EllipticalSersic(intensity=0.1),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.2),
+                light_profile=al.lp.EllipticalSersic(intensity=0.2),
             )
             g2 = al.Galaxy(redshift=2.0)
 
@@ -1414,15 +1414,15 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
             g2 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=3.0),
+                light_profile=al.lp.EllipticalSersic(intensity=3.0),
             )
 
             padded_g0_image = g0.profile_image_from_grid(grid=padded_grid)
@@ -1451,15 +1451,15 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.1,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.1),
+                light_profile=al.lp.EllipticalSersic(intensity=0.1),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.2),
+                light_profile=al.lp.EllipticalSersic(intensity=0.2),
             )
             g2 = al.Galaxy(
                 redshift=2.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.3),
+                light_profile=al.lp.EllipticalSersic(intensity=0.3),
             )
 
             padded_g0_image = g0.profile_image_from_grid(grid=padded_grid)
@@ -1485,22 +1485,22 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             g2 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=3.0),
+                light_profile=al.lp.EllipticalSersic(intensity=3.0),
             )
 
             g3 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=5.0),
+                light_profile=al.lp.EllipticalSersic(intensity=5.0),
             )
 
             g0_image_1d = g0.profile_image_from_grid(grid=sub_grid_7x7)
@@ -1554,7 +1554,7 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(redshift=0.5)
 
@@ -1577,15 +1577,15 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
             g2 = al.Galaxy(
                 redshift=1.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=3.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=3.0),
             )
 
             g0_convergence = g0.convergence_from_grid(grid=sub_grid_7x7)
@@ -1641,7 +1641,7 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(redshift=0.5)
 
@@ -1662,15 +1662,15 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
             g2 = al.Galaxy(
                 redshift=1.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=3.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=3.0),
             )
 
             g0_potential = g0.potential_from_grid(grid=sub_grid_7x7)
@@ -1726,7 +1726,7 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(redshift=0.5)
 
@@ -1755,15 +1755,15 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
             g2 = al.Galaxy(
                 redshift=1.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=3.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=3.0),
             )
 
             g0_deflections = g0.deflections_from_grid(grid=sub_grid_7x7)
@@ -1816,7 +1816,7 @@ class TestAbstractTracerLensing(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0
                 ),
             )
@@ -1843,25 +1843,25 @@ class TestAbstractTracerLensing(object):
         def test__same_as_above_but_for_multi_tracing(self, sub_grid_7x7):
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0
                 ),
             )
             g1 = al.Galaxy(
                 redshift=0.75,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=2.0
                 ),
             )
             g2 = al.Galaxy(
                 redshift=1.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=3.0
                 ),
             )
             g3 = al.Galaxy(
                 redshift=1.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=4.0
                 ),
             )
@@ -1912,13 +1912,13 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0
                 ),
             )
             g1 = al.Galaxy(
                 redshift=0.75,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=2.0
                 ),
             )
@@ -1940,13 +1940,13 @@ class TestAbstractTracerLensing(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0
                 ),
             )
             g1 = al.Galaxy(
                 redshift=0.75,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=2.0
                 ),
             )
@@ -1964,11 +1964,11 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=1.0,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -2027,12 +2027,12 @@ class TestAbstractTracerLensing(object):
 
             g0 = al.Galaxy(
                 redshift=1.0,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                mass=al.mass_profiles.SphericalIsothermal(einstein_radius=2.0),
-                shear=al.mass_profiles.ExternalShear(),
+                mass=al.mp.SphericalIsothermal(einstein_radius=2.0),
+                shear=al.mp.ExternalShear(),
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -2096,12 +2096,12 @@ class TestAbstractTracerData(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
@@ -2142,12 +2142,12 @@ class TestAbstractTracerData(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
@@ -2186,12 +2186,12 @@ class TestAbstractTracerData(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
@@ -2236,12 +2236,12 @@ class TestAbstractTracerData(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
@@ -2284,22 +2284,22 @@ class TestAbstractTracerData(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             g2 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=3.0),
+                light_profile=al.lp.EllipticalSersic(intensity=3.0),
             )
 
             g3 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=5.0),
+                light_profile=al.lp.EllipticalSersic(intensity=5.0),
             )
 
             g0_blurred_image = g0.blurred_profile_image_from_grid_and_convolver(
@@ -2371,19 +2371,19 @@ class TestAbstractTracerData(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.1),
+                light_profile=al.lp.EllipticalSersic(intensity=0.1),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.2),
+                light_profile=al.lp.EllipticalSersic(intensity=0.2),
             )
             g2 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.3),
+                light_profile=al.lp.EllipticalSersic(intensity=0.3),
             )
             g3 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=0.4),
+                light_profile=al.lp.EllipticalSersic(intensity=0.4),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, g3])
@@ -2482,13 +2482,13 @@ class TestAbstractTracerData(object):
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
 
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             g0_image_1d = g0.profile_image_from_grid(grid=sub_grid_7x7)
@@ -2517,11 +2517,11 @@ class TestAbstractTracerData(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
@@ -2553,22 +2553,22 @@ class TestAbstractTracerData(object):
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
             )
             g1 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
-                light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+                light_profile=al.lp.EllipticalSersic(intensity=2.0),
             )
 
             g2 = al.Galaxy(
                 redshift=0.5,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=3.0),
+                light_profile=al.lp.EllipticalSersic(intensity=3.0),
             )
 
             g3 = al.Galaxy(
                 redshift=1.0,
-                light_profile=al.light_profiles.EllipticalSersic(intensity=5.0),
+                light_profile=al.lp.EllipticalSersic(intensity=5.0),
             )
 
             g0_visibilities = g0.profile_visibilities_from_grid_and_transformer(
@@ -2695,7 +2695,7 @@ class TestAbstractTracerData(object):
 
             galaxy_no_pix = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=0.5
                 ),
             )
@@ -2739,7 +2739,7 @@ class TestAbstractTracerData(object):
 
             galaxy_no_pix0 = al.Galaxy(
                 redshift=0.25,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=0.5
                 ),
             )
@@ -2805,7 +2805,7 @@ class TestAbstractTracerData(object):
 
             galaxy_no_pix0 = al.Galaxy(
                 redshift=0.25,
-                mass_profile=al.mass_profiles.SphericalIsothermal(
+                mass_profile=al.mp.SphericalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=0.5
                 ),
             )
@@ -2842,8 +2842,8 @@ class TestAbstractTracerData(object):
             self, sub_grid_7x7, image_1d_7x7, noise_map_1d_7x7, convolver_7x7
         ):
 
-            pix = al.pixelizations.Rectangular(shape=(3, 3))
-            reg = al.regularization.Constant(coefficient=0.0)
+            pix = al.pix.Rectangular(shape=(3, 3))
+            reg = al.reg.Constant(coefficient=0.0)
 
             g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
@@ -3030,19 +3030,19 @@ class TestTracer(object):
         # ):
         #
         #     g0 = al.Galaxy(
-        #         redshift=2.0, mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+        #         redshift=2.0, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
         #     )
         #     g1 = al.Galaxy(
-        #         redshift=2.0, mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+        #         redshift=2.0, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
         #     )
         #     g2 = al.Galaxy(
-        #         redshift=0.1, mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+        #         redshift=0.1, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
         #     )
         #     g3 = al.Galaxy(
         #         redshift=3.0,
         #     )
         #     g4 = al.Galaxy(
-        #         redshift=1.0, mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+        #         redshift=1.0, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
         #     )
         #     g5 = al.Galaxy(
         #         redshift=3.0,
@@ -3369,27 +3369,27 @@ class TestTacerFixedSlices(object):
 
             lens_g0 = al.Galaxy(
                 redshift=0.5,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             source_g0 = al.Galaxy(
                 redshift=2.0,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             los_g0 = al.Galaxy(
                 redshift=0.1,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             los_g1 = al.Galaxy(
                 redshift=0.2,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             los_g2 = al.Galaxy(
                 redshift=0.4,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
             los_g3 = al.Galaxy(
                 redshift=0.6,
-                mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
 
             tracer = al.Tracer.sliced_tracer_from_lens_line_of_sight_and_source_galaxies(
@@ -3541,27 +3541,27 @@ class TestTracerPositions(object):
 
         g0 = al.Galaxy(
             redshift=2.0,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
         g1 = al.Galaxy(
             redshift=2.0,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
         g2 = al.Galaxy(
             redshift=0.1,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
         g3 = al.Galaxy(
             redshift=3.0,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
         g4 = al.Galaxy(
             redshift=1.0,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
         g5 = al.Galaxy(
             redshift=3.0,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
 
         tracer = al.Tracer.from_galaxies(
@@ -3615,27 +3615,27 @@ class TestTracerPositions(object):
 
         g0 = al.Galaxy(
             redshift=2.0,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
         g1 = al.Galaxy(
             redshift=2.0,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
         g2 = al.Galaxy(
             redshift=0.1,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
         g3 = al.Galaxy(
             redshift=3.0,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
         g4 = al.Galaxy(
             redshift=1.0,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
         g5 = al.Galaxy(
             redshift=3.0,
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
 
         tracer = al.Tracer.from_galaxies(

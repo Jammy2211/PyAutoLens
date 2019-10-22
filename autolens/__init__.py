@@ -1,4 +1,7 @@
-from automodel.galaxy import Galaxy, GalaxyModel
+from autoarray.operators.inversion import pixelizations as pix, regularization as reg
+from automodel.galaxy.galaxy import Galaxy, HyperGalaxy
+from automodel.galaxy.galaxy_model import GalaxyModel
+from automodel.profiles import light_profiles as lp, mass_profiles as mp, light_and_mass_profiles as lmp
 from autolens.lens import ray_tracing
 from autolens.lens.lens_data import AbstractLensData, LensImagingData, LensUVPlaneData
 from autolens.lens.lens_fit import (

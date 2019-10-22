@@ -18,23 +18,14 @@ def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
     )
     origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
-    uniform_grid = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-        mask=np.full(shape=shape, fill_value=False),
-        pixel_scales=pixel_scales,
-        sub_size=1,
-        origin=origin,
-    )
+    uniform_grid = aa.grid.uniform(shape_2d=shape, pixel_scales=pixel_scales, sub_size=1, origin=origin)
 
-    image_1d = sum(
+    image = sum(
         map(lambda g: g.profile_image_from_grid(grid=uniform_grid), galaxies)
     )
 
-    image_2d = array_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
-        sub_array_1d=image_1d, mask=np.full(fill_value=False, shape=shape), sub_size=1
-    )
-
     return pl.PlaneImage(
-        array=image_2d, pixel_scales=pixel_scales, grid=grid, origin=origin
+        array=image, grid=grid,
     )
 
 

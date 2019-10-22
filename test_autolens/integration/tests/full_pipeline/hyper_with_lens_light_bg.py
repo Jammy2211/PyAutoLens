@@ -11,8 +11,8 @@ data_resolution = "LSST"
 def make_pipeline(
     name,
     phase_folders,
-    pipeline_pixelization=al.pixelizations.VoronoiBrightnessImage,
-    pipeline_regularization=al.regularization.AdaptiveBrightness,
+    pipeline_pixelization=al.pix.VoronoiBrightnessImage,
+    pipeline_regularization=al.reg.AdaptiveBrightness,
     optimizer_class=af.MultiNest,
 ):
 
@@ -20,7 +20,7 @@ def make_pipeline(
         phase_name="phase_1__lens_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, light=al.light_profiles.EllipticalSersic)
+            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic)
         ),
         optimizer_class=optimizer_class,
     )
@@ -44,7 +44,7 @@ def make_pipeline(
 
             ## Lens Mass, Move centre priors to centre of lens light ###
 
-            self.galaxies.lens.mass.mask_centre = (
+            self.galaxies.lens.mass.centre = (
                 results.from_phase("phase_1__lens_sersic")
                 .variable_absolute(a=0.1)
                 .galaxies.lens.light.centre
@@ -68,12 +68,12 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                light=al.lp.EllipticalSersic,
+                mass=al.mp.EllipticalIsothermal,
+                shear=al.mp.ExternalShear,
             ),
             source=al.GalaxyModel(
-                redshift=1.0, light=al.light_profiles.EllipticalSersic
+                redshift=1.0, light=al.lp.EllipticalSersic
             ),
         ),
         optimizer_class=optimizer_class,
@@ -130,12 +130,12 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                light=al.lp.EllipticalSersic,
+                mass=al.mp.EllipticalIsothermal,
+                shear=al.mp.ExternalShear,
             ),
             source=al.GalaxyModel(
-                redshift=1.0, light=al.light_profiles.EllipticalSersic
+                redshift=1.0, light=al.lp.EllipticalSersic
             ),
         ),
         optimizer_class=optimizer_class,
@@ -184,14 +184,14 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                light=al.lp.EllipticalSersic,
+                mass=al.mp.EllipticalIsothermal,
+                shear=al.mp.ExternalShear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pixelizations.VoronoiMagnification,
-                regularization=al.regularization.Constant,
+                pixelization=al.pix.VoronoiMagnification,
+                regularization=al.reg.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -245,14 +245,14 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                light=al.lp.EllipticalSersic,
+                mass=al.mp.EllipticalIsothermal,
+                shear=al.mp.ExternalShear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pixelizations.VoronoiMagnification,
-                regularization=al.regularization.Constant,
+                pixelization=al.pix.VoronoiMagnification,
+                regularization=al.reg.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -304,9 +304,9 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                light=al.lp.EllipticalSersic,
+                mass=al.mp.EllipticalIsothermal,
+                shear=al.mp.ExternalShear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
@@ -369,9 +369,9 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                light=al.lp.EllipticalSersic,
+                mass=al.mp.EllipticalIsothermal,
+                shear=al.mp.ExternalShear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,

@@ -16,11 +16,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                mass=al.mass_profiles.EllipticalIsothermal,
+                light=al.lp.EllipticalSersic,
+                mass=al.mp.EllipticalIsothermal,
             ),
             source=al.GalaxyModel(
-                redshift=1.0, light=al.light_profiles.EllipticalSersic
+                redshift=1.0, light=al.lp.EllipticalSersic
             ),
         ),
         optimizer_class=optimizer_class,
@@ -44,14 +44,14 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                light=al.lp.EllipticalSersic,
+                mass=al.mp.EllipticalIsothermal,
+                shear=al.mp.ExternalShear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pixelizations.VoronoiBrightnessImage,
-                regularization=al.regularization.AdaptiveBrightness,
+                pixelization=al.pix.VoronoiBrightnessImage,
+                regularization=al.reg.AdaptiveBrightness,
             ),
         ),
         inversion_pixel_limit=50,
@@ -84,14 +84,14 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic,
-                mass=al.mass_profiles.EllipticalIsothermal,
-                shear=al.mass_profiles.ExternalShear,
+                light=al.lp.EllipticalSersic,
+                mass=al.mp.EllipticalIsothermal,
+                shear=al.mp.ExternalShear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pixelizations.VoronoiBrightnessImage,
-                regularization=al.regularization.AdaptiveBrightness,
+                pixelization=al.pix.VoronoiBrightnessImage,
+                regularization=al.reg.AdaptiveBrightness,
             ),
         ),
         inversion_pixel_limit=50,

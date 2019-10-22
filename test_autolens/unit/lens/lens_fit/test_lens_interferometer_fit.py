@@ -24,8 +24,8 @@ class TestFitProperties:
 
         g2 = al.Galaxy(
             redshift=2.0,
-            pixelization=al.pixelizations.Rectangular(),
-            regularization=al.regularization.Constant(),
+            pixelization=al.pix.Rectangular(),
+            regularization=al.reg.Constant(),
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
@@ -38,20 +38,20 @@ class TestFitProperties:
 
         g0 = al.Galaxy(
             redshift=0.5,
-            pixelization=al.pixelizations.Rectangular(),
-            regularization=al.regularization.Constant(),
+            pixelization=al.pix.Rectangular(),
+            regularization=al.reg.Constant(),
         )
 
         g1 = al.Galaxy(
             redshift=1.0,
-            pixelization=al.pixelizations.Rectangular(),
-            regularization=al.regularization.Constant(),
+            pixelization=al.pix.Rectangular(),
+            regularization=al.reg.Constant(),
         )
 
         g2 = al.Galaxy(
             redshift=2.0,
-            pixelization=al.pixelizations.Rectangular(),
-            regularization=al.regularization.Constant(),
+            pixelization=al.pix.Rectangular(),
+            regularization=al.reg.Constant(),
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
@@ -168,7 +168,7 @@ class TestLikelihood:
 
         g0 = al.Galaxy(
             redshift=0.5,
-            light_profile=al.light_profiles.EllipticalSersic(intensity=0.001),
+            light_profile=al.lp.EllipticalSersic(intensity=0.001),
         )
 
         profile_image = g0.profile_image_from_grid(grid=lens_interferometer_7.grid)
@@ -264,13 +264,13 @@ class TestCompareToManualProfilesOnly:
 
         g0 = al.Galaxy(
             redshift=0.5,
-            light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-            mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+            light_profile=al.lp.EllipticalSersic(intensity=1.0),
+            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
         )
 
         g1 = al.Galaxy(
             redshift=1.0,
-            light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+            light_profile=al.lp.EllipticalSersic(intensity=1.0),
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
@@ -343,12 +343,12 @@ class TestCompareToManualProfilesOnly:
     # ):
     #     g0 = al.Galaxy(
     #         redshift=0.5,
-    #         light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-    #         mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+    #         light_profile=al.lp.EllipticalSersic(intensity=1.0),
+    #         mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
     #     )
     #     g1 = al.Galaxy(
     #         redshift=1.0,
-    #         light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+    #         light_profile=al.lp.EllipticalSersic(intensity=1.0),
     #     )
     #     g2 = al.Galaxy(redshift=1.0)
     #
@@ -429,13 +429,13 @@ class TestCompareToManualProfilesOnly:
     #
     #     g0 = al.Galaxy(
     #         redshift=0.5,
-    #         light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
-    #         mass_profile=al.mass_profiles.SphericalIsothermal(einstein_radius=1.0),
+    #         light_profile=al.lp.EllipticalSersic(intensity=1.0),
+    #         mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
     #     )
     #
     #     g1 = al.Galaxy(
     #         redshift=1.0,
-    #         light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+    #         light_profile=al.lp.EllipticalSersic(intensity=1.0),
     #     )
     #
     #     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
@@ -498,8 +498,8 @@ class TestCompareToManualProfilesOnly:
 # class TestCompareToManualInversionOnly:
 #     def test___all_lens_fit_quantities__no_hyper_methods(self, lens_interferometer_7):
 #
-#         pix = al.pixelizations.Rectangular(shape=(3, 3))
-#         reg = al.regularization.Constant(coefficient=1.0)
+#         pix = al.pix.Rectangular(shape=(3, 3))
+#         reg = al.reg.Constant(coefficient=1.0)
 #
 #         g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 #
@@ -607,8 +607,8 @@ class TestCompareToManualProfilesOnly:
 #     def test___lens_fit_galaxy_image_dict__has_inversion_reconstructed_data(
 #         self, lens_interferometer_7
 #     ):
-#         pix = al.pixelizations.Rectangular(shape=(3, 3))
-#         reg = al.regularization.Constant(coefficient=1.0)
+#         pix = al.pix.Rectangular(shape=(3, 3))
+#         reg = al.reg.Constant(coefficient=1.0)
 #
 #         g0 = al.Galaxy(redshift=0.5)
 #         g1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
@@ -666,8 +666,8 @@ class TestCompareToManualProfilesOnly:
 #             noise_map=lens_interferometer_7.noise_map(return_x2=True)
 #         )
 #
-#         pix = al.pixelizations.Rectangular(shape=(3, 3))
-#         reg = al.regularization.Constant(coefficient=1.0)
+#         pix = al.pix.Rectangular(shape=(3, 3))
+#         reg = al.reg.Constant(coefficient=1.0)
 #
 #         g0 = al.Galaxy(
 #             redshift=0.5,
@@ -802,8 +802,8 @@ class TestCompareToManualProfilesOnly:
 #         self, lens_interferometer_7
 #     ):
 #
-#         pix = al.pixelizations.Rectangular(shape=(3, 3))
-#         reg = al.regularization.Constant(coefficient=1.0)
+#         pix = al.pix.Rectangular(shape=(3, 3))
+#         reg = al.reg.Constant(coefficient=1.0)
 #
 #         g0 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 #
@@ -837,11 +837,11 @@ class TestCompareToManualProfilesOnly:
 #     def test___all_lens_fit_quantities__no_hyper_methods(self, lens_interferometer_7):
 #         galaxy_light = al.Galaxy(
 #             redshift=0.5,
-#             light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+#             light_profile=al.lp.EllipticalSersic(intensity=1.0),
 #         )
 #
-#         pix = al.pixelizations.Rectangular(shape=(3, 3))
-#         reg = al.regularization.Constant(coefficient=1.0)
+#         pix = al.pix.Rectangular(shape=(3, 3))
+#         reg = al.reg.Constant(coefficient=1.0)
 #         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
@@ -986,16 +986,16 @@ class TestCompareToManualProfilesOnly:
 #
 #         g0 = al.Galaxy(
 #             redshift=0.5,
-#             light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+#             light_profile=al.lp.EllipticalSersic(intensity=1.0),
 #         )
 #         g1 = al.Galaxy(
 #             redshift=0.5,
-#             light_profile=al.light_profiles.EllipticalSersic(intensity=2.0),
+#             light_profile=al.lp.EllipticalSersic(intensity=2.0),
 #         )
 #         g2 = al.Galaxy(redshift=0.5)
 #
-#         pix = al.pixelizations.Rectangular(shape=(3, 3))
-#         reg = al.regularization.Constant(coefficient=1.0)
+#         pix = al.pix.Rectangular(shape=(3, 3))
+#         reg = al.reg.Constant(coefficient=1.0)
 #         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
@@ -1115,7 +1115,7 @@ class TestCompareToManualProfilesOnly:
 #
 #         galaxy_light = al.Galaxy(
 #             redshift=0.5,
-#             light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+#             light_profile=al.lp.EllipticalSersic(intensity=1.0),
 #             hyper_galaxy=al.HyperGalaxy(
 #                 contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
 #             ),
@@ -1124,8 +1124,8 @@ class TestCompareToManualProfilesOnly:
 #             hyper_minimum_value=0.0,
 #         )
 #
-#         pix = al.pixelizations.Rectangular(shape=(3, 3))
-#         reg = al.regularization.Constant(coefficient=1.0)
+#         pix = al.pix.Rectangular(shape=(3, 3))
+#         reg = al.reg.Constant(coefficient=1.0)
 #         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
@@ -1284,11 +1284,11 @@ class TestCompareToManualProfilesOnly:
 #     ):
 #         galaxy_light = al.Galaxy(
 #             redshift=0.5,
-#             light_profile=al.light_profiles.EllipticalSersic(intensity=1.0),
+#             light_profile=al.lp.EllipticalSersic(intensity=1.0),
 #         )
 #
-#         pix = al.pixelizations.Rectangular(shape=(3, 3))
-#         reg = al.regularization.Constant(coefficient=1.0)
+#         pix = al.pix.Rectangular(shape=(3, 3))
+#         reg = al.reg.Constant(coefficient=1.0)
 #         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 #
 #         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])

@@ -11,14 +11,14 @@ from test import mock_pipeline
 def make_lens_galaxy():
     return al.Galaxy(
         redshift=1.0,
-        light=al.light_profiles.SphericalSersic(),
-        mass=al.mass_profiles.SphericalIsothermal(),
+        light=al.lp.SphericalSersic(),
+        mass=al.mp.SphericalIsothermal(),
     )
 
 
 @pytest.fixture(name="source_galaxy")
 def make_source_galaxy():
-    return al.Galaxy(redshift=2.0, light=al.light_profiles.SphericalSersic())
+    return al.Galaxy(redshift=2.0, light=al.lp.SphericalSersic())
 
 
 @pytest.fixture(name="all_galaxies")
@@ -153,22 +153,22 @@ class TestVariableFixing(object):
 
         mapper.lens_galaxy = al.GalaxyModel(
             redshift=al.Redshift,
-            pixelization=al.pixelizations.Rectangular,
-            regularization=al.regularization.Constant,
+            pixelization=al.pix.Rectangular,
+            regularization=al.reg.Constant,
         )
         mapper.source_galaxy = al.GalaxyModel(
-            redshift=al.Redshift, light=al.light_profiles.EllipticalLightProfile
+            redshift=al.Redshift, light=al.lp.EllipticalLightProfile
         )
 
         assert mapper.prior_count == 9
 
         instance.lens_galaxy = al.Galaxy(
-            pixelization=al.pixelizations.Rectangular(),
-            regularization=al.regularization.Constant(),
+            pixelization=al.pix.Rectangular(),
+            regularization=al.reg.Constant(),
             redshift=1.0,
         )
         instance.source_galaxy = al.Galaxy(
-            redshift=1.0, light=al.light_profiles.EllipticalLightProfile()
+            redshift=1.0, light=al.lp.EllipticalLightProfile()
         )
 
         # noinspection PyTypeChecker
@@ -176,8 +176,8 @@ class TestVariableFixing(object):
             MockPhase(),
             "mock_phase",
             variable_classes=(
-                al.pixelizations.Pixelization,
-                al.regularization.Regularization,
+                al.pix.Pixelization,
+                al.reg.Regularization,
             ),
         )
 
@@ -304,8 +304,8 @@ class TestImagePassing(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=al.HyperGalaxy,
-                    pixelization=al.pixelizations.VoronoiBrightnessImage,
-                    regularization=al.regularization.Constant,
+                    pixelization=al.pix.VoronoiBrightnessImage,
+                    regularization=al.reg.Constant,
                 )
             ),
             mask_function=mask_function_7x7,
@@ -329,8 +329,8 @@ class TestImagePassing(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=al.HyperGalaxy,
-                    pixelization=al.pixelizations.VoronoiBrightnessImage,
-                    regularization=al.regularization.Constant,
+                    pixelization=al.pix.VoronoiBrightnessImage,
+                    regularization=al.reg.Constant,
                 )
             ),
             inversion_pixel_limit=1,
@@ -363,8 +363,8 @@ class TestImagePassing(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=al.HyperGalaxy,
-                    pixelization=al.pixelizations.VoronoiBrightnessImage,
-                    regularization=al.regularization.Constant,
+                    pixelization=al.pix.VoronoiBrightnessImage,
+                    regularization=al.reg.Constant,
                 )
             ),
             inversion_pixel_limit=1,
@@ -406,8 +406,8 @@ class TestImagePassing(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     hyper_galaxy=al.HyperGalaxy,
-                    pixelization=al.pixelizations.VoronoiBrightnessImage,
-                    regularization=al.regularization.Constant,
+                    pixelization=al.pix.VoronoiBrightnessImage,
+                    regularization=al.reg.Constant,
                 )
             ),
             inversion_pixel_limit=1,
@@ -562,8 +562,8 @@ class TestHyperAPI(object):
         inversion_result.variable = af.ModelMapper()
 
         hyper_galaxy_result.variable.hyper_galaxy = al.HyperGalaxy
-        hyper_galaxy_result.variable.pixelization = al.pixelizations.Pixelization()
-        inversion_result.variable.pixelization = al.pixelizations.Pixelization
+        hyper_galaxy_result.variable.pixelization = al.pix.Pixelization()
+        inversion_result.variable.pixelization = al.pix.Pixelization
         inversion_result.variable.hyper_galaxy = al.HyperGalaxy()
 
         result.hyper_galaxy = hyper_galaxy_result
@@ -575,7 +575,7 @@ class TestHyperAPI(object):
         assert isinstance(variable.pixelization, af.PriorModel)
 
         assert variable.hyper_galaxy.cls == al.HyperGalaxy
-        assert variable.pixelization.cls == al.pixelizations.Pixelization
+        assert variable.pixelization.cls == al.pix.Pixelization
 
     def test_instantiation(self, hyper_combined):
         assert len(hyper_combined.hyper_phases) == 2
@@ -616,7 +616,7 @@ class TestHyperGalaxyPhase(object):
         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
         lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.light_profiles.EllipticalSersic(intensity=0.1)
+            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
         phase_imaging_7x7 = al.PhaseImaging(

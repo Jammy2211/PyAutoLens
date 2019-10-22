@@ -16,7 +16,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=al.light_profiles.EllipticalSersic(
+                light=al.lp.EllipticalSersic(
                     effective_radius=af.UniformPrior(lower_limit=0.0, upper_limit=4.0)
                 ),
             )

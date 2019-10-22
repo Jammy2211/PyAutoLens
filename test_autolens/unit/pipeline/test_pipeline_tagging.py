@@ -17,8 +17,8 @@ class TestPipelineNameTag:
 
         pipeline_tag = al.pipeline_tagging.pipeline_tag_from_pipeline_settings(
             fix_lens_light=True,
-            pixelization=al.pixelizations.Rectangular,
-            regularization=al.regularization.Constant,
+            pixelization=al.pix.Rectangular,
+            regularization=al.reg.Constant,
         )
 
         assert pipeline_tag == "pipeline_tag__fix_lens_light__pix_rect__reg_const"
@@ -117,11 +117,11 @@ class TestPipelineTaggers:
         tag = al.pipeline_tagging.pixelization_tag_from_pixelization(pixelization=None)
         assert tag == ""
         tag = al.pipeline_tagging.pixelization_tag_from_pixelization(
-            pixelization=al.pixelizations.Rectangular
+            pixelization=al.pix.Rectangular
         )
         assert tag == "__pix_rect"
         tag = al.pipeline_tagging.pixelization_tag_from_pixelization(
-            pixelization=al.pixelizations.VoronoiBrightnessImage
+            pixelization=al.pix.VoronoiBrightnessImage
         )
         assert tag == "__pix_voro_image"
 
@@ -131,11 +131,11 @@ class TestPipelineTaggers:
         )
         assert tag == ""
         tag = al.pipeline_tagging.regularization_tag_from_regularization(
-            regularization=al.regularization.Constant
+            regularization=al.reg.Constant
         )
         assert tag == "__reg_const"
         tag = al.pipeline_tagging.regularization_tag_from_regularization(
-            regularization=al.regularization.AdaptiveBrightness
+            regularization=al.reg.AdaptiveBrightness
         )
         assert tag == "__reg_adapt_bright"
 
