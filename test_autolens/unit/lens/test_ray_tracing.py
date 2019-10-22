@@ -1695,7 +1695,7 @@ class TestAbstractTracerLensing(object):
             )
 
             assert (
-                tracer.potential_from_grid(grid=sub_grid_7x7).in_2d == np.zeros(shape=(7, 7))
+                tracer.potential_from_grid(grid=sub_grid_7x7).in_2d_binned == np.zeros(shape=(7, 7))
             ).all()
 
             tracer = al.Tracer.from_galaxies(
@@ -1703,7 +1703,7 @@ class TestAbstractTracerLensing(object):
             )
 
             assert (
-                tracer.potential_from_grid(grid=sub_grid_7x7).in_2d == np.zeros(shape=(7, 7))
+                tracer.potential_from_grid(grid=sub_grid_7x7).in_2d_binned == np.zeros(shape=(7, 7))
             ).all()
 
     class TestDeflections:
@@ -1727,13 +1727,9 @@ class TestAbstractTracerLensing(object):
 
             tracer_deflections = tracer.deflections_from_grid(grid=sub_grid_7x7)
 
-            assert tracer_deflections[:, :, 0].shape_2d == (7, 7)
+            assert tracer_deflections.shape_2d == (7, 7)
             assert (
-                image_plane_deflections[:, :, 0] == tracer_deflections[:, :, 0]
-            ).all()
-            assert tracer_deflections[:, :, 1].shape_2d == (7, 7)
-            assert (
-                image_plane_deflections[:, :, 1] == tracer_deflections[:, :, 1]
+                image_plane_deflections == tracer_deflections
             ).all()
 
         def test__galaxy_entered_3_times__different_deflections_for_each(
@@ -1771,16 +1767,16 @@ class TestAbstractTracerLensing(object):
 
             tracer_deflections = tracer.deflections_from_grid(grid=sub_grid_7x7)
 
-            assert image_plane_deflections[:, :, 0] == pytest.approx(
-                g0_deflections[:, :, 0] + g1_deflections[:, :, 0], 1.0e-4
+            assert image_plane_deflections == pytest.approx(
+                g0_deflections + g1_deflections, 1.0e-4
             )
-            assert source_plane_deflections[:, :, 0] == pytest.approx(
-                g2_deflections[:, :, 0], 1.0e-4
+            assert source_plane_deflections == pytest.approx(
+                g2_deflections, 1.0e-4
             )
-            assert tracer_deflections[:, :, 0] == pytest.approx(
-                g0_deflections[:, :, 0]
-                + g1_deflections[:, :, 0]
-                + g2_deflections[:, :, 0],
+            assert tracer_deflections == pytest.approx(
+                g0_deflections
+                + g1_deflections
+                + g2_deflections,
                 1.0e-4,
             )
 
@@ -1794,8 +1790,8 @@ class TestAbstractTracerLensing(object):
 
             tracer_deflections = tracer.deflections_from_grid(grid=sub_grid_7x7)
 
-            assert (tracer_deflections[:, :, 0] == np.zeros(shape=(7, 7))).all()
-            assert (tracer_deflections[:, :, 1] == np.zeros(shape=(7, 7))).all()
+            assert (tracer_deflections.in_2d_binned[:, :, 0] == np.zeros(shape=(7, 7))).all()
+            assert (tracer_deflections.in_2d_binned[:, :, 1] == np.zeros(shape=(7, 7))).all()
 
     class TestGridAtRedshift:
         def test__lens_z05_source_z01_redshifts__match_planes_redshifts__gives_same_grids(
@@ -1941,10 +1937,10 @@ class TestAbstractTracerLensing(object):
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7.unlensed_unsubbed_1d, redshift=0.3
+                grid=sub_grid_7x7.geometry.unmasked_grid, redshift=0.3
             )
 
-            assert (grid_at_redshift == sub_grid_7x7.unlensed_unsubbed_1d).all()
+            assert (grid_at_redshift == sub_grid_7x7.geometry.unmasked_grid).all()
 
     class TestEinsteinRadiusAndMass:
         def test__x2_galaxies__values_are_sum_of_each_galaxy(self, sub_grid_7x7):
@@ -2339,8 +2335,8 @@ class TestAbstractTracerData(object):
     class TestUnmaskedBlurredProfileImages:
         def test__unmasked_images_of_tracer_planes_and_galaxies(self):
 
-            psf = aa.kernel(
-                array_1d=(
+            psf = aa.kernel.manual_2d(
+                array=(
                     np.array([[0.0, 3.0, 0.0], [0.0, 1.0, 2.0], [0.0, 0.0, 0.0]])
                 ),
                 pixel_scales=1.0,
