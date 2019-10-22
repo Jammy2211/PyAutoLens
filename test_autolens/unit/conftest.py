@@ -138,7 +138,7 @@ def make_mask_function_7x7():
             ]
         )
 
-        return mask.Mask(array_2d=array, pixel_scales=1.0, sub_size=sub_size)
+        return aa.mask(mask_2d=array, pixel_scales=(1.0, 1.0), sub_size=sub_size)
 
     return mask_function_7x7
 
@@ -161,17 +161,17 @@ def make_phase_imaging_7x7(mask_function_7x7):
 
 @pytest.fixture(name="hyper_model_image_7x7")
 def make_hyper_model_image_7x7(grid_7x7):
-    return grid_7x7.mapping.scaled_array_2d_from_array_1d(array_1d=np.ones(9))
+    return grid_7x7.mapping.array_from_array_1d(array_1d=np.ones(9))
 
 
 @pytest.fixture(name="hyper_galaxy_image_0_7x7")
 def make_hyper_galaxy_image_0_7x7(grid_7x7):
-    return grid_7x7.mapping.scaled_array_2d_from_array_1d(array_1d=2.0 * np.ones(9))
+    return grid_7x7.mapping.array_from_array_1d(array_1d=2.0 * np.ones(9))
 
 
 @pytest.fixture(name="hyper_galaxy_image_1_7x7")
 def make_hyper_galaxy_image_1_7x7(grid_7x7):
-    return grid_7x7.mapping.scaled_array_2d_from_array_1d(array_1d=3.0 * np.ones(9))
+    return grid_7x7.mapping.array_from_array_1d(array_1d=3.0 * np.ones(9))
 
 
 @pytest.fixture(name="contribution_map_7x7")
