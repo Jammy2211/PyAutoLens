@@ -11,7 +11,7 @@ test_data_dir = "{}/../test_files/array/".format(
 )
 
 
-def test__constructor_and_specific_instrument_class_methods(self):
+def test__constructor_and_specific_instrument_class_methods():
 
     psf = aa.kernel.from_gaussian(shape_2d=(11, 11), sigma=0.1, pixel_scales=0.1)
 
@@ -84,7 +84,7 @@ def test__constructor_and_specific_instrument_class_methods(self):
     assert adaptive_optics.background_sky_level == 1.0
 
 def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer(
-    self
+    
 ):
 
     grid = aa.grid.uniform(
@@ -144,7 +144,7 @@ def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer
         == imaging_simulated.exposure_time_map
     ).all()
 
-def test__from_tracer__same_as_manual_tracer_input(self):
+def test__from_tracer__same_as_manual_tracer_input():
     psf = aa.kernel.manual_2d(
         array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
         pixel_scales=1.0,
@@ -207,7 +207,7 @@ def test__from_tracer__same_as_manual_tracer_input(self):
     ).all()
 
 def test__simulate_imaging_from_lens__source_galaxy__compare_to_manual_imaging(
-    self
+    
 ):
 
     lens_galaxy = al.Galaxy(
@@ -320,7 +320,7 @@ def test__simulate_imaging_from_lens__source_galaxy__compare_to_manual_imaging(
         == observation_imaging.background_sky_map
     ).all()
 
-def test__simulate_imaging_from_lens__source_galaxy__and_write_to_fits(self):
+def test__simulate_imaging_from_lens__source_galaxy__and_write_to_fits():
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
@@ -425,7 +425,7 @@ def test__simulate_imaging_from_lens__source_galaxy__and_write_to_fits(self):
 
 
 def test__uv_from_deflections_and_galaxies__same_as_manual_calculation_using_tracer(
-    self, transformer_7x7_7
+    transformer_7x7_7
 ):
 
     grid = aa.grid.uniform(
@@ -482,7 +482,7 @@ def test__uv_from_deflections_and_galaxies__same_as_manual_calculation_using_tra
         == interferometer_simulated.noise_map
     ).all()
 
-def test__uv_from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
+def test__uv_from_tracer__same_as_manual_tracer_input(transformer_7x7_7):
 
     grid = aa.grid.uniform(
         shape_2d=(20, 20), pixel_scales=0.05, sub_size=1
