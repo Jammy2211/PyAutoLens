@@ -6,10 +6,11 @@ import pytest
 import autoarray as aa
 import autofit as af
 import autolens as al
-from test_autolens.mock.data import mock_data, mock_convolution, mock_mask
+
 from test_autolens.mock.lens import mock_lens_data
 from test_autolens.mock.pipeline import mock_pipeline
 from test_autoarray.unit.conftest import *
+from test_autoarray.mock import mock_data, mock_convolution, mock_mask
 
 directory = path.dirname(path.realpath(__file__))
 

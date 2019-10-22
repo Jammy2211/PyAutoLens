@@ -1,5 +1,5 @@
 import autofit as af
-from autolens.model.galaxy import galaxy as g
+from automodel.galaxy import galaxy as g
 
 
 class Result(af.Result):

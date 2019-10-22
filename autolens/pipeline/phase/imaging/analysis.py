@@ -1,6 +1,6 @@
 import autofit as af
 from autolens.lens import lens_fit, ray_tracing
-from autolens.model.galaxy import galaxy as g
+from automodel.galaxy import galaxy as g
 from autolens.pipeline import visualizer
 
 

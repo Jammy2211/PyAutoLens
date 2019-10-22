@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 import autoarray as aa
 from autolens.lens.plotters import lens_plotter_util
 from autolens.lens.plotters import plane_plotters
-from autolens.model.inversion.plotters import inversion_plotters
+from autoarray.plotters import inversion_plotters
 
 
 def plot_fit_subplot(

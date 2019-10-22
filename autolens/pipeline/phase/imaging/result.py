@@ -2,7 +2,7 @@ import numpy as np
 
 import autofit as af
 import autoarray as aa
-from autolens.model.galaxy import galaxy as g
+from automodel.galaxy import galaxy as g
 from autolens.pipeline.phase import data
 
 

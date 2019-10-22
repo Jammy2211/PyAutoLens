@@ -1,7 +1,7 @@
 import autofit as af
-from autolens.model.hyper import hyper_data as hd
-from autolens.model.inversion import pixelizations as px
-from autolens.model.inversion import regularization as rg
+from automodel.hyper import hyper_data as hd
+from autoarray.operators.inversion import pixelizations as pix
+from autoarray.operators.inversion import regularization as reg
 from autolens.pipeline.phase import abstract
 from autolens.pipeline.phase.imaging.phase import PhaseImaging
 from .hyper_phase import HyperPhase
@@ -60,7 +60,7 @@ class InversionPhase(VariableFixingHyperPhase):
     def __init__(
             self,
             phase: abstract.AbstractPhase,
-            variable_classes=(px.Pixelization, rg.Regularization),
+            variable_classes=(pix.Pixelization, reg.Regularization),
     ):
         super().__init__(
             phase=phase, variable_classes=variable_classes, hyper_name="inversion"
@@ -77,7 +77,7 @@ class InversionBackgroundSkyPhase(InversionPhase):
     def __init__(self, phase: PhaseImaging):
         super().__init__(
             phase=phase,
-            variable_classes=(px.Pixelization, rg.Regularization, hd.HyperImageSky),
+            variable_classes=(pix.Pixelization, reg.Regularization, hd.HyperImageSky),
         )
 
 
@@ -92,8 +92,8 @@ class InversionBackgroundNoisePhase(InversionPhase):
         super().__init__(
             phase=phase,
             variable_classes=(
-                px.Pixelization,
-                rg.Regularization,
+                pix.Pixelization,
+                reg.Regularization,
                 hd.HyperBackgroundNoise,
             ),
         )
@@ -110,8 +110,8 @@ class InversionBackgroundBothPhase(InversionPhase):
         super().__init__(
             phase=phase,
             variable_classes=(
-                px.Pixelization,
-                rg.Regularization,
+                pix.Pixelization,
+                reg.Regularization,
                 hd.HyperImageSky,
                 hd.HyperBackgroundNoise,
             ),

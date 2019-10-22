@@ -1,7 +1,7 @@
 import autofit as af
 import autoarray as aa
 from autolens import exc
-from autolens.model.inversion import pixelizations as pix
+from autoarray.operators.inversion import pixelizations as pix
 from autolens.pipeline.phase.data.phase import default_mask_function, isinstance_or_prior
 
 
