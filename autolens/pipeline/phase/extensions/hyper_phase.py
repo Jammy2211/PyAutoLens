@@ -44,11 +44,11 @@ class HyperPhase(object):
 
         phase = copy.deepcopy(self.phase)
 
-        phase_folders = phase.phase_folders
+        phase_folders = phase.paths.phase_folders
         phase_folders.append(phase.phase_name)
 
         phase.optimizer = phase.optimizer.copy_with_name_extension(
-            extension=self.hyper_name + "_" + phase.phase_tag
+            extension=self.hyper_name + "_" + phase.paths.phase_tag
         )
 
         phase.optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
@@ -65,8 +65,7 @@ class HyperPhase(object):
         )
 
         phase.is_hyper_phase = True
-        phase.optimizer.phase_tag = ""
-        phase.phase_tag = ""
+        phase.paths.phase_tag = ""
         phase.customize_priors = self.customize_priors
 
         return phase
