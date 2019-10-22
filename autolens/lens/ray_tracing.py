@@ -4,7 +4,7 @@ from astropy import cosmology as cosmo
 import autoarray as aa
 from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
-from autolens.model import cosmology_util
+from automodel.util import cosmology_util
 from autolens.model.inversion import inversions as inv
 from autolens.model.galaxy import galaxy as g
 
