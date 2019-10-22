@@ -4,12 +4,12 @@ from astropy import cosmology as cosmo
 from skimage import measure
 
 import autoarray as aa
-import automodel as am
+import autoastro as am
 import autolens as al
 from autolens import exc
 
 from test_autoarray.mock import mock_inversion
-from test_automodel.mock.mock_cosmology import MockCosmology
+from test_autoastro.mock.mock_cosmology import MockCosmology
 
 planck = cosmo.Planck15
 

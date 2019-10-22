@@ -10,7 +10,7 @@ import autolens as al
 from test_autolens.mock.lens import mock_lens_data
 from test_autolens.mock.pipeline import mock_pipeline
 from test_autoarray.unit.conftest import *
-from test_automodel.unit.conftest import *
+from test_autoastro.unit.conftest import *
 from test_autoarray.mock import mock_data, mock_convolution, mock_mask
 
 directory = path.dirname(path.realpath(__file__))
