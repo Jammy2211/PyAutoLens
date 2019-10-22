@@ -5,7 +5,7 @@ from skimage import measure
 
 import autolens as al
 from autolens import exc
-from test_automodel.mock import mock_inversion
+from test_autoarray.mock import mock_inversion
 
 planck = cosmo.Planck15
 
