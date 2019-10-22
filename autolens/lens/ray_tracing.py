@@ -252,7 +252,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     def profile_image_from_grid(self, grid):
         profile_image = sum(self.profile_images_of_planes_from_grid(grid=grid))
-        return grid.mask.mapping.array_from_sub_array_1d(
+        return grid.mapping.array_from_sub_array_1d(
             sub_array_1d=profile_image.in_1d
         )
 
@@ -274,7 +274,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             ):
 
                 profile_images_of_planes.append(
-                    grid.mask.mapping.array_from_sub_array_1d(sub_array_1d=np.zeros(shape=profile_images_of_planes[0].shape))
+                    grid.mapping.array_from_sub_array_1d(sub_array_1d=np.zeros(shape=profile_images_of_planes[0].shape))
                 )
 
         return profile_images_of_planes
@@ -289,17 +289,17 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         convergence = sum(
             [plane.convergence_from_grid(grid=grid) for plane in self.planes]
         )
-        return grid.mask.mapping.array_from_sub_array_1d(sub_array_1d=convergence)
+        return grid.mapping.array_from_sub_array_1d(sub_array_1d=convergence)
 
     def potential_from_grid(self, grid):
         potential = sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
-        return grid.mask.mapping.array_from_sub_array_1d(sub_array_1d=potential)
+        return grid.mapping.array_from_sub_array_1d(sub_array_1d=potential)
 
     def deflections_from_grid(self, grid):
         deflections = sum(
             [plane.deflections_from_grid(grid=grid) for plane in self.planes]
         )
-        return grid.mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=deflections)
+        return grid.mapping.grid_from_sub_grid_1d(sub_grid_1d=deflections)
 
     def einstein_radius_of_plane_in_units(self, i, unit_length="arcsec"):
         return self.planes[i].einstein_radius_in_units(unit_length=unit_length)
@@ -463,10 +463,10 @@ class AbstractTracerData(AbstractTracerLensing):
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.shape_2d)
 
-        padded_image_1d = self.profile_image_from_grid(grid=padded_grid)
+        padded_image = self.profile_image_from_grid(grid=padded_grid)
 
-        return padded_grid.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
-            padded_array_1d=padded_image_1d, psf=psf, image_shape=grid.mask.shape
+        return padded_grid.mapping.unmasked_blurred_array_2d_from_padded_array_psf_and_image_shape(
+            padded_array=padded_image, psf=psf, image_shape=grid.mask.shape
         )
 
     def unmasked_blurred_profile_image_of_planes_from_grid_and_psf(self, grid, psf):
@@ -481,8 +481,8 @@ class AbstractTracerData(AbstractTracerLensing):
 
             padded_image_1d = plane.profile_image_from_grid(grid=traced_padded_grid)
 
-            unmasked_blurred_array_2d = padded_grid.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
-                padded_array_1d=padded_image_1d, psf=psf, image_shape=grid.mask.shape
+            unmasked_blurred_array_2d = padded_grid.mapping.unmasked_blurred_array_2d_from_padded_array_psf_and_image_shape(
+                padded_array=padded_image_1d, psf=psf, image_shape=grid.mask.shape
             )
 
             unmasked_blurred_profile_images_of_planes.append(unmasked_blurred_array_2d)
@@ -507,8 +507,8 @@ class AbstractTracerData(AbstractTracerLensing):
 
             unmasked_blurred_array_2d_of_galaxies = list(
                 map(
-                    lambda padded_image_1d_of_galaxy: padded_grid.unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
-                        padded_array_1d=padded_image_1d_of_galaxy,
+                    lambda padded_image_1d_of_galaxy: padded_grid.mapping.unmasked_blurred_array_2d_from_padded_array_psf_and_image_shape(
+                        padded_array=padded_image_1d_of_galaxy,
                         psf=psf,
                         image_shape=grid.mask.shape,
                     ),
@@ -607,11 +607,11 @@ class AbstractTracerData(AbstractTracerLensing):
 
         return mappers_of_planes
 
-    def inversion_from_grid_image_1d_noise_map_1d_and_convolver(
+    def inversion_imaging_from_grid_and_data(
         self,
         grid,
-        image_1d,
-        noise_map_1d,
+        image,
+        noise_map,
         convolver,
         inversion_uses_border=False,
         preload_pixelization_grids_of_planes=None,
@@ -623,9 +623,9 @@ class AbstractTracerData(AbstractTracerLensing):
             preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
         )
 
-        return inv.Inversion.from_data_mapper_and_regularization(
-            image=image_1d,
-            noise_map=noise_map_1d,
+        return inv.InversionImaging.from_data_mapper_and_regularization(
+            image=image,
+            noise_map=noise_map,
             convolver=convolver,
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],

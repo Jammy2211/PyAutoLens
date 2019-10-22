@@ -2273,7 +2273,7 @@ class TestAbstractPlaneData(object):
                 plane_visibilities, 1.0e-4
             )
 
-    class TestPixelizationGrid:
+    class TestIrregularGrid:
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(
             self, sub_grid_7x7
         ):
