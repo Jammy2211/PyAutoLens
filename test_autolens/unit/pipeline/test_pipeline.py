@@ -1,9 +1,11 @@
 import builtins
+
 import numpy as np
 import pytest
 
 import autofit as af
 import autolens as al
+from autofit.optimize.non_linear.non_linear import Paths
 from autolens import exc
 
 
@@ -23,26 +25,22 @@ class MockMask(object):
 
 
 class Optimizer(object):
-    def __init__(self, phase_name="dummy_phase"):
-        self.phase_name = phase_name
-        self.phase_path = ""
+    def __init__(self, paths):
+        self.paths = paths
 
 
 class DummyPhaseImaging(af.AbstractPhase):
     def make_result(self, result, analysis):
         pass
 
-    def __init__(self, phase_name, phase_tag="", phase_path=None):
-        super().__init__(phase_name, phase_tag=phase_tag)
+    def __init__(self, paths):
+        super().__init__(paths)
         self.data = None
         self.positions = None
         self.results = None
-        self.phase_name = phase_name
-        self.phase_tag = phase_tag
-        self.phase_path = phase_path or phase_name
         self.mask = None
 
-        self.optimizer = Optimizer(phase_name)
+        self.optimizer = Optimizer(paths)
 
     def run(self, data, results, mask=None, positions=None):
         self.data = data
@@ -91,13 +89,18 @@ class TestMetaData(object):
     def test_files(self, mock_files):
         pipeline = al.PipelineImaging(
             "pipeline_name",
-            DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"),
+            DummyPhaseImaging(
+                Paths(
+                    phase_name="phase_name",
+                    phase_path="phase_path"
+                ),
+            )
         )
         pipeline.run(MockImagingData(), data_name="data_name")
 
         assert (
-            mock_files[1].text
-            == "pipeline=pipeline_name\nphase=phase_name\ndata=data_name"
+                mock_files[1].text
+                == "pipeline=pipeline_name\nphase=phase_name\ndata=data_name"
         )
 
         assert "phase_name///optimizer.pickle" in mock_files[2].filename
@@ -106,8 +109,8 @@ class TestMetaData(object):
 class TestPassMask(object):
     def test_pass_mask(self):
         mask = MockMask()
-        phase_1 = DummyPhaseImaging("one")
-        phase_2 = DummyPhaseImaging("two")
+        phase_1 = DummyPhaseImaging(Paths("one"))
+        phase_2 = DummyPhaseImaging(Paths("two"))
         pipeline = al.PipelineImaging("", phase_1, phase_2)
         pipeline.run(data=MockImagingData(), mask=mask)
 
@@ -118,8 +121,12 @@ class TestPassMask(object):
 class TestPassPositions(object):
     def test_pass_positions(self):
         positions = [[[1.0, 1.0], [2.0, 2.0]]]
-        phase_1 = DummyPhaseImaging("one")
-        phase_2 = DummyPhaseImaging("two")
+        phase_1 = DummyPhaseImaging(
+            Paths("one")
+        )
+        phase_2 = DummyPhaseImaging(
+            Paths("two")
+        )
         pipeline = al.PipelineImaging("", phase_1, phase_2)
         pipeline.run(data=MockImagingData(), positions=positions)
 
@@ -129,8 +136,12 @@ class TestPassPositions(object):
 
 class TestPipelineImaging(object):
     def test_run_pipeline(self):
-        phase_1 = DummyPhaseImaging("one")
-        phase_2 = DummyPhaseImaging("two")
+        phase_1 = DummyPhaseImaging(
+            Paths("one")
+        )
+        phase_2 = DummyPhaseImaging(
+            Paths("two")
+        )
 
         pipeline = al.PipelineImaging("", phase_1, phase_2)
 
@@ -139,9 +150,15 @@ class TestPipelineImaging(object):
         assert len(phase_2.results) == 2
 
     def test_addition(self):
-        phase_1 = DummyPhaseImaging("one")
-        phase_2 = DummyPhaseImaging("two")
-        phase_3 = DummyPhaseImaging("three")
+        phase_1 = DummyPhaseImaging(
+            Paths("one")
+        )
+        phase_2 = DummyPhaseImaging(
+            Paths("two")
+        )
+        phase_3 = DummyPhaseImaging(
+            Paths("three")
+        )
 
         pipeline1 = al.PipelineImaging("", phase_1, phase_2)
         pipeline2 = al.PipelineImaging("", phase_3)
@@ -149,8 +166,12 @@ class TestPipelineImaging(object):
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
 
     def test__hyper_mode_on__must_receive_mask(self):
-        phase_1 = DummyPhaseImaging("one")
-        phase_2 = DummyPhaseImaging("two")
+        phase_1 = DummyPhaseImaging(
+            Paths("one")
+        )
+        phase_2 = DummyPhaseImaging(
+            Paths("two")
+        )
 
         pipeline = al.PipelineImaging("", phase_1, phase_2, hyper_mode=False)
 
@@ -168,15 +189,18 @@ class DummyPhasePositions(af.AbstractPhase):
     def make_result(self, result, analysis):
         pass
 
-    def __init__(self, phase_name):
-        super().__init__(phase_name)
+    def __init__(
+            self,
+            paths
+    ):
+        super().__init__(
+            paths
+        )
         self.positions = None
         self.results = None
         self.pixel_scales = None
-        self.phase_name = phase_name
         self.phase_tag = ""
-        self.phase_path = phase_name
-        self.optimizer = Optimizer(phase_name)
+        self.optimizer = Optimizer(paths)
 
     def run(self, positions, pixel_scales, results):
         self.positions = positions
@@ -187,8 +211,16 @@ class DummyPhasePositions(af.AbstractPhase):
 
 class TestPipelinePositions(object):
     def test_run_pipeline(self):
-        phase_1 = DummyPhasePositions(phase_name="one")
-        phase_2 = DummyPhasePositions(phase_name="two")
+        phase_1 = DummyPhasePositions(
+            Paths(
+                phase_name="one"
+            )
+        )
+        phase_2 = DummyPhasePositions(
+            Paths(
+                phase_name="two"
+            )
+        )
         pipeline = al.PipelinePositions("", phase_1, phase_2)
 
         pipeline.run(None, None)
@@ -196,9 +228,15 @@ class TestPipelinePositions(object):
         assert len(phase_2.results) == 2
 
     def test_addition(self):
-        phase_1 = DummyPhasePositions("one")
-        phase_2 = DummyPhasePositions("two")
-        phase_3 = DummyPhasePositions("three")
+        phase_1 = DummyPhasePositions(
+            Paths("one")
+        )
+        phase_2 = DummyPhasePositions(
+            Paths("two")
+        )
+        phase_3 = DummyPhasePositions(
+            Paths("three")
+        )
 
         pipeline1 = al.PipelinePositions("", phase_1, phase_2)
         pipeline2 = al.PipelinePositions("", phase_3)
