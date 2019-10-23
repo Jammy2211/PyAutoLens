@@ -1,5 +1,5 @@
 import autofit as af
-from autolens.fit import imaging_fit
+from autolens.fit import fit
 from autolens.lens import ray_tracing
 from autoastro.galaxy import galaxy as g
 from autolens.pipeline import visualizer
@@ -130,7 +130,7 @@ class Analysis(af.Analysis):
             self, tracer, hyper_image_sky, hyper_background_noise
     ):
 
-        return lens_fit.LensImagingFit.from_lens_data_and_tracer(
+        return lens_fit.ImagingFit.from_masked_data_and_tracer(
             lens_data=self.lens_data,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,

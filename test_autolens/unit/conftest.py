@@ -1,17 +1,9 @@
-from os import path
-
-import numpy as np
-import pytest
-
-import autoarray as aa
 import autofit as af
 import autolens as al
 
-from test_autolens.mock.lens import mock_lens_data
-from test_autolens.mock.pipeline import mock_pipeline
-from test_autoarray.unit.conftest import *
+from test_autolens.mock import mock_masked_data, mock_pipeline
 from test_autoastro.unit.conftest import *
-from test_autoarray.mock import mock_data, mock_convolution, mock_mask
+from test_autoarray.mock import mock_mask
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -29,35 +21,32 @@ def set_config_path():
 # Lens Data #
 
 
-@pytest.fixture(name="lens_masked_imaging_7x7")
-def make_lens_masked_imaging_7x7(
+@pytest.fixture(name="masked_imaging_7x7")
+def make_masked_imaging_7x7(
     imaging_7x7,
     mask_7x7,
     sub_grid_7x7,
     blurring_grid_7x7,
     convolver_7x7,
-    binned_grid_7x7,
 ):
-    return mock_lens_data.MockLensImagingData(
+    return mock_masked_data.MockMaskedImaging(
         imaging=imaging_7x7,
         mask=mask_7x7,
         grid=sub_grid_7x7,
         blurring_grid=blurring_grid_7x7,
         convolver=convolver_7x7,
-        binned_grid=binned_grid_7x7,
     )
 
 
-@pytest.fixture(name="lens_masked_interferometer_6x6")
-def make_lens_masked_interferometer_6x6(
-    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
+@pytest.fixture(name="masked_interferometer_6x6")
+def make_masked_interferometer_6x6(
+    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7,
 ):
-    return mock_lens_data.MockLensUVPlaneData(
+    return mock_masked_data.MockMaskedInterferometer(
         interferometer=interferometer_7,
         mask=mask_7x7,
         grid=sub_grid_7x7,
         transformer=transformer_7x7_7,
-        binned_grid=binned_grid_7x7,
     )
 
 
@@ -88,16 +77,16 @@ def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp):
 
 
 @pytest.fixture(name="lens_imaging_fit_x1_plane_7x7")
-def make_lens_imaging_fit_x1_plane_7x7(lens_masked_imaging_7x7, tracer_x1_plane_7x7):
-    return al.LensImagingFit.from_lens_data_and_tracer(
-        lens_data=lens_masked_imaging_7x7, tracer=tracer_x1_plane_7x7
+def make_lens_imaging_fit_x1_plane_7x7(masked_imaging_7x7, tracer_x1_plane_7x7):
+    return al.ImagingFit.from_masked_data_and_tracer(
+        lens_data=masked_imaging_7x7, tracer=tracer_x1_plane_7x7
     )
 
 
 @pytest.fixture(name="lens_imaging_fit_x2_plane_7x7")
-def make_lens_imaging_fit_x2_plane_7x7(lens_masked_imaging_7x7, tracer_x2_plane_7x7):
-    return al.LensImagingFit.from_lens_data_and_tracer(
-        lens_data=lens_masked_imaging_7x7, tracer=tracer_x2_plane_7x7
+def make_lens_imaging_fit_x2_plane_7x7(masked_imaging_7x7, tracer_x2_plane_7x7):
+    return al.ImagingFit.from_masked_data_and_tracer(
+        lens_data=masked_imaging_7x7, tracer=tracer_x2_plane_7x7
     )
 
 
@@ -138,7 +127,7 @@ def make_mask_function_7x7():
             ]
         )
 
-        return mask.Mask(array_2d=array, pixel_scales=1.0, sub_size=sub_size)
+        return aa.mask.manual(mask_2d=array, pixel_scales=1.0, sub_size=sub_size)
 
     return mask_function_7x7
 

@@ -2914,8 +2914,8 @@ class TestAbstractTracerData(object):
             assert (hyper_noise_maps_1d[1] == hyper_noise_map_1d_1).all()
             assert hyper_noise_maps_1d[2] == 0
 
-            hyper_noise_map_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
-                noise_map_1d=noise_map_1d
+            hyper_noise_map_1d = tracer.hyper_noise_map_from_noise_map(
+                noise_map=noise_map_1d
             )
 
             assert (

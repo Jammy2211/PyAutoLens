@@ -168,14 +168,13 @@ def test__lens_fit_for_phase__source_and_lens__depedent_on_input(
 
 
 def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
-    hyper_model_image_7x7, binned_grid_7x7, mask_7x7, phase_plotter_path, plot_patch
+    hyper_model_image_7x7, mask_7x7, phase_plotter_path, plot_patch
 ):
     al.phase_plotters.plot_hyper_images_for_phase(
         hyper_model_image_2d=hyper_model_image_7x7,
         hyper_galaxy_image_2d_path_dict=None,
         binned_hyper_galaxy_image_2d_path_dict=None,
         mask=mask_7x7,
-        binned_grid=binned_grid_7x7,
         units="arcsec",
         should_plot_hyper_model_image=True,
         should_plot_hyper_galaxy_images=False,
