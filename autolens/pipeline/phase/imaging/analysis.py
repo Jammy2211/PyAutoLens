@@ -19,13 +19,13 @@ class Analysis(af.Analysis):
 
             self.visualizer.plot_hyper_images(last_results)
 
-            self.hyper_galaxy_image_1d_path_dict = (
-                last_results.hyper_galaxy_image_1d_path_dict
+            self.hyper_galaxy_image_path_dict = (
+                last_results.hyper_galaxy_image_path_dict
             )
 
-            self.hyper_model_image_1d = last_results.hyper_model_image_1d
+            self.hyper_model_image = last_results.hyper_model_image
 
-            self.binned_hyper_galaxy_image_1d_path_dict = last_results.binned_hyper_galaxy_image_1d_path_dict(
+            self.binned_hyper_galaxy_image_path_dict = last_results.binned_hyper_galaxy_image_path_dict(
                 binned_grid=lens_imaging.grid.binned
             )
 
@@ -94,20 +94,20 @@ class Analysis(af.Analysis):
         instance
            The input instance with images associated with galaxies where possible.
         """
-        if hasattr(self, "hyper_galaxy_image_1d_path_dict"):
+        if hasattr(self, "hyper_galaxy_image_path_dict"):
             for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
                     g.Galaxy
             ):
-                if galaxy_path in self.hyper_galaxy_image_1d_path_dict:
-                    galaxy.hyper_model_image_1d = self.hyper_model_image_1d
-                    galaxy.hyper_galaxy_image_1d = self.hyper_galaxy_image_1d_path_dict[
+                if galaxy_path in self.hyper_galaxy_image_path_dict:
+                    galaxy.hyper_model_image = self.hyper_model_image
+                    galaxy.hyper_galaxy_image = self.hyper_galaxy_image_path_dict[
                         galaxy_path
                     ]
                     if (
-                            hasattr(self, "binned_hyper_galaxy_image_1d_path_dict")
-                            and self.binned_hyper_galaxy_image_1d_path_dict is not None
+                            hasattr(self, "binned_hyper_galaxy_image_path_dict")
+                            and self.binned_hyper_galaxy_image_path_dict is not None
                     ):
-                        galaxy.binned_hyper_galaxy_image_1d = self.binned_hyper_galaxy_image_1d_path_dict[
+                        galaxy.binned_hyper_galaxy_image = self.binned_hyper_galaxy_image_path_dict[
                             galaxy_path
                         ]
         return instance

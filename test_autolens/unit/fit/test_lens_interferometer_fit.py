@@ -677,7 +677,7 @@ class TestCompareToManualProfilesOnly:
 #                 contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
 #             ),
 #             hyper_model_visibilities=np.ones(9),
-#             hyper_galaxy_image_1d=np.ones(9),
+#             hyper_galaxy_image=np.ones(9),
 #             hyper_minimum_value=0.0,
 #         )
 #
@@ -1120,7 +1120,7 @@ class TestCompareToManualProfilesOnly:
 #                 contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
 #             ),
 #             hyper_model_visibilities=np.ones(9),
-#             hyper_galaxy_image_1d=np.ones(9),
+#             hyper_galaxy_image=np.ones(9),
 #             hyper_minimum_value=0.0,
 #         )
 #

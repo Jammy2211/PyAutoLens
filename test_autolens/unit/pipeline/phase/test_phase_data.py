@@ -943,7 +943,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        phase_imaging_7x7.galaxies.source.binned_hyper_galaxy_image_1d = np.ones(9)
+        phase_imaging_7x7.galaxies.source.binned_hyper_galaxy_image = np.ones(9)
 
         result = phase_imaging_7x7.run(data=imaging_7x7)
 
@@ -989,7 +989,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        phase_imaging_7x7.galaxies.source.binned_hyper_galaxy_image_1d = np.ones(9)
+        phase_imaging_7x7.galaxies.source.binned_hyper_galaxy_image = np.ones(9)
 
         result = phase_imaging_7x7.run(data=imaging_7x7)
 

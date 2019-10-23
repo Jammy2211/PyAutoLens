@@ -98,10 +98,10 @@ class AbstractPlane(object):
             )
 
     @property
-    def hyper_galaxy_image_1d_of_galaxy_with_pixelization(self):
+    def hyper_galaxy_image_of_galaxy_with_pixelization(self):
         galaxies_with_pixelization = self.galaxies_with_pixelization
         if galaxies_with_pixelization:
-            return galaxies_with_pixelization[0].hyper_galaxy_image_1d
+            return galaxies_with_pixelization[0].hyper_galaxy_image
 
     @property
     def has_hyper_galaxy(self):
@@ -699,13 +699,13 @@ class AbstractPlaneData(AbstractPlaneLensing):
         if not self.has_pixelization:
             return None
 
-        hyper_galaxy_image_1d = (
-            self.hyper_galaxy_image_1d_of_galaxy_with_pixelization
+        hyper_galaxy_image = (
+            self.hyper_galaxy_image_of_galaxy_with_pixelization
         )
 
         return self.pixelization.pixelization_grid_from_grid(
             grid=grid,
-            hyper_image=hyper_galaxy_image_1d,
+            hyper_image=hyper_galaxy_image,
         )
 
     def mapper_from_grid_and_pixelization_grid(
@@ -726,7 +726,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
                 grid=grid,
                 pixelization_grid=pixelization_grid,
                 inversion_uses_border=inversion_uses_border,
-                hyper_image=galaxies_with_pixelization[0].hyper_galaxy_image_1d,
+                hyper_image=galaxies_with_pixelization[0].hyper_galaxy_image,
             )
 
         elif len(galaxies_with_pixelization) > 1:
@@ -739,66 +739,61 @@ class AbstractPlaneData(AbstractPlaneLensing):
             shape=grid.mask.shape, grid=grid.geometry.unmasked_grid, galaxies=self.galaxies
         )
 
-    def hyper_noise_map_1d_from_noise_map_1d(self, noise_map_1d):
-        hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(
-            noise_map_1d=noise_map_1d
+    def hyper_noise_map_from_noise_map(self, noise_map):
+        hyper_noise_maps = self.hyper_noise_maps_of_galaxies_from_noise_map(
+            noise_map=noise_map
         )
-        hyper_noise_maps_1d = [
-            hyper_noise_map
-            for hyper_noise_map in hyper_noise_maps_1d
-            if hyper_noise_map is not None
-        ]
-        return sum(hyper_noise_maps_1d)
+        return sum(hyper_noise_maps)
 
-    def hyper_noise_maps_1d_of_galaxies_from_noise_map_1d(self, noise_map_1d):
+    def hyper_noise_maps_of_galaxies_from_noise_map(self, noise_map):
         """For a contribution map and noise-map, use the model hyper_galaxy galaxies to compute a hyper noise-map.
 
         Parameters
         -----------
-        noise_map_1d : imaging.NoiseMap or ndarray
+        noise_map : imaging.NoiseMap or ndarray
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         """
-        hyper_noise_maps_1d = []
+        hyper_noise_maps = []
 
         for galaxy in self.galaxies:
             if galaxy.hyper_galaxy is not None:
 
                 hyper_noise_map_1d = galaxy.hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
-                    noise_map=noise_map_1d,
-                    hyper_model_image=galaxy.hyper_model_image_1d,
-                    hyper_galaxy_image=galaxy.hyper_galaxy_image_1d,
+                    noise_map=noise_map,
+                    hyper_model_image=galaxy.hyper_model_image,
+                    hyper_galaxy_image=galaxy.hyper_galaxy_image,
                 )
 
-                hyper_noise_maps_1d.append(hyper_noise_map_1d)
+                hyper_noise_maps.append(hyper_noise_map_1d)
 
             else:
 
-                hyper_noise_maps_1d.append(None)
+                hyper_noise_maps.append(arrays.MaskedArray.zeros(mask=noise_map.mask))
 
-        return hyper_noise_maps_1d
+        return hyper_noise_maps
 
     @property
-    def contribution_maps_1d_of_galaxies(self):
+    def contribution_maps_of_galaxies(self):
 
-        contribution_maps_1d = []
+        contribution_maps = []
 
         for galaxy in self.galaxies:
 
             if galaxy.hyper_galaxy is not None:
 
                 contribution_map = galaxy.hyper_galaxy.contribution_map_from_hyper_images(
-                    hyper_model_image=galaxy.hyper_model_image_1d,
-                    hyper_galaxy_image=galaxy.hyper_galaxy_image_1d,
+                    hyper_model_image=galaxy.hyper_model_image,
+                    hyper_galaxy_image=galaxy.hyper_galaxy_image,
                 )
 
-                contribution_maps_1d.append(contribution_map)
+                contribution_maps.append(contribution_map)
 
             else:
 
-                contribution_maps_1d.append(None)
+                contribution_maps.append(None)
 
-        return contribution_maps_1d
+        return contribution_maps
 
     @property
     def yticks(self):

@@ -77,7 +77,7 @@ class Result(data.Result):
         }
 
     @property
-    def hyper_galaxy_image_1d_path_dict(self):
+    def hyper_galaxy_image_path_dict(self):
         """
         A dictionary associating 1D hyper_galaxies galaxy images with their names.
         """
@@ -86,7 +86,7 @@ class Result(data.Result):
             "hyper", "hyper_minimum_percent", float
         )
 
-        hyper_galaxy_image_1d_path_dict = {}
+        hyper_galaxy_image_path_dict = {}
 
         for path, galaxy in self.path_galaxy_tuples:
 
@@ -98,9 +98,9 @@ class Result(data.Result):
                     galaxy_image_1d < minimum_galaxy_value
                     ] = minimum_galaxy_value
 
-            hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
+            hyper_galaxy_image_path_dict[path] = galaxy_image_1d
 
-        return hyper_galaxy_image_1d_path_dict
+        return hyper_galaxy_image_path_dict
 
     @property
     def hyper_galaxy_image_2d_path_dict(self):
@@ -114,7 +114,7 @@ class Result(data.Result):
             hyper_galaxy_image_2d_path_dict[
                 path
             ] = self.mask.mapping.scaled_array_2d_from_array_1d(
-                array_1d=self.hyper_galaxy_image_1d_path_dict[path]
+                array_1d=self.hyper_galaxy_image_path_dict[path]
             )
 
         return hyper_galaxy_image_2d_path_dict
@@ -139,7 +139,7 @@ class Result(data.Result):
 
         return binned_image_1d_dict
 
-    def binned_hyper_galaxy_image_1d_path_dict(self, binned_grid):
+    def binned_hyper_galaxy_image_path_dict(self, binned_grid):
         """
         A dictionary associating 1D hyper_galaxies galaxy binned images with their names.
         """
@@ -177,7 +177,7 @@ class Result(data.Result):
 
         if binned_grid is not None:
 
-            binned_hyper_galaxy_image_1d_path_dict = self.binned_hyper_galaxy_image_1d_path_dict(
+            binned_hyper_galaxy_image_path_dict = self.binned_hyper_galaxy_image_path_dict(
                 binned_grid=binned_grid
             )
 
@@ -187,17 +187,17 @@ class Result(data.Result):
                 binned_hyper_galaxy_image_2d_path_dict[
                     path
                 ] = binned_grid.mapping.scaled_array_2d_from_array_1d(
-                    array_1d=binned_hyper_galaxy_image_1d_path_dict[path]
+                    array_1d=binned_hyper_galaxy_image_path_dict[path]
                 )
 
             return binned_hyper_galaxy_image_2d_path_dict
 
     @property
-    def hyper_model_image_1d(self):
+    def hyper_model_image(self):
 
-        hyper_model_image_1d = np.zeros(self.mask.pixels_in_mask)
+        hyper_model_image = np.zeros(self.mask.pixels_in_mask)
 
         for path, galaxy in self.path_galaxy_tuples:
-            hyper_model_image_1d += self.hyper_galaxy_image_1d_path_dict[path]
+            hyper_model_image += self.hyper_galaxy_image_path_dict[path]
 
-        return hyper_model_image_1d
+        return hyper_model_image

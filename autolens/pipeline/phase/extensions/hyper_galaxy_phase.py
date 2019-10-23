@@ -15,7 +15,7 @@ from .hyper_phase import HyperPhase
 
 class Analysis(af.Analysis):
     def __init__(
-            self, lens_data, hyper_model_image_1d, hyper_galaxy_image_1d, image_path
+            self, lens_data, hyper_model_image, hyper_galaxy_image, image_path
     ):
         """
         An analysis to fit the noise for a single galaxy image.
@@ -23,9 +23,9 @@ class Analysis(af.Analysis):
         ----------
         lens_data: LensData
             lens data, including an image and noise
-        hyper_model_image_1d: ndarray
+        hyper_model_image: ndarray
             An image produce of the overall system by a model
-        hyper_galaxy_image_1d: ndarray
+        hyper_galaxy_image: ndarray
             The contribution of one galaxy to the model image
         """
 
@@ -33,8 +33,8 @@ class Analysis(af.Analysis):
 
         self.visualizer = visualizer.HyperGalaxyVisualizer(image_path)
 
-        self.hyper_model_image_1d = hyper_model_image_1d
-        self.hyper_galaxy_image_1d = hyper_galaxy_image_1d
+        self.hyper_model_image = hyper_model_image
+        self.hyper_galaxy_image = hyper_galaxy_image
 
     def visualize(self, instance, during_analysis):
 
@@ -46,11 +46,11 @@ class Analysis(af.Analysis):
             )
 
             hyper_model_image_2d = self.lens_data.grid.mapping.scaled_array_2d_from_array_1d(
-                array_1d=self.hyper_model_image_1d
+                array_1d=self.hyper_model_image
             )
 
             hyper_galaxy_image_2d = self.lens_data.grid.mapping.scaled_array_2d_from_array_1d(
-                array_1d=self.hyper_galaxy_image_1d
+                array_1d=self.hyper_galaxy_image
             )
 
             contribution_map_2d = instance.hyper_galaxy.contribution_map_from_hyper_images(
@@ -62,7 +62,7 @@ class Analysis(af.Analysis):
                 image=self.lens_data.image.in_1d,
                 noise_map=self.lens_data.noise_map.in_1d,
                 mask=self.lens_data._mask_1d,
-                model_image=self.hyper_model_image_1d,
+                model_image=self.hyper_model_image,
                 mapping=self.lens_data.mapping,
                 inversion=None,
             )
@@ -134,8 +134,8 @@ class Analysis(af.Analysis):
             noise_map_1d = self.lens_data.noise_map.in_1d
 
         hyper_noise_map_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
-            hyper_model_image=self.hyper_model_image_1d,
-            hyper_galaxy_image=self.hyper_galaxy_image_1d,
+            hyper_model_image=self.hyper_model_image,
+            hyper_galaxy_image=self.hyper_galaxy_image,
             noise_map=self.lens_data.noise_map.in_1d,
         )
 
@@ -149,7 +149,7 @@ class Analysis(af.Analysis):
             image=image_1d,
             noise_map=noise_map_1d,
             mask=self.lens_data._mask_1d,
-            model_image=self.hyper_model_image_1d,
+            model_image=self.hyper_model_image,
             mapping=self.lens_data.mapping,
             inversion=None,
         )
@@ -208,17 +208,17 @@ class HyperGalaxyPhase(HyperPhase):
             preload_pixelization_grids_of_planes=None,
         )
 
-        model_image_1d = results.last.hyper_model_image_1d
-        hyper_galaxy_image_1d_path_dict = results.last.hyper_galaxy_image_1d_path_dict
+        model_image_1d = results.last.hyper_model_image
+        hyper_galaxy_image_path_dict = results.last.hyper_galaxy_image_path_dict
 
         hyper_result = copy.deepcopy(results.last)
         hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(
             hyper_result.constant
         )
 
-        hyper_result.analysis.hyper_model_image_1d = model_image_1d
-        hyper_result.analysis.hyper_galaxy_image_1d_path_dict = (
-            hyper_galaxy_image_1d_path_dict
+        hyper_result.analysis.hyper_model_image = model_image_1d
+        hyper_result.analysis.hyper_galaxy_image_path_dict = (
+            hyper_galaxy_image_path_dict
         )
 
         for path, galaxy in results.last.path_galaxy_tuples:
@@ -254,12 +254,12 @@ class HyperGalaxyPhase(HyperPhase):
 
             # If array is all zeros, galaxy did not have image in previous phase and
             # should be ignored
-            if not np.all(hyper_galaxy_image_1d_path_dict[path] == 0):
+            if not np.all(hyper_galaxy_image_path_dict[path] == 0):
 
                 analysis = self.Analysis(
                     lens_data=lens_data,
-                    hyper_model_image_1d=model_image_1d,
-                    hyper_galaxy_image_1d=hyper_galaxy_image_1d_path_dict[path],
+                    hyper_model_image=model_image_1d,
+                    hyper_galaxy_image=hyper_galaxy_image_path_dict[path],
                     image_path=optimizer.image_path,
                 )
 
@@ -364,17 +364,17 @@ class HyperGalaxyAllPhase(HyperPhase):
             preload_pixelization_grids_of_planes=None,
         )
 
-        model_image_1d = results.last.hyper_model_image_1d
-        hyper_galaxy_image_1d_path_dict = results.last.hyper_galaxy_image_1d_path_dict
+        model_image_1d = results.last.hyper_model_image
+        hyper_galaxy_image_path_dict = results.last.hyper_galaxy_image_path_dict
 
         hyper_result = copy.deepcopy(results.last)
         hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(
             hyper_result.constant
         )
 
-        hyper_result.analysis.hyper_model_image_1d = model_image_1d
-        hyper_result.analysis.hyper_galaxy_image_1d_path_dict = (
-            hyper_galaxy_image_1d_path_dict
+        hyper_result.analysis.hyper_model_image = model_image_1d
+        hyper_result.analysis.hyper_galaxy_image_path_dict = (
+            hyper_galaxy_image_path_dict
         )
 
         for path, galaxy in results.last.path_galaxy_tuples:
@@ -409,12 +409,12 @@ class HyperGalaxyAllPhase(HyperPhase):
 
             # If array is all zeros, galaxy did not have image in previous phase and
             # should be ignored
-            if not np.all(hyper_galaxy_image_1d_path_dict[path] == 0):
+            if not np.all(hyper_galaxy_image_path_dict[path] == 0):
 
                 analysis = self.Analysis(
                     lens_data=lens_data,
                     model_image_1d=model_image_1d,
-                    galaxy_image_1d=hyper_galaxy_image_1d_path_dict[path],
+                    galaxy_image_1d=hyper_galaxy_image_path_dict[path],
                 )
 
                 result = optimizer.fit(analysis)

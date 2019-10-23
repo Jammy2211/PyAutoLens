@@ -256,17 +256,17 @@ class TestImagePassing(object):
         )
 
         assert (
-            analysis.hyper_galaxy_image_1d_path_dict[("g0",)]
+            analysis.hyper_galaxy_image_path_dict[("g0",)]
             == np.array([2.0, 2.0, 2.0, 0.02, 2.0, 2.0, 2.0, 2.0, 2.0])
         ).all()
 
         assert (
-            analysis.hyper_galaxy_image_1d_path_dict[("g1",)]
+            analysis.hyper_galaxy_image_path_dict[("g1",)]
             == np.array([2.0, 2.0, 2.0, 2.0, 2.0, 0.02, 2.0, 2.0, 2.0])
         ).all()
 
         assert (
-            analysis.hyper_model_image_1d
+            analysis.hyper_model_image
             == np.array([4.0, 4.0, 4.0, 2.02, 4.0, 2.02, 4.0, 4.0, 4.0])
         ).all()
 
@@ -286,13 +286,13 @@ class TestImagePassing(object):
             data=imaging_7x7, results=results_collection_7x7
         )
 
-        assert (analysis.hyper_model_image_1d == 5.0 * np.ones(9)).all()
+        assert (analysis.hyper_model_image == 5.0 * np.ones(9)).all()
 
         assert (
-            analysis.hyper_galaxy_image_1d_path_dict[("g0",)] == 2.0 * np.ones(9)
+            analysis.hyper_galaxy_image_path_dict[("g0",)] == 2.0 * np.ones(9)
         ).all()
         assert (
-            analysis.hyper_galaxy_image_1d_path_dict[("g1",)] == 3.0 * np.ones(9)
+            analysis.hyper_galaxy_image_path_dict[("g1",)] == 3.0 * np.ones(9)
         ).all()
 
     def test__results_are_passed_to_new_analysis__sets_up_hyper_cluster_images__includes_hyper_minimum(
@@ -318,10 +318,10 @@ class TestImagePassing(object):
         )
 
         assert (
-            analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)] == 2.0 * np.ones(9)
+            analysis.binned_hyper_galaxy_image_path_dict[("g0",)] == 2.0 * np.ones(9)
         ).all()
         assert (
-            analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)] == 3.0 * np.ones(9)
+            analysis.binned_hyper_galaxy_image_path_dict[("g1",)] == 3.0 * np.ones(9)
         ).all()
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -344,17 +344,17 @@ class TestImagePassing(object):
         )
 
         assert (
-            analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)] == 2.0 * np.ones(9)
+            analysis.binned_hyper_galaxy_image_path_dict[("g0",)] == 2.0 * np.ones(9)
         ).all()
         assert (
-            analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)] == 3.0 * np.ones(9)
+            analysis.binned_hyper_galaxy_image_path_dict[("g1",)] == 3.0 * np.ones(9)
         ).all()
         assert (
-            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)])
+            len(analysis.binned_hyper_galaxy_image_path_dict[("g0",)])
             == analysis.lens_data.grid.binned.shape[0]
         )
         assert (
-            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)])
+            len(analysis.binned_hyper_galaxy_image_path_dict[("g1",)])
             == analysis.lens_data.grid.binned.shape[0]
         )
 
@@ -378,19 +378,19 @@ class TestImagePassing(object):
         )
 
         assert (
-            analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)]
+            analysis.binned_hyper_galaxy_image_path_dict[("g0",)]
             == np.array([0.5, 1.0, 1.0, 2.0])
         ).all()
         assert (
-            analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)]
+            analysis.binned_hyper_galaxy_image_path_dict[("g1",)]
             == np.array([0.75, 1.5, 1.5, 3.0])
         ).all()
         assert (
-            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)])
+            len(analysis.binned_hyper_galaxy_image_path_dict[("g0",)])
             == analysis.lens_data.grid.binned.shape[0]
         )
         assert (
-            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)])
+            len(analysis.binned_hyper_galaxy_image_path_dict[("g1",)])
             == analysis.lens_data.grid.binned.shape[0]
         )
 
@@ -421,19 +421,19 @@ class TestImagePassing(object):
         )
 
         assert (
-            analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)]
+            analysis.binned_hyper_galaxy_image_path_dict[("g0",)]
             == np.array([2.0, 2.0, 1.25, 2.0])
         ).all()
         assert (
-            analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)]
+            analysis.binned_hyper_galaxy_image_path_dict[("g1",)]
             == np.array([2.0, 2.0, 2.0, 1.25])
         ).all()
         assert (
-            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g0",)])
+            len(analysis.binned_hyper_galaxy_image_path_dict[("g0",)])
             == analysis.lens_data.grid.binned.shape[0]
         )
         assert (
-            len(analysis.binned_hyper_galaxy_image_1d_path_dict[("g1",)])
+            len(analysis.binned_hyper_galaxy_image_path_dict[("g1",)])
             == analysis.lens_data.grid.binned.shape[0]
         )
 
@@ -456,20 +456,20 @@ class TestImagePassing(object):
             array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
-        hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
+        hyper_model_image = hyper_lens_image_1d + hyper_source_image_1d
 
-        assert instance.galaxies.lens.hyper_galaxy_image_1d == pytest.approx(
+        assert instance.galaxies.lens.hyper_galaxy_image == pytest.approx(
             hyper_lens_image_1d, 1.0e-4
         )
-        assert instance.galaxies.source.hyper_galaxy_image_1d == pytest.approx(
+        assert instance.galaxies.source.hyper_galaxy_image == pytest.approx(
             hyper_source_image_1d, 1.0e-4
         )
 
-        assert instance.galaxies.lens.hyper_model_image_1d == pytest.approx(
-            hyper_model_image_1d, 1.0e-4
+        assert instance.galaxies.lens.hyper_model_image == pytest.approx(
+            hyper_model_image, 1.0e-4
         )
-        assert instance.galaxies.source.hyper_model_image_1d == pytest.approx(
-            hyper_model_image_1d, 1.0e-4
+        assert instance.galaxies.source.hyper_model_image == pytest.approx(
+            hyper_model_image, 1.0e-4
         )
 
     def test__fit_uses_hyper_fit_correctly_(
@@ -499,15 +499,15 @@ class TestImagePassing(object):
             array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
-        hyper_model_image_1d = hyper_lens_image_1d + hyper_source_image_1d
+        hyper_model_image = hyper_lens_image_1d + hyper_source_image_1d
 
         g0 = al.Galaxy(
             redshift=0.5,
             light_profile=instance.galaxies.lens.light,
             mass_profile=instance.galaxies.lens.mass,
             hyper_galaxy=hyper_galaxy,
-            hyper_model_image_1d=hyper_model_image_1d,
-            hyper_galaxy_image_1d=hyper_lens_image_1d,
+            hyper_model_image=hyper_model_image,
+            hyper_galaxy_image=hyper_lens_image_1d,
             hyper_minimum_value=0.0,
         )
         g1 = al.Galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
@@ -654,8 +654,8 @@ class TestHyperGalaxyPhase(object):
 
         analysis = phase_imaging_7x7_hyper.hyper_phases[0].Analysis(
             lens_data=lens_data,
-            hyper_model_image_1d=fit.model_image(return_in_2d=False),
-            hyper_galaxy_image_1d=fit.model_image(return_in_2d=False),
+            hyper_model_image=fit.model_image(return_in_2d=False),
+            hyper_galaxy_image=fit.model_image(return_in_2d=False),
             image_path=None,
         )
 
