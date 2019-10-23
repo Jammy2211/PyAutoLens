@@ -82,7 +82,7 @@ class MockResults(object):
         return image_1d_dict
 
     @property
-    def hyper_galaxy_image_1d_path_dict(self):
+    def hyper_galaxy_image_path_dict(self):
         """
         A dictionary associating 1D hyper_galaxies galaxy images with their names.
         """
@@ -91,7 +91,7 @@ class MockResults(object):
             "hyper", "hyper_minimum_percent", float
         )
 
-        hyper_galaxy_image_1d_path_dict = {}
+        hyper_galaxy_image_path_dict = {}
 
         for path, galaxy in self.path_galaxy_tuples:
             galaxy_image_1d = self.image_galaxy_1d_dict[path]
@@ -100,9 +100,9 @@ class MockResults(object):
             galaxy_image_1d[
                 galaxy_image_1d < minimum_galaxy_value
             ] = minimum_galaxy_value
-            hyper_galaxy_image_1d_path_dict[path] = galaxy_image_1d
+            hyper_galaxy_image_path_dict[path] = galaxy_image_1d
 
-        return hyper_galaxy_image_1d_path_dict
+        return hyper_galaxy_image_path_dict
 
     @property
     def hyper_galaxy_image_2d_path_dict(self):
@@ -116,7 +116,7 @@ class MockResults(object):
             hyper_galaxy_image_2d_path_dict[
                 path
             ] = self.mask_2d.mapping.scaled_array_2d_from_array_1d(
-                array_1d=self.hyper_galaxy_image_1d_path_dict[path]
+                array_1d=self.hyper_galaxy_image_path_dict[path]
             )
 
         return hyper_galaxy_image_2d_path_dict
@@ -139,7 +139,7 @@ class MockResults(object):
 
         return binned_image_1d_dict
 
-    def binned_hyper_galaxy_image_1d_path_dict(self, binned_grid):
+    def binned_hyper_galaxy_image_path_dict(self, binned_grid):
         """
         A dictionary associating 1D hyper_galaxies galaxy cluster images with their names.
         """
@@ -177,7 +177,7 @@ class MockResults(object):
 
         if binned_grid is not None:
 
-            binned_hyper_galaxy_image_1d_path_dict = self.binned_hyper_galaxy_image_1d_path_dict(
+            binned_hyper_galaxy_image_path_dict = self.binned_hyper_galaxy_image_path_dict(
                 binned_grid=binned_grid
             )
 
@@ -187,20 +187,20 @@ class MockResults(object):
                 binned_hyper_galaxy_image_2d_path_dict[
                     path
                 ] = binned_grid.mapping.scaled_array_2d_from_array_1d(
-                    array_1d=binned_hyper_galaxy_image_1d_path_dict[path]
+                    array_1d=binned_hyper_galaxy_image_path_dict[path]
                 )
 
             return binned_hyper_galaxy_image_2d_path_dict
 
     @property
-    def hyper_model_image_1d(self):
+    def hyper_model_image(self):
 
-        hyper_model_image_1d = np.zeros(self.mask_2d.pixels_in_mask)
+        hyper_model_image = np.zeros(self.mask_2d.pixels_in_mask)
 
         for path, galaxy in self.path_galaxy_tuples:
-            hyper_model_image_1d += self.hyper_galaxy_image_1d_path_dict[path]
+            hyper_model_image += self.hyper_galaxy_image_path_dict[path]
 
-        return hyper_model_image_1d
+        return hyper_model_image
 
 
 class MockResult:

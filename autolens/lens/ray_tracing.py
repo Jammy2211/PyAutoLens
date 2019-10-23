@@ -108,9 +108,9 @@ class AbstractTracer(object):
         return [plane.regularization for plane in self.planes]
 
     @property
-    def hyper_galaxy_image_1d_of_planes_with_pixelizations(self):
+    def hyper_galaxy_image_of_planes_with_pixelizations(self):
         return [
-            plane.hyper_galaxy_image_1d_of_galaxy_with_pixelization
+            plane.hyper_galaxy_image_of_galaxy_with_pixelization
             for plane in self.planes
         ]
 

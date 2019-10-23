@@ -299,7 +299,7 @@ class TestAbstractTracer(object):
 
             assert tracer.upper_plane_index_with_light_profile == 2
 
-        def test__hyper_model_image_1d_of_galaxy_with_pixelization(
+        def test__hyper_model_image_of_galaxy_with_pixelization(
             self, sub_grid_7x7
         ):
 
@@ -312,22 +312,22 @@ class TestAbstractTracer(object):
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
 
-            assert tracer.hyper_galaxy_image_1d_of_planes_with_pixelizations == [None]
+            assert tracer.hyper_galaxy_image_of_planes_with_pixelizations == [None]
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal_pix])
 
-            assert tracer.hyper_galaxy_image_1d_of_planes_with_pixelizations == [None]
+            assert tracer.hyper_galaxy_image_of_planes_with_pixelizations == [None]
 
             gal_pix = al.Galaxy(
                 redshift=0.5,
                 pixelization=al.pix.Pixelization(),
                 regularization=al.reg.Constant(),
-                hyper_galaxy_image_1d=1,
+                hyper_galaxy_image=1,
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal])
 
-            assert tracer.hyper_galaxy_image_1d_of_planes_with_pixelizations == [1]
+            assert tracer.hyper_galaxy_image_of_planes_with_pixelizations == [1]
 
             gal0 = al.Galaxy(redshift=0.25)
             gal1 = al.Galaxy(redshift=0.75)
@@ -337,21 +337,21 @@ class TestAbstractTracer(object):
                 redshift=0.5,
                 pixelization=al.pix.Pixelization(),
                 regularization=al.reg.Constant(),
-                hyper_galaxy_image_1d=1,
+                hyper_galaxy_image=1,
             )
 
             gal_pix1 = al.Galaxy(
                 redshift=2.0,
                 pixelization=al.pix.Pixelization(),
                 regularization=al.reg.Constant(),
-                hyper_galaxy_image_1d=2,
+                hyper_galaxy_image=2,
             )
 
             tracer = al.Tracer.from_galaxies(
                 galaxies=[gal0, gal1, gal2, gal_pix0, gal_pix1]
             )
 
-            assert tracer.hyper_galaxy_image_1d_of_planes_with_pixelizations == [
+            assert tracer.hyper_galaxy_image_of_planes_with_pixelizations == [
                 None,
                 1,
                 None,
@@ -2869,8 +2869,8 @@ class TestAbstractTracerData(object):
 
             noise_map_1d = np.array([5.0, 3.0, 1.0])
 
-            hyper_model_image_1d = np.array([2.0, 4.0, 10.0])
-            hyper_galaxy_image_1d = np.array([1.0, 5.0, 8.0])
+            hyper_model_image = np.array([2.0, 4.0, 10.0])
+            hyper_galaxy_image = np.array([1.0, 5.0, 8.0])
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
@@ -2878,16 +2878,16 @@ class TestAbstractTracerData(object):
             galaxy_0 = al.Galaxy(
                 redshift=0.5,
                 hyper_galaxy=hyper_galaxy_0,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
                 hyper_minimum_value=0.0,
             )
 
             galaxy_1 = al.Galaxy(
                 redshift=1.0,
                 hyper_galaxy=hyper_galaxy_1,
-                hyper_model_image_1d=hyper_model_image_1d,
-                hyper_galaxy_image_1d=hyper_galaxy_image_1d,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
                 hyper_minimum_value=0.0,
             )
 
@@ -2895,11 +2895,11 @@ class TestAbstractTracerData(object):
             plane_1 = al.Plane(redshift=0.5, galaxies=[galaxy_1])
             plane_2 = al.Plane(redshift=1.0, galaxies=[al.Galaxy(redshift=0.5)])
 
-            hyper_noise_map_1d_0 = plane_0.hyper_noise_map_1d_from_noise_map_1d(
-                noise_map_1d=noise_map_1d
+            hyper_noise_map_1d_0 = plane_0.hyper_noise_map_from_noise_map(
+                noise_map=noise_map_1d
             )
-            hyper_noise_map_1d_1 = plane_1.hyper_noise_map_1d_from_noise_map_1d(
-                noise_map_1d=noise_map_1d
+            hyper_noise_map_1d_1 = plane_1.hyper_noise_map_from_noise_map(
+                noise_map=noise_map_1d
             )
 
             tracer = al.Tracer(

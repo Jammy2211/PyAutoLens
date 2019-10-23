@@ -322,8 +322,8 @@ class TestLikelihood:
             hyper_galaxy=al.HyperGalaxy(
                 contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
             ),
-            hyper_model_image_1d=np.ones(2),
-            hyper_galaxy_image_1d=np.ones(2),
+            hyper_model_image=np.ones(2),
+            hyper_galaxy_image=np.ones(2),
             hyper_minimum_value=0.0,
         )
 
@@ -920,8 +920,8 @@ class TestCompareToManualProfilesOnly:
             hyper_galaxy=al.HyperGalaxy(
                 contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
             ),
-            hyper_model_image_1d=np.ones(9),
-            hyper_galaxy_image_1d=np.ones(9),
+            hyper_model_image=np.ones(9),
+            hyper_galaxy_image=np.ones(9),
             hyper_minimum_value=0.0,
         )
         g1 = al.Galaxy(
@@ -1279,8 +1279,8 @@ class TestCompareToManualInversionOnly:
             hyper_galaxy=al.HyperGalaxy(
                 contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
             ),
-            hyper_model_image_1d=np.ones(9),
-            hyper_galaxy_image_1d=np.ones(9),
+            hyper_model_image=np.ones(9),
+            hyper_galaxy_image=np.ones(9),
             hyper_minimum_value=0.0,
         )
 
@@ -1710,8 +1710,8 @@ class TestCompareToManualProfilesAndInversion:
             hyper_galaxy=al.HyperGalaxy(
                 contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
             ),
-            hyper_model_image_1d=np.ones(9),
-            hyper_galaxy_image_1d=np.ones(9),
+            hyper_model_image=np.ones(9),
+            hyper_galaxy_image=np.ones(9),
             hyper_minimum_value=0.0,
         )
 
