@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+import autoarray as aa
 import autolens as al
 from autolens import exc
 
@@ -20,13 +21,13 @@ class TestPlaneImageFromGrid:
         )
 
         mask = aa.mask.manual(
-            array_2d=np.full(shape=(3, 3), fill_value=False),
+            mask_2d=np.full(shape=(3, 3), fill_value=False),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.Grid(
-            sub_grid_1d=np.array(
+        grid = aa.masked_grid.manual_1d(
+            grid=np.array(
                 [
                     [-1.0, -1.0],
                     [-1.0, 0.0],
@@ -44,7 +45,7 @@ class TestPlaneImageFromGrid:
 
         plane_image_galaxy = galaxy.profile_image_from_grid(grid)
 
-        assert (plane_image == plane_image_galaxy).all()
+        assert (plane_image.array == plane_image_galaxy).all()
 
     def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(
         self
@@ -69,13 +70,13 @@ class TestPlaneImageFromGrid:
         )
 
         mask = aa.mask.manual(
-            array_2d=np.full(shape=(3, 3), fill_value=False),
+            mask_2d=np.full(shape=(3, 3), fill_value=False),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.Grid(
-            sub_grid_1d=np.array(
+        grid = aa.masked_grid.manual_1d(
+            grid=np.array(
                 [
                     [-1.0, -1.0],
                     [-1.0, 0.0],
@@ -93,7 +94,7 @@ class TestPlaneImageFromGrid:
 
         plane_image_galaxy = galaxy.profile_image_from_grid(grid=grid)
 
-        assert (plane_image == plane_image_galaxy).all()
+        assert (plane_image.array == plane_image_galaxy).all()
 
     def test__2x3_grid__shape_change_correct_and_coordinates_shift(self):
         galaxy = al.Galaxy(
@@ -107,13 +108,13 @@ class TestPlaneImageFromGrid:
         )
 
         mask = aa.mask.manual(
-            array_2d=np.full(shape=(2, 3), fill_value=False),
+            mask_2d=np.full(shape=(2, 3), fill_value=False),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.Grid(
-            sub_grid_1d=np.array(
+        grid = aa.masked_grid.manual_1d(
+            grid=np.array(
                 [
                     [-0.75, -1.0],
                     [-0.75, 0.0],
@@ -128,7 +129,7 @@ class TestPlaneImageFromGrid:
 
         plane_image_galaxy = galaxy.profile_image_from_grid(grid=grid)
 
-        assert (plane_image == plane_image_galaxy).all()
+        assert (plane_image.array == plane_image_galaxy).all()
 
     def test__3x2_grid__shape_change_correct_and_coordinates_shift(self):
         galaxy = al.Galaxy(
@@ -142,13 +143,13 @@ class TestPlaneImageFromGrid:
         )
 
         mask = aa.mask.manual(
-            array_2d=np.full(shape=(3, 2), fill_value=False),
+            mask_2d=np.full(shape=(3, 2), fill_value=False),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.Grid(
-            sub_grid_1d=np.array(
+        grid = aa.masked_grid.manual_1d(
+            grid=np.array(
                 [
                     [-1.0, -0.75],
                     [-1.0, 0.75],
@@ -163,7 +164,7 @@ class TestPlaneImageFromGrid:
 
         plane_image_galaxy = galaxy.profile_image_from_grid(grid=grid)
 
-        assert (plane_image == plane_image_galaxy).all()
+        assert (plane_image.array == plane_image_galaxy).all()
 
     def test__3x3_grid__buffer_aligns_two_grids(self):
         galaxy = al.Galaxy(
@@ -177,13 +178,13 @@ class TestPlaneImageFromGrid:
         )
 
         mask = aa.mask.manual(
-            array_2d=np.full(shape=(3, 3), fill_value=False),
+            mask_2d=np.full(shape=(3, 3), fill_value=False),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.Grid(
-            sub_grid_1d=np.array(
+        grid = aa.masked_grid.manual_1d(
+            grid=np.array(
                 [
                     [-1.0, -1.0],
                     [-1.0, 0.0],
@@ -201,7 +202,7 @@ class TestPlaneImageFromGrid:
 
         plane_image_galaxy = galaxy.profile_image_from_grid(grid=grid)
 
-        assert (plane_image == plane_image_galaxy).all()
+        assert (plane_image.array == plane_image_galaxy).all()
 
 
 class TestPlaneRedshifts:

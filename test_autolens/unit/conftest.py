@@ -29,8 +29,8 @@ def set_config_path():
 # Lens Data #
 
 
-@pytest.fixture(name="lens_imaging_7x7")
-def make_lens_imaging_7x7(
+@pytest.fixture(name="lens_masked_imaging_7x7")
+def make_lens_masked_imaging_7x7(
     imaging_7x7,
     mask_7x7,
     sub_grid_7x7,
@@ -48,8 +48,8 @@ def make_lens_imaging_7x7(
     )
 
 
-@pytest.fixture(name="lens_interferometer_7")
-def make_lens_interferometer_7(
+@pytest.fixture(name="lens_masked_interferometer_6x6")
+def make_lens_masked_interferometer_6x6(
     interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
 ):
     return mock_lens_data.MockLensUVPlaneData(
@@ -88,16 +88,16 @@ def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp):
 
 
 @pytest.fixture(name="lens_imaging_fit_x1_plane_7x7")
-def make_lens_imaging_fit_x1_plane_7x7(lens_imaging_7x7, tracer_x1_plane_7x7):
+def make_lens_imaging_fit_x1_plane_7x7(lens_masked_imaging_7x7, tracer_x1_plane_7x7):
     return al.LensImagingFit.from_lens_data_and_tracer(
-        lens_data=lens_imaging_7x7, tracer=tracer_x1_plane_7x7
+        lens_data=lens_masked_imaging_7x7, tracer=tracer_x1_plane_7x7
     )
 
 
 @pytest.fixture(name="lens_imaging_fit_x2_plane_7x7")
-def make_lens_imaging_fit_x2_plane_7x7(lens_imaging_7x7, tracer_x2_plane_7x7):
+def make_lens_imaging_fit_x2_plane_7x7(lens_masked_imaging_7x7, tracer_x2_plane_7x7):
     return al.LensImagingFit.from_lens_data_and_tracer(
-        lens_data=lens_imaging_7x7, tracer=tracer_x2_plane_7x7
+        lens_data=lens_masked_imaging_7x7, tracer=tracer_x2_plane_7x7
     )
 
 

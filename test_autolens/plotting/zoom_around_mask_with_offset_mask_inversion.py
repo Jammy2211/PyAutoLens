@@ -1,4 +1,4 @@
-from autolens.lens.plotters import lens_imaging_fit_plotters
+from autolens.fit.plotters import lens_imaging_fit_plotters
 from test import simulation_util
 
 imaging = simulation_util.load_test_imaging(

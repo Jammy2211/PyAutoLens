@@ -75,7 +75,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         shape=imaging.image.shape, pixel_scales=0.2, sub_size=2, radius_arcsec=0.8
     )
 
-    lens_data = al.LensImagingData(imaging=imaging, mask=mask)
+    lens_data = al.MaskedImaging(imaging=imaging, mask=mask)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
@@ -157,7 +157,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         shape=imaging.image.shape, pixel_scales=0.2, sub_size=1, radius_arcsec=0.8
     )
 
-    lens_data = al.LensImagingData(imaging=imaging, mask=mask)
+    lens_data = al.MaskedImaging(imaging=imaging, mask=mask)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 

@@ -1,7 +1,7 @@
 import autofit as af
 from autoarray.plotters import imaging_plotters
 from autolens.lens.plotters import ray_tracing_plotters
-from autolens.lens.plotters import lens_imaging_fit_plotters
+from autolens.fit.plotters import lens_imaging_fit_plotters
 from autoarray.plotters import inversion_plotters
 from autolens.pipeline.plotters import hyper_plotters
 
@@ -179,7 +179,7 @@ def plot_lens_imaging_fit_for_phase(
 ):
 
     output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=visualize_path, folder_names=["lens_fit"]
+        path=visualize_path, folder_names=["fit"]
     )
 
     if should_plot_fit_as_subplot:

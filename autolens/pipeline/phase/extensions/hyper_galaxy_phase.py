@@ -4,8 +4,8 @@ import numpy as np
 from typing import cast
 
 import autofit as af
-from autolens.lens import lens_data as ld
-from autolens.lens.lens_fit import lens_imaging_fit
+from autolens.fit import masked_data as ld
+from autolens.fit import imaging_fit
 from autoastro.galaxy import galaxy as g
 from autoastro.hyper import hyper_data as hd
 from autolens.pipeline.phase import imaging
@@ -185,10 +185,10 @@ class HyperGalaxyPhase(HyperPhase):
         """
         phase = self.make_hyper_phase()
 
-        lens_data = ld.LensImagingData(
+        lens_data = ld.MaskedImaging(
             imaging=data,
             mask=results.last.mask,
-            trimmed_psf_shape=cast(imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
+            trimmed_psf_shape_2d=cast(imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
             positions=results.last.positions,
             positions_threshold=cast(
                 imaging.PhaseImaging, phase
@@ -341,10 +341,10 @@ class HyperGalaxyAllPhase(HyperPhase):
         """
         phase = self.make_hyper_phase()
 
-        lens_data = ld.LensImagingData(
+        lens_data = ld.MaskedImaging(
             imaging=data,
             mask=results.last.mask,
-            trimmed_psf_shape=cast(imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
+            trimmed_psf_shape_2d=cast(imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
             positions=results.last.positions,
             positions_threshold=cast(
                 imaging.PhaseImaging, phase
