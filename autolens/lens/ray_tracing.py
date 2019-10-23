@@ -632,19 +632,14 @@ class AbstractTracerData(AbstractTracerLensing):
         )
 
     def hyper_noise_map_from_noise_map(self, noise_map):
-        hyper_noise_maps_1d = self.hyper_noise_maps_1d_of_planes_from_noise_map_1d(
-            noise_map_1d=noise_map
+        hyper_noise_maps = self.hyper_noise_maps_of_planes_from_noise_map(
+            noise_map=noise_map
         )
-        hyper_noise_maps_1d = [
-            hyper_noise_map
-            for hyper_noise_map in hyper_noise_maps_1d
-            if hyper_noise_map is not None
-        ]
-        return sum(hyper_noise_maps_1d)
+        return sum(hyper_noise_maps)
 
-    def hyper_noise_maps_1d_of_planes_from_noise_map_1d(self, noise_map_1d):
+    def hyper_noise_maps_of_planes_from_noise_map(self, noise_map):
         return [
-            plane.hyper_noise_map_from_noise_map(noise_map=noise_map_1d)
+            plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
             for plane in self.planes
         ]
 
