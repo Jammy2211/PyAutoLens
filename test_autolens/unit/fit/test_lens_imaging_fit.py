@@ -8,7 +8,7 @@ from test_autoastro.mock.mock_profiles import MockLightProfile
 
 
 class TestFitProperties:
-    def test__total_inversions(self, lens_imaging_7x7):
+    def test__total_inversions(self, lens_masked_imaging_7x7):
 
         g0 = al.Galaxy(redshift=0.5)
 
@@ -19,7 +19,7 @@ class TestFitProperties:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         assert fit.total_inversions == 0
@@ -33,7 +33,7 @@ class TestFitProperties:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         assert fit.total_inversions == 1
@@ -59,7 +59,7 @@ class TestFitProperties:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         assert fit.total_inversions == 3
@@ -95,7 +95,7 @@ class TestLikelihood:
             sub_size=1,
         )
 
-        lens_imaging_7x7 = al.LensImagingData(imaging=imaging, mask=mask)
+        lens_masked_imaging_7x7 = al.MaskedImaging(imaging=imaging, mask=mask)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
@@ -103,7 +103,7 @@ class TestLikelihood:
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         assert (fit._mask == np.array([False, False])).all()
@@ -200,7 +200,7 @@ class TestLikelihood:
             sub_size=1,
         )
 
-        lens_imaging_7x7 = al.LensImagingData(imaging=imaging, mask=mask)
+        lens_masked_imaging_7x7 = al.MaskedImaging(imaging=imaging, mask=mask)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
@@ -208,7 +208,7 @@ class TestLikelihood:
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         assert (fit._mask == np.array([False, False])).all()
@@ -311,7 +311,7 @@ class TestLikelihood:
             sub_size=1,
         )
 
-        lens_imaging_7x7 = al.LensImagingData(imaging=imaging, mask=mask)
+        lens_masked_imaging_7x7 = al.MaskedImaging(imaging=imaging, mask=mask)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
@@ -329,7 +329,7 @@ class TestLikelihood:
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         assert (fit._mask == np.array([False, False])).all()
@@ -423,7 +423,7 @@ class TestLikelihood:
             sub_size=1,
         )
 
-        lens_imaging_7x7 = al.LensImagingData(imaging=imaging, mask=mask)
+        lens_masked_imaging_7x7 = al.MaskedImaging(imaging=imaging, mask=mask)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
@@ -433,7 +433,7 @@ class TestLikelihood:
         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7,
+            lens_data=lens_masked_imaging_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
         )
@@ -531,7 +531,7 @@ class TestLikelihood:
             sub_size=1,
         )
 
-        lens_imaging_7x7 = al.LensImagingData(imaging=imaging, mask=mask)
+        lens_masked_imaging_7x7 = al.MaskedImaging(imaging=imaging, mask=mask)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
@@ -541,7 +541,7 @@ class TestLikelihood:
         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7,
+            lens_data=lens_masked_imaging_7x7,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
@@ -637,7 +637,7 @@ class TestLikelihood:
             sub_size=1,
         )
 
-        lens_imaging_7x7 = al.LensImagingData(
+        lens_masked_imaging_7x7 = al.MaskedImaging(
             imaging=imaging, mask=mask, hyper_noise_map_max=1.0
         )
 
@@ -649,7 +649,7 @@ class TestLikelihood:
         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7,
+            lens_data=lens_masked_imaging_7x7,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
@@ -721,7 +721,7 @@ class TestLikelihood:
 
 
 class TestCompareToManualProfilesOnly:
-    def test___all_lens_fit_quantities__no_hyper_methods(self, lens_imaging_7x7):
+    def test___all_lens_fit_quantities__no_hyper_methods(self, lens_masked_imaging_7x7):
 
         g0 = al.Galaxy(
             redshift=0.5,
@@ -737,19 +737,19 @@ class TestCompareToManualProfilesOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
-        assert lens_imaging_7x7.noise_map.in_2d == pytest.approx(
+        assert lens_masked_imaging_7x7.noise_map.in_2d == pytest.approx(
             fit.noise_map(return_masked=True)
         )
 
         model_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
-            grid=lens_imaging_7x7.grid,
-            convolver=lens_imaging_7x7.convolver,
-            blurring_grid=lens_imaging_7x7.blurring_grid,
+            grid=lens_masked_imaging_7x7.grid,
+            convolver=lens_masked_imaging_7x7.convolver,
+            blurring_grid=lens_masked_imaging_7x7.blurring_grid,
         )
-        model_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        model_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=model_image_1d
         )
 
@@ -757,11 +757,11 @@ class TestCompareToManualProfilesOnly:
         assert model_image_2d == pytest.approx(fit.model_image(return_in_2d=True))
 
         residual_map_1d = aa.util.fit.residual_map_from_data_mask_and_model_data(
-            data=lens_imaging_7x7.image.in_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            data=lens_masked_imaging_7x7.image.in_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             model_data=model_image_1d,
         )
-        residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=residual_map_1d
         )
 
@@ -770,11 +770,11 @@ class TestCompareToManualProfilesOnly:
 
         normalized_residual_map_1d = aa.util.fit.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
         )
 
-        normalized_residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        normalized_residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=normalized_residual_map_1d
         )
 
@@ -787,11 +787,11 @@ class TestCompareToManualProfilesOnly:
 
         chi_squared_map_1d = aa.util.fit.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
         )
 
-        chi_squared_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        chi_squared_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=chi_squared_map_1d
         )
 
@@ -801,12 +801,12 @@ class TestCompareToManualProfilesOnly:
         )
 
         chi_squared = aa.util.fit.chi_squared_from_chi_squared_map_and_mask(
-            chi_squared_map=chi_squared_map_2d, mask=lens_imaging_7x7.mask
+            chi_squared_map=chi_squared_map_2d, mask=lens_masked_imaging_7x7.mask
         )
 
         noise_normalization = aa.util.fit.noise_normalization_from_noise_map_and_mask(
-            noise_map=lens_imaging_7x7.noise_map.in_2d,
-            mask=lens_imaging_7x7.mask,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_2d,
+            mask=lens_masked_imaging_7x7.mask,
         )
 
         likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
@@ -817,7 +817,7 @@ class TestCompareToManualProfilesOnly:
         assert likelihood == fit.figure_of_merit
 
     def test___lens_fit_galaxy_model_image_dict__corresponds_to_blurred_galaxy_images(
-        self, lens_imaging_7x7
+        self, lens_masked_imaging_7x7
     ):
         g0 = al.Galaxy(
             redshift=0.5,
@@ -833,14 +833,14 @@ class TestCompareToManualProfilesOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-            grid=lens_imaging_7x7.grid
+            grid=lens_masked_imaging_7x7.grid
         )
         traced_blurring_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-            grid=lens_imaging_7x7.blurring_grid
+            grid=lens_masked_imaging_7x7.blurring_grid
         )
 
         g0_image_1d = g0.profile_image_from_grid(grid=traced_grids_of_planes[0])
@@ -848,7 +848,7 @@ class TestCompareToManualProfilesOnly:
             grid=traced_blurring_grids_of_planes[0]
         )
 
-        g0_blurred_image_1d = lens_imaging_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
+        g0_blurred_image_1d = lens_masked_imaging_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=g0_image_1d, blurring_array=g0_blurring_image_1d
         )
 
@@ -857,7 +857,7 @@ class TestCompareToManualProfilesOnly:
             grid=traced_blurring_grids_of_planes[1]
         )
 
-        g1_blurred_image_1d = lens_imaging_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
+        g1_blurred_image_1d = lens_masked_imaging_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=g1_image_1d, blurring_array=g1_blurring_image_1d
         )
 
@@ -874,10 +874,10 @@ class TestCompareToManualProfilesOnly:
             1.0e-4,
         )
 
-        g0_blurred_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        g0_blurred_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=g0_blurred_image_1d
         )
-        g1_blurred_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        g1_blurred_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=g1_blurred_image_1d
         )
 
@@ -894,22 +894,22 @@ class TestCompareToManualProfilesOnly:
         )
 
     def test___all_lens_fit_quantities__including_hyper_methods(
-        self, lens_imaging_7x7
+        self, lens_masked_imaging_7x7
     ):
 
         hyper_noise_map_max = 0.2
-        lens_imaging_7x7.hyper_noise_map_max = hyper_noise_map_max
+        lens_masked_imaging_7x7.hyper_noise_map_max = hyper_noise_map_max
 
         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 
         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
         image_1d = hyper_image_sky.image_scaled_sky_from_image(
-            image=lens_imaging_7x7.image.in_1d
+            image=lens_masked_imaging_7x7.image.in_1d
         )
 
         hyper_noise_map_background_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
-            noise_map=lens_imaging_7x7.noise_map.in_1d
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d
         )
 
         g0 = al.Galaxy(
@@ -931,14 +931,14 @@ class TestCompareToManualProfilesOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7,
+            lens_data=lens_masked_imaging_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
 
         hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
-            noise_map_1d=lens_imaging_7x7.noise_map.in_1d
+            noise_map_1d=lens_masked_imaging_7x7.noise_map.in_1d
         )
 
         hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
@@ -947,7 +947,7 @@ class TestCompareToManualProfilesOnly:
             hyper_noise_map_1d > hyper_noise_map_max
         ] = hyper_noise_map_max
 
-        hyper_noise_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        hyper_noise_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=hyper_noise_map_1d
         )
 
@@ -955,12 +955,12 @@ class TestCompareToManualProfilesOnly:
         assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_masked=True))
 
         model_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
-            grid=lens_imaging_7x7.grid,
-            convolver=lens_imaging_7x7.convolver,
-            blurring_grid=lens_imaging_7x7.blurring_grid,
+            grid=lens_masked_imaging_7x7.grid,
+            convolver=lens_masked_imaging_7x7.convolver,
+            blurring_grid=lens_masked_imaging_7x7.blurring_grid,
         )
 
-        model_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        model_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=model_image_1d
         )
 
@@ -969,10 +969,10 @@ class TestCompareToManualProfilesOnly:
 
         residual_map_1d = aa.util.fit.residual_map_from_data_mask_and_model_data(
             data=image_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             model_data=model_image_1d,
         )
-        residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=residual_map_1d
         )
 
@@ -981,11 +981,11 @@ class TestCompareToManualProfilesOnly:
 
         normalized_residual_map_1d = aa.util.fit.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
         )
 
-        normalized_residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        normalized_residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=normalized_residual_map_1d
         )
 
@@ -998,11 +998,11 @@ class TestCompareToManualProfilesOnly:
 
         chi_squared_map_1d = aa.util.fit.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
         )
 
-        chi_squared_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        chi_squared_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=chi_squared_map_1d
         )
 
@@ -1012,11 +1012,11 @@ class TestCompareToManualProfilesOnly:
         )
 
         chi_squared = aa.util.fit.chi_squared_from_chi_squared_map_and_mask(
-            chi_squared_map=chi_squared_map_2d, mask=lens_imaging_7x7.mask
+            chi_squared_map=chi_squared_map_2d, mask=lens_masked_imaging_7x7.mask
         )
 
         noise_normalization = aa.util.fit.noise_normalization_from_noise_map_and_mask(
-            noise_map=hyper_noise_map_2d, mask=lens_imaging_7x7.mask
+            noise_map=hyper_noise_map_2d, mask=lens_masked_imaging_7x7.mask
         )
 
         likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
@@ -1027,7 +1027,7 @@ class TestCompareToManualProfilesOnly:
         assert likelihood == fit.figure_of_merit
 
     def test___blurred_and_model_images_of_planes_and_unmasked_blurred_profile_image_properties(
-        self, lens_imaging_7x7
+        self, lens_masked_imaging_7x7
     ):
 
         g0 = al.Galaxy(
@@ -1044,13 +1044,13 @@ class TestCompareToManualProfilesOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         blurred_profile_image_2d_of_planes = tracer.blurred_profile_images_of_planes_from_grid_and_convolver(
-            grid=lens_imaging_7x7.grid,
-            convolver=lens_imaging_7x7.convolver,
-            blurring_grid=lens_imaging_7x7.blurring_grid,
+            grid=lens_masked_imaging_7x7.grid,
+            convolver=lens_masked_imaging_7x7.convolver,
+            blurring_grid=lens_masked_imaging_7x7.blurring_grid,
         )
 
         model_images_of_planes = fit.model_images_of_planes.in_2d
@@ -1063,7 +1063,7 @@ class TestCompareToManualProfilesOnly:
         )
 
         unmasked_blurred_profile_image = tracer.unmasked_blurred_profile_image_from_grid_and_psf(
-            grid=lens_imaging_7x7.grid, psf=lens_imaging_7x7.psf
+            grid=lens_masked_imaging_7x7.grid, psf=lens_masked_imaging_7x7.psf
         )
 
         assert (
@@ -1071,7 +1071,7 @@ class TestCompareToManualProfilesOnly:
         ).all()
 
         unmasked_blurred_profile_image_of_planes = tracer.unmasked_blurred_profile_image_of_planes_from_grid_and_psf(
-            grid=lens_imaging_7x7.grid, psf=lens_imaging_7x7.psf
+            grid=lens_masked_imaging_7x7.grid, psf=lens_masked_imaging_7x7.psf
         )
 
         assert (
@@ -1084,7 +1084,7 @@ class TestCompareToManualProfilesOnly:
         ).all()
 
         unmasked_blurred_profile_image_of_galaxies = tracer.unmasked_blurred_profile_image_of_planes_and_galaxies_from_grid_and_psf(
-            grid=lens_imaging_7x7.grid, psf=lens_imaging_7x7.psf
+            grid=lens_masked_imaging_7x7.grid, psf=lens_masked_imaging_7x7.psf
         )
 
         assert (
@@ -1098,7 +1098,7 @@ class TestCompareToManualProfilesOnly:
 
 
 class TestCompareToManualInversionOnly:
-    def test___all_lens_fit_quantities__no_hyper_methods(self, lens_imaging_7x7):
+    def test___all_lens_fit_quantities__no_hyper_methods(self, lens_masked_imaging_7x7):
 
         pix = al.pix.Rectangular(shape=(3, 3))
         reg = al.reg.Constant(coefficient=1.0)
@@ -1108,29 +1108,29 @@ class TestCompareToManualInversionOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=lens_imaging_7x7.grid, pixelization_grid=None
+            grid=lens_masked_imaging_7x7.grid, pixelization_grid=None
         )
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
-            image=lens_imaging_7x7.image.in_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
-            convolver=lens_imaging_7x7.convolver,
+            image=lens_masked_imaging_7x7.image.in_1d,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
+            convolver=lens_masked_imaging_7x7.convolver,
         )
 
         assert inversion.mapped_reconstructed_image == pytest.approx(fit._model_data, 1e-4)
         assert inversion.reconstructed_data_2d == fit.model_image.in_2d
 
         residual_map_1d = aa.util.fit.residual_map_from_data_mask_and_model_data(
-            data=lens_imaging_7x7.image.in_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            data=lens_masked_imaging_7x7.image.in_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             model_data=inversion.mapped_reconstructed_image,
         )
-        residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=residual_map_1d
         )
 
@@ -1139,11 +1139,11 @@ class TestCompareToManualInversionOnly:
 
         normalized_residual_map_1d = aa.util.fit.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
         )
 
-        normalized_residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        normalized_residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=normalized_residual_map_1d
         )
 
@@ -1156,10 +1156,10 @@ class TestCompareToManualInversionOnly:
 
         chi_squared_map_1d = aa.util.fit.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
         )
-        chi_squared_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        chi_squared_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=chi_squared_map_1d
         )
 
@@ -1169,12 +1169,12 @@ class TestCompareToManualInversionOnly:
         )
 
         chi_squared = aa.util.fit.chi_squared_from_chi_squared_map_and_mask(
-            chi_squared_map=chi_squared_map_2d, mask=lens_imaging_7x7.mask
+            chi_squared_map=chi_squared_map_2d, mask=lens_masked_imaging_7x7.mask
         )
 
         noise_normalization = aa.util.fit.noise_normalization_from_noise_map_and_mask(
-            mask=lens_imaging_7x7.mask,
-            noise_map=lens_imaging_7x7.noise_map.in_2d,
+            mask=lens_masked_imaging_7x7.mask,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_2d,
         )
 
         likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
@@ -1205,7 +1205,7 @@ class TestCompareToManualInversionOnly:
         assert evidence == fit.figure_of_merit
 
     def test___lens_fit_galaxy_model_image_dict__has_inversion_reconstructed_data(
-        self, lens_imaging_7x7
+        self, lens_masked_imaging_7x7
     ):
         pix = al.pix.Rectangular(shape=(3, 3))
         reg = al.reg.Constant(coefficient=1.0)
@@ -1216,19 +1216,19 @@ class TestCompareToManualInversionOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=lens_imaging_7x7.grid, pixelization_grid=None
+            grid=lens_masked_imaging_7x7.grid, pixelization_grid=None
         )
 
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
-            image=lens_imaging_7x7.image.in_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
-            convolver=lens_imaging_7x7.convolver,
+            image=lens_masked_imaging_7x7.image.in_1d,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
+            convolver=lens_masked_imaging_7x7.convolver,
         )
 
         assert (fit.galaxy_model_image_1d_dict[g0] == np.zeros(9)).all()
@@ -1250,22 +1250,22 @@ class TestCompareToManualInversionOnly:
         )
 
     def test___all_lens_fit_quantities__include_hyper_methods(
-        self, lens_imaging_7x7
+        self, lens_masked_imaging_7x7
     ):
 
         hyper_noise_map_max = 0.2
-        lens_imaging_7x7.hyper_noise_map_max = hyper_noise_map_max
+        lens_masked_imaging_7x7.hyper_noise_map_max = hyper_noise_map_max
 
         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 
         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
         image_1d = hyper_image_sky.image_scaled_sky_from_image(
-            image=lens_imaging_7x7.image.in_1d
+            image=lens_masked_imaging_7x7.image.in_1d
         )
 
         hyper_noise_map_background_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
-            noise_map=lens_imaging_7x7.noise_map.in_1d
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d
         )
 
         pix = al.pix.Rectangular(shape=(3, 3))
@@ -1286,35 +1286,35 @@ class TestCompareToManualInversionOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7,
+            lens_data=lens_masked_imaging_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
 
         hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
-            noise_map_1d=lens_imaging_7x7.noise_map.in_1d
+            noise_map_1d=lens_masked_imaging_7x7.noise_map.in_1d
         )
         hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
         hyper_noise_map_1d[
             hyper_noise_map_1d > hyper_noise_map_max
         ] = hyper_noise_map_max
 
-        hyper_noise_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        hyper_noise_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=hyper_noise_map_1d
         )
         assert hyper_noise_map_1d == pytest.approx(fit._noise_map, 1e-4)
         assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_masked=True))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=lens_imaging_7x7.grid, inversion_uses_border=False
+            grid=lens_masked_imaging_7x7.grid, inversion_uses_border=False
         )
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
             image=image_1d,
             noise_map=hyper_noise_map_1d,
-            convolver=lens_imaging_7x7.convolver,
+            convolver=lens_masked_imaging_7x7.convolver,
         )
 
         assert inversion.mapped_reconstructed_image == pytest.approx(fit._model_data, 1e-4)
@@ -1322,10 +1322,10 @@ class TestCompareToManualInversionOnly:
 
         residual_map_1d = aa.util.fit.residual_map_from_data_mask_and_model_data(
             data=image_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             model_data=inversion.mapped_reconstructed_image,
         )
-        residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=residual_map_1d
         )
 
@@ -1334,11 +1334,11 @@ class TestCompareToManualInversionOnly:
 
         normalized_residual_map_1d = aa.util.fit.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
         )
 
-        normalized_residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        normalized_residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=normalized_residual_map_1d
         )
 
@@ -1351,10 +1351,10 @@ class TestCompareToManualInversionOnly:
 
         chi_squared_map_1d = aa.util.fit.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
         )
-        chi_squared_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        chi_squared_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=chi_squared_map_1d
         )
 
@@ -1364,11 +1364,11 @@ class TestCompareToManualInversionOnly:
         )
 
         chi_squared = aa.util.fit.chi_squared_from_chi_squared_map_and_mask(
-            chi_squared_map=chi_squared_map_2d, mask=lens_imaging_7x7.mask
+            chi_squared_map=chi_squared_map_2d, mask=lens_masked_imaging_7x7.mask
         )
 
         noise_normalization = aa.util.fit.noise_normalization_from_noise_map_and_mask(
-            mask=lens_imaging_7x7.mask, noise_map=hyper_noise_map_2d
+            mask=lens_masked_imaging_7x7.mask, noise_map=hyper_noise_map_2d
         )
 
         likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
@@ -1399,7 +1399,7 @@ class TestCompareToManualInversionOnly:
         assert evidence == fit.figure_of_merit
 
     def test___blurred_and_model_images_of_planes_and_unmasked_blurred_profile_image_properties(
-        self, lens_imaging_7x7
+        self, lens_masked_imaging_7x7
     ):
 
         pix = al.pix.Rectangular(shape=(3, 3))
@@ -1410,19 +1410,19 @@ class TestCompareToManualInversionOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=lens_imaging_7x7.grid, inversion_uses_border=False
+            grid=lens_masked_imaging_7x7.grid, inversion_uses_border=False
         )
 
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
-            image=lens_imaging_7x7.image.in_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
-            convolver=lens_imaging_7x7.convolver,
+            image=lens_masked_imaging_7x7.image.in_1d,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
+            convolver=lens_masked_imaging_7x7.convolver,
         )
 
         model_images_of_planes = fit.model_images_of_planes.in_2d
@@ -1434,7 +1434,7 @@ class TestCompareToManualInversionOnly:
 
 
 class TestCompareToManualProfilesAndInversion:
-    def test___all_lens_fit_quantities__no_hyper_methods(self, lens_imaging_7x7):
+    def test___all_lens_fit_quantities__no_hyper_methods(self, lens_masked_imaging_7x7):
         galaxy_light = al.Galaxy(
             redshift=0.5,
             light_profile=al.lp.EllipticalSersic(intensity=1.0),
@@ -1447,16 +1447,16 @@ class TestCompareToManualProfilesAndInversion:
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
-            grid=lens_imaging_7x7.grid,
-            convolver=lens_imaging_7x7.convolver,
-            blurring_grid=lens_imaging_7x7.blurring_grid,
+            grid=lens_masked_imaging_7x7.grid,
+            convolver=lens_masked_imaging_7x7.convolver,
+            blurring_grid=lens_masked_imaging_7x7.blurring_grid,
         )
 
-        blurred_profile_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        blurred_profile_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=blurred_profile_image_1d
         )
 
@@ -1468,9 +1468,9 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         profile_subtracted_image_1d = (
-            lens_imaging_7x7.image.in_1d - blurred_profile_image_1d
+            lens_masked_imaging_7x7.image.in_1d - blurred_profile_image_1d
         )
-        profile_subtracted_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        profile_subtracted_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=profile_subtracted_image_1d
         )
 
@@ -1482,19 +1482,19 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=lens_imaging_7x7.grid, inversion_uses_border=False
+            grid=lens_masked_imaging_7x7.grid, inversion_uses_border=False
         )
 
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=profile_subtracted_image_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
-            convolver=lens_imaging_7x7.convolver,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
+            convolver=lens_masked_imaging_7x7.convolver,
             mapper=mapper,
             regularization=reg,
         )
 
         model_image_1d = blurred_profile_image_1d + inversion.mapped_reconstructed_image
-        model_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        model_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=model_image_1d
         )
 
@@ -1502,11 +1502,11 @@ class TestCompareToManualProfilesAndInversion:
         assert model_image_2d == pytest.approx(fit.model_image(return_in_2d=True))
 
         residual_map_1d = aa.util.fit.residual_map_from_data_mask_and_model_data(
-            data=lens_imaging_7x7.image.in_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            data=lens_masked_imaging_7x7.image.in_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             model_data=model_image_1d,
         )
-        residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=residual_map_1d
         )
 
@@ -1515,11 +1515,11 @@ class TestCompareToManualProfilesAndInversion:
 
         normalized_residual_map_1d = aa.util.fit.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
         )
 
-        normalized_residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        normalized_residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=normalized_residual_map_1d
         )
 
@@ -1532,10 +1532,10 @@ class TestCompareToManualProfilesAndInversion:
 
         chi_squared_map_1d = aa.util.fit.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
         )
-        chi_squared_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        chi_squared_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=chi_squared_map_1d
         )
 
@@ -1545,12 +1545,12 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         chi_squared = aa.util.fit.chi_squared_from_chi_squared_map_and_mask(
-            chi_squared_map=chi_squared_map_2d, mask=lens_imaging_7x7.mask
+            chi_squared_map=chi_squared_map_2d, mask=lens_masked_imaging_7x7.mask
         )
 
         noise_normalization = aa.util.fit.noise_normalization_from_noise_map_and_mask(
-            mask=lens_imaging_7x7.mask,
-            noise_map=lens_imaging_7x7.noise_map.in_2d,
+            mask=lens_masked_imaging_7x7.mask,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_2d,
         )
 
         likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
@@ -1581,7 +1581,7 @@ class TestCompareToManualProfilesAndInversion:
         assert evidence == fit.figure_of_merit
 
     def test___lens_fit_galaxy_model_image_dict__has_blurred_profile_images_and_inversion_reconstructed_data(
-        self, lens_imaging_7x7
+        self, lens_masked_imaging_7x7
     ):
 
         g0 = al.Galaxy(
@@ -1601,43 +1601,43 @@ class TestCompareToManualProfilesAndInversion:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         traced_grids = tracer.traced_grids_of_planes_from_grid(
-            grid=lens_imaging_7x7.grid
+            grid=lens_masked_imaging_7x7.grid
         )
         traced_blurring_grids = tracer.traced_grids_of_planes_from_grid(
-            grid=lens_imaging_7x7.blurring_grid
+            grid=lens_masked_imaging_7x7.blurring_grid
         )
 
         g0_image_1d = g0.profile_image_from_grid(grid=traced_grids[0])
         g0_blurring_image_1d = g0.profile_image_from_grid(grid=traced_blurring_grids[0])
 
-        g0_blurred_image_1d = lens_imaging_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
+        g0_blurred_image_1d = lens_masked_imaging_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=g0_image_1d, blurring_array=g0_blurring_image_1d
         )
 
         g1_image_1d = g1.profile_image_from_grid(grid=traced_grids[1])
         g1_blurring_image_1d = g1.profile_image_from_grid(grid=traced_blurring_grids[1])
 
-        g1_blurred_image_1d = lens_imaging_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
+        g1_blurred_image_1d = lens_masked_imaging_7x7.convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=g1_image_1d, blurring_array=g1_blurring_image_1d
         )
 
         blurred_profile_image_1d = g0_blurred_image_1d + g1_blurred_image_1d
 
         profile_subtracted_image_1d = (
-            lens_imaging_7x7.image.in_1d - blurred_profile_image_1d
+            lens_masked_imaging_7x7.image.in_1d - blurred_profile_image_1d
         )
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=lens_imaging_7x7.grid, inversion_uses_border=False
+            grid=lens_masked_imaging_7x7.grid, inversion_uses_border=False
         )
 
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=profile_subtracted_image_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
-            convolver=lens_imaging_7x7.convolver,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
+            convolver=lens_masked_imaging_7x7.convolver,
             mapper=mapper,
             regularization=reg,
         )
@@ -1660,10 +1660,10 @@ class TestCompareToManualProfilesAndInversion:
             1.0e-4,
         )
 
-        g0_blurred_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        g0_blurred_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=g0_blurred_image_1d
         )
-        g1_blurred_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        g1_blurred_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=g1_blurred_image_1d
         )
 
@@ -1685,22 +1685,22 @@ class TestCompareToManualProfilesAndInversion:
         )
 
     def test___all_lens_fit_quantities__include_hyper_methods(
-        self, lens_imaging_7x7
+        self, lens_masked_imaging_7x7
     ):
 
         hyper_noise_map_max = 0.2
-        lens_imaging_7x7.hyper_noise_map_max = hyper_noise_map_max
+        lens_masked_imaging_7x7.hyper_noise_map_max = hyper_noise_map_max
 
         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 
         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
 
         image_1d = hyper_image_sky.image_scaled_sky_from_image(
-            image=lens_imaging_7x7.image.in_1d
+            image=lens_masked_imaging_7x7.image.in_1d
         )
 
         hyper_noise_map_background_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
-            noise_map=lens_imaging_7x7.noise_map.in_1d
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d
         )
 
         galaxy_light = al.Galaxy(
@@ -1721,21 +1721,21 @@ class TestCompareToManualProfilesAndInversion:
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7,
+            lens_data=lens_masked_imaging_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
 
         hyper_noise_1d = tracer.hyper_noise_map_1d_from_noise_map_1d(
-            noise_map_1d=lens_imaging_7x7.noise_map.in_1d
+            noise_map_1d=lens_masked_imaging_7x7.noise_map.in_1d
         )
         hyper_noise_map_1d = hyper_noise_map_background_1d + hyper_noise_1d
         hyper_noise_map_1d[
             hyper_noise_map_1d > hyper_noise_map_max
         ] = hyper_noise_map_max
 
-        hyper_noise_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        hyper_noise_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=hyper_noise_map_1d
         )
 
@@ -1743,12 +1743,12 @@ class TestCompareToManualProfilesAndInversion:
         assert hyper_noise_map_2d == pytest.approx(fit.noise_map(return_masked=True))
 
         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
-            grid=lens_imaging_7x7.grid,
-            convolver=lens_imaging_7x7.convolver,
-            blurring_grid=lens_imaging_7x7.blurring_grid,
+            grid=lens_masked_imaging_7x7.grid,
+            convolver=lens_masked_imaging_7x7.convolver,
+            blurring_grid=lens_masked_imaging_7x7.blurring_grid,
         )
 
-        blurred_profile_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        blurred_profile_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=blurred_profile_image_1d
         )
 
@@ -1760,7 +1760,7 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         profile_subtracted_image_1d = image_1d - blurred_profile_image_1d
-        profile_subtracted_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        profile_subtracted_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=profile_subtracted_image_1d
         )
 
@@ -1772,19 +1772,19 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=lens_imaging_7x7.grid, inversion_uses_border=False
+            grid=lens_masked_imaging_7x7.grid, inversion_uses_border=False
         )
 
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=profile_subtracted_image_1d,
             noise_map=hyper_noise_map_1d,
-            convolver=lens_imaging_7x7.convolver,
+            convolver=lens_masked_imaging_7x7.convolver,
             mapper=mapper,
             regularization=reg,
         )
 
         model_image_1d = blurred_profile_image_1d + inversion.mapped_reconstructed_image
-        model_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        model_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=model_image_1d
         )
 
@@ -1793,11 +1793,11 @@ class TestCompareToManualProfilesAndInversion:
 
         residual_map_1d = aa.util.fit.residual_map_from_data_mask_and_model_data(
             data=image_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             model_data=model_image_1d,
         )
 
-        residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=residual_map_1d
         )
 
@@ -1806,11 +1806,11 @@ class TestCompareToManualProfilesAndInversion:
 
         normalized_residual_map_1d = aa.util.fit.normalized_residual_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
         )
 
-        normalized_residual_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        normalized_residual_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=normalized_residual_map_1d
         )
 
@@ -1823,11 +1823,11 @@ class TestCompareToManualProfilesAndInversion:
 
         chi_squared_map_1d = aa.util.fit.chi_squared_map_from_residual_map_noise_map_and_mask(
             residual_map=residual_map_1d,
-            mask=lens_imaging_7x7._mask_1d,
+            mask=lens_masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map_1d,
         )
 
-        chi_squared_map_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        chi_squared_map_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=chi_squared_map_1d
         )
 
@@ -1837,11 +1837,11 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         chi_squared = aa.util.fit.chi_squared_from_chi_squared_map_and_mask(
-            chi_squared_map=chi_squared_map_2d, mask=lens_imaging_7x7.mask
+            chi_squared_map=chi_squared_map_2d, mask=lens_masked_imaging_7x7.mask
         )
 
         noise_normalization = aa.util.fit.noise_normalization_from_noise_map_and_mask(
-            mask=lens_imaging_7x7.mask, noise_map=hyper_noise_map_2d
+            mask=lens_masked_imaging_7x7.mask, noise_map=hyper_noise_map_2d
         )
 
         likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
@@ -1872,7 +1872,7 @@ class TestCompareToManualProfilesAndInversion:
         assert evidence == fit.figure_of_merit
 
     def test___blurred_and_model_images_of_planes_and_unmasked_blurred_profile_image_properties(
-        self, lens_imaging_7x7
+        self, lens_masked_imaging_7x7
     ):
         galaxy_light = al.Galaxy(
             redshift=0.5,
@@ -1886,31 +1886,31 @@ class TestCompareToManualProfilesAndInversion:
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
         fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_imaging_7x7, tracer=tracer
+            lens_data=lens_masked_imaging_7x7, tracer=tracer
         )
 
         blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
-            grid=lens_imaging_7x7.grid,
-            convolver=lens_imaging_7x7.convolver,
-            blurring_grid=lens_imaging_7x7.blurring_grid,
+            grid=lens_masked_imaging_7x7.grid,
+            convolver=lens_masked_imaging_7x7.convolver,
+            blurring_grid=lens_masked_imaging_7x7.blurring_grid,
         )
 
-        blurred_profile_image_2d = lens_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
+        blurred_profile_image_2d = lens_masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
             array_1d=blurred_profile_image_1d
         )
 
         profile_subtracted_image_1d = (
-            lens_imaging_7x7.image.in_1d - blurred_profile_image_1d
+            lens_masked_imaging_7x7.image.in_1d - blurred_profile_image_1d
         )
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
-            grid=lens_imaging_7x7.grid, inversion_uses_border=False
+            grid=lens_masked_imaging_7x7.grid, inversion_uses_border=False
         )
 
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=profile_subtracted_image_1d,
-            noise_map=lens_imaging_7x7.noise_map.in_1d,
-            convolver=lens_imaging_7x7.convolver,
+            noise_map=lens_masked_imaging_7x7.noise_map.in_1d,
+            convolver=lens_masked_imaging_7x7.convolver,
             mapper=mapper,
             regularization=reg,
         )

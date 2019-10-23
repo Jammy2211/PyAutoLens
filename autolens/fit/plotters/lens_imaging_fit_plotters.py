@@ -6,7 +6,7 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autolens.lens.plotters import lens_plotter_util
+from autolens.fit.plotters import lens_plotter_util
 from autolens.lens.plotters import plane_plotters
 from autoarray.plotters import inversion_plotters
 
@@ -39,7 +39,7 @@ def plot_fit_subplot(
     position_pointsize=10,
     grid_pointsize=1,
     output_path=None,
-    output_filename="lens_fit",
+    output_filename="fit",
     output_format="show",
 ):
 

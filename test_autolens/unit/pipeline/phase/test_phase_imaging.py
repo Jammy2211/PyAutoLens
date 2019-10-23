@@ -38,7 +38,7 @@ def clean_images():
 
 class TestPhase(object):
     def test__make_analysis(
-        self, phase_imaging_7x7, imaging_7x7, lens_imaging_7x7
+        self, phase_imaging_7x7, imaging_7x7, lens_masked_imaging_7x7
     ):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
@@ -192,7 +192,7 @@ class TestPhase(object):
 
         assert (analysis.lens_data.mask == binned_up_mask).all()
 
-        lens_data = al.LensImagingData(
+        lens_data = al.MaskedImaging(
             imaging=imaging_7x7, mask=mask_7x7_1_pix
         )
 
@@ -240,7 +240,7 @@ class TestPhase(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.mask_function(image=imaging_7x7.image, sub_size=2)
-        lens_data = al.LensImagingData(imaging=imaging_7x7, mask=mask)
+        lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImagingFit.from_lens_data_and_tracer(
             lens_data=lens_data, tracer=tracer
@@ -315,7 +315,7 @@ class TestPhase(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
-        lens_data = al.LensImagingData(imaging=imaging_7x7, mask=mask)
+        lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImagingFit.from_lens_data_and_tracer(
             lens_data=lens_data, tracer=tracer
@@ -347,7 +347,7 @@ class TestPhase(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
-        lens_data = al.LensImagingData(imaging=imaging_7x7, mask=mask)
+        lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.LensImagingFit.from_lens_data_and_tracer(
             lens_data=lens_data,
