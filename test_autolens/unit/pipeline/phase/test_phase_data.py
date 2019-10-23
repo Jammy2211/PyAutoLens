@@ -8,7 +8,7 @@ from astropy import cosmology as cosmo
 import autofit as af
 import autolens as al
 from autolens import exc
-from test_autolens.mock.pipeline import mock_pipeline
+from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -1016,7 +1016,7 @@ class TestResult(object):
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
         lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.LensImagingFit.from_lens_data_and_tracer(
+        fit = al.ImagingFit.from_masked_data_and_tracer(
             lens_data=lens_data, tracer=tracer
         )
 
@@ -1048,7 +1048,7 @@ class TestResult(object):
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
         lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.LensImagingFit.from_lens_data_and_tracer(
+        fit = al.ImagingFit.from_masked_data_and_tracer(
             lens_data=lens_data,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,

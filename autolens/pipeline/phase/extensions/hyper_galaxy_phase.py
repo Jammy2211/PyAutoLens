@@ -5,7 +5,7 @@ from typing import cast
 
 import autofit as af
 from autolens.fit import masked_data as ld
-from autolens.fit import imaging_fit
+from autolens.fit import fit
 from autoastro.galaxy import galaxy as g
 from autoastro.hyper import hyper_data as hd
 from autolens.pipeline.phase import imaging
@@ -127,7 +127,7 @@ class Analysis(af.Analysis):
         )
 
         if hyper_background_noise is not None:
-            noise_map_1d = hyper_background_noise.noise_map_scaled_noise_from_noise_map(
+            noise_map_1d = hyper_background_noise.hyper_noise_map_from_noise_map(
                 noise_map=self.lens_data.noise_map.in_1d
             )
         else:

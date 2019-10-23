@@ -1,5 +1,5 @@
-from test import MockMapper
-from test import MockHyperGalaxy
+from test_autoarray.mock.mock_inversion import MockMapper
+from test_autoastro.mock.mock_galaxy import MockHyperGalaxy
 
 
 class MockTracer(object):

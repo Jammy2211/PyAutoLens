@@ -4,7 +4,7 @@ import pytest
 from astropy import cosmology as cosmo
 
 import autofit as af
-from test_autolens.mock.pipeline import mock_pipeline
+from test_autolens.mock import mock_pipeline
 
 
 @pytest.fixture(name="lens_galaxy")
@@ -37,14 +37,14 @@ def make_instance(all_galaxies):
 
 
 @pytest.fixture(name="result")
-def make_result(lens_masked_imaging_7x7, instance):
+def make_result(masked_imaging_7x7, instance):
     return al.PhaseImaging.Result(
         constant=instance,
         figure_of_merit=1.0,
         previous_variable=af.ModelMapper(),
         gaussian_tuples=None,
         analysis=al.PhaseImaging.Analysis(
-            lens_imaging=lens_masked_imaging_7x7,
+            lens_imaging=masked_imaging_7x7,
             cosmology=cosmo.Planck15,
             image_path="",
         ),
@@ -437,11 +437,11 @@ class TestImagePassing(object):
             == analysis.lens_data.grid.binned.shape[0]
         )
 
-    def test__associate_images_(self, instance, result, lens_masked_imaging_7x7):
+    def test__associate_images_(self, instance, result, masked_imaging_7x7):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
         analysis = al.PhaseImaging.Analysis(
-            lens_imaging=lens_masked_imaging_7x7,
+            lens_imaging=masked_imaging_7x7,
             cosmology=None,
             results=results_collection,
             image_path="",
@@ -449,10 +449,10 @@ class TestImagePassing(object):
 
         instance = analysis.associate_images(instance=instance)
 
-        hyper_lens_image_1d = lens_masked_imaging_7x7.mapping.array_from_array_2d(
+        hyper_lens_image_1d = masked_imaging_7x7.mapping.array_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
-        hyper_source_image_1d = lens_masked_imaging_7x7.mapping.array_from_array_2d(
+        hyper_source_image_1d = masked_imaging_7x7.mapping.array_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
@@ -473,12 +473,12 @@ class TestImagePassing(object):
         )
 
     def test__fit_uses_hyper_fit_correctly_(
-        self, instance, result, lens_masked_imaging_7x7
+        self, instance, result, masked_imaging_7x7
     ):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
         analysis = al.PhaseImaging.Analysis(
-            lens_imaging=lens_masked_imaging_7x7,
+            lens_imaging=masked_imaging_7x7,
             cosmology=cosmo.Planck15,
             results=results_collection,
             image_path="",
@@ -492,10 +492,10 @@ class TestImagePassing(object):
 
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        hyper_lens_image_1d = lens_masked_imaging_7x7.mapping.array_from_array_2d(
+        hyper_lens_image_1d = masked_imaging_7x7.mapping.array_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
         )
-        hyper_source_image_1d = lens_masked_imaging_7x7.mapping.array_from_array_2d(
+        hyper_source_image_1d = masked_imaging_7x7.mapping.array_from_array_2d(
             array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
         )
 
@@ -514,8 +514,8 @@ class TestImagePassing(object):
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.LensImagingFit.from_lens_data_and_tracer(
-            lens_data=lens_masked_imaging_7x7, tracer=tracer
+        fit = al.ImagingFit.from_masked_data_and_tracer(
+            lens_data=masked_imaging_7x7, tracer=tracer
         )
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
@@ -637,7 +637,7 @@ class TestHyperGalaxyPhase(object):
         )
         lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.LensImagingFit.from_lens_data_and_tracer(
+        fit = al.ImagingFit.from_masked_data_and_tracer(
             lens_data=lens_data,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
