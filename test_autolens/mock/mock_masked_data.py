@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 class MockMaskedImaging(object):
     def __init__(self, imaging, mask, grid, blurring_grid, convolver):
@@ -33,7 +34,6 @@ class MockMaskedImaging(object):
 
     def check_inversion_pixels_are_below_limit_via_tracer(self, tracer):
         pass
-
 
 class MockMaskedInterferometer(object):
     def __init__(self, interferometer, mask, grid, transformer):

@@ -24,13 +24,14 @@ class ImagingFit(fit.ImagingFit):
         """
 
         self.tracer = tracer
+        self.masked_imaging = masked_imaging
 
         image = hyper_image_from_image_and_hyper_image_sky(
             image=masked_imaging.image, hyper_image_sky=hyper_image_sky
         )
 
         noise_map = hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
-            masked_imaging=masked_imaging,
+            noise_map=masked_imaging.noise_map,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
@@ -62,10 +63,15 @@ class ImagingFit(fit.ImagingFit):
             model_image = self.blurred_profile_image + inversion.mapped_reconstructed_image
 
         super().__init__(
-            masked_imaging=masked_imaging,
+            mask=masked_imaging.mask,
+            image=image, noise_map=noise_map,
             model_image=model_image,
             inversion=inversion,
         )
+
+    @property
+    def grid(self):
+        return self.masked_imaging.grid
 
     @property
     def galaxy_model_image_dict(self) -> {g.Galaxy: np.ndarray}:
@@ -90,6 +96,7 @@ class ImagingFit(fit.ImagingFit):
 
         return galaxy_model_image_dict
 
+    @property
     def model_images_of_planes(self):
 
         model_images_of_planes = self.tracer.blurred_profile_images_of_planes_from_grid_and_psf(
@@ -118,19 +125,17 @@ def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
 
 
 def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
-    masked_imaging, tracer, hyper_background_noise
+    noise_map, tracer, hyper_background_noise
 ):
+
+    hyper_noise_map = tracer.hyper_noise_map_from_noise_map(
+        noise_map=noise_map
+    )
 
     if hyper_background_noise is not None:
         noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
-            noise_map=masked_imaging.noise_map
+            noise_map=noise_map
         )
-    else:
-        noise_map = masked_imaging.noise_map
-
-    hyper_noise_map = tracer.hyper_noise_map_from_noise_map(
-        noise_map=masked_imaging.noise_map
-    )
 
     if hyper_noise_map is not None:
         noise_map = noise_map + hyper_noise_map
