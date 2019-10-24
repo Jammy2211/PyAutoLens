@@ -67,7 +67,6 @@ class MetaImagingFit(data.MetaDataFit):
             positions_threshold=self.positions_threshold,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             pixel_scale_binned_grid=pixel_scale_binned_grid,
-            hyper_noise_map_max=self.hyper_noise_map_max,
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
             preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,

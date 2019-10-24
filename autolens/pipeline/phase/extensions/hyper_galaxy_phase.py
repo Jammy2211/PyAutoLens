@@ -140,10 +140,6 @@ class Analysis(af.Analysis):
         )
 
         noise_map_1d = noise_map_1d + hyper_noise_map_1d
-        if self.lens_data.hyper_noise_map_max is not None:
-            noise_map_1d[
-                noise_map_1d > self.lens_data.hyper_noise_map_max
-                ] = self.lens_data.hyper_noise_map_max
 
         return lens_imaging_fit.ImagingFit(
             image=image_1d,
@@ -202,9 +198,6 @@ class HyperGalaxyPhase(HyperPhase):
             inversion_uses_border=cast(
                 imaging.PhaseImaging, phase
             ).meta_data_fit.inversion_uses_border,
-            hyper_noise_map_max=cast(
-                imaging.PhaseImaging, phase
-            ).hyper_noise_map_max,
             preload_pixelization_grids_of_planes=None,
         )
 
@@ -358,9 +351,6 @@ class HyperGalaxyAllPhase(HyperPhase):
             inversion_uses_border=cast(
                 imaging.PhaseImaging, phase
             ).meta_data_fit.inversion_uses_border,
-            hyper_noise_map_max=cast(
-                imaging.PhaseImaging, phase
-            ).hyper_noise_map_max,
             preload_pixelization_grids_of_planes=None,
         )
 

@@ -36,9 +36,6 @@ class MetaDataFit:
                     int
                 )
         )
-        self.hyper_noise_map_max = af.conf.instance.general.get(
-            "hyper", "hyper_noise_map_max", float
-        )
 
     def setup_phase_mask(self, data, mask):
 
