@@ -253,7 +253,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
     def profile_image_from_grid(self, grid):
         profile_image = sum(self.profile_images_of_planes_from_grid(grid=grid))
         return grid.mapping.array_from_sub_array_1d(
-            sub_array_1d=profile_image.in_1d
+            sub_array_1d=profile_image
         )
 
     def profile_images_of_planes_from_grid(self, grid):
@@ -426,9 +426,9 @@ class AbstractTracerData(AbstractTracerLensing):
 
         blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
-        return convolver.convolved_scaled_array_from_image_array_and_blurring_array(
-            image_array=profile_image.in_1d_binned,
-            blurring_array=blurring_image.in_1d_binned,
+        return convolver.convolved_image_from_image_and_blurring_image(
+            image=profile_image,
+            blurring_image=blurring_image,
         )
 
     def blurred_profile_images_of_planes_from_grid_and_convolver(

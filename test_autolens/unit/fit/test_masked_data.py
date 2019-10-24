@@ -112,8 +112,12 @@ class TestMaskedImaging(object):
         assert (masked_imaging_3x3.noise_map.in_1d == np.ones((1))).all()
 
     def test__masked_imaging_7x7_with_signal_to_noise_limit(
-        self, imaging_7x7, masked_imaging_7x7
+        self, imaging_7x7, sub_mask_7x7,
     ):
+
+        masked_imaging_7x7 = al.MaskedImaging(imaging=imaging_7x7,
+            mask=sub_mask_7x7,
+        )
 
         masked_imaging_snr_limit = masked_imaging_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
             signal_to_noise_limit=0.25

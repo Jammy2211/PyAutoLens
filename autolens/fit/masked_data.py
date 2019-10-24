@@ -5,6 +5,8 @@ from autoarray.fit import masked_data
 from autolens.fit import positions_fit
 from autolens import exc
 
+import copy
+
 
 class AbstractLensMasked(object):
 
@@ -148,6 +150,7 @@ class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
             preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes
         )
 
+
 class MaskedInterferometer(masked_data.MaskedInterferometer):
     def __init__(
             self,
@@ -206,3 +209,5 @@ class MaskedInterferometer(masked_data.MaskedInterferometer):
 
         AbstractLensMasked.__init__(self=self, positions=positions,
             positions_threshold=positions_threshold, preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes)
+
+

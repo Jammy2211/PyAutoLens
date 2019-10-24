@@ -282,7 +282,7 @@ class TestLikelihood:
         )
 
         imaging = aa.imaging(
-            5.0 * aa.array.ones(shape_2d=(3, 4)), pixel_scales=1.0, psf=psf, noise_map=aa.array.full(fill_value=2.0, shape_2d=(3, 4))
+            5.0 * aa.array.ones(shape_2d=(3, 4)), pixel_scales=1.0, psf=psf, noise_map=aa.array.ones(shape_2d=(3, 4))
         )
         imaging.image[6] = 4.0
 
@@ -308,8 +308,8 @@ class TestLikelihood:
             hyper_galaxy=al.HyperGalaxy(
                 contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
             ),
-            hyper_model_image=np.ones(2),
-            hyper_galaxy_image=np.ones(2),
+            hyper_model_image=aa.array.ones(shape_2d=(1,2)),
+            hyper_galaxy_image=aa.array.ones(shape_2d=(1,2)),
             hyper_minimum_value=0.0,
         )
 
@@ -387,9 +387,9 @@ class TestLikelihood:
         )
 
         imaging = aa.imaging(
-            5.0 * aa.array.ones(shape_2d=(3, 4)), pixel_scales=1.0, psf=psf, noise_map=aa.array.ones(shape_2d=(3, 4))
+           aa.array.full(fill_value=4.0, shape_2d=(3, 4)), pixel_scales=1.0, psf=psf, noise_map=aa.array.ones(shape_2d=(3, 4))
         )
-        imaging.image[5] = 6.0
+        imaging.image[5] = 5.0
 
         mask = aa.mask.manual(
             mask_2d=np.array(
@@ -488,7 +488,7 @@ class TestLikelihood:
         )
 
         imaging = aa.imaging(
-            5.0 * aa.array.ones(shape_2d=(3, 4)), pixel_scales=1.0, psf=psf, noise_map=aa.array.full(fill_value=2.0, shape_2d=(3, 4))
+            5.0 * aa.array.ones(shape_2d=(3, 4)), pixel_scales=1.0, psf=psf, noise_map=aa.array.ones(shape_2d=(3, 4))
         )
         imaging.image[6] = 4.0
 
@@ -682,8 +682,8 @@ class TestCompareToManualProfilesOnly:
             grid=traced_blurring_grids_of_planes[0]
         )
 
-        g0_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_array_and_blurring_array(
-            image_array=g0_image, blurring_array=g0_blurring_image
+        g0_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_and_blurring_image(
+            image=g0_image, blurring_image=g0_blurring_image
         )
 
         g1_image = g1.profile_image_from_grid(grid=traced_grids_of_planes[1])
@@ -691,8 +691,8 @@ class TestCompareToManualProfilesOnly:
             grid=traced_blurring_grids_of_planes[1]
         )
 
-        g1_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_array_and_blurring_array(
-            image_array=g1_image, blurring_array=g1_blurring_image
+        g1_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_and_blurring_image(
+            image=g1_image, blurring_image=g1_blurring_image
         )
 
         assert fit.galaxy_model_image_dict[g0] == pytest.approx(
@@ -712,19 +712,12 @@ class TestCompareToManualProfilesOnly:
         self, masked_imaging_7x7
     ):
 
-        hyper_noise_map_max = 0.2
-        masked_imaging_7x7.hyper_noise_map_max = hyper_noise_map_max
-
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
 
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
         image = hyper_image_sky.hyper_image_from_image(
             image=masked_imaging_7x7.image
-        )
-
-        hyper_noise_map_background = hyper_background_noise.hyper_noise_map_from_noise_map(
-            noise_map=masked_imaging_7x7.noise_map
         )
 
         g0 = al.Galaxy(
@@ -752,21 +745,16 @@ class TestCompareToManualProfilesOnly:
             hyper_background_noise=hyper_background_noise,
         )
 
+        hyper_noise_map_background = hyper_background_noise.hyper_noise_map_from_noise_map(
+            noise_map=masked_imaging_7x7.noise_map
+        )
+
         hyper_noise = tracer.hyper_noise_map_from_noise_map(
             noise_map=masked_imaging_7x7.noise_map
         )
 
         hyper_noise_map = hyper_noise_map_background + hyper_noise
 
-        hyper_noise_map[
-            hyper_noise_map > hyper_noise_map_max
-        ] = hyper_noise_map_max
-
-        hyper_noise_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=hyper_noise_map
-        )
-
-        assert hyper_noise_map == pytest.approx(fit._noise_map, 1e-4)
         assert hyper_noise_map.in_2d == pytest.approx(fit.noise_map.in_2d)
 
         model_image = tracer.blurred_profile_image_from_grid_and_convolver(
@@ -775,63 +763,39 @@ class TestCompareToManualProfilesOnly:
             blurring_grid=masked_imaging_7x7.blurring_grid,
         )
 
-        model_image_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=model_image
-        )
-
-        assert model_image == pytest.approx(fit._model_data, 1e-4)
         assert model_image.in_2d == pytest.approx(fit.model_image.in_2d)
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
             data=image,
-            mask=masked_imaging_7x7._mask_1d,
             model_data=model_image,
         )
-        residual_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=residual_map
-        )
 
-        assert residual_map == pytest.approx(fit._residual_map, 1e-4)
         assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d)
 
         normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
             residual_map=residual_map,
-            mask=masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map,
         )
 
-        normalized_residual_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=normalized_residual_map
-        )
-
-        assert normalized_residual_map == pytest.approx(
-            fit.normalized_residual_map, 1e-4
-        )
         assert normalized_residual_map.in_2d == pytest.approx(
             fit.normalized_residual_map.in_2d
         )
 
         chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
             residual_map=residual_map,
-            mask=masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map,
         )
 
-        chi_squared_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=chi_squared_map
-        )
-
-        assert chi_squared_map == pytest.approx(fit._chi_squared_map, 1e-4)
         assert chi_squared_map.in_2d == pytest.approx(
             fit.chi_squared_map.in_2d
         )
 
         chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
-            chi_squared_map=chi_squared_map_2d, mask=masked_imaging_7x7.mask
+            chi_squared_map=chi_squared_map
         )
 
         noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
-            noise_map=hyper_noise_map_2d, mask=masked_imaging_7x7.mask
+            noise_map=hyper_noise_map
         )
 
         likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
@@ -862,54 +826,19 @@ class TestCompareToManualProfilesOnly:
             masked_imaging=masked_imaging_7x7, tracer=tracer
         )
 
-        blurred_profile_image_2d_of_planes = tracer.blurred_profile_images_of_planes_from_grid_and_convolver(
+        blurred_profile_images_of_planes = tracer.blurred_profile_images_of_planes_from_grid_and_convolver(
             grid=masked_imaging_7x7.grid,
             convolver=masked_imaging_7x7.convolver,
             blurring_grid=masked_imaging_7x7.blurring_grid,
         )
 
-        model_images_of_planes = fit.model_images_of_planes.in_2d
-
-        assert blurred_profile_image_2d_of_planes[0] == pytest.approx(
-            model_images_of_planes[0], 1.0e-4
-        )
-        assert blurred_profile_image_2d_of_planes[1] == pytest.approx(
-            model_images_of_planes[1], 1.0e-4
+        assert blurred_profile_images_of_planes[0].in_2d == pytest.approx(
+            fit.model_images_of_planes[0].in_2d, 1.0e-4
         )
 
-        unmasked_blurred_profile_image = tracer.unmasked_blurred_profile_image_from_grid_and_psf(
-            grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
+        assert blurred_profile_images_of_planes[1].in_2d == pytest.approx(
+            fit.model_images_of_planes[1].in_2d, 1.0e-4
         )
-
-        assert (
-            unmasked_blurred_profile_image == fit.unmasked_blurred_profile_image
-        ).all()
-
-        unmasked_blurred_profile_image_of_planes = tracer.unmasked_blurred_profile_image_of_planes_from_grid_and_psf(
-            grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
-        )
-
-        assert (
-            unmasked_blurred_profile_image_of_planes[0]
-            == fit.unmasked_blurred_profile_image_of_planes[0]
-        ).all()
-        assert (
-            unmasked_blurred_profile_image_of_planes[1]
-            == fit.unmasked_blurred_profile_image_of_planes[1]
-        ).all()
-
-        unmasked_blurred_profile_image_of_galaxies = tracer.unmasked_blurred_profile_image_of_planes_and_galaxies_from_grid_and_psf(
-            grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
-        )
-
-        assert (
-            unmasked_blurred_profile_image_of_galaxies[0][0]
-            == fit.unmasked_blurred_profile_image_of_planes_and_galaxies[0][0]
-        ).all()
-        assert (
-            unmasked_blurred_profile_image_of_galaxies[1][0]
-            == fit.unmasked_blurred_profile_image_of_planes_and_galaxies[1][0]
-        ).all()
 
 
 class TestCompareToManualInversionOnly:
@@ -937,58 +866,38 @@ class TestCompareToManualInversionOnly:
             convolver=masked_imaging_7x7.convolver,
         )
 
-        assert inversion.mapped_reconstructed_image == pytest.approx(fit._model_data, 1e-4)
-        assert inversion.reconstructed_data.in_2d == fit.model_image.in_2d
+        assert inversion.mapped_reconstructed_image.in_2d == pytest.approx(fit.model_image.in_2d, 1.0e-4)
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
             data=masked_imaging_7x7.image,
-            mask=masked_imaging_7x7._mask_1d,
             model_data=inversion.mapped_reconstructed_image,
         )
-        residual_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=residual_map
-        )
 
-        assert residual_map == pytest.approx(fit._residual_map, 1e-4)
-        assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d)
+        assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d, 1.0e-4)
 
         normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
             residual_map=residual_map,
-            mask=masked_imaging_7x7._mask_1d,
             noise_map=masked_imaging_7x7.noise_map,
         )
 
-        normalized_residual_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=normalized_residual_map
-        )
-
-        assert normalized_residual_map == pytest.approx(
-            fit.normalized_residual_map, 1e-4
-        )
         assert normalized_residual_map.in_2d == pytest.approx(
-            fit.normalized_residual_map.in_2d
+            fit.normalized_residual_map.in_2d, 1.0e-4
         )
 
         chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
             residual_map=residual_map,
-            mask=masked_imaging_7x7._mask_1d,
             noise_map=masked_imaging_7x7.noise_map,
         )
-        chi_squared_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=chi_squared_map
-        )
 
-        assert chi_squared_map == pytest.approx(fit._chi_squared_map, 1e-4)
         assert chi_squared_map.in_2d == pytest.approx(
-            fit.chi_squared_map.in_2d
+            fit.chi_squared_map.in_2d, 1.0e-4
         )
 
         chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
-            chi_squared_map=chi_squared_map_2d, mask=masked_imaging_7x7.mask
+            chi_squared_map=chi_squared_map
         )
 
         noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
-            mask=masked_imaging_7x7.mask,
             noise_map=masked_imaging_7x7.noise_map,
         )
 
@@ -1019,7 +928,7 @@ class TestCompareToManualInversionOnly:
         assert evidence == fit.evidence
         assert evidence == fit.figure_of_merit
 
-    def test___lens_fit_galaxy_model_image_dict__has_inversion_reconstructed_data(
+    def test___lens_fit_galaxy_model_image_dict__has_inversion_mapped_reconstructed_image(
         self, masked_imaging_7x7
     ):
         pix = al.pix.Rectangular(shape=(3, 3))
@@ -1048,28 +957,17 @@ class TestCompareToManualInversionOnly:
 
         assert (fit.galaxy_model_image_dict[g0] == np.zeros(9)).all()
 
-        assert fit.galaxy_model_image_dict[g1] == pytest.approx(
-            inversion.mapped_reconstructed_image, 1.0e-4
-        )
-
-        assert fit._model_data == pytest.approx(
-            fit.galaxy_model_image_dict[g1], 1.0e-4
-        )
-
-        assert fit.galaxy_model_image_dict[g1] == pytest.approx(
-            inversion.reconstructed_data_2d, 1.0e-4
+        assert fit.galaxy_model_image_dict[g1].in_2d == pytest.approx(
+            inversion.mapped_reconstructed_image.in_2d, 1.0e-4
         )
 
         assert fit.model_image.in_2d == pytest.approx(
-            fit.galaxy_model_image_dict[g1], 1.0e-4
+            fit.galaxy_model_image_dict[g1].in_2d, 1.0e-4
         )
 
     def test___all_lens_fit_quantities__include_hyper_methods(
         self, masked_imaging_7x7
     ):
-
-        hyper_noise_map_max = 0.2
-        masked_imaging_7x7.hyper_noise_map_max = hyper_noise_map_max
 
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
 
@@ -1111,14 +1009,7 @@ class TestCompareToManualInversionOnly:
             noise_map=masked_imaging_7x7.noise_map
         )
         hyper_noise_map = hyper_noise_map_background + hyper_noise
-        hyper_noise_map[
-            hyper_noise_map > hyper_noise_map_max
-        ] = hyper_noise_map_max
 
-        hyper_noise_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=hyper_noise_map
-        )
-        assert hyper_noise_map == pytest.approx(fit._noise_map, 1e-4)
         assert hyper_noise_map.in_2d == pytest.approx(fit.noise_map.in_2d)
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
@@ -1132,58 +1023,39 @@ class TestCompareToManualInversionOnly:
             convolver=masked_imaging_7x7.convolver,
         )
 
-        assert inversion.mapped_reconstructed_image == pytest.approx(fit._model_data, 1e-4)
-        assert inversion.reconstructed_data.in_2d == fit.model_image.in_2d
+        assert inversion.mapped_reconstructed_image.in_2d == pytest.approx(fit.model_image.in_2d, 1.0e-4)
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
             data=image,
-            mask=masked_imaging_7x7._mask_1d,
             model_data=inversion.mapped_reconstructed_image,
         )
-        residual_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=residual_map
-        )
 
-        assert residual_map == pytest.approx(fit._residual_map, 1e-4)
         assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d)
 
         normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
             residual_map=residual_map,
-            mask=masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map,
         )
 
-        normalized_residual_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=normalized_residual_map
-        )
-
-        assert normalized_residual_map == pytest.approx(
-            fit.normalized_residual_map, 1e-4
-        )
         assert normalized_residual_map.in_2d == pytest.approx(
             fit.normalized_residual_map.in_2d
         )
 
         chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
             residual_map=residual_map,
-            mask=masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map,
         )
-        chi_squared_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=chi_squared_map
-        )
 
-        assert chi_squared_map == pytest.approx(fit._chi_squared_map, 1e-4)
         assert chi_squared_map.in_2d == pytest.approx(
             fit.chi_squared_map.in_2d
         )
 
         chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
-            chi_squared_map=chi_squared_map_2d, mask=masked_imaging_7x7.mask
+            chi_squared_map=chi_squared_map
         )
 
         noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
-            mask=masked_imaging_7x7.mask, noise_map=hyper_noise_map_2d
+            noise_map=hyper_noise_map
         )
 
         likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
@@ -1240,11 +1112,9 @@ class TestCompareToManualInversionOnly:
             convolver=masked_imaging_7x7.convolver,
         )
 
-        model_images_of_planes = fit.model_images_of_planes.in_2d
-
-        assert (model_images_of_planes[0] == np.zeros((7, 7))).all()
-        assert inversion.reconstructed_data.in_2d == pytest.approx(
-            model_images_of_planes[1], 1.0e-4
+        assert (fit.model_images_of_planes[0].in_2d == np.zeros((7, 7))).all()
+        assert inversion.mapped_reconstructed_image.in_2d == pytest.approx(
+            fit.model_images_of_planes[1].in_2d, 1.0e-4
         )
 
 
@@ -1271,13 +1141,6 @@ class TestCompareToManualProfilesAndInversion:
             blurring_grid=masked_imaging_7x7.blurring_grid,
         )
 
-        blurred_profile_image_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=blurred_profile_image
-        )
-
-        assert blurred_profile_image == pytest.approx(
-            fit.blurred_profile_image(return_in_2d=False), 1e-4
-        )
         assert blurred_profile_image.in_2d == pytest.approx(
             fit.blurred_profile_image.in_2d
         )
@@ -1285,13 +1148,7 @@ class TestCompareToManualProfilesAndInversion:
         profile_subtracted_image = (
             masked_imaging_7x7.image - blurred_profile_image
         )
-        profile_subtracted_image_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=profile_subtracted_image
-        )
 
-        assert profile_subtracted_image == pytest.approx(
-            fit.profile_subtracted_image(return_in_2d=False)
-        )
         assert profile_subtracted_image.in_2d == pytest.approx(
             fit.profile_subtracted_image.in_2d
         )
@@ -1309,62 +1166,39 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         model_image = blurred_profile_image + inversion.mapped_reconstructed_image
-        model_image_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=model_image
-        )
 
-        assert model_image == pytest.approx(fit._model_data, 1e-4)
         assert model_image.in_2d == pytest.approx(fit.model_image.in_2d)
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
             data=masked_imaging_7x7.image,
-            mask=masked_imaging_7x7._mask_1d,
             model_data=model_image,
         )
-        residual_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=residual_map
-        )
 
-        assert residual_map == pytest.approx(fit._residual_map, 1e-4)
         assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d)
 
         normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
             residual_map=residual_map,
-            mask=masked_imaging_7x7._mask_1d,
             noise_map=masked_imaging_7x7.noise_map,
         )
 
-        normalized_residual_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=normalized_residual_map
-        )
-
-        assert normalized_residual_map == pytest.approx(
-            fit.normalized_residual_map, 1e-4
-        )
         assert normalized_residual_map.in_2d == pytest.approx(
             fit.normalized_residual_map.in_2d
         )
 
         chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
             residual_map=residual_map,
-            mask=masked_imaging_7x7._mask_1d,
             noise_map=masked_imaging_7x7.noise_map,
         )
-        chi_squared_map_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=chi_squared_map
-        )
 
-        assert chi_squared_map == pytest.approx(fit._chi_squared_map, 1e-4)
         assert chi_squared_map.in_2d == pytest.approx(
             fit.chi_squared_map.in_2d
         )
 
         chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
-            chi_squared_map=chi_squared_map_2d, mask=masked_imaging_7x7.mask
+            chi_squared_map=chi_squared_map
         )
 
         noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
-            mask=masked_imaging_7x7.mask,
             noise_map=masked_imaging_7x7.noise_map,
         )
 
@@ -1395,7 +1229,7 @@ class TestCompareToManualProfilesAndInversion:
         assert evidence == fit.evidence
         assert evidence == fit.figure_of_merit
 
-    def test___lens_fit_galaxy_model_image_dict__has_blurred_profile_images_and_inversion_reconstructed_data(
+    def test___lens_fit_galaxy_model_image_dict__has_blurred_profile_images_and_inversion_mapped_reconstructed_image(
         self, masked_imaging_7x7
     ):
 
@@ -1429,15 +1263,15 @@ class TestCompareToManualProfilesAndInversion:
         g0_image = g0.profile_image_from_grid(grid=traced_grids[0])
         g0_blurring_image = g0.profile_image_from_grid(grid=traced_blurring_grids[0])
 
-        g0_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_array_and_blurring_array(
-            image_array=g0_image, blurring_array=g0_blurring_image
+        g0_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_and_blurring_image(
+            image=g0_image, blurring_image=g0_blurring_image
         )
 
         g1_image = g1.profile_image_from_grid(grid=traced_grids[1])
         g1_blurring_image = g1.profile_image_from_grid(grid=traced_blurring_grids[1])
 
-        g1_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_array_and_blurring_array(
-            image_array=g1_image, blurring_array=g1_blurring_image
+        g1_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_and_blurring_image(
+            image=g1_image, blurring_image=g1_blurring_image
         )
 
         blurred_profile_image = g0_blurred_image + g1_blurred_image
@@ -1457,54 +1291,29 @@ class TestCompareToManualProfilesAndInversion:
             regularization=reg,
         )
 
-        assert fit.galaxy_model_image_dict[g0] == pytest.approx(
-            g0_blurred_image, 1.0e-4
-        )
-        assert fit.galaxy_model_image_dict[g1] == pytest.approx(
-            g1_blurred_image, 1.0e-4
-        )
+
         assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
-        assert fit.galaxy_model_image_dict[galaxy_pix] == pytest.approx(
-            inversion.mapped_reconstructed_image, 1.0e-4
-        )
 
-        assert fit._model_data == pytest.approx(
-            fit.galaxy_model_image_dict[g0]
-            + fit.galaxy_model_image_dict[g1]
-            + fit.galaxy_model_image_dict[galaxy_pix],
-            1.0e-4,
+        assert fit.galaxy_model_image_dict[g0].in_2d == pytest.approx(
+            g0_blurred_image.in_2d, 1.0e-4
         )
-
-        g0_blurred_image_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=g0_blurred_image
+        assert fit.galaxy_model_image_dict[g1].in_2d == pytest.approx(
+            g1_blurred_image.in_2d, 1.0e-4
         )
-        g1_blurred_image_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=g1_blurred_image
-        )
-
-        assert fit.galaxy_model_image_dict[g0] == pytest.approx(
-            g0_blurred_image_2d, 1.0e-4
-        )
-        assert fit.galaxy_model_image_dict[g1] == pytest.approx(
-            g1_blurred_image_2d, 1.0e-4
-        )
-        assert fit.galaxy_model_image_dict[galaxy_pix] == pytest.approx(
-            inversion.reconstructed_data_2d, 1.0e-4
+        assert fit.galaxy_model_image_dict[galaxy_pix].in_2d == pytest.approx(
+            inversion.mapped_reconstructed_image.in_2d, 1.0e-4
         )
 
         assert fit.model_image.in_2d == pytest.approx(
-            fit.galaxy_model_image_dict[g0]
-            + fit.galaxy_model_image_dict[g1]
-            + inversion.reconstructed_data_2d,
+            fit.galaxy_model_image_dict[g0].in_2d
+            + fit.galaxy_model_image_dict[g1].in_2d
+            + inversion.mapped_reconstructed_image.in_2d,
             1.0e-4,
         )
 
     def test___all_lens_fit_quantities__include_hyper_methods(
         self, masked_imaging_7x7
     ):
-
-        hyper_noise_map_max = 0.2
-        masked_imaging_7x7.hyper_noise_map_max = hyper_noise_map_max
 
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
 
@@ -1524,8 +1333,8 @@ class TestCompareToManualProfilesAndInversion:
             hyper_galaxy=al.HyperGalaxy(
                 contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
             ),
-            hyper_model_image=np.ones(9),
-            hyper_galaxy_image=np.ones(9),
+            hyper_model_image=aa.array.ones(shape_2d=(3,3)),
+            hyper_galaxy_image=aa.array.ones(shape_2d=(3,3)),
             hyper_minimum_value=0.0,
         )
 
@@ -1546,11 +1355,8 @@ class TestCompareToManualProfilesAndInversion:
             noise_map=masked_imaging_7x7.noise_map
         )
         hyper_noise_map = hyper_noise_map_background + hyper_noise
-        hyper_noise_map[
-            hyper_noise_map > hyper_noise_map_max
-        ] = hyper_noise_map_max
-        
-        assert hyper_noise_map.in_2d == pytest.approx(fit.noise_map.in_2d)
+
+        assert hyper_noise_map.in_2d == pytest.approx(fit.noise_map.in_2d, 1.0e-4)
 
         blurred_profile_image = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=masked_imaging_7x7.grid,
@@ -1582,42 +1388,39 @@ class TestCompareToManualProfilesAndInversion:
 
         model_image = blurred_profile_image + inversion.mapped_reconstructed_image
 
-        assert model_image.in_2d == pytest.approx(fit.model_image.in_2d)
+        assert model_image.in_2d == pytest.approx(fit.model_image.in_2d, 1.0e-4)
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
             data=image,
-            mask=masked_imaging_7x7._mask_1d,
             model_data=model_image,
         )
 
-        assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d)
+        assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d, 1.0e-4)
 
         normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
             residual_map=residual_map,
-            mask=masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map,
         )
 
         assert normalized_residual_map.in_2d == pytest.approx(
-            fit.normalized_residual_map.in_2d
+            fit.normalized_residual_map.in_2d, 1.0e-4
         )
 
         chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
             residual_map=residual_map,
-            mask=masked_imaging_7x7._mask_1d,
             noise_map=hyper_noise_map,
         )
 
         assert chi_squared_map.in_2d == pytest.approx(
-            fit.chi_squared_map.in_2d
+            fit.chi_squared_map.in_2d, 1.0e-4
         )
 
         chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
-            chi_squared_map=chi_squared_map_2d, mask=masked_imaging_7x7.mask
+            chi_squared_map=chi_squared_map
         )
 
         noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
-            mask=masked_imaging_7x7.mask, noise_map=hyper_noise_map_2d
+            noise_map=hyper_noise_map
         )
 
         likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
@@ -1671,10 +1474,6 @@ class TestCompareToManualProfilesAndInversion:
             blurring_grid=masked_imaging_7x7.blurring_grid,
         )
 
-        blurred_profile_image_2d = masked_imaging_7x7.mapping.scaled_array_2d_from_array_1d(
-            array_1d=blurred_profile_image
-        )
-
         profile_subtracted_image = (
             masked_imaging_7x7.image - blurred_profile_image
         )
@@ -1691,11 +1490,9 @@ class TestCompareToManualProfilesAndInversion:
             regularization=reg,
         )
 
-        model_images_of_planes = fit.model_images_of_planes.in_2d
-
         assert blurred_profile_image.in_2d == pytest.approx(
-            model_images_of_planes[0], 1.0e-4
+            fit.model_images_of_planes[0].in_2d, 1.0e-4
         )
-        assert inversion.reconstructed_data.in_2d == pytest.approx(
-            model_images_of_planes[1], 1.0e-4
+        assert inversion.mapped_reconstructed_image.in_2d == pytest.approx(
+            fit.model_images_of_planes[1].in_2d, 1.0e-4
         )
