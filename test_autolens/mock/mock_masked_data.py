@@ -16,11 +16,14 @@ class MockMaskedImaging(object):
         self.noise_map = mask.mapping.array_from_array_2d(array_2d=imaging.noise_map.in_2d)
 
         self.positions = None
-        self.hyper_noise_map_max = None
         self.uses_cluster_inversion = False
         self.inversion_pixel_limit = 1000
         self.inversion_uses_border = True
         self.preload_pixelization_grids_of_planes = None
+
+    @property
+    def data(self):
+        return self.image
 
     def signal_to_noise_map(self):
         return self.image / self.noise_map
