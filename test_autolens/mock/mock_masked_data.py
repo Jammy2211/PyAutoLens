@@ -52,7 +52,6 @@ class MockMaskedInterferometer(object):
         self.transformer = transformer
 
         self.positions = None
-        self.hyper_noise_map_max = None
         self.uses_cluster_inversion = False
         self.inversion_pixel_limit = 1000
         self.inversion_uses_border = True

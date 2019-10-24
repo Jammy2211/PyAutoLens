@@ -650,9 +650,7 @@ class TestCompareToManualProfilesOnly:
 #         )
 #
 #     def test___all_lens_fit_quantities__include_hyper_methods(self, masked_interferometer_6x6):
-#
-#         hyper_noise_map_max = 0.2
-#         masked_interferometer_6x6.hyper_noise_map_max = hyper_noise_map_max
+
 #
 #         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 #
@@ -694,9 +692,6 @@ class TestCompareToManualProfilesOnly:
 #             noise_map=masked_interferometer_6x6.noise_map(return_x2=True)
 #         )
 #         hyper_noise_map = hyper_noise_map_background_1d + hyper_noise_1d
-#         hyper_noise_map[
-#             hyper_noise_map > hyper_noise_map_max
-#         ] = hyper_noise_map_max
 #
 #         hyper_noise_map_2d = masked_interferometer_6x6.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=hyper_noise_map
@@ -1098,9 +1093,6 @@ class TestCompareToManualProfilesOnly:
 #
 #     def test___all_lens_fit_quantities__include_hyper_methods(self, masked_interferometer_6x6):
 #
-#         hyper_noise_map_max = 0.2
-#         masked_interferometer_6x6.hyper_noise_map_max = hyper_noise_map_max
-#
 #         hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
 #
 #         hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
@@ -1141,9 +1133,6 @@ class TestCompareToManualProfilesOnly:
 #             noise_map=masked_interferometer_6x6.noise_map(return_x2=True)
 #         )
 #         hyper_noise_map = hyper_noise_map_background_1d + hyper_noise_1d
-#         hyper_noise_map[
-#             hyper_noise_map > hyper_noise_map_max
-#         ] = hyper_noise_map_max
 #
 #         hyper_noise_map_2d = masked_interferometer_6x6.mapping.scaled_array_2d_from_array_1d(
 #             array_1d=hyper_noise_map

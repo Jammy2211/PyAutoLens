@@ -63,7 +63,6 @@ class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
             pixel_scale_interpolation_grid=None,
             inversion_pixel_limit=None,
             inversion_uses_border=True,
-            hyper_noise_map_max=None,
             positions=None,
             positions_threshold=None,
             preload_pixelization_grids_of_planes=None,
@@ -105,7 +104,6 @@ class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
-            hyper_noise_map_max=hyper_noise_map_max,
         )
 
         AbstractLensMasked.__init__(self=self, positions=positions,
@@ -125,7 +123,6 @@ class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
-            hyper_noise_map_max=self.hyper_noise_map_max,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
             preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes
@@ -144,7 +141,6 @@ class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
-            hyper_noise_map_max=self.hyper_noise_map_max,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
             preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes
@@ -160,7 +156,6 @@ class MaskedInterferometer(masked_data.MaskedInterferometer):
             pixel_scale_interpolation_grid=None,
             inversion_pixel_limit=None,
             inversion_uses_border=True,
-            hyper_noise_map_max=None,
             positions=None,
             positions_threshold=None,
             preload_pixelization_grids_of_planes=None,
@@ -204,7 +199,6 @@ class MaskedInterferometer(masked_data.MaskedInterferometer):
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
-            hyper_noise_map_max=hyper_noise_map_max,
         )
 
         AbstractLensMasked.__init__(self=self, positions=positions,

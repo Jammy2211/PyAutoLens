@@ -44,12 +44,11 @@ class TestMaskedImaging(object):
 
         masked_imaging_7x7 = al.MaskedImaging(imaging=imaging_7x7,
             mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0, trimmed_psf_shape_2d=(3,3),
-            inversion_pixel_limit=20.0, inversion_uses_border=False, hyper_noise_map_max=10.0, preload_pixelization_grids_of_planes=1
+            inversion_pixel_limit=20.0, inversion_uses_border=False, preload_pixelization_grids_of_planes=1
         )
 
         assert masked_imaging_7x7.inversion_pixel_limit == 20.0
         assert masked_imaging_7x7.inversion_uses_border == False
-        assert masked_imaging_7x7.hyper_noise_map_max == 10.0
         assert masked_imaging_7x7.preload_pixelization_grids_of_planes == 1
 
         grid = aa.masked_grid.from_mask(mask=sub_mask_7x7)
@@ -202,7 +201,7 @@ class TestInterferometerData(object):
         masked_interferometer_7 = al.MaskedInterferometer(
             interferometer=interferometer_7,
             real_space_mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0, trimmed_primary_beam_shape_2d=(3, 3),
-            inversion_pixel_limit=20.0, inversion_uses_border=False, hyper_noise_map_max=10.0, preload_pixelization_grids_of_planes=1
+            inversion_pixel_limit=20.0, inversion_uses_border=False, preload_pixelization_grids_of_planes=1
         )
 
         assert (masked_interferometer_7.grid.in_1d_binned == grid_7x7).all()
@@ -210,7 +209,6 @@ class TestInterferometerData(object):
 
         assert masked_interferometer_7.inversion_pixel_limit == 20.0
         assert masked_interferometer_7.inversion_uses_border == False
-        assert masked_interferometer_7.hyper_noise_map_max == 10.0
         assert masked_interferometer_7.preload_pixelization_grids_of_planes == 1
 
         grid = aa.masked_grid.from_mask(mask=sub_mask_7x7)

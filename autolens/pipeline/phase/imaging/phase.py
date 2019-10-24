@@ -75,10 +75,6 @@ class PhaseImaging(data.PhaseData):
         self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
 
-        self.hyper_noise_map_max = af.conf.instance.general.get(
-            "hyper", "hyper_noise_map_max", float
-        )
-
         self.is_hyper_phase = False
 
         self.meta_data_fit = MetaImagingFit(
