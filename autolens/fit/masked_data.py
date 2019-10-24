@@ -155,7 +155,7 @@ class MaskedInterferometer(masked_data.MaskedInterferometer):
     def __init__(
             self,
             interferometer,
-            mask,
+            real_space_mask,
             trimmed_primary_beam_shape_2d=None,
             pixel_scale_interpolation_grid=None,
             inversion_pixel_limit=None,
@@ -176,7 +176,7 @@ class MaskedInterferometer(masked_data.MaskedInterferometer):
         ----------
         imaging: im.Imaging
             The imaging data_type all in 2D (the image, noise-map, primary_beam, etc.)
-        mask: msk.Mask
+        real_space_mask: msk.Mask
             The 2D mask that is applied to the image.
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
@@ -199,7 +199,7 @@ class MaskedInterferometer(masked_data.MaskedInterferometer):
 
         super(MaskedInterferometer, self).__init__(
             interferometer=interferometer,
-            mask=mask,
+            real_space_mask=real_space_mask,
             trimmed_primary_beam_shape_2d=trimmed_primary_beam_shape_2d,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
