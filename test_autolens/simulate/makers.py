@@ -37,7 +37,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
 
     # Simulate the Imaging data_type, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.al. the PSF convolution).
-    imaging = al.SimulatedImagingData.from_tracer_grid_and_exposure_arrays(
+    imaging = al.SimulatedImagingData.simulate_from_tracer_and_grid(
         tracer=tracer,
         pixel_scales=pixel_scales,
         psf=psf,
@@ -47,11 +47,11 @@ def simulate_image_from_galaxies_and_output_to_fits(
         grid=image_plane_grid,
     )
 
-    # Now, lets output this simulated imaging-data to the test_autoarray/data folder.
+    # Now, lets output this simulated imaging-simulate to the test_autoarray/simulate folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=test_path, folder_names=["data", data_type, data_resolution]
+        path=test_path, folder_names=["simulate", data_type, data_resolution]
     )
 
     al.output_imaging_to_fits(

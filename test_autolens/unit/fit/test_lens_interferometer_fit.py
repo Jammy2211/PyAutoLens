@@ -526,7 +526,7 @@ class TestCompareToManualProfilesOnly:
 #         assert inversion.reconstructed_data_2d == fit.model_visibilities(return_x2=True)
 #
 #         residual_map = af.fit_util.residual_map_from_data_mask_and_model_data(
-#             data=masked_interferometer_6x6.visibilities(),
+#             simulate=masked_interferometer_6x6.visibilities(),
 #             mask=masked_interferometer_6x6.visibilities_mask,
 #             model_data=inversion.reconstructed_data_1d,
 #         )
@@ -721,7 +721,7 @@ class TestCompareToManualProfilesOnly:
 #         assert inversion.reconstructed_data_2d == fit.model_visibilities(return_x2=True)
 #
 #         residual_map = af.fit_util.residual_map_from_data_mask_and_model_data(
-#             data=image_1d,
+#             simulate=image_1d,
 #             mask=masked_interferometer_6x6.visibilities_mask,
 #             model_data=inversion.reconstructed_data_1d,
 #         )
@@ -902,7 +902,7 @@ class TestCompareToManualProfilesOnly:
 #         assert model_visibilities_2d == pytest.approx(fit.model_visibilities(return_x2=True))
 #
 #         residual_map = af.fit_util.residual_map_from_data_mask_and_model_data(
-#             data=masked_interferometer_6x6.visibilities(),
+#             simulate=masked_interferometer_6x6.visibilities(),
 #             mask=masked_interferometer_6x6.visibilities_mask,
 #             model_data=model_visibilities,
 #         )
@@ -1202,7 +1202,7 @@ class TestCompareToManualProfilesOnly:
 #         assert model_visibilities_2d == pytest.approx(fit.model_visibilities(return_x2=True))
 #
 #         residual_map = af.fit_util.residual_map_from_data_mask_and_model_data(
-#             data=image_1d, mask=masked_interferometer_6x6.visibilities_mask, model_data=model_visibilities
+#             simulate=image_1d, mask=masked_interferometer_6x6.visibilities_mask, model_data=model_visibilities
 #         )
 #
 #         residual_map_2d = masked_interferometer_6x6.mapping.scaled_array_2d_from_array_1d(
