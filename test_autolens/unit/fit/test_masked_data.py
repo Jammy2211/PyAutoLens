@@ -171,7 +171,7 @@ class TestInterferometerData(object):
 
         masked_interferometer_7 = al.MaskedInterferometer(
             interferometer=interferometer_7,
-            mask=sub_mask_7x7,
+            real_space_mask=sub_mask_7x7,
         )
 
         assert (
@@ -201,7 +201,7 @@ class TestInterferometerData(object):
 
         masked_interferometer_7 = al.MaskedInterferometer(
             interferometer=interferometer_7,
-            mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0, trimmed_primary_beam_shape_2d=(3,3),
+            real_space_mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0, trimmed_primary_beam_shape_2d=(3, 3),
             inversion_pixel_limit=20.0, inversion_uses_border=False, hyper_noise_map_max=10.0, preload_pixelization_grids_of_planes=1
         )
 
@@ -228,9 +228,9 @@ class TestInterferometerData(object):
         self
     ):
         interferometer = aa.interferometer.manual(
-            shape_2d=(2, 2),
+            real_space_shape_2d=(2, 2),
             visibilities=np.ones((19, 2)),
-            pixel_scales=3.0,
+            real_space_pixel_scales=3.0,
             primary_beam=aa.kernel.ones(shape_2d=(7, 7), pixel_scales=1.0),
             noise_map=2.0 * np.ones((19,)),
             uv_wavelengths=3.0 * np.ones((19, 2)),
@@ -242,7 +242,7 @@ class TestInterferometerData(object):
 
         masked_interferometer = al.MaskedInterferometer(
             interferometer=interferometer,
-            mask=mask,
+            real_space_mask=mask,
             trimmed_primary_beam_shape_2d=(5, 5),
             positions=[aa.irregular_grid.manual_1d([[1.0, 1.0]])],
             positions_threshold=1.0,

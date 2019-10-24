@@ -122,7 +122,7 @@ class TestPhaseModelMapper(object):
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
-            pixel_scales=0.1,
+            real_space_pixel_scales=0.1,
         )
 
         class MMPhase(al.PhaseImaging):
@@ -195,7 +195,7 @@ class TestPhaseModelMapper(object):
             image_path=path + "/test_files/data/" + test_name + "/image.fits",
             psf_path=path + "/test_files/data/" + test_name + "/psf.fits",
             noise_map_path=path + "/test_files/data/" + test_name + "/noise_map.fits",
-            pixel_scales=0.1,
+            real_space_pixel_scales=0.1,
         )
 
         class MMPhase(al.PhaseImaging):

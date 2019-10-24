@@ -89,12 +89,12 @@ class TestLikelihood:
                     [True, True, True, True],
                 ]
             ),
-            pixel_scales=1.0,
+            real_space_pixel_scales=1.0,
             sub_size=1,
         )
 
         masked_interferometer_6x6 = al.MaskedInterferometer(
-            interferometer=interferometer, mask=mask
+            interferometer=interferometer, real_space_mask=mask
         )
 
         # Setup as a ray trace instance, using a light profile for the lens
@@ -156,12 +156,12 @@ class TestLikelihood:
                     [True, True, True, True, True],
                 ]
             ),
-            pixel_scales=1.0,
+            real_space_pixel_scales=1.0,
             sub_size=1,
         )
 
         masked_interferometer_6x6 = al.MaskedInterferometer(
-            interferometer=interferometer, mask=mask
+            interferometer=interferometer, real_space_mask=mask
         )
 
         # Setup as a ray trace instance, using a light profile for the lens

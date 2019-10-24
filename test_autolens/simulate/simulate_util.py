@@ -84,7 +84,7 @@ def load_test_imaging(
         image_path=data_path + "/image.fits",
         psf_path=data_path + "/psf.fits",
         noise_map_path=data_path + "/noise_map.fits",
-        pixel_scales=pixel_scales,
+        real_space_pixel_scales=pixel_scales,
         resized_psf_shape=psf_shape,
         lens_name=lens_name,
     )

@@ -117,7 +117,7 @@ def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer
     tracer_profile_image = tracer.profile_image_from_grid(grid=grid)
 
     imaging_simulated = imaging.SimulatedImaging.simulate(
-        image=tracer_profile_image,
+        real_space_image=tracer_profile_image,
         exposure_time=10000.0,
         background_sky_level=100.0,
         add_noise=True,
@@ -177,7 +177,7 @@ def test__from_tracer__same_as_manual_tracer_input(self):
     )
 
     imaging_simulated = imaging.SimulatedImaging.simulate(
-        image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
+        real_space_image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
             grid=grid, psf_shape=(3, 3)
         ),
         exposure_time=10000.0,
@@ -459,8 +459,8 @@ def test__uv_from_deflections_and_galaxies__same_as_manual_calculation_using_tra
     tracer_profile_image = tracer.profile_image_from_grid(grid=grid)
 
     interferometer_simulated = aa.interferometer.simulate(
-        image=tracer_profile_image,
-        pixel_scales=1.0,
+        real_space_image=tracer_profile_image,
+        real_space_pixel_scales=1.0,
         exposure_time=10000.0,
         background_sky_level=100.0,
         transformer=transformer_7x7_7,
@@ -512,8 +512,8 @@ def test__uv_from_tracer__same_as_manual_tracer_input(self, transformer_7x7_7):
     )
 
     interferometer_simulated = aa.interferometer.simulate(
-        image=tracer.profile_image_from_grid(grid=grid),
-        pixel_scales=0.1,
+        real_space_image=tracer.profile_image_from_grid(grid=grid),
+        real_space_pixel_scales=0.1,
         exposure_time=10000.0,
         background_sky_level=100.0,
         transformer=transformer_7x7_7,

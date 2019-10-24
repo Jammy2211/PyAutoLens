@@ -115,10 +115,10 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     imaging_simulated = al.SimulatedImagingData.simulate(
-        image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
+        real_space_image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
             grid=grid, psf_shape=psf.shape_2d
         ),
-        pixel_scales=0.2,
+        real_space_pixel_scales=0.2,
         exposure_time=300.0,
         psf=psf,
         background_sky_level=0.0,
