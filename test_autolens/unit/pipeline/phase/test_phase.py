@@ -114,7 +114,7 @@ class TestPhase(object):
     #         phase_name="test_phase", mask_function=mask_function_7x7
     #     )
     #
-    #     analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+    #     analysis = phase_imaging_7x7.make_analysis(simulate=imaging_7x7)
     #
     #     galaxy = al.Galaxy(redshift=0.5)
     #
@@ -186,7 +186,7 @@ class TestPhase(object):
     #         mask_function=mask_function_7x7,
     #     )
     #
-    #     analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+    #     analysis = phase_imaging_7x7.make_analysis(simulate=imaging_7x7)
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
     #         galaxies=[galaxy_pix_which_uses_brightness],

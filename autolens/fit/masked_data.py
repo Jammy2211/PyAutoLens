@@ -69,10 +69,10 @@ class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
             preload_pixelization_grids_of_planes=None,
     ):
         """
-        The lens data is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        The lens simulate is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens simulate creates reduced 1D arrays of each \
         for lensing calculations.
 
         Parameters
@@ -166,10 +166,10 @@ class MaskedInterferometer(masked_data.MaskedInterferometer):
             preload_pixelization_grids_of_planes=None,
     ):
         """
-        The lens data is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
+        The lens simulate is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens simulate creates reduced 1D arrays of each \
         for lensing calculations.
 
         Parameters

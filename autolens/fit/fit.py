@@ -13,7 +13,7 @@ class ImagingFit(fit.ImagingFit):
             hyper_background_noise=None,
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens data's hyper_galaxies.
+        the lens simulate's hyper_galaxies.
 
         Parameters
         -----------
