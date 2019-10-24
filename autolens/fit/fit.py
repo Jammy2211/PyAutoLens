@@ -7,12 +7,12 @@ from autoastro.galaxy import galaxy as g
 class ImagingFit(fit.ImagingFit):
     def __init__(
         self,
+        mask,
         tracer,
         grid,
         blurring_grid,
         image,
         noise_map,
-        mask,
         inversion,
         model_image,
         convolver,
@@ -27,9 +27,9 @@ class ImagingFit(fit.ImagingFit):
         self.positions = positions
 
         super().__init__(
+            mask=mask,
             image=image,
             noise_map=noise_map,
-            mask=mask,
             model_image=model_image,
             inversion=inversion,
         )
@@ -49,48 +49,48 @@ class ImagingFit(fit.ImagingFit):
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D array.
         """
 
-        image_1d = hyper_image_from_image_and_hyper_image_sky(
+        image = hyper_image_from_image_and_hyper_image_sky(
             image=lens_data, hyper_image_sky=hyper_image_sky
         )
 
-        noise_map_1d = hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
+        noise_map = hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
             lens_data=lens_data,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
 
-        blurred_profile_image_1d = tracer.blurred_profile_image_from_grid_and_convolver(
+        blurred_profile_image = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=lens_data.grid,
             convolver=lens_data.convolver,
             blurring_grid=lens_data.blurring_grid,
         )
 
-        profile_subtracted_image_1d = image_1d - blurred_profile_image_1d
+        profile_subtracted_image = image - blurred_profile_image
 
         if not tracer.has_pixelization:
 
             inversion = None
-            model_image_1d = blurred_profile_image_1d
+            model_image = blurred_profile_image
 
         else:
 
             inversion = tracer.inversion_imaging_from_grid_and_data(
                 grid=lens_data.grid,
-                image=profile_subtracted_image_1d,
-                noise_map=noise_map_1d,
+                image=profile_subtracted_image,
+                noise_map=noise_map,
                 convolver=lens_data.convolver,
                 inversion_uses_border=lens_data.inversion_uses_border,
                 preload_pixelization_grids_of_planes=lens_data.preload_pixelization_grids_of_planes,
             )
 
-            model_image_1d = blurred_profile_image_1d + inversion.mapped_reconstructed_image
+            model_image = blurred_profile_image + inversion.mapped_reconstructed_image
 
         return cls(
             tracer=tracer,
-            image=image_1d,
-            noise_map=noise_map_1d,
-            mask=lens_data._mask_1d,
-            model_image=model_image_1d,
+            image=image,
+            noise_map=noise_map,
+            mask=lens_data.mask,
+            model_image=model_image,
             grid=lens_data.grid,
             blurring_grid=lens_data.blurring_grid,
             convolver=lens_data.convolver,
@@ -153,7 +153,7 @@ def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
     if hyper_image_sky is not None:
         return hyper_image_sky.hyper_image_from_image(image=image)
     else:
-        return image.image.in_1d
+        return image
 
 
 def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
@@ -173,9 +173,5 @@ def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
 
     if hyper_noise_map is not None:
         noise_map = noise_map + hyper_noise_map
-        if lens_data.hyper_noise_map_max is not None:
-            noise_map[
-                noise_map > lens_data.hyper_noise_map_max
-            ] = lens_data.hyper_noise_map_max
 
     return noise_map
