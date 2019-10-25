@@ -9,7 +9,7 @@ from autolens.lens.plane import Plane, PlanePositions, PlaneImage
 from autolens.fit.plotters import lens_imaging_fit_plotters
 from autolens.lens.ray_tracing import Tracer
 from autolens.lens.util import lens_util
-from autolens.fit.fit import ImagingFit, InterferometerFit
+from autolens.fit.fit import ImagingFit, InterferometerFit, PositionsFit
 from autolens.pipeline import phase_tagging, pipeline_tagging
 from autolens.pipeline.phase.abstract import phase
 from autolens.pipeline.phase.abstract.phase import AbstractPhase
