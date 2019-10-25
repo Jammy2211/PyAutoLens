@@ -2,7 +2,7 @@ import numpy as np
 from astropy import cosmology as cosmo
 from skimage import measure
 
-from autoarray.structures import arrays
+from autoarray.structures import arrays, visibilities as vis
 import autofit as af
 from autoastro.util import cosmology_util
 from autolens import exc
@@ -680,9 +680,11 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
     def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
-        profile_image = self.profile_image_from_grid(grid=grid)
-
-        return transformer.visibilities_from_image(image=profile_image)
+        if self.galaxies:
+            profile_image = self.profile_image_from_grid(grid=grid)
+            return transformer.visibilities_from_image(image=profile_image)
+        else:
+            return vis.Visibilities.zeros(shape_1d=(transformer.uv_wavelengths.shape[0],))
 
     def profile_visibilities_of_galaxies_from_grid_and_transformer(
         self, grid, transformer

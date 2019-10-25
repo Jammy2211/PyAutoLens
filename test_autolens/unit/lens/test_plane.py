@@ -2231,6 +2231,17 @@ class TestAbstractPlaneData(object):
 
             assert visibilities == pytest.approx(plane_visibilities, 1.0e-4)
 
+        def test__visibilities_from_grid_and_transformer__plane_has_no_galaxies__returns_zeros(
+            self, sub_grid_7x7, transformer_7x7_7
+        ):
+            plane = al.Plane(redshift=0.5, galaxies=[])
+
+            plane_visibilities = plane.profile_visibilities_from_grid_and_transformer(
+                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            )
+
+            assert (plane_visibilities.in_1d == np.zeros((7, 2))).all()
+
         def test__visibilities_of_galaxies_from_grid_and_transformer(
             self, sub_grid_7x7, transformer_7x7_7
         ):
@@ -2886,6 +2897,7 @@ class TestAbstractPlaneData(object):
             )
 
             assert hyper_noise_map == np.zeros((3,1))
+
 
 class TestPlane(object):
     class TestTracedGrid:
