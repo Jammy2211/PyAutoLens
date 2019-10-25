@@ -44,7 +44,7 @@ def make_masked_interferometer_6x6(
 ):
     return mock_masked_data.MockMaskedInterferometer(
         interferometer=interferometer_7,
-        mask=mask_7x7,
+        real_space_mask=mask_7x7,
         grid=sub_grid_7x7,
         transformer=transformer_7x7_7,
     )

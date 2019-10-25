@@ -164,7 +164,7 @@ class TestMaskedImaging(object):
         assert masked_imaging_new.preload_pixelization_grids_of_planes == 3
 
 
-class TestInterferometerData(object):
+class TestMaskedInterferometer(object):
 
     def test__masked_data_via_autoarray(self, interferometer_7, sub_mask_7x7):
 

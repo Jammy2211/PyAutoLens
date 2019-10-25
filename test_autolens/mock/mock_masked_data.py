@@ -35,16 +35,15 @@ class MockMaskedImaging(object):
     def check_inversion_pixels_are_below_limit_via_tracer(self, tracer):
         pass
 
+
 class MockMaskedInterferometer(object):
-    def __init__(self, interferometer, mask, grid, transformer):
+    def __init__(self, interferometer, real_space_mask, grid, transformer):
 
         self.interferometer = interferometer
-        self.mask = mask
+        self.real_space_mask = real_space_mask
 
         self.visibilities = interferometer.visibilities
-        self.noise_map =  np.stack(
-                (self.interferometer.noise_map, self.interferometer.noise_map), axis=-1
-            )
+        self.noise_map =  self.interferometer.noise_map
         self.visibilities_mask = np.full(fill_value=False, shape=self.interferometer.uv_wavelengths.shape)
         self.primary_beam = interferometer.primary_beam
 
