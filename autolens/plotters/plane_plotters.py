@@ -1,17 +1,18 @@
-import autofit as af
+import autoarray as aa
+from autoarray.plotters import plotter_util
 import matplotlib
 
-backend = af.conf.instance.visualize.get("figures", "backend", str)
+backend = aa.conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
 
 
-def plot_profile_image(
+def profile_image(
     plane,
     grid,
-    mask=None,
+    mask_overlay=None,
     positions=None,
     plot_grid=False,
     plot_critical_curves=False,
@@ -47,7 +48,7 @@ def plot_profile_image(
     profile_image = plane.profile_image_from_grid(grid=grid)
 
     if plane.has_mass_profile:
-        lines = aa.plotter_util.get_critical_curve_and_caustic(
+        lines = plotter_util.get_critical_curve_and_caustic(
             obj=plane,
             grid=grid,
             plot_critical_curve=plot_critical_curves,
@@ -59,9 +60,9 @@ def plot_profile_image(
     if not plot_grid:
         grid = None
 
-    aa.plot_array(
+    aa.plot.array(
         array=profile_image,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         positions=positions,
         grid=grid,
         lines=lines,
@@ -95,7 +96,7 @@ def plot_profile_image(
     )
 
 
-def plot_plane_image(
+def plane_image(
     plane,
     grid,
     plot_origin=True,
@@ -131,16 +132,18 @@ def plot_plane_image(
 
     plane_image = plane.plane_image_from_grid(grid=grid)
 
-    if not plot_grid:
+    if plot_grid:
+        grid = plane_image.grid
+    else:
         grid = None
 
     if plot_origin:
-        origin = plane_image.origin
+        origin = plane_image.grid.origin
     else:
         origin = None
 
-    aa.plot_array(
-        array=plane_image,
+    aa.plot.array(
+        array=plane_image.array,
         should_plot_origin=origin,
         positions=positions,
         grid=grid,
@@ -174,10 +177,10 @@ def plot_plane_image(
     )
 
 
-def plot_convergence(
+def convergence(
     plane,
     grid,
-    mask=None,
+    mask_overlay=None,
     plot_critical_curves=False,
     plot_caustics=False,
     as_subplot=False,
@@ -207,16 +210,16 @@ def plot_convergence(
 
     convergence = plane.convergence_from_grid(grid=grid)
 
-    lines = aa.plotter_util.get_critical_curve_and_caustic(
+    lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    aa.plot_array(
+    aa.plot.array(
         array=convergence,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         lines=lines,
         as_subplot=as_subplot,
         units=units,
@@ -245,10 +248,10 @@ def plot_convergence(
     )
 
 
-def plot_potential(
+def potential(
     plane,
     grid,
-    mask=None,
+    mask_overlay=None,
     plot_critical_curves=False,
     plot_caustics=False,
     as_subplot=False,
@@ -278,16 +281,16 @@ def plot_potential(
 
     potential = plane.potential_from_grid(grid=grid)
 
-    lines = aa.plotter_util.get_critical_curve_and_caustic(
+    lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    aa.plot_array(
+    aa.plot.array(
         array=potential,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         lines=lines,
         as_subplot=as_subplot,
         units=units,
@@ -316,10 +319,10 @@ def plot_potential(
     )
 
 
-def plot_deflections_y(
+def deflections_y(
     plane,
     grid,
-    mask=None,
+    mask_overlay=None,
     plot_critical_curves=False,
     plot_caustics=False,
     as_subplot=False,
@@ -348,18 +351,18 @@ def plot_deflections_y(
 ):
 
     deflections = plane.deflections_from_grid(grid=grid)
-    deflections_y = grid.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 0])
+    deflections_y = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 0])
 
-    lines = aa.plotter_util.get_critical_curve_and_caustic(
+    lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    aa.plot_array(
+    aa.plot.array(
         array=deflections_y,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         lines=lines,
         as_subplot=as_subplot,
         units=units,
@@ -388,10 +391,10 @@ def plot_deflections_y(
     )
 
 
-def plot_deflections_x(
+def deflections_x(
     plane,
     grid,
-    mask=None,
+    mask_overlay=None,
     plot_critical_curves=False,
     plot_caustics=False,
     as_subplot=False,
@@ -420,18 +423,18 @@ def plot_deflections_x(
 ):
 
     deflections = plane.deflections_from_grid(grid=grid)
-    deflections_x = grid.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 1])
+    deflections_x = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 1])
 
-    lines = aa.plotter_util.get_critical_curve_and_caustic(
+    lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    aa.plot_array(
+    aa.plot.array(
         array=deflections_x,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         lines=lines,
         as_subplot=as_subplot,
         units=units,
@@ -460,10 +463,10 @@ def plot_deflections_x(
     )
 
 
-def plot_magnification(
+def magnification(
     plane,
     grid,
-    mask=None,
+    mask_overlay=None,
     plot_critical_curves=False,
     plot_caustics=False,
     as_subplot=False,
@@ -493,16 +496,16 @@ def plot_magnification(
 
     magnification = plane.magnification_from_grid(grid=grid)
 
-    lines = aa.plotter_util.get_critical_curve_and_caustic(
+    lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
         plot_critical_curve=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
-    aa.plot_array(
+    aa.plot.array(
         array=magnification,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         lines=lines,
         as_subplot=as_subplot,
         units=units,
@@ -531,7 +534,7 @@ def plot_magnification(
     )
 
 
-def plot_image_and_source_plane_subplot(
+def image_and_source_plane_subplot(
     image_plane,
     source_plane,
     grid,
@@ -545,11 +548,11 @@ def plot_image_and_source_plane_subplot(
     output_filename="image_and_source_plane_grids",
 ):
 
-    rows, columns, figsize = aa.plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize = plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=2
     )
 
-    lines = aa.plotter_util.get_critical_curve_and_caustic(
+    lines = plotter_util.get_critical_curve_and_caustic(
         obj=image_plane, grid=grid, plot_critical_curve=True, plot_caustics=True
     )
 
@@ -566,7 +569,7 @@ def plot_image_and_source_plane_subplot(
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    plot_plane_grid(
+    plane_grid(
         plane=image_plane,
         grid=grid,
         axis_limits=axis_limits,
@@ -589,7 +592,7 @@ def plot_image_and_source_plane_subplot(
 
     plt.subplot(rows, columns, 2)
 
-    plot_plane_grid(
+    plane_grid(
         plane=source_plane,
         grid=source_plane_grid,
         axis_limits=axis_limits,
@@ -608,7 +611,7 @@ def plot_image_and_source_plane_subplot(
         output_format=output_format,
     )
 
-    aa.plotter_util.output_subplot_array(
+    plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -616,7 +619,7 @@ def plot_image_and_source_plane_subplot(
     plt.close()
 
 
-def plot_plane_grid(
+def plane_grid(
     plane,
     grid,
     axis_limits=None,
@@ -636,7 +639,7 @@ def plot_plane_grid(
     output_filename="plane_grid",
 ):
 
-    aa.plot_grid(
+    aa.plot.grid(
         grid=grid,
         points=points,
         axis_limits=axis_limits,

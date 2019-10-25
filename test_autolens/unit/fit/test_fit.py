@@ -10,7 +10,6 @@ from test_autoastro.mock.mock_profiles import MockLightProfile
 
 class TestImagingFit:
 
-
     class TestFitProperties:
 
         def test__total_inversions(self, masked_imaging_7x7):

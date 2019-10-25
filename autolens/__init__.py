@@ -6,7 +6,6 @@ from autolens.simulate.simulator import ImagingSimulator
 from autolens.lens import ray_tracing
 from autolens.fit.masked_data import MaskedImaging, MaskedInterferometer
 from autolens.lens.plane import Plane, PlanePositions, PlaneImage
-from autolens.fit.plotters import lens_imaging_fit_plotters
 from autolens.lens.ray_tracing import Tracer
 from autolens.lens.util import lens_util
 from autolens.fit.fit import ImagingFit, InterferometerFit, PositionsFit
@@ -34,6 +33,6 @@ from autolens.pipeline.pipeline import (
     PipelineImaging,
     PipelinePositions,
 )
-from autolens.pipeline.plotters import hyper_plotters, phase_plotters
+from autolens import plotters as plot
 
 __version__ = "0.31.8"

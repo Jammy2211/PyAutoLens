@@ -6,7 +6,7 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autolens.lens.plotters import plane_plotters
+from autolens.plotters import plane_plotters
 
 
 def plot_ray_tracing_subplot(
@@ -162,7 +162,7 @@ def plot_ray_tracing_subplot(
 
     source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-    plane_plotters.plot_plane_image(
+    plane_plotters.plane_image(
         plane=tracer.source_plane,
         grid=source_plane_grid,
         as_subplot=True,
@@ -328,7 +328,7 @@ def plot_ray_tracing_individual(
 
         source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-        plane_plotters.plot_plane_image(
+        plane_plotters.plane_image(
             plane=tracer.source_plane,
             grid=source_plane_grid,
             positions=None,
