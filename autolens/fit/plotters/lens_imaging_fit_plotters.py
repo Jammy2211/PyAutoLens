@@ -6,8 +6,7 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autolens.fit.plotters import lens_plotter_util
-from autolens.lens.plotters import plane_plotters
+from autolens.plotters import plane_plotters, fit_plotters
 from autoarray.plotters import inversion_plotters
 
 
@@ -47,7 +46,7 @@ def plot_fit_subplot(
         number_subplots=6
     )
 
-    mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=should_plot_mask)
+    mask = fit_plotters.get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
     if figsize is None:
         figsize = figsize_tool
@@ -57,11 +56,11 @@ def plot_fit_subplot(
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
-    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(
+    image_plane_pix_grid = fit_plotters.get_image_plane_pix_grid(
         should_plot_image_plane_pix, fit
     )
 
-    lens_plotter_util.plot_image(
+    fit_plotters.plot_image(
         fit=fit,
         grid=image_plane_pix_grid,
         mask=mask,
@@ -96,7 +95,7 @@ def plot_fit_subplot(
 
     plt.subplot(rows, columns, 2)
 
-    lens_plotter_util.plot_signal_to_noise_map(
+    fit_plotters.plot_signal_to_noise_map(
         fit=fit,
         mask=mask,
         as_subplot=True,
@@ -128,7 +127,7 @@ def plot_fit_subplot(
 
     plt.subplot(rows, columns, 3)
 
-    lens_plotter_util.plot_model_data(
+    fit_plotters.plot_model_data(
         fit=fit,
         mask=mask,
         as_subplot=True,
@@ -158,7 +157,7 @@ def plot_fit_subplot(
 
     plt.subplot(rows, columns, 4)
 
-    lens_plotter_util.plot_residual_map(
+    fit_plotters.plot_residual_map(
         fit=fit,
         mask=mask,
         as_subplot=True,
@@ -188,7 +187,7 @@ def plot_fit_subplot(
 
     plt.subplot(rows, columns, 5)
 
-    lens_plotter_util.plot_normalized_residual_map(
+    fit_plotters.plot_normalized_residual_map(
         fit=fit,
         mask=mask,
         as_subplot=True,
@@ -218,7 +217,7 @@ def plot_fit_subplot(
 
     plt.subplot(rows, columns, 6)
 
-    lens_plotter_util.plot_chi_squared_map(
+    fit_plotters.plot_chi_squared_map(
         fit=fit,
         mask=mask,
         as_subplot=True,
@@ -383,7 +382,7 @@ def plot_fit_subplot_for_plane(
         number_subplots=4
     )
 
-    mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=should_plot_mask)
+    mask = fit_plotters.get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
     if figsize is None:
         figsize = figsize_tool
@@ -392,13 +391,13 @@ def plot_fit_subplot_for_plane(
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
-    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(
+    image_plane_pix_grid = fit_plotters.get_image_plane_pix_grid(
         should_plot_image_plane_pix, fit
     )
 
     plt.subplot(rows, columns, 1)
 
-    lens_plotter_util.plot_image(
+    fit_plotters.plot_image(
         fit=fit,
         mask=mask,
         grid=image_plane_pix_grid,
@@ -433,7 +432,7 @@ def plot_fit_subplot_for_plane(
 
     plt.subplot(rows, columns, 2)
 
-    lens_plotter_util.plot_subtracted_image_of_plane(
+    fit_plotters.plot_subtracted_image_of_plane(
         fit=fit,
         plane_index=plane_index,
         mask=mask,
@@ -468,7 +467,7 @@ def plot_fit_subplot_for_plane(
 
     plt.subplot(rows, columns, 3)
 
-    lens_plotter_util.plot_model_image_of_plane(
+    fit_plotters.plot_model_image_of_plane(
         fit=fit,
         plane_index=plane_index,
         mask=mask,
@@ -505,7 +504,7 @@ def plot_fit_subplot_for_plane(
 
         traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
-        plane_plotters.plot_plane_image(
+        plane_plotters.plane_image(
             plane=fit.tracer.planes[plane_index],
             grid=traced_grids[plane_index],
             positions=None,
@@ -635,8 +634,8 @@ def plot_fit_individuals(
         in the python interpreter window.
     """
 
-    mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=should_plot_mask)
-    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(
+    mask = fit_plotters.get_mask(fit=fit, should_plot_mask=should_plot_mask)
+    image_plane_pix_grid = fit_plotters.get_image_plane_pix_grid(
         should_plot_image_plane_pix, fit
     )
 
@@ -646,7 +645,7 @@ def plot_fit_individuals(
 
     if should_plot_image:
 
-        lens_plotter_util.plot_image(
+        fit_plotters.plot_image(
             fit=fit,
             mask=mask,
             positions=positions,
@@ -658,7 +657,7 @@ def plot_fit_individuals(
 
     if should_plot_noise_map:
 
-        lens_plotter_util.plot_noise_map(
+        fit_plotters.plot_noise_map(
             fit=fit,
             mask=mask,
             units=units,
@@ -669,7 +668,7 @@ def plot_fit_individuals(
 
     if should_plot_signal_to_noise_map:
 
-        lens_plotter_util.plot_signal_to_noise_map(
+        fit_plotters.plot_signal_to_noise_map(
             fit=fit,
             mask=mask,
             units=units,
@@ -680,7 +679,7 @@ def plot_fit_individuals(
 
     if should_plot_model_image:
 
-        lens_plotter_util.plot_model_data(
+        fit_plotters.plot_model_data(
             fit=fit,
             mask=mask,
             units=units,
@@ -691,7 +690,7 @@ def plot_fit_individuals(
 
     if should_plot_residual_map:
 
-        lens_plotter_util.plot_residual_map(
+        fit_plotters.plot_residual_map(
             fit=fit,
             mask=mask,
             units=units,
@@ -702,7 +701,7 @@ def plot_fit_individuals(
 
     if should_plot_normalized_residual_map:
 
-        lens_plotter_util.plot_normalized_residual_map(
+        fit_plotters.plot_normalized_residual_map(
             fit=fit,
             mask=mask,
             units=units,
@@ -713,7 +712,7 @@ def plot_fit_individuals(
 
     if should_plot_chi_squared_map:
 
-        lens_plotter_util.plot_chi_squared_map(
+        fit_plotters.plot_chi_squared_map(
             fit=fit,
             mask=mask,
             units=units,
@@ -778,7 +777,7 @@ def plot_fit_individuals(
 
         for plane_index in range(fit.tracer.total_planes):
 
-            lens_plotter_util.plot_subtracted_image_of_plane(
+            fit_plotters.plot_subtracted_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
                 mask=mask,
@@ -792,7 +791,7 @@ def plot_fit_individuals(
 
         for plane_index in range(fit.tracer.total_planes):
 
-            lens_plotter_util.plot_model_image_of_plane(
+            fit_plotters.plot_model_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
                 mask=mask,
@@ -810,7 +809,7 @@ def plot_fit_individuals(
 
                 output_filename = "fit_plane_image_of_plane_" + str(plane_index)
 
-                plane_plotters.plot_plane_image(
+                plane_plotters.plane_image(
                     plane=fit.tracer.planes[plane_index],
                     grid=traced_grids[plane_index],
                     plot_grid=True,

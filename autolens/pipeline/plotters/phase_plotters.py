@@ -1,6 +1,6 @@
 import autofit as af
 from autoarray.plotters import imaging_plotters
-from autolens.lens.plotters import ray_tracing_plotters
+from autolens.plotters import ray_tracing_plotters
 from autolens.fit.plotters import lens_imaging_fit_plotters
 from autoarray.plotters import inversion_plotters
 from autolens.pipeline.plotters import hyper_plotters
