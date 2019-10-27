@@ -56,7 +56,7 @@ class TestPhase(object):
         phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
         file_phase_info = "{}/{}".format(
-            phase_imaging_7x7.optimizer.phase_output_path, "phase.info"
+            phase_imaging_7x7.optimizer.paths.phase_output_path, "phase.info"
         )
 
         phase_info = open(file_phase_info, "r")
@@ -115,10 +115,10 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
-            analysis.lens_data.image.in_2d
+            analysis.masked_imaging.image.in_2d
             == 20.0 * np.ones(shape=(5, 5))
         ).all()
-        assert (analysis.lens_data.image.in_1d == 20.0 * np.ones(shape=9)).all()
+        assert (analysis.masked_imaging.image.in_1d == 20.0 * np.ones(shape=9)).all()
 
     def test__lens_data_signal_to_noise_limit(
         self, imaging_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
@@ -135,11 +135,11 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
-            analysis.lens_data.image.in_2d
+            analysis.masked_imaging.image.in_2d
             == imaging_snr_limit.image
         ).all()
         assert (
-            analysis.lens_data.noise_map.in_2d
+            analysis.masked_imaging.noise_map.in_2d
             == imaging_snr_limit.noise_map
         ).all()
 
@@ -155,11 +155,11 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
-            analysis.lens_data.image.in_2d
+            analysis.masked_imaging.image.in_2d
             == imaging_snr_limit.image
         ).all()
         assert (
-            analysis.lens_data.noise_map.in_2d
+            analysis.masked_imaging.noise_map.in_2d
             == imaging_snr_limit.noise_map
         ).all()
 
@@ -180,16 +180,16 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
-            analysis.lens_data.image.in_2d
+            analysis.masked_imaging.image.in_2d
             == binned_up_imaging.image
         ).all()
-        assert (analysis.lens_data.psf == binned_up_imaging.psf).all()
+        assert (analysis.masked_imaging.psf == binned_up_imaging.psf).all()
         assert (
-            analysis.lens_data.noise_map.in_2d
+            analysis.masked_imaging.noise_map.in_2d
             == binned_up_imaging.noise_map
         ).all()
 
-        assert (analysis.lens_data.mask == binned_up_mask).all()
+        assert (analysis.masked_imaging.mask == binned_up_mask).all()
 
         lens_data = al.MaskedImaging(
             imaging=imaging_7x7, mask=mask_7x7_1_pix
@@ -200,20 +200,20 @@ class TestPhase(object):
         )
 
         assert (
-            analysis.lens_data.image.in_2d
+            analysis.masked_imaging.image.in_2d
             == binned_up_lens_data.image.in_2d
         ).all()
-        assert (analysis.lens_data.psf == binned_up_lens_data.psf).all()
+        assert (analysis.masked_imaging.psf == binned_up_lens_data.psf).all()
         assert (
-            analysis.lens_data.noise_map.in_2d
+            analysis.masked_imaging.noise_map.in_2d
             == binned_up_lens_data.noise_map.in_2d
         ).all()
 
-        assert (analysis.lens_data.mask == binned_up_lens_data.mask).all()
+        assert (analysis.masked_imaging.mask == binned_up_lens_data.mask).all()
 
-        assert (analysis.lens_data.image.in_1d == binned_up_lens_data.image.in_1d).all()
+        assert (analysis.masked_imaging.image.in_1d == binned_up_lens_data.image.in_1d).all()
         assert (
-            analysis.lens_data.noise_map.in_1d == binned_up_lens_data.noise_map.in_1d
+                analysis.masked_imaging.noise_map.in_1d == binned_up_lens_data.noise_map.in_1d
         ).all()
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(

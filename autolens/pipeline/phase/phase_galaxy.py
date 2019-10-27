@@ -254,7 +254,7 @@ class PhaseGalaxy(af.AbstractPhase):
             return AnalysisSingle(
                 galaxy_data=galaxy_data,
                 cosmology=self.cosmology,
-                image_path=self.optimizer.image_path,
+                image_path=self.optimizer.paths.image_path,
                 results=results,
             )
 
@@ -286,7 +286,7 @@ class PhaseGalaxy(af.AbstractPhase):
                 galaxy_data_y=galaxy_data_y,
                 galaxy_data_x=galaxy_data_x,
                 cosmology=self.cosmology,
-                image_path=self.optimizer.image_path,
+                image_path=self.optimizer.paths.image_path,
                 results=results,
             )
 

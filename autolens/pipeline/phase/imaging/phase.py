@@ -155,7 +155,7 @@ class PhaseImaging(data.PhaseData):
         analysis = self.Analysis(
             masked_imaging=masked_imaging,
             cosmology=self.cosmology,
-            image_path=self.optimizer.image_path,
+            image_path=self.optimizer.paths.image_path,
             results=results,
         )
 
@@ -163,7 +163,7 @@ class PhaseImaging(data.PhaseData):
 
     def output_phase_info(self):
 
-        file_phase_info = "{}/{}".format(self.optimizer.phase_output_path, "phase.info")
+        file_phase_info = "{}/{}".format(self.optimizer.paths.phase_output_path, "phase.info")
 
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.optimizer).__name__))

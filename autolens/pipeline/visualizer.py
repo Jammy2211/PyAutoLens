@@ -28,7 +28,6 @@ class AbstractVisualizer:
             "figures", "plot_units", str
         ).strip()
         self.should_plot_mask = figure_setting("plot_mask_on_images")
-        self.zoom_around_mask = figure_setting("zoom_around_mask_of_images")
         self.plot_ray_tracing_all_at_end_png = plot_setting(
             "plot_ray_tracing_all_at_end_png"
         )
@@ -69,8 +68,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
         if self.plot_galaxy_fit_as_subplot:
             galaxy_fit_plotters.subplot(
                 fit=fit,
-                should_plot_mask=self.should_plot_mask,
-                zoom_around_mask=self.zoom_around_mask,
+                should_plot_mask_overlay=self.should_plot_mask,
                 units=self.plot_units,
                 output_path=f"{self.image_path}/{path_suffix}",
                 output_format="png",
@@ -93,8 +91,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
             should_plot_chi_squared_map = self.plot_galaxy_fit_chi_squared_map
         galaxy_fit_plotters.individuals(
             fit=fit,
-            should_plot_mask=self.should_plot_mask,
-            zoom_around_mask=self.zoom_around_mask,
+            should_plot_mask_overlay=self.should_plot_mask,
             should_plot_image=should_plot_image,
             should_plot_noise_map=should_plot_noise_map,
             should_plot_model_image=should_plot_model_image,
@@ -178,10 +175,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         )
         self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
         self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
-        self.plot_binned_hyper_galaxy_images = plot_setting(
-            "plot_binned_hyper_galaxy_images"
-        )
-        self.extract_array_from_mask = figure_setting("extract_images_from_mask")
+
         self.should_plot_positions = figure_setting("plot_positions_on_images")
 
         self.plot_ray_tracing_as_subplot = plot_setting("plot_ray_tracing_as_subplot")
@@ -207,9 +201,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
             tracer=tracer,
             grid=self.masked_imaging.grid,
             during_analysis=during_analysis,
-            mask=mask,
-            extract_array_from_mask=self.extract_array_from_mask,
-            zoom_around_mask=self.zoom_around_mask,
+            mask_overlay=mask,
             positions=positions,
             units=self.plot_units,
             should_plot_as_subplot=self.plot_ray_tracing_as_subplot,
@@ -231,9 +223,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         phase_plotters.imaging_fit_of_phase(
             fit=fit,
             during_analysis=during_analysis,
-            should_plot_mask=self.should_plot_mask,
-            extract_array_from_mask=self.extract_array_from_mask,
-            zoom_around_mask=self.zoom_around_mask,
+            should_plot_mask_overlay=self.should_plot_mask,
             positions=positions,
             should_plot_image_plane_pix=self.should_plot_image_plane_pix,
             should_plot_all_at_end_png=self.plot_lens_fit_all_at_end_png,
@@ -270,10 +260,8 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
 
         phase_plotters.imaging_of_phase(
             imaging=self.masked_imaging.imaging,
-            mask=mask,
+            mask_overlay=mask,
             positions=positions,
-            extract_array_from_mask=self.extract_array_from_mask,
-            zoom_around_mask=self.zoom_around_mask,
             units=self.plot_units,
             should_plot_as_subplot=self.plot_data_as_subplot,
             should_plot_image=self.plot_data_image,
@@ -290,21 +278,12 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         mask = self.masked_imaging.mask
         if self.should_plot_mask and mask is not None and last_results is not None:
             phase_plotters.plot_hyper_images_for_phase(
-                hyper_model_image=mask.mapping.scaled_array_2d_from_array_1d(
-                    array_1d=last_results.hyper_model_image
-                ),
-                hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_2d_path_dict,
-                binned_hyper_galaxy_image_2d_path_dict=last_results.binned_hyper_galaxy_image_2d_path_dict(
-                    binned_grid=self.masked_imaging.grid.binned
-                ),
-                mask=self.masked_imaging.mask,
-                binned_grid=self.masked_imaging.grid.binned,
-                extract_array_from_mask=self.extract_array_from_mask,
-                zoom_around_mask=self.zoom_around_mask,
+                hyper_model_image=last_results.hyper_model_image,
+                hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
+                mask_overlay=self.masked_imaging.mask,
                 units=self.plot_units,
                 should_plot_hyper_model_image=self.plot_hyper_model_image,
                 should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
-                should_plot_binned_hyper_galaxy_images=self.plot_binned_hyper_galaxy_images,
                 visualize_path=self.image_path,
             )
 

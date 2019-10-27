@@ -213,7 +213,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.lens_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(source=al.Galaxy(redshift=0.5)),
@@ -230,7 +230,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.RayTracingException):
-            analysis.lens_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(source=al.Galaxy(redshift=0.5)),
@@ -253,7 +253,7 @@ class TestPhase(object):
             ]
         )
 
-        analysis.lens_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
         tracer = al.Tracer.from_galaxies(
             galaxies=[
@@ -266,7 +266,7 @@ class TestPhase(object):
         )
 
         with pytest.raises(exc.RayTracingException):
-            analysis.lens_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
         analysis = phase_imaging_7x7.make_analysis(
             data=imaging_7x7,
@@ -275,7 +275,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.lens_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
         analysis = phase_imaging_7x7.make_analysis(
             data=imaging_7x7,
@@ -285,7 +285,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.RayTracingException):
-            analysis.lens_data.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
 
     def test__make_analysis__inversion_resolution_error_raised_if_above_inversion_pixel_limit(
         self, phase_imaging_7x7, imaging_7x7, mask_function_7x7
@@ -309,7 +309,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.lens_data.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+        analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -330,7 +330,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
-            analysis.lens_data.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+            analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
             analysis.fit(instance=instance)
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -351,7 +351,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.lens_data.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+        analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -372,7 +372,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
-            analysis.lens_data.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+            analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
             analysis.fit(instance=instance)
 
     def test__make_analysis__pixel_scale_interpolation_grid_is_input__interp_grid_used_in_analysis(
@@ -578,7 +578,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
-        analysis.lens_data.grid[4] = np.array([[500.0, 0.0]])
+        analysis.masked_imaging.grid[4] = np.array([[500.0, 0.0]])
 
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -599,7 +599,7 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
-        analysis.lens_data.grid[4] = np.array([300.0, 0.0])
+        analysis.masked_imaging.grid[4] = np.array([300.0, 0.0])
 
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -653,7 +653,7 @@ class TestPhase(object):
             data=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.lens_data.preload_pixelization_grids_of_planes is None
+        assert analysis.masked_imaging.preload_pixelization_grids_of_planes is None
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase", mask_function=mask_function_7x7
@@ -665,7 +665,7 @@ class TestPhase(object):
             data=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.lens_data.preload_pixelization_grids_of_planes is None
+        assert analysis.masked_imaging.preload_pixelization_grids_of_planes is None
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase",
@@ -685,7 +685,7 @@ class TestPhase(object):
             data=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.lens_data.preload_pixelization_grids_of_planes is None
+        assert analysis.masked_imaging.preload_pixelization_grids_of_planes is None
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase",
@@ -705,7 +705,7 @@ class TestPhase(object):
             data=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.lens_data.preload_pixelization_grids_of_planes == 1
+        assert analysis.masked_imaging.preload_pixelization_grids_of_planes == 1
 
     #
     # def test__uses_pixelization_preload_grids_if_possible(
