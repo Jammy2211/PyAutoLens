@@ -1,6 +1,7 @@
 from autoarray.operators.inversion import pixelizations as pix, regularization as reg
 from autoastro.profiles import light_profiles as lp, mass_profiles as mp, light_and_mass_profiles as lmp
 from autoastro.galaxy.galaxy import Galaxy, HyperGalaxy
+from autoastro.galaxy.galaxy_model import GalaxyModel
 from autoastro import hyper_data
 from autolens.simulate.simulator import ImagingSimulator
 from autolens.lens import ray_tracing

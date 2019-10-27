@@ -1,9 +1,8 @@
 import autofit as af
 from autoarray.plotters import imaging_plotters
-from autolens.plotters import ray_tracing_plotters
-from autolens.fit.plotters import lens_imaging_fit_plotters
+from autolens.plotters import ray_tracing_plotters, hyper_plotters
+from autolens.plotters import imaging_fit_plotters
 from autoarray.plotters import inversion_plotters
-from autolens.pipeline.plotters import hyper_plotters
 
 
 def plot_imaging_for_phase(
@@ -146,7 +145,7 @@ def plot_ray_tracing_for_phase(
             )
 
 
-def plot_lens_imaging_fit_for_phase(
+def plot_masked_imaging_fit_for_phase(
     fit,
     during_analysis,
     extract_array_from_mask,
@@ -184,7 +183,7 @@ def plot_lens_imaging_fit_for_phase(
 
     if should_plot_fit_as_subplot:
 
-        lens_imaging_fit_plotters.plot_fit_subplot(
+        imaging_fit_plotters.plot_fit_subplot(
             fit=fit,
             should_plot_mask=should_plot_mask,
             positions=positions,
@@ -196,7 +195,7 @@ def plot_lens_imaging_fit_for_phase(
 
     if should_plot_fit_of_planes_as_subplot:
 
-        lens_imaging_fit_plotters.plot_fit_subplot_of_planes(
+        imaging_fit_plotters.plot_fit_subplot_of_planes(
             fit=fit,
             should_plot_mask=should_plot_mask,
             positions=positions,
@@ -216,7 +215,7 @@ def plot_lens_imaging_fit_for_phase(
             output_format="png",
         )
 
-    lens_imaging_fit_plotters.plot_fit_individuals(
+    imaging_fit_plotters.plot_fit_individuals(
         fit=fit,
         should_plot_mask=should_plot_mask,
         positions=positions,
@@ -244,7 +243,7 @@ def plot_lens_imaging_fit_for_phase(
 
         if should_plot_all_at_end_png:
 
-            lens_imaging_fit_plotters.plot_fit_individuals(
+            imaging_fit_plotters.plot_fit_individuals(
                 fit=fit,
                 should_plot_mask=should_plot_mask,
                 positions=positions,
@@ -274,7 +273,7 @@ def plot_lens_imaging_fit_for_phase(
                 path=output_path, folder_names=["fits"]
             )
 
-            lens_imaging_fit_plotters.plot_fit_individuals(
+            imaging_fit_plotters.plot_fit_individuals(
                 fit=fit,
                 should_plot_mask=should_plot_mask,
                 positions=positions,

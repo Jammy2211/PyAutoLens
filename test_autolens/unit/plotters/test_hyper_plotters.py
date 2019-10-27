@@ -62,10 +62,10 @@ def test__plot_hyper_noise_map(hyper_noise_map_7x7, hyper_plotter_path, plot_pat
 
 
 def test__plot_chi_squared_map(
-    lens_imaging_fit_x1_plane_7x7, hyper_plotter_path, plot_patch
+    masked_imaging_fit_x1_plane_7x7, hyper_plotter_path, plot_patch
 ):
     al.hyper_plotters.plot_chi_squared_map(
-        chi_squared_map=lens_imaging_fit_x1_plane_7x7.chi_squared_map(
+        chi_squared_map=masked_imaging_fit_x1_plane_7x7.chi_squared_map(
             return_in_2d=True
         ),
         cb_tick_values=[1.0],
@@ -78,10 +78,10 @@ def test__plot_chi_squared_map(
 
 
 def test__plot_hyper_chi_squared_map(
-    lens_imaging_fit_x1_plane_7x7, hyper_plotter_path, plot_patch
+    masked_imaging_fit_x1_plane_7x7, hyper_plotter_path, plot_patch
 ):
     al.hyper_plotters.plot_hyper_chi_squared_map(
-        hyper_chi_squared_map=lens_imaging_fit_x1_plane_7x7.chi_squared_map(
+        hyper_chi_squared_map=masked_imaging_fit_x1_plane_7x7.chi_squared_map(
             return_in_2d=True
         ),
         cb_tick_values=[1.0],
@@ -98,7 +98,7 @@ def test__plot_hyper_galaxy(
     contribution_map_7x7,
     noise_map_7x7,
     hyper_noise_map_7x7,
-    lens_imaging_fit_x1_plane_7x7,
+    masked_imaging_fit_x1_plane_7x7,
     hyper_plotter_path,
     plot_patch,
 ):
@@ -107,10 +107,10 @@ def test__plot_hyper_galaxy(
         contribution_map=contribution_map_7x7,
         noise_map=noise_map_7x7,
         hyper_noise_map=hyper_noise_map_7x7,
-        chi_squared_map=lens_imaging_fit_x1_plane_7x7.chi_squared_map(
+        chi_squared_map=masked_imaging_fit_x1_plane_7x7.chi_squared_map(
             return_in_2d=True
         ),
-        hyper_chi_squared_map=lens_imaging_fit_x1_plane_7x7.chi_squared_map(
+        hyper_chi_squared_map=masked_imaging_fit_x1_plane_7x7.chi_squared_map(
             return_in_2d=True
         ),
         cb_tick_values=[1.0],

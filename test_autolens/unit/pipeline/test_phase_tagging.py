@@ -27,7 +27,7 @@ class TestPhaseTag:
         )
 
         assert (
-            phase_tag == "phase_tag__sub_1__bin_3__psf_2x2__interp_0.200__cluster_0.300"
+            phase_tag == "phase_tag__sub_1__bin_3__psf_2x2__interp_0.200"
         )
 
 

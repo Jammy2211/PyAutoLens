@@ -58,7 +58,7 @@ class Analysis(af.Analysis):
                 hyper_galaxy_image=hyper_galaxy_image_2d,
             )
 
-            fit_normal = lens_imaging_fit.ImagingFit(
+            fit_normal = masked_imaging_fit.ImagingFit(
                 image=self.lens_data.image.in_1d,
                 noise_map=self.lens_data.noise_map.in_1d,
                 mask=self.lens_data._mask_1d,
@@ -122,7 +122,7 @@ class Analysis(af.Analysis):
             self, hyper_galaxy, hyper_image_sky, hyper_background_noise
     ):
 
-        image_1d = lens_imaging_fit.image_1d_from_lens_data_and_hyper_image_sky(
+        image_1d = masked_imaging_fit.image_1d_from_lens_data_and_hyper_image_sky(
             lens_data=self.lens_data, hyper_image_sky=hyper_image_sky
         )
 
@@ -141,7 +141,7 @@ class Analysis(af.Analysis):
 
         noise_map_1d = noise_map_1d + hyper_noise_map_1d
 
-        return lens_imaging_fit.ImagingFit(
+        return masked_imaging_fit.ImagingFit(
             image=image_1d,
             noise_map=noise_map_1d,
             mask=self.lens_data._mask_1d,

@@ -76,17 +76,17 @@ def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp):
 # Lens Fit #
 
 
-@pytest.fixture(name="lens_imaging_fit_x1_plane_7x7")
-def make_lens_imaging_fit_x1_plane_7x7(masked_imaging_7x7, tracer_x1_plane_7x7):
-    return al.ImagingFit.from_masked_data_and_tracer(
-        lens_data=masked_imaging_7x7, tracer=tracer_x1_plane_7x7
+@pytest.fixture(name="masked_imaging_fit_x1_plane_7x7")
+def make_masked_imaging_fit_x1_plane_7x7(masked_imaging_7x7, tracer_x1_plane_7x7):
+    return al.ImagingFit(
+        masked_imaging=masked_imaging_7x7, tracer=tracer_x1_plane_7x7
     )
 
 
-@pytest.fixture(name="lens_imaging_fit_x2_plane_7x7")
-def make_lens_imaging_fit_x2_plane_7x7(masked_imaging_7x7, tracer_x2_plane_7x7):
-    return al.ImagingFit.from_masked_data_and_tracer(
-        lens_data=masked_imaging_7x7, tracer=tracer_x2_plane_7x7
+@pytest.fixture(name="masked_imaging_fit_x2_plane_7x7")
+def make_masked_imaging_fit_x2_plane_7x7(masked_imaging_7x7, tracer_x2_plane_7x7):
+    return al.ImagingFit(
+        masked_imaging=masked_imaging_7x7, tracer=tracer_x2_plane_7x7
     )
 
 

@@ -42,11 +42,11 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
         assert (
-            analysis.lens_data.image(return_in_2d=True, return_masked=False)
+            analysis.lens_data.image.in_2d
             == imaging_7x7.image
         )
         assert (
-            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
+            analysis.lens_data.noise_map.in_2d
             == imaging_7x7.noise_map
         )
 
@@ -115,7 +115,7 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
-            analysis.lens_data.image(return_in_2d=True, return_masked=False)
+            analysis.lens_data.image.in_2d
             == 20.0 * np.ones(shape=(5, 5))
         ).all()
         assert (analysis.lens_data.image.in_1d == 20.0 * np.ones(shape=9)).all()
@@ -135,11 +135,11 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
-            analysis.lens_data.image(return_in_2d=True, return_masked=False)
+            analysis.lens_data.image.in_2d
             == imaging_snr_limit.image
         ).all()
         assert (
-            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
+            analysis.lens_data.noise_map.in_2d
             == imaging_snr_limit.noise_map
         ).all()
 
@@ -155,11 +155,11 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
-            analysis.lens_data.image(return_in_2d=True, return_masked=False)
+            analysis.lens_data.image.in_2d
             == imaging_snr_limit.image
         ).all()
         assert (
-            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
+            analysis.lens_data.noise_map.in_2d
             == imaging_snr_limit.noise_map
         ).all()
 
@@ -180,12 +180,12 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         assert (
-            analysis.lens_data.image(return_in_2d=True, return_masked=False)
+            analysis.lens_data.image.in_2d
             == binned_up_imaging.image
         ).all()
         assert (analysis.lens_data.psf == binned_up_imaging.psf).all()
         assert (
-            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
+            analysis.lens_data.noise_map.in_2d
             == binned_up_imaging.noise_map
         ).all()
 
@@ -195,7 +195,7 @@ class TestPhase(object):
             imaging=imaging_7x7, mask=mask_7x7_1_pix
         )
 
-        binned_up_lens_data = lens_data.new_lens_imaging_with_binned_up_imaging_and_mask(
+        binned_up_lens_data = lens_data.new_masked_imaging_with_binned_up_imaging_and_mask(
             bin_up_factor=2
         )
 
@@ -241,7 +241,7 @@ class TestPhase(object):
         mask = phase_imaging_7x7.mask_function(image=imaging_7x7.image, sub_size=2)
         lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.ImagingFit.from_masked_data_and_tracer(
+        fit = al.ImagingFit(
             lens_data=lens_data, tracer=tracer
         )
 
@@ -316,7 +316,7 @@ class TestPhase(object):
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
         lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.ImagingFit.from_masked_data_and_tracer(
+        fit = al.ImagingFit(
             lens_data=lens_data, tracer=tracer
         )
 
@@ -348,7 +348,7 @@ class TestPhase(object):
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
         lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.ImagingFit.from_masked_data_and_tracer(
+        fit = al.ImagingFit(
             lens_data=lens_data,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
