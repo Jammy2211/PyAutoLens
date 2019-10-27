@@ -149,18 +149,18 @@ def make_phase_imaging_7x7(mask_function_7x7):
 
 
 @pytest.fixture(name="hyper_model_image_7x7")
-def make_hyper_model_image_7x7(grid_7x7):
-    return grid_7x7.mapping.scaled_array_2d_from_array_1d(array_1d=np.ones(9))
+def make_hyper_model_image_7x7(masked_imaging_fit_x2_plane_7x7):
+    return masked_imaging_fit_x2_plane_7x7.model_image
 
 
 @pytest.fixture(name="hyper_galaxy_image_0_7x7")
-def make_hyper_galaxy_image_0_7x7(grid_7x7):
-    return grid_7x7.mapping.scaled_array_2d_from_array_1d(array_1d=2.0 * np.ones(9))
+def make_hyper_galaxy_image_0_7x7(masked_imaging_fit_x2_plane_7x7):
+    return masked_imaging_fit_x2_plane_7x7.model_images_of_planes[0]
 
 
 @pytest.fixture(name="hyper_galaxy_image_1_7x7")
-def make_hyper_galaxy_image_1_7x7(grid_7x7):
-    return grid_7x7.mapping.scaled_array_2d_from_array_1d(array_1d=3.0 * np.ones(9))
+def make_hyper_galaxy_image_1_7x7(masked_imaging_fit_x2_plane_7x7):
+    return masked_imaging_fit_x2_plane_7x7.model_images_of_planes[1]
 
 
 @pytest.fixture(name="contribution_map_7x7")
@@ -174,11 +174,11 @@ def make_contribution_map_7x7(
 
 
 @pytest.fixture(name="hyper_noise_map_7x7")
-def make_hyper_noise_map_7x7(noise_map_7x7, contribution_map_7x7, hyper_galaxy):
+def make_hyper_noise_map_7x7(masked_imaging_fit_x2_plane_7x7, contribution_map_7x7, hyper_galaxy):
     hyper_noise = hyper_galaxy.hyper_noise_map_from_contribution_map(
-        noise_map=noise_map_7x7, contribution_map=contribution_map_7x7
+        noise_map=masked_imaging_fit_x2_plane_7x7.noise_map, contribution_map=contribution_map_7x7
     )
-    return noise_map_7x7 + hyper_noise
+    return masked_imaging_fit_x2_plane_7x7.noise_map + hyper_noise
 
 
 @pytest.fixture(name="results_7x7")

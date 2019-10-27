@@ -318,7 +318,7 @@ def plot_hyper_images_for_phase(
 
     if should_plot_hyper_model_image:
 
-        hyper_plotters.plot_hyper_model_image(
+        hyper_plotters.hyper_model_image(
             hyper_model_image=hyper_model_image_2d,
             mask=mask,
             units=units,
@@ -328,7 +328,7 @@ def plot_hyper_images_for_phase(
 
     if should_plot_hyper_galaxy_images:
 
-        hyper_plotters.plot_hyper_galaxy_images_subplot(
+        hyper_plotters.subplot_of_hyper_galaxy_images(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_2d_path_dict,
             mask=mask,
             units=units,

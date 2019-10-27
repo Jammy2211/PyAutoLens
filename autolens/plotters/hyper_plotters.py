@@ -7,16 +7,17 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
+from autoarray.plotters import plotter_util
 
 
-def plot_hyper_galaxy_subplot(
-    hyper_galaxy_image,
-    contribution_map,
-    noise_map,
-    hyper_noise_map,
-    chi_squared_map,
-    hyper_chi_squared_map,
-    mask=None,
+def subplot_of_hyper_galaxy(
+    hyper_galaxy_image_sub,
+    contribution_map_sub,
+    noise_map_sub,
+    hyper_noise_map_sub,
+    chi_squared_map_sub,
+    hyper_chi_squared_map_sub,
+    mask_overlay=None,
     units="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
@@ -43,7 +44,7 @@ def plot_hyper_galaxy_subplot(
     output_filename="hyper_galaxies",
 ):
 
-    rows, columns, figsize_tool = aa.plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=6
     )
 
@@ -54,9 +55,9 @@ def plot_hyper_galaxy_subplot(
 
     plt.subplot(rows, columns, 1)
 
-    plot_hyper_galaxy_image(
-        hyper_galaxy_image=hyper_galaxy_image,
-        mask=mask,
+    hyper_galaxy_image(
+        hyper_galaxy_image=hyper_galaxy_image_sub,
+        mask_overlay=mask_overlay,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -86,9 +87,9 @@ def plot_hyper_galaxy_subplot(
 
     plt.subplot(rows, columns, 2)
 
-    aa.data_plotters.plot_noise_map(
-        noise_map=noise_map,
-        mask=mask,
+    aa.plot.array(
+        array=noise_map_sub,
+        mask_overlay=mask_overlay,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -117,9 +118,9 @@ def plot_hyper_galaxy_subplot(
 
     plt.subplot(rows, columns, 3)
 
-    plot_hyper_noise_map(
-        hyper_noise_map=hyper_noise_map,
-        mask=mask,
+    hyper_noise_map(
+        hyper_noise_map=hyper_noise_map_sub,
+        mask_overlay=mask_overlay,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -149,9 +150,9 @@ def plot_hyper_galaxy_subplot(
 
     plt.subplot(rows, columns, 4)
 
-    plot_contribution_map(
-        contribution_map=contribution_map,
-        mask=mask,
+    contribution_map(
+        contribution_map=contribution_map_sub,
+        mask_overlay=mask_overlay,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -181,9 +182,9 @@ def plot_hyper_galaxy_subplot(
 
     plt.subplot(rows, columns, 5)
 
-    plot_chi_squared_map(
-        chi_squared_map=chi_squared_map,
-        mask=mask,
+    chi_squared_map(
+        chi_squared_map=chi_squared_map_sub,
+        mask_overlay=mask_overlay,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -212,9 +213,9 @@ def plot_hyper_galaxy_subplot(
 
     plt.subplot(rows, columns, 6)
 
-    plot_hyper_chi_squared_map(
-        hyper_chi_squared_map=hyper_chi_squared_map,
-        mask=mask,
+    hyper_chi_squared_map(
+        hyper_chi_squared_map=hyper_chi_squared_map_sub,
+        mask_overlay=mask_overlay,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -241,7 +242,7 @@ def plot_hyper_galaxy_subplot(
         output_filename=output_filename,
     )
 
-    aa.plotter_util.output_subplot_array(
+    plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -250,71 +251,10 @@ def plot_hyper_galaxy_subplot(
     plt.close()
 
 
-def plot_binned_hyper_galaxy_images_subplot(
-    hyper_galaxy_cluster_image_path_dict,
-    mask,
-    should_plot_mask=True,
-    units="arcsec",
-    kpc_per_arcsec=None,
-    figsize=None,
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=10,
-    xlabelsize=10,
-    ylabelsize=10,
-    xyticksize=10,
-    mask_overlay_pointsize=10,
-    position_pointsize=10,
-    output_path=None,
-    output_filename="hyper_galaxy_cluster_images",
-    output_format="show",
-):
-
-    plot_hyper_galaxy_images_subplot(
-        hyper_galaxy_image_path_dict=hyper_galaxy_cluster_image_path_dict,
-        mask=mask,
-        should_plot_mask=should_plot_mask,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
-        position_pointsize=position_pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
-    )
-
-
-def plot_hyper_galaxy_images_subplot(
+def subplot_of_hyper_galaxy_images(
     hyper_galaxy_image_path_dict,
-    mask,
-    should_plot_mask=True,
+    mask_overlay,
+    should_plot_mask_overlay=True,
     units="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
@@ -341,12 +281,12 @@ def plot_hyper_galaxy_images_subplot(
     output_format="show",
 ):
 
-    rows, columns, figsize_tool = aa.plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=len(hyper_galaxy_image_path_dict)
     )
 
-    if not should_plot_mask:
-        mask = False
+    if not should_plot_mask_overlay:
+        mask_overlay = False
 
     if figsize is None:
         figsize = figsize_tool
@@ -355,15 +295,15 @@ def plot_hyper_galaxy_images_subplot(
 
     hyper_index = 0
 
-    for path, hyper_galaxy_image in hyper_galaxy_image_path_dict.items():
+    for path, hyper_galaxy_image_sub in hyper_galaxy_image_path_dict.items():
 
         hyper_index += 1
 
         plt.subplot(rows, columns, hyper_index)
 
-        plot_hyper_galaxy_image(
-            hyper_galaxy_image=hyper_galaxy_image,
-            mask=mask,
+        hyper_galaxy_image(
+            hyper_galaxy_image=hyper_galaxy_image_sub,
+            mask_overlay=mask_overlay,
             as_subplot=True,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
@@ -392,7 +332,7 @@ def plot_hyper_galaxy_images_subplot(
             output_filename=output_filename,
         )
 
-    aa.plotter_util.output_subplot_array(
+    plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -401,9 +341,9 @@ def plot_hyper_galaxy_images_subplot(
     plt.close()
 
 
-def plot_hyper_model_image(
+def hyper_model_image(
     hyper_model_image,
-    mask=None,
+    mask_overlay=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -446,9 +386,9 @@ def plot_hyper_model_image(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    aa.plot_array(
+    aa.plot.array(
         array=hyper_model_image,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -481,9 +421,9 @@ def plot_hyper_model_image(
     )
 
 
-def plot_hyper_galaxy_image(
+def hyper_galaxy_image(
     hyper_galaxy_image,
-    mask=None,
+    mask_overlay=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -526,9 +466,9 @@ def plot_hyper_galaxy_image(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    aa.plot_array(
+    aa.plot.array(
         array=hyper_galaxy_image,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -561,9 +501,9 @@ def plot_hyper_galaxy_image(
     )
 
 
-def plot_contribution_map(
+def contribution_map(
     contribution_map,
-    mask=None,
+    mask_overlay=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -606,9 +546,9 @@ def plot_contribution_map(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    aa.plot_array(
+    aa.plot.array(
         array=contribution_map,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -641,9 +581,9 @@ def plot_contribution_map(
     )
 
 
-def plot_hyper_noise_map(
+def hyper_noise_map(
     hyper_noise_map,
-    mask=None,
+    mask_overlay=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -686,9 +626,9 @@ def plot_hyper_noise_map(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    aa.plot_array(
+    aa.plot.array(
         array=hyper_noise_map,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -721,9 +661,9 @@ def plot_hyper_noise_map(
     )
 
 
-def plot_chi_squared_map(
+def chi_squared_map(
     chi_squared_map,
-    mask=None,
+    mask_overlay=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -766,9 +706,9 @@ def plot_chi_squared_map(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    aa.plot_array(
+    aa.plot.array(
         array=chi_squared_map,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -801,9 +741,9 @@ def plot_chi_squared_map(
     )
 
 
-def plot_hyper_chi_squared_map(
+def hyper_chi_squared_map(
     hyper_chi_squared_map,
-    mask=None,
+    mask_overlay=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -846,9 +786,9 @@ def plot_hyper_chi_squared_map(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    aa.plot_array(
+    aa.plot.array(
         array=hyper_chi_squared_map,
-        mask_overlay=mask,
+        mask_overlay=mask_overlay,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
