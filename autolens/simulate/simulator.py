@@ -309,12 +309,12 @@ class ImagingSimulator(object):
             A seed for random noise_maps generation
         """
 
-        image_2d = tracer.padded_profile_image_2d_from_grid_and_psf_shape(
+        image = tracer.padded_profile_image_from_grid_and_psf_shape(
             grid=grid, psf_shape=self.psf.shape_2d
         )
 
         return self.simulate_from_image(
-            image=image_2d,
+            image=image.in_1d_binned,
             add_noise=add_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,

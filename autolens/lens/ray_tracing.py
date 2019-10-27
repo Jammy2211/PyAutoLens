@@ -279,11 +279,11 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return profile_images_of_planes
 
-    def padded_profile_image_2d_from_grid_and_psf_shape(self, grid, psf_shape):
+    def padded_profile_image_from_grid_and_psf_shape(self, grid, psf_shape):
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf_shape)
 
-        return self.profile_image_from_grid(grid=padded_grid).in_1d_binned
+        return self.profile_image_from_grid(grid=padded_grid)
 
     def convergence_from_grid(self, grid):
         convergence = sum(

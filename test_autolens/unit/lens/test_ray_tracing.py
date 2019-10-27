@@ -1434,7 +1434,7 @@ class TestAbstractTracerLensing(object):
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            padded_tracer_profile_image = tracer.padded_profile_image_2d_from_grid_and_psf_shape(
+            padded_tracer_profile_image = tracer.padded_profile_image_from_grid_and_psf_shape(
                 grid=sub_grid_7x7, psf_shape=(3, 3)
             )
 
@@ -1473,7 +1473,7 @@ class TestAbstractTracerLensing(object):
                 galaxies=[g0, g1, g2], cosmology=cosmo.Planck15
             )
 
-            padded_tracer_profile_image = tracer.padded_profile_image_2d_from_grid_and_psf_shape(
+            padded_tracer_profile_image = tracer.padded_profile_image_from_grid_and_psf_shape(
                 grid=sub_grid_7x7, psf_shape=(3, 3)
             )
 

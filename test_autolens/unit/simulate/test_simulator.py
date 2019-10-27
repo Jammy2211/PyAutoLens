@@ -116,7 +116,7 @@ class TestImaging:
         )
 
         imaging_manual = aa.imaging.simulate(
-            image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
+            image=tracer.padded_profile_image_from_grid_and_psf_shape(
                 grid=grid, psf_shape=(3, 3)
             ),
             exposure_time=10000.0,
@@ -179,7 +179,7 @@ class TestImaging:
         )
 
         imaging_manual = aa.imaging.simulate(
-            image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
+            image=tracer.padded_profile_image_from_grid_and_psf_shape(
                 grid=grid, psf_shape=(1, 1)
             ),
             exposure_time=10000.0,
@@ -249,7 +249,7 @@ class TestImaging:
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         imaging_manual = aa.imaging.simulate(
-            image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
+            image=tracer.padded_profile_image_from_grid_and_psf_shape(
                 grid=grid, psf_shape=(7, 7)
             ),
             exposure_time=100.0,

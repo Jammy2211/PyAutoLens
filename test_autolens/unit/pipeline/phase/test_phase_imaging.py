@@ -240,7 +240,7 @@ class TestPhase(object):
 
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.mask_function(image=imaging_7x7.image, sub_size=2)
+        mask = mask_function_7x7(image=imaging_7x7.image, sub_size=2)
         masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.ImagingFit(
