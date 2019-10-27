@@ -90,7 +90,7 @@ class Result(data.Result):
     @property
     def hyper_model_image(self):
 
-        hyper_model_image = np.zeros(self.mask.pixels_in_mask)
+        hyper_model_image = aa.masked_array.zeros(mask=self.mask)
 
         for path, galaxy in self.path_galaxy_tuples:
             hyper_model_image += self.hyper_galaxy_image_path_dict[path]

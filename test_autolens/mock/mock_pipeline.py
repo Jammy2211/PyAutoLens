@@ -1,5 +1,6 @@
 import numpy as np
 
+import autoarray as aa
 import autofit as af
 import autolens as al
 
@@ -82,9 +83,11 @@ class MockResults(object):
             galaxy_image = self.image_galaxy_dict[path]
 
             minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image)
+
             galaxy_image[
                 galaxy_image < minimum_galaxy_value
             ] = minimum_galaxy_value
+
             hyper_galaxy_image_path_dict[path] = galaxy_image
 
         return hyper_galaxy_image_path_dict
@@ -92,7 +95,7 @@ class MockResults(object):
     @property
     def hyper_model_image(self):
 
-        hyper_model_image = np.zeros(self.mask_2d.pixels_in_mask)
+        hyper_model_image = aa.masked_array.zeros(mask=self.mask_2d)
 
         for path, galaxy in self.path_galaxy_tuples:
             hyper_model_image += self.hyper_galaxy_image_path_dict[path]
