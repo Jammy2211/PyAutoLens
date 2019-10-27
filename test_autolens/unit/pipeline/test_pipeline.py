@@ -33,13 +33,10 @@ class DummyPhaseImaging(af.AbstractPhase):
         pass
 
     def __init__(self, phase_name, phase_tag="", phase_path=None):
-        super().__init__(phase_name, phase_tag=phase_tag)
+        super().__init__(paths=af.Paths(phase_name=phase_name, phase_tag=phase_tag, phase_path=phase_path))
         self.data = None
         self.positions = None
         self.results = None
-        self.phase_name = phase_name
-        self.phase_tag = phase_tag
-        self.phase_path = phase_path or phase_name
         self.mask = None
 
         self.optimizer = Optimizer(phase_name)
@@ -169,13 +166,10 @@ class DummyPhasePositions(af.AbstractPhase):
         pass
 
     def __init__(self, phase_name):
-        super().__init__(phase_name)
+        super().__init__(paths=af.Paths(phase_name=phase_name, phase_tag="", phase_path=phase_name))
         self.positions = None
         self.results = None
         self.pixel_scales = None
-        self.phase_name = phase_name
-        self.phase_tag = ""
-        self.phase_path = phase_name
         self.optimizer = Optimizer(phase_name)
 
     def run(self, positions, pixel_scales, results):

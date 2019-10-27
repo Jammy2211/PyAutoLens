@@ -226,11 +226,9 @@ class TestMaskedInterferometer(object):
         self
     ):
         interferometer = aa.interferometer.manual(
-            real_space_shape_2d=(2, 2),
-            visibilities=np.ones((19, 2)),
-            real_space_pixel_scales=3.0,
+            visibilities=aa.visibilities.ones(shape_1d=(19,)),
             primary_beam=aa.kernel.ones(shape_2d=(7, 7), pixel_scales=1.0),
-            noise_map=2.0 * np.ones((19,)),
+            noise_map=aa.visibilities.full(fill_value=2.0, shape_1d=(19,)),
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
         mask = aa.mask.unmasked(
@@ -246,8 +244,8 @@ class TestMaskedInterferometer(object):
             positions_threshold=1.0,
         )
 
-        assert (masked_interferometer.visibilities == np.ones((19, 2))).all()
-        assert (masked_interferometer.noise_map == 2.0 * np.ones((19,2))).all()
+        assert (masked_interferometer.visibilities.in_1d == np.ones((19, 2))).all()
+        assert (masked_interferometer.noise_map.in_1d == 2.0 * np.ones((19,2))).all()
         assert (
             masked_interferometer.interferometer.uv_wavelengths == 3.0 * np.ones((19, 2))
         ).all()

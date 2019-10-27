@@ -113,7 +113,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     imaging_simulator = simulator.ImagingSimulator(shape_2d=(11,11), pixel_scales=0.2, exposure_time=300.0, psf=psf, background_sky_level=0.0)
 
     imaging_simulated = imaging_simulator.simulate_from_image(
-        image=tracer.padded_profile_image_2d_from_grid_and_psf_shape(
+        image=tracer.padded_profile_image_from_grid_and_psf_shape(
             grid=grid, psf_shape=psf.shape_2d
         ),
         add_noise=False,
