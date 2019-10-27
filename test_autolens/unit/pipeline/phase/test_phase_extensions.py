@@ -190,13 +190,13 @@ class TestVariableFixing(object):
 
 class TestImagePassing(object):
     def test__image_dict(self, result):
-        image_dict = result.image_galaxy_2d_dict
+        image_dict = result.image_galaxy_dict
         assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
         result.constant.galaxies.lens = al.Galaxy(redshift=0.5)
 
-        image_dict = result.image_galaxy_2d_dict
+        image_dict = result.image_galaxy_dict
         assert (image_dict[("galaxies", "lens")] == np.zeros((7, 7))).all()
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
@@ -351,11 +351,11 @@ class TestImagePassing(object):
         ).all()
         assert (
             len(analysis.binned_hyper_galaxy_image_path_dict[("g0",)])
-            == analysis.lens_data.grid.binned.shape[0]
+            == analysis.masked_imaging.grid.binned.shape[0]
         )
         assert (
             len(analysis.binned_hyper_galaxy_image_path_dict[("g1",)])
-            == analysis.lens_data.grid.binned.shape[0]
+            == analysis.masked_imaging.grid.binned.shape[0]
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -387,11 +387,11 @@ class TestImagePassing(object):
         ).all()
         assert (
             len(analysis.binned_hyper_galaxy_image_path_dict[("g0",)])
-            == analysis.lens_data.grid.binned.shape[0]
+            == analysis.masked_imaging.grid.binned.shape[0]
         )
         assert (
             len(analysis.binned_hyper_galaxy_image_path_dict[("g1",)])
-            == analysis.lens_data.grid.binned.shape[0]
+            == analysis.masked_imaging.grid.binned.shape[0]
         )
 
         results_collection_7x7[0].galaxy_images = [
@@ -430,11 +430,11 @@ class TestImagePassing(object):
         ).all()
         assert (
             len(analysis.binned_hyper_galaxy_image_path_dict[("g0",)])
-            == analysis.lens_data.grid.binned.shape[0]
+            == analysis.masked_imaging.grid.binned.shape[0]
         )
         assert (
             len(analysis.binned_hyper_galaxy_image_path_dict[("g1",)])
-            == analysis.lens_data.grid.binned.shape[0]
+            == analysis.masked_imaging.grid.binned.shape[0]
         )
 
     def test__associate_images_(self, instance, result, masked_imaging_7x7):
@@ -450,10 +450,10 @@ class TestImagePassing(object):
         instance = analysis.associate_images(instance=instance)
 
         hyper_lens_image_1d = masked_imaging_7x7.mapping.array_from_array_2d(
-            array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
+            array_2d=result.image_galaxy_dict[("galaxies", "lens")]
         )
         hyper_source_image_1d = masked_imaging_7x7.mapping.array_from_array_2d(
-            array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
+            array_2d=result.image_galaxy_dict[("galaxies", "source")]
         )
 
         hyper_model_image = hyper_lens_image_1d + hyper_source_image_1d
@@ -493,10 +493,10 @@ class TestImagePassing(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         hyper_lens_image_1d = masked_imaging_7x7.mapping.array_from_array_2d(
-            array_2d=result.image_galaxy_2d_dict[("galaxies", "lens")]
+            array_2d=result.image_galaxy_dict[("galaxies", "lens")]
         )
         hyper_source_image_1d = masked_imaging_7x7.mapping.array_from_array_2d(
-            array_2d=result.image_galaxy_2d_dict[("galaxies", "source")]
+            array_2d=result.image_galaxy_dict[("galaxies", "source")]
         )
 
         hyper_model_image = hyper_lens_image_1d + hyper_source_image_1d

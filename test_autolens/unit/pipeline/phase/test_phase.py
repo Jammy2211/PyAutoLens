@@ -20,7 +20,7 @@ directory = path.dirname(path.realpath(__file__))
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
     af.conf.instance = af.conf.Config(
-        "{}/../test_files/config/phase_imaging_7x7".format(directory)
+        "{}/../test_files/config/phase_data_7x7".format(directory)
     )
 
 
@@ -37,11 +37,11 @@ def clean_images():
 class TestPhase(object):
     def test__set_constants(self, phase_data_7x7):
         phase_data_7x7.galaxies = [al.Galaxy(redshift=0.5)]
-        assert phase_data_7x7.optimizer.variable.galaxies == [al.Galaxy(redshift=0.5)]
+        assert phase_data_7x7.variable.galaxies == [al.Galaxy(redshift=0.5)]
 
     def test__set_variables(self, phase_data_7x7):
         phase_data_7x7.galaxies = [al.GalaxyModel(redshift=0.5)]
-        assert phase_data_7x7.optimizer.variable.galaxies == [
+        assert phase_data_7x7.variable.galaxies == [
             al.GalaxyModel(redshift=0.5)
         ]
 
@@ -58,18 +58,18 @@ class TestPhase(object):
         setattr(results_7x7.constant, "galaxies", [galaxy])
         setattr(results_7x7.variable, "galaxies", [galaxy_model])
 
-        phase_imaging_7x7 = MyPlanePhaseAnd(
+        phase_data_7x7 = MyPlanePhaseAnd(
             phase_name="test_phase",
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
         )
 
-        phase_imaging_7x7.make_analysis(
+        phase_data_7x7.make_analysis(
             data=imaging_7x7, results=results_collection_7x7
         )
-        phase_imaging_7x7.customize_priors(results_collection_7x7)
+        phase_data_7x7.customize_priors(results_collection_7x7)
 
-        assert phase_imaging_7x7.galaxies == [galaxy]
+        assert phase_data_7x7.galaxies == [galaxy]
 
         class MyPlanePhaseAnd(al.PhaseImaging):
             def customize_priors(self, results):
@@ -81,21 +81,21 @@ class TestPhase(object):
         setattr(results_7x7.constant, "galaxies", [galaxy])
         setattr(results_7x7.variable, "galaxies", [galaxy_model])
 
-        phase_imaging_7x7 = MyPlanePhaseAnd(
+        phase_data_7x7 = MyPlanePhaseAnd(
             phase_name="test_phase",
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
         )
 
-        phase_imaging_7x7.make_analysis(
+        phase_data_7x7.make_analysis(
             data=imaging_7x7, results=results_collection_7x7
         )
-        phase_imaging_7x7.customize_priors(results_collection_7x7)
+        phase_data_7x7.customize_priors(results_collection_7x7)
 
-        assert phase_imaging_7x7.galaxies == [galaxy_model]
+        assert phase_data_7x7.galaxies == [galaxy_model]
 
     def test__duplication(self):
-        phase_imaging_7x7 = al.PhaseImaging(
+        phase_data_7x7 = al.PhaseImaging(
             phase_name="test_phase",
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5), source=al.GalaxyModel(redshift=1.0)
@@ -104,169 +104,22 @@ class TestPhase(object):
 
         al.PhaseImaging(phase_name="test_phase")
 
-        assert phase_imaging_7x7.galaxies is not None
+        assert phase_data_7x7.galaxies is not None
 
-    #
-    # def test__uses_pixelization_preload_grids_if_possible(
-    #     self, imaging_7x7, mask_function_7x7
-    # ):
-    #     phase_imaging_7x7 = al.PhaseImaging(
-    #         phase_name="test_phase", mask_function=mask_function_7x7
-    #     )
-    #
-    #     analysis = phase_imaging_7x7.make_analysis(simulate=imaging_7x7)
-    #
-    #     galaxy = al.Galaxy(redshift=0.5)
-    #
-    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
-    #         galaxies=[galaxy, galaxy], grid=analysis.masked_imaging.grid
-    #     )
-    #
-    #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
-    #
-    #     galaxy_pix_which_doesnt_use_pix_grid = al.Galaxy(
-    #         redshift=0.5, pixelization=al.pix.Rectangular(), regularization=al.reg.Constant()
-    #     )
-    #
-    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
-    #         galaxies=[galaxy_pix_which_doesnt_use_pix_grid],
-    #         grid=analysis.masked_imaging.grid,
-    #     )
-    #
-    #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
-    #
-    #     galaxy_pix_which_uses_pix_grid = al.Galaxy(
-    #         redshift=0.5,
-    #         pixelization=al.pix.VoronoiMagnification(),
-    #         regularization=al.reg.Constant(),
-    #     )
-    #
-    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
-    #         galaxies=[galaxy_pix_which_uses_pix_grid],
-    #         grid=analysis.masked_imaging.grid,
-    #     )
-    #
-    #     assert (
-    #         preload_pixelization_grid.pixelization
-    #         == np.array(
-    #             [
-    #                 [1.0, -1.0],
-    #                 [1.0, 0.0],
-    #                 [1.0, 1.0],
-    #                 [0.0, -1.0],
-    #                 [0.0, 0.0],
-    #                 [0.0, 1.0],
-    #                 [-1.0, -1.0],
-    #                 [-1.0, 0.0],
-    #                 [-1.0, 1.0],
-    #             ]
-    #         )
-    #     ).all()
-    #
-    #     galaxy_pix_which_uses_brightness = al.Galaxy(
-    #         redshift=0.5,
-    #         pixelization=al.pix.VoronoiBrightnessImage(pixels=9),
-    #         regularization=al.reg.Constant(),
-    #     )
-    #
-    #     galaxy_pix_which_uses_brightness.hyper_galaxy_cluster_image_1d = np.array(
-    #         [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
-    #     )
-    #
-    #     phase_imaging_7x7 = al.PhaseImaging(
-    #         phase_name="test_phase",
-    #         galaxies=dict(
-    #             lens=al.GalaxyModel(
-    #                 redshift=0.5,
-    #                 pixelization=al.pix.VoronoiBrightnessImage,
-    #                 regularization=al.reg.Constant,
-    #             )
-    #         ),
-    #         inversion_pixel_limit=5,
-    #         mask_function=mask_function_7x7,
-    #     )
-    #
-    #     analysis = phase_imaging_7x7.make_analysis(simulate=imaging_7x7)
-    #
-    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
-    #         galaxies=[galaxy_pix_which_uses_brightness],
-    #         grid=analysis.masked_imaging.grid,
-    #     )
-    #
-    #     assert (
-    #         preload_pixelization_grid.pixelization
-    #         == np.array(
-    #             [
-    #                 [0.0, 1.0],
-    #                 [1.0, -1.0],
-    #                 [-1.0, -1.0],
-    #                 [-1.0, 1.0],
-    #                 [0.0, -1.0],
-    #                 [1.0, 1.0],
-    #                 [-1.0, 0.0],
-    #                 [0.0, 0.0],
-    #                 [1.0, 0.0],
-    #             ]
-    #         )
-    #     ).all()
 
-    def test__tracer_for_instance__includes_cosmology(
+    def test__uses_pixelization_preload_grids_if_possible(
         self, imaging_7x7, mask_function_7x7
     ):
-        lens_galaxy = al.Galaxy(redshift=0.5)
-        source_galaxy = al.Galaxy(redshift=0.5)
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            mask_function=mask_function_7x7,
-            galaxies=[lens_galaxy],
-            cosmology=cosmo.FLRW,
-            phase_name="test_phase",
+        phase_data_7x7 = al.PhaseImaging(
+            phase_name="test_phase", mask_function=mask_function_7x7
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
-        tracer = analysis.tracer_for_instance(instance=instance)
+        analysis = phase_data_7x7.make_analysis(data=imaging_7x7)
 
-        assert tracer.image_plane.galaxies[0] == lens_galaxy
-        assert tracer.cosmology == cosmo.FLRW
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            mask_function=mask_function_7x7,
-            galaxies=[lens_galaxy, source_galaxy],
-            cosmology=cosmo.FLRW,
-            phase_name="test_phase",
-        )
-
-        analysis = phase_imaging_7x7.make_analysis(imaging_7x7)
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
-        tracer = analysis.tracer_for_instance(instance)
-
-        assert tracer.image_plane.galaxies[0] == lens_galaxy
-        assert tracer.source_plane.galaxies[0] == source_galaxy
-        assert tracer.cosmology == cosmo.FLRW
-
-        galaxy_0 = al.Galaxy(redshift=0.1)
-        galaxy_1 = al.Galaxy(redshift=0.2)
-        galaxy_2 = al.Galaxy(redshift=0.3)
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            mask_function=mask_function_7x7,
-            galaxies=[galaxy_0, galaxy_1, galaxy_2],
-            cosmology=cosmo.WMAP7,
-            phase_name="test_phase",
-        )
-
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
-        tracer = analysis.tracer_for_instance(instance)
-
-        assert tracer.planes[0].galaxies[0] == galaxy_0
-        assert tracer.planes[1].galaxies[0] == galaxy_1
-        assert tracer.planes[2].galaxies[0] == galaxy_2
-        assert tracer.cosmology == cosmo.WMAP7
+        assert analysis.masked_imaging.preload_pixelization_grids_of_planes is None
 
     def test__phase_can_receive_list_of_galaxy_models(self):
-        phase_imaging_7x7 = al.PhaseImaging(
+        phase_data_7x7 = al.PhaseImaging(
             galaxies=dict(
                 lens=al.GalaxyModel(
                     sersic=al.lp.EllipticalSersic,
@@ -281,12 +134,12 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        for item in phase_imaging_7x7.variable.path_priors_tuples:
+        for item in phase_data_7x7.variable.path_priors_tuples:
             print(item)
 
-        sersic = phase_imaging_7x7.variable.galaxies[0].sersic
-        sis = phase_imaging_7x7.variable.galaxies[0].sis
-        lens_1_sis = phase_imaging_7x7.variable.galaxies[1].sis
+        sersic = phase_data_7x7.variable.galaxies[0].sersic
+        sis = phase_data_7x7.variable.galaxies[0].sis
+        lens_1_sis = phase_data_7x7.variable.galaxies[1].sis
 
         arguments = {
             sersic.centre[0]: 0.2,
@@ -299,14 +152,14 @@ class TestPhase(object):
             sis.centre[0]: 0.1,
             sis.centre[1]: 0.2,
             sis.einstein_radius.priors[0]: 0.3,
-            phase_imaging_7x7.variable.galaxies[0].redshift.priors[0]: 0.4,
+            phase_data_7x7.variable.galaxies[0].redshift.priors[0]: 0.4,
             lens_1_sis.centre[0]: 0.6,
             lens_1_sis.centre[1]: 0.5,
             lens_1_sis.einstein_radius.priors[0]: 0.7,
-            phase_imaging_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
+            phase_data_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
         }
 
-        instance = phase_imaging_7x7.optimizer.variable.instance_for_arguments(
+        instance = phase_data_7x7.variable.instance_for_arguments(
             arguments=arguments
         )
 
@@ -325,7 +178,7 @@ class TestPhase(object):
             def pass_models(self, results):
                 self.galaxies[0].sis.einstein_radius = 10.0
 
-        phase_imaging_7x7 = LensPlanePhase2(
+        phase_data_7x7 = LensPlanePhase2(
             galaxies=dict(
                 lens=al.GalaxyModel(
                     sersic=al.lp.EllipticalSersic,
@@ -341,11 +194,11 @@ class TestPhase(object):
         )
 
         # noinspection PyTypeChecker
-        phase_imaging_7x7.pass_models(None)
+        phase_data_7x7.pass_models(None)
 
-        sersic = phase_imaging_7x7.variable.galaxies[0].sersic
-        sis = phase_imaging_7x7.variable.galaxies[0].sis
-        lens_1_sis = phase_imaging_7x7.variable.galaxies[1].sis
+        sersic = phase_data_7x7.variable.galaxies[0].sersic
+        sis = phase_data_7x7.variable.galaxies[0].sis
+        lens_1_sis = phase_data_7x7.variable.galaxies[1].sis
 
         arguments = {
             sersic.centre[0]: 0.01,
@@ -357,14 +210,14 @@ class TestPhase(object):
             sersic.intensity.priors[0]: 0.6,
             sis.centre[0]: 0.1,
             sis.centre[1]: 0.2,
-            phase_imaging_7x7.variable.galaxies[0].redshift.priors[0]: 0.4,
+            phase_data_7x7.variable.galaxies[0].redshift.priors[0]: 0.4,
             lens_1_sis.centre[0]: 0.6,
             lens_1_sis.centre[1]: 0.5,
             lens_1_sis.einstein_radius.priors[0]: 0.7,
-            phase_imaging_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
+            phase_data_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
         }
 
-        instance = phase_imaging_7x7.optimizer.variable.instance_for_arguments(
+        instance = phase_data_7x7.variable.instance_for_arguments(
             arguments
         )
 
@@ -385,7 +238,7 @@ class TestResult(object):
     ):
         clean_images()
 
-        phase_imaging_7x7 = al.PhaseImaging(
+        phase_data_7x7 = al.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=[
@@ -397,7 +250,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_7x7)
+        result = phase_data_7x7.run(data=imaging_7x7)
 
         assert isinstance(result, al.AbstractPhase.Result)
 
@@ -405,7 +258,7 @@ class TestResult(object):
         self, imaging_7x7, mask_function_7x7
     ):
 
-        phase_imaging_7x7 = al.PhaseImaging(
+        phase_data_7x7 = al.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=dict(
@@ -421,7 +274,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_7x7)
+        result = phase_data_7x7.run(data=imaging_7x7)
 
         assert isinstance(result.most_likely_tracer, al.Tracer)
         assert result.most_likely_tracer.galaxies[0].light.intensity == 1.0
@@ -435,7 +288,7 @@ class TestPhasePickle(object):
         def make_analysis(*args, **kwargs):
             return mock_pipeline.MockAnalysis(1, 1)
 
-        phase_imaging_7x7 = al.PhaseImaging(
+        phase_data_7x7 = al.PhaseImaging(
             phase_name="phase_name",
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
@@ -446,13 +299,13 @@ class TestPhasePickle(object):
             ),
         )
 
-        phase_imaging_7x7.make_analysis = make_analysis
-        result = phase_imaging_7x7.run(
+        phase_data_7x7.make_analysis = make_analysis
+        result = phase_data_7x7.run(
             data=imaging_7x7, results=None, mask=None, positions=None
         )
         assert result is not None
 
-        phase_imaging_7x7 = al.PhaseImaging(
+        phase_data_7x7 = al.PhaseImaging(
             phase_name="phase_name",
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
@@ -463,8 +316,8 @@ class TestPhasePickle(object):
             ),
         )
 
-        phase_imaging_7x7.make_analysis = make_analysis
-        result = phase_imaging_7x7.run(
+        phase_data_7x7.make_analysis = make_analysis
+        result = phase_data_7x7.run(
             data=imaging_7x7, results=None, mask=None, positions=None
         )
         assert result is not None
@@ -473,7 +326,7 @@ class TestPhasePickle(object):
             def customize_priors(self, results):
                 self.galaxies.lens.light = al.lp.EllipticalLightProfile()
 
-        phase_imaging_7x7 = CustomPhase(
+        phase_data_7x7 = CustomPhase(
             phase_name="phase_name",
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
@@ -483,7 +336,7 @@ class TestPhasePickle(object):
                 )
             ),
         )
-        phase_imaging_7x7.make_analysis = make_analysis
+        phase_data_7x7.make_analysis = make_analysis
 
         # with pytest.raises(af.exc.PipelineException):
-        #     phase_imaging_7x7.run(data_type=imaging_7x7, results=None, mask=None, positions=None)
+        #     phase_data_7x7.run(data_type=imaging_7x7, results=None, mask=None, positions=None)

@@ -253,7 +253,7 @@ class HyperGalaxyPhase(HyperPhase):
                     lens_data=lens_data,
                     hyper_model_image=model_image_1d,
                     hyper_galaxy_image=hyper_galaxy_image_path_dict[path],
-                    image_path=optimizer.image_path,
+                    image_path=optimizer.paths.image_path,
                 )
 
                 result = optimizer.fit(analysis)

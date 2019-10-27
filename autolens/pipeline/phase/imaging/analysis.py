@@ -12,7 +12,7 @@ class Analysis(af.Analysis):
             masked_imaging, image_path
         )
 
-        self.lens_data = masked_imaging
+        self.masked_imaging = masked_imaging
 
         if results is not None and results.last is not None:
             last_results = results.last
@@ -25,11 +25,7 @@ class Analysis(af.Analysis):
 
             self.hyper_model_image = last_results.hyper_model_image
 
-            self.binned_hyper_galaxy_image_path_dict = last_results.binned_hyper_galaxy_image_path_dict(
-                binned_grid=masked_imaging.grid.binned
-            )
-
-            self.visualizer.plot_hyper_images(last_results)
+            self.visualizer.plot_hyper_images(last_results=last_results)
 
     def fit(self, instance):
         """
@@ -49,10 +45,10 @@ class Analysis(af.Analysis):
         self.associate_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
-        self.lens_data.check_positions_trace_within_threshold_via_tracer(
+        self.masked_imaging.check_positions_trace_within_threshold_via_tracer(
             tracer=tracer
         )
-        self.lens_data.check_inversion_pixels_are_below_limit_via_tracer(
+        self.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
             tracer=tracer
         )
 
@@ -103,13 +99,7 @@ class Analysis(af.Analysis):
                     galaxy.hyper_galaxy_image = self.hyper_galaxy_image_path_dict[
                         galaxy_path
                     ]
-                    if (
-                            hasattr(self, "binned_hyper_galaxy_image_path_dict")
-                            and self.binned_hyper_galaxy_image_path_dict is not None
-                    ):
-                        galaxy.binned_hyper_galaxy_image = self.binned_hyper_galaxy_image_path_dict[
-                            galaxy_path
-                        ]
+
         return instance
 
     def hyper_image_sky_for_instance(self, instance):
@@ -130,8 +120,8 @@ class Analysis(af.Analysis):
             self, tracer, hyper_image_sky, hyper_background_noise
     ):
 
-        return lens_fit.ImagingFit.from_masked_data_and_tracer(
-            lens_data=self.lens_data,
+        return fit.ImagingFit(
+            masked_imaging=self.masked_imaging,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
