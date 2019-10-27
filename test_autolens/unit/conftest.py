@@ -106,7 +106,7 @@ def make_mask_function_7x7_1_pix():
             ]
         )
 
-        return mock_mask.MockMask(array_2d=array, sub_size=sub_size)
+        return mock_mask.MockMask(mask_2d=array, sub_size=sub_size)
 
     return mask_function_7x7_1_pix
 

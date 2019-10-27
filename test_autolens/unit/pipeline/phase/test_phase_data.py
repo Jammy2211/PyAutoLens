@@ -38,19 +38,6 @@ def clean_images():
 
 
 class TestPhase(object):
-    def test__make_analysis__masks_image_and_noise_map_correctly(
-        self, phase_imaging_7x7, imaging_7x7, mask_7x7
-    ):
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
-
-        assert (
-            analysis.masked_imaging.image.in_2d
-            == imaging_7x7.image.in_2d * np.invert(mask_7x7)
-        ).all()
-        assert (
-            analysis.masked_imaging.noise_map.in_2d
-            == imaging_7x7.noise_map.in_2d * np.invert(mask_7x7)
-        ).all()
 
     def test__make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(
         self, phase_imaging_7x7, imaging_7x7
