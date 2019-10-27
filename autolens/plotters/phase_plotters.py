@@ -1,16 +1,13 @@
 import autofit as af
-from autoarray.plotters import imaging_plotters
+import autoarray as aa
 from autolens.plotters import ray_tracing_plotters, hyper_plotters
 from autolens.plotters import imaging_fit_plotters
-from autoarray.plotters import inversion_plotters
 
 
-def plot_imaging_for_phase(
+def imaging_of_phase(
     imaging,
-    mask,
+    mask_overlay,
     positions,
-    extract_array_from_mask,
-    zoom_around_mask,
     units,
     should_plot_as_subplot,
     should_plot_image,
@@ -29,18 +26,18 @@ def plot_imaging_for_phase(
 
     if should_plot_as_subplot:
 
-        imaging_plotters.plot_imaging_subplot(
+        aa.plot.imaging.subplot(
             imaging=imaging,
-            mask_overlay=mask,
+            mask_overlay=mask_overlay,
             positions=positions,
             units=units,
             output_path=subplot_path,
             output_format="png",
         )
 
-    imaging_plotters.individual(
+    aa.plot.imaging.individual(
         imaging=imaging,
-        mask=mask,
+        mask_overlay=mask_overlay,
         positions=positions,
         should_plot_image=should_plot_image,
         should_plot_noise_map=should_plot_noise_map,
@@ -54,13 +51,11 @@ def plot_imaging_for_phase(
     )
 
 
-def plot_ray_tracing_for_phase(
+def ray_tracing_of_phase(
     tracer,
     grid,
     during_analysis,
-    mask,
-    extract_array_from_mask,
-    zoom_around_mask,
+    mask_overlay,
     positions,
     units,
     should_plot_as_subplot,
@@ -83,7 +78,7 @@ def plot_ray_tracing_for_phase(
         ray_tracing_plotters.subplot(
             tracer=tracer,
             grid=grid,
-            mask=mask,
+            mask_overlay=mask_overlay,
             positions=positions,
             units=units,
             output_path=subplot_path,
@@ -93,7 +88,7 @@ def plot_ray_tracing_for_phase(
     ray_tracing_plotters.individual(
         tracer=tracer,
         grid=grid,
-        mask=mask,
+        mask_overlay=mask_overlay,
         positions=positions,
         should_plot_profile_image=should_plot_image,
         should_plot_source_plane=should_plot_source_plane,
@@ -112,7 +107,7 @@ def plot_ray_tracing_for_phase(
             ray_tracing_plotters.individual(
                 tracer=tracer,
                 grid=grid,
-                mask=mask,
+                mask_overlay=mask_overlay,
                 positions=positions,
                 should_plot_profile_image=True,
                 should_plot_source_plane=True,
@@ -133,7 +128,7 @@ def plot_ray_tracing_for_phase(
             ray_tracing_plotters.individual(
                 tracer=tracer,
                 grid=grid,
-                mask=mask,
+                mask_overlay=mask_overlay,
                 positions=positions,
                 should_plot_profile_image=True,
                 should_plot_source_plane=True,
@@ -145,11 +140,9 @@ def plot_ray_tracing_for_phase(
             )
 
 
-def plot_masked_imaging_fit_for_phase(
+def imaging_fit_of_phase(
     fit,
     during_analysis,
-    extract_array_from_mask,
-    zoom_around_mask,
     positions,
     units,
     should_plot_mask,
@@ -183,7 +176,7 @@ def plot_masked_imaging_fit_for_phase(
 
     if should_plot_fit_as_subplot:
 
-        imaging_fit_plotters.plot_fit_subplot(
+        imaging_fit_plotters.subplot(
             fit=fit,
             should_plot_mask=should_plot_mask,
             positions=positions,
@@ -195,7 +188,7 @@ def plot_masked_imaging_fit_for_phase(
 
     if should_plot_fit_of_planes_as_subplot:
 
-        imaging_fit_plotters.plot_fit_subplot_of_planes(
+        imaging_fit_plotters.subplot_of_planes(
             fit=fit,
             should_plot_mask=should_plot_mask,
             positions=positions,
@@ -207,15 +200,15 @@ def plot_masked_imaging_fit_for_phase(
 
     if should_plot_inversion_as_subplot and fit.tracer.has_pixelization:
 
-        inversion_plotters.plot_inversion_subplot(
+        aa.plot.inversion.subplot(
             inversion=fit.inversion,
-            mask=fit.mask,
+            mask_overlay=fit.mask_overlay,
             positions=positions,
             output_path=subplot_path,
             output_format="png",
         )
 
-    imaging_fit_plotters.plot_fit_individuals(
+    imaging_fit_plotters.individuals(
         fit=fit,
         should_plot_mask=should_plot_mask,
         positions=positions,
@@ -243,7 +236,7 @@ def plot_masked_imaging_fit_for_phase(
 
         if should_plot_all_at_end_png:
 
-            imaging_fit_plotters.plot_fit_individuals(
+            imaging_fit_plotters.individuals(
                 fit=fit,
                 should_plot_mask=should_plot_mask,
                 positions=positions,
@@ -273,7 +266,7 @@ def plot_masked_imaging_fit_for_phase(
                 path=output_path, folder_names=["fits"]
             )
 
-            imaging_fit_plotters.plot_fit_individuals(
+            imaging_fit_plotters.individuals(
                 fit=fit,
                 should_plot_mask=should_plot_mask,
                 positions=positions,
@@ -298,17 +291,12 @@ def plot_masked_imaging_fit_for_phase(
 
 
 def plot_hyper_images_for_phase(
-    hyper_model_image_2d,
-    hyper_galaxy_image_2d_path_dict,
-    binned_hyper_galaxy_image_2d_path_dict,
-    mask,
-    binned_grid,
-    extract_array_from_mask,
-    zoom_around_mask,
+    hyper_model_image,
+    hyper_galaxy_image_path_dict,
+    mask_overlay,
     units,
     should_plot_hyper_model_image,
     should_plot_hyper_galaxy_images,
-    should_plot_binned_hyper_galaxy_images,
     visualize_path,
 ):
 
@@ -319,8 +307,8 @@ def plot_hyper_images_for_phase(
     if should_plot_hyper_model_image:
 
         hyper_plotters.hyper_model_image(
-            hyper_model_image=hyper_model_image_2d,
-            mask=mask,
+            hyper_model_image=hyper_model_image,
+            mask_overlay=mask_overlay,
             units=units,
             output_path=output_path,
             output_format="png",
@@ -329,21 +317,8 @@ def plot_hyper_images_for_phase(
     if should_plot_hyper_galaxy_images:
 
         hyper_plotters.subplot_of_hyper_galaxy_images(
-            hyper_galaxy_image_path_dict=hyper_galaxy_image_2d_path_dict,
-            mask=mask,
-            units=units,
-            output_path=output_path,
-            output_format="png",
-        )
-
-    if (
-        should_plot_binned_hyper_galaxy_images
-        and binned_hyper_galaxy_image_2d_path_dict is not None
-    ):
-
-        hyper_plotters.plot_binned_hyper_galaxy_images_subplot(
-            hyper_galaxy_cluster_image_path_dict=binned_hyper_galaxy_image_2d_path_dict,
-            mask=binned_grid.mask,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+            mask_overlay=mask_overlay,
             units=units,
             output_path=output_path,
             output_format="png",
