@@ -8,7 +8,6 @@ from matplotlib import pyplot as plt
 import autoarray as aa
 from autoarray.plotters import plotter_util
 from autolens.plotters import plane_plotters
-from autoarray.plotters import inversion_plotters
 
 
 def subplot(

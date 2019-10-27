@@ -27,11 +27,11 @@ class ImagingFit(fit.ImagingFit):
         self.masked_imaging = masked_imaging
         self.tracer = tracer
 
-        image = self.hyper_image_from_image_and_hyper_image_sky(
+        image = hyper_image_from_image_and_hyper_image_sky(
             image=masked_imaging.image, hyper_image_sky=hyper_image_sky
         )
 
-        noise_map = self.hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
+        noise_map = hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
             noise_map=masked_imaging.noise_map,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
@@ -116,33 +116,31 @@ class ImagingFit(fit.ImagingFit):
     def total_inversions(self):
         return len(list(filter(None, self.tracer.regularizations_of_planes)))
 
-    @staticmethod
-    def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
 
-        if hyper_image_sky is not None:
-            return hyper_image_sky.hyper_image_from_image(image=image)
-        else:
-            return image
+def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
 
-    @staticmethod
-    def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
-        noise_map, tracer, hyper_background_noise
-    ):
+    if hyper_image_sky is not None:
+        return hyper_image_sky.hyper_image_from_image(image=image)
+    else:
+        return image
 
-        hyper_noise_map = tracer.hyper_noise_map_from_noise_map(
+def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
+    noise_map, tracer, hyper_background_noise
+):
+
+    hyper_noise_map = tracer.hyper_noise_map_from_noise_map(
+        noise_map=noise_map
+    )
+
+    if hyper_background_noise is not None:
+        noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
             noise_map=noise_map
         )
 
-        if hyper_background_noise is not None:
-            noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
-                noise_map=noise_map
-            )
+    if hyper_noise_map is not None:
+        noise_map = noise_map + hyper_noise_map
 
-        if hyper_noise_map is not None:
-            noise_map = noise_map + hyper_noise_map
-
-        return noise_map
-
+    return noise_map
 
 class InterferometerFit(fit.InterferometerFit):
     def __init__(

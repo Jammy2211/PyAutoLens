@@ -3,9 +3,10 @@ import copy
 import numpy as np
 from typing import cast
 
+import autoarray as aa
 import autofit as af
-from autolens.fit import masked_data as ld
 from autolens.fit import fit
+from autolens.fit import masked_data
 from autoastro.galaxy import galaxy as g
 from autoastro.hyper import hyper_data as hd
 from autolens.pipeline.phase import imaging
@@ -45,41 +46,31 @@ class Analysis(af.Analysis):
                 instance=instance
             )
 
-            hyper_model_image_2d = self.masked_imaging.grid.mapping.scaled_array_2d_from_array_1d(
-                array_1d=self.hyper_model_image
+            contribution_map = instance.hyper_galaxy.contribution_map_from_hyper_images(
+                hyper_model_image=self.hyper_model_image,
+                hyper_galaxy_image=self.hyper_galaxy_image,
             )
 
-            hyper_galaxy_image_2d = self.masked_imaging.grid.mapping.scaled_array_2d_from_array_1d(
-                array_1d=self.hyper_galaxy_image
-            )
-
-            contribution_map_2d = instance.hyper_galaxy.contribution_map_from_hyper_images(
-                hyper_model_image=hyper_model_image_2d,
-                hyper_galaxy_image=hyper_galaxy_image_2d,
-            )
-
-            fit_normal = masked_imaging_fit.ImagingFit(
-                image=self.masked_imaging.image.in_1d,
-                noise_map=self.masked_imaging.noise_map.in_1d,
-                mask=self.masked_imaging._mask_1d,
+            fit_normal = aa.fit_imaging(
+                image=self.masked_imaging.image,
+                noise_map=self.masked_imaging.noise_map,
+                mask=self.masked_imaging.mask,
                 model_image=self.hyper_model_image,
-                mapping=self.masked_imaging.mapping,
-                inversion=None,
             )
 
-            fit = self.fit_for_hyper_galaxy(
+            fit_hyper = self.fit_for_hyper_galaxy(
                 hyper_galaxy=instance.hyper_galaxy,
                 hyper_image_sky=hyper_image_sky,
                 hyper_background_noise=hyper_background_noise,
             )
 
             self.visualizer.hyper_galaxy_subplot(
-                hyper_galaxy_image=hyper_galaxy_image_2d,
-                contribution_map=contribution_map_2d,
-                noise_map=self.masked_imaging.noise_map.in_2d,
-                hyper_noise_map=fit.noise_map.in_2d,
-                chi_squared_map=fit_normal.chi_squared_map.in_2d,
-                hyper_chi_squared_map=fit.chi_squared_map.in_2d,
+                hyper_galaxy_image=self.hyper_galaxy_image,
+                contribution_map=contribution_map,
+                noise_map=self.masked_imaging.noise_map,
+                hyper_noise_map=fit_hyper.noise_map,
+                chi_squared_map=fit_normal.chi_squared_map,
+                hyper_chi_squared_map=fit_hyper.chi_squared_map,
             )
 
     def fit(self, instance):
@@ -122,32 +113,30 @@ class Analysis(af.Analysis):
             self, hyper_galaxy, hyper_image_sky, hyper_background_noise
     ):
 
-        image_1d = masked_imaging_fit.image_1d_from_lens_data_and_hyper_image_sky(
-            masked_imaging=self.masked_imaging, hyper_image_sky=hyper_image_sky
+        image = fit.hyper_image_from_image_and_hyper_image_sky(
+            image=self.masked_imaging.image, hyper_image_sky=hyper_image_sky
         )
-
+        
         if hyper_background_noise is not None:
-            noise_map_1d = hyper_background_noise.hyper_noise_map_from_noise_map(
-                noise_map=self.masked_imaging.noise_map.in_1d
+            noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
+                noise_map=self.masked_imaging.noise_map
             )
         else:
-            noise_map_1d = self.masked_imaging.noise_map.in_1d
+            noise_map = self.masked_imaging.noise_map
 
-        hyper_noise_map_1d = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
+        hyper_noise_map = hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
             hyper_model_image=self.hyper_model_image,
             hyper_galaxy_image=self.hyper_galaxy_image,
-            noise_map=self.masked_imaging.noise_map.in_1d,
+            noise_map=self.masked_imaging.noise_map,
         )
 
-        noise_map_1d = noise_map_1d + hyper_noise_map_1d
+        noise_map = noise_map + hyper_noise_map
 
-        return masked_imaging_fit.ImagingFit(
-            image=image_1d,
-            noise_map=noise_map_1d,
-            mask=self.masked_imaging._mask_1d,
+        return aa.fit_imaging(
+            image=image,
+            noise_map=noise_map,
+            mask=self.masked_imaging.mask,
             model_image=self.hyper_model_image,
-            mapping=self.masked_imaging.mapping,
-            inversion=None,
         )
 
     @classmethod
@@ -181,12 +170,12 @@ class HyperGalaxyPhase(HyperPhase):
         """
         phase = self.make_hyper_phase()
 
-        masked_imaging = ld.MaskedImaging(
+        masked_imaging = masked_data.MaskedImaging(
             imaging=data,
             mask=results.last.mask,
-            trimmed_psf_shape_2d=cast(imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
+            trimmed_psf_shape_2d=cast(imaging.PhaseImaging, phase).meta_data_fit.trimmed_psf_shape_2d,
             positions=results.last.positions,
-            positions_threshold=cast(
+            positions_threshomasked_imaging=cast(
                 imaging.PhaseImaging, phase
             ).meta_data_fit.positions_threshold,
             pixel_scale_interpolation_grid=cast(
@@ -201,24 +190,21 @@ class HyperGalaxyPhase(HyperPhase):
             preload_pixelization_grids_of_planes=None,
         )
 
-        model_image_1d = results.last.hyper_model_image
-        hyper_galaxy_image_path_dict = results.last.hyper_galaxy_image_path_dict
-
         hyper_result = copy.deepcopy(results.last)
         hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(
             hyper_result.constant
         )
 
-        hyper_result.analysis.hyper_model_image = model_image_1d
+        hyper_result.analysis.hyper_model_image = results.last.hyper_model_image
         hyper_result.analysis.hyper_galaxy_image_path_dict = (
-            hyper_galaxy_image_path_dict
+            results.last.hyper_galaxy_image_path_dict
         )
 
         for path, galaxy in results.last.path_galaxy_tuples:
 
             optimizer = phase.optimizer.copy_with_name_extension(extension=path[-1])
 
-            optimizer.phase_tag = ""
+            optimizer.paths.phase_tag = ""
 
             # TODO : This is a HACK :O
 
@@ -246,13 +232,13 @@ class HyperGalaxyPhase(HyperPhase):
                 optimizer.variable.hyper_background_noise = hd.HyperBackgroundNoise
 
             # If array is all zeros, galaxy did not have image in previous phase and
-            # should be ignored
-            if not np.all(hyper_galaxy_image_path_dict[path] == 0):
+            # shoumasked_imaging be ignored
+            if not np.all(hyper_result.analysis.hyper_galaxy_image_path_dict[path] == 0):
 
                 analysis = self.Analysis(
                     masked_imaging=masked_imaging,
-                    hyper_model_image=model_image_1d,
-                    hyper_galaxy_image=hyper_galaxy_image_path_dict[path],
+                    hyper_model_image=hyper_result.analysis.hyper_model_image,
+                    hyper_galaxy_image=hyper_result.analysis.hyper_galaxy_image_path_dict[path],
                     image_path=optimizer.paths.image_path,
                 )
 
@@ -309,121 +295,3 @@ class HyperGalaxyBackgroundBothPhase(HyperGalaxyPhase):
         super().__init__(phase=phase)
         self.include_sky_background = True
         self.include_noise_background = True
-
-
-class HyperGalaxyAllPhase(HyperPhase):
-    def __init__(
-            self, phase, include_sky_background=False, include_noise_background=False
-    ):
-        super().__init__(phase=phase, hyper_name="hyper_galaxy")
-        self.include_sky_background = include_sky_background
-        self.include_noise_background = include_noise_background
-
-    def run_hyper(self, data, results=None):
-        """
-        Run a fit for each galaxy from the previous phase.
-        Parameters
-        ----------
-        data: LensData
-        results: ResultsCollection
-            Results from all previous phases
-        Returns
-        -------
-        results: HyperGalaxyResults
-            A collection of results, with one item per a galaxy
-        """
-        phase = self.make_hyper_phase()
-
-        masked_imaging = ld.MaskedImaging(
-            imaging=data,
-            mask=results.last.mask,
-            trimmed_psf_shape_2d=cast(imaging.PhaseImaging, phase).meta_data_fit.psf_shape,
-            positions=results.last.positions,
-            positions_threshold=cast(
-                imaging.PhaseImaging, phase
-            ).meta_data_fit.positions_threshold,
-            pixel_scale_interpolation_grid=cast(
-                imaging.PhaseImaging, phase
-            ).meta_data_fit.pixel_scale_interpolation_grid,
-            inversion_pixel_limit=cast(
-                imaging.PhaseImaging, phase
-            ).meta_data_fit.inversion_pixel_limit,
-            inversion_uses_border=cast(
-                imaging.PhaseImaging, phase
-            ).meta_data_fit.inversion_uses_border,
-            preload_pixelization_grids_of_planes=None,
-        )
-
-        model_image_1d = results.last.hyper_model_image
-        hyper_galaxy_image_path_dict = results.last.hyper_galaxy_image_path_dict
-
-        hyper_result = copy.deepcopy(results.last)
-        hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(
-            hyper_result.constant
-        )
-
-        hyper_result.analysis.hyper_model_image = model_image_1d
-        hyper_result.analysis.hyper_galaxy_image_path_dict = (
-            hyper_galaxy_image_path_dict
-        )
-
-        for path, galaxy in results.last.path_galaxy_tuples:
-
-            optimizer = phase.optimizer.copy_with_name_extension(extension=path[-1])
-
-            optimizer.phase_tag = ""
-
-            # TODO : This is a HACK :O
-
-            optimizer.variable.galaxies = []
-            optimizer.variable.galaxies = []
-            optimizer.variable.galaxies = []
-
-            optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
-                "MultiNest", "extension_hyper_galaxy_const_efficiency_mode", bool
-            )
-            optimizer.sampling_efficiency = af.conf.instance.non_linear.get(
-                "MultiNest", "extension_hyper_galaxy_sampling_efficiency", float
-            )
-            optimizer.n_live_points = af.conf.instance.non_linear.get(
-                "MultiNest", "extension_hyper_galaxy_n_live_points", int
-            )
-
-            optimizer.variable.hyper_galaxy = g.HyperGalaxy
-
-            if self.include_sky_background:
-                optimizer.variable.hyper_image_sky = hd.HyperImageSky
-
-            if self.include_noise_background:
-                optimizer.variable.hyper_background_noise = hd.HyperBackgroundNoise
-
-            # If array is all zeros, galaxy did not have image in previous phase and
-            # should be ignored
-            if not np.all(hyper_galaxy_image_path_dict[path] == 0):
-
-                analysis = self.Analysis(
-                    masked_imaging=masked_imaging,
-                    model_image_1d=model_image_1d,
-                    galaxy_image_1d=hyper_galaxy_image_path_dict[path],
-                )
-
-                result = optimizer.fit(analysis)
-
-                def transfer_field(name):
-                    if hasattr(result.constant, name):
-                        setattr(
-                            hyper_result.constant.object_for_path(path),
-                            name,
-                            getattr(result.constant, name),
-                        )
-                        setattr(
-                            hyper_result.variable.object_for_path(path),
-                            name,
-                            getattr(result.variable, name),
-                        )
-
-                transfer_field("hyper_galaxy")
-                transfer_field("hyper_image_sky")
-                transfer_field("hyper_background_noise")
-
-        return hyper_result

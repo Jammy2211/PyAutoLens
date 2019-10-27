@@ -195,7 +195,7 @@ class ImagingSimulator(object):
         )
 
         if should_plot_imaging:
-            imaging_plotters.plot_imaging_subplot(imaging=imaging)
+            imaging_plotters.subplot(imaging=imaging)
 
         return imaging
 

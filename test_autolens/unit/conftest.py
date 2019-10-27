@@ -149,18 +149,18 @@ def make_phase_imaging_7x7(mask_function_7x7):
 
 
 @pytest.fixture(name="hyper_model_image_7x7")
-def make_hyper_model_image_7x7(masked_imaging_fit_x2_plane_7x7):
-    return masked_imaging_fit_x2_plane_7x7.model_image
+def make_hyper_model_image_7x7(mask_7x7):
+    return aa.masked_array.full(fill_value=5.0, mask=mask_7x7)
 
 
 @pytest.fixture(name="hyper_galaxy_image_0_7x7")
-def make_hyper_galaxy_image_0_7x7(masked_imaging_fit_x2_plane_7x7):
-    return masked_imaging_fit_x2_plane_7x7.model_images_of_planes[0]
+def make_hyper_galaxy_image_0_7x7(mask_7x7):
+    return aa.masked_array.full(fill_value=2.0, mask=mask_7x7)
 
 
 @pytest.fixture(name="hyper_galaxy_image_1_7x7")
-def make_hyper_galaxy_image_1_7x7(masked_imaging_fit_x2_plane_7x7):
-    return masked_imaging_fit_x2_plane_7x7.model_images_of_planes[1]
+def make_hyper_galaxy_image_1_7x7(mask_7x7):
+    return aa.masked_array.full(fill_value=3.0, mask=mask_7x7)
 
 
 @pytest.fixture(name="contribution_map_7x7")
