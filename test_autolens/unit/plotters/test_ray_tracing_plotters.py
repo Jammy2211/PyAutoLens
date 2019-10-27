@@ -14,7 +14,7 @@ def make_ray_tracing_plotter_setup():
 def test__all_individual_plotters(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch
 ):
-    al.ray_tracing_plotters.plot_profile_image(
+    al.plot.ray_tracing.profile_image(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -26,7 +26,7 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "tracer_profile_image.png" in plot_patch.paths
 
-    al.ray_tracing_plotters.plot_convergence(
+    al.plot.ray_tracing.convergence(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -38,7 +38,7 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "tracer_convergence.png" in plot_patch.paths
 
-    al.ray_tracing_plotters.plot_potential(
+    al.plot.ray_tracing.potential(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -50,7 +50,7 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "tracer_potential.png" in plot_patch.paths
 
-    al.ray_tracing_plotters.plot_deflections_y(
+    al.plot.ray_tracing.deflections_y(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -62,7 +62,7 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "tracer_deflections_y.png" in plot_patch.paths
 
-    al.ray_tracing_plotters.plot_deflections_x(
+    al.plot.ray_tracing.deflections_x(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -78,7 +78,7 @@ def test__all_individual_plotters(
 def test__tracer_sub_plot_output(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch
 ):
-    al.ray_tracing_plotters.plot_ray_tracing_subplot(
+    al.plot.ray_tracing.subplot(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
@@ -92,7 +92,7 @@ def test__tracer_sub_plot_output(
 def test__tracer_individuals__dependent_on_input(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch
 ):
-    al.ray_tracing_plotters.plot_ray_tracing_individual(
+    al.plot.ray_tracing.individual(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
