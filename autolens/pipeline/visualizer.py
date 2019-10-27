@@ -323,7 +323,7 @@ class HyperGalaxyVisualizer(SubPlotVisualizer):
         chi_squared_map,
         hyper_chi_squared_map,
     ):
-        hyper_plotters.plot_hyper_galaxy_subplot(
+        hyper_plotters.subplot_of_hyper_galaxy(
             hyper_galaxy_image=hyper_galaxy_image,
             contribution_map=contribution_map,
             noise_map=noise_map,
