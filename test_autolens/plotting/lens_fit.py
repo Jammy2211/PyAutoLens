@@ -1,4 +1,4 @@
-from autolens.fit.plotters import lens_imaging_fit_plotters
+from autolens.fit.plotters import masked_imaging_fit_plotters
 from test import simulation_util
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use
@@ -25,6 +25,6 @@ lens_data = al.LensData(imaging=imaging, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
 fit = al.LensImageFit.from_masked_data_and_tracer(lens_data=lens_data, tracer=tracer)
-lens_imaging_fit_plotters.plot_fit_subplot(
+masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit, should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True
 )

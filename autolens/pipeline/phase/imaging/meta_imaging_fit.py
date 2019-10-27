@@ -48,16 +48,11 @@ class MetaImagingFit(data.MetaDataFit):
 
         self.check_positions(positions=positions)
 
-        if self.uses_cluster_inversion:
-            pixel_scale_binned_grid = self.pixel_scale_binned_grid_from_mask(mask=mask)
-        else:
-            pixel_scale_binned_grid = None
-
         preload_pixelization_grids_of_planes = self.preload_pixelization_grids_of_planes_from_results(
             results=results
         )
 
-        lens_imaging = ld.MaskedImaging(
+        masked_imaging = ld.MaskedImaging(
             imaging=data.modified_image_from_image(
                 modified_image
             ),
@@ -66,20 +61,19 @@ class MetaImagingFit(data.MetaDataFit):
             positions=positions,
             positions_threshold=self.positions_threshold,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
-            pixel_scale_binned_grid=pixel_scale_binned_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
             preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
         )
 
         if self.signal_to_noise_limit is not None:
-            lens_imaging = lens_imaging.new_lens_imaging_with_signal_to_noise_limit(
+            masked_imaging = masked_imaging.signal_to_noise_limited_from_signal_to_noise_limit(
                 signal_to_noise_limit=self.signal_to_noise_limit
             )
 
         if self.bin_up_factor is not None:
-            lens_imaging = lens_imaging.new_lens_imaging_with_binned_up_imaging_and_mask(
+            masked_imaging = masked_imaging.binned_from_bin_up_factor(
                 bin_up_factor=self.bin_up_factor
             )
 
-        return lens_imaging
+        return masked_imaging

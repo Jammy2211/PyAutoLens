@@ -6,11 +6,12 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autolens.plotters import plane_plotters, fit_plotters
+from autoarray.plotters import plotter_util
+from autolens.plotters import plane_plotters
 from autoarray.plotters import inversion_plotters
 
 
-def plot_fit_subplot(
+def subplot(
     fit,
     should_plot_mask=True,
     positions=None,
@@ -34,7 +35,7 @@ def plot_fit_subplot(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    mask_pointsize=10,
+    mask_overlay_pointsize=10,
     position_pointsize=10,
     grid_pointsize=1,
     output_path=None,
@@ -42,11 +43,11 @@ def plot_fit_subplot(
     output_format="show",
 ):
 
-    rows, columns, figsize_tool = aa.plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=6
     )
 
-    mask = fit_plotters.get_mask(fit=fit, should_plot_mask=should_plot_mask)
+    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask=should_plot_mask)
 
     if figsize is None:
         figsize = figsize_tool
@@ -56,14 +57,14 @@ def plot_fit_subplot(
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
-    image_plane_pix_grid = fit_plotters.get_image_plane_pix_grid(
+    image_plane_pix_grid = get_image_plane_pix_grid(
         should_plot_image_plane_pix, fit
     )
 
-    fit_plotters.plot_image(
+    aa.plot.imaging_fit.image(
         fit=fit,
         grid=image_plane_pix_grid,
-        mask=mask,
+        mask_overlay=mask_overlay,
         positions=positions,
         as_subplot=True,
         units=units,
@@ -87,7 +88,7 @@ def plot_fit_subplot(
         xyticksize=xyticksize,
         grid_pointsize=grid_pointsize,
         position_pointsize=position_pointsize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_filename="",
         output_format=output_format,
@@ -95,9 +96,9 @@ def plot_fit_subplot(
 
     plt.subplot(rows, columns, 2)
 
-    fit_plotters.plot_signal_to_noise_map(
+    aa.plot.imaging_fit.signal_to_noise_map(
         fit=fit,
-        mask=mask,
+        mask_overlay=mask_overlay,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -119,7 +120,7 @@ def plot_fit_subplot(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         position_pointsize=position_pointsize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_filename="",
         output_format=output_format,
@@ -127,9 +128,9 @@ def plot_fit_subplot(
 
     plt.subplot(rows, columns, 3)
 
-    fit_plotters.plot_model_data(
+    aa.plot.imaging_fit.model_image(
         fit=fit,
-        mask=mask,
+        mask_overlay=mask_overlay,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -157,9 +158,9 @@ def plot_fit_subplot(
 
     plt.subplot(rows, columns, 4)
 
-    fit_plotters.plot_residual_map(
+    aa.plot.imaging_fit.residual_map(
         fit=fit,
-        mask=mask,
+        mask_overlay=mask_overlay,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -187,9 +188,9 @@ def plot_fit_subplot(
 
     plt.subplot(rows, columns, 5)
 
-    fit_plotters.plot_normalized_residual_map(
+    aa.plot.imaging_fit.normalized_residual_map(
         fit=fit,
-        mask=mask,
+        mask_overlay=mask_overlay,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -217,9 +218,9 @@ def plot_fit_subplot(
 
     plt.subplot(rows, columns, 6)
 
-    fit_plotters.plot_chi_squared_map(
+    aa.plot.imaging_fit.chi_squared_map(
         fit=fit,
-        mask=mask,
+        mask_overlay=mask_overlay,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -245,7 +246,7 @@ def plot_fit_subplot(
         output_format=output_format,
     )
 
-    aa.plotter_util.output_subplot_array(
+    plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -254,7 +255,7 @@ def plot_fit_subplot(
     plt.close()
 
 
-def plot_fit_subplot_of_planes(
+def subplot_of_planes(
     fit,
     should_plot_mask=True,
     positions=None,
@@ -278,7 +279,7 @@ def plot_fit_subplot_of_planes(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    mask_pointsize=10,
+    mask_overlay_pointsize=10,
     position_pointsize=10,
     grid_pointsize=1,
     output_path=None,
@@ -293,7 +294,7 @@ def plot_fit_subplot_of_planes(
             or fit.tracer.planes[plane_index].has_pixelization
         ):
 
-            plot_fit_subplot_for_plane(
+            subplot_for_plane(
                 fit=fit,
                 plane_index=plane_index,
                 should_plot_mask=should_plot_mask,
@@ -319,14 +320,14 @@ def plot_fit_subplot_of_planes(
                 xyticksize=xyticksize,
                 grid_pointsize=grid_pointsize,
                 position_pointsize=position_pointsize,
-                mask_pointsize=mask_pointsize,
+                mask_overlay_pointsize=mask_overlay_pointsize,
                 output_path=output_path,
                 output_filename=output_filename,
                 output_format=output_format,
             )
 
 
-def plot_fit_subplot_for_plane(
+def subplot_for_plane(
     fit,
     plane_index,
     should_plot_mask=True,
@@ -352,7 +353,7 @@ def plot_fit_subplot_for_plane(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    mask_pointsize=10,
+    mask_overlay_pointsize=10,
     position_pointsize=10,
     grid_pointsize=1,
     output_path=None,
@@ -378,11 +379,11 @@ def plot_fit_subplot_for_plane(
 
     output_filename += "_" + str(plane_index)
 
-    rows, columns, figsize_tool = aa.plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=4
     )
 
-    mask = fit_plotters.get_mask(fit=fit, should_plot_mask=should_plot_mask)
+    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask=should_plot_mask)
 
     if figsize is None:
         figsize = figsize_tool
@@ -391,15 +392,15 @@ def plot_fit_subplot_for_plane(
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
-    image_plane_pix_grid = fit_plotters.get_image_plane_pix_grid(
+    image_plane_pix_grid = get_image_plane_pix_grid(
         should_plot_image_plane_pix, fit
     )
 
     plt.subplot(rows, columns, 1)
 
-    fit_plotters.plot_image(
+    aa.plot.imaging_fit.image(
         fit=fit,
-        mask=mask,
+        mask_overlay=mask_overlay,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=True,
@@ -424,7 +425,7 @@ def plot_fit_subplot_for_plane(
         xyticksize=xyticksize,
         grid_pointsize=grid_pointsize,
         position_pointsize=position_pointsize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_filename="",
         output_format=output_format,
@@ -432,10 +433,10 @@ def plot_fit_subplot_for_plane(
 
     plt.subplot(rows, columns, 2)
 
-    fit_plotters.plot_subtracted_image_of_plane(
+    subtracted_image_of_plane(
         fit=fit,
         plane_index=plane_index,
-        mask=mask,
+        mask_overlay=mask_overlay,
         image_plane_pix_grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=True,
@@ -457,7 +458,7 @@ def plot_fit_subplot_for_plane(
         titlesize=titlesize,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         position_pointsize=position_pointsize,
         xyticksize=xyticksize,
         output_path=output_path,
@@ -467,10 +468,10 @@ def plot_fit_subplot_for_plane(
 
     plt.subplot(rows, columns, 3)
 
-    fit_plotters.plot_model_image_of_plane(
+    model_image_of_plane(
         fit=fit,
         plane_index=plane_index,
-        mask=mask,
+        mask_overlay=mask_overlay,
         plot_mass_profile_centres=plot_mass_profile_centres,
         as_subplot=True,
         units=units,
@@ -492,7 +493,7 @@ def plot_fit_subplot_for_plane(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_filename="",
         output_format=output_format,
@@ -557,7 +558,7 @@ def plot_fit_subplot_for_plane(
 
         plt.subplot(rows, columns, 4, aspect=float(aspect_inv))
 
-        inversion_plotters.plot_pixelization_values(
+        aa.plot.inversion.reconstruction(
             inversion=fit.inversion,
             positions=None,
             should_plot_grid=False,
@@ -587,7 +588,7 @@ def plot_fit_subplot_for_plane(
             output_format=output_format,
         )
 
-    aa.plotter_util.output_subplot_array(
+    plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -596,7 +597,7 @@ def plot_fit_subplot_for_plane(
     plt.close()
 
 
-def plot_fit_individuals(
+def individuals(
     fit,
     should_plot_mask=True,
     positions=None,
@@ -634,8 +635,8 @@ def plot_fit_individuals(
         in the python interpreter window.
     """
 
-    mask = fit_plotters.get_mask(fit=fit, should_plot_mask=should_plot_mask)
-    image_plane_pix_grid = fit_plotters.get_image_plane_pix_grid(
+    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask=should_plot_mask)
+    image_plane_pix_grid = get_image_plane_pix_grid(
         should_plot_image_plane_pix, fit
     )
 
@@ -645,9 +646,9 @@ def plot_fit_individuals(
 
     if should_plot_image:
 
-        fit_plotters.plot_image(
+        aa.plot.imaging_fit.image(
             fit=fit,
-            mask=mask,
+            mask_overlay=mask_overlay,
             positions=positions,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
@@ -657,9 +658,9 @@ def plot_fit_individuals(
 
     if should_plot_noise_map:
 
-        fit_plotters.plot_noise_map(
+        aa.plot.imaging_fit.noise_map(
             fit=fit,
-            mask=mask,
+            mask_overlay=mask_overlay,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -668,9 +669,9 @@ def plot_fit_individuals(
 
     if should_plot_signal_to_noise_map:
 
-        fit_plotters.plot_signal_to_noise_map(
+        aa.plot.imaging_fit.signal_to_noise_map(
             fit=fit,
-            mask=mask,
+            mask_overlay=mask_overlay,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -679,9 +680,9 @@ def plot_fit_individuals(
 
     if should_plot_model_image:
 
-        fit_plotters.plot_model_data(
+        aa.plot.imaging_fit.model_image(
             fit=fit,
-            mask=mask,
+            mask_overlay=mask_overlay,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -690,9 +691,9 @@ def plot_fit_individuals(
 
     if should_plot_residual_map:
 
-        fit_plotters.plot_residual_map(
+        aa.plot.imaging_fit.residual_map(
             fit=fit,
-            mask=mask,
+            mask_overlay=mask_overlay,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -701,9 +702,9 @@ def plot_fit_individuals(
 
     if should_plot_normalized_residual_map:
 
-        fit_plotters.plot_normalized_residual_map(
+        aa.plot.imaging_fit.normalized_residual_map(
             fit=fit,
-            mask=mask,
+            mask_overlay=mask_overlay,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -712,9 +713,9 @@ def plot_fit_individuals(
 
     if should_plot_chi_squared_map:
 
-        fit_plotters.plot_chi_squared_map(
+        aa.plot.imaging_fit.chi_squared_map(
             fit=fit,
-            mask=mask,
+            mask_overlay=mask_overlay,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -725,7 +726,7 @@ def plot_fit_individuals(
 
         if fit.total_inversions == 1:
 
-            inversion_plotters.plot_pixelization_residual_map(
+            aa.plot.inversion.residual_map(
                 inversion=fit.inversion,
                 should_plot_grid=True,
                 units=units,
@@ -738,7 +739,7 @@ def plot_fit_individuals(
 
         if fit.total_inversions == 1:
 
-            inversion_plotters.plot_pixelization_normalized_residual_map(
+            aa.plot.inversion.normalized_residual_map(
                 inversion=fit.inversion,
                 should_plot_grid=True,
                 units=units,
@@ -751,7 +752,7 @@ def plot_fit_individuals(
 
         if fit.total_inversions == 1:
 
-            inversion_plotters.plot_pixelization_chi_squared_map(
+            aa.plot.inversion.chi_squared_map(
                 inversion=fit.inversion,
                 should_plot_grid=True,
                 units=units,
@@ -764,7 +765,7 @@ def plot_fit_individuals(
 
         if fit.total_inversions == 1:
 
-            inversion_plotters.plot_pixelization_regularization_weights(
+            aa.plot.inversion.regularization_weights(
                 inversion=fit.inversion,
                 should_plot_grid=True,
                 units=units,
@@ -777,10 +778,10 @@ def plot_fit_individuals(
 
         for plane_index in range(fit.tracer.total_planes):
 
-            fit_plotters.plot_subtracted_image_of_plane(
+            subtracted_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
-                mask=mask,
+                mask_overlay=mask_overlay,
                 units=units,
                 kpc_per_arcsec=kpc_per_arcsec,
                 output_path=output_path,
@@ -791,10 +792,10 @@ def plot_fit_individuals(
 
         for plane_index in range(fit.tracer.total_planes):
 
-            fit_plotters.plot_model_image_of_plane(
+            model_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
-                mask=mask,
+                mask_overlay=mask_overlay,
                 units=units,
                 kpc_per_arcsec=kpc_per_arcsec,
                 output_path=output_path,
@@ -818,3 +819,309 @@ def plot_fit_individuals(
                     output_filename=output_filename,
                     output_format=output_format,
                 )
+
+
+def subtracted_image_of_plane(
+    fit,
+    plane_index,
+    mask_overlay=None,
+    positions=None,
+    image_plane_pix_grid=None,
+    as_subplot=False,
+    units="arcsec",
+    kpc_per_arcsec=None,
+    figsize=(7, 7),
+    aspect="square",
+    cmap="jet",
+    norm="linear",
+    norm_min=None,
+    norm_max=None,
+    linthresh=0.05,
+    linscale=0.01,
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    title="Fit Model Image",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    mask_overlay_pointsize=10,
+    position_pointsize=10,
+    output_path=None,
+    output_format="show",
+    output_filename="fit_subtracted_image_of_plane",
+):
+    """Plot the model image of a specific plane of a lens fit.
+
+    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+
+    Parameters
+    -----------
+    fit : datas.fitting.fitting.AbstractFitter
+        The fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
+    image_index : int
+        The index of the datas in the datas-set of which the model image is plotted.
+    plane_indexes : int
+        The plane from which the model image is generated.
+    """
+
+    output_filename += "_" + str(plane_index)
+
+    if fit.tracer.total_planes > 1:
+
+        other_planes_model_images = [
+            model_image
+            for i, model_image in enumerate(
+                fit.model_images_of_planes
+            )
+            if i != plane_index
+        ]
+
+        subtracted_image = fit.image - sum(
+            other_planes_model_images
+        )
+
+    else:
+
+        subtracted_image = fit.image
+
+    aa.plot.array(
+        array=subtracted_image,
+        mask_overlay=mask_overlay,
+        grid=image_plane_pix_grid,
+        positions=positions,
+        as_subplot=as_subplot,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
+        position_pointsize=position_pointsize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+
+def model_image_of_plane(
+    fit,
+    plane_index,
+    mask_overlay=None,
+    positions=None,
+    plot_mass_profile_centres=True,
+    as_subplot=False,
+    units="arcsec",
+    kpc_per_arcsec=None,
+    figsize=(7, 7),
+    aspect="square",
+    cmap="jet",
+    norm="linear",
+    norm_min=None,
+    norm_max=None,
+    linthresh=0.05,
+    linscale=0.01,
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    title="Model Image",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    mask_overlay_pointsize=10,
+    position_pointsize=10,
+    output_path=None,
+    output_format="show",
+    output_filename="fit_model_image_of_plane",
+):
+    """Plot the model image of a specific plane of a lens fit.
+
+    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+
+    Parameters
+    -----------
+    fit : datas.fitting.fitting.AbstractFitter
+        The fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
+    plane_indexes : [int]
+        The plane from which the model image is generated.
+    """
+
+    output_filename += "_" + str(plane_index)
+
+    centres = get_mass_profile_centes(
+        plot_mass_profile_centres=plot_mass_profile_centres, fit=fit
+    )
+
+    aa.plot.array(
+        array=fit.model_images_of_planes[plane_index],
+        mask_overlay=mask_overlay,
+        positions=positions,
+        centres=centres,
+        as_subplot=as_subplot,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
+        position_pointsize=position_pointsize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+
+def contribution_maps(
+    fit,
+    mask_overlay=None,
+    positions=None,
+    as_subplot=False,
+    units="arcsec",
+    kpc_per_arcsec=None,
+    figsize=(7, 7),
+    aspect="square",
+    cmap="jet",
+    norm="linear",
+    norm_min=None,
+    norm_max=None,
+    linthresh=0.05,
+    linscale=0.01,
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    title="Contributions",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    mask_overlay_pointsize=10,
+    position_pointsize=10,
+    output_path=None,
+    output_format="show",
+    output_filename="fit_contribution_maps",
+):
+    """Plot the summed contribution maps of a hyper_galaxies-fit.
+
+    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+
+    Parameters
+    -----------
+    fit : datas.fitting.fitting.AbstractLensHyperFit
+        The hyper_galaxies-fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
+    image_index : int
+        The index of the datas in the datas-set of which the contribution_maps are plotted.
+    """
+
+    if len(fit.contribution_maps) > 1:
+        contribution_map = sum(fit.contribution_maps)
+    else:
+        contribution_map = fit.contribution_maps[0]
+
+    aa.plot.array(
+        array=contribution_map,
+        mask_overlay=mask_overlay,
+        positions=positions,
+        as_subplot=as_subplot,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
+        position_pointsize=position_pointsize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+
+def get_image_plane_pix_grid(should_plot_image_plane_pix, fit):
+
+    if fit.inversion is not None:
+        if (
+            should_plot_image_plane_pix
+            and fit.inversion.mapper.is_image_plane_pixelization
+        ):
+            return fit.tracer.pixelization_grids_of_planes_from_grid(grid=fit.grid)[-1]
+    else:
+        return None
+
+
+def get_mask_overlay(fit, should_plot_mask):
+    """Get the mask_overlays of the fit if the mask_overlays should be plotted on the fit.
+
+    Parameters
+    -----------
+    fit : datas.fitting.fitting.AbstractLensHyperFit
+        The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
+    should_plot_mask : bool
+        If *True*, the mask_overlays is plotted on the fit's datas.
+    """
+    if should_plot_mask:
+        return fit.mask
+    else:
+        return None
+
+
+def get_mass_profile_centes(plot_mass_profile_centres, fit):
+
+    if not hasattr(fit, "tracer"):
+        return None
+
+    if plot_mass_profile_centres:
+        return fit.tracer.image_plane.centres_of_galaxy_mass_profiles
+    else:
+        return None

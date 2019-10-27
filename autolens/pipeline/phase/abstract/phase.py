@@ -29,9 +29,7 @@ class AbstractPhase(af.AbstractPhase):
         """
 
         super().__init__(
-            phase_name=phase_name,
-            phase_tag=phase_tag,
-            phase_folders=phase_folders,
+            paths=af.Paths(phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders),
             optimizer_class=optimizer_class,
             auto_link_priors=auto_link_priors,
         )

@@ -2,7 +2,7 @@ import os
 
 import autofit as af
 from autoastro.plotters import galaxy_fit_plotters
-from autolens.pipeline.plotters import phase_plotters, hyper_plotters
+from autolens.plotters import phase_plotters, hyper_plotters
 
 
 def setting(section, name):
@@ -107,9 +107,9 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
 
 
 class PhaseImagingVisualizer(SubPlotVisualizer):
-    def __init__(self, lens_imaging, image_path):
+    def __init__(self, masked_imaging, image_path):
         super().__init__(image_path)
-        self.lens_imaging = lens_imaging
+        self.masked_imaging = masked_imaging
 
         self.should_plot_image_plane_pix = figure_setting(
             "plot_image_plane_adaptive_pixelization_grid"
@@ -200,12 +200,12 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
 
     def plot_ray_tracing(self, tracer, during_analysis):
         positions = (
-            self.lens_imaging.positions if self.should_plot_positions else None
+            self.masked_imaging.positions if self.should_plot_positions else None
         )
-        mask = self.lens_imaging.mask if self.should_plot_mask else None
+        mask = self.masked_imaging.mask if self.should_plot_mask else None
         phase_plotters.plot_ray_tracing_for_phase(
             tracer=tracer,
-            grid=self.lens_imaging.grid,
+            grid=self.masked_imaging.grid,
             during_analysis=during_analysis,
             mask=mask,
             extract_array_from_mask=self.extract_array_from_mask,
@@ -224,11 +224,11 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
             subplot_path=self.subplot_path,
         )
 
-    def plot_lens_imaging(self, fit, during_analysis):
+    def plot_masked_imaging(self, fit, during_analysis):
         positions = (
-            self.lens_imaging.positions if self.should_plot_positions else None
+            self.masked_imaging.positions if self.should_plot_positions else None
         )
-        phase_plotters.plot_lens_imaging_fit_for_phase(
+        phase_plotters.plot_masked_imaging_fit_for_phase(
             fit=fit,
             during_analysis=during_analysis,
             should_plot_mask=self.should_plot_mask,
@@ -263,13 +263,13 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         )
 
     def plot_imaging(self):
-        mask = self.lens_imaging.mask if self.should_plot_mask else None
+        mask = self.masked_imaging.mask if self.should_plot_mask else None
         positions = (
-            self.lens_imaging.positions if self.should_plot_positions else None
+            self.masked_imaging.positions if self.should_plot_positions else None
         )
 
         phase_plotters.plot_imaging_for_phase(
-            imaging=self.lens_imaging.imaging,
+            imaging=self.masked_imaging.imaging,
             mask=mask,
             positions=positions,
             extract_array_from_mask=self.extract_array_from_mask,
@@ -287,7 +287,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         )
 
     def plot_hyper_images(self, last_results):
-        mask = self.lens_imaging.mask
+        mask = self.masked_imaging.mask
         if self.should_plot_mask and mask is not None and last_results is not None:
             phase_plotters.plot_hyper_images_for_phase(
                 hyper_model_image_2d=mask.mapping.scaled_array_2d_from_array_1d(
@@ -295,10 +295,10 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
                 ),
                 hyper_galaxy_image_2d_path_dict=last_results.hyper_galaxy_image_2d_path_dict,
                 binned_hyper_galaxy_image_2d_path_dict=last_results.binned_hyper_galaxy_image_2d_path_dict(
-                    binned_grid=self.lens_imaging.grid.binned
+                    binned_grid=self.masked_imaging.grid.binned
                 ),
-                mask=self.lens_imaging.mask,
-                binned_grid=self.lens_imaging.grid.binned,
+                mask=self.masked_imaging.mask,
+                binned_grid=self.masked_imaging.grid.binned,
                 extract_array_from_mask=self.extract_array_from_mask,
                 zoom_around_mask=self.zoom_around_mask,
                 units=self.plot_units,

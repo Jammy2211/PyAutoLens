@@ -6,13 +6,13 @@ from autolens.pipeline import visualizer
 
 
 class Analysis(af.Analysis):
-    def __init__(self, lens_imaging, cosmology, image_path=None, results=None):
+    def __init__(self, masked_imaging, cosmology, image_path=None, results=None):
         self.cosmology = cosmology
         self.visualizer = visualizer.PhaseImagingVisualizer(
-            lens_imaging, image_path
+            masked_imaging, image_path
         )
 
-        self.lens_data = lens_imaging
+        self.lens_data = masked_imaging
 
         if results is not None and results.last is not None:
             last_results = results.last
@@ -26,7 +26,7 @@ class Analysis(af.Analysis):
             self.hyper_model_image = last_results.hyper_model_image
 
             self.binned_hyper_galaxy_image_path_dict = last_results.binned_hyper_galaxy_image_path_dict(
-                binned_grid=lens_imaging.grid.binned
+                binned_grid=masked_imaging.grid.binned
             )
 
             self.visualizer.plot_hyper_images(last_results)
@@ -62,7 +62,7 @@ class Analysis(af.Analysis):
             instance=instance
         )
 
-        fit = self.lens_imaging_fit_for_tracer(
+        fit = self.masked_imaging_fit_for_tracer(
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -126,7 +126,7 @@ class Analysis(af.Analysis):
         else:
             return None
 
-    def lens_imaging_fit_for_tracer(
+    def masked_imaging_fit_for_tracer(
             self, tracer, hyper_image_sky, hyper_background_noise
     ):
 
@@ -145,13 +145,13 @@ class Analysis(af.Analysis):
             instance=instance
         )
 
-        fit = self.lens_imaging_fit_for_tracer(
+        fit = self.masked_imaging_fit_for_tracer(
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
         self.visualizer.plot_ray_tracing(fit.tracer, during_analysis)
-        self.visualizer.plot_lens_imaging(fit, during_analysis)
+        self.visualizer.plot_masked_imaging(fit, during_analysis)
 
     def tracer_for_instance(self, instance):
         return ray_tracing.Tracer.from_galaxies(

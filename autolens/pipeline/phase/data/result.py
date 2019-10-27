@@ -13,7 +13,7 @@ class Result(abstract.result.Result):
             instance=self.constant
         )
 
-        return self.analysis.lens_imaging_fit_for_tracer(
+        return self.analysis.masked_imaging_fit_for_tracer(
             tracer=self.most_likely_tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,

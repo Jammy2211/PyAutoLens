@@ -1,4 +1,4 @@
-from autolens.fit.plotters import lens_imaging_fit_plotters
+from autolens.fit.plotters import masked_imaging_fit_plotters
 from test import simulation_util
 
 imaging = simulation_util.load_test_imaging(
@@ -52,7 +52,7 @@ def fit_with_offset_centre(centre):
 
 fit = fit_with_offset_centre(centre=(1.0, 1.0))
 
-lens_imaging_fit_plotters.plot_fit_subplot(
+masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
@@ -62,7 +62,7 @@ lens_imaging_fit_plotters.plot_fit_subplot(
 fit = fit_with_offset_centre(centre=(1.05, 1.05))
 
 
-lens_imaging_fit_plotters.plot_fit_subplot(
+masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
@@ -71,7 +71,7 @@ lens_imaging_fit_plotters.plot_fit_subplot(
 
 fit = fit_with_offset_centre(centre=(1.1, 1.1))
 
-lens_imaging_fit_plotters.plot_fit_subplot(
+masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
@@ -80,7 +80,7 @@ lens_imaging_fit_plotters.plot_fit_subplot(
 
 fit = fit_with_offset_centre(centre=(0.95, 0.95))
 
-lens_imaging_fit_plotters.plot_fit_subplot(
+masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
@@ -89,7 +89,7 @@ lens_imaging_fit_plotters.plot_fit_subplot(
 
 fit = fit_with_offset_centre(centre=(5.9, 5.9))
 
-lens_imaging_fit_plotters.plot_fit_subplot(
+masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
     should_plot_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],

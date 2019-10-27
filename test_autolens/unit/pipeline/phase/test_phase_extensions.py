@@ -44,7 +44,7 @@ def make_result(masked_imaging_7x7, instance):
         previous_variable=af.ModelMapper(),
         gaussian_tuples=None,
         analysis=al.PhaseImaging.Analysis(
-            lens_imaging=masked_imaging_7x7,
+            masked_imaging=masked_imaging_7x7,
             cosmology=cosmo.Planck15,
             image_path="",
         ),
@@ -441,7 +441,7 @@ class TestImagePassing(object):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
         analysis = al.PhaseImaging.Analysis(
-            lens_imaging=masked_imaging_7x7,
+            masked_imaging=masked_imaging_7x7,
             cosmology=None,
             results=results_collection,
             image_path="",
@@ -478,7 +478,7 @@ class TestImagePassing(object):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
         analysis = al.PhaseImaging.Analysis(
-            lens_imaging=masked_imaging_7x7,
+            masked_imaging=masked_imaging_7x7,
             cosmology=cosmo.Planck15,
             results=results_collection,
             image_path="",
@@ -514,8 +514,8 @@ class TestImagePassing(object):
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.ImagingFit.from_masked_data_and_tracer(
-            lens_data=masked_imaging_7x7, tracer=tracer
+        fit = al.ImagingFit(
+            masked_imaging=masked_imaging_7x7, tracer=tracer
         )
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
@@ -637,7 +637,7 @@ class TestHyperGalaxyPhase(object):
         )
         lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.ImagingFit.from_masked_data_and_tracer(
+        fit = al.ImagingFit(
             lens_data=lens_data,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,

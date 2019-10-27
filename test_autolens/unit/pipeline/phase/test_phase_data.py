@@ -43,11 +43,11 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
         assert (
-            analysis.lens_data.image(return_in_2d=True, return_masked=False)
+            analysis.lens_data.image.in_2d
             == imaging_7x7.image
         )
         assert (
-            analysis.lens_data.noise_map(return_in_2d=True, return_masked=False)
+            analysis.lens_data.noise_map.in_2d
             == imaging_7x7.noise_map
         )
 
@@ -582,7 +582,7 @@ class TestPhase(object):
 
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = analysis.lens_imaging_fit_for_tracer(
+        fit = analysis.masked_imaging_fit_for_tracer(
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
@@ -603,7 +603,7 @@ class TestPhase(object):
 
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = analysis.lens_imaging_fit_for_tracer(
+        fit = analysis.masked_imaging_fit_for_tracer(
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
@@ -1016,7 +1016,7 @@ class TestResult(object):
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
         lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.ImagingFit.from_masked_data_and_tracer(
+        fit = al.ImagingFit(
             lens_data=lens_data, tracer=tracer
         )
 
@@ -1048,7 +1048,7 @@ class TestResult(object):
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
         lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.ImagingFit.from_masked_data_and_tracer(
+        fit = al.ImagingFit(
             lens_data=lens_data,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
