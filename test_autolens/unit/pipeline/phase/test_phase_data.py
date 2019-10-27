@@ -103,7 +103,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.inner_mask_radii = 0.5
 
         mask_input = aa.mask.circular(
-            shape=imaging_7x7.shape, pixel_scales=1, sub_size=1, radius_arcsec=1.5
+            shape_2d=imaging_7x7.shape_2d, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -120,7 +120,7 @@ class TestPhase(object):
 
         def mask_function(image, sub_size):
             return aa.mask.circular(
-                shape=image.shape, pixel_scales=1, sub_size=sub_size, radius_arcsec=1.4
+                shape_2d=image.shape_2d, pixel_scales=1, sub_size=sub_size, radius_arcsec=1.4
             )
 
         mask_from_function = mask_function(image=imaging_7x7.image, sub_size=1)
@@ -153,7 +153,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.mask_function = None
 
         mask_input = aa.mask.circular(
-            shape=imaging_7x7.shape, pixel_scales=1, sub_size=1, radius_arcsec=1.5
+            shape_2d=imaging_7x7.shape_2d, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
         phase_imaging_7x7.meta_data_fit.sub_size = 1
@@ -162,7 +162,7 @@ class TestPhase(object):
         )
 
         assert (analysis.masked_imaging.mask == mask_input).all()
-        assert analysis.masked_imaging.sub_size == 1
+        assert analysis.masked_imaging.mask.sub_size == 1
 
         phase_imaging_7x7.meta_data_fit.sub_size = 2
         analysis = phase_imaging_7x7.make_analysis(
@@ -170,7 +170,7 @@ class TestPhase(object):
         )
 
         assert (analysis.masked_imaging.mask == mask_input).all()
-        assert analysis.masked_imaging.sub_size == 2
+        assert analysis.masked_imaging.mask.sub_size == 2
 
     def test__make_analysis__positions_are_input__are_used_in_analysis(
         self, phase_imaging_7x7, imaging_7x7
@@ -387,38 +387,6 @@ class TestPhase(object):
         assert analysis.masked_imaging.pixel_scale_interpolation_grid == 0.1
         assert hasattr(analysis.masked_imaging.grid, "interpolator")
         assert hasattr(analysis.masked_imaging.blurring_grid, "interpolator")
-
-    def test__make_analysis__inversion_pixel_limit__is_input__used_in_analysis(
-        self, phase_imaging_7x7, imaging_7x7, mask_7x7
-    ):
-        phase_imaging_7x7.galaxies.lens = al.GalaxyModel(
-            redshift=0.5,
-            pixelization=al.pix.VoronoiBrightnessImage,
-            regularization=al.reg.Constant,
-        )
-        phase_imaging_7x7.meta_data_fit.inversion_pixel_limit = 5
-
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
-
-        assert (
-            analysis.masked_imaging.pixel_scale_binned_grid == mask_7x7.pixel_scales
-        )
-
-        # There are 9 pixels in the mask, so to meet the inversoin pixel limit the pixel scale will be rescaled to the
-        # masks's pixel scale * 2.0
-        phase_imaging_7x7.meta_data_fit.inversion_pixel_limit = 5
-
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
-
-        assert (
-            analysis.masked_imaging.pixel_scale_binned_grid == mask_7x7.pixel_scales
-        )
-
-        # This image cannot meet the requirement, so will raise an error. * 2.0
-        phase_imaging_7x7.meta_data_fit.inversion_pixel_limit = 10
-
-        with pytest.raises(exc.DataException):
-            phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
     def test__pixelization_property_extracts_pixelization(
         self, mask_function_7x7, imaging_7x7
@@ -708,110 +676,6 @@ class TestPhase(object):
 
         assert analysis.masked_imaging.preload_pixelization_grids_of_planes == 1
 
-    #
-    # def test__uses_pixelization_preload_grids_if_possible(
-    #     self, imaging_7x7, mask_function_7x7
-    # ):
-    #     phase_imaging_7x7 = al.PhaseImaging(
-    #         phase_name="test_phase", mask_function=mask_function_7x7
-    #     )
-    #
-    #     analysis = phase_imaging_7x7.make_analysis(simulate=imaging_7x7)
-    #
-    #     galaxy = al.Galaxy(redshift=0.5)
-    #
-    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
-    #         galaxies=[galaxy, galaxy], grid=analysis.masked_imaging.grid
-    #     )
-    #
-    #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
-    #
-    #     galaxy_pix_which_doesnt_use_pix_grid = al.Galaxy(
-    #         redshift=0.5, pixelization=al.pix.Rectangular(), regularization=al.reg.Constant()
-    #     )
-    #
-    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
-    #         galaxies=[galaxy_pix_which_doesnt_use_pix_grid],
-    #         grid=analysis.masked_imaging.grid,
-    #     )
-    #
-    #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
-    #
-    #     galaxy_pix_which_uses_pix_grid = al.Galaxy(
-    #         redshift=0.5,
-    #         pixelization=al.pix.VoronoiMagnification(),
-    #         regularization=al.reg.Constant(),
-    #     )
-    #
-    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
-    #         galaxies=[galaxy_pix_which_uses_pix_grid],
-    #         grid=analysis.masked_imaging.grid,
-    #     )
-    #
-    #     assert (
-    #         preload_pixelization_grid.pixelization
-    #         == np.array(
-    #             [
-    #                 [1.0, -1.0],
-    #                 [1.0, 0.0],
-    #                 [1.0, 1.0],
-    #                 [0.0, -1.0],
-    #                 [0.0, 0.0],
-    #                 [0.0, 1.0],
-    #                 [-1.0, -1.0],
-    #                 [-1.0, 0.0],
-    #                 [-1.0, 1.0],
-    #             ]
-    #         )
-    #     ).all()
-    #
-    #     galaxy_pix_which_uses_brightness = al.Galaxy(
-    #         redshift=0.5,
-    #         pixelization=al.pix.VoronoiBrightnessImage(pixels=9),
-    #         regularization=al.reg.Constant(),
-    #     )
-    #
-    #     galaxy_pix_which_uses_brightness.hyper_galaxy_cluster_image_1d = np.array(
-    #         [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
-    #     )
-    #
-    #     phase_imaging_7x7 = al.PhaseImaging(
-    #         phase_name="test_phase",
-    #         galaxies=dict(
-    #             lens=al.GalaxyModel(
-    #                 redshift=0.5,
-    #                 pixelization=al.pix.VoronoiBrightnessImage,
-    #                 regularization=al.reg.Constant,
-    #             )
-    #         ),
-    #         inversion_pixel_limit=5,
-    #         mask_function=mask_function_7x7,
-    #     )
-    #
-    #     analysis = phase_imaging_7x7.make_analysis(simulate=imaging_7x7)
-    #
-    #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
-    #         galaxies=[galaxy_pix_which_uses_brightness],
-    #         grid=analysis.masked_imaging.grid,
-    #     )
-    #
-    #     assert (
-    #         preload_pixelization_grid.pixelization
-    #         == np.array(
-    #             [
-    #                 [0.0, 1.0],
-    #                 [1.0, -1.0],
-    #                 [-1.0, -1.0],
-    #                 [-1.0, 1.0],
-    #                 [0.0, -1.0],
-    #                 [1.0, 1.0],
-    #                 [-1.0, 0.0],
-    #                 [0.0, 0.0],
-    #                 [1.0, 0.0],
-    #             ]
-    #         )
-    #     ).all()
-
 
 class TestResult(object):
     def test__results_of_phase_are_available_as_properties(
@@ -944,7 +808,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        phase_imaging_7x7.galaxies.source.binned_hyper_galaxy_image = np.ones(9)
+        phase_imaging_7x7.galaxies.source.hyper_galaxy_image = np.ones(9)
 
         result = phase_imaging_7x7.run(data=imaging_7x7)
 
@@ -990,7 +854,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        phase_imaging_7x7.galaxies.source.binned_hyper_galaxy_image = np.ones(9)
+        phase_imaging_7x7.galaxies.source.hyper_galaxy_image = np.ones(9)
 
         result = phase_imaging_7x7.run(data=imaging_7x7)
 
@@ -1026,8 +890,8 @@ class TestResult(object):
     def test__fit_figure_of_merit__includes_hyper_image_and_noise__matches_fit(
         self, imaging_7x7, mask_function_7x7
     ):
-        hyper_image_sky = al.HyperImageSky(sky_scale=1.0)
-        hyper_background_noise = al.HyperBackgroundNoise(noise_scale=1.0)
+        hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
+        hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
         lens_galaxy = al.Galaxy(
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
