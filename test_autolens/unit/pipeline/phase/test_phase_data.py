@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
+import autoarray as aa
 import autofit as af
 import autolens as al
 from autolens import exc
@@ -37,19 +38,19 @@ def clean_images():
 
 
 class TestPhase(object):
-    def test__make_analysis(
-        self, phase_imaging_7x7, imaging_7x7
+    def test__make_analysis__masks_image_and_noise_map_correctly(
+        self, phase_imaging_7x7, imaging_7x7, mask_7x7
     ):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
         assert (
-            analysis.lens_data.image.in_2d
-            == imaging_7x7.image
-        )
+            analysis.masked_imaging.image.in_2d
+            == imaging_7x7.image.in_2d * np.invert(mask_7x7)
+        ).all()
         assert (
-            analysis.lens_data.noise_map.in_2d
-            == imaging_7x7.noise_map
-        )
+            analysis.masked_imaging.noise_map.in_2d
+            == imaging_7x7.noise_map.in_2d * np.invert(mask_7x7)
+        ).all()
 
     def test__make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(
         self, phase_imaging_7x7, imaging_7x7
@@ -58,32 +59,32 @@ class TestPhase(object):
 
         phase_imaging_7x7.meta_data_fit.mask_function = None
 
-        mask_input = al.Mask.circular(
-            shape=imaging_7x7.shape, pixel_scales=1, sub_size=1, radius_arcsec=1.5
+        mask_input = aa.mask.circular(
+            shape_2d=imaging_7x7.shape_2d, pixel_scales=1.0, sub_size=1, radius_arcsec=1.5
         )
 
         analysis = phase_imaging_7x7.make_analysis(
             data=imaging_7x7, mask=mask_input
         )
 
-        assert (analysis.lens_data.mask == mask_input).all()
+        assert (analysis.masked_imaging.mask == mask_input).all()
 
         # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
 
         def mask_function(image, sub_size):
-            return al.Mask.circular(
-                shape=image.shape, pixel_scales=1, sub_size=sub_size, radius_arcsec=0.3
+            return aa.mask.circular(
+                shape_2d=image.shape_2d, pixel_scales=1.0, sub_size=sub_size, radius_arcsec=0.3
             )
 
         mask_from_function = mask_function(image=imaging_7x7.image, sub_size=1)
         phase_imaging_7x7.meta_data_fit.mask_function = mask_function
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=None)
-        assert (analysis.lens_data.mask == mask_from_function).all()
+        assert (analysis.masked_imaging.mask == mask_from_function).all()
         analysis = phase_imaging_7x7.make_analysis(
             data=imaging_7x7, mask=mask_input
         )
-        assert (analysis.lens_data.mask == mask_from_function).all()
+        assert (analysis.masked_imaging.mask == mask_from_function).all()
 
         # If no mask is suppled, nor a mask function, we should use the default mask. This extends behind the edge of
         # 5x5 image, so will raise a MaskException.
@@ -101,7 +102,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.mask_function = None
         phase_imaging_7x7.meta_data_fit.inner_mask_radii = 0.5
 
-        mask_input = al.Mask.circular(
+        mask_input = aa.mask.circular(
             shape=imaging_7x7.shape, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
@@ -113,12 +114,12 @@ class TestPhase(object):
 
         mask_input[3, 3] = True
 
-        assert (analysis.lens_data.mask == mask_input).all()
+        assert (analysis.masked_imaging.mask == mask_input).all()
 
         # If a mask function is supplied, we should use this mask, regardless of whether an input mask is supplied.
 
         def mask_function(image, sub_size):
-            return al.Mask.circular(
+            return aa.mask.circular(
                 shape=image.shape, pixel_scales=1, sub_size=sub_size, radius_arcsec=1.4
             )
 
@@ -130,12 +131,12 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.mask_function = mask_function
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=None)
-        assert (analysis.lens_data.mask == mask_from_function).all()
+        assert (analysis.masked_imaging.mask == mask_from_function).all()
 
         analysis = phase_imaging_7x7.make_analysis(
             data=imaging_7x7, mask=mask_input
         )
-        assert (analysis.lens_data.mask == mask_from_function).all()
+        assert (analysis.masked_imaging.mask == mask_from_function).all()
 
         # If no mask is suppled, nor a mask function, we should use the default mask.
 
@@ -151,7 +152,7 @@ class TestPhase(object):
 
         phase_imaging_7x7.meta_data_fit.mask_function = None
 
-        mask_input = al.Mask.circular(
+        mask_input = aa.mask.circular(
             shape=imaging_7x7.shape, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
@@ -160,16 +161,16 @@ class TestPhase(object):
             data=imaging_7x7, mask=mask_input
         )
 
-        assert (analysis.lens_data.mask == mask_input).all()
-        assert analysis.lens_data.sub_size == 1
+        assert (analysis.masked_imaging.mask == mask_input).all()
+        assert analysis.masked_imaging.sub_size == 1
 
         phase_imaging_7x7.meta_data_fit.sub_size = 2
         analysis = phase_imaging_7x7.make_analysis(
             data=imaging_7x7, mask=mask_input
         )
 
-        assert (analysis.lens_data.mask == mask_input).all()
-        assert analysis.lens_data.sub_size == 2
+        assert (analysis.masked_imaging.mask == mask_input).all()
+        assert analysis.masked_imaging.sub_size == 2
 
     def test__make_analysis__positions_are_input__are_used_in_analysis(
         self, phase_imaging_7x7, imaging_7x7
@@ -183,12 +184,12 @@ class TestPhase(object):
         )
 
         assert (
-            analysis.lens_data.positions[0][0] == np.array([1.0, 1.0])
+            analysis.masked_imaging.positions[0][0] == np.array([1.0, 1.0])
         ).all()
         assert (
-            analysis.lens_data.positions[0][1] == np.array([2.0, 2.0])
+            analysis.masked_imaging.positions[0][1] == np.array([2.0, 2.0])
         ).all()
-        assert analysis.lens_data.positions_threshold == 0.2
+        assert analysis.masked_imaging.positions_threshold == 0.2
 
         # If position threshold is input (not None) and but no positions are supplied, raise an error
 
@@ -383,9 +384,9 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.pixel_scale_interpolation_grid = 0.1
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
-        assert analysis.lens_data.pixel_scale_interpolation_grid == 0.1
-        assert hasattr(analysis.lens_data.grid, "interpolator")
-        assert hasattr(analysis.lens_data.blurring_grid, "interpolator")
+        assert analysis.masked_imaging.pixel_scale_interpolation_grid == 0.1
+        assert hasattr(analysis.masked_imaging.grid, "interpolator")
+        assert hasattr(analysis.masked_imaging.blurring_grid, "interpolator")
 
     def test__make_analysis__inversion_pixel_limit__is_input__used_in_analysis(
         self, phase_imaging_7x7, imaging_7x7, mask_7x7
@@ -400,7 +401,7 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
         assert (
-            analysis.lens_data.pixel_scale_binned_grid == mask_7x7.pixel_scales
+            analysis.masked_imaging.pixel_scale_binned_grid == mask_7x7.pixel_scales
         )
 
         # There are 9 pixels in the mask, so to meet the inversoin pixel limit the pixel scale will be rescaled to the
@@ -410,7 +411,7 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
         assert (
-            analysis.lens_data.pixel_scale_binned_grid == mask_7x7.pixel_scales
+            analysis.masked_imaging.pixel_scale_binned_grid == mask_7x7.pixel_scales
         )
 
         # This image cannot meet the requirement, so will raise an error. * 2.0
@@ -466,14 +467,14 @@ class TestPhase(object):
         )
 
     def test__default_mask_function(self, phase_imaging_7x7, imaging_7x7):
-        lens_data = al.MaskedImaging(
+        masked_imaging = al.MaskedImaging(
             imaging=imaging_7x7,
             mask=phase_imaging_7x7.meta_data_fit.mask_function(
                 image=imaging_7x7.image, sub_size=1
             ),
         )
 
-        assert len(lens_data.image.in_1d) == 9
+        assert len(masked_imaging.image.in_1d) == 9
 
     def test__check_if_phase_uses_cluster_inversion(self, mask_function_7x7):
         phase_imaging_7x7 = al.PhaseImaging(
@@ -720,7 +721,7 @@ class TestPhase(object):
     #     galaxy = al.Galaxy(redshift=0.5)
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
-    #         galaxies=[galaxy, galaxy], grid=analysis.lens_data.grid
+    #         galaxies=[galaxy, galaxy], grid=analysis.masked_imaging.grid
     #     )
     #
     #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
@@ -731,7 +732,7 @@ class TestPhase(object):
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
     #         galaxies=[galaxy_pix_which_doesnt_use_pix_grid],
-    #         grid=analysis.lens_data.grid,
+    #         grid=analysis.masked_imaging.grid,
     #     )
     #
     #     assert (preload_pixelization_grid.pixelization == np.array([[0.0, 0.0]])).all()
@@ -744,7 +745,7 @@ class TestPhase(object):
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
     #         galaxies=[galaxy_pix_which_uses_pix_grid],
-    #         grid=analysis.lens_data.grid,
+    #         grid=analysis.masked_imaging.grid,
     #     )
     #
     #     assert (
@@ -791,7 +792,7 @@ class TestPhase(object):
     #
     #     preload_pixelization_grid = analysis.setup_peload_pixelization_grid(
     #         galaxies=[galaxy_pix_which_uses_brightness],
-    #         grid=analysis.lens_data.grid,
+    #         grid=analysis.masked_imaging.grid,
     #     )
     #
     #     assert (
@@ -1014,10 +1015,10 @@ class TestResult(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
-        lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.ImagingFit(
-            lens_data=lens_data, tracer=tracer
+            masked_imaging=masked_imaging, tracer=tracer
         )
 
         assert fit.likelihood == fit_figure_of_merit
@@ -1046,10 +1047,10 @@ class TestResult(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
-        lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.ImagingFit(
-            lens_data=lens_data,
+            masked_imaging=masked_imaging,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,

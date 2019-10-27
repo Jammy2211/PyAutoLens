@@ -42,11 +42,11 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
         assert (
-            analysis.lens_data.image.in_2d
+            analysis.masked_imaging.image.in_2d
             == imaging_7x7.image
         )
         assert (
-            analysis.lens_data.noise_map.in_2d
+            analysis.masked_imaging.noise_map.in_2d
             == imaging_7x7.noise_map
         )
 
@@ -191,11 +191,11 @@ class TestPhase(object):
 
         assert (analysis.masked_imaging.mask == binned_up_mask).all()
 
-        lens_data = al.MaskedImaging(
+        masked_imaging = al.MaskedImaging(
             imaging=imaging_7x7, mask=mask_7x7_1_pix
         )
 
-        binned_up_lens_data = lens_data.new_masked_imaging_with_binned_up_imaging_and_mask(
+        binned_up_lens_data = masked_imaging.new_masked_imaging_with_binned_up_imaging_and_mask(
             bin_up_factor=2
         )
 
@@ -239,10 +239,10 @@ class TestPhase(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.mask_function(image=imaging_7x7.image, sub_size=2)
-        lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.ImagingFit(
-            lens_data=lens_data, tracer=tracer
+            masked_imaging=masked_imaging, tracer=tracer
         )
 
         assert fit.likelihood == fit_figure_of_merit
@@ -314,10 +314,10 @@ class TestPhase(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
-        lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.ImagingFit(
-            lens_data=lens_data, tracer=tracer
+            masked_imaging=masked_imaging, tracer=tracer
         )
 
         assert fit.likelihood == fit_figure_of_merit
@@ -346,10 +346,10 @@ class TestPhase(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
-        lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.ImagingFit(
-            lens_data=lens_data,
+            masked_imaging=masked_imaging,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,

@@ -51,7 +51,7 @@ class AnalysisSingle(Analysis):
 
     def fit_for_instance(self, instance):
         """
-        Determine the fit of a lens galaxy and source galaxy to the lens_data in
+        Determine the fit of a lens galaxy and source galaxy to the masked_imaging in
         this lens.
 
         Parameters
@@ -63,7 +63,7 @@ class AnalysisSingle(Analysis):
         -------
         fit: Fit
             A fractional value indicating how well this model fit and the model
-            lens_data itself
+            masked_imaging itself
         """
         return galaxy_fit.GalaxyFit(
             galaxy_data=self.galaxy_data, model_galaxies=instance.galaxies
@@ -213,7 +213,7 @@ class PhaseGalaxy(af.AbstractPhase):
 
     def make_analysis(self, galaxy_data, results=None, mask=None):
         """
-        Create an lens object. Also calls the prior passing and lens_data modifying
+        Create an lens object. Also calls the prior passing and masked_imaging modifying
         functions to allow child classes to change the behaviour of the phase.
 
         Parameters

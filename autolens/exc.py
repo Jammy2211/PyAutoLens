@@ -1,5 +1,5 @@
 import autofit as af
-
+from autoarray.exc import *
 
 class RayTracingException(af.exc.FitException):
     pass

@@ -29,7 +29,7 @@ class Analysis(af.Analysis):
 
     def fit(self, instance):
         """
-        Determine the fit of a lens galaxy and source galaxy to the lens_data in this lens.
+        Determine the fit of a lens galaxy and source galaxy to the masked_imaging in this lens.
 
         Parameters
         ----------
@@ -39,7 +39,7 @@ class Analysis(af.Analysis):
         Returns
         -------
         fit : Fit
-            A fractional value indicating how well this model fit and the model lens_data itself
+            A fractional value indicating how well this model fit and the model masked_imaging itself
         """
 
         self.associate_images(instance=instance)

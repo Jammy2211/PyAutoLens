@@ -635,10 +635,10 @@ class TestHyperGalaxyPhase(object):
         mask = phase_imaging_7x7.meta_data_fit.mask_function(
             image=imaging_7x7.image, sub_size=2
         )
-        lens_data = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.ImagingFit(
-            lens_data=lens_data,
+            masked_imaging=masked_imaging,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -653,7 +653,7 @@ class TestHyperGalaxyPhase(object):
         instance.hyper_galaxy = al.HyperGalaxy(noise_factor=0.0)
 
         analysis = phase_imaging_7x7_hyper.hyper_phases[0].Analysis(
-            lens_data=lens_data,
+            masked_imaging=masked_imaging,
             hyper_model_image=fit.model_image(return_in_2d=False),
             hyper_galaxy_image=fit.model_image(return_in_2d=False),
             image_path=None,
