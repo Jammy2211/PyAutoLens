@@ -14,13 +14,11 @@ def make_phase_plotter_setup():
 def test__plot_imaging_for_phase(
     imaging_7x7, mask_7x7, general_config, phase_plotter_path, plot_patch
 ):
-    al.phase_plotters.plot_imaging_for_phase(
+    al.plot.phase.imaging_of_phase(
         imaging=imaging_7x7,
-        mask=mask_7x7,
+        mask_overlay=mask_7x7,
         positions=None,
         units="arcsec",
-        zoom_around_mask=True,
-        extract_array_from_mask=True,
         should_plot_as_subplot=True,
         should_plot_image=True,
         should_plot_noise_map=False,
@@ -53,11 +51,11 @@ def test__plot_imaging_for_phase(
 def test__plot_ray_tracing_for_phase__dependent_on_input(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, phase_plotter_path, plot_patch
 ):
-    al.phase_plotters.plot_ray_tracing_for_phase(
+    al.plot.phase.ray_tracing_of_phase(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         during_analysis=False,
-        mask=mask_7x7,
+        mask_overlay=mask_7x7,
         positions=None,
         units="arcsec",
         should_plot_as_subplot=True,
@@ -94,10 +92,10 @@ def test__plot_ray_tracing_for_phase__dependent_on_input(
     )
 
 
-def test__lens_fit_for_phase__source_and_lens__depedent_on_input(
+def test__imaging_fit_for_phase__source_and_lens__depedent_on_input(
     masked_imaging_fit_x2_plane_7x7, phase_plotter_path, plot_patch
 ):
-    al.phase_plotters.plot_masked_imaging_fit_for_phase(
+    al.plot.phase.imaging_fit_of_phase(
         fit=masked_imaging_fit_x2_plane_7x7,
         during_analysis=False,
         should_plot_mask=True,
@@ -170,15 +168,13 @@ def test__lens_fit_for_phase__source_and_lens__depedent_on_input(
 def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
     hyper_model_image_7x7, mask_7x7, phase_plotter_path, plot_patch
 ):
-    al.phase_plotters.plot_hyper_images_for_phase(
-        hyper_model_image_2d=hyper_model_image_7x7,
-        hyper_galaxy_image_2d_path_dict=None,
-        binned_hyper_galaxy_image_2d_path_dict=None,
-        mask=mask_7x7,
+    al.plot.phase.plot_hyper_images_for_phase(
+        hyper_model_image=hyper_model_image_7x7,
+        hyper_galaxy_image_path_dict=None,
+        mask_overlay=mask_7x7,
         units="arcsec",
         should_plot_hyper_model_image=True,
         should_plot_hyper_galaxy_images=False,
-        should_plot_binned_hyper_galaxy_images=False,
         visualize_path=phase_plotter_path,
     )
 
@@ -187,9 +183,5 @@ def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
     )
     assert (
         phase_plotter_path + "hyper_galaxies/hyper_galaxy_images.png"
-        not in plot_patch.paths
-    )
-    assert (
-        phase_plotter_path + "hyper_galaxies/hyper_galaxy_cluster_images.png"
         not in plot_patch.paths
     )

@@ -203,7 +203,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
             self.masked_imaging.positions if self.should_plot_positions else None
         )
         mask = self.masked_imaging.mask if self.should_plot_mask else None
-        phase_plotters.plot_ray_tracing_for_phase(
+        phase_plotters.ray_tracing_of_phase(
             tracer=tracer,
             grid=self.masked_imaging.grid,
             during_analysis=during_analysis,
@@ -228,7 +228,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         positions = (
             self.masked_imaging.positions if self.should_plot_positions else None
         )
-        phase_plotters.plot_masked_imaging_fit_for_phase(
+        phase_plotters.imaging_fit_of_phase(
             fit=fit,
             during_analysis=during_analysis,
             should_plot_mask=self.should_plot_mask,
@@ -268,7 +268,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
             self.masked_imaging.positions if self.should_plot_positions else None
         )
 
-        phase_plotters.plot_imaging_for_phase(
+        phase_plotters.imaging_of_phase(
             imaging=self.masked_imaging.imaging,
             mask=mask,
             positions=positions,
@@ -290,10 +290,10 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         mask = self.masked_imaging.mask
         if self.should_plot_mask and mask is not None and last_results is not None:
             phase_plotters.plot_hyper_images_for_phase(
-                hyper_model_image_2d=mask.mapping.scaled_array_2d_from_array_1d(
+                hyper_model_image=mask.mapping.scaled_array_2d_from_array_1d(
                     array_1d=last_results.hyper_model_image
                 ),
-                hyper_galaxy_image_2d_path_dict=last_results.hyper_galaxy_image_2d_path_dict,
+                hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_2d_path_dict,
                 binned_hyper_galaxy_image_2d_path_dict=last_results.binned_hyper_galaxy_image_2d_path_dict(
                     binned_grid=self.masked_imaging.grid.binned
                 ),

@@ -17,7 +17,7 @@ def test__all_individual_plotters(
     al.plot.ray_tracing.profile_image(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
+        mask_overlay=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=ray_tracing_plotter_path,
@@ -29,7 +29,7 @@ def test__all_individual_plotters(
     al.plot.ray_tracing.convergence(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
+        mask_overlay=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=ray_tracing_plotter_path,
@@ -41,7 +41,7 @@ def test__all_individual_plotters(
     al.plot.ray_tracing.potential(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
+        mask_overlay=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=ray_tracing_plotter_path,
@@ -53,7 +53,7 @@ def test__all_individual_plotters(
     al.plot.ray_tracing.deflections_y(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
+        mask_overlay=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=ray_tracing_plotter_path,
@@ -65,7 +65,7 @@ def test__all_individual_plotters(
     al.plot.ray_tracing.deflections_x(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
+        mask_overlay=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=ray_tracing_plotter_path,
@@ -81,7 +81,7 @@ def test__tracer_sub_plot_output(
     al.plot.ray_tracing.subplot(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
+        mask_overlay=mask_7x7,
         output_path=ray_tracing_plotter_path,
         output_format="png",
     )
@@ -95,7 +95,7 @@ def test__tracer_individuals__dependent_on_input(
     al.plot.ray_tracing.individual(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
+        mask_overlay=mask_7x7,
         should_plot_profile_image=True,
         should_plot_source_plane=True,
         should_plot_potential=True,
