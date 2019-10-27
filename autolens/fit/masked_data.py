@@ -2,7 +2,7 @@ import numpy as np
 
 import autoarray as aa
 from autoarray.fit import masked_data
-from autolens.fit import positions_fit
+from autolens.fit import fit
 from autolens import exc
 
 import copy
@@ -34,12 +34,12 @@ class AbstractLensMasked(object):
                 positions=self.positions
             )
 
-            fit = positions_fit.LensPositionFit(
+            positions_fit = fit.PositionsFit(
                 positions=traced_positions_of_planes[-1],
                 noise_map=self.imaging.pixel_scales,
             )
 
-            if not fit.maximum_separation_within_threshold(
+            if not positions_fit.maximum_separation_within_threshold(
                     self.positions_threshold
             ):
                 raise exc.RayTracingException

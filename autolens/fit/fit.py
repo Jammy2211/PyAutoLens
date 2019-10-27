@@ -23,6 +23,7 @@ class ImagingFit(fit.ImagingFit):
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D array.
         """
 
+        self.masked_data = masked_imaging
         self.masked_imaging = masked_imaging
         self.tracer = tracer
 
@@ -159,6 +160,7 @@ class InterferometerFit(fit.InterferometerFit):
         scaled_array_2d_from_array_1d : func
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D array.
         """
+        self.masked_data = masked_interferometer
         self.masked_interferometer = masked_interferometer
         self.tracer = tracer
 
