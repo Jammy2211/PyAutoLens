@@ -9,7 +9,7 @@ from autolens.pipeline.phase.data.result import Result
 
 def default_mask_function(image):
     return aa.mask.circular(
-        shape=image.shape, pixel_scales=image.pixel_scales, sub_size=1, radius_arcsec=3.0
+        shape_2d=image.shape_2d, pixel_scales=image.pixel_scales, sub_size=1, radius_arcsec=3.0
     )
 
 
@@ -71,7 +71,7 @@ class PhaseData(abstract.AbstractPhase):
         results: autofit.tools.pipeline.ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
         data: scaled_array.ScaledSquarePixelArray
-            An lens_data that has been masked
+            An masked_imaging that has been masked
 
         Returns
         -------
@@ -93,7 +93,7 @@ class PhaseData(abstract.AbstractPhase):
 
     def make_analysis(self, data, results=None, mask=None, positions=None):
         """
-        Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
+        Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
@@ -102,7 +102,7 @@ class PhaseData(abstract.AbstractPhase):
         mask: Mask
             The default masks passed in by the pipeline
         data: im.Imaging
-            An lens_data that has been masked
+            An masked_imaging that has been masked
         results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase
 

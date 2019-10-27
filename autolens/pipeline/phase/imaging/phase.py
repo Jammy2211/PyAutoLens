@@ -94,18 +94,18 @@ class PhaseImaging(data.PhaseData):
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def modify_image(self, image, results):
         """
-        Customize an lens_data. e.g. removing lens light.
+        Customize an masked_imaging. e.g. removing lens light.
 
         Parameters
         ----------
         image: scaled_array.ScaledSquarePixelArray
-            An lens_data that has been masked
+            An masked_imaging that has been masked
         results: autofit.tools.pipeline.ResultsCollection
             The result of the previous lens
 
         Returns
         -------
-        lens_data: scaled_array.ScaledSquarePixelArray
+        masked_imaging: scaled_array.ScaledSquarePixelArray
             The modified image (not changed by default)
         """
         return image
@@ -118,7 +118,7 @@ class PhaseImaging(data.PhaseData):
             positions=None
     ):
         """
-        Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
+        Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
@@ -127,7 +127,7 @@ class PhaseImaging(data.PhaseData):
         mask: Mask
             The default masks passed in by the pipeline
         data: im.Imaging
-            An lens_data that has been masked
+            An masked_imaging that has been masked
         results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase
 

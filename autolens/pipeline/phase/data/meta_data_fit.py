@@ -45,7 +45,7 @@ class MetaDataFit:
             mask = default_mask_function(image=data.image)
 
         if mask.sub_size != self.sub_size:
-            mask = mask.new_mask_with_new_sub_size(sub_size=self.sub_size)
+            mask = aa.mask.manual(mask_2d=mask, pixel_scales=mask.pixel_scales, sub_size=self.sub_size, origin=mask.origin)
 
         if self.inner_mask_radii is not None:
             inner_mask = aa.mask.circular(
