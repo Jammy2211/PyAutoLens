@@ -6,10 +6,11 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
+from autoarray.plotters import plotter_util
 from autolens.plotters import plane_plotters
 
 
-def plot_ray_tracing_subplot(
+def subplot(
     tracer,
     grid,
     mask=None,
@@ -55,7 +56,7 @@ def plot_ray_tracing_subplot(
         in the python interpreter window.
     """
 
-    rows, columns, figsize_tool = aa.plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=6
     )
 
@@ -65,7 +66,7 @@ def plot_ray_tracing_subplot(
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    plot_profile_image(
+    profile_image(
         tracer=tracer,
         grid=grid,
         mask=mask,
@@ -100,7 +101,7 @@ def plot_ray_tracing_subplot(
 
         plt.subplot(rows, columns, 2)
 
-        plot_convergence(
+        convergence(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -130,7 +131,7 @@ def plot_ray_tracing_subplot(
 
         plt.subplot(rows, columns, 3)
 
-        plot_potential(
+        potential(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -193,7 +194,7 @@ def plot_ray_tracing_subplot(
 
         plt.subplot(rows, columns, 5)
 
-        plot_deflections_y(
+        deflections_y(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -223,7 +224,7 @@ def plot_ray_tracing_subplot(
 
         plt.subplot(rows, columns, 6)
 
-        plot_deflections_x(
+        deflections_x(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -251,7 +252,7 @@ def plot_ray_tracing_subplot(
             output_format=output_format,
         )
 
-    aa.plotter_util.output_subplot_array(
+    plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -260,7 +261,7 @@ def plot_ray_tracing_subplot(
     plt.close()
 
 
-def plot_ray_tracing_individual(
+def individual(
     tracer,
     grid,
     mask=None,
@@ -292,7 +293,7 @@ def plot_ray_tracing_individual(
 
     if should_plot_profile_image:
 
-        plot_profile_image(
+        profile_image(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -304,7 +305,7 @@ def plot_ray_tracing_individual(
 
     if should_plot_convergence:
 
-        plot_convergence(
+        convergence(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -315,7 +316,7 @@ def plot_ray_tracing_individual(
 
     if should_plot_potential:
 
-        plot_potential(
+        potential(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -341,7 +342,7 @@ def plot_ray_tracing_individual(
 
     if should_plot_deflections:
 
-        plot_deflections_y(
+        deflections_y(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -352,7 +353,7 @@ def plot_ray_tracing_individual(
 
     if should_plot_deflections:
 
-        plot_deflections_x(
+        deflections_x(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -362,7 +363,7 @@ def plot_ray_tracing_individual(
         )
 
 
-def plot_profile_image(
+def profile_image(
     tracer,
     grid,
     mask=None,
@@ -396,7 +397,7 @@ def plot_profile_image(
 
     profile_image = tracer.profile_image_from_grid(grid=grid)
 
-    aa.plot_array(
+    aa.plot.array(
         array=profile_image,
         mask_overlay=mask,
         positions=positions,
@@ -429,7 +430,7 @@ def plot_profile_image(
     )
 
 
-def plot_convergence(
+def convergence(
     tracer,
     grid,
     mask=None,
@@ -460,7 +461,7 @@ def plot_convergence(
 
     convergence = tracer.convergence_from_grid(grid=grid)
 
-    aa.plot_array(
+    aa.plot.array(
         array=convergence,
         mask_overlay=mask,
         as_subplot=as_subplot,
@@ -490,7 +491,7 @@ def plot_convergence(
     )
 
 
-def plot_potential(
+def potential(
     tracer,
     grid,
     mask=None,
@@ -521,7 +522,7 @@ def plot_potential(
 
     potential = tracer.potential_from_grid(grid=grid)
 
-    aa.plot_array(
+    aa.plot.array(
         array=potential,
         mask_overlay=mask,
         as_subplot=as_subplot,
@@ -551,7 +552,7 @@ def plot_potential(
     )
 
 
-def plot_deflections_y(
+def deflections_y(
     tracer,
     grid,
     mask=None,
@@ -581,9 +582,9 @@ def plot_deflections_y(
 ):
 
     deflections = tracer.deflections_from_grid(grid=grid)
-    deflections_y = grid.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 0])
+    deflections_y = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 0])
 
-    aa.plot_array(
+    aa.plot.array(
         array=deflections_y,
         mask_overlay=mask,
         as_subplot=as_subplot,
@@ -613,7 +614,7 @@ def plot_deflections_y(
     )
 
 
-def plot_deflections_x(
+def deflections_x(
     tracer,
     grid,
     mask=None,
@@ -643,9 +644,9 @@ def plot_deflections_x(
 ):
 
     deflections = tracer.deflections_from_grid(grid=grid)
-    deflections_x = grid.mapping.scaled_array_2d_from_array_1d(array_1d=deflections[:, 1])
+    deflections_x = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 1])
 
-    aa.plot_array(
+    aa.plot.array(
         array=deflections_x,
         mask_overlay=mask,
         as_subplot=as_subplot,
