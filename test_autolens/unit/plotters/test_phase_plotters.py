@@ -98,7 +98,7 @@ def test__imaging_fit_for_phase__source_and_lens__depedent_on_input(
     al.plot.phase.imaging_fit_of_phase(
         fit=masked_imaging_fit_x2_plane_7x7,
         during_analysis=False,
-        should_plot_mask=True,
+        should_plot_mask_overlay=True,
         positions=None,
         units="arcsec",
         should_plot_image_plane_pix=True,

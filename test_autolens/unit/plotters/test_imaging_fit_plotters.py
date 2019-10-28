@@ -112,7 +112,7 @@ def test__fit_sub_plot(
 
     al.plot.imaging_fit.subplot(
         fit=masked_imaging_fit_x2_plane_7x7,
-        should_plot_mask=True,
+        should_plot_mask_overlay=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -132,7 +132,7 @@ def test__fit_for_plane_subplot(
     al.plot.imaging_fit.subplot_for_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        should_plot_mask=True,
+        should_plot_mask_overlay=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -144,7 +144,7 @@ def test__fit_for_plane_subplot(
     al.plot.imaging_fit.subplot_for_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        should_plot_mask=True,
+        should_plot_mask_overlay=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -156,7 +156,7 @@ def test__fit_for_plane_subplot(
     al.plot.imaging_fit.subplot_for_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        should_plot_mask=True,
+        should_plot_mask_overlay=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -175,7 +175,7 @@ def test__fit_for_planes_subplot(
 
     al.plot.imaging_fit.subplot_of_planes(
         fit=masked_imaging_fit_x1_plane_7x7,
-        should_plot_mask=True,
+        should_plot_mask_overlay=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -186,7 +186,7 @@ def test__fit_for_planes_subplot(
 
     al.plot.imaging_fit.subplot_of_planes(
         fit=masked_imaging_fit_x2_plane_7x7,
-        should_plot_mask=True,
+        should_plot_mask_overlay=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,

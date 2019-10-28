@@ -173,9 +173,9 @@ class HyperGalaxyPhase(HyperPhase):
         masked_imaging = masked_data.MaskedImaging(
             imaging=data,
             mask=results.last.mask,
-            trimmed_psf_shape_2d=cast(imaging.PhaseImaging, phase).meta_data_fit.trimmed_psf_shape_2d,
+            trimmed_psf_shape_2d=data.psf.shape_2d,
             positions=results.last.positions,
-            positions_threshomasked_imaging=cast(
+            positions_threshold=cast(
                 imaging.PhaseImaging, phase
             ).meta_data_fit.positions_threshold,
             pixel_scale_interpolation_grid=cast(
@@ -202,13 +202,10 @@ class HyperGalaxyPhase(HyperPhase):
 
         for path, galaxy in results.last.path_galaxy_tuples:
 
+            # TODO : NEed t be sure these wont mess up anything else.
+
+            phase.optimizer.paths.phase_tag = ""
             optimizer = phase.optimizer.copy_with_name_extension(extension=path[-1])
-
-            optimizer.paths.phase_tag = ""
-
-            # TODO : This is a HACK :O
-
-            optimizer.variable.galaxies = []
 
             optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
                 "MultiNest", "extension_hyper_galaxy_const_efficiency_mode", bool
@@ -223,13 +220,19 @@ class HyperGalaxyPhase(HyperPhase):
                 "MultiNest", "extension_hyper_galaxy_multimodal", bool
             )
 
-            optimizer.variable.hyper_galaxy = g.HyperGalaxy
+            model = copy.deepcopy(phase.variable)
+
+            # TODO : This is a HACK :O
+
+            model.galaxies = []
+
+            model.hyper_galaxy = g.HyperGalaxy
 
             if self.include_sky_background:
-                optimizer.variable.hyper_image_sky = hd.HyperImageSky
+                model.hyper_image_sky = hd.HyperImageSky
 
             if self.include_noise_background:
-                optimizer.variable.hyper_background_noise = hd.HyperBackgroundNoise
+                model.hyper_background_noise = hd.HyperBackgroundNoise
 
             # If array is all zeros, galaxy did not have image in previous phase and
             # shoumasked_imaging be ignored
@@ -242,7 +245,7 @@ class HyperGalaxyPhase(HyperPhase):
                     image_path=optimizer.paths.image_path,
                 )
 
-                result = optimizer.fit(analysis)
+                result = optimizer.fit(analysis=analysis, model=model)
 
                 def transfer_field(name):
                     if hasattr(result.constant, name):

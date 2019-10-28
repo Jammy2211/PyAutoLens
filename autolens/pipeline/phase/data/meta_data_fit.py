@@ -40,7 +40,7 @@ class MetaDataFit:
     def setup_phase_mask(self, data, mask):
 
         if self.mask_function is not None:
-            mask = self.mask_function(image=data.image, sub_size=self.sub_size)
+            mask = self.mask_function(image=data.image)
 
         elif mask is None and self.mask_function is None:
             mask = default_mask_function(image=data.image)

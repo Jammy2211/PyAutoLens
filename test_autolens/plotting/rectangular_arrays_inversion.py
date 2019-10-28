@@ -43,21 +43,21 @@ fit = al.LensImageFit.from_masked_data_and_tracer(masked_imaging=masked_imaging,
 
 masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     should_plot_image_plane_pix=True,
     aspect="auto",
 )
 
 masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     should_plot_image_plane_pix=True,
     aspect="equal",
 )
 
 masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     should_plot_image_plane_pix=True,
     aspect="square",
 )

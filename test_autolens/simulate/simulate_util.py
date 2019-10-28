@@ -1,5 +1,6 @@
 import os
 
+import autoarray as aa
 import autofit as af
 import autolens as al
 
@@ -17,15 +18,15 @@ def pixel_scale_from_data_resolution(data_resolution):
         A string giving the resolution of the desired data_type type (LSST | Euclid | HST | HST_Up | AO).
     """
     if data_resolution == "LSST":
-        return 0.2
+        return (0.2, 0.2)
     elif data_resolution == "Euclid":
-        return 0.1
+        return (0.1, 0.1)
     elif data_resolution == "HST":
-        return 0.05
+        return (0.05, 0.05)
     elif data_resolution == "HST_Up":
-        return 0.03
+        return (0.03, 0.03)
     elif data_resolution == "AO":
-        return 0.01
+        return (0.01, 0.01)
     else:
         raise ValueError(
             "An invalid data_type resolution was entered - ", data_resolution
@@ -84,7 +85,7 @@ def load_test_imaging(
         image_path=data_path + "/image.fits",
         psf_path=data_path + "/psf.fits",
         noise_map_path=data_path + "/noise_map.fits",
-        real_space_pixel_scales=pixel_scales,
+        pixel_scales=pixel_scales,
         resized_psf_shape=psf_shape,
         lens_name=lens_name,
     )

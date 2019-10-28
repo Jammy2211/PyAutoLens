@@ -145,7 +145,7 @@ def imaging_fit_of_phase(
     during_analysis,
     positions,
     units,
-    should_plot_mask,
+    should_plot_mask_overlay,
     should_plot_image_plane_pix,
     should_plot_all_at_end_png,
     should_plot_all_at_end_fits,
@@ -178,7 +178,7 @@ def imaging_fit_of_phase(
 
         imaging_fit_plotters.subplot(
             fit=fit,
-            should_plot_mask=should_plot_mask,
+            should_plot_mask_overlay=should_plot_mask_overlay,
             positions=positions,
             should_plot_image_plane_pix=should_plot_image_plane_pix,
             units=units,
@@ -190,7 +190,7 @@ def imaging_fit_of_phase(
 
         imaging_fit_plotters.subplot_of_planes(
             fit=fit,
-            should_plot_mask=should_plot_mask,
+            should_plot_mask_overlay=should_plot_mask_overlay,
             positions=positions,
             should_plot_image_plane_pix=should_plot_image_plane_pix,
             units=units,
@@ -210,7 +210,7 @@ def imaging_fit_of_phase(
 
     imaging_fit_plotters.individuals(
         fit=fit,
-        should_plot_mask=should_plot_mask,
+        should_plot_mask_overlay=should_plot_mask_overlay,
         positions=positions,
         should_plot_image_plane_pix=should_plot_image_plane_pix,
         should_plot_image=should_plot_image,
@@ -238,7 +238,7 @@ def imaging_fit_of_phase(
 
             imaging_fit_plotters.individuals(
                 fit=fit,
-                should_plot_mask=should_plot_mask,
+                should_plot_mask_overlay=should_plot_mask_overlay,
                 positions=positions,
                 should_plot_image_plane_pix=should_plot_image_plane_pix,
                 should_plot_image=True,
@@ -268,7 +268,7 @@ def imaging_fit_of_phase(
 
             imaging_fit_plotters.individuals(
                 fit=fit,
-                should_plot_mask=should_plot_mask,
+                should_plot_mask_overlay=should_plot_mask_overlay,
                 positions=positions,
                 should_plot_image_plane_pix=should_plot_image_plane_pix,
                 should_plot_image=True,
