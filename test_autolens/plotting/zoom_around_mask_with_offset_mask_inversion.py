@@ -54,7 +54,7 @@ fit = fit_with_offset_centre(centre=(1.0, 1.0))
 
 masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
@@ -64,7 +64,7 @@ fit = fit_with_offset_centre(centre=(1.05, 1.05))
 
 masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
@@ -73,7 +73,7 @@ fit = fit_with_offset_centre(centre=(1.1, 1.1))
 
 masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
@@ -82,7 +82,7 @@ fit = fit_with_offset_centre(centre=(0.95, 0.95))
 
 masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
@@ -91,7 +91,7 @@ fit = fit_with_offset_centre(centre=(5.9, 5.9))
 
 masked_imaging_fit_plotters.plot_fit_subplot(
     fit=fit,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )

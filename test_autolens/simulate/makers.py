@@ -1,6 +1,7 @@
+import autoarray as aa
 import autofit as af
 import autolens as al
-from test import simulation_util
+from test_autolens.simulate import simulate_util
 
 import os
 
@@ -10,26 +11,26 @@ def simulate_image_from_galaxies_and_output_to_fits(
     data_type,
     sub_size,
     galaxies,
-    psf_shape=(51, 51),
+    psf_shape_2d=(51, 51),
     exposure_time=300.0,
     background_sky_level=1.0,
 ):
 
-    pixel_scales = simulation_util.pixel_scale_from_data_resolution(
+    pixel_scales = simulate_util.pixel_scale_from_data_resolution(
         data_resolution=data_resolution
     )
-    shape = simulation_util.shape_from_data_resolution(data_resolution=data_resolution)
+    shape_2d = simulate_util.shape_from_data_resolution(data_resolution=data_resolution)
 
     # Simulate a simple Gaussian PSF for the image.
     psf = aa.kernel.from_gaussian(
-        shape_2d=psf_shape, sigma=pixel_scales, pixel_scales=pixel_scales
+        shape_2d=psf_shape_2d, sigma=pixel_scales, pixel_scales=pixel_scales
     )
 
     # Setup the image-plane al.ogrid of the Imaging array which will be used for generating the image of the
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
     # lens and source galaxy light.
     image_plane_grid = aa.grid.uniform(
-        shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size
+        shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size
     )
 
     # Use the input galaxies to setup a tracer, which will generate the image for the simulated Imaging data_type.
@@ -37,12 +38,12 @@ def simulate_image_from_galaxies_and_output_to_fits(
 
     # Simulate the Imaging data_type, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.al. the PSF convolution).
-    imaging = al.SimulatedImagingData.simulate_from_tracer_and_grid(
+
+    imaging_simulator = al.ImagingSimulator(shape_2d=shape_2d, pixel_scales=pixel_scales,
+                                            exposure_time=exposure_time, psf=psf, background_sky_level=background_sky_level)
+
+    imaging = imaging_simulator.simulate_from_tracer_and_grid(
         tracer=tracer,
-        pixel_scales=pixel_scales,
-        psf=psf,
-        exposure_time=exposure_time,
-        background_sky_level=background_sky_level,
         add_noise=True,
         grid=image_plane_grid,
     )
@@ -54,22 +55,21 @@ def simulate_image_from_galaxies_and_output_to_fits(
         path=test_path, folder_names=["simulate", data_type, data_resolution]
     )
 
-    al.output_imaging_to_fits(
-        imaging=imaging,
+    imaging.output_to_fits(
         image_path=data_path + "image.fits",
         psf_path=data_path + "psf.fits",
         noise_map_path=data_path + "noise_map.fits",
         overwrite=True,
     )
 
-    autoarray.data.plotters.imaging_plotters.plot_imaging_subplot(
+    aa.plot.imaging.subplot(
         imaging=imaging,
         output_filename="imaging",
         output_path=data_path,
         output_format="png",
     )
 
-    autoarray.data.plotters.imaging_plotters.plot_imaging_individual(
+    aa.plot.imaging.individual(
         imaging=imaging,
         should_plot_image=True,
         should_plot_noise_map=True,
@@ -79,7 +79,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         output_format="png",
     )
 
-    al.ray_tracing_plotters.plot_ray_tracing_subplot(
+    al.plot.ray_tracing.subplot(
         tracer=tracer,
         output_filename="tracer",
         output_path=data_path,
@@ -87,7 +87,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         grid=image_plane_grid,
     )
 
-    al.ray_tracing_plotters.plot_ray_tracing_individual(
+    al.plot.ray_tracing.individual(
         tracer=tracer,
         should_plot_profile_image=True,
         should_plot_source_plane=True,

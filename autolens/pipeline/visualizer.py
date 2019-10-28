@@ -27,7 +27,7 @@ class AbstractVisualizer:
         self.plot_units = af.conf.instance.visualize.get(
             "figures", "plot_units", str
         ).strip()
-        self.should_plot_mask = figure_setting("plot_mask_on_images")
+        self.should_plot_mask_overlay = figure_setting("plot_mask_on_images")
         self.plot_ray_tracing_all_at_end_png = plot_setting(
             "plot_ray_tracing_all_at_end_png"
         )
@@ -68,7 +68,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
         if self.plot_galaxy_fit_as_subplot:
             galaxy_fit_plotters.subplot(
                 fit=fit,
-                should_plot_mask_overlay=self.should_plot_mask,
+                should_plot_mask_overlay=self.should_plot_mask_overlay,
                 units=self.plot_units,
                 output_path=f"{self.image_path}/{path_suffix}",
                 output_format="png",
@@ -91,7 +91,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
             should_plot_chi_squared_map = self.plot_galaxy_fit_chi_squared_map
         galaxy_fit_plotters.individuals(
             fit=fit,
-            should_plot_mask_overlay=self.should_plot_mask,
+            should_plot_mask_overlay=self.should_plot_mask_overlay,
             should_plot_image=should_plot_image,
             should_plot_noise_map=should_plot_noise_map,
             should_plot_model_image=should_plot_model_image,
@@ -196,7 +196,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         positions = (
             self.masked_imaging.positions if self.should_plot_positions else None
         )
-        mask = self.masked_imaging.mask if self.should_plot_mask else None
+        mask = self.masked_imaging.mask if self.should_plot_mask_overlay else None
         phase_plotters.ray_tracing_of_phase(
             tracer=tracer,
             grid=self.masked_imaging.grid,
@@ -223,7 +223,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         phase_plotters.imaging_fit_of_phase(
             fit=fit,
             during_analysis=during_analysis,
-            should_plot_mask_overlay=self.should_plot_mask,
+            should_plot_mask_overlay=self.should_plot_mask_overlay,
             positions=positions,
             should_plot_image_plane_pix=self.should_plot_image_plane_pix,
             should_plot_all_at_end_png=self.plot_lens_fit_all_at_end_png,
@@ -253,7 +253,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         )
 
     def plot_imaging(self):
-        mask = self.masked_imaging.mask if self.should_plot_mask else None
+        mask = self.masked_imaging.mask if self.should_plot_mask_overlay else None
         positions = (
             self.masked_imaging.positions if self.should_plot_positions else None
         )
@@ -276,7 +276,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
 
     def plot_hyper_images(self, last_results):
         mask = self.masked_imaging.mask
-        if self.should_plot_mask and mask is not None and last_results is not None:
+        if self.should_plot_mask_overlay and mask is not None and last_results is not None:
             phase_plotters.plot_hyper_images_for_phase(
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
@@ -303,12 +303,12 @@ class HyperGalaxyVisualizer(SubPlotVisualizer):
         hyper_chi_squared_map,
     ):
         hyper_plotters.subplot_of_hyper_galaxy(
-            hyper_galaxy_image=hyper_galaxy_image,
-            contribution_map=contribution_map,
-            noise_map=noise_map,
-            hyper_noise_map=hyper_noise_map,
-            chi_squared_map=chi_squared_map,
-            hyper_chi_squared_map=hyper_chi_squared_map,
+            hyper_galaxy_image_sub=hyper_galaxy_image,
+            contribution_map_sub=contribution_map,
+            noise_map_sub=noise_map,
+            hyper_noise_map_sub=hyper_noise_map,
+            chi_squared_map_sub=chi_squared_map,
+            hyper_chi_squared_map_sub=hyper_chi_squared_map,
             output_path=self.subplot_path,
             output_format="png",
         )

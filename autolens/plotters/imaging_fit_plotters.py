@@ -12,7 +12,7 @@ from autolens.plotters import plane_plotters
 
 def subplot(
     fit,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     positions=None,
     should_plot_image_plane_pix=False,
     plot_mass_profile_centres=True,
@@ -46,7 +46,7 @@ def subplot(
         number_subplots=6
     )
 
-    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask=should_plot_mask)
+    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask_overlay=should_plot_mask_overlay)
 
     if figsize is None:
         figsize = figsize_tool
@@ -256,7 +256,7 @@ def subplot(
 
 def subplot_of_planes(
     fit,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     positions=None,
     should_plot_image_plane_pix=False,
     plot_mass_profile_centres=True,
@@ -296,7 +296,7 @@ def subplot_of_planes(
             subplot_for_plane(
                 fit=fit,
                 plane_index=plane_index,
-                should_plot_mask=should_plot_mask,
+                should_plot_mask_overlay=should_plot_mask_overlay,
                 should_plot_image_plane_pix=should_plot_image_plane_pix,
                 positions=positions,
                 units=units,
@@ -329,7 +329,7 @@ def subplot_of_planes(
 def subplot_for_plane(
     fit,
     plane_index,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     should_plot_source_grid=False,
     positions=None,
     should_plot_image_plane_pix=False,
@@ -382,7 +382,7 @@ def subplot_for_plane(
         number_subplots=4
     )
 
-    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask=should_plot_mask)
+    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask_overlay=should_plot_mask_overlay)
 
     if figsize is None:
         figsize = figsize_tool
@@ -598,7 +598,7 @@ def subplot_for_plane(
 
 def individuals(
     fit,
-    should_plot_mask=True,
+    should_plot_mask_overlay=True,
     positions=None,
     should_plot_image_plane_pix=False,
     should_plot_image=False,
@@ -634,7 +634,7 @@ def individuals(
         in the python interpreter window.
     """
 
-    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask=should_plot_mask)
+    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask_overlay=should_plot_mask_overlay)
     image_plane_pix_grid = get_image_plane_pix_grid(
         should_plot_image_plane_pix, fit
     )
@@ -1099,17 +1099,17 @@ def get_image_plane_pix_grid(should_plot_image_plane_pix, fit):
         return None
 
 
-def get_mask_overlay(fit, should_plot_mask):
+def get_mask_overlay(fit, should_plot_mask_overlay):
     """Get the mask_overlays of the fit if the mask_overlays should be plotted on the fit.
 
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractLensHyperFit
         The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-    should_plot_mask : bool
+    should_plot_mask_overlay : bool
         If *True*, the mask_overlays is plotted on the fit's datas.
     """
-    if should_plot_mask:
+    if should_plot_mask_overlay:
         return fit.mask
     else:
         return None

@@ -26,5 +26,5 @@ masked_imaging = al.LensData(imaging=imaging, mask=mask)
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
 fit = al.LensImageFit.from_masked_data_and_tracer(masked_imaging=masked_imaging, tracer=tracer)
 masked_imaging_fit_plotters.plot_fit_subplot(
-    fit=fit, should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True
+    fit=fit, should_plot_mask_overlay=True, extract_array_from_mask=True, zoom_around_mask=True
 )

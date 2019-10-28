@@ -43,7 +43,7 @@ class MetaImagingFit(data.MetaDataFit):
     ):
         mask = self.setup_phase_mask(
             data=data,
-            mask=mask
+            mask=mask,
         )
 
         self.check_positions(positions=positions)
