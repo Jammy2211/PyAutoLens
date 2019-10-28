@@ -38,12 +38,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase1 = phase1.extend_with_inversion_phase()
 
-    class SourcePix(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            self.galaxies.source = results.last.inversion.constant.galaxies.source
-
-    phase2 = SourcePix(
+    phase2 = al.PhaseImaging(
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
@@ -52,8 +47,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.Constant,
+                pixelization=phase1.result.inversion.constant.galaxies.source.pixelization,
+                regularization=phase1.result.inversion.constant.galaxies.source.regularization,
             ),
         ),
         optimizer_class=optimizer_class,

@@ -1,3 +1,4 @@
+import autoarray as aa
 import autofit as af
 import autolens as al
 from test_autolens.integration.tests import runner
@@ -11,7 +12,7 @@ data_resolution = "LSST"
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     def modify_mask_function(image):
         return aa.mask.circular(
-            shape=image.shape, pixel_scales=image.pixel_scales, radius_arcsec=5.0
+            shape_2d=image.shape_2d, pixel_scales=image.pixel_scales, radius_arcsec=5.0
         )
 
     class LensPlaneGalaxyX2Phase(al.PhaseImaging):
@@ -44,28 +45,17 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
 
-    class LensPlaneGalaxyX2Phase(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            self.galaxies = results.from_phase("phase_1").variable.galaxies
-
-            self.galaxies.lens_0.hyper_galaxy = results.from_phase(
-                "phase_1"
-            ).hyper_galaxy.constant.galaxies.lens_0.hyper_galaxy
-
-            self.galaxies.lens_1.hyper_galaxy = results.from_phase(
-                "phase_1"
-            ).hyper_galaxy.constant.galaxies.lens_1.hyper_galaxy
-
-    phase2 = LensPlaneGalaxyX2Phase(
+    phase2 = al.PhaseImaging(
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
             lens_0=al.GalaxyModel(
-                redshift=0.5, light=al.lp.EllipticalSersic
+                redshift=0.5, light=phase1.result.variable.galaxies.lens_0.light,
+                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens_0.hyper_galaxy
             ),
             lens_1=al.GalaxyModel(
-                redshift=0.5, light=al.lp.EllipticalSersic
+                redshift=0.5, light=phase1.result.variable.galaxies.lens_1.light,
+                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens_1.hyper_galaxy
             ),
         ),
         mask_function=modify_mask_function,

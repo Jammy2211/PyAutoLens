@@ -34,24 +34,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         hyper_galaxy=True, include_background_sky=True, include_background_noise=True
     )
 
-    class HyperLensSourcePlanePhase(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            self.galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
-            )
-
-            self.galaxies.source.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
-            )
-
-            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
-
-            self.hyper_background_noise = (
-                results.last.hyper_combined.constant.hyper_background_noise
-            )
-
-    phase2 = HyperLensSourcePlanePhase(
+    phase2 = al.PhaseImaging(
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
@@ -59,14 +42,16 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 redshift=0.5,
                 light=phase1.result.variable.galaxies.lens.light,
                 mass=phase1.result.variable.galaxies.lens.mass,
-                hyper_galaxy=al.HyperGalaxy,
+                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
                 light=phase1.result.variable.galaxies.source.light,
-                hyper_galaxy=al.HyperGalaxy,
+                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.source.hyper_galaxy,
             ),
         ),
+        hyper_image_sky=phase1.result.hyper_combined.constant.hyper_image_sky,
+        hyper_background_noise=phase1.result.hyper_combined.constant.hyper_background_noise,
         optimizer_class=optimizer_class,
     )
 

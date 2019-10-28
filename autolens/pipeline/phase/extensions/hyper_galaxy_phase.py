@@ -204,7 +204,6 @@ class HyperGalaxyPhase(HyperPhase):
 
             # TODO : NEed t be sure these wont mess up anything else.
 
-            phase.optimizer.paths.phase_tag = ""
             optimizer = phase.optimizer.copy_with_name_extension(extension=path[-1])
 
             optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
