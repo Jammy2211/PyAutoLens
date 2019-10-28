@@ -101,7 +101,6 @@ class CombinedHyperPhase(HyperPhase):
     def run_hyper(self, data, results, **kwargs) -> af.Result:
 
         phase = self.make_hyper_phase()
-        self.phase.optimizer.paths.phase_tag = ""
         phase.variable = self.combine_variables(results.last)
 
 

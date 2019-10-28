@@ -36,20 +36,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1 = phase1.extend_with_multiple_hyper_phases(
         hyper_galaxy=True, include_background_sky=True, include_background_noise=True
     )
-
-    class InversionPhase(al.PhaseImaging):
-        def customize_priors(self, results):
-            ## Lens Mass, SIE -> SIE, Shear -> Shear ###
-
-            self.galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
-            )
-
-            self.galaxies.source.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
-            )
-
-    phase2 = InversionPhase(
+    phase2 = al.PhaseImaging(
         phase_name="phase_2_weighted_regularization",
         phase_folders=phase_folders,
         galaxies=dict(
@@ -57,11 +44,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 redshift=0.5,
                 mass=phase1.result.constant.galaxies.lens.mass,
                 shear=phase1.result.constant.galaxies.lens.shear,
+                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiBrightnessImage,
                 regularization=al.reg.AdaptiveBrightness,
+                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.source.hyper_galaxy
             ),
         ),
         optimizer_class=optimizer_class,
@@ -78,19 +67,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         inversion=True,
     )
 
-    class InversionPhase(al.PhaseImaging):
-        def customize_priors(self, results):
-            ## Lens Mass, SIE -> SIE, Shear -> Shear ###
-
-            self.galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
-            )
-
-            self.galaxies.source.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
-            )
-
-    phase3 = InversionPhase(
+    phase3 = al.PhaseImaging(
         phase_name="phase_3",
         phase_folders=phase_folders,
         galaxies=dict(
@@ -98,11 +75,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 redshift=0.5,
                 mass=phase1.result.variable.galaxies.lens.mass,
                 shear=phase1.result.variable.galaxies.lens.shear,
+                hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.lens.hyper_galaxy
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=phase2.result.constant.galaxies.source.pixelization,
                 regularization=phase2.result.constant.galaxies.source.regularization,
+                hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.source.hyper_galaxy
             ),
         ),
         optimizer_class=optimizer_class,

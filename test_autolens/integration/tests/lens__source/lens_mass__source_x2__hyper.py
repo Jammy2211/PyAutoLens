@@ -69,17 +69,16 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             lens=al.GalaxyModel(
                 redshift=0.5,
                 mass=phase2.result.variable.galaxies.lens.mass,
-                hyper_galaxy=al.HyperGalaxy,
             ),
             source_0=al.GalaxyModel(
                 redshift=1.0,
                 light=phase2.result.variable.galaxies.source_0.light,
-                hyper_galaxy=al.HyperGalaxy,
+                hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.source_0.hyper_galaxy,
             ),
             source_1=al.GalaxyModel(
                 redshift=1.0,
                 light=phase2.result.variable.galaxies.source_1.light,
-                hyper_galaxy=al.HyperGalaxy,
+                hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.source_1.hyper_galaxy,
             ),
         ),
         optimizer_class=optimizer_class,
