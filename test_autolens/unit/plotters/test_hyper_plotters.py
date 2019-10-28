@@ -11,8 +11,15 @@ def make_hyper_plotter_setup():
     )
 
 
-def test__plot_individual_images(hyper_model_image_7x7, hyper_galaxy_image_0_7x7, contribution_map_7x7,
-                                 hyper_noise_map_7x7, masked_imaging_fit_x1_plane_7x7, hyper_plotter_path, plot_patch):
+def test__plot_individual_images(
+    hyper_model_image_7x7,
+    hyper_galaxy_image_0_7x7,
+    contribution_map_7x7,
+    hyper_noise_map_7x7,
+    masked_imaging_fit_x1_plane_7x7,
+    hyper_plotter_path,
+    plot_patch,
+):
     al.plot.hyper.hyper_model_image(
         hyper_model_image=hyper_model_image_7x7,
         cb_tick_values=[1.0],

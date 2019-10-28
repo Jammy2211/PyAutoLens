@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 
+
 class MockMaskedImaging(object):
     def __init__(self, imaging, mask, grid, blurring_grid, convolver):
 
@@ -14,13 +15,15 @@ class MockMaskedImaging(object):
         self.convolver = convolver
 
         self.image = mask.mapping.array_from_array_2d(array_2d=imaging.image.in_2d)
-        self.noise_map = mask.mapping.array_from_array_2d(array_2d=imaging.noise_map.in_2d)
+        self.noise_map = mask.mapping.array_from_array_2d(
+            array_2d=imaging.noise_map.in_2d
+        )
 
         self.positions = None
         self.uses_cluster_inversion = False
         self.inversion_pixel_limit = 1000
         self.inversion_uses_border = True
-        self.preload_pixelization_grids_of_planes = None
+        self.preload_sparse_grids_of_planes = None
 
     @property
     def data(self):
@@ -43,8 +46,10 @@ class MockMaskedInterferometer(object):
         self.real_space_mask = real_space_mask
 
         self.visibilities = interferometer.visibilities
-        self.noise_map =  self.interferometer.noise_map
-        self.visibilities_mask = np.full(fill_value=False, shape=self.interferometer.uv_wavelengths.shape)
+        self.noise_map = self.interferometer.noise_map
+        self.visibilities_mask = np.full(
+            fill_value=False, shape=self.interferometer.uv_wavelengths.shape
+        )
         self.primary_beam = interferometer.primary_beam
 
         self.grid = grid
@@ -54,7 +59,7 @@ class MockMaskedInterferometer(object):
         self.uses_cluster_inversion = False
         self.inversion_pixel_limit = 1000
         self.inversion_uses_border = True
-        self.preload_pixelization_grids_of_planes = None
+        self.preload_sparse_grids_of_planes = None
 
     def signal_to_noise_map(self):
         return self.visibilities / self.noise_map

@@ -16,7 +16,7 @@ from .hyper_phase import HyperPhase
 
 class Analysis(af.Analysis):
     def __init__(
-            self, masked_imaging, hyper_model_image, hyper_galaxy_image, image_path
+        self, masked_imaging, hyper_model_image, hyper_galaxy_image, image_path
     ):
         """
         An analysis to fit the noise for a single galaxy image.
@@ -110,13 +110,13 @@ class Analysis(af.Analysis):
             return instance.hyper_background_noise
 
     def fit_for_hyper_galaxy(
-            self, hyper_galaxy, hyper_image_sky, hyper_background_noise
+        self, hyper_galaxy, hyper_image_sky, hyper_background_noise
     ):
 
         image = fit.hyper_image_from_image_and_hyper_image_sky(
             image=self.masked_imaging.image, hyper_image_sky=hyper_image_sky
         )
-        
+
         if hyper_background_noise is not None:
             noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
                 noise_map=self.masked_imaging.noise_map
@@ -187,7 +187,7 @@ class HyperGalaxyPhase(HyperPhase):
             inversion_uses_border=cast(
                 imaging.PhaseImaging, phase
             ).meta_data_fit.inversion_uses_border,
-            preload_pixelization_grids_of_planes=None,
+            preload_sparse_grids_of_planes=None,
         )
 
         hyper_result = copy.deepcopy(results.last)
@@ -235,12 +235,16 @@ class HyperGalaxyPhase(HyperPhase):
 
             # If array is all zeros, galaxy did not have image in previous phase and
             # shoumasked_imaging be ignored
-            if not np.all(hyper_result.analysis.hyper_galaxy_image_path_dict[path] == 0):
+            if not np.all(
+                hyper_result.analysis.hyper_galaxy_image_path_dict[path] == 0
+            ):
 
                 analysis = self.Analysis(
                     masked_imaging=masked_imaging,
                     hyper_model_image=hyper_result.analysis.hyper_model_image,
-                    hyper_galaxy_image=hyper_result.analysis.hyper_galaxy_image_path_dict[path],
+                    hyper_galaxy_image=hyper_result.analysis.hyper_galaxy_image_path_dict[
+                        path
+                    ],
                     image_path=optimizer.paths.image_path,
                 )
 

@@ -39,13 +39,16 @@ def simulate_image_from_galaxies_and_output_to_fits(
     # Simulate the Imaging data_type, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.al. the PSF convolution).
 
-    imaging_simulator = al.ImagingSimulator(shape_2d=shape_2d, pixel_scales=pixel_scales,
-                                            exposure_time=exposure_time, psf=psf, background_sky_level=background_sky_level)
+    imaging_simulator = al.ImagingSimulator(
+        shape_2d=shape_2d,
+        pixel_scales=pixel_scales,
+        exposure_time=exposure_time,
+        psf=psf,
+        background_sky_level=background_sky_level,
+    )
 
     imaging = imaging_simulator.simulate_from_tracer_and_grid(
-        tracer=tracer,
-        add_noise=True,
-        grid=image_plane_grid,
+        tracer=tracer, add_noise=True, grid=image_plane_grid
     )
 
     # Now, lets output this simulated imaging-simulate to the test_autoarray/simulate folder.
@@ -279,9 +282,7 @@ def make_lens_sis__source_smooth(data_resolutions, sub_size):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.SphericalIsothermal(
-            centre=(0.0, 0.0), einstein_radius=1.6
-        ),
+        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6),
     )
 
     source_galaxy = al.Galaxy(
@@ -314,9 +315,7 @@ def make_lens_sis__source_smooth__offset_centre(data_resolutions, sub_size):
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.SphericalIsothermal(
-            centre=(4.0, 4.0), einstein_radius=1.6
-        ),
+        mass=al.mp.SphericalIsothermal(centre=(4.0, 4.0), einstein_radius=1.6),
     )
 
     source_galaxy = al.Galaxy(

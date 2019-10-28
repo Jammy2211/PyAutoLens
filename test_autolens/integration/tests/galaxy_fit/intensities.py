@@ -19,9 +19,7 @@ def galaxy_fit_phase():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    grid = aa.grid.uniform(
-        shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=4
-    )
+    grid = aa.grid.uniform(shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=4)
 
     galaxy = al.Galaxy(
         redshift=0.5,
@@ -39,9 +37,7 @@ def galaxy_fit_phase():
     phase1 = al.PhaseGalaxy(
         phase_name=test_name + "/",
         galaxies=dict(
-            gal=al.GalaxyModel(
-                redshift=0.5, light=al.lp.SphericalExponential
-            )
+            gal=al.GalaxyModel(redshift=0.5, light=al.lp.SphericalExponential)
         ),
         use_image=True,
         sub_size=4,

@@ -10,9 +10,7 @@ class TestPlaneImageFromGrid:
     def test__3x3_grid__extracts_max_min_coordinates__creates_grid_including_half_pixel_offset_from_edge(
         self
     ):
-        galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
-        )
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
@@ -50,9 +48,7 @@ class TestPlaneImageFromGrid:
     def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(
         self
     ):
-        galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
-        )
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array(
             [
@@ -97,9 +93,7 @@ class TestPlaneImageFromGrid:
         assert (plane_image.array == plane_image_galaxy).all()
 
     def test__2x3_grid__shape_change_correct_and_coordinates_shift(self):
-        galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
-        )
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
@@ -132,9 +126,7 @@ class TestPlaneImageFromGrid:
         assert (plane_image.array == plane_image_galaxy).all()
 
     def test__3x2_grid__shape_change_correct_and_coordinates_shift(self):
-        galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
-        )
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
@@ -167,9 +159,7 @@ class TestPlaneImageFromGrid:
         assert (plane_image.array == plane_image_galaxy).all()
 
     def test__3x3_grid__buffer_aligns_two_grids(self):
-        galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
-        )
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
         grid_without_buffer = np.array([[-1.48, -1.48], [1.48, 1.48]])
 

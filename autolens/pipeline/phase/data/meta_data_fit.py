@@ -2,22 +2,25 @@ import autofit as af
 import autoarray as aa
 from autolens import exc
 from autoarray.operators.inversion import pixelizations as pix
-from autolens.pipeline.phase.data.phase import default_mask_function, isinstance_or_prior
+from autolens.pipeline.phase.data.phase import (
+    default_mask_function,
+    isinstance_or_prior,
+)
 
 
 class MetaDataFit:
     def __init__(
-            self,
-            variable,
-            sub_size=2,
-            signal_to_noise_limit=None,
-            positions_threshold=None,
-            mask_function=None,
-            inner_mask_radii=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_uses_border=True,
-            inversion_pixel_limit=None,
-            is_hyper_phase=False
+        self,
+        variable,
+        sub_size=2,
+        signal_to_noise_limit=None,
+        positions_threshold=None,
+        mask_function=None,
+        inner_mask_radii=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_uses_border=True,
+        inversion_pixel_limit=None,
+        is_hyper_phase=False,
     ):
         self.is_hyper_phase = is_hyper_phase
         self.variable = variable
@@ -29,12 +32,10 @@ class MetaDataFit:
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
         self.inversion_uses_border = inversion_uses_border
         self.inversion_pixel_limit = (
-                inversion_pixel_limit or
-                af.conf.instance.general.get(
-                    "inversion",
-                    "inversion_pixel_limit_overall",
-                    int
-                )
+            inversion_pixel_limit
+            or af.conf.instance.general.get(
+                "inversion", "inversion_pixel_limit_overall", int
+            )
         )
 
     def setup_phase_mask(self, data, mask):
@@ -46,7 +47,12 @@ class MetaDataFit:
             mask = default_mask_function(image=data.image)
 
         if mask.sub_size != self.sub_size:
-            mask = aa.mask.manual(mask_2d=mask, pixel_scales=mask.pixel_scales, sub_size=self.sub_size, origin=mask.origin)
+            mask = aa.mask.manual(
+                mask_2d=mask,
+                pixel_scales=mask.pixel_scales,
+                sub_size=self.sub_size,
+                origin=mask.origin,
+            )
 
         if self.inner_mask_radii is not None:
             inner_mask = aa.mask.circular(
@@ -91,10 +97,10 @@ class MetaDataFit:
             return None
 
         if (
-                results is not None
-                and results.last is not None
-                and hasattr(results.last, "hyper_combined")
-                and self.pixelization is not None
+            results is not None
+            and results.last is not None
+            and hasattr(results.last, "hyper_combined")
+            and self.pixelization is not None
         ):
             if self.pixelization.__class__ is results.last.pixelization.__class__:
                 return (

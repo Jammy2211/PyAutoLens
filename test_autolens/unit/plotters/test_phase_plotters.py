@@ -129,14 +129,12 @@ def test__imaging_fit_for_phase__source_and_lens__depedent_on_input(
     assert phase_plotter_path + "fit/fit_image.png" in plot_patch.paths
     assert phase_plotter_path + "fit/fit_noise_map.png" not in plot_patch.paths
     assert (
-        phase_plotter_path + "fit/fit_signal_to_noise_map.png"
-        not in plot_patch.paths
+        phase_plotter_path + "fit/fit_signal_to_noise_map.png" not in plot_patch.paths
     )
     assert phase_plotter_path + "fit/fit_model_image.png" in plot_patch.paths
     assert phase_plotter_path + "fit/fit_residual_map.png" not in plot_patch.paths
     assert (
-        phase_plotter_path + "fit/fit_normalized_residual_map.png"
-        in plot_patch.paths
+        phase_plotter_path + "fit/fit_normalized_residual_map.png" in plot_patch.paths
     )
     assert phase_plotter_path + "fit/fit_chi_squared_map.png" in plot_patch.paths
     assert (
@@ -155,14 +153,8 @@ def test__imaging_fit_for_phase__source_and_lens__depedent_on_input(
         phase_plotter_path + "fit/fit_model_image_of_plane_1.png"
         not in plot_patch.paths
     )
-    assert (
-        phase_plotter_path + "fit/fit_plane_image_of_plane_0.png"
-        in plot_patch.paths
-    )
-    assert (
-        phase_plotter_path + "fit/fit_plane_image_of_plane_1.png"
-        in plot_patch.paths
-    )
+    assert phase_plotter_path + "fit/fit_plane_image_of_plane_0.png" in plot_patch.paths
+    assert phase_plotter_path + "fit/fit_plane_image_of_plane_1.png" in plot_patch.paths
 
 
 def test__hyper_images_for_phase__source_and_lens__depedent_on_input(

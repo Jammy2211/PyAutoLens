@@ -6,11 +6,7 @@ from autoastro.galaxy import galaxy as g
 
 class ImagingFit(fit.ImagingFit):
     def __init__(
-        self,
-        masked_imaging,
-            tracer,
-            hyper_image_sky=None,
-            hyper_background_noise=None,
+        self, masked_imaging, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens simulate's hyper_galaxies.
@@ -58,14 +54,17 @@ class ImagingFit(fit.ImagingFit):
                 noise_map=noise_map,
                 convolver=masked_imaging.convolver,
                 inversion_uses_border=masked_imaging.inversion_uses_border,
-                preload_pixelization_grids_of_planes=masked_imaging.preload_pixelization_grids_of_planes,
+                preload_sparse_grids_of_planes=masked_imaging.preload_sparse_grids_of_planes,
             )
 
-            model_image = self.blurred_profile_image + inversion.mapped_reconstructed_image
+            model_image = (
+                self.blurred_profile_image + inversion.mapped_reconstructed_image
+            )
 
         super().__init__(
             mask=masked_imaging.mask,
-            image=image, noise_map=noise_map,
+            image=image,
+            noise_map=noise_map,
             model_image=model_image,
             inversion=inversion,
         )
@@ -80,7 +79,9 @@ class ImagingFit(fit.ImagingFit):
         A dictionary associating galaxies with their corresponding model images
         """
         galaxy_model_image_dict = self.tracer.galaxy_blurred_profile_image_dict_from_grid_and_convolver(
-            grid=self.grid, convolver=self.masked_imaging.convolver, blurring_grid=self.masked_imaging.blurring_grid
+            grid=self.grid,
+            convolver=self.masked_imaging.convolver,
+            blurring_grid=self.masked_imaging.blurring_grid,
         )
 
         # TODO : Extend to multiple inversioons across Planes
@@ -101,7 +102,9 @@ class ImagingFit(fit.ImagingFit):
     def model_images_of_planes(self):
 
         model_images_of_planes = self.tracer.blurred_profile_images_of_planes_from_grid_and_psf(
-            grid=self.grid, psf=self.masked_imaging.psf, blurring_grid=self.masked_imaging.blurring_grid
+            grid=self.grid,
+            psf=self.masked_imaging.psf,
+            blurring_grid=self.masked_imaging.blurring_grid,
         )
 
         for plane_index in self.tracer.plane_indexes_with_pixelizations:
@@ -124,13 +127,12 @@ def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
     else:
         return image
 
+
 def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
     noise_map, tracer, hyper_background_noise
 ):
 
-    hyper_noise_map = tracer.hyper_noise_map_from_noise_map(
-        noise_map=noise_map
-    )
+    hyper_noise_map = tracer.hyper_noise_map_from_noise_map(noise_map=noise_map)
 
     if hyper_background_noise is not None:
         noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
@@ -142,12 +144,9 @@ def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
 
     return noise_map
 
+
 class InterferometerFit(fit.InterferometerFit):
-    def __init__(
-        self,
-        masked_interferometer,
-        tracer,
-    ):
+    def __init__(self, masked_interferometer, tracer):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens simulate's hyper_galaxies.
 
@@ -163,7 +162,8 @@ class InterferometerFit(fit.InterferometerFit):
         self.tracer = tracer
 
         profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
-            grid=masked_interferometer.grid, transformer=masked_interferometer.transformer
+            grid=masked_interferometer.grid,
+            transformer=masked_interferometer.transformer,
         )
 
         # profile_subtracted_visibilities_1d = visibilities_1d - blurred_profile_visibilities_1d
@@ -181,7 +181,7 @@ class InterferometerFit(fit.InterferometerFit):
         #         noise_map_1d=noise_map_1d,
         #         convolver=lens_interferometer.convolver,
         #         inversion_uses_border=lens_interferometer.inversion_uses_border,
-        #         preload_pixelization_grids_of_planes=lens_interferometer.preload_pixelization_grids_of_planes,
+        #         preload_sparse_grids_of_planes=lens_interferometer.preload_sparse_grids_of_planes,
         #     )
         #
         #     model_visibilities_1d = blurred_profile_visibilities_1d + inversion.reconstructed_data_1d
@@ -200,7 +200,8 @@ class InterferometerFit(fit.InterferometerFit):
         A dictionary associating galaxies with their corresponding model images
         """
         galaxy_model_visibilities_dict = self.tracer.galaxy_profile_visibilities_dict_from_grid_and_transformer(
-            grid=self.masked_interferometer.grid, transformer=self.masked_interferometer.transformer,
+            grid=self.masked_interferometer.grid,
+            transformer=self.masked_interferometer.transformer,
         )
 
         # TODO : Extend to multiple inversioons across Planes
@@ -220,7 +221,8 @@ class InterferometerFit(fit.InterferometerFit):
     def model_visibilities_of_planes(self):
 
         model_visibilities_of_planes = self.tracer.profile_visibilities_of_planes_from_grid_and_transformer(
-            grid=self.masked_interferometer.grid, transformer=self.masked_interferometer.transformer
+            grid=self.masked_interferometer.grid,
+            transformer=self.masked_interferometer.transformer,
         )
 
         for plane_index in self.tracer.plane_indexes_with_pixelizations:

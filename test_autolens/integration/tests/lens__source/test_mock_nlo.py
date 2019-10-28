@@ -1,6 +1,8 @@
 from test_autolens.integration.tests.lens__source import lens_light_mass__source
 from test_autolens.integration.tests.lens__source import lens_light_mass__source__hyper
-from test_autolens.integration.tests.lens__source import lens_light_mass__source__hyper_bg
+from test_autolens.integration.tests.lens__source import (
+    lens_light_mass__source__hyper_bg,
+)
 from test_autolens.integration.tests.lens__source import lens_mass__source_x2
 from test_autolens.integration.tests.lens__source import lens_mass__source_x2__hyper
 from test_autolens.integration.tests.runner import run_a_mock

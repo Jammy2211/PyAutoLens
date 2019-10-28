@@ -72,9 +72,7 @@ def data_resolution_from_pixel_scale(pixel_scales):
         raise ValueError("An invalid pixel-scale was entered - ", pixel_scales)
 
 
-def load_test_imaging(
-    data_type, data_resolution, psf_shape=(11, 11), lens_name=None
-):
+def load_test_imaging(data_type, data_resolution, psf_shape=(11, 11), lens_name=None):
     pixel_scales = pixel_scale_from_data_resolution(data_resolution=data_resolution)
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(

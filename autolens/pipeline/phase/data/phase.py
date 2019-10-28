@@ -9,7 +9,10 @@ from autolens.pipeline.phase.data.result import Result
 
 def default_mask_function(image):
     return aa.mask.circular(
-        shape_2d=image.shape_2d, pixel_scales=image.pixel_scales, sub_size=1, radius_arcsec=3.0
+        shape_2d=image.shape_2d,
+        pixel_scales=image.pixel_scales,
+        sub_size=1,
+        radius_arcsec=3.0,
     )
 
 
@@ -27,14 +30,14 @@ class PhaseData(abstract.AbstractPhase):
     Result = Result
 
     def __init__(
-            self,
-            phase_name,
-            phase_tag,
-            phase_folders=tuple(),
-            galaxies=None,
-            optimizer_class=af.MultiNest,
-            cosmology=cosmo.Planck15,
-            auto_link_priors=False,
+        self,
+        phase_name,
+        phase_tag,
+        phase_folders=tuple(),
+        galaxies=None,
+        optimizer_class=af.MultiNest,
+        cosmology=cosmo.Planck15,
+        auto_link_priors=False,
     ):
         """
 

@@ -19,9 +19,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 light=al.lp.SphericalDevVaucouleurs,
                 mass=al.mp.EllipticalIsothermal,
             ),
-            source=al.GalaxyModel(
-                redshift=1.0, light=al.lp.EllipticalSersic
-            ),
+            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )

@@ -37,9 +37,7 @@ mask = aa.mask.circular(
     radius_arcsec=5.0,
     centre=(1.0, 1.0),
 )
-aa.plot_array(
-    array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]]
-)
+aa.plot_array(array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]])
 aa.plot_array(
     array=array,
     mask=mask,

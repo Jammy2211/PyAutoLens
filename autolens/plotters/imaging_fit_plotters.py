@@ -46,7 +46,9 @@ def subplot(
         number_subplots=6
     )
 
-    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask_overlay=should_plot_mask_overlay)
+    mask_overlay = get_mask_overlay(
+        fit=fit, should_plot_mask_overlay=should_plot_mask_overlay
+    )
 
     if figsize is None:
         figsize = figsize_tool
@@ -56,9 +58,7 @@ def subplot(
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
-    image_plane_pix_grid = get_image_plane_pix_grid(
-        should_plot_image_plane_pix, fit
-    )
+    image_plane_pix_grid = get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
     aa.plot.imaging_fit.image(
         fit=fit,
@@ -382,7 +382,9 @@ def subplot_for_plane(
         number_subplots=4
     )
 
-    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask_overlay=should_plot_mask_overlay)
+    mask_overlay = get_mask_overlay(
+        fit=fit, should_plot_mask_overlay=should_plot_mask_overlay
+    )
 
     if figsize is None:
         figsize = figsize_tool
@@ -391,9 +393,7 @@ def subplot_for_plane(
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
-    image_plane_pix_grid = get_image_plane_pix_grid(
-        should_plot_image_plane_pix, fit
-    )
+    image_plane_pix_grid = get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
     plt.subplot(rows, columns, 1)
 
@@ -634,10 +634,10 @@ def individuals(
         in the python interpreter window.
     """
 
-    mask_overlay = get_mask_overlay(fit=fit, should_plot_mask_overlay=should_plot_mask_overlay)
-    image_plane_pix_grid = get_image_plane_pix_grid(
-        should_plot_image_plane_pix, fit
+    mask_overlay = get_mask_overlay(
+        fit=fit, should_plot_mask_overlay=should_plot_mask_overlay
     )
+    image_plane_pix_grid = get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
     traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
@@ -873,15 +873,11 @@ def subtracted_image_of_plane(
 
         other_planes_model_images = [
             model_image
-            for i, model_image in enumerate(
-                fit.model_images_of_planes
-            )
+            for i, model_image in enumerate(fit.model_images_of_planes)
             if i != plane_index
         ]
 
-        subtracted_image = fit.image - sum(
-            other_planes_model_images
-        )
+        subtracted_image = fit.image - sum(other_planes_model_images)
 
     else:
 
@@ -1094,7 +1090,7 @@ def get_image_plane_pix_grid(should_plot_image_plane_pix, fit):
             should_plot_image_plane_pix
             and fit.inversion.mapper.is_image_plane_pixelization
         ):
-            return fit.tracer.pixelization_grids_of_planes_from_grid(grid=fit.grid)[-1]
+            return fit.tracer.sparse_image_plane_grids_of_planes_from_grid(grid=fit.grid)[-1]
     else:
         return None
 

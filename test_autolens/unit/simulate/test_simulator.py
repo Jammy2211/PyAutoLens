@@ -10,8 +10,8 @@ test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
-class TestImaging:
 
+class TestImaging:
     def test__constructor_and_specific_instrument_class_methods(self):
 
         psf = aa.kernel.from_gaussian(shape_2d=(11, 11), sigma=0.1, pixel_scales=0.1)
@@ -32,7 +32,9 @@ class TestImaging:
 
         lsst = obs.ImagingSimulator.lsst()
 
-        lsst_psf = aa.kernel.from_gaussian(shape_2d=(31, 31), sigma=0.5, pixel_scales=0.2)
+        lsst_psf = aa.kernel.from_gaussian(
+            shape_2d=(31, 31), sigma=0.5, pixel_scales=0.2
+        )
 
         assert lsst.shape == (101, 101)
         assert lsst.pixel_scales == (0.2, 0.2)
@@ -42,7 +44,9 @@ class TestImaging:
 
         euclid = obs.ImagingSimulator.euclid()
 
-        euclid_psf = aa.kernel.from_gaussian(shape_2d=(31, 31), sigma=0.1, pixel_scales=0.1)
+        euclid_psf = aa.kernel.from_gaussian(
+            shape_2d=(31, 31), sigma=0.1, pixel_scales=0.1
+        )
 
         assert euclid.shape == (151, 151)
         assert euclid.pixel_scales == (0.1, 0.1)
@@ -52,7 +56,9 @@ class TestImaging:
 
         hst = obs.ImagingSimulator.hst()
 
-        hst_psf = aa.kernel.from_gaussian(shape_2d=(31, 31), sigma=0.05, pixel_scales=0.05)
+        hst_psf = aa.kernel.from_gaussian(
+            shape_2d=(31, 31), sigma=0.05, pixel_scales=0.05
+        )
 
         assert hst.shape == (251, 251)
         assert hst.pixel_scales == (0.05, 0.05)
@@ -90,9 +96,7 @@ class TestImaging:
             pixel_scales=1.0,
         )
 
-        grid = aa.grid.uniform(
-            shape_2d=(20, 20), pixel_scales=0.05, sub_size=1
-        )
+        grid = aa.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
         lens_galaxy = al.Galaxy(
             redshift=0.5,
@@ -106,13 +110,16 @@ class TestImaging:
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-        simulator = al.ImagingSimulator(shape_2d=(20, 20), pixel_scales=0.05, psf=psf, exposure_time=10000.0, background_sky_level=100.0)
+        simulator = al.ImagingSimulator(
+            shape_2d=(20, 20),
+            pixel_scales=0.05,
+            psf=psf,
+            exposure_time=10000.0,
+            background_sky_level=100.0,
+        )
 
         imaging_simulator = simulator.simulate_from_tracer_and_grid(
-            tracer=tracer,
-            grid=grid,
-            add_noise=True,
-            noise_seed=1,
+            tracer=tracer, grid=grid, add_noise=True, noise_seed=1
         )
 
         imaging_manual = aa.imaging.simulate(
@@ -126,23 +133,14 @@ class TestImaging:
             noise_seed=1,
         )
 
+        assert (imaging_simulator.image.in_2d == imaging_manual.image.in_2d).all()
+        assert (imaging_simulator.psf == imaging_manual.psf).all()
+        assert (imaging_simulator.noise_map == imaging_manual.noise_map).all()
         assert (
-            imaging_simulator.image.in_2d == imaging_manual.image.in_2d
+            imaging_simulator.background_sky_map == imaging_manual.background_sky_map
         ).all()
         assert (
-            imaging_simulator.psf == imaging_manual.psf
-        ).all()
-        assert (
-            imaging_simulator.noise_map
-            == imaging_manual.noise_map
-        ).all()
-        assert (
-            imaging_simulator.background_sky_map
-            == imaging_manual.background_sky_map
-        ).all()
-        assert (
-            imaging_simulator.exposure_time_map
-            == imaging_manual.exposure_time_map
+            imaging_simulator.exposure_time_map == imaging_manual.exposure_time_map
         ).all()
 
     def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer(
@@ -154,13 +152,10 @@ class TestImaging:
             pixel_scales=0.05,
         )
 
-        grid = aa.grid.uniform(
-            shape_2d=(20, 20), pixel_scales=0.05, sub_size=1
-        )
+        grid = aa.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
         lens_galaxy = al.Galaxy(
-            redshift=0.5,
-            mass=al.mp.EllipticalIsothermal(einstein_radius=1.6),
+            redshift=0.5, mass=al.mp.EllipticalIsothermal(einstein_radius=1.6)
         )
 
         source_galaxy = al.Galaxy(
@@ -169,7 +164,13 @@ class TestImaging:
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-        simulator = al.ImagingSimulator(shape_2d=(20, 20), pixel_scales=0.05, psf=psf, exposure_time=10000.0, background_sky_level=100.0)
+        simulator = al.ImagingSimulator(
+            shape_2d=(20, 20),
+            pixel_scales=0.05,
+            psf=psf,
+            exposure_time=10000.0,
+            background_sky_level=100.0,
+        )
 
         imaging_simulator = simulator.simulate_from_deflections_and_galaxies(
             deflections=tracer.deflections_from_grid(grid=grid),
@@ -189,23 +190,14 @@ class TestImaging:
             noise_seed=1,
         )
 
+        assert (imaging_simulator.image.in_2d == imaging_manual.image.in_2d).all()
+        assert (imaging_simulator.psf == imaging_manual.psf).all()
+        assert (imaging_simulator.noise_map == imaging_manual.noise_map).all()
         assert (
-            imaging_simulator.image.in_2d == imaging_manual.image.in_2d
+            imaging_simulator.background_sky_map == imaging_manual.background_sky_map
         ).all()
         assert (
-            imaging_simulator.psf == imaging_manual.psf
-        ).all()
-        assert (
-            imaging_simulator.noise_map
-            == imaging_manual.noise_map
-        ).all()
-        assert (
-            imaging_simulator.background_sky_map
-            == imaging_manual.background_sky_map
-        ).all()
-        assert (
-            imaging_simulator.exposure_time_map
-            == imaging_manual.exposure_time_map
+            imaging_simulator.exposure_time_map == imaging_manual.exposure_time_map
         ).all()
 
     def test__simulate_imaging_from_lens__source_galaxy__compare_to_manual_imaging(
@@ -231,13 +223,17 @@ class TestImaging:
             ),
         )
 
-        grid = aa.grid.uniform(
-            shape_2d=(11, 11), pixel_scales=0.2, sub_size=1
-        )
+        grid = aa.grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=1)
 
         psf = aa.kernel.from_gaussian(shape_2d=(7, 7), sigma=0.1, pixel_scales=0.2)
 
-        simulator = al.ImagingSimulator(shape_2d=(11, 11), pixel_scales=0.2, psf=psf, exposure_time=100.0, background_sky_level=1.0)
+        simulator = al.ImagingSimulator(
+            shape_2d=(11, 11),
+            pixel_scales=0.2,
+            psf=psf,
+            exposure_time=100.0,
+            background_sky_level=1.0,
+        )
 
         imaging_simulator = simulator.simulate_from_galaxies(
             galaxies=[lens_galaxy, source_galaxy],
@@ -267,15 +263,12 @@ class TestImaging:
             imaging_manual.background_noise_map
             == imaging_simulator.background_noise_map
         )
-        assert (
-            imaging_manual.poisson_noise_map == imaging_simulator.poisson_noise_map
-        )
+        assert imaging_manual.poisson_noise_map == imaging_simulator.poisson_noise_map
         assert (
             imaging_manual.exposure_time_map == imaging_simulator.exposure_time_map
         ).all()
         assert (
-            imaging_manual.background_sky_map
-            == imaging_simulator.background_sky_map
+            imaging_manual.background_sky_map == imaging_simulator.background_sky_map
         ).all()
 
     def test__simulate_imaging_from_lens__source_galaxy__and_write_to_fits(self):
@@ -301,7 +294,13 @@ class TestImaging:
 
         psf = aa.kernel.from_gaussian(shape_2d=(7, 7), sigma=0.1, pixel_scales=0.2)
 
-        simulator = al.ImagingSimulator(shape_2d=(11, 11), pixel_scales=0.2, psf=psf, exposure_time=100.0, background_sky_level=1.0)
+        simulator = al.ImagingSimulator(
+            shape_2d=(11, 11),
+            pixel_scales=0.2,
+            psf=psf,
+            exposure_time=100.0,
+            background_sky_level=1.0,
+        )
 
         imaging_simulator = simulator.simulate_from_galaxies(
             galaxies=[lens_galaxy, source_galaxy],

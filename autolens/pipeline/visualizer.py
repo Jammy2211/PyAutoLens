@@ -276,7 +276,11 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
 
     def plot_hyper_images(self, last_results):
         mask = self.masked_imaging.mask
-        if self.should_plot_mask_overlay and mask is not None and last_results is not None:
+        if (
+            self.should_plot_mask_overlay
+            and mask is not None
+            and last_results is not None
+        ):
             phase_plotters.plot_hyper_images_for_phase(
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,

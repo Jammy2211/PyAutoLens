@@ -14,6 +14,7 @@ def set_config_path():
         path.join(directory, "test_files/config"), path.join(directory, "output")
     )
 
+
 ############
 # LENS #
 ############
@@ -23,11 +24,7 @@ def set_config_path():
 
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7(
-    imaging_7x7,
-    mask_7x7,
-    sub_grid_7x7,
-    blurring_grid_7x7,
-    convolver_7x7,
+    imaging_7x7, mask_7x7, sub_grid_7x7, blurring_grid_7x7, convolver_7x7
 ):
     return mock_masked_data.MockMaskedImaging(
         imaging=imaging_7x7,
@@ -40,7 +37,7 @@ def make_masked_imaging_7x7(
 
 @pytest.fixture(name="masked_interferometer_6x6")
 def make_masked_interferometer_6x6(
-    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7,
+    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
     return mock_masked_data.MockMaskedInterferometer(
         interferometer=interferometer_7,
@@ -78,16 +75,12 @@ def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp):
 
 @pytest.fixture(name="masked_imaging_fit_x1_plane_7x7")
 def make_masked_imaging_fit_x1_plane_7x7(masked_imaging_7x7, tracer_x1_plane_7x7):
-    return al.ImagingFit(
-        masked_imaging=masked_imaging_7x7, tracer=tracer_x1_plane_7x7
-    )
+    return al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer_x1_plane_7x7)
 
 
 @pytest.fixture(name="masked_imaging_fit_x2_plane_7x7")
 def make_masked_imaging_fit_x2_plane_7x7(masked_imaging_7x7, tracer_x2_plane_7x7):
-    return al.ImagingFit(
-        masked_imaging=masked_imaging_7x7, tracer=tracer_x2_plane_7x7
-    )
+    return al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer_x2_plane_7x7)
 
 
 @pytest.fixture(name="mask_function_7x7_1_pix")
@@ -174,9 +167,12 @@ def make_contribution_map_7x7(
 
 
 @pytest.fixture(name="hyper_noise_map_7x7")
-def make_hyper_noise_map_7x7(masked_imaging_fit_x2_plane_7x7, contribution_map_7x7, hyper_galaxy):
+def make_hyper_noise_map_7x7(
+    masked_imaging_fit_x2_plane_7x7, contribution_map_7x7, hyper_galaxy
+):
     hyper_noise = hyper_galaxy.hyper_noise_map_from_contribution_map(
-        noise_map=masked_imaging_fit_x2_plane_7x7.noise_map, contribution_map=contribution_map_7x7
+        noise_map=masked_imaging_fit_x2_plane_7x7.noise_map,
+        contribution_map=contribution_map_7x7,
     )
     return masked_imaging_fit_x2_plane_7x7.noise_map + hyper_noise
 

@@ -37,7 +37,6 @@ def clean_images():
 
 
 class TestPhase(object):
-
     def test__make_analysis__masks_image_and_noise_map_correctly(
         self, phase_imaging_7x7, imaging_7x7, mask_7x7
     ):
@@ -52,9 +51,7 @@ class TestPhase(object):
             == imaging_7x7.noise_map.in_2d * np.invert(mask_7x7)
         ).all()
 
-    def test__make_analysis__phase_info_is_made(
-        self, phase_imaging_7x7, imaging_7x7
-    ):
+    def test__make_analysis__phase_info_is_made(self, phase_imaging_7x7, imaging_7x7):
         phase_imaging_7x7.make_analysis(data=imaging_7x7)
 
         file_phase_info = "{}/{}".format(
@@ -89,12 +86,8 @@ class TestPhase(object):
         phase_imaging_7x7 = al.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
-                lens=al.GalaxyModel(
-                    redshift=0.5, light=al.lp.EllipticalSersic
-                ),
-                source=al.GalaxyModel(
-                    redshift=1.0, light=al.lp.EllipticalSersic
-                ),
+                lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
+                source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
             ),
             mask_function=mask_function_7x7,
             phase_name="test_phase_test_fit",
@@ -168,11 +161,11 @@ class TestPhase(object):
     def test__masked_imaging_is_binned_up(
         self, imaging_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
     ):
-        binned_up_imaging = imaging_7x7.binned_from_bin_up_factor(
+        binned_up_imaging = imaging_7x7.binned_from_bin_up_factor(bin_up_factor=2)
+
+        binned_up_mask = mask_7x7_1_pix.mapping.binned_mask_from_bin_up_factor(
             bin_up_factor=2
         )
-
-        binned_up_mask = mask_7x7_1_pix.mapping.binned_mask_from_bin_up_factor(bin_up_factor=2)
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="phase_imaging_7x7",
@@ -193,13 +186,9 @@ class TestPhase(object):
 
         assert (analysis.masked_imaging.mask == binned_up_mask).all()
 
-        masked_imaging = al.MaskedImaging(
-            imaging=imaging_7x7, mask=mask_7x7_1_pix
-        )
+        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
 
-        binned_up_lens_data = masked_imaging.binned_from_bin_up_factor(
-            bin_up_factor=2
-        )
+        binned_up_lens_data = masked_imaging.binned_from_bin_up_factor(bin_up_factor=2)
 
         assert (
             analysis.masked_imaging.image.in_2d
@@ -213,9 +202,12 @@ class TestPhase(object):
 
         assert (analysis.masked_imaging.mask == binned_up_lens_data.mask).all()
 
-        assert (analysis.masked_imaging.image.in_1d == binned_up_lens_data.image.in_1d).all()
         assert (
-                analysis.masked_imaging.noise_map.in_1d == binned_up_lens_data.noise_map.in_1d
+            analysis.masked_imaging.image.in_1d == binned_up_lens_data.image.in_1d
+        ).all()
+        assert (
+            analysis.masked_imaging.noise_map.in_1d
+            == binned_up_lens_data.noise_map.in_1d
         ).all()
 
     def test__phase_can_receive_hyper_image_and_noise_maps(self):
@@ -285,13 +277,13 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(data=imaging_7x7, mask=None)
+        mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(
+            data=imaging_7x7, mask=None
+        )
         masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        fit = al.ImagingFit(
-            masked_imaging=masked_imaging, tracer=tracer
-        )
+        fit = al.ImagingFit(masked_imaging=masked_imaging, tracer=tracer)
 
         assert fit.likelihood == fit_figure_of_merit
 
@@ -319,7 +311,9 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(data=imaging_7x7, mask=None)
+        mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(
+            data=imaging_7x7, mask=None
+        )
         assert mask.sub_size == 4
 
         masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)

@@ -26,9 +26,7 @@ class TestPhaseTag:
             pixel_scale_interpolation_grid=0.2,
         )
 
-        assert (
-            phase_tag == "phase_tag__sub_1__bin_3__psf_2x2__interp_0.200"
-        )
+        assert phase_tag == "phase_tag__sub_1__bin_3__psf_2x2__interp_0.200"
 
 
 class TestPhaseTaggers:

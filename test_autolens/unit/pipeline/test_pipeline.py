@@ -33,7 +33,11 @@ class DummyPhaseImaging(af.AbstractPhase):
         pass
 
     def __init__(self, phase_name, phase_tag="", phase_path=None):
-        super().__init__(paths=af.Paths(phase_name=phase_name, phase_tag=phase_tag, phase_path=phase_path))
+        super().__init__(
+            paths=af.Paths(
+                phase_name=phase_name, phase_tag=phase_tag, phase_path=phase_path
+            )
+        )
         self.data = None
         self.positions = None
         self.results = None
@@ -166,7 +170,9 @@ class DummyPhasePositions(af.AbstractPhase):
         pass
 
     def __init__(self, phase_name):
-        super().__init__(paths=af.Paths(phase_name=phase_name, phase_tag="", phase_path=phase_name))
+        super().__init__(
+            paths=af.Paths(phase_name=phase_name, phase_tag="", phase_path=phase_name)
+        )
         self.positions = None
         self.results = None
         self.pixel_scales = None
