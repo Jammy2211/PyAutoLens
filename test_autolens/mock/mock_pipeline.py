@@ -84,9 +84,7 @@ class MockResults(object):
 
             minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image)
 
-            galaxy_image[
-                galaxy_image < minimum_galaxy_value
-            ] = minimum_galaxy_value
+            galaxy_image[galaxy_image < minimum_galaxy_value] = minimum_galaxy_value
 
             hyper_galaxy_image_path_dict[path] = galaxy_image
 
@@ -124,7 +122,6 @@ class MockHyperCombinedPhase(object):
 
 
 class MockNLO(af.NonLinearOptimizer):
-
     def fit(self, analysis, model):
         class Fitness(object):
             def __init__(self, instance_from_physical_vector):

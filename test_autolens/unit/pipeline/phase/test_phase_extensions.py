@@ -11,9 +11,7 @@ from test_autolens.mock import mock_pipeline
 @pytest.fixture(name="lens_galaxy")
 def make_lens_galaxy():
     return al.Galaxy(
-        redshift=1.0,
-        light=al.lp.SphericalSersic(),
-        mass=al.mp.SphericalIsothermal(),
+        redshift=1.0, light=al.lp.SphericalSersic(), mass=al.mp.SphericalIsothermal()
     )
 
 
@@ -45,9 +43,7 @@ def make_result(masked_imaging_7x7, instance):
         previous_variable=af.ModelMapper(),
         gaussian_tuples=None,
         analysis=al.PhaseImaging.Analysis(
-            masked_imaging=masked_imaging_7x7,
-            cosmology=cosmo.Planck15,
-            image_path="",
+            masked_imaging=masked_imaging_7x7, cosmology=cosmo.Planck15, image_path=""
         ),
         optimizer=None,
     )
@@ -75,13 +71,12 @@ class MockAnalysis(object):
 # noinspection PyAbstractClass
 class MockOptimizer(af.NonLinearOptimizer):
     def __init__(
-        self,
-        phase_name="mock_optimizer",
-        phase_tag="tag",
-        phase_folders=tuple(),
+        self, phase_name="mock_optimizer", phase_tag="tag", phase_folders=tuple()
     ):
         super().__init__(
-            paths=af.Paths(phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders),
+            paths=af.Paths(
+                phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders
+            )
         )
 
     def fit(self, analysis, model):
@@ -91,7 +86,12 @@ class MockOptimizer(af.NonLinearOptimizer):
 
 class MockPhase(object):
     def __init__(self):
-        self.paths = af.Paths(phase_name="phase_name", phase_path="phase_path", phase_folders=("",), phase_tag="")
+        self.paths = af.Paths(
+            phase_name="phase_name",
+            phase_path="phase_path",
+            phase_folders=("",),
+            phase_tag="",
+        )
         self.optimizer = MockOptimizer()
         self.variable = af.ModelMapper()
 
@@ -169,10 +169,7 @@ class TestVariableFixing(object):
         phase = al.VariableFixingHyperPhase(
             MockPhase(),
             "mock_phase",
-            variable_classes=(
-                al.pix.Pixelization,
-                al.reg.Regularization,
-            ),
+            variable_classes=(al.pix.Pixelization, al.reg.Regularization),
         )
 
         mapper = mapper.copy_with_fixed_priors(instance, phase.variable_classes)
@@ -266,9 +263,7 @@ class TestImagePassing(object):
             hyper_model_image.in_2d, 1.0e-4
         )
 
-    def test__fit_uses_hyper_fit_correctly(
-        self, instance, result, masked_imaging_7x7
-    ):
+    def test__fit_uses_hyper_fit_correctly(self, instance, result, masked_imaging_7x7):
         results_collection = af.ResultsCollection()
         results_collection.add("phase", result)
         analysis = al.PhaseImaging.Analysis(
@@ -304,9 +299,7 @@ class TestImagePassing(object):
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.ImagingFit(
-            masked_imaging=masked_imaging_7x7, tracer=tracer
-        )
+        fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 
@@ -422,7 +415,9 @@ class TestHyperGalaxyPhase(object):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
 
-        mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(data=imaging_7x7, mask=None)
+        mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(
+            data=imaging_7x7, mask=None
+        )
         assert mask.sub_size == 2
 
         masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)

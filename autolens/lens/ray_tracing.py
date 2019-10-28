@@ -8,7 +8,6 @@ from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
 
 
-
 class AbstractTracer(object):
     def __init__(self, planes, cosmology):
         """Ray-tracer for a lens system with any number of planes.
@@ -252,9 +251,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     def profile_image_from_grid(self, grid):
         profile_image = sum(self.profile_images_of_planes_from_grid(grid=grid))
-        return grid.mapping.array_from_sub_array_1d(
-            sub_array_1d=profile_image
-        )
+        return grid.mapping.array_from_sub_array_1d(sub_array_1d=profile_image)
 
     def profile_images_of_planes_from_grid(self, grid):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
@@ -274,7 +271,9 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             ):
 
                 profile_images_of_planes.append(
-                    grid.mapping.array_from_sub_array_1d(sub_array_1d=np.zeros(shape=profile_images_of_planes[0].shape))
+                    grid.mapping.array_from_sub_array_1d(
+                        sub_array_1d=np.zeros(shape=profile_images_of_planes[0].shape)
+                    )
                 )
 
         return profile_images_of_planes
@@ -427,8 +426,7 @@ class AbstractTracerData(AbstractTracerLensing):
         blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
         return convolver.convolved_image_from_image_and_blurring_image(
-            image=profile_image,
-            blurring_image=blurring_image,
+            image=profile_image, blurring_image=blurring_image
         )
 
     def blurred_profile_images_of_planes_from_grid_and_convolver(
@@ -537,60 +535,60 @@ class AbstractTracerData(AbstractTracerLensing):
             for profile_image_1d in profile_images_1d_of_planes
         ]
 
-    def pixelization_grids_of_planes_from_grid(self, grid):
+    def sparse_image_plane_grids_of_planes_from_grid(self, grid):
 
-        pixelization_grids_of_planes = []
+        sparse_image_plane_grids_of_planes = []
 
         for plane in self.planes:
-            pixelization_grid = plane.pixelization_grid_from_grid(grid=grid)
-            pixelization_grids_of_planes.append(pixelization_grid)
+            sparse_image_plane_grid = plane.sparse_image_plane_grid_from_grid(grid=grid)
+            sparse_image_plane_grids_of_planes.append(sparse_image_plane_grid)
 
-        return pixelization_grids_of_planes
+        return sparse_image_plane_grids_of_planes
 
-    def traced_pixelization_grids_of_planes_from_grid(
-        self, grid, preload_pixelization_grids_of_planes=None
+    def traced_sparse_grids_of_planes_from_grid(
+        self, grid, preload_sparse_grids_of_planes=None
     ):
 
-        if preload_pixelization_grids_of_planes is None:
+        if preload_sparse_grids_of_planes is None:
 
-            pixelization_grids_of_planes = self.pixelization_grids_of_planes_from_grid(
+            sparse_image_plane_grids_of_planes = self.sparse_image_plane_grids_of_planes_from_grid(
                 grid=grid
             )
 
         else:
 
-            pixelization_grids_of_planes = preload_pixelization_grids_of_planes
+            sparse_image_plane_grids_of_planes = preload_sparse_grids_of_planes
 
-        traced_pixelization_grids_of_planes = []
+        traced_sparse_grids_of_planes = []
 
         for (plane_index, plane) in enumerate(self.planes):
 
-            if pixelization_grids_of_planes[plane_index] is None:
-                traced_pixelization_grids_of_planes.append(None)
+            if sparse_image_plane_grids_of_planes[plane_index] is None:
+                traced_sparse_grids_of_planes.append(None)
             else:
-                traced_pixelization_grids = self.traced_grids_of_planes_from_grid(
-                    grid=pixelization_grids_of_planes[plane_index]
+                traced_sparse_grids = self.traced_grids_of_planes_from_grid(
+                    grid=sparse_image_plane_grids_of_planes[plane_index]
                 )
-                traced_pixelization_grids_of_planes.append(
-                    traced_pixelization_grids[plane_index]
+                traced_sparse_grids_of_planes.append(
+                    traced_sparse_grids[plane_index]
                 )
 
-        return traced_pixelization_grids_of_planes
+        return traced_sparse_grids_of_planes
 
     def mappers_of_planes_from_grid(
         self,
         grid,
         inversion_uses_border=False,
-        preload_pixelization_grids_of_planes=None,
+        preload_sparse_grids_of_planes=None,
     ):
 
         mappers_of_planes = []
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
-        traced_pixelization_grids_of_planes = self.traced_pixelization_grids_of_planes_from_grid(
+        traced_sparse_grids_of_planes = self.traced_sparse_grids_of_planes_from_grid(
             grid=grid,
-            preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
+            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
 
         for (plane_index, plane) in enumerate(self.planes):
@@ -598,9 +596,9 @@ class AbstractTracerData(AbstractTracerLensing):
             if not plane.has_pixelization:
                 mappers_of_planes.append(None)
             else:
-                mapper = plane.mapper_from_grid_and_pixelization_grid(
+                mapper = plane.mapper_from_grid_and_sparse_grid(
                     grid=traced_grids_of_planes[plane_index],
-                    pixelization_grid=traced_pixelization_grids_of_planes[plane_index],
+                    sparse_grid=traced_sparse_grids_of_planes[plane_index],
                     inversion_uses_border=inversion_uses_border,
                 )
                 mappers_of_planes.append(mapper)
@@ -614,13 +612,13 @@ class AbstractTracerData(AbstractTracerLensing):
         noise_map,
         convolver,
         inversion_uses_border=False,
-        preload_pixelization_grids_of_planes=None,
+        preload_sparse_grids_of_planes=None,
     ):
 
         mappers_of_planes = self.mappers_of_planes_from_grid(
             grid=grid,
             inversion_uses_border=inversion_uses_border,
-            preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes,
+            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
 
         return inv.InversionImaging.from_data_mapper_and_regularization(

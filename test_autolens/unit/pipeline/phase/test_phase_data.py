@@ -38,7 +38,6 @@ def clean_images():
 
 
 class TestPhase(object):
-
     def test__make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(
         self, phase_imaging_7x7, imaging_7x7
     ):
@@ -47,12 +46,13 @@ class TestPhase(object):
         phase_imaging_7x7.meta_data_fit.mask_function = None
 
         mask_input = aa.mask.circular(
-            shape_2d=imaging_7x7.shape_2d, pixel_scales=1.0, sub_size=1, radius_arcsec=1.5
+            shape_2d=imaging_7x7.shape_2d,
+            pixel_scales=1.0,
+            sub_size=1,
+            radius_arcsec=1.5,
         )
 
-        analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, mask=mask_input
-        )
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
 
         assert (analysis.masked_imaging.mask == mask_input).all()
 
@@ -68,9 +68,7 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=None)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
-        analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, mask=mask_input
-        )
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
 
         # If no mask is suppled, nor a mask function, we should use the default mask. This extends behind the edge of
@@ -93,9 +91,7 @@ class TestPhase(object):
             shape_2d=imaging_7x7.shape_2d, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
-        analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, mask=mask_input
-        )
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
 
         # The inner circulaar mask radii of 0.5" masks only the central pixel of the mask
 
@@ -120,9 +116,7 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=None)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
 
-        analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, mask=mask_input
-        )
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
 
         # If no mask is suppled, nor a mask function, we should use the default mask.
@@ -144,17 +138,13 @@ class TestPhase(object):
         )
 
         phase_imaging_7x7.meta_data_fit.sub_size = 1
-        analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, mask=mask_input
-        )
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
 
         assert (analysis.masked_imaging.mask == mask_input).all()
         assert analysis.masked_imaging.mask.sub_size == 1
 
         phase_imaging_7x7.meta_data_fit.sub_size = 2
-        analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, mask=mask_input
-        )
+        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
 
         assert (analysis.masked_imaging.mask == mask_input).all()
         assert analysis.masked_imaging.mask.sub_size == 2
@@ -170,12 +160,8 @@ class TestPhase(object):
             data=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
         )
 
-        assert (
-            analysis.masked_imaging.positions[0][0] == np.array([1.0, 1.0])
-        ).all()
-        assert (
-            analysis.masked_imaging.positions[0][1] == np.array([2.0, 2.0])
-        ).all()
+        assert (analysis.masked_imaging.positions[0][0] == np.array([1.0, 1.0])).all()
+        assert (analysis.masked_imaging.positions[0][1] == np.array([2.0, 2.0])).all()
         assert analysis.masked_imaging.positions_threshold == 0.2
 
         # If position threshold is input (not None) and but no positions are supplied, raise an error
@@ -201,7 +187,9 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+            tracer=tracer
+        )
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(source=al.Galaxy(redshift=0.5)),
@@ -218,7 +206,9 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.RayTracingException):
-            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+                tracer=tracer
+            )
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(source=al.Galaxy(redshift=0.5)),
@@ -234,27 +224,29 @@ class TestPhase(object):
         tracer = al.Tracer.from_galaxies(
             galaxies=[
                 al.Galaxy(
-                    redshift=0.5,
-                    mass=al.mp.SphericalIsothermal(einstein_radius=1.0),
+                    redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
                 ),
                 al.Galaxy(redshift=1.0),
             ]
         )
 
-        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+            tracer=tracer
+        )
 
         tracer = al.Tracer.from_galaxies(
             galaxies=[
                 al.Galaxy(
-                    redshift=0.5,
-                    mass=al.mp.SphericalIsothermal(einstein_radius=0.0),
+                    redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=0.0)
                 ),
                 al.Galaxy(redshift=1.0),
             ]
         )
 
         with pytest.raises(exc.RayTracingException):
-            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+                tracer=tracer
+            )
 
         analysis = phase_imaging_7x7.make_analysis(
             data=imaging_7x7,
@@ -263,7 +255,9 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+            tracer=tracer
+        )
 
         analysis = phase_imaging_7x7.make_analysis(
             data=imaging_7x7,
@@ -273,7 +267,9 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.RayTracingException):
-            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(tracer=tracer)
+            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+                tracer=tracer
+            )
 
     def test__make_analysis__inversion_resolution_error_raised_if_above_inversion_pixel_limit(
         self, phase_imaging_7x7, imaging_7x7, mask_function_7x7
@@ -297,7 +293,9 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+        analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
+            tracer=tracer
+        )
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -318,7 +316,9 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
-            analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+            analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
+                tracer=tracer
+            )
             analysis.fit(instance=instance)
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -339,7 +339,9 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+        analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
+            tracer=tracer
+        )
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -360,7 +362,9 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
-            analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(tracer=tracer)
+            analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
+                tracer=tracer
+            )
             analysis.fit(instance=instance)
 
     def test__make_analysis__pixel_scale_interpolation_grid_is_input__interp_grid_used_in_analysis(
@@ -402,7 +406,9 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        assert isinstance(phase_imaging_7x7.meta_data_fit.pixelization, al.pix.Rectangular)
+        assert isinstance(
+            phase_imaging_7x7.meta_data_fit.pixelization, al.pix.Rectangular
+        )
 
         source_galaxy = al.GalaxyModel(
             redshift=0.5,
@@ -424,9 +430,7 @@ class TestPhase(object):
     def test__default_mask_function(self, phase_imaging_7x7, imaging_7x7):
         masked_imaging = al.MaskedImaging(
             imaging=imaging_7x7,
-            mask=phase_imaging_7x7.meta_data_fit.mask_function(
-                image=imaging_7x7.image,
-            ),
+            mask=phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image),
         )
 
         assert len(masked_imaging.image.in_1d) == 9
@@ -516,8 +520,7 @@ class TestPhase(object):
         # noinspection PyTypeChecker
 
         lens_galaxy = al.Galaxy(
-            redshift=0.5,
-            mass=al.mp.SphericalIsothermal(einstein_radius=100.0),
+            redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=100.0)
         )
         source_galaxy = al.Galaxy(
             redshift=1.0,
@@ -595,7 +598,7 @@ class TestPhase(object):
     def test__make_analysis_determines_if_pixelization_is_same_as_previous_phase(
         self, imaging_7x7, mask_function_7x7, results_collection_7x7
     ):
-        results_collection_7x7.last.hyper_combined.preload_pixelization_grids_of_planes = (
+        results_collection_7x7.last.hyper_combined.preload_sparse_grids_of_planes = (
             1
         )
 
@@ -609,7 +612,7 @@ class TestPhase(object):
             data=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.masked_imaging.preload_pixelization_grids_of_planes is None
+        assert analysis.masked_imaging.preload_sparse_grids_of_planes is None
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase", mask_function=mask_function_7x7
@@ -621,7 +624,7 @@ class TestPhase(object):
             data=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.masked_imaging.preload_pixelization_grids_of_planes is None
+        assert analysis.masked_imaging.preload_sparse_grids_of_planes is None
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase",
@@ -641,7 +644,7 @@ class TestPhase(object):
             data=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.masked_imaging.preload_pixelization_grids_of_planes is None
+        assert analysis.masked_imaging.preload_sparse_grids_of_planes is None
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase",
@@ -661,7 +664,7 @@ class TestPhase(object):
             data=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.masked_imaging.preload_pixelization_grids_of_planes == 1
+        assert analysis.masked_imaging.preload_sparse_grids_of_planes == 1
 
 
 class TestResult(object):
@@ -674,10 +677,7 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=[
-                al.Galaxy(
-                    redshift=0.5,
-                    light=al.lp.EllipticalSersic(intensity=1.0),
-                )
+                al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
             phase_name="test_phase_2",
         )
@@ -695,10 +695,7 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=[
-                al.Galaxy(
-                    redshift=0.5,
-                    light=al.lp.EllipticalSersic(intensity=1.0),
-                )
+                al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
             sub_size=2,
             phase_name="test_phase_2",
@@ -719,10 +716,7 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=[
-                al.Galaxy(
-                    redshift=0.5,
-                    light=al.lp.EllipticalSersic(intensity=1.0),
-                )
+                al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
             phase_name="test_phase_2",
         )
@@ -736,8 +730,7 @@ class TestResult(object):
             mask_function=mask_function_7x7,
             galaxies=dict(
                 lens=al.Galaxy(
-                    redshift=0.5,
-                    light=al.lp.EllipticalSersic(intensity=1.0),
+                    redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
                 ),
                 source=al.Galaxy(redshift=1.0),
             ),
@@ -759,8 +752,7 @@ class TestResult(object):
             mask_function=mask_function_7x7,
             galaxies=dict(
                 lens=al.Galaxy(
-                    redshift=0.5,
-                    light=al.lp.EllipticalSersic(intensity=1.0),
+                    redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
                 ),
                 source=al.Galaxy(
                     redshift=1.0,
@@ -782,8 +774,7 @@ class TestResult(object):
             mask_function=mask_function_7x7,
             galaxies=dict(
                 lens=al.Galaxy(
-                    redshift=0.5,
-                    light=al.lp.EllipticalSersic(intensity=1.0),
+                    redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
                 ),
                 source=al.Galaxy(
                     redshift=1.0,
@@ -811,10 +802,7 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=[
-                al.Galaxy(
-                    redshift=0.5,
-                    light=al.lp.EllipticalSersic(intensity=1.0),
-                )
+                al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
             phase_name="test_phase_2",
         )
@@ -828,8 +816,7 @@ class TestResult(object):
             mask_function=mask_function_7x7,
             galaxies=dict(
                 lens=al.Galaxy(
-                    redshift=0.5,
-                    light=al.lp.EllipticalSersic(intensity=1.0),
+                    redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
                 ),
                 source=al.Galaxy(
                     redshift=1.0,
@@ -860,9 +847,7 @@ class TestPhasePickle(object):
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
-                lens=al.Galaxy(
-                    light=al.lp.EllipticalLightProfile, redshift=1
-                )
+                lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
         )
 
@@ -877,9 +862,7 @@ class TestPhasePickle(object):
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
-                lens=al.Galaxy(
-                    light=al.lp.EllipticalLightProfile, redshift=1
-                )
+                lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
         )
 
@@ -898,9 +881,7 @@ class TestPhasePickle(object):
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
-                lens=al.Galaxy(
-                    light=al.lp.EllipticalLightProfile, redshift=1
-                )
+                lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
         )
         phase_imaging_7x7.make_analysis = make_analysis

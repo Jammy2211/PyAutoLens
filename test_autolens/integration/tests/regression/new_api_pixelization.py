@@ -19,12 +19,8 @@ def make_pipeline(
         phase_name="phase_1__lens_sersic",
         phase_folders=phase_folders,
         galaxies=dict(
-            source=al.GalaxyModel(
-                redshift=1.0, light=al.lp.SphericalExponential
-            ),
-            lens=al.GalaxyModel(
-                redshift=0.5, light=al.mp.SphericalIsothermal()
-            ),
+            source=al.GalaxyModel(redshift=1.0, light=al.lp.SphericalExponential),
+            lens=al.GalaxyModel(redshift=0.5, light=al.mp.SphericalIsothermal()),
         ),
         optimizer_class=optimizer_class,
     )

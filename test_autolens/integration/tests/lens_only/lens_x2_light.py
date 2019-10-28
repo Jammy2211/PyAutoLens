@@ -20,19 +20,15 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     def mask_function(image):
         return aa.mask.circular(
-            shape_2d=image.shape_2d, pixel_scales=image.pixel_scales, radius_arcsec=5.0,
+            shape_2d=image.shape_2d, pixel_scales=image.pixel_scales, radius_arcsec=5.0
         )
 
     phase1 = LensPlanex2GalPhase(
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=al.GalaxyModel(
-                redshift=0.5, light=al.lp.EllipticalSersic
-            ),
-            lens_1=al.GalaxyModel(
-                redshift=0.5, light=al.lp.EllipticalSersic
-            ),
+            lens_0=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
+            lens_1=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
         ),
         mask_function=mask_function,
         optimizer_class=optimizer_class,

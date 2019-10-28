@@ -7,7 +7,9 @@ from autoarray.plotters import imaging_plotters
 
 
 class ImagingSimulator(object):
-    def __init__(self, shape_2d, pixel_scales, psf, exposure_time, background_sky_level):
+    def __init__(
+        self, shape_2d, pixel_scales, psf, exposure_time, background_sky_level
+    ):
         """A class representing a Imaging observation, using the shape of the image, the pixel scale,
         psf, exposure time, etc.
 
@@ -260,7 +262,9 @@ class ImagingSimulator(object):
     ):
 
         grid = aa.grid.uniform(
-            shape_2d=deflections.shape_2d, pixel_scales=deflections.pixel_scales, sub_size=1
+            shape_2d=deflections.shape_2d,
+            pixel_scales=deflections.pixel_scales,
+            sub_size=1,
         )
 
         deflected_grid = grid - deflections.in_1d_binned
@@ -359,4 +363,5 @@ class ImagingSimulator(object):
             add_noise=add_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,
-            name=name)
+            name=name,
+        )

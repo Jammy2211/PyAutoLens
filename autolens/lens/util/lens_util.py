@@ -18,15 +18,13 @@ def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
     )
     origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
-    uniform_grid = aa.grid.uniform(shape_2d=shape, pixel_scales=pixel_scales, sub_size=1, origin=origin)
-
-    image = sum(
-        map(lambda g: g.profile_image_from_grid(grid=uniform_grid), galaxies)
+    uniform_grid = aa.grid.uniform(
+        shape_2d=shape, pixel_scales=pixel_scales, sub_size=1, origin=origin
     )
 
-    return pl.PlaneImage(
-        array=image, grid=grid,
-    )
+    image = sum(map(lambda g: g.profile_image_from_grid(grid=uniform_grid), galaxies))
+
+    return pl.PlaneImage(array=image, grid=grid)
 
 
 def ordered_plane_redshifts_from_galaxies(galaxies):

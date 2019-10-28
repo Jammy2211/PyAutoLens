@@ -21,13 +21,9 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5,
-                mass=al.mp.EllipticalIsothermal,
-                shear=al.mp.ExternalShear,
+                redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
             ),
-            source=al.GalaxyModel(
-                redshift=1.0, light=al.lp.EllipticalSersic
-            ),
+            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -62,9 +58,7 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5,
-                mass=al.mp.EllipticalIsothermal,
-                shear=al.mp.ExternalShear,
+                redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
@@ -114,9 +108,7 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5,
-                mass=al.mp.EllipticalIsothermal,
-                shear=al.mp.ExternalShear,
+                redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
@@ -160,9 +152,7 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5,
-                mass=al.mp.EllipticalIsothermal,
-                shear=al.mp.ExternalShear,
+                redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
@@ -216,9 +206,7 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5,
-                mass=al.mp.EllipticalIsothermal,
-                shear=al.mp.ExternalShear,
+                redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
             ),
             source=al.GalaxyModel(
                 redshift=1.0,

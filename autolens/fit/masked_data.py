@@ -9,26 +9,29 @@ import copy
 
 
 class AbstractLensMasked(object):
-
-    def __init__(self, positions, positions_threshold, preload_pixelization_grids_of_planes):
+    def __init__(
+        self, positions, positions_threshold, preload_sparse_grids_of_planes
+    ):
 
         if positions is not None:
             self.positions = list(
-                map(lambda position_set: aa.irregular_grid.manual_1d(grid=np.asarray(position_set)), positions)
+                map(
+                    lambda position_set: aa.irregular_grid.manual_1d(
+                        grid=np.asarray(position_set)
+                    ),
+                    positions,
+                )
             )
         else:
             self.positions = positions
 
         self.positions_threshold = positions_threshold
 
-        self.preload_pixelization_grids_of_planes = preload_pixelization_grids_of_planes
+        self.preload_sparse_grids_of_planes = preload_sparse_grids_of_planes
 
     def check_positions_trace_within_threshold_via_tracer(self, tracer):
 
-        if (
-                self.positions is not None
-                and self.positions_threshold is not None
-        ):
+        if self.positions is not None and self.positions_threshold is not None:
 
             traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
                 positions=self.positions
@@ -40,7 +43,7 @@ class AbstractLensMasked(object):
             )
 
             if not positions_fit.maximum_separation_within_threshold(
-                    self.positions_threshold
+                self.positions_threshold
             ):
                 raise exc.RayTracingException
 
@@ -56,16 +59,16 @@ class AbstractLensMasked(object):
 
 class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
     def __init__(
-            self,
-            imaging,
-            mask,
-            trimmed_psf_shape_2d=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_pixel_limit=None,
-            inversion_uses_border=True,
-            positions=None,
-            positions_threshold=None,
-            preload_pixelization_grids_of_planes=None,
+        self,
+        imaging,
+        mask,
+        trimmed_psf_shape_2d=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
+        positions=None,
+        positions_threshold=None,
+        preload_sparse_grids_of_planes=None,
     ):
         """
         The lens simulate is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
@@ -106,15 +109,21 @@ class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
             inversion_uses_border=inversion_uses_border,
         )
 
-        AbstractLensMasked.__init__(self=self, positions=positions,
-            positions_threshold=positions_threshold, preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes)
+        AbstractLensMasked.__init__(
+            self=self,
+            positions=positions,
+            positions_threshold=positions_threshold,
+            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
+        )
 
     def binned_from_bin_up_factor(self, bin_up_factor):
 
         binned_imaging = self.imaging.binned_from_bin_up_factor(
             bin_up_factor=bin_up_factor
         )
-        binned_mask = self.mask.mapping.binned_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
+        binned_mask = self.mask.mapping.binned_mask_from_bin_up_factor(
+            bin_up_factor=bin_up_factor
+        )
 
         return self.__class__(
             imaging=binned_imaging,
@@ -125,7 +134,7 @@ class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
             inversion_uses_border=self.inversion_uses_border,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
-            preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes
+            preload_sparse_grids_of_planes=self.preload_sparse_grids_of_planes,
         )
 
     def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
@@ -143,22 +152,22 @@ class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
             inversion_uses_border=self.inversion_uses_border,
             positions=self.positions,
             positions_threshold=self.positions_threshold,
-            preload_pixelization_grids_of_planes=self.preload_pixelization_grids_of_planes
+            preload_sparse_grids_of_planes=self.preload_sparse_grids_of_planes,
         )
 
 
 class MaskedInterferometer(masked_data.MaskedInterferometer):
     def __init__(
-            self,
-            interferometer,
-            real_space_mask,
-            trimmed_primary_beam_shape_2d=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_pixel_limit=None,
-            inversion_uses_border=True,
-            positions=None,
-            positions_threshold=None,
-            preload_pixelization_grids_of_planes=None,
+        self,
+        interferometer,
+        real_space_mask,
+        trimmed_primary_beam_shape_2d=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
+        positions=None,
+        positions_threshold=None,
+        preload_sparse_grids_of_planes=None,
     ):
         """
         The lens simulate is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
@@ -201,7 +210,9 @@ class MaskedInterferometer(masked_data.MaskedInterferometer):
             inversion_uses_border=inversion_uses_border,
         )
 
-        AbstractLensMasked.__init__(self=self, positions=positions,
-            positions_threshold=positions_threshold, preload_pixelization_grids_of_planes=preload_pixelization_grids_of_planes)
-
-
+        AbstractLensMasked.__init__(
+            self=self,
+            positions=positions,
+            positions_threshold=positions_threshold,
+            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
+        )

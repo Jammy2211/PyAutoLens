@@ -15,9 +15,7 @@ class Analysis(af.Analysis):
 # noinspection PyAbstractClass
 class AnalysisSingle(Analysis):
     def __init__(self, galaxy_data, cosmology, image_path: str, results=None):
-        super().__init__(
-            cosmology=cosmology, image_path=image_path, results=results
-        )
+        super().__init__(cosmology=cosmology, image_path=image_path, results=results)
 
         self.galaxy_data = galaxy_data
 
@@ -41,10 +39,7 @@ class AnalysisSingle(Analysis):
 
             if self.visualizer.plot_ray_tracing_all_at_end_fits:
                 self.visualizer.plot_fit_individuals(
-                    fit=fit,
-                    plot_all=True,
-                    image_format="fits",
-                    path_suffix="/fits/",
+                    fit=fit, plot_all=True, image_format="fits", path_suffix="/fits/"
                 )
 
         return fit
@@ -73,11 +68,9 @@ class AnalysisSingle(Analysis):
 # noinspection PyAbstractClass
 class AnalysisDeflections(Analysis):
     def __init__(
-            self, galaxy_data_y, galaxy_data_x, cosmology, image_path, results=None
+        self, galaxy_data_y, galaxy_data_x, cosmology, image_path, results=None
     ):
-        super().__init__(
-            cosmology=cosmology, image_path=image_path, results=results
-        )
+        super().__init__(cosmology=cosmology, image_path=image_path, results=results)
 
         self.galaxy_data_y = galaxy_data_y
         self.galaxy_data_x = galaxy_data_x
@@ -108,16 +101,10 @@ class AnalysisDeflections(Analysis):
 
             if self.visualizer.plot_ray_tracing_all_at_end_fits:
                 self.visualizer.plot_fit_individuals(
-                    fit_y,
-                    path_suffix="/fits/fit_y",
-                    plot_all=True,
-                    image_format="fits",
+                    fit_y, path_suffix="/fits/fit_y", plot_all=True, image_format="fits"
                 )
                 self.visualizer.plot_fit_individuals(
-                    fit_x,
-                    path_suffix="/fits/fit_x",
-                    plot_all=True,
-                    image_format="fits",
+                    fit_x, path_suffix="/fits/fit_x", plot_all=True, image_format="fits"
                 )
 
         return fit_y, fit_x
@@ -140,19 +127,19 @@ class PhaseGalaxy(af.AbstractPhase):
     Analysis = Analysis
 
     def __init__(
-            self,
-            phase_name,
-            phase_folders=tuple(),
-            galaxies=None,
-            use_image=False,
-            use_convergence=False,
-            use_potential=False,
-            use_deflections=False,
-            optimizer_class=af.MultiNest,
-            sub_size=2,
-            pixel_scale_interpolation_grid=None,
-            mask_function=None,
-            cosmology=cosmo.Planck15,
+        self,
+        phase_name,
+        phase_folders=tuple(),
+        galaxies=None,
+        use_image=False,
+        use_convergence=False,
+        use_potential=False,
+        use_deflections=False,
+        optimizer_class=af.MultiNest,
+        sub_size=2,
+        pixel_scale_interpolation_grid=None,
+        mask_function=None,
+        cosmology=cosmo.Planck15,
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit

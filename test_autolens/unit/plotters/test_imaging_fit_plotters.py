@@ -3,6 +3,7 @@ import os
 
 import autolens as al
 
+
 @pytest.fixture(name="imaging_fit_plotter_path")
 def make_imaging_fit_plotter_setup():
     return "{}/../../test_files/plotting/fit/".format(
@@ -80,7 +81,9 @@ def test__model_image_of_plane_is_output(
         output_format="png",
     )
 
-    assert imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
+    assert (
+        imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
+    )
 
     al.plot.imaging_fit.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -92,7 +95,9 @@ def test__model_image_of_plane_is_output(
         output_format="png",
     )
 
-    assert imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
+    assert (
+        imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
+    )
 
     al.plot.imaging_fit.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -104,7 +109,10 @@ def test__model_image_of_plane_is_output(
         output_format="png",
     )
 
-    assert imaging_fit_plotter_path + "fit_model_image_of_plane_1.png" in plot_patch.paths
+    assert (
+        imaging_fit_plotter_path + "fit_model_image_of_plane_1.png" in plot_patch.paths
+    )
+
 
 def test__fit_sub_plot(
     masked_imaging_fit_x2_plane_7x7, imaging_fit_plotter_path, plot_patch
@@ -222,7 +230,9 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     assert imaging_fit_plotter_path + "fit_noise_map.png" not in plot_patch.paths
 
-    assert imaging_fit_plotter_path + "fit_signal_to_noise_map.png" not in plot_patch.paths
+    assert (
+        imaging_fit_plotter_path + "fit_signal_to_noise_map.png" not in plot_patch.paths
+    )
 
     assert imaging_fit_plotter_path + "fit_model_image.png" in plot_patch.paths
 
@@ -240,9 +250,13 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         in plot_patch.paths
     )
 
-    assert imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
+    assert (
+        imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
+    )
 
-    assert imaging_fit_plotter_path + "fit_plane_image_of_plane_0.png" in plot_patch.paths
+    assert (
+        imaging_fit_plotter_path + "fit_plane_image_of_plane_0.png" in plot_patch.paths
+    )
 
     al.plot.imaging_fit.individuals(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -262,7 +276,9 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     assert imaging_fit_plotter_path + "fit_noise_map.png" not in plot_patch.paths
 
-    assert imaging_fit_plotter_path + "fit_signal_to_noise_map.png" not in plot_patch.paths
+    assert (
+        imaging_fit_plotter_path + "fit_signal_to_noise_map.png" not in plot_patch.paths
+    )
 
     assert imaging_fit_plotter_path + "fit_model_image.png" in plot_patch.paths
 
@@ -284,8 +300,16 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         in plot_patch.paths
     )
 
-    assert imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
-    assert imaging_fit_plotter_path + "fit_model_image_of_plane_1.png" in plot_patch.paths
+    assert (
+        imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
+    )
+    assert (
+        imaging_fit_plotter_path + "fit_model_image_of_plane_1.png" in plot_patch.paths
+    )
 
-    assert imaging_fit_plotter_path + "fit_plane_image_of_plane_0.png" in plot_patch.paths
-    assert imaging_fit_plotter_path + "fit_plane_image_of_plane_1.png" in plot_patch.paths
+    assert (
+        imaging_fit_plotter_path + "fit_plane_image_of_plane_0.png" in plot_patch.paths
+    )
+    assert (
+        imaging_fit_plotter_path + "fit_plane_image_of_plane_1.png" in plot_patch.paths
+    )

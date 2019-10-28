@@ -19,9 +19,7 @@ def make_pipeline(
     phase1 = al.PhaseImaging(
         phase_name="phase_1__lens_sersic",
         phase_folders=phase_folders,
-        galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic)
-        ),
+        galaxies=dict(lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic)),
         optimizer_class=optimizer_class,
     )
 
@@ -55,9 +53,7 @@ def make_pipeline(
                 shear=al.mp.ExternalShear,
                 hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
             ),
-            source=al.GalaxyModel(
-                redshift=1.0, light=al.lp.EllipticalSersic
-            ),
+            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
         hyper_image_sky=phase1.result.hyper_combined.constant.hyper_image_sky,
         hyper_background_noise=phase1.result.hyper_combined.constant.hyper_background_noise,

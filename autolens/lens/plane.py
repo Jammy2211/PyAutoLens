@@ -212,9 +212,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                     self.galaxies,
                 )
             )
-            return grid.mapping.array_from_sub_array_1d(
-                sub_array_1d=profile_image
-            )
+            return grid.mapping.array_from_sub_array_1d(sub_array_1d=profile_image)
         else:
             return grid.mapping.array_from_sub_array_1d(
                 sub_array_1d=np.zeros((grid.sub_shape_1d,))
@@ -668,8 +666,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
         blurring_image = self.profile_image_from_grid(grid=blurring_grid)
 
         return convolver.convolved_image_from_image_and_blurring_image(
-            image=profile_image,
-            blurring_image=blurring_image,
+            image=profile_image, blurring_image=blurring_image
         )
 
     def blurred_profile_images_of_galaxies_from_grid_and_convolver(
@@ -688,7 +685,9 @@ class AbstractPlaneData(AbstractPlaneLensing):
             profile_image = self.profile_image_from_grid(grid=grid)
             return transformer.visibilities_from_image(image=profile_image)
         else:
-            return vis.Visibilities.zeros(shape_1d=(transformer.uv_wavelengths.shape[0],))
+            return vis.Visibilities.zeros(
+                shape_1d=(transformer.uv_wavelengths.shape[0],)
+            )
 
     def profile_visibilities_of_galaxies_from_grid_and_transformer(
         self, grid, transformer
@@ -700,22 +699,19 @@ class AbstractPlaneData(AbstractPlaneLensing):
             for galaxy in self.galaxies
         ]
 
-    def pixelization_grid_from_grid(self, grid):
+    def sparse_image_plane_grid_from_grid(self, grid):
 
         if not self.has_pixelization:
             return None
 
-        hyper_galaxy_image = (
-            self.hyper_galaxy_image_of_galaxy_with_pixelization
+        hyper_galaxy_image = self.hyper_galaxy_image_of_galaxy_with_pixelization
+
+        return self.pixelization.sparse_grid_from_grid(
+            grid=grid, hyper_image=hyper_galaxy_image
         )
 
-        return self.pixelization.pixelization_grid_from_grid(
-            grid=grid,
-            hyper_image=hyper_galaxy_image,
-        )
-
-    def mapper_from_grid_and_pixelization_grid(
-        self, grid, pixelization_grid, inversion_uses_border=False
+    def mapper_from_grid_and_sparse_grid(
+        self, grid, sparse_grid, inversion_uses_border=False
     ):
 
         galaxies_with_pixelization = list(
@@ -728,9 +724,9 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
             pixelization = galaxies_with_pixelization[0].pixelization
 
-            return pixelization.mapper_from_grid_and_pixelization_grid(
+            return pixelization.mapper_from_grid_and_sparse_grid(
                 grid=grid,
-                pixelization_grid=pixelization_grid,
+                sparse_grid=sparse_grid,
                 inversion_uses_border=inversion_uses_border,
                 hyper_image=galaxies_with_pixelization[0].hyper_galaxy_image,
             )
@@ -742,7 +738,9 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
     def plane_image_from_grid(self, grid):
         return lens_util.plane_image_of_galaxies_from_grid(
-            shape=grid.mask.shape, grid=grid.geometry.unmasked_grid, galaxies=self.galaxies
+            shape=grid.mask.shape,
+            grid=grid.geometry.unmasked_grid,
+            galaxies=self.galaxies,
         )
 
     def hyper_noise_map_from_noise_map(self, noise_map):

@@ -33,7 +33,7 @@ def fit_with_offset_centre(centre):
 
     masked_imaging = al.LensData(imaging=imaging, mask=mask)
 
-    pixelization_grid = source_galaxy.pixelization.traced_pixelization_grids_of_planes_from_grid(
+    pixelization_grid = source_galaxy.pixelization.traced_sparse_grids_of_planes_from_grid(
         grid=masked_imaging.grid
     )
 
@@ -45,7 +45,9 @@ def fit_with_offset_centre(centre):
         galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid=grid_stack_with_pixelization_grid,
     )
-    fit = al.LensImageFit.from_masked_data_and_tracer(masked_imaging=masked_imaging, tracer=tracer)
+    fit = al.LensImageFit.from_masked_data_and_tracer(
+        masked_imaging=masked_imaging, tracer=tracer
+    )
 
     return fit
 

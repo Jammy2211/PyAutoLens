@@ -121,7 +121,10 @@ class TestPhaseModelMapper(object):
         imaging = aa.imaging.from_fits(
             image_path=path + "/test_files/simulate/" + test_name + "/image.fits",
             psf_path=path + "/test_files/simulate/" + test_name + "/psf.fits",
-            noise_map_path=path + "/test_files/simulate/" + test_name + "/noise_map.fits",
+            noise_map_path=path
+            + "/test_files/simulate/"
+            + test_name
+            + "/noise_map.fits",
             real_space_pixel_scales=0.1,
         )
 
@@ -133,9 +136,7 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(
             galaxies=dict(
-                lens=al.GalaxyModel(
-                    redshift=0.5, sersic=al.lp.EllipticalSersic
-                )
+                lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)
             ),
             optimizer_class=af.MultiNest,
             phase_name="{}/phase1".format(test_name),
@@ -194,7 +195,10 @@ class TestPhaseModelMapper(object):
         imaging = aa.imaging.from_fits(
             image_path=path + "/test_files/simulate/" + test_name + "/image.fits",
             psf_path=path + "/test_files/simulate/" + test_name + "/psf.fits",
-            noise_map_path=path + "/test_files/simulate/" + test_name + "/noise_map.fits",
+            noise_map_path=path
+            + "/test_files/simulate/"
+            + test_name
+            + "/noise_map.fits",
             real_space_pixel_scales=0.1,
         )
 
@@ -208,9 +212,7 @@ class TestPhaseModelMapper(object):
 
         phase = MMPhase(
             galaxies=dict(
-                lens=al.GalaxyModel(
-                    redshift=0.5, sersic=al.lp.EllipticalSersic
-                )
+                lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)
             ),
             optimizer_class=af.MultiNest,
             phase_name="{}/phase1".format(name),

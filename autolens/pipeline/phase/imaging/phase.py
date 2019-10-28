@@ -18,25 +18,25 @@ class PhaseImaging(data.PhaseData):
     Result = Result
 
     def __init__(
-            self,
-            phase_name,
-            phase_folders=tuple(),
-            galaxies=None,
-            hyper_image_sky=None,
-            hyper_background_noise=None,
-            optimizer_class=af.MultiNest,
-            cosmology=cosmo.Planck15,
-            sub_size=2,
-            signal_to_noise_limit=None,
-            bin_up_factor=None,
-            psf_shape=None,
-            positions_threshold=None,
-            mask_function=None,
-            inner_mask_radii=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_uses_border=True,
-            inversion_pixel_limit=None,
-            auto_link_priors=False,
+        self,
+        phase_name,
+        phase_folders=tuple(),
+        galaxies=None,
+        hyper_image_sky=None,
+        hyper_background_noise=None,
+        optimizer_class=af.MultiNest,
+        cosmology=cosmo.Planck15,
+        sub_size=2,
+        signal_to_noise_limit=None,
+        bin_up_factor=None,
+        psf_shape=None,
+        positions_threshold=None,
+        mask_function=None,
+        inner_mask_radii=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_uses_border=True,
+        inversion_pixel_limit=None,
+        auto_link_priors=False,
     ):
 
         """
@@ -110,13 +110,7 @@ class PhaseImaging(data.PhaseData):
         """
         return image
 
-    def make_analysis(
-            self,
-            data,
-            results=None,
-            mask=None,
-            positions=None
-    ):
+    def make_analysis(self, data, results=None, mask=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -137,17 +131,14 @@ class PhaseImaging(data.PhaseData):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         self.meta_data_fit.variable = self.variable
-        modified_image = self.modify_image(
-            image=data.image,
-            results=results,
-        )
+        modified_image = self.modify_image(image=data.image, results=results)
 
         masked_imaging = self.meta_data_fit.data_fit_from(
             data=data,
             mask=mask,
             positions=positions,
             results=results,
-            modified_image=modified_image
+            modified_image=modified_image,
         )
 
         self.output_phase_info()
@@ -163,14 +154,20 @@ class PhaseImaging(data.PhaseData):
 
     def output_phase_info(self):
 
-        file_phase_info = "{}/{}".format(self.optimizer.paths.phase_output_path, "phase.info")
+        file_phase_info = "{}/{}".format(
+            self.optimizer.paths.phase_output_path, "phase.info"
+        )
 
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.optimizer).__name__))
-            phase_info.write("Sub-grid size = {} \n".format(self.meta_data_fit.sub_size))
+            phase_info.write(
+                "Sub-grid size = {} \n".format(self.meta_data_fit.sub_size)
+            )
             phase_info.write("PSF shape = {} \n".format(self.meta_data_fit.psf_shape))
             phase_info.write(
-                "Positions Threshold = {} \n".format(self.meta_data_fit.positions_threshold)
+                "Positions Threshold = {} \n".format(
+                    self.meta_data_fit.positions_threshold
+                )
             )
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
             phase_info.write("Auto Link Priors = {} \n".format(self.auto_link_priors))
@@ -178,11 +175,11 @@ class PhaseImaging(data.PhaseData):
             phase_info.close()
 
     def extend_with_multiple_hyper_phases(
-            self,
-            hyper_galaxy=False,
-            inversion=False,
-            include_background_sky=False,
-            include_background_noise=False,
+        self,
+        hyper_galaxy=False,
+        inversion=False,
+        include_background_sky=False,
+        include_background_noise=False,
     ):
         hyper_phase_classes = []
 
@@ -206,26 +203,17 @@ class PhaseImaging(data.PhaseData):
 
         if inversion:
             if not include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(
-                    extensions.InversionPhase
-                )
+                hyper_phase_classes.append(extensions.InversionPhase)
             elif include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(
-                    extensions.InversionBackgroundSkyPhase
-                )
+                hyper_phase_classes.append(extensions.InversionBackgroundSkyPhase)
             elif not include_background_sky and include_background_noise:
-                hyper_phase_classes.append(
-                    extensions.InversionBackgroundNoisePhase
-                )
+                hyper_phase_classes.append(extensions.InversionBackgroundNoisePhase)
             else:
-                hyper_phase_classes.append(
-                    extensions.InversionBackgroundBothPhase
-                )
+                hyper_phase_classes.append(extensions.InversionBackgroundBothPhase)
 
         if len(hyper_phase_classes) == 0:
             return self
         else:
             return extensions.CombinedHyperPhase(
-                phase=self,
-                hyper_phase_classes=hyper_phase_classes
+                phase=self, hyper_phase_classes=hyper_phase_classes
             )

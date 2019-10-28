@@ -35,15 +35,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mp.EllipticalIsothermal
-            ),
+            lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             subhalo=al.GalaxyModel(
                 redshift=0.5, mass=al.mp.SphericalTruncatedNFWChallenge
             ),
-            source=al.GalaxyModel(
-                redshift=1.0, light=al.lp.EllipticalSersic
-            ),
+            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
         number_of_steps=2,

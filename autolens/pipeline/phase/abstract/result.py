@@ -4,13 +4,13 @@ from autoastro.galaxy import galaxy as g
 
 class Result(af.Result):
     def __init__(
-            self,
-            constant,
-            figure_of_merit,
-            previous_variable,
-            gaussian_tuples,
-            analysis,
-            optimizer,
+        self,
+        constant,
+        figure_of_merit,
+        previous_variable,
+        gaussian_tuples,
+        analysis,
+        optimizer,
     ):
         """
         The result of a phase

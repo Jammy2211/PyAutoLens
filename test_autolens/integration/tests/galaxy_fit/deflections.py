@@ -21,15 +21,11 @@ def galaxy_fit_phase():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    grid = aa.grid.uniform(
-        shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=4
-    )
+    grid = aa.grid.uniform(shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=4)
 
     galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.SphericalIsothermal(
-            centre=(0.0, 0.0), einstein_radius=1.0
-        ),
+        mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
     )
 
     deflections = galaxy.deflections_from_grid(galaxies=[galaxy], grid=grid)

@@ -103,7 +103,6 @@ class CombinedHyperPhase(HyperPhase):
         phase = self.make_hyper_phase()
         phase.variable = self.combine_variables(results.last)
 
-
         return phase.run(
             data,
             results=results,

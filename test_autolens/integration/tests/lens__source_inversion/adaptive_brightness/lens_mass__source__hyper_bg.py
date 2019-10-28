@@ -18,13 +18,9 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5,
-                mass=al.mp.EllipticalIsothermal,
-                shear=al.mp.ExternalShear,
+                redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
             ),
-            source=al.GalaxyModel(
-                redshift=1.0, light=al.lp.EllipticalSersic
-            ),
+            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
         optimizer_class=optimizer_class,
     )
@@ -44,13 +40,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 redshift=0.5,
                 mass=phase1.result.constant.galaxies.lens.mass,
                 shear=phase1.result.constant.galaxies.lens.shear,
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy
+                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiBrightnessImage,
                 regularization=al.reg.AdaptiveBrightness,
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.source.hyper_galaxy
+                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.source.hyper_galaxy,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -75,13 +71,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 redshift=0.5,
                 mass=phase1.result.variable.galaxies.lens.mass,
                 shear=phase1.result.variable.galaxies.lens.shear,
-                hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.lens.hyper_galaxy
+                hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=phase2.result.constant.galaxies.source.pixelization,
                 regularization=phase2.result.constant.galaxies.source.regularization,
-                hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.source.hyper_galaxy
+                hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.source.hyper_galaxy,
             ),
         ),
         optimizer_class=optimizer_class,

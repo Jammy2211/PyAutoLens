@@ -1,4 +1,6 @@
-from test_autolens.integration.tests.lens__source_inversion.rectangular import lens_both__source
+from test_autolens.integration.tests.lens__source_inversion.rectangular import (
+    lens_both__source,
+)
 from test_autolens.integration.tests.runner import run_a_mock
 
 
