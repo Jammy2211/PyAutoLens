@@ -218,37 +218,6 @@ class TestPhase(object):
                 analysis.masked_imaging.noise_map.in_1d == binned_up_lens_data.noise_map.in_1d
         ).all()
 
-    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
-        self, imaging_7x7, mask_function_7x7
-    ):
-        # noinspection PyTypeChecker
-
-        lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
-        )
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=[lens_galaxy],
-            mask_function=mask_function_7x7,
-            cosmology=cosmo.FLRW,
-            phase_name="test_phase",
-        )
-
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
-
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
-
-        fit_figure_of_merit = analysis.fit(instance=instance)
-
-        mask = mask_function_7x7(image=imaging_7x7.image, sub_size=2)
-        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
-        tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.ImagingFit(
-            masked_imaging=masked_imaging, tracer=tracer
-        )
-
-        assert fit.likelihood == fit_figure_of_merit
-
     def test__phase_can_receive_hyper_image_and_noise_maps(self):
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -297,7 +266,7 @@ class TestPhase(object):
         assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
         assert type(phase_extended.hyper_phases[1]) == al.InversionPhase
 
-    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles_2(
+    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, imaging_7x7, mask_function_7x7
     ):
         lens_galaxy = al.Galaxy(
@@ -308,6 +277,7 @@ class TestPhase(object):
             mask_function=mask_function_7x7,
             galaxies=[lens_galaxy],
             cosmology=cosmo.FLRW,
+            sub_size=2,
             phase_name="test_phase",
         )
 
@@ -315,9 +285,10 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
+        mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(data=imaging_7x7, mask=None)
         masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
+
         fit = al.ImagingFit(
             masked_imaging=masked_imaging, tracer=tracer
         )
@@ -340,6 +311,7 @@ class TestPhase(object):
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
             cosmology=cosmo.FLRW,
+            sub_size=4,
             phase_name="test_phase",
         )
 
@@ -347,7 +319,9 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
+        mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(data=imaging_7x7, mask=None)
+        assert mask.sub_size == 4
+
         masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.ImagingFit(

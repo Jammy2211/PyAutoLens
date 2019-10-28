@@ -273,8 +273,8 @@ class PositionsFit(object):
 
     @staticmethod
     def max_separation_of_grid(grid):
-        rdist_max = np.zeros((grid.shape[0]))
-        for i in range(grid.shape[0]):
+        rdist_max = np.zeros((grid.sub_shape_1d))
+        for i in range(grid.sub_shape_1d):
             xdists = np.square(np.subtract(grid[i, 0], grid[:, 0]))
             ydists = np.square(np.subtract(grid[i, 1], grid[:, 1]))
             rdist_max[i] = np.max(np.add(xdists, ydists))

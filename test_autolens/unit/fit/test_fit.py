@@ -1835,23 +1835,23 @@ class MockTracerPositions:
 
 class TestPositionsFit:
     def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
-        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
+        tracer = MockTracerPositions(positions=[aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0]])])
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == 1.0
 
-        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 1.0]])])
+        tracer = MockTracerPositions(positions=[aa.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0]])])
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(2)
 
-        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 3.0]])])
+        tracer = MockTracerPositions(positions=[aa.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 3.0]])])
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(1.0) + np.square(3.0))
 
-        tracer = MockTracerPositions(positions=[np.array([[-2.0, -4.0], [1.0, 3.0]])])
+        tracer = MockTracerPositions(positions=[aa.irregular_grid.manual_1d([[-2.0, -4.0], [1.0, 3.0]])])
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
-        tracer = MockTracerPositions(positions=[np.array([[8.0, 4.0], [-9.0, -4.0]])])
+        tracer = MockTracerPositions(positions=[aa.irregular_grid.manual_1d([[8.0, 4.0], [-9.0, -4.0]])])
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
@@ -1859,26 +1859,26 @@ class TestPositionsFit:
         self
     ):
         tracer = MockTracerPositions(
-            positions=[np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]])]
+            positions=[aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]])]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == 1.0
 
         tracer = MockTracerPositions(
-            positions=[np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]])]
+            positions=[aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]])]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(18)
 
         tracer = MockTracerPositions(
-            positions=[np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])]
+            positions=[aa.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(18)
 
         tracer = MockTracerPositions(
             positions=[
-                np.array(
+                aa.irregular_grid.manual_1d(
                     [
                         [-2.0, -4.0],
                         [1.0, 3.0],
@@ -1894,7 +1894,7 @@ class TestPositionsFit:
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
         tracer = MockTracerPositions(
-            positions=[np.array([[8.0, 4.0], [8.0, 4.0], [-9.0, -4.0]])]
+            positions=[aa.irregular_grid.manual_1d([[8.0, 4.0], [8.0, 4.0], [-9.0, -4.0]])]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
@@ -1902,9 +1902,9 @@ class TestPositionsFit:
     def test_multiple_sets_of_positions__multiple_sets_of_max_distances(self):
         tracer = MockTracerPositions(
             positions=[
-                np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
-                np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
-                np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]]),
+                aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
+                aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
+                aa.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]]),
             ]
         )
 
@@ -1917,9 +1917,9 @@ class TestPositionsFit:
     def test__likelihood__is_sum_of_separations_divided_by_noise(self):
         tracer = MockTracerPositions(
             positions=[
-                np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
-                np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
-                np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]]),
+                aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
+                aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
+                aa.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]]),
             ]
         )
 
@@ -1948,7 +1948,7 @@ class TestPositionsFit:
         )
 
     def test__threshold__if_not_met_returns_ray_tracing_exception(self):
-        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
+        tracer = MockTracerPositions(positions=[aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0]])])
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
 
         assert fit.maximum_separation_within_threshold(threshold=100.0)

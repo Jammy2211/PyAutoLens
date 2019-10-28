@@ -717,7 +717,7 @@ class TestAbstractPlaneLensing(object):
 
             convergence = plane.convergence_from_grid(grid=sub_grid_7x7)
 
-            assert convergence.shape[0] == sub_grid_7x7.shape[0]
+            assert convergence.sub_shape_1d == sub_grid_7x7.sub_shape_1d
 
             convergence = plane.convergence_from_grid(grid=sub_grid_7x7)
 
@@ -808,7 +808,7 @@ class TestAbstractPlaneLensing(object):
 
             potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
-            assert potential.shape[0] == sub_grid_7x7.shape[0]
+            assert potential.sub_shape_1d == sub_grid_7x7.sub_shape_1d
 
             potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
@@ -2085,11 +2085,11 @@ class TestAbstractPlaneData(object):
                 grid=sub_grid_7x7, blurring_grid=blurring_grid_7x7, psf=psf_3x3
             )
 
-            assert blurred_g0_image.in_1d.shape[0] == 9
+            assert blurred_g0_image.shape_1d == 9
             assert blurred_images_of_galaxies[0].in_1d == pytest.approx(
                 blurred_g0_image.in_1d, 1.0e-4
             )
-            assert blurred_g1_image.in_1d.shape[0] == 9
+            assert blurred_g1_image.shape_1d == 9
             assert blurred_images_of_galaxies[1].in_1d == pytest.approx(
                 blurred_g1_image.in_1d, 1.0e-4
             )
@@ -2173,11 +2173,11 @@ class TestAbstractPlaneData(object):
                 convolver=convolver_7x7,
             )
 
-            assert blurred_g0_image.in_1d.shape[0] == 9
+            assert blurred_g0_image.shape_1d == 9
             assert blurred_images_of_galaxies[0].in_1d == pytest.approx(
                 blurred_g0_image.in_1d, 1.0e-4
             )
-            assert blurred_g1_image.in_1d.shape[0] == 9
+            assert blurred_g1_image.shape_1d == 9
             assert blurred_images_of_galaxies[1].in_1d == pytest.approx(
                 blurred_g1_image.in_1d, 1.0e-4
             )

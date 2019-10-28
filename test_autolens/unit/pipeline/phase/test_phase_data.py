@@ -58,12 +58,12 @@ class TestPhase(object):
 
         # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
 
-        def mask_function(image, sub_size):
+        def mask_function(image):
             return aa.mask.circular(
-                shape_2d=image.shape_2d, pixel_scales=1.0, sub_size=sub_size, radius_arcsec=0.3
+                shape_2d=image.shape_2d, pixel_scales=1.0, radius_arcsec=0.3
             )
 
-        mask_from_function = mask_function(image=imaging_7x7.image, sub_size=1)
+        mask_from_function = mask_function(image=imaging_7x7.image)
         phase_imaging_7x7.meta_data_fit.mask_function = mask_function
 
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=None)
@@ -105,12 +105,12 @@ class TestPhase(object):
 
         # If a mask function is supplied, we should use this mask, regardless of whether an input mask is supplied.
 
-        def mask_function(image, sub_size):
+        def mask_function(image):
             return aa.mask.circular(
-                shape_2d=image.shape_2d, pixel_scales=1, sub_size=sub_size, radius_arcsec=1.4
+                shape_2d=image.shape_2d, pixel_scales=1, radius_arcsec=1.4
             )
 
-        mask_from_function = mask_function(image=imaging_7x7.image, sub_size=1)
+        mask_from_function = mask_function(image=imaging_7x7)
 
         # The inner circulaar mask radii of 1.0" masks the centra pixels of the mask
         mask_from_function[3, 3] = True
@@ -425,7 +425,7 @@ class TestPhase(object):
         masked_imaging = al.MaskedImaging(
             imaging=imaging_7x7,
             mask=phase_imaging_7x7.meta_data_fit.mask_function(
-                image=imaging_7x7.image, sub_size=1
+                image=imaging_7x7.image,
             ),
         )
 
@@ -706,7 +706,7 @@ class TestResult(object):
 
         result = phase_imaging_7x7.run(data=imaging_7x7)
 
-        mask = mask_function_7x7(image=imaging_7x7.image, sub_size=2)
+        mask = mask_function_7x7(image=imaging_7x7.image)
 
         assert (result.mask == mask).all()
 
@@ -846,68 +846,6 @@ class TestResult(object):
         result = phase_imaging_7x7.run(data=imaging_7x7)
 
         assert result.most_likely_pixelization_grids_of_planes[-1].shape == (6, 2)
-
-    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
-        self, imaging_7x7, mask_function_7x7
-    ):
-        lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
-        )
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            mask_function=mask_function_7x7,
-            galaxies=[lens_galaxy],
-            cosmology=cosmo.FLRW,
-            phase_name="test_phase",
-        )
-
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
-        fit_figure_of_merit = analysis.fit(instance=instance)
-
-        mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
-        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
-        tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.ImagingFit(
-            masked_imaging=masked_imaging, tracer=tracer
-        )
-
-        assert fit.likelihood == fit_figure_of_merit
-
-    def test__fit_figure_of_merit__includes_hyper_image_and_noise__matches_fit(
-        self, imaging_7x7, mask_function_7x7
-    ):
-        hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
-        hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
-
-        lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
-        )
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            mask_function=mask_function_7x7,
-            galaxies=[lens_galaxy],
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-            cosmology=cosmo.FLRW,
-            phase_name="test_phase",
-        )
-
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
-        fit_figure_of_merit = analysis.fit(instance=instance)
-
-        mask = phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image, sub_size=2)
-        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
-        tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.ImagingFit(
-            masked_imaging=masked_imaging,
-            tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-        )
-
-        assert fit.likelihood == fit_figure_of_merit
 
 
 class TestPhasePickle(object):

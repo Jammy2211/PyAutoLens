@@ -93,7 +93,7 @@ def make_masked_imaging_fit_x2_plane_7x7(masked_imaging_7x7, tracer_x2_plane_7x7
 @pytest.fixture(name="mask_function_7x7_1_pix")
 def make_mask_function_7x7_1_pix():
     # noinspection PyUnusedLocal
-    def mask_function_7x7_1_pix(image, sub_size):
+    def mask_function_7x7_1_pix(image):
         array = np.array(
             [
                 [True, True, True, True, True, True, True],
@@ -106,7 +106,7 @@ def make_mask_function_7x7_1_pix():
             ]
         )
 
-        return mock_mask.MockMask(mask_2d=array, sub_size=sub_size)
+        return mock_mask.MockMask(mask_2d=array)
 
     return mask_function_7x7_1_pix
 
@@ -114,7 +114,7 @@ def make_mask_function_7x7_1_pix():
 @pytest.fixture(name="mask_function_7x7")
 def make_mask_function_7x7():
     # noinspection PyUnusedLocal
-    def mask_function_7x7(image, sub_size):
+    def mask_function_7x7(image):
         array = np.array(
             [
                 [True, True, True, True, True, True, True],
@@ -127,7 +127,7 @@ def make_mask_function_7x7():
             ]
         )
 
-        return aa.mask.manual(mask_2d=array, pixel_scales=1.0, sub_size=sub_size)
+        return aa.mask.manual(mask_2d=array, pixel_scales=1.0)
 
     return mask_function_7x7
 

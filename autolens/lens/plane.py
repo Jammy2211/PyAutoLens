@@ -217,7 +217,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             )
         else:
             return grid.mapping.array_from_sub_array_1d(
-                sub_array_1d=np.zeros((grid.shape[0],))
+                sub_array_1d=np.zeros((grid.sub_shape_1d,))
             )
 
     def profile_images_of_galaxies_from_grid(self, grid):
@@ -250,7 +250,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             return grid.mapping.array_from_sub_array_1d(sub_array_1d=convergence)
         else:
             return grid.mapping.array_from_sub_array_1d(
-                sub_array_1d=np.full((grid.shape[0]), 0.0)
+                sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
             )
 
     def potential_from_grid(self, grid):
@@ -278,7 +278,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             return grid.mapping.array_from_sub_array_1d(sub_array_1d=potential)
         else:
             return grid.mapping.array_from_sub_array_1d(
-                sub_array_1d=np.full((grid.shape[0]), 0.0)
+                sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
             )
 
     def deflections_from_grid(self, grid):
@@ -289,7 +289,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             return grid.mapping.grid_from_sub_grid_1d(sub_grid_1d=deflections)
         else:
             return grid.mapping.grid_from_sub_grid_1d(
-                sub_grid_1d=np.full((grid.shape[0], 2), 0.0)
+                sub_grid_1d=np.full((grid.sub_shape_1d, 2), 0.0)
             )
 
     def traced_grid_from_grid(self, grid):
