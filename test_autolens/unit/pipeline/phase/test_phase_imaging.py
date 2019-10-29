@@ -77,7 +77,6 @@ class TestPhase(object):
             == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, '
             "Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n"
         )
-        assert auto_link_priors == "Auto Link Priors = False \n"
 
     def test__fit_using_imaging(self, imaging_7x7, mask_function_7x7):
         clean_images()

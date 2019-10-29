@@ -4,7 +4,7 @@ import autofit as af
 import autolens as al
 
 
-class MockAnalysis(object):
+class GalaxiesMockAnalysis(object):
     def __init__(self, number_galaxies, value):
         self.number_galaxies = number_galaxies
         self.value = value
@@ -15,6 +15,8 @@ class MockAnalysis(object):
 
     def fit(self, instance):
         return 1
+
+
 
 
 class MockResults(object):

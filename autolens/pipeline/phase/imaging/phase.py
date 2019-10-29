@@ -170,7 +170,6 @@ class PhaseImaging(data.PhaseData):
                 )
             )
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
-            phase_info.write("Auto Link Priors = {} \n".format(self.auto_link_priors))
 
             phase_info.close()
 
