@@ -539,12 +539,12 @@ def subplot_for_plane(
 
         ratio = float(
             (
-                fit.inversion.mapper.arc_second_maxima[1]
-                - fit.inversion.mapper.arc_second_minima[1]
+                fit.inversion.mapper.grid.arc_second_maxima[1]
+                - fit.inversion.mapper.grid.arc_second_minima[1]
             )
             / (
-                fit.inversion.mapper.arc_second_maxima[0]
-                - fit.inversion.mapper.arc_second_minima[0]
+                fit.inversion.mapper.grid.arc_second_maxima[0]
+                - fit.inversion.mapper.grid.arc_second_minima[0]
             )
         )
 
