@@ -4,6 +4,7 @@ from autoarray.structures.grids import (
     Grid as grid,
     MaskedGrid as masked_grid,
     IrregularGrid as irregular_grid,
+    Positions as positions,
 )
 from autoarray.structures.kernel import Kernel as kernel
 from autoarray.structures.visibilities import Visibilities as visibilities
