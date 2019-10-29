@@ -14,16 +14,9 @@ class AbstractLensMasked(object):
     ):
 
         if positions is not None:
-            self.positions = list(
-                map(
-                    lambda position_set: aa.irregular_grid.manual_1d(
-                        grid=np.asarray(position_set)
-                    ),
-                    positions,
-                )
-            )
+            self.positions = aa.positions(positions=positions)
         else:
-            self.positions = positions
+            self.positions = None
 
         self.positions_threshold = positions_threshold
 

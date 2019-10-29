@@ -7,7 +7,6 @@ from autoarray.structures.grids import (
 )
 from autoarray.structures.kernel import Kernel as kernel
 from autoarray.structures.visibilities import Visibilities as visibilities
-from autoarray.data.abstract_data import load_positions, output_positions
 from autoarray.data.imaging import Imaging as imaging
 from autoarray.data.interferometer import Interferometer as interferometer
 from autoarray.fit.masked_data import (
