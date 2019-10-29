@@ -1,4 +1,4 @@
-from autolens.fit import masked_data as ld
+from autolens.fit import masked_data
 from autolens.pipeline.phase import data
 
 
@@ -42,7 +42,7 @@ class MetaImagingFit(data.MetaDataFit):
             results=results
         )
 
-        masked_imaging = ld.MaskedImaging(
+        masked_imaging = masked_data.MaskedImaging(
             imaging=data.modified_image_from_image(modified_image),
             mask=mask,
             trimmed_psf_shape_2d=self.psf_shape,

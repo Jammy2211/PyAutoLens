@@ -37,7 +37,6 @@ class PhaseData(abstract.AbstractPhase):
         galaxies=None,
         optimizer_class=af.MultiNest,
         cosmology=cosmo.Planck15,
-        auto_link_priors=False,
     ):
         """
 
@@ -55,7 +54,6 @@ class PhaseData(abstract.AbstractPhase):
             phase_tag=phase_tag,
             phase_folders=phase_folders,
             optimizer_class=optimizer_class,
-            auto_link_priors=auto_link_priors,
         )
         self.galaxies = galaxies or []
         self.cosmology = cosmology
