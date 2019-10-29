@@ -841,7 +841,7 @@ class TestPhasePickle(object):
     # noinspection PyTypeChecker
     def test_assertion_failure(self, imaging_7x7, mask_function_7x7):
         def make_analysis(*args, **kwargs):
-            return mock_pipeline.MockAnalysis(1, 1)
+            return mock_pipeline.GalaxiesMockAnalysis(1, 1)
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="phase_name",
