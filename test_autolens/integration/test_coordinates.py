@@ -2,6 +2,7 @@ import autoarray as aa
 import autolens as al
 import numpy as np
 import pytest
+import autoarray as aa
 
 
 # Arc second coordinate grid is:.

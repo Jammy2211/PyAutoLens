@@ -8,6 +8,7 @@ from astropy import cosmology as cosmo
 import autoarray as aa
 import autofit as af
 import autolens as al
+from autofit.optimize.non_linear.multi_nest import Paths
 from autolens import exc
 from test_autolens.mock import mock_pipeline
 
@@ -532,7 +533,7 @@ class TestPhase(object):
             galaxies=[lens_galaxy, source_galaxy],
             mask_function=mask_function_7x7,
             cosmology=cosmo.Planck15,
-            phase_name="test_phase",
+            paths=Paths("test_phase"),
             inversion_uses_border=True,
         )
 
