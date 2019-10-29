@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 
-import autoarray as aa
 import autolens as al
 from autolens import exc
 
@@ -18,13 +17,13 @@ class TestPlaneImageFromGrid:
             shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        mask = aa.mask.manual(
+        mask = al.mask.manual(
             mask_2d=np.full(shape=(3, 3), fill_value=False),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.masked_grid.manual_1d(
+        grid = al.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -1.0],
@@ -65,13 +64,13 @@ class TestPlaneImageFromGrid:
             shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        mask = aa.mask.manual(
+        mask = al.mask.manual(
             mask_2d=np.full(shape=(3, 3), fill_value=False),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.masked_grid.manual_1d(
+        grid = al.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -1.0],
@@ -101,13 +100,13 @@ class TestPlaneImageFromGrid:
             shape=(2, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        mask = aa.mask.manual(
+        mask = al.mask.manual(
             mask_2d=np.full(shape=(2, 3), fill_value=False),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.masked_grid.manual_1d(
+        grid = al.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [-0.75, -1.0],
@@ -134,13 +133,13 @@ class TestPlaneImageFromGrid:
             shape=(3, 2), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
-        mask = aa.mask.manual(
+        mask = al.mask.manual(
             mask_2d=np.full(shape=(3, 2), fill_value=False),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.masked_grid.manual_1d(
+        grid = al.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -0.75],
@@ -167,13 +166,13 @@ class TestPlaneImageFromGrid:
             shape=(3, 3), grid=grid_without_buffer, galaxies=[galaxy], buffer=0.02
         )
 
-        mask = aa.mask.manual(
+        mask = al.mask.manual(
             mask_2d=np.full(shape=(3, 3), fill_value=False),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.masked_grid.manual_1d(
+        grid = al.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -1.0],

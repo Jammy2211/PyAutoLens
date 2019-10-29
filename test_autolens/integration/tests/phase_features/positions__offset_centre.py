@@ -10,7 +10,7 @@ data_resolution = "LSST"
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     def mask_function(image):
-        return aa.mask.circular(
+        return al.mask.circular(
             shape=image.shape,
             pixel_scales=image.pixel_scales,
             radius_arcsec=3.0,

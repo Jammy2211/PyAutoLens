@@ -1,10 +1,6 @@
-import autoarray as aa
 import autolens as al
 import numpy as np
 import pytest
-import autoarray as aa
-
-
 # Arc second coordinate grid is:.
 
 # [[[-2.0, -2.0], [-2.0, -1.0], [-2.0, 0.0], [-2.0, 1.0], [-2.0, 2.0]],
@@ -16,7 +12,7 @@ import autoarray as aa
 
 def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
-    grid = aa.grid.uniform(shape_2d=(5, 5), pixel_scales=1.0, sub_size=1)
+    grid = al.grid.uniform(shape_2d=(5, 5), pixel_scales=1.0, sub_size=1)
 
     sersic = al.lp.SphericalSersic(centre=(2.0, -2.0))
     image = sersic.profile_image_from_grid(grid=grid)
@@ -45,7 +41,7 @@ def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
 def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index():
 
-    grid = aa.grid.uniform(shape_2d=(5, 5), pixel_scales=1.0, sub_size=1)
+    grid = al.grid.uniform(shape_2d=(5, 5), pixel_scales=1.0, sub_size=1)
 
     sis = al.mp.SphericalIsothermal(centre=(2.0, -2.0))
     density = sis.convergence_from_grid(grid=grid)
@@ -74,7 +70,7 @@ def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index(
 
 def test__deflection_angles():
 
-    grid = aa.grid.uniform(shape_2d=(5, 5), pixel_scales=1.0, sub_size=1)
+    grid = al.grid.uniform(shape_2d=(5, 5), pixel_scales=1.0, sub_size=1)
 
     sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
     deflections_y_2d = sis.deflections_from_grid(grid=grid).in_2d[:, :, 0]

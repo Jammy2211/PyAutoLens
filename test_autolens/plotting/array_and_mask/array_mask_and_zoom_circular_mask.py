@@ -11,13 +11,13 @@ imaging = simulation_util.load_test_imaging(
 )
 array = imaging.image
 
-mask = aa.mask.circular(
+mask = al.mask.circular(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     radius_arcsec=5.0,
     centre=(0.0, 0.0),
 )
-aa.plot_array(
+al.plot_array(
     array=array,
     mask=mask,
     positions=[[[1.0, 1.0]]],
@@ -31,14 +31,14 @@ imaging = simulation_util.load_test_imaging(
 )
 array = imaging.image
 
-mask = aa.mask.circular(
+mask = al.mask.circular(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     radius_arcsec=5.0,
     centre=(1.0, 1.0),
 )
-aa.plot_array(array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]])
-aa.plot_array(
+al.plot_array(array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]])
+al.plot_array(
     array=array,
     mask=mask,
     positions=[[[2.0, 2.0]]],

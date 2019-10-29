@@ -8,7 +8,8 @@ from autoarray.plotters import imaging_plotters
 
 class ImagingSimulator(object):
     def __init__(
-        self, shape_2d, pixel_scales, psf, exposure_time, background_sky_level
+        self, shape_2d, pixel_scales, psf, exposure_time, background_sky_level, add_noise=True,        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
     ):
         """A class representing a Imaging observation, using the shape of the image, the pixel scale,
         psf, exposure time, etc.
@@ -36,6 +37,9 @@ class ImagingSimulator(object):
         self.psf = psf
         self.exposure_time = exposure_time
         self.background_sky_level = background_sky_level
+        self.add_noise = add_noise
+        self.noise_if_add_noise_false = noise_if_add_noise_false
+        self.noise_seed = noise_seed
 
     @classmethod
     def lsst(
@@ -46,6 +50,9 @@ class ImagingSimulator(object):
         psf_sigma=0.5,
         exposure_time=100.0,
         background_sky_level=1.0,
+        add_noise=True,
+            noise_if_add_noise_false=0.1,
+            noise_seed=-1,
     ):
         """Default settings for an observation with the Large Synotpic Survey Telescope.
 
@@ -59,6 +66,9 @@ class ImagingSimulator(object):
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
+            add_noise=add_noise,
+            noise_if_add_noise_false=noise_if_add_noise_false,
+            noise_seed=noise_seed,
         )
 
     @classmethod
@@ -70,6 +80,9 @@ class ImagingSimulator(object):
         psf_sigma=0.1,
         exposure_time=565.0,
         background_sky_level=1.0,
+            add_noise=True,
+            noise_if_add_noise_false=0.1,
+            noise_seed=-1,
     ):
         """Default settings for an observation with the Euclid space satellite.
 
@@ -83,6 +96,9 @@ class ImagingSimulator(object):
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
+            add_noise=add_noise,
+            noise_if_add_noise_false=noise_if_add_noise_false,
+            noise_seed=noise_seed,
         )
 
     @classmethod
@@ -94,6 +110,9 @@ class ImagingSimulator(object):
         psf_sigma=0.05,
         exposure_time=2000.0,
         background_sky_level=1.0,
+            add_noise=True,
+            noise_if_add_noise_false=0.1,
+            noise_seed=-1,
     ):
         """Default settings for an observation with the Hubble Space Telescope.
 
@@ -107,6 +126,9 @@ class ImagingSimulator(object):
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
+            add_noise=add_noise,
+            noise_if_add_noise_false=noise_if_add_noise_false,
+            noise_seed=noise_seed,
         )
 
     @classmethod
@@ -118,6 +140,9 @@ class ImagingSimulator(object):
         psf_sigma=0.05,
         exposure_time=2000.0,
         background_sky_level=1.0,
+            add_noise=True,
+            noise_if_add_noise_false=0.1,
+            noise_seed=-1,
     ):
         """Default settings for an observation with the Hubble Space Telescope which has been upscaled to a higher \
         pixel-scale to better sample the PSF.
@@ -132,6 +157,9 @@ class ImagingSimulator(object):
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
+            add_noise=add_noise,
+            noise_if_add_noise_false=noise_if_add_noise_false,
+            noise_seed=noise_seed
         )
 
     @classmethod
@@ -143,6 +171,9 @@ class ImagingSimulator(object):
         psf_sigma=0.025,
         exposure_time=1000.0,
         background_sky_level=1.0,
+            add_noise=True,
+            noise_if_add_noise_false=0.1,
+            noise_seed=-1,
     ):
         """Default settings for an observation using Keck Adaptive Optics imaging.
 
@@ -156,15 +187,15 @@ class ImagingSimulator(object):
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
+            add_noise=add_noise,
+            noise_if_add_noise_false=noise_if_add_noise_false,
+            noise_seed=noise_seed,
         )
 
-    def simulate_from_galaxies(
+    def from_galaxies(
         self,
         galaxies,
         sub_size=16,
-        add_noise=True,
-        noise_if_add_noise_false=0.1,
-        noise_seed=-1,
         should_plot_imaging=False,
     ):
         """Simulate Imaging data_type for this data_type, as follows:
@@ -188,12 +219,9 @@ class ImagingSimulator(object):
 
         tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
 
-        imaging = self.simulate_from_tracer_and_grid(
+        imaging = self.from_tracer_and_grid(
             tracer=tracer,
             grid=grid,
-            add_noise=add_noise,
-            noise_if_add_noise_false=noise_if_add_noise_false,
-            noise_seed=noise_seed,
         )
 
         if should_plot_imaging:
@@ -201,15 +229,12 @@ class ImagingSimulator(object):
 
         return imaging
 
-    def simulate_from_galaxies_and_write_to_fits(
+    def from_galaxies_and_write_to_fits(
         self,
         galaxies,
         data_path,
         data_name,
         sub_size=16,
-        add_noise=True,
-        noise_if_add_noise_false=0.1,
-        noise_seed=-1,
         should_plot_imaging=False,
     ):
         """Simulate Imaging data_type for this data_type, as follows:
@@ -227,12 +252,9 @@ class ImagingSimulator(object):
         5) Output the simulate to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
-        imaging = self.simulate_from_galaxies(
+        imaging = self.from_galaxies(
             galaxies=galaxies,
             sub_size=sub_size,
-            add_noise=add_noise,
-            noise_if_add_noise_false=noise_if_add_noise_false,
-            noise_seed=noise_seed,
             should_plot_imaging=should_plot_imaging,
         )
 
@@ -251,13 +273,10 @@ class ImagingSimulator(object):
             overwrite=True,
         )
 
-    def simulate_from_deflections_and_galaxies(
+    def from_deflections_and_galaxies(
         self,
         deflections,
         galaxies,
-        add_noise=True,
-        noise_if_add_noise_false=0.1,
-        noise_seed=-1,
         name=None,
     ):
 
@@ -273,21 +292,15 @@ class ImagingSimulator(object):
             map(lambda g: g.profile_image_from_grid(grid=deflected_grid), galaxies)
         )
 
-        return self.simulate_from_image(
+        return self.from_image(
             image=image_2d,
-            add_noise=add_noise,
-            noise_if_add_noise_false=noise_if_add_noise_false,
-            noise_seed=noise_seed,
             name=name,
         )
 
-    def simulate_from_tracer_and_grid(
+    def from_tracer_and_grid(
         self,
         tracer,
         grid,
-        add_noise=True,
-        noise_if_add_noise_false=0.1,
-        noise_seed=-1,
         name=None,
     ):
         """
@@ -317,20 +330,14 @@ class ImagingSimulator(object):
             grid=grid, psf_shape=self.psf.shape_2d
         )
 
-        return self.simulate_from_image(
+        return self.from_image(
             image=image.in_1d_binned,
-            add_noise=add_noise,
-            noise_if_add_noise_false=noise_if_add_noise_false,
-            noise_seed=noise_seed,
             name=name,
         )
 
-    def simulate_from_image(
+    def from_image(
         self,
         image,
-        add_noise=True,
-        noise_if_add_noise_false=0.1,
-        noise_seed=-1,
         name=None,
     ):
         """
@@ -360,8 +367,8 @@ class ImagingSimulator(object):
             exposure_time=self.exposure_time,
             psf=self.psf,
             background_sky_level=self.background_sky_level,
-            add_noise=add_noise,
-            noise_if_add_noise_false=noise_if_add_noise_false,
-            noise_seed=noise_seed,
+            add_noise=self.add_noise,
+            noise_if_add_noise_false=self.noise_if_add_noise_false,
+            noise_seed=self.noise_seed,
             name=name,
         )

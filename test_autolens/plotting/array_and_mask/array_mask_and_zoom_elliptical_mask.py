@@ -11,7 +11,7 @@ imaging = simulation_util.load_test_imaging(
 )
 array = imaging.image
 
-mask = aa.mask.elliptical(
+mask = al.mask.elliptical(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius_arcsec=6.0,
@@ -19,7 +19,7 @@ mask = aa.mask.elliptical(
     phi=0.0,
     centre=(0.0, 0.0),
 )
-aa.plot_array(
+al.plot_array(
     array=array,
     mask=mask,
     positions=[[[1.0, 1.0]]],
@@ -33,7 +33,7 @@ imaging = simulation_util.load_test_imaging(
 )
 array = imaging.image
 
-mask = aa.mask.elliptical(
+mask = al.mask.elliptical(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius_arcsec=6.0,
@@ -41,8 +41,8 @@ mask = aa.mask.elliptical(
     phi=0.0,
     centre=(1.0, 1.0),
 )
-aa.plot_array(array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]])
-aa.plot_array(
+al.plot_array(array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]])
+al.plot_array(
     array=array,
     mask=mask,
     positions=[[[2.0, 2.0]]],

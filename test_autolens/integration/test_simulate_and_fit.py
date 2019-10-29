@@ -4,18 +4,17 @@ import numpy as np
 import pytest
 import shutil
 
-import autoarray as aa
 import autolens as al
 from autolens.simulate import simulator
 
 
 def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noise_normalization_correct():
-    psf = aa.kernel.manual_2d(
+    psf = al.kernel.manual_2d(
         array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         pixel_scales=0.2,
     )
 
-    grid = aa.grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=2)
+    grid = al.grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=2)
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
@@ -36,13 +35,14 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         exposure_time=300.0,
         psf=psf,
         background_sky_level=0.0,
+        add_noise=False
     )
 
-    imaging_simulated = imaging_simulator.simulate_from_tracer_and_grid(
-        tracer=tracer, grid=grid, add_noise=False
+    imaging_simulated = imaging_simulator.from_tracer_and_grid(
+        tracer=tracer, grid=grid,
     )
 
-    imaging_simulated.noise_map = aa.array.ones(
+    imaging_simulated.noise_map = al.array.ones(
         shape_2d=imaging_simulated.image.shape_2d
     )
 
@@ -64,14 +64,14 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         psf_path=path + "/psf.fits",
     )
 
-    imaging = aa.imaging.from_fits(
+    imaging = al.imaging.from_fits(
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
         pixel_scales=0.2,
     )
 
-    mask = aa.mask.circular(
+    mask = al.mask.circular(
         shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=2, radius_arcsec=0.8
     )
 
@@ -93,9 +93,9 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
 def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
-    psf = aa.kernel.from_gaussian(shape_2d=(3, 3), pixel_scales=0.2, sigma=0.75)
+    psf = al.kernel.from_gaussian(shape_2d=(3, 3), pixel_scales=0.2, sigma=0.75)
 
-    grid = aa.grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=1)
+    grid = al.grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=1)
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
@@ -114,15 +114,15 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         exposure_time=300.0,
         psf=psf,
         background_sky_level=0.0,
+        add_noise=False,
     )
 
-    imaging_simulated = imaging_simulator.simulate_from_image(
+    imaging_simulated = imaging_simulator.from_image(
         image=tracer.padded_profile_image_from_grid_and_psf_shape(
             grid=grid, psf_shape=psf.shape_2d
         ),
-        add_noise=False,
     )
-    imaging_simulated.noise_map = aa.array.ones(
+    imaging_simulated.noise_map = al.array.ones(
         shape_2d=imaging_simulated.image.shape_2d
     )
 
@@ -144,14 +144,14 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         psf_path=path + "/psf.fits",
     )
 
-    imaging = aa.imaging.from_fits(
+    imaging = al.imaging.from_fits(
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
         pixel_scales=0.2,
     )
 
-    mask = aa.mask.circular(
+    mask = al.mask.circular(
         shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=1, radius_arcsec=0.8
     )
 
