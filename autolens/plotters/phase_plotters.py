@@ -202,7 +202,7 @@ def imaging_fit_of_phase(
 
         aa.plot.inversion.subplot(
             inversion=fit.inversion,
-            mask_overlay=fit.mask_overlay,
+            mask_overlay=fit.mask,
             positions=positions,
             output_path=subplot_path,
             output_format="png",
