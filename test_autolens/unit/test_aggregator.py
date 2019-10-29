@@ -109,7 +109,7 @@ class TestCase(object):
         assert two.optimizer is not None
         assert three.optimizer is not None
 
-        assert one.optimizer.variable.priors == two.optimizer.variable.priors
+        assert one.model.priors == two.model.priors
 
     def test_filter_optimizers(self, aggregator, one, two, three):
         result = aggregator.optimizers_with()
