@@ -1,6 +1,5 @@
 import os
 
-import autoarray as aa
 import autofit as af
 import autolens as al
 
@@ -79,7 +78,7 @@ def load_test_imaging(data_type, data_resolution, psf_shape=(11, 11), lens_name=
         path=test_path, folder_names=["simulate", data_type, data_resolution]
     )
 
-    return aa.imaging.from_fits(
+    return al.imaging.from_fits(
         image_path=data_path + "/image.fits",
         psf_path=data_path + "/psf.fits",
         noise_map_path=data_path + "/noise_map.fits",

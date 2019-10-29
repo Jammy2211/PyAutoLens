@@ -1,9 +1,56 @@
-import autoarray as aa
+
 import autolens as al
+from skimage import measure
 import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 from test_autoarray.mock import mock_inversion as mock_inv
+
+
+def critical_curve_via_magnification_from_tracer_and_grid(tracer, grid):
+    magnification = tracer.magnification_from_grid(grid=grid)
+
+    inverse_magnification = 1 / magnification
+
+    critical_curves_indices = measure.find_contours(inverse_magnification.in_2d, 0)
+
+    no_critical_curves = len(critical_curves_indices)
+    contours = []
+    critical_curves = []
+
+    for jj in np.arange(no_critical_curves):
+        contours.append(critical_curves_indices[jj])
+        contour_x, contour_y = contours[jj].T
+        pixel_coord = np.stack((contour_x, contour_y), axis=-1)
+
+        critical_curve = grid.geometry.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+            grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
+        )
+
+        critical_curve = al.irregular_grid.manual_1d(grid=critical_curve)
+
+        critical_curves.append(critical_curve)
+
+    return critical_curves
+
+
+def caustics_via_magnification_from_tracer_and_grid(tracer, grid):
+    caustics = []
+
+    critical_curves = critical_curve_via_magnification_from_tracer_and_grid(
+        tracer=tracer, grid=grid
+    )
+
+    for i in range(len(critical_curves)):
+        critical_curve = critical_curves[i]
+
+        deflections_1d = tracer.deflections_from_grid(grid=critical_curve)
+
+        caustic = critical_curve - deflections_1d
+
+        caustics.append(caustic)
+
+    return caustics
 
 
 class TestAbstractTracer(object):
@@ -942,12 +989,12 @@ class TestAbstractTracerLensing(object):
             )
 
             defl11 = g0.deflections_from_grid(
-                grid=aa.grid.manual_2d(
+                grid=al.grid.manual_2d(
                     [[[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]]]
                 )
             )
             defl12 = g0.deflections_from_grid(
-                grid=aa.grid.manual_2d([[[(1.0 - beta_01 * 1.0), 0.0]]])
+                grid=al.grid.manual_2d([[[(1.0 - beta_01 * 1.0), 0.0]]])
             )
 
             assert traced_grids_of_planes[2][0] == pytest.approx(
@@ -1740,6 +1787,582 @@ class TestAbstractTracerLensing(object):
                 tracer_deflections.in_2d_binned[:, :, 1] == np.zeros(shape=(7, 7))
             ).all()
 
+    class TestDeflectionAnglesviaPotential(object):
+        def test__compare_tracer_deflections_via_potential_and_calculation(self):
+            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=1)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            )
+
+            g1 = al.Galaxy(
+                redshift=1.0,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
+            )
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            deflections_via_calculation = tracer.deflections_from_grid(grid=grid)
+
+            deflections_via_potential = tracer.deflections_via_potential_from_grid(
+                grid=grid
+            )
+
+            mean_error = np.mean(
+                deflections_via_potential - deflections_via_calculation
+            )
+
+            assert mean_error < 1e-4
+
+        def test__deflections_via_potential_same_as_its_planes___use_multiple_planes(
+                self
+        ):
+            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=1)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            )
+            g1 = al.Galaxy(
+                redshift=0.1,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
+            )
+
+            plane_0 = al.Plane(galaxies=[g0])
+            plane_1 = al.Plane(galaxies=[g1])
+
+            g0_deflections = plane_0.deflections_via_potential_from_grid(grid=grid)
+            g1_deflections = plane_1.deflections_via_potential_from_grid(grid=grid)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            deflections = tracer.deflections_via_potential_from_grid(grid=grid)
+
+            assert deflections == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
+
+    class TestJacobian(object):
+        def test__jacobian_components__two_component_galaxy_plane(self):
+            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
+            )
+
+            g1 = al.Galaxy(
+                redshift=1.0,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            plane_0 = al.Plane(galaxies=[g0])
+            plane_1 = al.Plane(galaxies=[g1])
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            jacobian = tracer.jacobian_from_grid(grid=grid)
+
+            A_12 = jacobian[0][1]
+            A_21 = jacobian[1][0]
+
+            mean_error = np.mean(A_12 - A_21)
+
+            assert mean_error < 1e-4
+
+            jacobian = tracer.jacobian_from_grid(grid=grid)
+
+            A_12 = jacobian[0][1]
+            A_21 = jacobian[1][0]
+
+            mean_error = np.mean(A_12 - A_21)
+
+            assert mean_error < 1e-4
+
+    class TestConvergenceviaJacobian(object):
+        def test__compare_plane_convergence_via_jacobian_and_calculation(self):
+            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
+            )
+
+            g1 = al.Galaxy(
+                redshift=1.0,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            convergence_via_calculation = tracer.convergence_from_grid(grid=grid)
+
+            convergence_via_jacobian = tracer.convergence_via_jacobian_from_grid(
+                grid=grid
+            )
+
+            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+            assert mean_error < 1e-1
+
+        def test__convergence_sub_grid_binning_two_component_galaxy_plane(self):
+            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=2)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
+            )
+
+            g1 = al.Galaxy(
+                redshift=1.0,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            convergence = tracer.convergence_via_jacobian_from_grid(grid=grid)
+
+            pixel_first_binned = convergence.in_1d_binned[0]
+            pixel_first_binned_manual = (
+                                                convergence[0] + convergence[1] + convergence[2] + convergence[3]
+                                        ) / 4
+
+            assert pixel_first_binned == pytest.approx(pixel_first_binned_manual, 1e-4)
+
+            last_pixel_binned = convergence.in_1d_binned[99]
+
+            last_pixel_binned_manual = (
+                                               convergence[399]
+                                               + convergence[398]
+                                               + convergence[397]
+                                               + convergence[396]
+                                       ) / 4
+
+            assert last_pixel_binned == pytest.approx(last_pixel_binned_manual, 1e-4)
+
+            convergence_via_calculation = tracer.convergence_from_grid(grid=grid)
+
+            convergence_via_jacobian = tracer.convergence_via_jacobian_from_grid(
+                grid=grid
+            )
+
+            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
+
+            assert convergence_via_jacobian.in_1d_binned.shape == (400,)
+            assert mean_error < 1e-1
+
+        def test__plane_convergence_via_jacobian_same_as_multiple_galaxies(self):
+            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=2)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            )
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
+            )
+
+            g2 = al.Galaxy(redshift=1.0)
+
+            plane_0 = al.Plane(galaxies=[g0])
+            plane_1 = al.Plane(galaxies=[g1])
+
+            plane_0_convergence = plane_0.convergence_via_jacobian_from_grid(grid=grid)
+            plane_1_convergence = plane_1.convergence_via_jacobian_from_grid(grid=grid)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+            convergence = tracer.convergence_via_jacobian_from_grid(grid=grid)
+
+            assert convergence == pytest.approx(plane_0_convergence + plane_1_convergence, 1.0e-8)
+
+    class TestShearviaJacobian(object):
+        def test__shear_sub_grid_binning_two_component_galaxy_plane(self):
+            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=2)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
+            )
+
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            shear = tracer.shear_via_jacobian_from_grid(grid=grid)
+
+            first_pixel_binned = shear.in_1d_binned[0]
+            first_pixel_binned_manual = (shear[0] + shear[1] + shear[2] + shear[3]) / 4
+
+            assert first_pixel_binned == pytest.approx(first_pixel_binned_manual, 1e-4)
+
+            last_pixel_binned = shear.in_1d_binned[99]
+
+            last_pixel_binned_manual = (
+                                               shear[399] + shear[398] + shear[397] + shear[396]
+                                       ) / 4
+
+            assert last_pixel_binned == pytest.approx(last_pixel_binned_manual, 1e-4)
+
+        def test__plane_shear_via_jacobian_same_as_multiple_galaxies(self):
+            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=2)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            )
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
+            )
+
+            g2 = al.Galaxy(redshift=1.0)
+
+            plane_0 = al.Plane(galaxies=[g0])
+            plane_1 = al.Plane(galaxies=[g1])
+
+            plane_0_shear = plane_0.shear_via_jacobian_from_grid(grid=grid)
+            plane_1_shear = plane_1.shear_via_jacobian_from_grid(grid=grid)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+            shear = tracer.shear_via_jacobian_from_grid(grid=grid)
+
+            assert shear == pytest.approx(plane_0_shear + plane_1_shear, 1.0e-8)
+
+    class TestMagnification(object):
+        def test__compare_magnification_from_eigen_values_and_from_determinant__two_component_galaxy_plane(
+                self
+        ):
+            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=1)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
+            )
+
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            g2 = al.Galaxy(redshift=1.0)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+            magnification_via_determinant = tracer.magnification_from_grid(grid=grid)
+
+            tangential_eigen_value = tracer.tangential_eigen_value_from_grid(grid=grid)
+
+            radal_eigen_value = tracer.radial_eigen_value_from_grid(grid=grid)
+
+            magnification_via_eigen_values = 1 / (
+                    tangential_eigen_value * radal_eigen_value
+            )
+
+            mean_error = np.mean(
+                magnification_via_determinant - magnification_via_eigen_values
+            )
+
+            assert mean_error < 1e-4
+
+            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=2)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            magnification_via_determinant = tracer.magnification_from_grid(grid=grid)
+
+            tangential_eigen_value = tracer.tangential_eigen_value_from_grid(grid=grid)
+
+            radal_eigen_value = tracer.radial_eigen_value_from_grid(grid=grid)
+
+            magnification_via_eigen_values = 1 / (
+                    tangential_eigen_value * radal_eigen_value
+            )
+
+            mean_error = np.mean(
+                magnification_via_determinant - magnification_via_eigen_values
+            )
+
+            assert mean_error < 1e-4
+
+        def test__compare_magnification_from_determinant_and_from_convergence_and_shear__two_component_galaxy(
+                self
+        ):
+            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=1)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.0
+                ),
+            )
+
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            g2 = al.Galaxy(redshift=1.0)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+            magnification_via_determinant = tracer.magnification_from_grid(grid=grid)
+
+            convergence = tracer.convergence_via_jacobian_from_grid(grid=grid)
+
+            shear = tracer.shear_via_jacobian_from_grid(grid=grid)
+
+            magnification_via_convergence_and_shear = 1 / (
+                    (1 - convergence) ** 2 - shear ** 2
+            )
+
+            mean_error = np.mean(
+                magnification_via_determinant - magnification_via_convergence_and_shear
+            )
+
+            assert mean_error < 1e-4
+
+            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=2)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            magnification_via_determinant = tracer.magnification_from_grid(grid=grid)
+
+            convergence = tracer.convergence_via_jacobian_from_grid(grid=grid)
+
+            shear = tracer.shear_via_jacobian_from_grid(grid=grid)
+
+            magnification_via_convergence_and_shear = 1 / (
+                    (1 - convergence) ** 2 - shear ** 2
+            )
+
+            mean_error = np.mean(
+                magnification_via_determinant - magnification_via_convergence_and_shear
+            )
+
+            assert mean_error < 1e-4
+
+    class TestCriticalCurvesandCaustics(object):
+        def test__compare_tangential_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
+                self
+        ):
+            grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.EllipticalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
+                ),
+            )
+
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(0.1, 0.1), einstein_radius=2.0
+                ),
+            )
+
+            g2 = al.Galaxy(redshift=1.0)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+            critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_tracer_and_grid(
+                tracer=tracer, grid=grid
+            )[
+                0
+            ]
+
+            critical_curve_tangential_from_lambda_t = tracer.critical_curves_from_grid(
+                grid=grid
+            )[0]
+
+            assert critical_curve_tangential_from_lambda_t == pytest.approx(
+                critical_curve_tangential_from_magnification, 1e-4
+            )
+
+            grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+            critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_tracer_and_grid(
+                tracer=tracer, grid=grid
+            )[
+                0
+            ]
+
+            critical_curve_tangential_from_lambda_t = tracer.critical_curves_from_grid(
+                grid=grid
+            )[0]
+
+            assert critical_curve_tangential_from_lambda_t == pytest.approx(
+                critical_curve_tangential_from_magnification, 1e-4
+            )
+
+        def test__compare_radial_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
+                self
+        ):
+            grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.EllipticalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
+                ),
+            )
+
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(0.1, 0.1), einstein_radius=2.0
+                ),
+            )
+
+            g2 = al.Galaxy(redshift=1.0)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+            critical_curve_radial_from_magnification = critical_curve_via_magnification_from_tracer_and_grid(
+                tracer=tracer, grid=grid
+            )[
+                1
+            ]
+
+            critical_curve_radial_from_lambda_t = tracer.critical_curves_from_grid(
+                grid=grid
+            )[1]
+
+            assert sum(critical_curve_radial_from_lambda_t) == pytest.approx(
+                sum(critical_curve_radial_from_magnification), 1e-2
+            )
+
+            grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+            critical_curve_radial_from_magnification = critical_curve_via_magnification_from_tracer_and_grid(
+                tracer=tracer, grid=grid
+            )[
+                1
+            ]
+
+            critical_curve_radial_from_lambda_t = tracer.critical_curves_from_grid(
+                grid=grid
+            )[1]
+
+            assert sum(critical_curve_radial_from_lambda_t) == pytest.approx(
+                sum(critical_curve_radial_from_magnification), 1e-2
+            )
+
+        def test__compare_tangential_caustic_from_magnification_and_lambda_t__two_component_galaxy(
+                self
+        ):
+            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.25, sub_size=1)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.EllipticalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
+                ),
+            )
+
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(0.1, 0.1), einstein_radius=2.0
+                ),
+            )
+
+            g2 = al.Galaxy(redshift=1.0)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+            caustic_tangential_from_magnification = caustics_via_magnification_from_tracer_and_grid(
+                tracer=tracer, grid=grid
+            )[
+                0
+            ]
+
+            caustic_tangential_from_lambda_t = tracer.caustics_from_grid(grid=grid)[0]
+
+            assert caustic_tangential_from_lambda_t == pytest.approx(
+                caustic_tangential_from_magnification, 5e-1
+            )
+
+            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.5, sub_size=2)
+
+            caustic_tangential_from_magnification = caustics_via_magnification_from_tracer_and_grid(
+                tracer=tracer, grid=grid
+            )[
+                0
+            ]
+
+            caustic_tangential_from_lambda_t = tracer.caustics_from_grid(grid=grid)[0]
+
+            assert caustic_tangential_from_lambda_t == pytest.approx(
+                caustic_tangential_from_magnification, 5e-1
+            )
+
+        def test__compare_radial_caustic_from_magnification_and_lambda_t__two_component_galaxy(
+                self
+        ):
+            grid = al.grid.uniform(shape_2d=(60, 60), pixel_scales=0.5, sub_size=2)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.EllipticalIsothermal(
+                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
+                ),
+            )
+
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(
+                    centre=(1.0, 1.0), einstein_radius=2.0
+                ),
+            )
+
+            g2 = al.Galaxy(redshift=1.0)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+            caustic_radial_from_magnification = caustics_via_magnification_from_tracer_and_grid(
+                tracer=tracer, grid=grid
+            )[
+                1
+            ]
+
+            caustic_radial_from_lambda_t = tracer.caustics_from_grid(grid=grid)[1]
+
+            assert sum(caustic_radial_from_lambda_t) == pytest.approx(
+                sum(caustic_radial_from_magnification), 1e-2
+            )
+
     class TestGridAtRedshift:
         def test__lens_z05_source_z01_redshifts__match_planes_redshifts__gives_same_grids(
             self, sub_grid_7x7
@@ -2272,12 +2895,12 @@ class TestAbstractTracerData(object):
     class TestUnmaskedBlurredProfileImages:
         def test__unmasked_images_of_tracer_planes_and_galaxies(self):
 
-            psf = aa.kernel.manual_2d(
+            psf = al.kernel.manual_2d(
                 array=(np.array([[0.0, 3.0, 0.0], [0.0, 1.0, 2.0], [0.0, 0.0, 0.0]])),
                 pixel_scales=1.0,
             )
 
-            mask = aa.mask.manual(
+            mask = al.mask.manual(
                 mask_2d=np.array(
                     [[True, True, True], [True, False, True], [True, True, True]]
                 ),
@@ -2285,7 +2908,7 @@ class TestAbstractTracerData(object):
                 sub_size=1,
             )
 
-            grid = aa.masked_grid.from_mask(mask=mask)
+            grid = al.masked_grid.from_mask(mask=mask)
 
             g0 = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=0.1)
@@ -2348,7 +2971,7 @@ class TestAbstractTracerData(object):
                 grid=grid, psf=psf
             )
 
-            assert unmasked_blurred_image == pytest.approx(
+            assert unmasked_blurred_image.in_2d == pytest.approx(
                 manual_blurred_image_0.in_2d_binned[1:4, 1:4]
                 + manual_blurred_image_1.in_2d_binned[1:4, 1:4]
                 + manual_blurred_image_2.in_2d_binned[1:4, 1:4]
@@ -2360,12 +2983,12 @@ class TestAbstractTracerData(object):
                 grid=grid, psf=psf
             )
 
-            assert unmasked_blurred_image_of_planes[0] == pytest.approx(
+            assert unmasked_blurred_image_of_planes[0].in_2d == pytest.approx(
                 manual_blurred_image_0.in_2d_binned[1:4, 1:4]
                 + manual_blurred_image_1.in_2d_binned[1:4, 1:4],
                 1.0e-4,
             )
-            assert unmasked_blurred_image_of_planes[1] == pytest.approx(
+            assert unmasked_blurred_image_of_planes[1].in_2d == pytest.approx(
                 manual_blurred_image_2.in_2d_binned[1:4, 1:4]
                 + manual_blurred_image_3.in_2d_binned[1:4, 1:4],
                 1.0e-4,
@@ -2376,19 +2999,19 @@ class TestAbstractTracerData(object):
             )
 
             assert (
-                unmasked_blurred_image_of_planes_and_galaxies[0][0]
+                unmasked_blurred_image_of_planes_and_galaxies[0][0].in_2d
                 == manual_blurred_image_0.in_2d_binned[1:4, 1:4]
             ).all()
             assert (
-                unmasked_blurred_image_of_planes_and_galaxies[0][1]
+                unmasked_blurred_image_of_planes_and_galaxies[0][1].in_2d
                 == manual_blurred_image_1.in_2d_binned[1:4, 1:4]
             ).all()
             assert (
-                unmasked_blurred_image_of_planes_and_galaxies[1][0]
+                unmasked_blurred_image_of_planes_and_galaxies[1][0].in_2d
                 == manual_blurred_image_2.in_2d_binned[1:4, 1:4]
             ).all()
             assert (
-                unmasked_blurred_image_of_planes_and_galaxies[1][1]
+                unmasked_blurred_image_of_planes_and_galaxies[1][1].in_2d
                 == manual_blurred_image_3.in_2d_binned[1:4, 1:4]
             ).all()
 
@@ -2584,7 +3207,7 @@ class TestAbstractTracerData(object):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=aa.grid.manual_2d([[[1.0, 0.0]]])
+                    value=1, grid=al.grid.manual_2d([[[1.0, 0.0]]])
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -2613,7 +3236,7 @@ class TestAbstractTracerData(object):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=aa.grid.manual_2d([[[1.0, 0.0]]])
+                    value=1, grid=al.grid.manual_2d([[[1.0, 0.0]]])
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -2634,7 +3257,7 @@ class TestAbstractTracerData(object):
             galaxy_pix0 = al.Galaxy(
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=aa.grid.manual_2d([[[1.0, 1.0]]])
+                    value=1, grid=al.grid.manual_2d([[[1.0, 1.0]]])
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -2642,7 +3265,7 @@ class TestAbstractTracerData(object):
             galaxy_pix1 = al.Galaxy(
                 redshift=2.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=aa.grid.manual_2d([[[2.0, 2.0]]])
+                    value=1, grid=al.grid.manual_2d([[[2.0, 2.0]]])
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -2671,10 +3294,10 @@ class TestAbstractTracerData(object):
             )
 
             traced_grid_pix0 = tracer.traced_grids_of_planes_from_grid(
-                grid=aa.grid.manual_2d([[[1.0, 1.0]]])
+                grid=al.grid.manual_2d([[[1.0, 1.0]]])
             )[2]
             traced_grid_pix1 = tracer.traced_grids_of_planes_from_grid(
-                grid=aa.grid.manual_2d([[[2.0, 2.0]]])
+                grid=al.grid.manual_2d([[[2.0, 2.0]]])
             )[4]
 
             assert traced_pixelization_grids[0] == None
@@ -2689,7 +3312,7 @@ class TestAbstractTracerData(object):
 
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
-                pixelization=aa.pix.VoronoiMagnification(shape=(3, 3)),
+                pixelization=al.pix.VoronoiMagnification(shape=(3, 3)),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
             galaxy_no_pix = al.Galaxy(redshift=0.5)
@@ -2794,10 +3417,10 @@ class TestAbstractTracerData(object):
     class TestHyperNoiseMap:
         def test__hyper_noise_maps_of_planes(self, sub_grid_7x7):
 
-            noise_map_1d = aa.array.manual_2d([[5.0, 3.0, 1.0]])
+            noise_map_1d = al.array.manual_2d([[5.0, 3.0, 1.0]])
 
-            hyper_model_image = aa.array.manual_2d([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = aa.array.manual_2d([[1.0, 5.0, 8.0]])
+            hyper_model_image = al.array.manual_2d([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = al.array.manual_2d([[1.0, 5.0, 8.0]])
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
@@ -3361,12 +3984,12 @@ class TestTacerFixedSlices(object):
             #  Galaxies in this plane, so multiply by 3
 
             defl11 = 3.0 * lens_g0.deflections_from_grid(
-                grid=aa.grid.manual_2d(
+                grid=al.grid.manual_2d(
                     [[[(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]]]
                 )
             )
             defl12 = 3.0 * lens_g0.deflections_from_grid(
-                grid=aa.grid.manual_2d([[[(1.0 - beta_01 * 2.0 * 1.0), 0.0]]])
+                grid=al.grid.manual_2d([[[(1.0 - beta_01 * 2.0 * 1.0), 0.0]]])
             )
 
             assert traced_grids[2][0] == pytest.approx(
@@ -3399,7 +4022,7 @@ class TestTracerPositions(object):
         from autoarray.structures.grids import IrregularGrid
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[aa.irregular_grid.manual_1d(grid=[[1.0, 1.0], [-1.0, -1.0]])]
+            positions=[al.irregular_grid.manual_1d(grid=[[1.0, 1.0], [-1.0, -1.0]])]
         )
 
         assert traced_positions_of_planes[0][0] == pytest.approx(
@@ -3416,7 +4039,7 @@ class TestTracerPositions(object):
         tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, al.Galaxy(redshift=1.0)])
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[aa.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
+            positions=[al.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
         )
 
         assert traced_positions_of_planes[0][0] == pytest.approx(
@@ -3433,7 +4056,7 @@ class TestTracerPositions(object):
         )
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[aa.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
+            positions=[al.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
         )
 
         assert traced_positions_of_planes[0][0] == pytest.approx(
@@ -3448,8 +4071,8 @@ class TestTracerPositions(object):
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
             positions=[
-                aa.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]]),
-                aa.irregular_grid.manual_1d([[0.5, 0.5]]),
+                al.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]]),
+                al.irregular_grid.manual_1d([[0.5, 0.5]]),
             ]
         )
 
@@ -3498,7 +4121,7 @@ class TestTracerPositions(object):
         )
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[aa.irregular_grid.manual_1d([[1.0, 1.0]])]
+            positions=[al.irregular_grid.manual_1d([[1.0, 1.0]])]
         )
 
         # From unit test_autoarray below:
@@ -3520,7 +4143,7 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=aa.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
+            grid=al.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
         )
 
         assert traced_positions_of_planes[2][0] == pytest.approx(
@@ -3567,8 +4190,8 @@ class TestTracerPositions(object):
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
             positions=[
-                aa.irregular_grid.manual_1d([[1.0, 1.0]]),
-                aa.irregular_grid.manual_1d([[1.0, 1.0]]),
+                al.irregular_grid.manual_1d([[1.0, 1.0]]),
+                al.irregular_grid.manual_1d([[1.0, 1.0]]),
             ]
         )
 
@@ -3591,7 +4214,7 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=aa.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
+            grid=al.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
         )
 
         assert traced_positions_of_planes[2][0] == pytest.approx(
@@ -3619,7 +4242,7 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=aa.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
+            grid=al.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
         )
 
         assert traced_positions_of_planes[2][1] == pytest.approx(
