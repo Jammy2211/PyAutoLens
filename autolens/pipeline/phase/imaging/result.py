@@ -47,7 +47,7 @@ class Result(data.Result):
         Returns
         -------
         ndarray or None
-            A numpy array giving the model image of that galaxy
+            A numpy arrays giving the model image of that galaxy
         """
         return self.most_likely_fit.galaxy_model_image_dict[galaxy]
 

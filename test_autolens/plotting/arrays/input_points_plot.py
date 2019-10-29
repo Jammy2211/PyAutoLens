@@ -4,7 +4,7 @@ import numpy as np
 
 array = al.array.manual_2d(array=np.ones((50, 50)), pixel_scales=0.1)
 
-# al.plot_array(array=array, centres=[[(1.0, 1.0)], [(-1.0, 1.0)], [(-2.0, -2.0), (-3.0, -3.0)]])
+# al.plot_array(arrays=arrays, centres=[[(1.0, 1.0)], [(-1.0, 1.0)], [(-2.0, -2.0), (-3.0, -3.0)]])
 al.plot_array(array=array, centres=[[(0.0, 0.0)]], axis_ratios=[[0.5]], phis=[[45.0]])
 stop
 al.plot_array(

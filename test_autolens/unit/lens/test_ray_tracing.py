@@ -3620,17 +3620,17 @@ class TestTracer(object):
         #     val = np.sqrt(2) / 2.0
         #
         #     assert deflections_between_planes[0] == pytest.approx(
-        #         np.array([val, val]), 1e-4
+        #         np.arrays([val, val]), 1e-4
         #     )
         #     assert deflections_between_planes[1] == pytest.approx(
-        #         np.array([1.0, 0.0]), 1e-4
+        #         np.arrays([1.0, 0.0]), 1e-4
         #     )
         #
         #     defl11 = g0.deflections_from_grid(
-        #         grid=np.array([[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]])
+        #         grid=np.arrays([[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]])
         #     )
         #     defl12 = g0.deflections_from_grid(
-        #         grid=np.array([[(1.0 - beta_01 * 1.0), 0.0]])
+        #         grid=np.arrays([[(1.0 - beta_01 * 1.0), 0.0]])
         #     )
 
         # assert traced_deflections_of_planes[1][0] == pytest.approx(
@@ -3643,7 +3643,7 @@ class TestTracer(object):
         # 2 Galaxies in this plane, so multiply by 2.0
 
         # defl21 = 2.0 * g0.deflections_from_grid(
-        #     grid=np.array(
+        #     grid=np.arrays(
         #         [
         #             [
         #                 (1.0 - beta_02 * val - beta_12 * defl11[0, 0]),
@@ -3653,7 +3653,7 @@ class TestTracer(object):
         #     )
         # )
         # defl22 = 2.0 * g0.deflections_from_grid(
-        #     grid=np.array([[(1.0 - beta_02 * 1.0 - beta_12 * defl12[0, 0]), 0.0]])
+        #     grid=np.arrays([[(1.0 - beta_02 * 1.0 - beta_12 * defl12[0, 0]), 0.0]])
         # )
 
         # assert deflections_between_planes[2][0] == pytest.approx(
@@ -3664,10 +3664,10 @@ class TestTracer(object):
         # )
         #
         # assert deflections_between_planes[3][0] == pytest.approx(
-        #     np.array([0.0, 0.0]), 1e-3
+        #     np.arrays([0.0, 0.0]), 1e-3
         # )
         # assert deflections_between_planes[3][1] == pytest.approx(
-        #     np.array([0.0, 0.0]), 1e-3
+        #     np.arrays([0.0, 0.0]), 1e-3
         # )
 
         # def test__grid_attributes_passed(self, sub_grid_7x7_simple):
@@ -4018,8 +4018,6 @@ class TestTracerPositions(object):
         tracer = al.Tracer.from_galaxies(
             galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
         )
-
-        from autoarray.structures.grids import IrregularGrid
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
             positions=[al.irregular_grid.manual_1d(grid=[[1.0, 1.0], [-1.0, -1.0]])]

@@ -22,7 +22,7 @@ class ImagingSimulator(object):
         pixel_scales : float
             The size of each pixel in arc seconds.
         psf : PSF
-            An array describing the PSF kernel of the image.
+            An arrays describing the PSF kernel of the image.
         exposure_time : float
             The exposure time of an observation using this data_type.
         background_sky_level : float
@@ -200,7 +200,7 @@ class ImagingSimulator(object):
     ):
         """Simulate Imaging data_type for this data_type, as follows:
 
-        1)  Setup the image-plane al.ogrid of the Imaging array, which defines the coordinates used for the ray-tracing.
+        1)  Setup the image-plane al.ogrid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
 
         2) Use this grid and the lens and source galaxies to setup a tracer, which generates the image of \
            the simulated Imaging data_type.
@@ -239,7 +239,7 @@ class ImagingSimulator(object):
     ):
         """Simulate Imaging data_type for this data_type, as follows:
 
-        1)  Setup the image-plane al.ogrid of the Imaging array, which defines the coordinates used for the ray-tracing.
+        1)  Setup the image-plane al.ogrid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
 
         2) Use this grid and the lens and source galaxies to setup a tracer, which generates the image of \
            the simulated Imaging data_type.
@@ -314,9 +314,9 @@ class ImagingSimulator(object):
         pixel_scales: float
             The scale of each pixel in arc seconds
         exposure_time_map : ndarray
-            An array representing the effective exposure time of each pixel.
+            An arrays representing the effective exposure time of each pixel.
         psf: PSF
-            An array describing the PSF the simulated image is blurred with.
+            An arrays describing the PSF the simulated image is blurred with.
         background_sky_map : ndarray
             The value of background sky in every image pixel (electrons per second).
         add_noise: Bool
@@ -351,9 +351,9 @@ class ImagingSimulator(object):
         pixel_scales: float
             The scale of each pixel in arc seconds
         exposure_time_map : ndarray
-            An array representing the effective exposure time of each pixel.
+            An arrays representing the effective exposure time of each pixel.
         psf: PSF
-            An array describing the PSF the simulated image is blurred with.
+            An arrays describing the PSF the simulated image is blurred with.
         background_sky_map : ndarray
             The value of background sky in every image pixel (electrons per second).
         add_noise: Bool

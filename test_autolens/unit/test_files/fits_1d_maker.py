@@ -2,7 +2,7 @@ from astropy.io import fits
 import numpy as np
 import os
 
-path = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
+path = "{}/../test_files/arrays/".format(os.path.dirname(os.path.realpath(__file__)))
 
 array1 = np.ones((3))
 array2 = 2.0 * np.ones((3))
