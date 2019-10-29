@@ -14,7 +14,6 @@ class AbstractPhase(af.AbstractPhase):
         phase_tag=None,
         phase_folders=tuple(),
         optimizer_class=af.MultiNest,
-        auto_link_priors=False,
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
