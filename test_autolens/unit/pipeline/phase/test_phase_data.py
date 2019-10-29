@@ -533,7 +533,7 @@ class TestPhase(object):
             galaxies=[lens_galaxy, source_galaxy],
             mask_function=mask_function_7x7,
             cosmology=cosmo.Planck15,
-            paths=Paths("test_phase"),
+            phase_name="test_phase",
             inversion_uses_border=True,
         )
 
