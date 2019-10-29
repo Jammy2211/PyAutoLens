@@ -9,7 +9,7 @@ from test import simulation_util
 imaging = simulation_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
-mask = aa.mask.circular(
+mask = al.mask.circular(
     shape=imaging.shape, pixel_scales=imaging.pixel_scales, radius_arcsec=3.0
 )
 

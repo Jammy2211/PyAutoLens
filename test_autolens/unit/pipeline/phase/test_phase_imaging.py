@@ -1,7 +1,6 @@
 import os
 from os import path
 
-import autoarray as aa
 import numpy as np
 import pytest
 from astropy import cosmology as cosmo
@@ -100,7 +99,7 @@ class TestPhase(object):
         class MyPhase(al.PhaseImaging):
             def modify_image(self, image, results):
                 assert imaging_7x7.image.shape_2d == image.shape_2d
-                image = aa.array.full(fill_value=20.0, shape_2d=(7, 7))
+                image = al.array.full(fill_value=20.0, shape_2d=(7, 7))
                 return image
 
         phase_imaging_7x7 = MyPhase(

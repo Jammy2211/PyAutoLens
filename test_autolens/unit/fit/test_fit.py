@@ -1,4 +1,3 @@
-import autoarray as aa
 from autoarray.operators.inversion import inversions
 from autoarray.operators import fourier_transform
 import autolens as al
@@ -66,20 +65,20 @@ class TestImagingFit:
 
             # Thus the chi squared is 4.0**2.0 + 3.0**2.0 = 25.0
 
-            psf = aa.kernel.manual_2d(
+            psf = al.kernel.manual_2d(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scales=1.0,
             )
 
-            imaging = aa.imaging(
-                image=5.0 * aa.array.ones(shape_2d=(3, 4)),
+            imaging = al.imaging(
+                image=5.0 * al.array.ones(shape_2d=(3, 4)),
                 pixel_scales=1.0,
                 psf=psf,
-                noise_map=aa.array.ones(shape_2d=(3, 4)),
+                noise_map=al.array.ones(shape_2d=(3, 4)),
             )
             imaging.image[6] = 4.0
 
-            mask = aa.mask.manual(
+            mask = al.mask.manual(
                 mask_2d=np.array(
                     [
                         [True, True, True, True],
@@ -169,20 +168,20 @@ class TestImagingFit:
 
             # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
-            psf = aa.kernel.manual_2d(
+            psf = al.kernel.manual_2d(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
                 pixel_scales=1.0,
             )
 
-            imaging = aa.imaging(
-                5.0 * aa.array.ones(shape_2d=(3, 4)),
+            imaging = al.imaging(
+                5.0 * al.array.ones(shape_2d=(3, 4)),
                 pixel_scales=1.0,
                 psf=psf,
-                noise_map=aa.array.ones(shape_2d=(3, 4)),
+                noise_map=al.array.ones(shape_2d=(3, 4)),
             )
             imaging.image[6] = 4.0
 
-            mask = aa.mask.manual(
+            mask = al.mask.manual(
                 mask_2d=np.array(
                     [
                         [True, True, True, True],
@@ -276,20 +275,20 @@ class TestImagingFit:
 
             # This reduces the chi squared to 2.0 instead of 4.0
 
-            psf = aa.kernel.manual_2d(
+            psf = al.kernel.manual_2d(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
                 pixel_scales=1.0,
             )
 
-            imaging = aa.imaging(
-                5.0 * aa.array.ones(shape_2d=(3, 4)),
+            imaging = al.imaging(
+                5.0 * al.array.ones(shape_2d=(3, 4)),
                 pixel_scales=1.0,
                 psf=psf,
-                noise_map=aa.array.ones(shape_2d=(3, 4)),
+                noise_map=al.array.ones(shape_2d=(3, 4)),
             )
             imaging.image[6] = 4.0
 
-            mask = aa.mask.manual(
+            mask = al.mask.manual(
                 mask_2d=np.array(
                     [
                         [True, True, True, True],
@@ -311,8 +310,8 @@ class TestImagingFit:
                 hyper_galaxy=al.HyperGalaxy(
                     contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
                 ),
-                hyper_model_image=aa.array.ones(shape_2d=(1, 2)),
-                hyper_galaxy_image=aa.array.ones(shape_2d=(1, 2)),
+                hyper_model_image=al.array.ones(shape_2d=(1, 2)),
+                hyper_galaxy_image=al.array.ones(shape_2d=(1, 2)),
                 hyper_minimum_value=0.0,
             )
 
@@ -380,20 +379,20 @@ class TestImagingFit:
 
         def test__hyper_image_changes_background_sky__reflected_in_likelihood(self):
 
-            psf = aa.kernel.manual_2d(
+            psf = al.kernel.manual_2d(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scales=1.0,
             )
 
-            imaging = aa.imaging(
-                aa.array.full(fill_value=4.0, shape_2d=(3, 4)),
+            imaging = al.imaging(
+                al.array.full(fill_value=4.0, shape_2d=(3, 4)),
                 pixel_scales=1.0,
                 psf=psf,
-                noise_map=aa.array.ones(shape_2d=(3, 4)),
+                noise_map=al.array.ones(shape_2d=(3, 4)),
             )
             imaging.image[5] = 5.0
 
-            mask = aa.mask.manual(
+            mask = al.mask.manual(
                 mask_2d=np.array(
                     [
                         [True, True, True, True],
@@ -486,20 +485,20 @@ class TestImagingFit:
             self
         ):
 
-            psf = aa.kernel.manual_2d(
+            psf = al.kernel.manual_2d(
                 array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
                 pixel_scales=1.0,
             )
 
-            imaging = aa.imaging(
-                5.0 * aa.array.ones(shape_2d=(3, 4)),
+            imaging = al.imaging(
+                5.0 * al.array.ones(shape_2d=(3, 4)),
                 pixel_scales=1.0,
                 psf=psf,
-                noise_map=aa.array.ones(shape_2d=(3, 4)),
+                noise_map=al.array.ones(shape_2d=(3, 4)),
             )
             imaging.image[6] = 4.0
 
-            mask = aa.mask.manual(
+            mask = al.mask.manual(
                 mask_2d=np.array(
                     [
                         [True, True, True, True],
@@ -617,13 +616,13 @@ class TestImagingFit:
 
             assert model_image.in_2d == pytest.approx(fit.model_image.in_2d)
 
-            residual_map = aa.util.fit.residual_map_from_data_and_model_data(
+            residual_map = al.util.fit.residual_map_from_data_and_model_data(
                 data=masked_imaging_7x7.image, model_data=model_image
             )
 
             assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d)
 
-            normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
+            normalized_residual_map = al.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=masked_imaging_7x7.noise_map
             )
 
@@ -631,21 +630,21 @@ class TestImagingFit:
                 fit.normalized_residual_map.in_2d
             )
 
-            chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+            chi_squared_map = al.util.fit.chi_squared_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=masked_imaging_7x7.noise_map
             )
 
             assert chi_squared_map.in_2d == pytest.approx(fit.chi_squared_map.in_2d)
 
-            chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
+            chi_squared = al.util.fit.chi_squared_from_chi_squared_map(
                 chi_squared_map=chi_squared_map
             )
 
-            noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
+            noise_normalization = al.util.fit.noise_normalization_from_noise_map(
                 noise_map=masked_imaging_7x7.noise_map
             )
 
-            likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
@@ -764,13 +763,13 @@ class TestImagingFit:
 
             assert model_image.in_2d == pytest.approx(fit.model_image.in_2d)
 
-            residual_map = aa.util.fit.residual_map_from_data_and_model_data(
+            residual_map = al.util.fit.residual_map_from_data_and_model_data(
                 data=image, model_data=model_image
             )
 
             assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d)
 
-            normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
+            normalized_residual_map = al.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=hyper_noise_map
             )
 
@@ -778,21 +777,21 @@ class TestImagingFit:
                 fit.normalized_residual_map.in_2d
             )
 
-            chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+            chi_squared_map = al.util.fit.chi_squared_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=hyper_noise_map
             )
 
             assert chi_squared_map.in_2d == pytest.approx(fit.chi_squared_map.in_2d)
 
-            chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
+            chi_squared = al.util.fit.chi_squared_from_chi_squared_map(
                 chi_squared_map=chi_squared_map
             )
 
-            noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
+            noise_normalization = al.util.fit.noise_normalization_from_noise_map(
                 noise_map=hyper_noise_map
             )
 
-            likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
@@ -831,6 +830,40 @@ class TestImagingFit:
                 fit.model_images_of_planes[1].in_2d, 1.0e-4
             )
 
+            unmasked_blurred_profile_image = tracer.unmasked_blurred_profile_image_from_grid_and_psf(
+                grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
+            )
+
+            assert (
+                unmasked_blurred_profile_image == fit.unmasked_blurred_profile_image
+            ).all()
+    
+            unmasked_blurred_profile_image_of_planes = tracer.unmasked_blurred_profile_image_of_planes_from_grid_and_psf(
+                grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
+            )
+    
+            assert (
+                unmasked_blurred_profile_image_of_planes[0]
+                == fit.unmasked_blurred_profile_image_of_planes[0]
+            ).all()
+            assert (
+                unmasked_blurred_profile_image_of_planes[1]
+                == fit.unmasked_blurred_profile_image_of_planes[1]
+            ).all()
+    
+            unmasked_blurred_profile_image_of_galaxies = tracer.unmasked_blurred_profile_image_of_planes_and_galaxies_from_grid_and_psf(
+                grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
+            )
+    
+            assert (
+                unmasked_blurred_profile_image_of_galaxies[0][0]
+                == fit.unmasked_blurred_profile_image_of_planes_and_galaxies[0][0]
+            ).all()
+            assert (
+                unmasked_blurred_profile_image_of_galaxies[1][0]
+                == fit.unmasked_blurred_profile_image_of_planes_and_galaxies[1][0]
+            ).all()
+
     class TestCompareToManualInversionOnly:
         def test___all_lens_fit_quantities__no_hyper_methods(self, masked_imaging_7x7):
 
@@ -858,14 +891,14 @@ class TestImagingFit:
                 fit.model_image.in_2d, 1.0e-4
             )
 
-            residual_map = aa.util.fit.residual_map_from_data_and_model_data(
+            residual_map = al.util.fit.residual_map_from_data_and_model_data(
                 data=masked_imaging_7x7.image,
                 model_data=inversion.mapped_reconstructed_image,
             )
 
             assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d, 1.0e-4)
 
-            normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
+            normalized_residual_map = al.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=masked_imaging_7x7.noise_map
             )
 
@@ -873,7 +906,7 @@ class TestImagingFit:
                 fit.normalized_residual_map.in_2d, 1.0e-4
             )
 
-            chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+            chi_squared_map = al.util.fit.chi_squared_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=masked_imaging_7x7.noise_map
             )
 
@@ -881,21 +914,21 @@ class TestImagingFit:
                 fit.chi_squared_map.in_2d, 1.0e-4
             )
 
-            chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
+            chi_squared = al.util.fit.chi_squared_from_chi_squared_map(
                 chi_squared_map=chi_squared_map
             )
 
-            noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
+            noise_normalization = al.util.fit.noise_normalization_from_noise_map(
                 noise_map=masked_imaging_7x7.noise_map
             )
 
-            likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = aa.util.fit.likelihood_with_regularization_from_inversion_terms(
+            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -905,7 +938,7 @@ class TestImagingFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = aa.util.fit.evidence_from_inversion_terms(
+            evidence = al.util.fit.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1013,13 +1046,13 @@ class TestImagingFit:
                 fit.model_image.in_2d, 1.0e-4
             )
 
-            residual_map = aa.util.fit.residual_map_from_data_and_model_data(
+            residual_map = al.util.fit.residual_map_from_data_and_model_data(
                 data=image, model_data=inversion.mapped_reconstructed_image
             )
 
             assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d)
 
-            normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
+            normalized_residual_map = al.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=hyper_noise_map
             )
 
@@ -1027,27 +1060,27 @@ class TestImagingFit:
                 fit.normalized_residual_map.in_2d
             )
 
-            chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+            chi_squared_map = al.util.fit.chi_squared_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=hyper_noise_map
             )
 
             assert chi_squared_map.in_2d == pytest.approx(fit.chi_squared_map.in_2d)
 
-            chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
+            chi_squared = al.util.fit.chi_squared_from_chi_squared_map(
                 chi_squared_map=chi_squared_map
             )
 
-            noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
+            noise_normalization = al.util.fit.noise_normalization_from_noise_map(
                 noise_map=hyper_noise_map
             )
 
-            likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = aa.util.fit.likelihood_with_regularization_from_inversion_terms(
+            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1057,7 +1090,7 @@ class TestImagingFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = aa.util.fit.evidence_from_inversion_terms(
+            evidence = al.util.fit.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1144,13 +1177,13 @@ class TestImagingFit:
 
             assert model_image.in_2d == pytest.approx(fit.model_image.in_2d)
 
-            residual_map = aa.util.fit.residual_map_from_data_and_model_data(
+            residual_map = al.util.fit.residual_map_from_data_and_model_data(
                 data=masked_imaging_7x7.image, model_data=model_image
             )
 
             assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d)
 
-            normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
+            normalized_residual_map = al.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=masked_imaging_7x7.noise_map
             )
 
@@ -1158,27 +1191,27 @@ class TestImagingFit:
                 fit.normalized_residual_map.in_2d
             )
 
-            chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+            chi_squared_map = al.util.fit.chi_squared_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=masked_imaging_7x7.noise_map
             )
 
             assert chi_squared_map.in_2d == pytest.approx(fit.chi_squared_map.in_2d)
 
-            chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
+            chi_squared = al.util.fit.chi_squared_from_chi_squared_map(
                 chi_squared_map=chi_squared_map
             )
 
-            noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
+            noise_normalization = al.util.fit.noise_normalization_from_noise_map(
                 noise_map=masked_imaging_7x7.noise_map
             )
 
-            likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = aa.util.fit.likelihood_with_regularization_from_inversion_terms(
+            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1188,7 +1221,7 @@ class TestImagingFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = aa.util.fit.evidence_from_inversion_terms(
+            evidence = al.util.fit.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1300,8 +1333,8 @@ class TestImagingFit:
                 hyper_galaxy=al.HyperGalaxy(
                     contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
                 ),
-                hyper_model_image=aa.array.ones(shape_2d=(3, 3)),
-                hyper_galaxy_image=aa.array.ones(shape_2d=(3, 3)),
+                hyper_model_image=al.array.ones(shape_2d=(3, 3)),
+                hyper_galaxy_image=al.array.ones(shape_2d=(3, 3)),
                 hyper_minimum_value=0.0,
             )
 
@@ -1357,13 +1390,13 @@ class TestImagingFit:
 
             assert model_image.in_2d == pytest.approx(fit.model_image.in_2d, 1.0e-4)
 
-            residual_map = aa.util.fit.residual_map_from_data_and_model_data(
+            residual_map = al.util.fit.residual_map_from_data_and_model_data(
                 data=image, model_data=model_image
             )
 
             assert residual_map.in_2d == pytest.approx(fit.residual_map.in_2d, 1.0e-4)
 
-            normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
+            normalized_residual_map = al.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=hyper_noise_map
             )
 
@@ -1371,7 +1404,7 @@ class TestImagingFit:
                 fit.normalized_residual_map.in_2d, 1.0e-4
             )
 
-            chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+            chi_squared_map = al.util.fit.chi_squared_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=hyper_noise_map
             )
 
@@ -1379,21 +1412,21 @@ class TestImagingFit:
                 fit.chi_squared_map.in_2d, 1.0e-4
             )
 
-            chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
+            chi_squared = al.util.fit.chi_squared_from_chi_squared_map(
                 chi_squared_map=chi_squared_map
             )
 
-            noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
+            noise_normalization = al.util.fit.noise_normalization_from_noise_map(
                 noise_map=hyper_noise_map
             )
 
-            likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            likelihood_with_regularization = aa.util.fit.likelihood_with_regularization_from_inversion_terms(
+            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1403,7 +1436,7 @@ class TestImagingFit:
                 fit.likelihood_with_regularization, 1e-4
             )
 
-            evidence = aa.util.fit.evidence_from_inversion_terms(
+            evidence = al.util.fit.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1522,16 +1555,16 @@ class TestInterferometerFit:
 
             uv_wavelengths = np.array([[0.0, 0.0]])
 
-            interferometer = aa.interferometer.manual(
-                visibilities=aa.visibilities.full(fill_value=5.0, shape_1d=(1,)),
-                noise_map=aa.visibilities.ones(shape_1d=(1,)),
+            interferometer = al.interferometer.manual(
+                visibilities=al.visibilities.full(fill_value=5.0, shape_1d=(1,)),
+                noise_map=al.visibilities.ones(shape_1d=(1,)),
                 uv_wavelengths=uv_wavelengths,
                 primary_beam=None,
             )
 
             interferometer.visibilities[0, 1] = 4.0
 
-            real_space_mask = aa.mask.manual(
+            real_space_mask = al.mask.manual(
                 mask_2d=np.array(
                     [
                         [True, True, True, True],
@@ -1578,9 +1611,9 @@ class TestInterferometerFit:
 
             uv_wavelengths = np.array([[1.0, 0.0], [1.0, 1.0], [2.0, 2.0]])
 
-            interferometer = aa.interferometer.manual(
-                visibilities=aa.visibilities.full(fill_value=5.0, shape_1d=(3,)),
-                noise_map=aa.visibilities.full(fill_value=2.0, shape_1d=(3,)),
+            interferometer = al.interferometer.manual(
+                visibilities=al.visibilities.full(fill_value=5.0, shape_1d=(3,)),
+                noise_map=al.visibilities.full(fill_value=2.0, shape_1d=(3,)),
                 uv_wavelengths=uv_wavelengths,
                 primary_beam=None,
             )
@@ -1590,7 +1623,7 @@ class TestInterferometerFit:
                 grid_radians=np.array([[0.0, -1.0], [0.0, 1.0], [1.0, 1.0]]),
             )
 
-            real_space_mask = aa.mask.manual(
+            real_space_mask = al.mask.manual(
                 mask_2d=np.array(
                     [
                         [True, True, True, True, True],
@@ -1703,14 +1736,14 @@ class TestInterferometerFit:
 
             assert model_visibilities == pytest.approx(fit.model_visibilities, 1e-4)
 
-            residual_map = aa.util.fit.residual_map_from_data_and_model_data(
+            residual_map = al.util.fit.residual_map_from_data_and_model_data(
                 data=masked_interferometer_6x6.visibilities,
                 model_data=model_visibilities,
             )
 
             assert residual_map == pytest.approx(fit.residual_map, 1e-4)
 
-            normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
+            normalized_residual_map = al.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=masked_interferometer_6x6.noise_map
             )
 
@@ -1718,21 +1751,21 @@ class TestInterferometerFit:
                 fit.normalized_residual_map, 1e-4
             )
 
-            chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+            chi_squared_map = al.util.fit.chi_squared_map_from_residual_map_and_noise_map(
                 residual_map=residual_map, noise_map=masked_interferometer_6x6.noise_map
             )
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
+            chi_squared = al.util.fit.chi_squared_from_chi_squared_map(
                 chi_squared_map=fit.chi_squared_map
             )
 
-            noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
+            noise_normalization = al.util.fit.noise_normalization_from_noise_map(
                 noise_map=masked_interferometer_6x6.noise_map
             )
 
-            likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
@@ -1798,31 +1831,31 @@ class MockTracerPositions:
 class TestPositionsFit:
     def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
         tracer = MockTracerPositions(
-            positions=[aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0]])]
+            positions=[al.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0]])]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == 1.0
 
         tracer = MockTracerPositions(
-            positions=[aa.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0]])]
+            positions=[al.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0]])]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(2)
 
         tracer = MockTracerPositions(
-            positions=[aa.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 3.0]])]
+            positions=[al.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 3.0]])]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(1.0) + np.square(3.0))
 
         tracer = MockTracerPositions(
-            positions=[aa.irregular_grid.manual_1d([[-2.0, -4.0], [1.0, 3.0]])]
+            positions=[al.irregular_grid.manual_1d([[-2.0, -4.0], [1.0, 3.0]])]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
         tracer = MockTracerPositions(
-            positions=[aa.irregular_grid.manual_1d([[8.0, 4.0], [-9.0, -4.0]])]
+            positions=[al.irregular_grid.manual_1d([[8.0, 4.0], [-9.0, -4.0]])]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
@@ -1832,7 +1865,7 @@ class TestPositionsFit:
     ):
         tracer = MockTracerPositions(
             positions=[
-                aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]])
+                al.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]])
             ]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
@@ -1840,7 +1873,7 @@ class TestPositionsFit:
 
         tracer = MockTracerPositions(
             positions=[
-                aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]])
+                al.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]])
             ]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
@@ -1848,7 +1881,7 @@ class TestPositionsFit:
 
         tracer = MockTracerPositions(
             positions=[
-                aa.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])
+                al.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])
             ]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
@@ -1856,7 +1889,7 @@ class TestPositionsFit:
 
         tracer = MockTracerPositions(
             positions=[
-                aa.irregular_grid.manual_1d(
+                al.irregular_grid.manual_1d(
                     [
                         [-2.0, -4.0],
                         [1.0, 3.0],
@@ -1873,7 +1906,7 @@ class TestPositionsFit:
 
         tracer = MockTracerPositions(
             positions=[
-                aa.irregular_grid.manual_1d([[8.0, 4.0], [8.0, 4.0], [-9.0, -4.0]])
+                al.irregular_grid.manual_1d([[8.0, 4.0], [8.0, 4.0], [-9.0, -4.0]])
             ]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
@@ -1882,9 +1915,9 @@ class TestPositionsFit:
     def test_multiple_sets_of_positions__multiple_sets_of_max_distances(self):
         tracer = MockTracerPositions(
             positions=[
-                aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
-                aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
-                aa.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]]),
+                al.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
+                al.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
+                al.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]]),
             ]
         )
 
@@ -1897,9 +1930,9 @@ class TestPositionsFit:
     def test__likelihood__is_sum_of_separations_divided_by_noise(self):
         tracer = MockTracerPositions(
             positions=[
-                aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
-                aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
-                aa.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]]),
+                al.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
+                al.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
+                al.irregular_grid.manual_1d([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]]),
             ]
         )
 
@@ -1929,7 +1962,7 @@ class TestPositionsFit:
 
     def test__threshold__if_not_met_returns_ray_tracing_exception(self):
         tracer = MockTracerPositions(
-            positions=[aa.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0]])]
+            positions=[al.irregular_grid.manual_1d([[0.0, 0.0], [0.0, 1.0]])]
         )
         fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
 

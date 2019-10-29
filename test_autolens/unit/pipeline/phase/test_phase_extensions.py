@@ -3,7 +3,6 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
-import autoarray as aa
 import autofit as af
 from test_autolens.mock import mock_pipeline
 
@@ -198,8 +197,8 @@ class TestImagePassing(object):
         mask = mask_function_7x7(image=imaging_7x7.image)
 
         results_collection_7x7[0].galaxy_images = [
-            aa.masked_array.full(fill_value=2.0, mask=mask),
-            aa.masked_array.full(fill_value=2.0, mask=mask),
+            al.masked_array.full(fill_value=2.0, mask=mask),
+            al.masked_array.full(fill_value=2.0, mask=mask),
         ]
         results_collection_7x7[0].galaxy_images[0][3] = -1.0
         results_collection_7x7[0].galaxy_images[1][5] = -1.0

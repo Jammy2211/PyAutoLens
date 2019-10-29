@@ -116,6 +116,24 @@ class ImagingFit(fit.ImagingFit):
         return model_images_of_planes
 
     @property
+    def unmasked_blurred_profile_image(self):
+        return self.tracer.unmasked_blurred_profile_image_from_grid_and_psf(
+            grid=self.grid, psf=self.masked_imaging.psf
+        )
+
+    @property
+    def unmasked_blurred_profile_image_of_planes(self):
+        return self.tracer.unmasked_blurred_profile_image_of_planes_from_grid_and_psf(
+            grid=self.grid, psf=self.masked_imaging.psf
+        )
+
+    @property
+    def unmasked_blurred_profile_image_of_planes_and_galaxies(self):
+        return self.tracer.unmasked_blurred_profile_image_of_planes_and_galaxies_from_grid_and_psf(
+            grid=self.grid, psf=self.masked_imaging.psf
+        )
+
+    @property
     def total_inversions(self):
         return len(list(filter(None, self.tracer.regularizations_of_planes)))
 

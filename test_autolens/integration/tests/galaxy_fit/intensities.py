@@ -19,7 +19,7 @@ def galaxy_fit_phase():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    grid = aa.grid.uniform(shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=4)
+    grid = al.grid.uniform(shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=4)
 
     galaxy = al.Galaxy(
         redshift=0.5,
@@ -30,7 +30,7 @@ def galaxy_fit_phase():
 
     image = galaxy.profile_image_from_grid(galaxies=[galaxy], grid=grid)
 
-    noise_map = aa.Scaled(sub_array_1d=np.ones(image.shape), pixel_scales=pixel_scales)
+    noise_map = al.array.manual_2d(array=np.ones(image.shape), pixel_scales=pixel_scales)
 
     data = al.GalaxyData(image=image, noise_map=noise_map, pixel_scales=pixel_scales)
 

@@ -28,7 +28,7 @@ def simulate_integration_image(test_name, pixel_scales, galaxies):
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
-    psf = aa.kernel.from_gaussian(
+    psf = al.kernel.from_gaussian(
         shape_2d=psf_shape, pixel_scales=pixel_scales, sigma=pixel_scales
     )
 
@@ -40,7 +40,7 @@ def simulate_integration_image(test_name, pixel_scales, galaxies):
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    imaging_simulated = al.SimulatedImagingData.simulate_from_tracer_and_grid(
+    imaging_simulated = al.SimulatedImagingData.from_tracer_and_grid(
         tracer=tracer,
         pixel_scales=pixel_scales,
         exposure_time=100.0,
@@ -118,7 +118,7 @@ class TestPhaseModelMapper(object):
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        imaging = aa.imaging.from_fits(
+        imaging = al.imaging.from_fits(
             image_path=path + "/test_files/simulate/" + test_name + "/image.fits",
             psf_path=path + "/test_files/simulate/" + test_name + "/psf.fits",
             noise_map_path=path
@@ -192,7 +192,7 @@ class TestPhaseModelMapper(object):
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        imaging = aa.imaging.from_fits(
+        imaging = al.imaging.from_fits(
             image_path=path + "/test_files/simulate/" + test_name + "/image.fits",
             psf_path=path + "/test_files/simulate/" + test_name + "/psf.fits",
             noise_map_path=path
