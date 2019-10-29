@@ -1,4 +1,3 @@
-import autoarray as aa
 import autolens as al
 import numpy as np
 import pytest
@@ -942,12 +941,12 @@ class TestAbstractTracerLensing(object):
             )
 
             defl11 = g0.deflections_from_grid(
-                grid=aa.grid.manual_2d(
+                grid=al.grid.manual_2d(
                     [[[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]]]
                 )
             )
             defl12 = g0.deflections_from_grid(
-                grid=aa.grid.manual_2d([[[(1.0 - beta_01 * 1.0), 0.0]]])
+                grid=al.grid.manual_2d([[[(1.0 - beta_01 * 1.0), 0.0]]])
             )
 
             assert traced_grids_of_planes[2][0] == pytest.approx(
@@ -2272,12 +2271,12 @@ class TestAbstractTracerData(object):
     class TestUnmaskedBlurredProfileImages:
         def test__unmasked_images_of_tracer_planes_and_galaxies(self):
 
-            psf = aa.kernel.manual_2d(
+            psf = al.kernel.manual_2d(
                 array=(np.array([[0.0, 3.0, 0.0], [0.0, 1.0, 2.0], [0.0, 0.0, 0.0]])),
                 pixel_scales=1.0,
             )
 
-            mask = aa.mask.manual(
+            mask = al.mask.manual(
                 mask_2d=np.array(
                     [[True, True, True], [True, False, True], [True, True, True]]
                 ),
@@ -2285,7 +2284,7 @@ class TestAbstractTracerData(object):
                 sub_size=1,
             )
 
-            grid = aa.masked_grid.from_mask(mask=mask)
+            grid = al.masked_grid.from_mask(mask=mask)
 
             g0 = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=0.1)
@@ -2584,7 +2583,7 @@ class TestAbstractTracerData(object):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=aa.grid.manual_2d([[[1.0, 0.0]]])
+                    value=1, grid=al.grid.manual_2d([[[1.0, 0.0]]])
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -2613,7 +2612,7 @@ class TestAbstractTracerData(object):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=aa.grid.manual_2d([[[1.0, 0.0]]])
+                    value=1, grid=al.grid.manual_2d([[[1.0, 0.0]]])
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -2634,7 +2633,7 @@ class TestAbstractTracerData(object):
             galaxy_pix0 = al.Galaxy(
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=aa.grid.manual_2d([[[1.0, 1.0]]])
+                    value=1, grid=al.grid.manual_2d([[[1.0, 1.0]]])
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -2642,7 +2641,7 @@ class TestAbstractTracerData(object):
             galaxy_pix1 = al.Galaxy(
                 redshift=2.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=aa.grid.manual_2d([[[2.0, 2.0]]])
+                    value=1, grid=al.grid.manual_2d([[[2.0, 2.0]]])
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -2671,10 +2670,10 @@ class TestAbstractTracerData(object):
             )
 
             traced_grid_pix0 = tracer.traced_grids_of_planes_from_grid(
-                grid=aa.grid.manual_2d([[[1.0, 1.0]]])
+                grid=al.grid.manual_2d([[[1.0, 1.0]]])
             )[2]
             traced_grid_pix1 = tracer.traced_grids_of_planes_from_grid(
-                grid=aa.grid.manual_2d([[[2.0, 2.0]]])
+                grid=al.grid.manual_2d([[[2.0, 2.0]]])
             )[4]
 
             assert traced_pixelization_grids[0] == None
@@ -2689,7 +2688,7 @@ class TestAbstractTracerData(object):
 
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
-                pixelization=aa.pix.VoronoiMagnification(shape=(3, 3)),
+                pixelization=al.pix.VoronoiMagnification(shape=(3, 3)),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
             galaxy_no_pix = al.Galaxy(redshift=0.5)
@@ -2794,10 +2793,10 @@ class TestAbstractTracerData(object):
     class TestHyperNoiseMap:
         def test__hyper_noise_maps_of_planes(self, sub_grid_7x7):
 
-            noise_map_1d = aa.array.manual_2d([[5.0, 3.0, 1.0]])
+            noise_map_1d = al.array.manual_2d([[5.0, 3.0, 1.0]])
 
-            hyper_model_image = aa.array.manual_2d([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = aa.array.manual_2d([[1.0, 5.0, 8.0]])
+            hyper_model_image = al.array.manual_2d([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = al.array.manual_2d([[1.0, 5.0, 8.0]])
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
@@ -3361,12 +3360,12 @@ class TestTacerFixedSlices(object):
             #  Galaxies in this plane, so multiply by 3
 
             defl11 = 3.0 * lens_g0.deflections_from_grid(
-                grid=aa.grid.manual_2d(
+                grid=al.grid.manual_2d(
                     [[[(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]]]
                 )
             )
             defl12 = 3.0 * lens_g0.deflections_from_grid(
-                grid=aa.grid.manual_2d([[[(1.0 - beta_01 * 2.0 * 1.0), 0.0]]])
+                grid=al.grid.manual_2d([[[(1.0 - beta_01 * 2.0 * 1.0), 0.0]]])
             )
 
             assert traced_grids[2][0] == pytest.approx(
@@ -3399,7 +3398,7 @@ class TestTracerPositions(object):
         from autoarray.structures.grids import IrregularGrid
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[aa.irregular_grid.manual_1d(grid=[[1.0, 1.0], [-1.0, -1.0]])]
+            positions=[al.irregular_grid.manual_1d(grid=[[1.0, 1.0], [-1.0, -1.0]])]
         )
 
         assert traced_positions_of_planes[0][0] == pytest.approx(
@@ -3416,7 +3415,7 @@ class TestTracerPositions(object):
         tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, al.Galaxy(redshift=1.0)])
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[aa.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
+            positions=[al.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
         )
 
         assert traced_positions_of_planes[0][0] == pytest.approx(
@@ -3433,7 +3432,7 @@ class TestTracerPositions(object):
         )
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[aa.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
+            positions=[al.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
         )
 
         assert traced_positions_of_planes[0][0] == pytest.approx(
@@ -3448,8 +3447,8 @@ class TestTracerPositions(object):
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
             positions=[
-                aa.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]]),
-                aa.irregular_grid.manual_1d([[0.5, 0.5]]),
+                al.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]]),
+                al.irregular_grid.manual_1d([[0.5, 0.5]]),
             ]
         )
 
@@ -3498,7 +3497,7 @@ class TestTracerPositions(object):
         )
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[aa.irregular_grid.manual_1d([[1.0, 1.0]])]
+            positions=[al.irregular_grid.manual_1d([[1.0, 1.0]])]
         )
 
         # From unit test_autoarray below:
@@ -3520,7 +3519,7 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=aa.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
+            grid=al.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
         )
 
         assert traced_positions_of_planes[2][0] == pytest.approx(
@@ -3567,8 +3566,8 @@ class TestTracerPositions(object):
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
             positions=[
-                aa.irregular_grid.manual_1d([[1.0, 1.0]]),
-                aa.irregular_grid.manual_1d([[1.0, 1.0]]),
+                al.irregular_grid.manual_1d([[1.0, 1.0]]),
+                al.irregular_grid.manual_1d([[1.0, 1.0]]),
             ]
         )
 
@@ -3591,7 +3590,7 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=aa.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
+            grid=al.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
         )
 
         assert traced_positions_of_planes[2][0] == pytest.approx(
@@ -3619,7 +3618,7 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=aa.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
+            grid=al.grid.manual_2d([[[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]])
         )
 
         assert traced_positions_of_planes[2][1] == pytest.approx(

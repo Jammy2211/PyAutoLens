@@ -12,7 +12,7 @@ def default_mask_function(image):
         shape_2d=image.shape_2d,
         pixel_scales=image.pixel_scales,
         sub_size=1,
-        radius_arcsec= 3.0,
+        radius_arcsec=3.0,
     )
 
 

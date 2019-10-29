@@ -1,4 +1,3 @@
-import autoarray as aa
 import autofit as af
 import autolens as al
 from test_autolens.simulate import simulate_util
@@ -22,14 +21,14 @@ def simulate_image_from_galaxies_and_output_to_fits(
     shape_2d = simulate_util.shape_from_data_resolution(data_resolution=data_resolution)
 
     # Simulate a simple Gaussian PSF for the image.
-    psf = aa.kernel.from_gaussian(
+    psf = al.kernel.from_gaussian(
         shape_2d=psf_shape_2d, sigma=pixel_scales[0], pixel_scales=pixel_scales
     )
 
     # Setup the image-plane al.ogrid of the Imaging array which will be used for generating the image of the
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
     # lens and source galaxy light.
-    image_plane_grid = aa.grid.uniform(
+    image_plane_grid = al.grid.uniform(
         shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size
     )
 
@@ -47,7 +46,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         background_sky_level=background_sky_level,
     )
 
-    imaging = imaging_simulator.simulate_from_tracer_and_grid(
+    imaging = imaging_simulator.from_tracer_and_grid(
         tracer=tracer, add_noise=True, grid=image_plane_grid
     )
 
@@ -65,14 +64,14 @@ def simulate_image_from_galaxies_and_output_to_fits(
         overwrite=True,
     )
 
-    aa.plot.imaging.subplot(
+    al.plot.imaging.subplot(
         imaging=imaging,
         output_filename="imaging",
         output_path=data_path,
         output_format="png",
     )
 
-    aa.plot.imaging.individual(
+    al.plot.imaging.individual(
         imaging=imaging,
         should_plot_image=True,
         should_plot_noise_map=True,

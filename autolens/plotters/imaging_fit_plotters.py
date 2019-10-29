@@ -608,10 +608,10 @@ def individuals(
     should_plot_residual_map=False,
     should_plot_normalized_residual_map=False,
     should_plot_chi_squared_map=False,
-    should_plot_pixelization_residual_map=False,
-    should_plot_pixelization_normalized_residual_map=False,
-    should_plot_pixelization_chi_squared_map=False,
-    should_plot_pixelization_regularization_weight_map=False,
+    should_plot_inversion_residual_map=False,
+    should_plot_inversion_normalized_residual_map=False,
+    should_plot_inversion_chi_squared_map=False,
+    should_plot_inversion_regularization_weight_map=False,
     should_plot_subtracted_images_of_planes=False,
     should_plot_model_images_of_planes=False,
     should_plot_plane_images_of_planes=False,
@@ -721,7 +721,7 @@ def individuals(
             output_format=output_format,
         )
 
-    if should_plot_pixelization_residual_map:
+    if should_plot_inversion_residual_map:
 
         if fit.total_inversions == 1:
 
@@ -734,7 +734,7 @@ def individuals(
                 output_format=output_format,
             )
 
-    if should_plot_pixelization_normalized_residual_map:
+    if should_plot_inversion_normalized_residual_map:
 
         if fit.total_inversions == 1:
 
@@ -747,7 +747,7 @@ def individuals(
                 output_format=output_format,
             )
 
-    if should_plot_pixelization_chi_squared_map:
+    if should_plot_inversion_chi_squared_map:
 
         if fit.total_inversions == 1:
 
@@ -760,7 +760,7 @@ def individuals(
                 output_format=output_format,
             )
 
-    if should_plot_pixelization_regularization_weight_map:
+    if should_plot_inversion_regularization_weight_map:
 
         if fit.total_inversions == 1:
 

@@ -463,7 +463,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
         padded_image = self.profile_image_from_grid(grid=padded_grid)
 
-        return padded_grid.mapping.unmasked_blurred_array_2d_from_padded_array_psf_and_image_shape(
+        return padded_grid.mapping.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
             padded_array=padded_image, psf=psf, image_shape=grid.mask.shape
         )
 
@@ -479,7 +479,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
             padded_image_1d = plane.profile_image_from_grid(grid=traced_padded_grid)
 
-            unmasked_blurred_array_2d = padded_grid.mapping.unmasked_blurred_array_2d_from_padded_array_psf_and_image_shape(
+            unmasked_blurred_array_2d = padded_grid.mapping.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
                 padded_array=padded_image_1d, psf=psf, image_shape=grid.mask.shape
             )
 
@@ -505,7 +505,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
             unmasked_blurred_array_2d_of_galaxies = list(
                 map(
-                    lambda padded_image_1d_of_galaxy: padded_grid.mapping.unmasked_blurred_array_2d_from_padded_array_psf_and_image_shape(
+                    lambda padded_image_1d_of_galaxy: padded_grid.mapping.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
                         padded_array=padded_image_1d_of_galaxy,
                         psf=psf,
                         image_shape=grid.mask.shape,

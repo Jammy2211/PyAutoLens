@@ -1,4 +1,3 @@
-import autoarray as aa
 from autoarray.operators import convolution, fourier_transform
 import autolens as al
 import numpy as np
@@ -8,7 +7,7 @@ import pytest
 class TestMaskedImaging(object):
     def test__masked_data_via_autoarray(self, imaging_7x7, sub_mask_7x7):
 
-        masked_imaging_7x7 = aa.masked_imaging.manual(
+        masked_imaging_7x7 = al.masked_imaging.manual(
             imaging=imaging_7x7, mask=sub_mask_7x7
         )
 
@@ -48,7 +47,7 @@ class TestMaskedImaging(object):
         assert masked_imaging_7x7.inversion_uses_border == False
         assert masked_imaging_7x7.preload_sparse_grids_of_planes == 1
 
-        grid = aa.masked_grid.from_mask(mask=sub_mask_7x7)
+        grid = al.masked_grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (masked_imaging_7x7.grid == new_grid).all()
@@ -217,7 +216,7 @@ class TestMaskedInterferometer(object):
         assert masked_interferometer_7.inversion_uses_border == False
         assert masked_interferometer_7.preload_sparse_grids_of_planes == 1
 
-        grid = aa.masked_grid.from_mask(mask=sub_mask_7x7)
+        grid = al.masked_grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (masked_interferometer_7.grid == new_grid).all()
@@ -231,13 +230,13 @@ class TestMaskedInterferometer(object):
     def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
         self
     ):
-        interferometer = aa.interferometer.manual(
-            visibilities=aa.visibilities.ones(shape_1d=(19,)),
-            primary_beam=aa.kernel.ones(shape_2d=(7, 7), pixel_scales=1.0),
-            noise_map=aa.visibilities.full(fill_value=2.0, shape_1d=(19,)),
+        interferometer = al.interferometer.manual(
+            visibilities=al.visibilities.ones(shape_1d=(19,)),
+            primary_beam=al.kernel.ones(shape_2d=(7, 7), pixel_scales=1.0),
+            noise_map=al.visibilities.full(fill_value=2.0, shape_1d=(19,)),
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
-        mask = aa.mask.unmasked(
+        mask = al.mask.unmasked(
             shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         mask[9, 9] = False
@@ -246,7 +245,7 @@ class TestMaskedInterferometer(object):
             interferometer=interferometer,
             real_space_mask=mask,
             trimmed_primary_beam_shape_2d=(5, 5),
-            positions=[aa.irregular_grid.manual_1d([[1.0, 1.0]])],
+            positions=[al.irregular_grid.manual_1d([[1.0, 1.0]])],
             positions_threshold=1.0,
         )
 
