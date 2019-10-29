@@ -2347,7 +2347,7 @@ class TestAbstractTracerData(object):
                 grid=grid, psf=psf
             )
 
-            assert unmasked_blurred_image == pytest.approx(
+            assert unmasked_blurred_image.in_2d == pytest.approx(
                 manual_blurred_image_0.in_2d_binned[1:4, 1:4]
                 + manual_blurred_image_1.in_2d_binned[1:4, 1:4]
                 + manual_blurred_image_2.in_2d_binned[1:4, 1:4]
@@ -2359,12 +2359,12 @@ class TestAbstractTracerData(object):
                 grid=grid, psf=psf
             )
 
-            assert unmasked_blurred_image_of_planes[0] == pytest.approx(
+            assert unmasked_blurred_image_of_planes[0].in_2d == pytest.approx(
                 manual_blurred_image_0.in_2d_binned[1:4, 1:4]
                 + manual_blurred_image_1.in_2d_binned[1:4, 1:4],
                 1.0e-4,
             )
-            assert unmasked_blurred_image_of_planes[1] == pytest.approx(
+            assert unmasked_blurred_image_of_planes[1].in_2d == pytest.approx(
                 manual_blurred_image_2.in_2d_binned[1:4, 1:4]
                 + manual_blurred_image_3.in_2d_binned[1:4, 1:4],
                 1.0e-4,
@@ -2375,19 +2375,19 @@ class TestAbstractTracerData(object):
             )
 
             assert (
-                unmasked_blurred_image_of_planes_and_galaxies[0][0]
+                unmasked_blurred_image_of_planes_and_galaxies[0][0].in_2d
                 == manual_blurred_image_0.in_2d_binned[1:4, 1:4]
             ).all()
             assert (
-                unmasked_blurred_image_of_planes_and_galaxies[0][1]
+                unmasked_blurred_image_of_planes_and_galaxies[0][1].in_2d
                 == manual_blurred_image_1.in_2d_binned[1:4, 1:4]
             ).all()
             assert (
-                unmasked_blurred_image_of_planes_and_galaxies[1][0]
+                unmasked_blurred_image_of_planes_and_galaxies[1][0].in_2d
                 == manual_blurred_image_2.in_2d_binned[1:4, 1:4]
             ).all()
             assert (
-                unmasked_blurred_image_of_planes_and_galaxies[1][1]
+                unmasked_blurred_image_of_planes_and_galaxies[1][1].in_2d
                 == manual_blurred_image_3.in_2d_binned[1:4, 1:4]
             ).all()
 
