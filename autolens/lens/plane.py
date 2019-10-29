@@ -2,7 +2,9 @@ import numpy as np
 from astropy import cosmology as cosmo
 from skimage import measure
 
-from autoarray.structures import arrays, visibilities as vis, grids
+from autoarray.structures import visibilities as vis
+from autoarray.structures.grids import grids
+from autoarray.structures.array import arrays
 import autofit as af
 from autoastro.util import cosmology_util
 from autolens import exc
@@ -198,7 +200,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         The image is calculated on the sub-grid and binned-up to the original grid by taking the mean
         value of every set of sub-pixels, provided the *returned_binned_sub_grid* bool is *True*.
 
-        If the plane has no galaxies (or no galaxies have mass profiles) an array of all zeros the shape of the plane's
+        If the plane has no galaxies (or no galaxies have mass profiles) an arrays of all zeros the shape of the plane's
         sub-grid is returned.
 
         Parameters
@@ -230,7 +232,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         The convergence is calculated on the sub-grid and binned-up to the original grid by taking the mean
         value of every set of sub-pixels, provided the *returned_binned_sub_grid* bool is *True*.
 
-        If the plane has no galaxies (or no galaxies have mass profiles) an array of all zeros the shape of the plane's
+        If the plane has no galaxies (or no galaxies have mass profiles) an arrays of all zeros the shape of the plane's
         sub-grid is returned.
 
         Parameters
@@ -258,7 +260,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         The potential is calculated on the sub-grid and binned-up to the original grid by taking the mean
         value of every set of sub-pixels, provided the *returned_binned_sub_grid* bool is *True*.
 
-        If the plane has no galaxies (or no galaxies have mass profiles) an array of all zeros the shape of the plane's
+        If the plane has no galaxies (or no galaxies have mass profiles) an arrays of all zeros the shape of the plane's
         sub-grid is returned.
 
         Parameters
@@ -755,7 +757,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
         Parameters
         -----------
         noise_map : imaging.NoiseMap or ndarray
-            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
+            An arrays describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         """
         hyper_noise_maps = []

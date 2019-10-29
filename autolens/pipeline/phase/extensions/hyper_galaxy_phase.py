@@ -233,7 +233,7 @@ class HyperGalaxyPhase(HyperPhase):
             if self.include_noise_background:
                 model.hyper_background_noise = hd.HyperBackgroundNoise
 
-            # If array is all zeros, galaxy did not have image in previous phase and
+            # If arrays is all zeros, galaxy did not have image in previous phase and
             # shoumasked_imaging be ignored
             if not np.all(
                 hyper_result.analysis.hyper_galaxy_image_path_dict[path] == 0

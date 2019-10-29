@@ -25,7 +25,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         shape_2d=psf_shape_2d, sigma=pixel_scales[0], pixel_scales=pixel_scales
     )
 
-    # Setup the image-plane al.ogrid of the Imaging array which will be used for generating the image of the
+    # Setup the image-plane al.ogrid of the Imaging arrays which will be used for generating the image of the
     # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
     # lens and source galaxy light.
     image_plane_grid = al.grid.uniform(

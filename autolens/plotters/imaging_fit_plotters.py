@@ -855,7 +855,7 @@ def subtracted_image_of_plane(
 ):
     """Plot the model image of a specific plane of a lens fit.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -952,7 +952,7 @@ def model_image_of_plane(
 ):
     """Plot the model image of a specific plane of a lens fit.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -1035,7 +1035,7 @@ def contribution_maps(
 ):
     """Plot the summed contribution maps of a hyper_galaxies-fit.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------

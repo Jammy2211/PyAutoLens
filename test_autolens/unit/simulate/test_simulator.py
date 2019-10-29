@@ -5,7 +5,7 @@ import numpy as np
 import os
 import shutil
 
-test_data_dir = "{}/../test_files/array/".format(
+test_data_dir = "{}/../test_files/arrays/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
@@ -310,7 +310,7 @@ class TestImaging:
             sub_size=1,
         )
 
-        output_data_dir = "{}/../test_files/array/output_test/".format(
+        output_data_dir = "{}/../test_files/arrays/output_test/".format(
             os.path.dirname(os.path.realpath(__file__))
         )
         if os.path.exists(output_data_dir):

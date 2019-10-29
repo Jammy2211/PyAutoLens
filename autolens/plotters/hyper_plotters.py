@@ -376,7 +376,7 @@ def hyper_model_image(
 ):
     """Plot the image of a hyper_galaxies model image.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -456,7 +456,7 @@ def hyper_galaxy_image(
 ):
     """Plot the image of a hyper_galaxies galaxy image.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -536,7 +536,7 @@ def contribution_map(
 ):
     """Plot the image of a hyper_galaxies galaxy image.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -616,7 +616,7 @@ def hyper_noise_map(
 ):
     """Plot the image of a hyper_galaxies galaxy image.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -696,7 +696,7 @@ def chi_squared_map(
 ):
     """Plot the image of a hyper_galaxies galaxy image.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -776,7 +776,7 @@ def hyper_chi_squared_map(
 ):
     """Plot the image of a hyper_galaxies galaxy image.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------

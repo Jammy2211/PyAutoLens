@@ -2,7 +2,7 @@ import numpy as np
 from astropy import cosmology as cosmo
 from skimage import measure
 
-from autoarray.structures import grids
+from autoarray.structures.grids import grids
 from autoarray.operators.inversion import inversions as inv
 from autoastro.util import cosmology_util
 from autoastro.galaxy import galaxy as g

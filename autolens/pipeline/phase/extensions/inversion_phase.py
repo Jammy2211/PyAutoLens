@@ -42,7 +42,7 @@ class VariableFixingHyperPhase(HyperPhase):
         only fit pixelization hyperparameters.
         """
         phase = self.make_hyper_phase()
-        phase.optimizer.variable = self.make_variable(results.last.constant)
+        phase.variable = self.make_variable(results.last.constant)
 
         return phase.run(
             data,
