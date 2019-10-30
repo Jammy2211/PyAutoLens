@@ -1,9 +1,8 @@
 import autofit as af
 import autoarray as aa
 
-from autoarray.data import imaging
+from autoarray.data.imaging import imaging, imaging_plotters
 from autolens.lens import ray_tracing
-from autoarray.plotters import imaging_plotters
 
 
 class ImagingSimulator(object):
