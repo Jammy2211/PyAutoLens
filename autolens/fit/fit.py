@@ -82,7 +82,7 @@ class ImagingFit(aa_fit.ImagingFit):
         return self.masked_imaging.grid
 
     @property
-    def galaxy_model_image_dict(self) -> {al.galaxy: np.ndarray}:
+    def galaxy_model_image_dict(self) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
@@ -221,7 +221,7 @@ class InterferometerFit(aa_fit.InterferometerFit):
         )
 
     @property
-    def galaxy_model_visibilities_dict(self) -> {al.galaxy: np.ndarray}:
+    def galaxy_model_visibilities_dict(self) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """

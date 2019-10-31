@@ -504,7 +504,7 @@ def subplot_for_plane(
 
         traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
-        al.plot.plane.plane_image(
+        plane_plotters.plane_image(
             plane=fit.tracer.planes[plane_index],
             grid=traced_grids[plane_index],
             positions=None,
@@ -809,7 +809,7 @@ def individuals(
 
                 output_filename = "fit_plane_image_of_plane_" + str(plane_index)
 
-                al.plot.plane.plane_image(
+                plane_plotters.plane_image(
                     plane=fit.tracer.planes[plane_index],
                     grid=traced_grids[plane_index],
                     plot_grid=True,

@@ -163,7 +163,7 @@ def subplot(
 
     source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-    al.plot.plane.plane_image(
+    plane_plotters.plane_image(
         plane=tracer.source_plane,
         grid=source_plane_grid,
         as_subplot=True,
@@ -329,7 +329,7 @@ def individual(
 
         source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-        al.plot.plane.plane_image(
+        plane_plotters.plane_image(
             plane=tracer.source_plane,
             grid=source_plane_grid,
             positions=None,

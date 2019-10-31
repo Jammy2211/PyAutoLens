@@ -90,7 +90,7 @@ class Analysis(af.Analysis):
         """
         if hasattr(self, "hyper_galaxy_image_path_dict"):
             for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                al.galaxy
+                g.Galaxy
             ):
                 if galaxy_path in self.hyper_galaxy_image_path_dict:
                     galaxy.hyper_model_image = self.hyper_model_image

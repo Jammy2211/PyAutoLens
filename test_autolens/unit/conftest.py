@@ -66,7 +66,7 @@ def make_tracer_x1_plane_7x7(gal_x1_lp):
 
 @pytest.fixture(name="tracer_x2_plane_7x7")
 def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp):
-    source_gal_x1_lp = al.galaxy(redshift=1.0, light_profile_0=al.lp_0)
+    source_gal_x1_lp = al.galaxy(redshift=1.0, light_profile_0=lp_0)
 
     return al.tracer.from_galaxies(galaxies=[gal_x1_mp, gal_x1_lp, source_gal_x1_lp])
 

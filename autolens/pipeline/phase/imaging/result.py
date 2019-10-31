@@ -37,7 +37,7 @@ class Result(data.Result):
         fit = self.most_likely_fit
         return fit.unmasked_blurred_profile_image_of_planes_and_galaxies
 
-    def image_for_galaxy(self, galaxy: al.galaxy) -> np.ndarray:
+    def image_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
         """
         Parameters
         ----------
@@ -52,7 +52,7 @@ class Result(data.Result):
         return self.most_likely_fit.galaxy_model_image_dict[galaxy]
 
     @property
-    def image_galaxy_dict(self) -> {str: al.galaxy}:
+    def image_galaxy_dict(self) -> {str: g.Galaxy}:
         """
         A dictionary associating galaxy names with model images of those galaxies
         """
