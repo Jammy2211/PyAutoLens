@@ -9,7 +9,7 @@ class ImagingFit(fit.ImagingFit):
         self, masked_imaging, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens simulate's hyper_galaxies.
+        the lens simulator's hyper_galaxies.
 
         Parameters
         -----------
@@ -166,7 +166,7 @@ def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
 class InterferometerFit(fit.InterferometerFit):
     def __init__(self, masked_interferometer, tracer):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens simulate's hyper_galaxies.
+        the lens simulator's hyper_galaxies.
 
         Parameters
         -----------

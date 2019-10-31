@@ -21,7 +21,7 @@ test_name = "tests"
 
 def simulate_integration_image(test_name, pixel_scales, galaxies):
     output_path = (
-        "{}/test_files/simulate/".format(os.path.dirname(os.path.realpath(__file__)))
+        "{}/test_files/simulator/".format(os.path.dirname(os.path.realpath(__file__)))
         + test_name
         + "/"
     )
@@ -119,10 +119,10 @@ class TestPhaseModelMapper(object):
         )  # Setup path so we can output the simulated image.
 
         imaging = al.imaging.from_fits(
-            image_path=path + "/test_files/simulate/" + test_name + "/image.fits",
-            psf_path=path + "/test_files/simulate/" + test_name + "/psf.fits",
+            image_path=path + "/test_files/simulator/" + test_name + "/image.fits",
+            psf_path=path + "/test_files/simulator/" + test_name + "/psf.fits",
             noise_map_path=path
-            + "/test_files/simulate/"
+            + "/test_files/simulator/"
             + test_name
             + "/noise_map.fits",
             real_space_pixel_scales=0.1,
@@ -193,10 +193,10 @@ class TestPhaseModelMapper(object):
         )  # Setup path so we can output the simulated image.
 
         imaging = al.imaging.from_fits(
-            image_path=path + "/test_files/simulate/" + test_name + "/image.fits",
-            psf_path=path + "/test_files/simulate/" + test_name + "/psf.fits",
+            image_path=path + "/test_files/simulator/" + test_name + "/image.fits",
+            psf_path=path + "/test_files/simulator/" + test_name + "/psf.fits",
             noise_map_path=path
-            + "/test_files/simulate/"
+            + "/test_files/simulator/"
             + test_name
             + "/noise_map.fits",
             real_space_pixel_scales=0.1,

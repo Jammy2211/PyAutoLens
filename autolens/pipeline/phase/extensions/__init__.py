@@ -53,7 +53,7 @@ class CombinedHyperPhase(HyperPhase):
         positions
         mask
         data
-            the simulate
+            the simulator
         results
             Results from previous phases
         kwargs

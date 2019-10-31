@@ -3,7 +3,7 @@ from astropy import cosmology as cosmo
 from skimage import measure
 
 from autoarray.structures import visibilities as vis
-from autoarray.structures.grids import grids
+from autoarray.structures import grids
 from autoarray.structures.array import arrays
 import autofit as af
 from autoastro.util import cosmology_util
