@@ -2,9 +2,9 @@ import numpy as np
 from astropy import cosmology as cosmo
 from skimage import measure
 
-from autoarray.structures import arrays, grids, visibilities as vis
-from autoarray.masked import masked_structures
 import autofit as af
+from autoarray.structures import grids, visibilities as vis
+from autoarray.masked import masked_structures
 from autoastro.util import cosmology_util
 from autolens import exc
 from autoastro import dimensions as dim

@@ -25,13 +25,6 @@ def simulate_image_from_galaxies_and_output_to_fits(
         shape_2d=psf_shape_2d, sigma=pixel_scales[0], pixel_scales=pixel_scales
     )
 
-    # Setup the image-plane al.ogrid of the Imaging arrays which will be used for generating the image of the
-    # simulated strong lens. A high-res sub-grid is necessary to ensure we fully resolve the central regions of the
-    # lens and source galaxy light.
-    image_plane_grid = al.grid.uniform(
-        shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size
-    )
-
     # Use the input galaxies to setup a tracer, which will generate the image for the simulated Imaging data_type.
     tracer = al.tracer.from_galaxies(galaxies=galaxies)
 
@@ -41,20 +34,22 @@ def simulate_image_from_galaxies_and_output_to_fits(
     imaging_simulator = al.simulator.imaging(
         shape_2d=shape_2d,
         pixel_scales=pixel_scales,
+        sub_size=sub_size,
         exposure_time=exposure_time,
         psf=psf,
         background_sky_level=background_sky_level,
+        add_noise=True,
     )
 
     imaging = imaging_simulator.from_tracer(
-        tracer=tracer, add_noise=True, grid=image_plane_grid
+        tracer=tracer,
     )
 
     # Now, lets output this simulated imaging-simulator to the test_autoarray/simulator folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=test_path, folder_names=["simulator", data_type, data_resolution]
+        path=test_path, folder_names=["data", data_type, data_resolution]
     )
 
     imaging.output_to_fits(
@@ -83,10 +78,10 @@ def simulate_image_from_galaxies_and_output_to_fits(
 
     al.plot.ray_tracing.subplot(
         tracer=tracer,
+        grid=imaging.mask
         output_filename="tracer",
         output_path=data_path,
         output_format="png",
-        grid=image_plane_grid,
     )
 
     al.plot.ray_tracing.individual(
@@ -98,7 +93,6 @@ def simulate_image_from_galaxies_and_output_to_fits(
         should_plot_deflections=True,
         output_path=data_path,
         output_format="png",
-        grid=image_plane_grid,
     )
 
 
