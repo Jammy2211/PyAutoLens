@@ -34,6 +34,7 @@ class TestSimulatorImaging:
         simulator = al.simulator.imaging(
             shape_2d=(20, 20),
             pixel_scales=0.05,
+            sub_size=1,
             psf=psf,
             exposure_time=10000.0,
             background_sky_level=100.0,
@@ -41,8 +42,8 @@ class TestSimulatorImaging:
             noise_seed=1
         )
 
-        imaging_simulated = simulator.from_tracer_and_grid(
-            tracer=tracer, grid=grid,
+        imaging_simulated = simulator.from_tracer(
+            tracer=tracer,
         )
 
         imaging_manual = al.imaging.simulate(
@@ -90,6 +91,7 @@ class TestSimulatorImaging:
         simulator = al.simulator.imaging(
             shape_2d=(20, 20),
             pixel_scales=0.05,
+            sub_size=1,
             psf=psf,
             exposure_time=10000.0,
             background_sky_level=100.0,
@@ -153,6 +155,7 @@ class TestSimulatorImaging:
         simulator = al.simulator.imaging(
             shape_2d=(11, 11),
             pixel_scales=0.2,
+            sub_size=1,
             psf=psf,
             exposure_time=100.0,
             background_sky_level=1.0,
@@ -220,6 +223,7 @@ class TestSimulatorImaging:
         simulator = al.simulator.imaging(
             shape_2d=(11, 11),
             pixel_scales=0.2,
+            sub_size=1,
             psf=psf,
             exposure_time=100.0,
             background_sky_level=1.0,

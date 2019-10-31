@@ -46,7 +46,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         background_sky_level=background_sky_level,
     )
 
-    imaging = imaging_simulator.from_tracer_and_grid(
+    imaging = imaging_simulator.from_tracer(
         tracer=tracer, add_noise=True, grid=image_plane_grid
     )
 
