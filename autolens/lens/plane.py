@@ -419,7 +419,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             shape_2d=tangential_eigen_values.sub_shape_2d,
         )
 
-        return grids.IrregularGrid(grid=tangential_critical_curve)
+        return grids.GridIrregular(grid=tangential_critical_curve)
 
     def radial_critical_curve_from_grid(self, grid):
 
@@ -437,7 +437,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             shape_2d=radial_eigen_values.sub_shape_2d,
         )
 
-        return grids.IrregularGrid(grid=radial_critical_curve)
+        return grids.GridIrregular(grid=radial_critical_curve)
 
     def tangential_caustic_from_grid(self, grid):
 
