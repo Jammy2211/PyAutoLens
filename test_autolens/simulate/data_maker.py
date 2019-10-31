@@ -20,7 +20,7 @@ from test_autolens.simulate import makers
 sub_size = 1
 data_resolutions = ["LSST", "Euclid"]  # , "HST", "HST_Up", "AO"]
 
-# To simulate each lens, we pass it a name and call its maker. In the makers.py file, you'll see the
+# To simulator each lens, we pass it a name and call its maker. In the makers.py file, you'll see the
 makers.make_lens_light_dev_vaucouleurs(
     data_resolutions=data_resolutions, sub_size=sub_size
 )
