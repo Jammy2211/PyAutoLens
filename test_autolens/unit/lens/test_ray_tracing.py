@@ -27,7 +27,7 @@ def critical_curve_via_magnification_from_tracer_and_grid(tracer, grid):
             grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
         )
 
-        critical_curve = al.irregular_grid.manual_1d(grid=critical_curve)
+        critical_curve = al.grid_irregular.manual_1d(grid=critical_curve)
 
         critical_curves.append(critical_curve)
 
@@ -4020,7 +4020,7 @@ class TestTracerPositions(object):
         )
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[al.irregular_grid.manual_1d(grid=[[1.0, 1.0], [-1.0, -1.0]])]
+            positions=[al.grid_irregular.manual_1d(grid=[[1.0, 1.0], [-1.0, -1.0]])]
         )
 
         assert traced_positions_of_planes[0][0] == pytest.approx(
@@ -4037,7 +4037,7 @@ class TestTracerPositions(object):
         tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, al.Galaxy(redshift=1.0)])
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[al.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
+            positions=[al.grid_irregular.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
         )
 
         assert traced_positions_of_planes[0][0] == pytest.approx(
@@ -4054,7 +4054,7 @@ class TestTracerPositions(object):
         )
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[al.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
+            positions=[al.grid_irregular.manual_1d([[1.0, 1.0], [-1.0, -1.0]])]
         )
 
         assert traced_positions_of_planes[0][0] == pytest.approx(
@@ -4069,8 +4069,8 @@ class TestTracerPositions(object):
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
             positions=[
-                al.irregular_grid.manual_1d([[1.0, 1.0], [-1.0, -1.0]]),
-                al.irregular_grid.manual_1d([[0.5, 0.5]]),
+                al.grid_irregular.manual_1d([[1.0, 1.0], [-1.0, -1.0]]),
+                al.grid_irregular.manual_1d([[0.5, 0.5]]),
             ]
         )
 
@@ -4119,7 +4119,7 @@ class TestTracerPositions(object):
         )
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[al.irregular_grid.manual_1d([[1.0, 1.0]])]
+            positions=[al.grid_irregular.manual_1d([[1.0, 1.0]])]
         )
 
         # From unit test_autoarray below:
@@ -4188,8 +4188,8 @@ class TestTracerPositions(object):
 
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
             positions=[
-                al.irregular_grid.manual_1d([[1.0, 1.0]]),
-                al.irregular_grid.manual_1d([[1.0, 1.0]]),
+                al.grid_irregular.manual_1d([[1.0, 1.0]]),
+                al.grid_irregular.manual_1d([[1.0, 1.0]]),
             ]
         )
 

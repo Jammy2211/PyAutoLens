@@ -245,7 +245,7 @@ class TestMaskedInterferometer(object):
             interferometer=interferometer,
             real_space_mask=mask,
             trimmed_primary_beam_shape_2d=(5, 5),
-            positions=[al.irregular_grid.manual_1d([[1.0, 1.0]])],
+            positions=[al.grid_irregular.manual_1d([[1.0, 1.0]])],
             positions_threshold=1.0,
         )
 

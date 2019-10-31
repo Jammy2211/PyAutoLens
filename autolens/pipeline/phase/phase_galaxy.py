@@ -227,7 +227,7 @@ class PhaseGalaxy(af.AbstractPhase):
 
         if self.use_image or self.use_convergence or self.use_potential:
 
-            galaxy_data = gd.GalaxyFitData(
+            galaxy_data = gd.MaskedGalaxyData(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
@@ -247,7 +247,7 @@ class PhaseGalaxy(af.AbstractPhase):
 
         elif self.use_deflections:
 
-            galaxy_data_y = gd.GalaxyFitData(
+            galaxy_data_y = gd.MaskedGalaxyData(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
@@ -258,7 +258,7 @@ class PhaseGalaxy(af.AbstractPhase):
                 use_deflections_x=False,
             )
 
-            galaxy_data_x = gd.GalaxyFitData(
+            galaxy_data_x = gd.MaskedGalaxyData(
                 galaxy_data=galaxy_data[1],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
