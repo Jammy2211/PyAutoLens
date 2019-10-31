@@ -3137,7 +3137,7 @@ class TestAbstractTracerData(object):
             assert (visibilities_dict[g2] == g2_visibilities).all()
             assert (visibilities_dict[g3] == g3_visibilities).all()
 
-    class TestIrregularGridsOfPlanes:
+    class TestGridIrregularsOfPlanes:
         def test__x2_planes__traced_grid_setup_correctly(self, sub_grid_7x7):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
@@ -3199,7 +3199,7 @@ class TestAbstractTracerData(object):
             assert pixelization_grids[3] == None
             assert (pixelization_grids[4] == np.array([[2.0, 2.0]])).all()
 
-    class TestTracedIrregularGridsOfPlanes:
+    class TestTracedGridIrregularsOfPlanes:
         def test__x2_planes__no_mass_profiles__traced_grid_setup_correctly(
             self, sub_grid_7x7
         ):

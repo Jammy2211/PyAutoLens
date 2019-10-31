@@ -1,11 +1,7 @@
-import numpy as np
-
 import autoarray as aa
-from autoarray.fit import masked_data
+from autoarray.masked import masked_data
 from autolens.fit import fit
 from autolens import exc
-
-import copy
 
 
 class AbstractLensMasked(object):
