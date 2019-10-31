@@ -17,7 +17,7 @@ class ImagingFit(aa_fit.ImagingFit):
         self, masked_imaging, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens simulator's hyper_galaxies.
+        the lens data's hyper_galaxies.
 
         Parameters
         -----------
@@ -82,7 +82,7 @@ class ImagingFit(aa_fit.ImagingFit):
         return self.masked_imaging.grid
 
     @property
-    def galaxy_model_image_dict(self) -> {g.Galaxy: np.ndarray}:
+    def galaxy_model_image_dict(self) -> {al.galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
@@ -174,7 +174,7 @@ def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
 class InterferometerFit(aa_fit.InterferometerFit):
     def __init__(self, masked_interferometer, tracer):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens simulator's hyper_galaxies.
+        the lens data's hyper_galaxies.
 
         Parameters
         -----------
@@ -221,7 +221,7 @@ class InterferometerFit(aa_fit.InterferometerFit):
         )
 
     @property
-    def galaxy_model_visibilities_dict(self) -> {g.Galaxy: np.ndarray}:
+    def galaxy_model_visibilities_dict(self) -> {al.galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """

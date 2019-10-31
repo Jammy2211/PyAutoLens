@@ -23,7 +23,7 @@ class Analysis(af.Analysis):
         Parameters
         ----------
         masked_imaging: LensData
-            lens simulator, including an image and noise
+            lens data, including an image and noise
         hyper_model_image: ndarray
             An image produce of the overall system by a model
         hyper_galaxy_image: ndarray

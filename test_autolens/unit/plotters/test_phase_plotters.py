@@ -16,7 +16,7 @@ def test__plot_imaging_for_phase(
 ):
     al.plot.phase.imaging_of_phase(
         imaging=imaging_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         positions=None,
         units="arcsec",
         should_plot_as_subplot=True,
@@ -55,7 +55,7 @@ def test__plot_ray_tracing_for_phase__dependent_on_input(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         during_analysis=False,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         positions=None,
         units="arcsec",
         should_plot_as_subplot=True,
@@ -98,7 +98,7 @@ def test__imaging_fit_for_phase__source_and_lens__depedent_on_input(
     al.plot.phase.imaging_fit_of_phase(
         fit=masked_imaging_fit_x2_plane_7x7,
         during_analysis=False,
-        should_plot_mask_overlay=True,
+        should_plot_mask=True,
         positions=None,
         units="arcsec",
         should_plot_image_plane_pix=True,
@@ -163,7 +163,7 @@ def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
     al.plot.phase.plot_hyper_images_for_phase(
         hyper_model_image=hyper_model_image_7x7,
         hyper_galaxy_image_path_dict=None,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         units="arcsec",
         should_plot_hyper_model_image=True,
         should_plot_hyper_galaxy_images=False,

@@ -12,7 +12,7 @@ from autolens.plotters import plane_plotters
 
 def subplot(
     fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     positions=None,
     should_plot_image_plane_pix=False,
     plot_mass_profile_centres=True,
@@ -34,7 +34,7 @@ def subplot(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     grid_pointsize=1,
     output_path=None,
@@ -46,8 +46,8 @@ def subplot(
         number_subplots=6
     )
 
-    mask_overlay = get_mask_overlay(
-        fit=fit, should_plot_mask_overlay=should_plot_mask_overlay
+    mask = get_mask(
+        fit=fit, should_plot_mask=should_plot_mask
     )
 
     if figsize is None:
@@ -63,7 +63,7 @@ def subplot(
     aa.plot.fit_imaging.image(
         fit=fit,
         grid=image_plane_pix_grid,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=True,
         units=units,
@@ -87,7 +87,7 @@ def subplot(
         xyticksize=xyticksize,
         grid_pointsize=grid_pointsize,
         position_pointsize=position_pointsize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         output_path=output_path,
         output_filename="",
         output_format=output_format,
@@ -97,7 +97,7 @@ def subplot(
 
     aa.plot.fit_imaging.signal_to_noise_map(
         fit=fit,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -119,7 +119,7 @@ def subplot(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         position_pointsize=position_pointsize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         output_path=output_path,
         output_filename="",
         output_format=output_format,
@@ -129,7 +129,7 @@ def subplot(
 
     aa.plot.fit_imaging.model_image(
         fit=fit,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -159,7 +159,7 @@ def subplot(
 
     aa.plot.fit_imaging.residual_map(
         fit=fit,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -189,7 +189,7 @@ def subplot(
 
     aa.plot.fit_imaging.normalized_residual_map(
         fit=fit,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -219,7 +219,7 @@ def subplot(
 
     aa.plot.fit_imaging.chi_squared_map(
         fit=fit,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -256,7 +256,7 @@ def subplot(
 
 def subplot_of_planes(
     fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     positions=None,
     should_plot_image_plane_pix=False,
     plot_mass_profile_centres=True,
@@ -278,7 +278,7 @@ def subplot_of_planes(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     grid_pointsize=1,
     output_path=None,
@@ -296,7 +296,7 @@ def subplot_of_planes(
             subplot_for_plane(
                 fit=fit,
                 plane_index=plane_index,
-                should_plot_mask_overlay=should_plot_mask_overlay,
+                should_plot_mask=should_plot_mask,
                 should_plot_image_plane_pix=should_plot_image_plane_pix,
                 positions=positions,
                 units=units,
@@ -319,7 +319,7 @@ def subplot_of_planes(
                 xyticksize=xyticksize,
                 grid_pointsize=grid_pointsize,
                 position_pointsize=position_pointsize,
-                mask_overlay_pointsize=mask_overlay_pointsize,
+                mask_pointsize=mask_pointsize,
                 output_path=output_path,
                 output_filename=output_filename,
                 output_format=output_format,
@@ -329,7 +329,7 @@ def subplot_of_planes(
 def subplot_for_plane(
     fit,
     plane_index,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     should_plot_source_grid=False,
     positions=None,
     should_plot_image_plane_pix=False,
@@ -352,7 +352,7 @@ def subplot_for_plane(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     grid_pointsize=1,
     output_path=None,
@@ -382,8 +382,8 @@ def subplot_for_plane(
         number_subplots=4
     )
 
-    mask_overlay = get_mask_overlay(
-        fit=fit, should_plot_mask_overlay=should_plot_mask_overlay
+    mask = get_mask(
+        fit=fit, should_plot_mask=should_plot_mask
     )
 
     if figsize is None:
@@ -399,7 +399,7 @@ def subplot_for_plane(
 
     aa.plot.fit_imaging.image(
         fit=fit,
-        mask_overlay=mask_overlay,
+        mask=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=True,
@@ -424,7 +424,7 @@ def subplot_for_plane(
         xyticksize=xyticksize,
         grid_pointsize=grid_pointsize,
         position_pointsize=position_pointsize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         output_path=output_path,
         output_filename="",
         output_format=output_format,
@@ -435,7 +435,7 @@ def subplot_for_plane(
     subtracted_image_of_plane(
         fit=fit,
         plane_index=plane_index,
-        mask_overlay=mask_overlay,
+        mask=mask,
         image_plane_pix_grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=True,
@@ -457,7 +457,7 @@ def subplot_for_plane(
         titlesize=titlesize,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         xyticksize=xyticksize,
         output_path=output_path,
@@ -470,7 +470,7 @@ def subplot_for_plane(
     model_image_of_plane(
         fit=fit,
         plane_index=plane_index,
-        mask_overlay=mask_overlay,
+        mask=mask,
         plot_mass_profile_centres=plot_mass_profile_centres,
         as_subplot=True,
         units=units,
@@ -492,7 +492,7 @@ def subplot_for_plane(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         output_path=output_path,
         output_filename="",
         output_format=output_format,
@@ -504,7 +504,7 @@ def subplot_for_plane(
 
         traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
-        plane_plotters.plane_image(
+        al.plot.plane.plane_image(
             plane=fit.tracer.planes[plane_index],
             grid=traced_grids[plane_index],
             positions=None,
@@ -598,7 +598,7 @@ def subplot_for_plane(
 
 def individuals(
     fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     positions=None,
     should_plot_image_plane_pix=False,
     should_plot_image=False,
@@ -634,8 +634,8 @@ def individuals(
         in the python interpreter window.
     """
 
-    mask_overlay = get_mask_overlay(
-        fit=fit, should_plot_mask_overlay=should_plot_mask_overlay
+    mask = get_mask(
+        fit=fit, should_plot_mask=should_plot_mask
     )
     image_plane_pix_grid = get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
@@ -647,7 +647,7 @@ def individuals(
 
         aa.plot.fit_imaging.image(
             fit=fit,
-            mask_overlay=mask_overlay,
+            mask=mask,
             positions=positions,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
@@ -659,7 +659,7 @@ def individuals(
 
         aa.plot.fit_imaging.noise_map(
             fit=fit,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -670,7 +670,7 @@ def individuals(
 
         aa.plot.fit_imaging.signal_to_noise_map(
             fit=fit,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -681,7 +681,7 @@ def individuals(
 
         aa.plot.fit_imaging.model_image(
             fit=fit,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -692,7 +692,7 @@ def individuals(
 
         aa.plot.fit_imaging.residual_map(
             fit=fit,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -703,7 +703,7 @@ def individuals(
 
         aa.plot.fit_imaging.normalized_residual_map(
             fit=fit,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -714,7 +714,7 @@ def individuals(
 
         aa.plot.fit_imaging.chi_squared_map(
             fit=fit,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -780,7 +780,7 @@ def individuals(
             subtracted_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
-                mask_overlay=mask_overlay,
+                mask=mask,
                 units=units,
                 kpc_per_arcsec=kpc_per_arcsec,
                 output_path=output_path,
@@ -794,7 +794,7 @@ def individuals(
             model_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
-                mask_overlay=mask_overlay,
+                mask=mask,
                 units=units,
                 kpc_per_arcsec=kpc_per_arcsec,
                 output_path=output_path,
@@ -809,7 +809,7 @@ def individuals(
 
                 output_filename = "fit_plane_image_of_plane_" + str(plane_index)
 
-                plane_plotters.plane_image(
+                al.plot.plane.plane_image(
                     plane=fit.tracer.planes[plane_index],
                     grid=traced_grids[plane_index],
                     plot_grid=True,
@@ -823,7 +823,7 @@ def individuals(
 def subtracted_image_of_plane(
     fit,
     plane_index,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -847,7 +847,7 @@ def subtracted_image_of_plane(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -885,7 +885,7 @@ def subtracted_image_of_plane(
 
     aa.plot.array(
         array=subtracted_image,
-        mask_overlay=mask_overlay,
+        mask=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -909,7 +909,7 @@ def subtracted_image_of_plane(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -920,7 +920,7 @@ def subtracted_image_of_plane(
 def model_image_of_plane(
     fit,
     plane_index,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     plot_mass_profile_centres=True,
     as_subplot=False,
@@ -944,7 +944,7 @@ def model_image_of_plane(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -970,7 +970,7 @@ def model_image_of_plane(
 
     aa.plot.array(
         array=fit.model_images_of_planes[plane_index],
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         centres=centres,
         as_subplot=as_subplot,
@@ -994,7 +994,7 @@ def model_image_of_plane(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -1004,7 +1004,7 @@ def model_image_of_plane(
 
 def contribution_maps(
     fit,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -1027,7 +1027,7 @@ def contribution_maps(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -1052,7 +1052,7 @@ def contribution_maps(
 
     aa.plot.array(
         array=contribution_map,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -1075,7 +1075,7 @@ def contribution_maps(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -1095,17 +1095,17 @@ def get_image_plane_pix_grid(should_plot_image_plane_pix, fit):
         return None
 
 
-def get_mask_overlay(fit, should_plot_mask_overlay):
-    """Get the mask_overlays of the fit if the mask_overlays should be plotted on the fit.
+def get_mask(fit, should_plot_mask):
+    """Get the masks of the fit if the masks should be plotted on the fit.
 
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractLensHyperFit
         The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-    should_plot_mask_overlay : bool
-        If *True*, the mask_overlays is plotted on the fit's datas.
+    should_plot_mask : bool
+        If *True*, the masks is plotted on the fit's datas.
     """
-    if should_plot_mask_overlay:
+    if should_plot_mask:
         return fit.mask
     else:
         return None

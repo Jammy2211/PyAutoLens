@@ -17,7 +17,7 @@ def subplot_of_hyper_galaxy(
     hyper_noise_map_sub,
     chi_squared_map_sub,
     hyper_chi_squared_map_sub,
-    mask_overlay=None,
+    mask=None,
     units="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
@@ -37,7 +37,7 @@ def subplot_of_hyper_galaxy(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -57,7 +57,7 @@ def subplot_of_hyper_galaxy(
 
     hyper_galaxy_image(
         hyper_galaxy_image=hyper_galaxy_image_sub,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -78,7 +78,7 @@ def subplot_of_hyper_galaxy(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -89,7 +89,7 @@ def subplot_of_hyper_galaxy(
 
     aa.plot.array(
         array=noise_map_sub,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -110,7 +110,7 @@ def subplot_of_hyper_galaxy(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -120,7 +120,7 @@ def subplot_of_hyper_galaxy(
 
     hyper_noise_map(
         hyper_noise_map=hyper_noise_map_sub,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -141,7 +141,7 @@ def subplot_of_hyper_galaxy(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -152,7 +152,7 @@ def subplot_of_hyper_galaxy(
 
     contribution_map(
         contribution_map=contribution_map_sub,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -173,7 +173,7 @@ def subplot_of_hyper_galaxy(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -184,7 +184,7 @@ def subplot_of_hyper_galaxy(
 
     chi_squared_map(
         chi_squared_map=chi_squared_map_sub,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -205,7 +205,7 @@ def subplot_of_hyper_galaxy(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -215,7 +215,7 @@ def subplot_of_hyper_galaxy(
 
     hyper_chi_squared_map(
         hyper_chi_squared_map=hyper_chi_squared_map_sub,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -236,7 +236,7 @@ def subplot_of_hyper_galaxy(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -253,8 +253,8 @@ def subplot_of_hyper_galaxy(
 
 def subplot_of_hyper_galaxy_images(
     hyper_galaxy_image_path_dict,
-    mask_overlay,
-    should_plot_mask_overlay=True,
+    mask,
+    should_plot_mask=True,
     units="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
@@ -274,7 +274,7 @@ def subplot_of_hyper_galaxy_images(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_filename="hyper_galaxy_images",
@@ -285,8 +285,8 @@ def subplot_of_hyper_galaxy_images(
         number_subplots=len(hyper_galaxy_image_path_dict)
     )
 
-    if not should_plot_mask_overlay:
-        mask_overlay = False
+    if not should_plot_mask:
+        mask = False
 
     if figsize is None:
         figsize = figsize_tool
@@ -303,7 +303,7 @@ def subplot_of_hyper_galaxy_images(
 
         hyper_galaxy_image(
             hyper_galaxy_image=hyper_galaxy_image_sub,
-            mask_overlay=mask_overlay,
+            mask=mask,
             as_subplot=True,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
@@ -325,7 +325,7 @@ def subplot_of_hyper_galaxy_images(
             xlabelsize=xlabelsize,
             ylabelsize=ylabelsize,
             xyticksize=xyticksize,
-            mask_overlay_pointsize=mask_overlay_pointsize,
+            mask_pointsize=mask_pointsize,
             position_pointsize=position_pointsize,
             output_path=output_path,
             output_format=output_format,
@@ -343,7 +343,7 @@ def subplot_of_hyper_galaxy_images(
 
 def hyper_model_image(
     hyper_model_image,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -368,7 +368,7 @@ def hyper_model_image(
     ylabelsize=16,
     xyticksize=16,
     grid_pointsize=1,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -388,7 +388,7 @@ def hyper_model_image(
 
     aa.plot.array(
         array=hyper_model_image,
-        mask_overlay=mask_overlay,
+        mask=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -413,7 +413,7 @@ def hyper_model_image(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         grid_pointsize=grid_pointsize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -423,7 +423,7 @@ def hyper_model_image(
 
 def hyper_galaxy_image(
     hyper_galaxy_image,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -448,7 +448,7 @@ def hyper_galaxy_image(
     ylabelsize=16,
     xyticksize=16,
     grid_pointsize=1,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -468,7 +468,7 @@ def hyper_galaxy_image(
 
     aa.plot.array(
         array=hyper_galaxy_image,
-        mask_overlay=mask_overlay,
+        mask=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -493,7 +493,7 @@ def hyper_galaxy_image(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         grid_pointsize=grid_pointsize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -503,7 +503,7 @@ def hyper_galaxy_image(
 
 def contribution_map(
     contribution_map,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -528,7 +528,7 @@ def contribution_map(
     ylabelsize=16,
     xyticksize=16,
     grid_pointsize=1,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -548,7 +548,7 @@ def contribution_map(
 
     aa.plot.array(
         array=contribution_map,
-        mask_overlay=mask_overlay,
+        mask=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -573,7 +573,7 @@ def contribution_map(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         grid_pointsize=grid_pointsize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -583,7 +583,7 @@ def contribution_map(
 
 def hyper_noise_map(
     hyper_noise_map,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -608,7 +608,7 @@ def hyper_noise_map(
     ylabelsize=16,
     xyticksize=16,
     grid_pointsize=1,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -628,7 +628,7 @@ def hyper_noise_map(
 
     aa.plot.array(
         array=hyper_noise_map,
-        mask_overlay=mask_overlay,
+        mask=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -653,7 +653,7 @@ def hyper_noise_map(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         grid_pointsize=grid_pointsize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -663,7 +663,7 @@ def hyper_noise_map(
 
 def chi_squared_map(
     chi_squared_map,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -688,7 +688,7 @@ def chi_squared_map(
     ylabelsize=16,
     xyticksize=16,
     grid_pointsize=1,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -708,7 +708,7 @@ def chi_squared_map(
 
     aa.plot.array(
         array=chi_squared_map,
-        mask_overlay=mask_overlay,
+        mask=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -733,7 +733,7 @@ def chi_squared_map(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         grid_pointsize=grid_pointsize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -743,7 +743,7 @@ def chi_squared_map(
 
 def hyper_chi_squared_map(
     hyper_chi_squared_map,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -768,7 +768,7 @@ def hyper_chi_squared_map(
     ylabelsize=16,
     xyticksize=16,
     grid_pointsize=1,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -788,7 +788,7 @@ def hyper_chi_squared_map(
 
     aa.plot.array(
         array=hyper_chi_squared_map,
-        mask_overlay=mask_overlay,
+        mask=mask,
         grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=as_subplot,
@@ -813,7 +813,7 @@ def hyper_chi_squared_map(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         grid_pointsize=grid_pointsize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,

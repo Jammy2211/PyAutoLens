@@ -16,7 +16,7 @@ mask = al.mask.circular(
     centre=(1.0, 1.0),
 )
 
-# The lines of code below do everything we're used to, that is, setup an image and its al.ogrid, mask it, trace it
+# The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
 lens_galaxy = al.galaxy(
     redshift=0.5,
@@ -25,15 +25,15 @@ lens_galaxy = al.galaxy(
     ),
 )
 
-masked_imaging = al.LensData(imaging=imaging, mask=mask)
+masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 
 tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy])
 fit = al.LensImageFit.from_masked_data_and_tracer(
-    masked_imaging=masked_imaging, tracer=tracer
+    masked_data=masked_imaging, tracer=tracer
 )
-masked_imaging_fit_plotters.plot_fit_subplot(
+al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     extract_array_from_mask=True,
     zoom_around_mask=True,
 )

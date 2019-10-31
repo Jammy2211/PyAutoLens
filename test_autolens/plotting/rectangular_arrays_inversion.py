@@ -18,13 +18,13 @@ mask = al.mask.elliptical(
     centre=(0.0, 0.0),
 )
 
-# imaging_plotters.plot_imaging_subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
-# imaging_plotters.plot_imaging_subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='auto')
+# al.plot.imaging.plot_imaging_subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
+# al.plot.imaging.plot_imaging_subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='auto')
 
-# imaging_plotters.plot_image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='square')
-# imaging_plotters.plot_image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
+# al.plot.imaging.plot_image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='square')
+# al.plot.imaging.plot_image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
 
-# The lines of code below do everything we're used to, that is, setup an image and its al.ogrid, mask it, trace it
+# The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
 lens_galaxy = al.galaxy(
     mass=al.mp.EllipticalIsothermal(
@@ -36,30 +36,30 @@ source_galaxy = al.galaxy(
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
-masked_imaging = al.LensData(imaging=imaging, mask=mask)
+masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 
 tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 fit = al.LensImageFit.from_masked_data_and_tracer(
-    masked_imaging=masked_imaging, tracer=tracer
+    masked_data=masked_imaging, tracer=tracer
 )
 
-masked_imaging_fit_plotters.plot_fit_subplot(
+al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     should_plot_image_plane_pix=True,
     aspect="auto",
 )
 
-masked_imaging_fit_plotters.plot_fit_subplot(
+al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     should_plot_image_plane_pix=True,
     aspect="equal",
 )
 
-masked_imaging_fit_plotters.plot_fit_subplot(
+al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     should_plot_image_plane_pix=True,
     aspect="square",
 )

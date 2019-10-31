@@ -108,7 +108,7 @@ class TestPhaseModelMapper(object):
             sersic_index=3.0,
         )
 
-        lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
+        lens_galaxy = al.galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(
             test_name=test_name, pixel_scales=0.5, galaxies=[lens_galaxy]
@@ -183,7 +183,7 @@ class TestPhaseModelMapper(object):
             sersic_index=3.0,
         )
 
-        lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
+        lens_galaxy = al.galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(
             test_name=test_name, pixel_scales=0.5, galaxies=[lens_galaxy]

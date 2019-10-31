@@ -17,7 +17,7 @@ def fit_with_offset_centre(centre):
         centre=centre,
     )
 
-    # The lines of code below do everything we're used to, that is, setup an image and its al.ogrid, mask it, trace it
+    # The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it
     # via a tracer, setup the rectangular mapper, etc.
     lens_galaxy = al.galaxy(
         redshift=0.5,
@@ -31,7 +31,7 @@ def fit_with_offset_centre(centre):
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
-    masked_imaging = al.LensData(imaging=imaging, mask=mask)
+    masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 
     pixelization_grid = source_galaxy.pixelization.traced_sparse_grids_of_planes_from_grid(
         grid=masked_imaging.grid
@@ -46,7 +46,7 @@ def fit_with_offset_centre(centre):
         image_plane_grid=grid_stack_with_pixelization_grid,
     )
     fit = al.LensImageFit.from_masked_data_and_tracer(
-        masked_imaging=masked_imaging, tracer=tracer
+        masked_data=masked_imaging, tracer=tracer
     )
 
     return fit
@@ -54,9 +54,9 @@ def fit_with_offset_centre(centre):
 
 fit = fit_with_offset_centre(centre=(1.0, 1.0))
 
-masked_imaging_fit_plotters.plot_fit_subplot(
+al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
@@ -64,36 +64,36 @@ masked_imaging_fit_plotters.plot_fit_subplot(
 fit = fit_with_offset_centre(centre=(1.05, 1.05))
 
 
-masked_imaging_fit_plotters.plot_fit_subplot(
+al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
 
 fit = fit_with_offset_centre(centre=(1.1, 1.1))
 
-masked_imaging_fit_plotters.plot_fit_subplot(
+al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
 
 fit = fit_with_offset_centre(centre=(0.95, 0.95))
 
-masked_imaging_fit_plotters.plot_fit_subplot(
+al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )
 
 fit = fit_with_offset_centre(centre=(5.9, 5.9))
 
-masked_imaging_fit_plotters.plot_fit_subplot(
+al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask_overlay=True,
+    should_plot_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
     should_plot_image_plane_pix=True,
 )

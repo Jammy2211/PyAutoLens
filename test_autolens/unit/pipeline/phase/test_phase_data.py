@@ -152,7 +152,7 @@ class TestPhase(object):
     def test__make_analysis__positions_are_input__are_used_in_analysis(
         self, phase_imaging_7x7, imaging_7x7
     ):
-        # If position threshold is input (not None) and positions are input, make the positions part of the lens simulator.
+        # If position threshold is input (not None) and positions are input, make the positions part of the lens data.
 
         phase_imaging_7x7.meta_data_fit.positions_threshold = 0.2
 
@@ -370,7 +370,7 @@ class TestPhase(object):
     def test__make_analysis__pixel_scale_interpolation_grid_is_input__interp_grid_used_in_analysis(
         self, phase_imaging_7x7, imaging_7x7
     ):
-        # If use positions is true and positions are input, make the positions part of the lens simulator.
+        # If use positions is true and positions are input, make the positions part of the lens data.
 
         phase_imaging_7x7.meta_data_fit.pixel_scale_interpolation_grid = 0.1
 
