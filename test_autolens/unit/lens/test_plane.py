@@ -33,7 +33,7 @@ def critical_curve_via_magnification_from_plane_and_grid(plane, grid):
             grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
         )
 
-        critical_curve = al.irregular_grid.manual_1d(grid=critical_curve)
+        critical_curve = al.grid_irregular.manual_1d(grid=critical_curve)
 
         critical_curves.append(critical_curve)
 
