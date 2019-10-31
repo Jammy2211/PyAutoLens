@@ -1,7 +1,7 @@
 import os
 
 import autofit as af
-from autoastro.plotters import galaxy_fit_plotters
+from autoastro.plotters import fit_galaxy_plotters
 from autolens.plotters import phase_plotters, hyper_plotters
 
 
@@ -66,7 +66,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
 
     def plot_galaxy_fit_subplot(self, fit, path_suffix=""):
         if self.plot_galaxy_fit_as_subplot:
-            galaxy_fit_plotters.subplot(
+            fit_galaxy_plotters.subplot(
                 fit=fit,
                 should_plot_mask_overlay=self.should_plot_mask_overlay,
                 units=self.plot_units,
@@ -89,7 +89,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
             should_plot_model_image = self.plot_galaxy_fit_model_image
             should_plot_residual_map = self.plot_galaxy_fit_residual_map
             should_plot_chi_squared_map = self.plot_galaxy_fit_chi_squared_map
-        galaxy_fit_plotters.individuals(
+        fit_galaxy_plotters.individuals(
             fit=fit,
             should_plot_mask_overlay=self.should_plot_mask_overlay,
             should_plot_image=should_plot_image,

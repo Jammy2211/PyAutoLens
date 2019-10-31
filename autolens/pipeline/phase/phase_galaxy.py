@@ -1,7 +1,7 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autoastro.galaxy import galaxy_fit, galaxy_data as gd
+from autoastro.galaxy import fit_galaxy, galaxy_data as gd
 from autolens.pipeline import visualizer
 
 
@@ -60,7 +60,7 @@ class AnalysisSingle(Analysis):
             A fractional value indicating how well this model fit and the model
             masked_imaging itself
         """
-        return galaxy_fit.GalaxyFit(
+        return fit_galaxy.GalaxyFit(
             galaxy_data=self.galaxy_data, model_galaxies=instance.galaxies
         )
 
@@ -111,10 +111,10 @@ class AnalysisDeflections(Analysis):
 
     def fit_for_instance(self, instance):
 
-        fit_y = galaxy_fit.GalaxyFit(
+        fit_y = fit_galaxy.GalaxyFit(
             galaxy_data=self.galaxy_data_y, model_galaxies=instance.galaxies
         )
-        fit_x = galaxy_fit.GalaxyFit(
+        fit_x = fit_galaxy.GalaxyFit(
             galaxy_data=self.galaxy_data_x, model_galaxies=instance.galaxies
         )
 
