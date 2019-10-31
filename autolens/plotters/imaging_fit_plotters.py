@@ -60,7 +60,7 @@ def subplot(
 
     image_plane_pix_grid = get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
-    aa.plot.imaging_fit.image(
+    aa.plot.fit_imaging.image(
         fit=fit,
         grid=image_plane_pix_grid,
         mask_overlay=mask_overlay,
@@ -95,7 +95,7 @@ def subplot(
 
     plt.subplot(rows, columns, 2)
 
-    aa.plot.imaging_fit.signal_to_noise_map(
+    aa.plot.fit_imaging.signal_to_noise_map(
         fit=fit,
         mask_overlay=mask_overlay,
         as_subplot=True,
@@ -127,7 +127,7 @@ def subplot(
 
     plt.subplot(rows, columns, 3)
 
-    aa.plot.imaging_fit.model_image(
+    aa.plot.fit_imaging.model_image(
         fit=fit,
         mask_overlay=mask_overlay,
         as_subplot=True,
@@ -157,7 +157,7 @@ def subplot(
 
     plt.subplot(rows, columns, 4)
 
-    aa.plot.imaging_fit.residual_map(
+    aa.plot.fit_imaging.residual_map(
         fit=fit,
         mask_overlay=mask_overlay,
         as_subplot=True,
@@ -187,7 +187,7 @@ def subplot(
 
     plt.subplot(rows, columns, 5)
 
-    aa.plot.imaging_fit.normalized_residual_map(
+    aa.plot.fit_imaging.normalized_residual_map(
         fit=fit,
         mask_overlay=mask_overlay,
         as_subplot=True,
@@ -217,7 +217,7 @@ def subplot(
 
     plt.subplot(rows, columns, 6)
 
-    aa.plot.imaging_fit.chi_squared_map(
+    aa.plot.fit_imaging.chi_squared_map(
         fit=fit,
         mask_overlay=mask_overlay,
         as_subplot=True,
@@ -397,7 +397,7 @@ def subplot_for_plane(
 
     plt.subplot(rows, columns, 1)
 
-    aa.plot.imaging_fit.image(
+    aa.plot.fit_imaging.image(
         fit=fit,
         mask_overlay=mask_overlay,
         grid=image_plane_pix_grid,
@@ -645,7 +645,7 @@ def individuals(
 
     if should_plot_image:
 
-        aa.plot.imaging_fit.image(
+        aa.plot.fit_imaging.image(
             fit=fit,
             mask_overlay=mask_overlay,
             positions=positions,
@@ -657,7 +657,7 @@ def individuals(
 
     if should_plot_noise_map:
 
-        aa.plot.imaging_fit.noise_map(
+        aa.plot.fit_imaging.noise_map(
             fit=fit,
             mask_overlay=mask_overlay,
             units=units,
@@ -668,7 +668,7 @@ def individuals(
 
     if should_plot_signal_to_noise_map:
 
-        aa.plot.imaging_fit.signal_to_noise_map(
+        aa.plot.fit_imaging.signal_to_noise_map(
             fit=fit,
             mask_overlay=mask_overlay,
             units=units,
@@ -679,7 +679,7 @@ def individuals(
 
     if should_plot_model_image:
 
-        aa.plot.imaging_fit.model_image(
+        aa.plot.fit_imaging.model_image(
             fit=fit,
             mask_overlay=mask_overlay,
             units=units,
@@ -690,7 +690,7 @@ def individuals(
 
     if should_plot_residual_map:
 
-        aa.plot.imaging_fit.residual_map(
+        aa.plot.fit_imaging.residual_map(
             fit=fit,
             mask_overlay=mask_overlay,
             units=units,
@@ -701,7 +701,7 @@ def individuals(
 
     if should_plot_normalized_residual_map:
 
-        aa.plot.imaging_fit.normalized_residual_map(
+        aa.plot.fit_imaging.normalized_residual_map(
             fit=fit,
             mask_overlay=mask_overlay,
             units=units,
@@ -712,7 +712,7 @@ def individuals(
 
     if should_plot_chi_squared_map:
 
-        aa.plot.imaging_fit.chi_squared_map(
+        aa.plot.fit_imaging.chi_squared_map(
             fit=fit,
             mask_overlay=mask_overlay,
             units=units,

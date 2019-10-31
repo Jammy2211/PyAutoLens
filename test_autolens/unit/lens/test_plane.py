@@ -401,21 +401,21 @@ class TestAbstractPlaneCosmology(object):
 
         assert (
             plane.arcsec_per_kpc
-            == am.util.cosmo.arcsec_per_kpc_from_redshift_and_cosmology(
+            == am.util.cosmology.arcsec_per_kpc_from_redshift_and_cosmology(
                 redshift=0.1, cosmology=planck
             )
         )
 
         assert (
             plane.kpc_per_arcsec
-            == am.util.cosmo.kpc_per_arcsec_from_redshift_and_cosmology(
+            == am.util.cosmology.kpc_per_arcsec_from_redshift_and_cosmology(
                 redshift=0.1, cosmology=planck
             )
         )
 
         assert plane.angular_diameter_distance_to_earth_in_units(
             unit_length="arcsec"
-        ) == am.util.cosmo.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+        ) == am.util.cosmology.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
             redshift=0.1, cosmology=planck, unit_length="arcsec"
         )
 
@@ -423,7 +423,7 @@ class TestAbstractPlaneCosmology(object):
 
         assert plane.angular_diameter_distance_to_earth_in_units(
             unit_length="kpc"
-        ) == am.util.cosmo.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+        ) == am.util.cosmology.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
             redshift=0.1, cosmology=planck, unit_length="kpc"
         )
 
@@ -431,21 +431,21 @@ class TestAbstractPlaneCosmology(object):
 
         assert (
             plane.arcsec_per_kpc
-            == am.util.cosmo.arcsec_per_kpc_from_redshift_and_cosmology(
+            == am.util.cosmology.arcsec_per_kpc_from_redshift_and_cosmology(
                 redshift=1.0, cosmology=planck
             )
         )
 
         assert (
             plane.kpc_per_arcsec
-            == am.util.cosmo.kpc_per_arcsec_from_redshift_and_cosmology(
+            == am.util.cosmology.kpc_per_arcsec_from_redshift_and_cosmology(
                 redshift=1.0, cosmology=planck
             )
         )
 
         assert plane.angular_diameter_distance_to_earth_in_units(
             unit_length="arcsec"
-        ) == am.util.cosmo.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+        ) == am.util.cosmology.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
             redshift=1.0, cosmology=planck, unit_length="arcsec"
         )
 
@@ -453,7 +453,7 @@ class TestAbstractPlaneCosmology(object):
 
         assert plane.angular_diameter_distance_to_earth_in_units(
             unit_length="kpc"
-        ) == am.util.cosmo.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+        ) == am.util.cosmology.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
             redshift=1.0, cosmology=planck, unit_length="kpc"
         )
 
@@ -461,7 +461,7 @@ class TestAbstractPlaneCosmology(object):
 
         assert plane.cosmic_average_density_in_units(
             unit_length="arcsec", unit_mass="solMass"
-        ) == am.util.cosmo.cosmic_average_density_from_redshift_and_cosmology(
+        ) == am.util.cosmology.cosmic_average_density_from_redshift_and_cosmology(
             redshift=0.6, cosmology=planck, unit_length="arcsec", unit_mass="solMass"
         )
 
@@ -469,7 +469,7 @@ class TestAbstractPlaneCosmology(object):
 
         assert plane.cosmic_average_density_in_units(
             unit_length="kpc", unit_mass="solMass"
-        ) == am.util.cosmo.cosmic_average_density_from_redshift_and_cosmology(
+        ) == am.util.cosmology.cosmic_average_density_from_redshift_and_cosmology(
             redshift=0.6, cosmology=planck, unit_length="kpc", unit_mass="solMass"
         )
 

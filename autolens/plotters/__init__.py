@@ -6,7 +6,7 @@ from autoarray.plotters.quantity_radii_plotters import (
 )
 from autoarray.plotters import imaging_plotters as imaging
 from autoarray.plotters import interferometer_plotters as interferometer
-from autoarray.plotters import imaging_fit_plotters as fit_imaging
+from autoarray.plotters import fit_imaging_plotters as fit_imaging
 from autoarray.plotters import mapper_plotters as mapper
 from autoarray.plotters import inversion_plotters as inversion
 from autolens.plotters import plane_plotters as plane
