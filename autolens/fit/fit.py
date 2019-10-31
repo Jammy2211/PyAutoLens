@@ -4,12 +4,23 @@ from autoarray.fit import fit as aa_fit
 from autoastro.galaxy import galaxy as g
 from autolens.masked import masked_data as md
 
+
 def fit(masked_data, tracer, hyper_image_sky=None, hyper_background_noise=None):
 
     if isinstance(masked_data, md.MaskedImaging):
-        return ImagingFit(masked_imaging=masked_data, tracer=tracer, hyper_image_sky=hyper_image_sky, hyper_background_noise=hyper_background_noise)
+        return ImagingFit(
+            masked_imaging=masked_data,
+            tracer=tracer,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+        )
     elif isinstance(masked_data, md.MaskedInterferometer):
-        return InterferometerFit(masked_visibilities=masked_data, tracer=tracer, hyper_image_sky=hyper_image_sky, hyper_background_noise=hyper_background_noise)
+        return InterferometerFit(
+            masked_visibilities=masked_data,
+            tracer=tracer,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+        )
 
 
 class ImagingFit(aa_fit.ImagingFit):

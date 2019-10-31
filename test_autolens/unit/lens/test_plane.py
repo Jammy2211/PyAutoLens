@@ -2242,9 +2242,7 @@ class TestAbstractPlaneData(object):
             plane = al.plane(galaxies=[galaxy_no_pix, galaxy_pix], redshift=0.5)
 
             mapper = plane.mapper_from_grid_and_sparse_grid(
-                grid=sub_grid_7x7,
-                sparse_grid=sub_grid_7x7,
-                inversion_uses_border=False,
+                grid=sub_grid_7x7, sparse_grid=sub_grid_7x7, inversion_uses_border=False
             )
 
             assert mapper == 1

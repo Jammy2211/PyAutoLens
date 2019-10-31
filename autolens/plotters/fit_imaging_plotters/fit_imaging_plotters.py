@@ -46,9 +46,7 @@ def subplot(
         number_subplots=6
     )
 
-    mask = get_mask(
-        fit=fit, should_plot_mask=should_plot_mask
-    )
+    mask = get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
     if figsize is None:
         figsize = figsize_tool
@@ -382,9 +380,7 @@ def subplot_for_plane(
         number_subplots=4
     )
 
-    mask = get_mask(
-        fit=fit, should_plot_mask=should_plot_mask
-    )
+    mask = get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
     if figsize is None:
         figsize = figsize_tool
@@ -634,9 +630,7 @@ def individuals(
         in the python interpreter window.
     """
 
-    mask = get_mask(
-        fit=fit, should_plot_mask=should_plot_mask
-    )
+    mask = get_mask(fit=fit, should_plot_mask=should_plot_mask)
     image_plane_pix_grid = get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
     traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
@@ -1090,7 +1084,9 @@ def get_image_plane_pix_grid(should_plot_image_plane_pix, fit):
             should_plot_image_plane_pix
             and fit.inversion.mapper.is_image_plane_pixelization
         ):
-            return fit.tracer.sparse_image_plane_grids_of_planes_from_grid(grid=fit.grid)[-1]
+            return fit.tracer.sparse_image_plane_grids_of_planes_from_grid(
+                grid=fit.grid
+            )[-1]
     else:
         return None
 

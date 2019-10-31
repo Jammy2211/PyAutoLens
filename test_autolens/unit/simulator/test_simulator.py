@@ -10,7 +10,6 @@ test_data_dir = "{}/../test_files/arrays/".format(
 
 
 class TestSimulatorImaging:
-
     def test__from_tracer__same_as_manual_tracer_input(self):
         psf = al.kernel.manual_2d(
             array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
@@ -38,13 +37,11 @@ class TestSimulatorImaging:
             psf=psf,
             exposure_time=10000.0,
             background_sky_level=100.0,
-            add_noise=True, 
-            noise_seed=1
+            add_noise=True,
+            noise_seed=1,
         )
 
-        imaging_simulated = simulator.from_tracer(
-            tracer=tracer,
-        )
+        imaging_simulated = simulator.from_tracer(tracer=tracer)
 
         imaging_manual = al.imaging.simulate(
             image=tracer.padded_profile_image_from_grid_and_psf_shape(
@@ -164,8 +161,7 @@ class TestSimulatorImaging:
         )
 
         imaging_simulated = simulator.from_galaxies(
-            galaxies=[lens_galaxy, source_galaxy],
-            sub_size=1,
+            galaxies=[lens_galaxy, source_galaxy], sub_size=1
         )
 
         tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -232,8 +228,7 @@ class TestSimulatorImaging:
         )
 
         imaging_simulated = simulator.from_galaxies(
-            galaxies=[lens_galaxy, source_galaxy],
-            sub_size=1,
+            galaxies=[lens_galaxy, source_galaxy], sub_size=1
         )
 
         output_data_dir = "{}/../test_files/arrays/output_test/".format(

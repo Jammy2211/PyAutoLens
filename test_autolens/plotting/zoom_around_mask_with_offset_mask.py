@@ -1,26 +1,26 @@
-from autolens.fit.plotters import masked_imaging_fit_plotters
-from test import simulation_util
+import autolens as al
+from test_autolens.simulate import simulate_util
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use
 # uniform grid of rectangular pixels, but instead uses ir'Voronoi' pixels. So, why would we want to do that?
 # Lets take another look at the rectangular grid, and think about its weakness.
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
-imaging = simulation_util.load_test_imaging(
+imaging = simulate_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
 mask = al.mask.circular(
-    shape=imaging.shape,
+    shape_2d=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     radius_arcsec=3.0,
-    centre=(1.0, 1.0),
+    centre=(2.0, 2.0),
 )
 
 # The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
 lens_galaxy = al.galaxy(
     redshift=0.5,
-    bulge=al.EllipticalDevVaucouleurs(
+    bulge=al.lp.EllipticalDevVaucouleurs(
         centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.1, effective_radius=1.0
     ),
 )
@@ -28,12 +28,9 @@ lens_galaxy = al.galaxy(
 masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 
 tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy])
-fit = al.LensImageFit.from_masked_data_and_tracer(
+fit = al.fit(
     masked_data=masked_imaging, tracer=tracer
 )
 al.plot.fit_imaging.subplot(
-    fit=fit,
-    should_plot_mask=True,
-    extract_array_from_mask=True,
-    zoom_around_mask=True,
+    fit=fit, should_plot_mask=True
 )

@@ -598,9 +598,7 @@ class TestPhase(object):
     def test__make_analysis_determines_if_pixelization_is_same_as_previous_phase(
         self, imaging_7x7, mask_function_7x7, results_collection_7x7
     ):
-        results_collection_7x7.last.hyper_combined.preload_sparse_grids_of_planes = (
-            1
-        )
+        results_collection_7x7.last.hyper_combined.preload_sparse_grids_of_planes = 1
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase", mask_function=mask_function_7x7

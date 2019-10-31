@@ -1815,7 +1815,7 @@ class TestAbstractTracerLensing(object):
             assert mean_error < 1e-4
 
         def test__deflections_via_potential_same_as_its_planes___use_multiple_planes(
-                self
+            self
         ):
             grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=1)
 
@@ -1934,19 +1934,19 @@ class TestAbstractTracerLensing(object):
 
             pixel_first_binned = convergence.in_1d_binned[0]
             pixel_first_binned_manual = (
-                                                convergence[0] + convergence[1] + convergence[2] + convergence[3]
-                                        ) / 4
+                convergence[0] + convergence[1] + convergence[2] + convergence[3]
+            ) / 4
 
             assert pixel_first_binned == pytest.approx(pixel_first_binned_manual, 1e-4)
 
             last_pixel_binned = convergence.in_1d_binned[99]
 
             last_pixel_binned_manual = (
-                                               convergence[399]
-                                               + convergence[398]
-                                               + convergence[397]
-                                               + convergence[396]
-                                       ) / 4
+                convergence[399]
+                + convergence[398]
+                + convergence[397]
+                + convergence[396]
+            ) / 4
 
             assert last_pixel_binned == pytest.approx(last_pixel_binned_manual, 1e-4)
 
@@ -1985,7 +1985,9 @@ class TestAbstractTracerLensing(object):
 
             convergence = tracer.convergence_via_jacobian_from_grid(grid=grid)
 
-            assert convergence == pytest.approx(plane_0_convergence + plane_1_convergence, 1.0e-8)
+            assert convergence == pytest.approx(
+                plane_0_convergence + plane_1_convergence, 1.0e-8
+            )
 
     class TestShearviaJacobian(object):
         def test__shear_sub_grid_binning_two_component_galaxy_plane(self):
@@ -2017,8 +2019,8 @@ class TestAbstractTracerLensing(object):
             last_pixel_binned = shear.in_1d_binned[99]
 
             last_pixel_binned_manual = (
-                                               shear[399] + shear[398] + shear[397] + shear[396]
-                                       ) / 4
+                shear[399] + shear[398] + shear[397] + shear[396]
+            ) / 4
 
             assert last_pixel_binned == pytest.approx(last_pixel_binned_manual, 1e-4)
 
@@ -2050,7 +2052,7 @@ class TestAbstractTracerLensing(object):
 
     class TestMagnification(object):
         def test__compare_magnification_from_eigen_values_and_from_determinant__two_component_galaxy_plane(
-                self
+            self
         ):
             grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=1)
 
@@ -2079,7 +2081,7 @@ class TestAbstractTracerLensing(object):
             radal_eigen_value = tracer.radial_eigen_value_from_grid(grid=grid)
 
             magnification_via_eigen_values = 1 / (
-                    tangential_eigen_value * radal_eigen_value
+                tangential_eigen_value * radal_eigen_value
             )
 
             mean_error = np.mean(
@@ -2099,7 +2101,7 @@ class TestAbstractTracerLensing(object):
             radal_eigen_value = tracer.radial_eigen_value_from_grid(grid=grid)
 
             magnification_via_eigen_values = 1 / (
-                    tangential_eigen_value * radal_eigen_value
+                tangential_eigen_value * radal_eigen_value
             )
 
             mean_error = np.mean(
@@ -2109,7 +2111,7 @@ class TestAbstractTracerLensing(object):
             assert mean_error < 1e-4
 
         def test__compare_magnification_from_determinant_and_from_convergence_and_shear__two_component_galaxy(
-                self
+            self
         ):
             grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=1)
 
@@ -2138,7 +2140,7 @@ class TestAbstractTracerLensing(object):
             shear = tracer.shear_via_jacobian_from_grid(grid=grid)
 
             magnification_via_convergence_and_shear = 1 / (
-                    (1 - convergence) ** 2 - shear ** 2
+                (1 - convergence) ** 2 - shear ** 2
             )
 
             mean_error = np.mean(
@@ -2158,7 +2160,7 @@ class TestAbstractTracerLensing(object):
             shear = tracer.shear_via_jacobian_from_grid(grid=grid)
 
             magnification_via_convergence_and_shear = 1 / (
-                    (1 - convergence) ** 2 - shear ** 2
+                (1 - convergence) ** 2 - shear ** 2
             )
 
             mean_error = np.mean(
@@ -2169,7 +2171,7 @@ class TestAbstractTracerLensing(object):
 
     class TestCriticalCurvesandCaustics(object):
         def test__compare_tangential_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
-                self
+            self
         ):
             grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
 
@@ -2224,7 +2226,7 @@ class TestAbstractTracerLensing(object):
             )
 
         def test__compare_radial_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
-                self
+            self
         ):
             grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
 
@@ -2279,7 +2281,7 @@ class TestAbstractTracerLensing(object):
             )
 
         def test__compare_tangential_caustic_from_magnification_and_lambda_t__two_component_galaxy(
-                self
+            self
         ):
             grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.25, sub_size=1)
 
@@ -2328,7 +2330,7 @@ class TestAbstractTracerLensing(object):
             )
 
         def test__compare_radial_caustic_from_magnification_and_lambda_t__two_component_galaxy(
-                self
+            self
         ):
             grid = al.grid.uniform(shape_2d=(60, 60), pixel_scales=0.5, sub_size=2)
 

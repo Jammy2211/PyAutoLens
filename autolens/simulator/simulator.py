@@ -7,8 +7,17 @@ from autolens.lens import ray_tracing
 
 class ImagingSimulator(simulator.ImagingSimulator):
     def __init__(
-        self, shape_2d, pixel_scales, sub_size, psf, exposure_time, background_sky_level, add_noise=True, noise_if_add_noise_false=0.1,
-        noise_seed=-1, origin=(0.0, 0.0),
+        self,
+        shape_2d,
+        pixel_scales,
+        sub_size,
+        psf,
+        exposure_time,
+        background_sky_level,
+        add_noise=True,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
+        origin=(0.0, 0.0),
     ):
         """A class representing a Imaging observation, using the shape of the image, the pixel scale,
         psf, exposure time, etc.
@@ -28,16 +37,20 @@ class ImagingSimulator(simulator.ImagingSimulator):
             The level of the background sky of an observationg using this data_type.
         """
 
-        super(ImagingSimulator, self).__init__(shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, psf=psf, exposure_time=exposure_time,
-                                               background_sky_level=background_sky_level, add_noise=add_noise, noise_if_add_noise_false=noise_if_add_noise_false,
-                                               noise_seed=noise_seed, origin=origin)
+        super(ImagingSimulator, self).__init__(
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            psf=psf,
+            exposure_time=exposure_time,
+            background_sky_level=background_sky_level,
+            add_noise=add_noise,
+            noise_if_add_noise_false=noise_if_add_noise_false,
+            noise_seed=noise_seed,
+            origin=origin,
+        )
 
-    def from_galaxies(
-        self,
-        galaxies,
-        sub_size=16,
-        should_plot_imaging=False,
-    ):
+    def from_galaxies(self, galaxies, sub_size=16, should_plot_imaging=False):
         """Simulate Imaging data_type for this data_type, as follows:
 
         1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
@@ -54,14 +67,14 @@ class ImagingSimulator(simulator.ImagingSimulator):
            imaging data_type instance."""
 
         grid = grids.Grid.uniform(
-            shape_2d=self.shape_2d, pixel_scales=self.psf.pixel_scales, sub_size=sub_size
+            shape_2d=self.shape_2d,
+            pixel_scales=self.psf.pixel_scales,
+            sub_size=sub_size,
         )
 
         tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
 
-        imaging = self.from_tracer(
-            tracer=tracer,
-        )
+        imaging = self.from_tracer(tracer=tracer)
 
         if should_plot_imaging:
             al.plot.imaging.subplot(imaging=imaging)
@@ -69,12 +82,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
         return imaging
 
     def from_galaxies_and_write_to_fits(
-        self,
-        galaxies,
-        data_path,
-        data_name,
-        sub_size=16,
-        should_plot_imaging=False,
+        self, galaxies, data_path, data_name, sub_size=16, should_plot_imaging=False
     ):
         """Simulate Imaging data_type for this data_type, as follows:
 
@@ -112,12 +120,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
             overwrite=True,
         )
 
-    def from_deflections_and_galaxies(
-        self,
-        deflections,
-        galaxies,
-        name=None,
-    ):
+    def from_deflections_and_galaxies(self, deflections, galaxies, name=None):
 
         grid = grids.Grid.uniform(
             shape_2d=deflections.shape_2d,
@@ -131,16 +134,9 @@ class ImagingSimulator(simulator.ImagingSimulator):
             map(lambda g: g.profile_image_from_grid(grid=deflected_grid), galaxies)
         )
 
-        return self.from_image(
-            image=image_2d,
-            name=name,
-        )
+        return self.from_image(image=image_2d, name=name)
 
-    def from_tracer(
-        self,
-        tracer,
-        name=None,
-    ):
+    def from_tracer(self, tracer, name=None):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 
@@ -174,7 +170,4 @@ class ImagingSimulator(simulator.ImagingSimulator):
             grid=grid, psf_shape=self.psf.shape_2d
         )
 
-        return self.from_image(
-            image=image.in_1d_binned,
-            name=name,
-        )
+        return self.from_image(image=image.in_1d_binned, name=name)

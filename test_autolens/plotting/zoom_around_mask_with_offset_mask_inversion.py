@@ -1,7 +1,7 @@
 from autolens.fit.plotters import masked_imaging_fit_plotters
-from test import simulation_util
+from test import simulate_util
 
-imaging = simulation_util.load_test_imaging(
+imaging = simulate_util.load_test_imaging(
     data_type="lens_sis__source_smooth__offset_centre", data_resolution="LSST"
 )
 
@@ -45,7 +45,7 @@ def fit_with_offset_centre(centre):
         galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid=grid_stack_with_pixelization_grid,
     )
-    fit = al.LensImageFit.from_masked_data_and_tracer(
+    fit = al.fit(
         masked_data=masked_imaging, tracer=tracer
     )
 

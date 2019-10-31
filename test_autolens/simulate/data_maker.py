@@ -35,7 +35,7 @@ makers.make_lens_mass__source_cuspy(
 makers.make_lens_sis__source_smooth(
     data_resolutions=data_resolutions, sub_size=sub_size
 )
-makers.make_lens_sis__source_smooth__offset_centre(
+makers.make_lens_mass__source_smooth__offset_centre(
     data_resolutions=data_resolutions, sub_size=sub_size
 )
 makers.make_lens_light__source_smooth(

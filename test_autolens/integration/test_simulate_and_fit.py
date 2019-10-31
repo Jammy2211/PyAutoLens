@@ -7,6 +7,7 @@ import shutil
 import autolens as al
 from autolens.simulator import simulator
 
+
 def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noise_normalization_correct():
     psf = al.kernel.manual_2d(
         array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
@@ -33,12 +34,10 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         exposure_time=300.0,
         psf=psf,
         background_sky_level=0.0,
-        add_noise=False
+        add_noise=False,
     )
 
-    imaging_simulated = imaging_simulator.from_tracer(
-        tracer=tracer,
-    )
+    imaging_simulated = imaging_simulator.from_tracer(tracer=tracer)
 
     imaging_simulated.noise_map = al.array.ones(
         shape_2d=imaging_simulated.image.shape_2d
@@ -119,7 +118,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     imaging_simulated = imaging_simulator.from_image(
         image=tracer.padded_profile_image_from_grid_and_psf_shape(
             grid=grid, psf_shape=psf.shape_2d
-        ),
+        )
     )
     imaging_simulated.noise_map = al.array.ones(
         shape_2d=imaging_simulated.image.shape_2d

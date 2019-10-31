@@ -8,6 +8,7 @@ from autolens.pipeline.phase import abstract
 from autolens.pipeline import visualizer
 from autolens.pipeline.phase.data.phase import default_mask_function
 
+
 class Analysis(af.Analysis):
     def __init__(self, cosmology, results, image_path):
         self.cosmology = cosmology
@@ -239,10 +240,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
              set of values
         """
 
-        mask = self.setup_phase_mask(
-            data=galaxy_data[0],
-            mask=mask,
-        )
+        mask = self.setup_phase_mask(data=galaxy_data[0], mask=mask)
 
         if self.use_image or self.use_convergence or self.use_potential:
 
