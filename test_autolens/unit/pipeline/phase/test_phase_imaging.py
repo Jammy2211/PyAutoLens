@@ -187,7 +187,9 @@ class TestPhase(object):
 
         masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
 
-        binned_up_masked_imaging = masked_imaging.binned_from_bin_up_factor(bin_up_factor=2)
+        binned_up_masked_imaging = masked_imaging.binned_from_bin_up_factor(
+            bin_up_factor=2
+        )
 
         assert (
             analysis.masked_imaging.image.in_2d

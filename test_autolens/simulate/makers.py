@@ -41,9 +41,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         add_noise=True,
     )
 
-    imaging = simulator.from_tracer(
-        tracer=tracer,
-    )
+    imaging = simulator.from_tracer(tracer=tracer)
 
     # Now, lets output this simulated imaging-simulator to the test_autoarray/simulator folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
@@ -301,15 +299,15 @@ def make_lens_sis__source_smooth(data_resolutions, sub_size):
         )
 
 
-def make_lens_sis__source_smooth__offset_centre(data_resolutions, sub_size):
+def make_lens_mass__source_smooth__offset_centre(data_resolutions, sub_size):
 
-    data_type = "lens_sis__source_smooth__offset_centre"
+    data_type = "lens_mass__source_smooth__offset_centre"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
     lens_galaxy = al.galaxy(
         redshift=0.5,
-        mass=al.mp.SphericalIsothermal(centre=(4.0, 4.0), einstein_radius=1.6),
+        mass=al.mp.SphericalIsothermal(centre=(2.0, 2.0), einstein_radius=1.6),
     )
 
     source_galaxy = al.galaxy(

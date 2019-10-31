@@ -17,8 +17,6 @@ class GalaxiesMockAnalysis(object):
         return 1
 
 
-
-
 class MockResults(object):
     def __init__(
         self,

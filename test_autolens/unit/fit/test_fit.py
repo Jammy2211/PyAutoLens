@@ -838,11 +838,11 @@ class TestImagingFit:
             assert (
                 unmasked_blurred_profile_image == fit.unmasked_blurred_profile_image
             ).all()
-    
+
             unmasked_blurred_profile_image_of_planes = tracer.unmasked_blurred_profile_image_of_planes_from_grid_and_psf(
                 grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
             )
-    
+
             assert (
                 unmasked_blurred_profile_image_of_planes[0]
                 == fit.unmasked_blurred_profile_image_of_planes[0]
@@ -851,11 +851,11 @@ class TestImagingFit:
                 unmasked_blurred_profile_image_of_planes[1]
                 == fit.unmasked_blurred_profile_image_of_planes[1]
             ).all()
-    
+
             unmasked_blurred_profile_image_of_galaxies = tracer.unmasked_blurred_profile_image_of_planes_and_galaxies_from_grid_and_psf(
                 grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
             )
-    
+
             assert (
                 unmasked_blurred_profile_image_of_galaxies[0][0]
                 == fit.unmasked_blurred_profile_image_of_planes_and_galaxies[0][0]

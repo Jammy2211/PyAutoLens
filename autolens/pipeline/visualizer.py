@@ -126,9 +126,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
             "plot_data_potential_chi_squared_map"
         )
         self.plot_fit_all_at_end_png = plot_setting("plot_fit_all_at_end_png")
-        self.plot_fit_all_at_end_fits = plot_setting(
-            "plot_fit_all_at_end_fits"
-        )
+        self.plot_fit_all_at_end_fits = plot_setting("plot_fit_all_at_end_fits")
         self.plot_fit_as_subplot = plot_setting("plot_fit_as_subplot")
         self.plot_fit_of_planes_as_subplot = plot_setting(
             "plot_fit_of_planes_as_subplot"
@@ -138,20 +136,14 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         )
         self.plot_fit_image = plot_setting("plot_fit_image")
         self.plot_fit_noise_map = plot_setting("plot_fit_noise_map")
-        self.plot_fit_signal_to_noise_map = plot_setting(
-            "plot_fit_signal_to_noise_map"
-        )
+        self.plot_fit_signal_to_noise_map = plot_setting("plot_fit_signal_to_noise_map")
         self.plot_fit_model_image = plot_setting("plot_fit_model_image")
         self.plot_fit_residual_map = plot_setting("plot_fit_residual_map")
         self.plot_fit_normalized_residual_map = plot_setting(
             "plot_fit_normalized_residual_map"
         )
-        self.plot_fit_chi_squared_map = plot_setting(
-            "plot_fit_chi_squared_map"
-        )
-        self.plot_fit_contribution_maps = plot_setting(
-            "plot_fit_contribution_maps"
-        )
+        self.plot_fit_chi_squared_map = plot_setting("plot_fit_chi_squared_map")
+        self.plot_fit_contribution_maps = plot_setting("plot_fit_contribution_maps")
         self.plot_fit_inversion_residual_map = plot_setting(
             "plot_fit_inversion_residual_map"
         )
@@ -276,11 +268,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
 
     def plot_hyper_images(self, last_results):
         mask = self.masked_imaging.mask
-        if (
-            self.should_plot_mask
-            and mask is not None
-            and last_results is not None
-        ):
+        if self.should_plot_mask and mask is not None and last_results is not None:
             phase_plotters.plot_hyper_images_for_phase(
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
