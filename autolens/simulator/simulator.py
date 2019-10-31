@@ -1,6 +1,6 @@
 import autofit as af
+from autoarray.structures import grids
 from autoarray.simulator import simulator
-from autoarray.data import imaging
 from autoarray.plotters import imaging_plotters
 from autolens.lens import ray_tracing
 
@@ -65,7 +65,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
         5) Output the simulator to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
-        grid = aa.grid.uniform(
+        grid = grids.Grid.uniform(
             shape_2d=self.shape_2d, pixel_scales=self.psf.pixel_scales, sub_size=sub_size
         )
 
@@ -132,7 +132,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
         name=None,
     ):
 
-        grid = aa.grid.uniform(
+        grid = grids.Grid.uniform(
             shape_2d=deflections.shape_2d,
             pixel_scales=deflections.pixel_scales,
             sub_size=1,

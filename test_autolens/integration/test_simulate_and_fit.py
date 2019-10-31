@@ -27,7 +27,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         light=al.lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5),
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     imaging_simulator = simulator.ImagingSimulator(
         shape_2d=(11, 11),
@@ -75,11 +75,11 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=2, radius_arcsec=0.8
     )
 
-    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+    masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.ImagingFit(masked_imaging=masked_imaging, tracer=tracer)
+    fit = al.fit(masked_data=masked_imaging, tracer=tracer)
 
     assert fit.chi_squared == 0.0
 
@@ -106,7 +106,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         redshift=1.0,
         light=al.lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5),
     )
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     imaging_simulator = simulator.ImagingSimulator(
         shape_2d=(11, 11),
@@ -155,11 +155,11 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=1, radius_arcsec=0.8
     )
 
-    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+    masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.ImagingFit(masked_imaging=masked_imaging, tracer=tracer)
+    fit = al.fit(masked_data=masked_imaging, tracer=tracer)
 
     assert fit.chi_squared == pytest.approx(0.0, 1e-4)
 

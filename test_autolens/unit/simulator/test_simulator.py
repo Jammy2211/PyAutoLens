@@ -29,9 +29,9 @@ class TestSimulatorImaging:
             redshift=1.0, light=al.lp.EllipticalSersic(intensity=0.3)
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-        simulator = al.ImagingSimulator(
+        simulator = al.simulator.imaging(
             shape_2d=(20, 20),
             pixel_scales=0.05,
             psf=psf,
@@ -85,9 +85,9 @@ class TestSimulatorImaging:
             redshift=1.0, light=al.lp.EllipticalSersic(intensity=0.3)
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-        simulator = al.ImagingSimulator(
+        simulator = al.simulator.imaging(
             shape_2d=(20, 20),
             pixel_scales=0.05,
             psf=psf,
@@ -150,7 +150,7 @@ class TestSimulatorImaging:
 
         psf = al.kernel.from_gaussian(shape_2d=(7, 7), sigma=0.1, pixel_scales=0.2)
 
-        simulator = al.ImagingSimulator(
+        simulator = al.simulator.imaging(
             shape_2d=(11, 11),
             pixel_scales=0.2,
             psf=psf,
@@ -165,7 +165,7 @@ class TestSimulatorImaging:
             sub_size=1,
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         imaging_manual = al.imaging.simulate(
             image=tracer.padded_profile_image_from_grid_and_psf_shape(
@@ -217,7 +217,7 @@ class TestSimulatorImaging:
 
         psf = al.kernel.from_gaussian(shape_2d=(7, 7), sigma=0.1, pixel_scales=0.2)
 
-        simulator = al.ImagingSimulator(
+        simulator = al.simulator.imaging(
             shape_2d=(11, 11),
             pixel_scales=0.2,
             psf=psf,

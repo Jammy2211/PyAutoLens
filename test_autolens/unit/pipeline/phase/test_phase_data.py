@@ -221,7 +221,7 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(
             data=imaging_7x7, positions=[[[1.0, 0.0], [-1.0, 0.0]]]
         )
-        tracer = al.Tracer.from_galaxies(
+        tracer = al.tracer.from_galaxies(
             galaxies=[
                 al.galaxy(
                     redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
@@ -234,7 +234,7 @@ class TestPhase(object):
             tracer=tracer
         )
 
-        tracer = al.Tracer.from_galaxies(
+        tracer = al.tracer.from_galaxies(
             galaxies=[
                 al.galaxy(
                     redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=0.0)
@@ -428,7 +428,7 @@ class TestPhase(object):
         )
 
     def test__default_mask_function(self, phase_imaging_7x7, imaging_7x7):
-        masked_imaging = al.MaskedImaging(
+        masked_imaging = al.masked.imaging(
             imaging=imaging_7x7,
             mask=phase_imaging_7x7.meta_data_fit.mask_function(image=imaging_7x7.image),
         )

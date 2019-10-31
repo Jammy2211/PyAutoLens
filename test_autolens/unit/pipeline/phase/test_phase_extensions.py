@@ -296,9 +296,9 @@ class TestImagePassing(object):
         )
         g1 = al.galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+        tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.fit(masked_data=masked_imaging_7x7, tracer=tracer)
 
         assert (fit_figure_of_merit == fit.figure_of_merit).all()
 
@@ -419,7 +419,7 @@ class TestHyperGalaxyPhase(object):
         )
         assert mask.sub_size == 2
 
-        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.ImagingFit(
             masked_imaging=masked_imaging,

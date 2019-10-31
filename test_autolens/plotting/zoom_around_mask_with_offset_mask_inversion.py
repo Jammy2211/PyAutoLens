@@ -41,7 +41,7 @@ def fit_with_offset_centre(centre):
         pixelization=pixelization_grid
     )
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.tracer.from_galaxies(
         galaxies=[lens_galaxy, source_galaxy],
         image_plane_grid=grid_stack_with_pixelization_grid,
     )

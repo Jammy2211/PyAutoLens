@@ -1,6 +1,7 @@
 from autoarray.operators.inversion import inversions
 from autoarray.operators import fourier_transform
 import autolens as al
+from autolens.fit.fit import ImagingFit, InterferometerFit
 import numpy as np
 import pytest
 
@@ -17,9 +18,9 @@ class TestImagingFit:
 
             g2 = al.galaxy(redshift=2.0)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             assert fit.total_inversions == 0
 
@@ -29,9 +30,9 @@ class TestImagingFit:
                 regularization=al.reg.Constant(),
             )
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             assert fit.total_inversions == 1
 
@@ -53,9 +54,9 @@ class TestImagingFit:
                 regularization=al.reg.Constant(),
             )
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             assert fit.total_inversions == 3
 
@@ -90,16 +91,16 @@ class TestImagingFit:
                 sub_size=1,
             )
 
-            masked_imaging_7x7 = al.MaskedImaging(imaging=imaging, mask=mask)
+            masked_imaging_7x7 = al.masked.imaging(imaging=imaging, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
             g0 = al.galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = al.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.tracer.from_galaxies(galaxies=[g0])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             assert (
                 fit.mask
@@ -193,16 +194,16 @@ class TestImagingFit:
                 sub_size=1,
             )
 
-            masked_imaging_7x7 = al.MaskedImaging(imaging=imaging, mask=mask)
+            masked_imaging_7x7 = al.masked.imaging(imaging=imaging, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
             g0 = al.galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = al.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.tracer.from_galaxies(galaxies=[g0])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             assert (
                 fit.mask
@@ -300,7 +301,7 @@ class TestImagingFit:
                 sub_size=1,
             )
 
-            masked_imaging_7x7 = al.MaskedImaging(imaging=imaging, mask=mask)
+            masked_imaging_7x7 = al.masked.imaging(imaging=imaging, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -315,9 +316,9 @@ class TestImagingFit:
                 hyper_minimum_value=0.0,
             )
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.tracer.from_galaxies(galaxies=[g0])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             assert (
                 fit.mask
@@ -404,18 +405,18 @@ class TestImagingFit:
                 sub_size=1,
             )
 
-            masked_imaging_7x7 = al.MaskedImaging(imaging=imaging, mask=mask)
+            masked_imaging_7x7 = al.masked.imaging(imaging=imaging, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
             g0 = al.galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = al.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.tracer.from_galaxies(galaxies=[g0])
 
             hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
 
-            fit = al.ImagingFit(
+            fit = ImagingFit(
                 masked_imaging=masked_imaging_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -510,18 +511,18 @@ class TestImagingFit:
                 sub_size=1,
             )
 
-            masked_imaging_7x7 = al.MaskedImaging(imaging=imaging, mask=mask)
+            masked_imaging_7x7 = al.masked.imaging(imaging=imaging, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
             g0 = al.galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = al.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.tracer.from_galaxies(galaxies=[g0])
 
             hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-            fit = al.ImagingFit(
+            fit = ImagingFit(
                 masked_imaging=masked_imaging_7x7,
                 tracer=tracer,
                 hyper_background_noise=hyper_background_noise,
@@ -600,9 +601,9 @@ class TestImagingFit:
                 redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             assert masked_imaging_7x7.noise_map.in_2d == pytest.approx(
                 fit.noise_map.in_2d
@@ -664,9 +665,9 @@ class TestImagingFit:
             )
             g2 = al.galaxy(redshift=1.0)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
                 grid=masked_imaging_7x7.grid
@@ -734,9 +735,9 @@ class TestImagingFit:
                 redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.ImagingFit(
+            fit = ImagingFit(
                 masked_imaging=masked_imaging_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -812,9 +813,9 @@ class TestImagingFit:
                 redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             blurred_profile_images_of_planes = tracer.blurred_profile_images_of_planes_from_grid_and_convolver(
                 grid=masked_imaging_7x7.grid,
@@ -872,9 +873,9 @@ class TestImagingFit:
 
             g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
+            tracer = al.tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_imaging_7x7.grid, sparse_grid=None
@@ -958,9 +959,9 @@ class TestImagingFit:
             g0 = al.galaxy(redshift=0.5)
             g1 = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_imaging_7x7.grid, sparse_grid=None
@@ -1015,9 +1016,9 @@ class TestImagingFit:
                 hyper_minimum_value=0.0,
             )
 
-            tracer = al.Tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
+            tracer = al.tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
 
-            fit = al.ImagingFit(
+            fit = ImagingFit(
                 masked_imaging=masked_imaging_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -1110,9 +1111,9 @@ class TestImagingFit:
 
             g0 = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
+            tracer = al.tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_imaging_7x7.grid, inversion_uses_border=False
@@ -1141,9 +1142,9 @@ class TestImagingFit:
             reg = al.reg.Constant(coefficient=1.0)
             galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+            tracer = al.tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             blurred_profile_image = tracer.blurred_profile_image_from_grid_and_convolver(
                 grid=masked_imaging_7x7.grid,
@@ -1248,9 +1249,9 @@ class TestImagingFit:
             reg = al.reg.Constant(coefficient=1.0)
             galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             traced_grids = tracer.traced_grids_of_planes_from_grid(
                 grid=masked_imaging_7x7.grid
@@ -1342,9 +1343,9 @@ class TestImagingFit:
             reg = al.reg.Constant(coefficient=1.0)
             galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+            tracer = al.tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = al.ImagingFit(
+            fit = ImagingFit(
                 masked_imaging=masked_imaging_7x7,
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
@@ -1458,9 +1459,9 @@ class TestImagingFit:
             reg = al.reg.Constant(coefficient=1.0)
             galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+            tracer = al.tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = al.ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             blurred_profile_image = tracer.blurred_profile_image_from_grid_and_convolver(
                 grid=masked_imaging_7x7.grid,
@@ -1499,9 +1500,9 @@ class TestInterferometerFit:
 
             g2 = al.galaxy(redshift=2.0)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = al.InterferometerFit(
+            fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_6x6, tracer=tracer
             )
 
@@ -1513,9 +1514,9 @@ class TestInterferometerFit:
                 regularization=al.reg.Constant(),
             )
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = al.InterferometerFit(
+            fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_6x6, tracer=tracer
             )
 
@@ -1539,9 +1540,9 @@ class TestInterferometerFit:
                 regularization=al.reg.Constant(),
             )
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = al.InterferometerFit(
+            fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_6x6, tracer=tracer
             )
 
@@ -1576,7 +1577,7 @@ class TestInterferometerFit:
                 sub_size=1,
             )
 
-            masked_interferometer = al.MaskedInterferometer(
+            masked_interferometer = al.masked.interferometer(
                 interferometer=interferometer, real_space_mask=real_space_mask
             )
 
@@ -1585,9 +1586,9 @@ class TestInterferometerFit:
             g0 = al.galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = al.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.tracer.from_galaxies(galaxies=[g0])
 
-            fit = al.InterferometerFit(
+            fit = InterferometerFit(
                 masked_interferometer=masked_interferometer, tracer=tracer
             )
 
@@ -1635,7 +1636,7 @@ class TestInterferometerFit:
                 sub_size=1,
             )
 
-            masked_interferometer = al.MaskedInterferometer(
+            masked_interferometer = al.masked.interferometer(
                 interferometer=interferometer, real_space_mask=real_space_mask
             )
 
@@ -1650,9 +1651,9 @@ class TestInterferometerFit:
                 image=profile_image
             )
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0])
+            tracer = al.tracer.from_galaxies(galaxies=[g0])
 
-            fit = al.InterferometerFit(
+            fit = InterferometerFit(
                 masked_interferometer=masked_interferometer, tracer=tracer
             )
 
@@ -1721,9 +1722,9 @@ class TestInterferometerFit:
                 redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.InterferometerFit(
+            fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_6x6, tracer=tracer
             )
 
@@ -1785,9 +1786,9 @@ class TestInterferometerFit:
             )
             g2 = al.galaxy(redshift=1.0)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = al.InterferometerFit(
+            fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_6x6, tracer=tracer
             )
 
@@ -1833,31 +1834,31 @@ class TestPositionsFit:
         tracer = MockTracerPositions(
             positions=[al.grid_irregular.manual_1d([[0.0, 0.0], [0.0, 1.0]])]
         )
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == 1.0
 
         tracer = MockTracerPositions(
             positions=[al.grid_irregular.manual_1d([[0.0, 0.0], [1.0, 1.0]])]
         )
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(2)
 
         tracer = MockTracerPositions(
             positions=[al.grid_irregular.manual_1d([[0.0, 0.0], [1.0, 3.0]])]
         )
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(1.0) + np.square(3.0))
 
         tracer = MockTracerPositions(
             positions=[al.grid_irregular.manual_1d([[-2.0, -4.0], [1.0, 3.0]])]
         )
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
         tracer = MockTracerPositions(
             positions=[al.grid_irregular.manual_1d([[8.0, 4.0], [-9.0, -4.0]])]
         )
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
     def test_multiple_positions__mock_position_tracer__maximum_separation_is_correct(
@@ -1868,7 +1869,7 @@ class TestPositionsFit:
                 al.grid_irregular.manual_1d([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]])
             ]
         )
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == 1.0
 
         tracer = MockTracerPositions(
@@ -1876,7 +1877,7 @@ class TestPositionsFit:
                 al.grid_irregular.manual_1d([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]])
             ]
         )
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(18)
 
         tracer = MockTracerPositions(
@@ -1884,7 +1885,7 @@ class TestPositionsFit:
                 al.grid_irregular.manual_1d([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])
             ]
         )
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(18)
 
         tracer = MockTracerPositions(
@@ -1901,7 +1902,7 @@ class TestPositionsFit:
                 )
             ]
         )
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
         tracer = MockTracerPositions(
@@ -1909,7 +1910,7 @@ class TestPositionsFit:
                 al.grid_irregular.manual_1d([[8.0, 4.0], [8.0, 4.0], [-9.0, -4.0]])
             ]
         )
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
     def test_multiple_sets_of_positions__multiple_sets_of_max_distances(self):
@@ -1921,7 +1922,7 @@ class TestPositionsFit:
             ]
         )
 
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
 
         assert fit.maximum_separations[0] == 1.0
         assert fit.maximum_separations[1] == np.sqrt(18)
@@ -1936,13 +1937,13 @@ class TestPositionsFit:
             ]
         )
 
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
         assert fit.chi_squared_map[0] == 1.0
         assert fit.chi_squared_map[1] == pytest.approx(18.0, 1e-4)
         assert fit.chi_squared_map[2] == pytest.approx(18.0, 1e-4)
         assert fit.figure_of_merit == pytest.approx(-0.5 * (1.0 + 18 + 18), 1e-4)
 
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=2.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=2.0)
         assert fit.chi_squared_map[0] == (1.0 / 2.0) ** 2.0
         assert fit.chi_squared_map[1] == pytest.approx(
             (np.sqrt(18.0) / 2.0) ** 2.0, 1e-4
@@ -1964,7 +1965,7 @@ class TestPositionsFit:
         tracer = MockTracerPositions(
             positions=[al.grid_irregular.manual_1d([[0.0, 0.0], [0.0, 1.0]])]
         )
-        fit = al.PositionsFit(positions=tracer.positions, noise_map=1.0)
+        fit = al.fit_positions(positions=tracer.positions, noise_map=1.0)
 
         assert fit.maximum_separation_within_threshold(threshold=100.0)
         assert not fit.maximum_separation_within_threshold(threshold=0.1)
