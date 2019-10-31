@@ -184,7 +184,7 @@ class TestPhase(object):
 
         assert (analysis.masked_imaging.mask == binned_up_mask).all()
 
-        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
+        masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
 
         binned_up_lens_data = masked_imaging.binned_from_bin_up_factor(bin_up_factor=2)
 
@@ -278,10 +278,10 @@ class TestPhase(object):
         mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(
             data=imaging_7x7, mask=None
         )
-        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        fit = al.ImagingFit(masked_imaging=masked_imaging, tracer=tracer)
+        fit = al.fit(masked_data=masked_imaging, tracer=tracer)
 
         assert fit.likelihood == fit_figure_of_merit
 
@@ -314,7 +314,7 @@ class TestPhase(object):
         )
         assert mask.sub_size == 4
 
-        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.ImagingFit(
             masked_imaging=masked_imaging,

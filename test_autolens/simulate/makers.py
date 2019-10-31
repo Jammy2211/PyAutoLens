@@ -33,12 +33,12 @@ def simulate_image_from_galaxies_and_output_to_fits(
     )
 
     # Use the input galaxies to setup a tracer, which will generate the image for the simulated Imaging data_type.
-    tracer = al.Tracer.from_galaxies(galaxies=galaxies)
+    tracer = al.tracer.from_galaxies(galaxies=galaxies)
 
     # Simulate the Imaging data_type, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.al. the PSF convolution).
 
-    imaging_simulator = al.ImagingSimulator(
+    imaging_simulator = al.simulator.imaging(
         shape_2d=shape_2d,
         pixel_scales=pixel_scales,
         exposure_time=exposure_time,

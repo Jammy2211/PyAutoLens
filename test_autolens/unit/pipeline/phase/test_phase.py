@@ -260,7 +260,7 @@ class TestResult(object):
 
         result = phase_data_7x7.run(data=imaging_7x7)
 
-        assert isinstance(result.most_likely_tracer, al.Tracer)
+        assert isinstance(result.most_likely_tracer, al.tracer)
         assert result.most_likely_tracer.galaxies[0].light.intensity == 1.0
         assert result.most_likely_tracer.galaxies[1].light.intensity == 2.0
 

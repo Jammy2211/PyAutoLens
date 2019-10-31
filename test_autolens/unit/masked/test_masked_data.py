@@ -7,7 +7,7 @@ import pytest
 class TestMaskedImaging(object):
     def test__masked_data_via_autoarray(self, imaging_7x7, sub_mask_7x7):
 
-        masked_imaging_7x7 = al.masked_imaging.manual(
+        masked_imaging_7x7 = al.masked.imaging.manual(
             imaging=imaging_7x7, mask=sub_mask_7x7
         )
 
@@ -33,7 +33,7 @@ class TestMaskedImaging(object):
         self, imaging_7x7, sub_mask_7x7, blurring_grid_7x7
     ):
 
-        masked_imaging_7x7 = al.MaskedImaging(
+        masked_imaging_7x7 = al.masked.imaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
             pixel_scale_interpolation_grid=1.0,
@@ -76,7 +76,7 @@ class TestMaskedImaging(object):
 
     def test__masked_imaging_6x6_with_binned_up_imaging(self, imaging_6x6, mask_6x6):
 
-        masked_imaging_6x6 = al.MaskedImaging(imaging=imaging_6x6, mask=mask_6x6)
+        masked_imaging_6x6 = al.masked.imaging(imaging=imaging_6x6, mask=mask_6x6)
 
         binned_mask = np.array(
             [[True, True, True], [True, False, True], [True, True, True]]
@@ -104,7 +104,7 @@ class TestMaskedImaging(object):
         self, imaging_7x7, sub_mask_7x7
     ):
 
-        masked_imaging_7x7 = al.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
+        masked_imaging_7x7 = al.masked.imaging(imaging=imaging_7x7, mask=sub_mask_7x7)
 
         masked_imaging_snr_limit = masked_imaging_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
             signal_to_noise_limit=0.25
@@ -135,7 +135,7 @@ class TestMaskedImaging(object):
         self, imaging_7x7, sub_mask_7x7
     ):
 
-        masked_imaging_7x7 = al.MaskedImaging(
+        masked_imaging_7x7 = al.masked.imaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
             positions=[1],
@@ -163,7 +163,7 @@ class TestMaskedImaging(object):
 class TestMaskedInterferometer(object):
     def test__masked_data_via_autoarray(self, interferometer_7, sub_mask_7x7):
 
-        masked_interferometer_7 = al.MaskedInterferometer(
+        masked_interferometer_7 = al.masked.interferometer(
             interferometer=interferometer_7, real_space_mask=sub_mask_7x7
         )
 
@@ -199,7 +199,7 @@ class TestMaskedInterferometer(object):
         self, interferometer_7, sub_mask_7x7, grid_7x7, sub_grid_7x7
     ):
 
-        masked_interferometer_7 = al.MaskedInterferometer(
+        masked_interferometer_7 = al.masked.interferometer(
             interferometer=interferometer_7,
             real_space_mask=sub_mask_7x7,
             pixel_scale_interpolation_grid=1.0,
@@ -241,7 +241,7 @@ class TestMaskedInterferometer(object):
         )
         mask[9, 9] = False
 
-        masked_interferometer = al.MaskedInterferometer(
+        masked_interferometer = al.masked.interferometer(
             interferometer=interferometer,
             real_space_mask=mask,
             trimmed_primary_beam_shape_2d=(5, 5),

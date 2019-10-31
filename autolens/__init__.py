@@ -41,6 +41,7 @@ from autolens.lens.plane import Plane as plane
 from autolens.lens.ray_tracing import Tracer as tracer
 from autolens import util
 from autolens.fit.fit import fit
+from autolens.fit.fit import PositionsFit as fit_positions
 from autolens.pipeline import phase_tagging, pipeline_tagging
 from autolens.pipeline.phase.abstract import phase
 from autolens.pipeline.phase.abstract.phase import AbstractPhase
