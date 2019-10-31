@@ -3,8 +3,8 @@ import copy
 import numpy as np
 from typing import cast
 
-import autoarray as aa
 import autofit as af
+from autoarray.fit import fit as aa_fit
 from autolens.fit import fit
 from autolens.masked import masked_data
 from autoastro.galaxy import galaxy as g
@@ -51,7 +51,7 @@ class Analysis(af.Analysis):
                 hyper_galaxy_image=self.hyper_galaxy_image,
             )
 
-            fit_normal = aa.fit_imaging(
+            fit_normal = aa_fit.ImagingFit(
                 image=self.masked_imaging.image,
                 noise_map=self.masked_imaging.noise_map,
                 mask=self.masked_imaging.mask,
@@ -132,7 +132,7 @@ class Analysis(af.Analysis):
 
         noise_map = noise_map + hyper_noise_map
 
-        return aa.fit_imaging(
+        return aa_fit.ImagingFit(
             image=image,
             noise_map=noise_map,
             mask=self.masked_imaging.mask,

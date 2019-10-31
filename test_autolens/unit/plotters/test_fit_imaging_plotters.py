@@ -18,7 +18,7 @@ def test__subtracted_image_of_plane_is_output(
     plot_patch,
 ):
 
-    al.plot.imaging_fit.subtracted_image_of_plane(
+    al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
         mask_overlay=masked_imaging_fit_x2_plane_7x7.mask,
@@ -33,7 +33,7 @@ def test__subtracted_image_of_plane_is_output(
         in plot_patch.paths
     )
 
-    al.plot.imaging_fit.subtracted_image_of_plane(
+    al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
         mask_overlay=masked_imaging_fit_x2_plane_7x7.mask,
@@ -48,7 +48,7 @@ def test__subtracted_image_of_plane_is_output(
         in plot_patch.paths
     )
 
-    al.plot.imaging_fit.subtracted_image_of_plane(
+    al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
         mask_overlay=masked_imaging_fit_x2_plane_7x7.mask,
@@ -71,7 +71,7 @@ def test__model_image_of_plane_is_output(
     plot_patch,
 ):
 
-    al.plot.imaging_fit.model_image_of_plane(
+    al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
         mask_overlay=masked_imaging_fit_x2_plane_7x7.mask,
@@ -85,7 +85,7 @@ def test__model_image_of_plane_is_output(
         imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
     )
 
-    al.plot.imaging_fit.model_image_of_plane(
+    al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
         mask_overlay=masked_imaging_fit_x2_plane_7x7.mask,
@@ -99,7 +99,7 @@ def test__model_image_of_plane_is_output(
         imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
     )
 
-    al.plot.imaging_fit.model_image_of_plane(
+    al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
         mask_overlay=masked_imaging_fit_x2_plane_7x7.mask,
@@ -118,7 +118,7 @@ def test__fit_sub_plot(
     masked_imaging_fit_x2_plane_7x7, imaging_fit_plotter_path, plot_patch
 ):
 
-    al.plot.imaging_fit.subplot(
+    al.plot.fit_imaging.subplot(
         fit=masked_imaging_fit_x2_plane_7x7,
         should_plot_mask_overlay=True,
         cb_tick_values=[1.0],
@@ -137,7 +137,7 @@ def test__fit_for_plane_subplot(
     plot_patch,
 ):
 
-    al.plot.imaging_fit.subplot_for_plane(
+    al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
         should_plot_mask_overlay=True,
@@ -149,7 +149,7 @@ def test__fit_for_plane_subplot(
 
     assert imaging_fit_plotter_path + "lens_fit_plane_0.png" in plot_patch.paths
 
-    al.plot.imaging_fit.subplot_for_plane(
+    al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
         should_plot_mask_overlay=True,
@@ -161,7 +161,7 @@ def test__fit_for_plane_subplot(
 
     assert imaging_fit_plotter_path + "lens_fit_plane_0.png" in plot_patch.paths
 
-    al.plot.imaging_fit.subplot_for_plane(
+    al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
         should_plot_mask_overlay=True,
@@ -181,7 +181,7 @@ def test__fit_for_planes_subplot(
     plot_patch,
 ):
 
-    al.plot.imaging_fit.subplot_of_planes(
+    al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x1_plane_7x7,
         should_plot_mask_overlay=True,
         cb_tick_values=[1.0],
@@ -192,7 +192,7 @@ def test__fit_for_planes_subplot(
 
     assert imaging_fit_plotter_path + "lens_fit_plane_0.png" in plot_patch.paths
 
-    al.plot.imaging_fit.subplot_of_planes(
+    al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x2_plane_7x7,
         should_plot_mask_overlay=True,
         cb_tick_values=[1.0],
@@ -212,7 +212,7 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
     plot_patch,
 ):
 
-    al.plot.imaging_fit.individuals(
+    al.plot.fit_imaging.individuals(
         fit=masked_imaging_fit_x1_plane_7x7,
         should_plot_image=True,
         should_plot_noise_map=False,
@@ -258,7 +258,7 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         imaging_fit_plotter_path + "fit_plane_image_of_plane_0.png" in plot_patch.paths
     )
 
-    al.plot.imaging_fit.individuals(
+    al.plot.fit_imaging.individuals(
         fit=masked_imaging_fit_x2_plane_7x7,
         should_plot_image=True,
         should_plot_noise_map=False,

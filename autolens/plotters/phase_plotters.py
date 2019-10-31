@@ -1,7 +1,7 @@
 import autofit as af
 import autoarray as aa
 from autolens.plotters import ray_tracing_plotters, hyper_plotters
-from autolens.plotters import fit_imaging_plotters
+from autolens.plotters.fit_imaging_plotters import fit_imaging_plotters
 
 
 def imaging_of_phase(

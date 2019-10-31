@@ -7,6 +7,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 import autolens as al
+from autolens.fit.fit import ImagingFit
 from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
@@ -316,7 +317,7 @@ class TestPhase(object):
 
         masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.ImagingFit(
+        fit = ImagingFit(
             masked_imaging=masked_imaging,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,

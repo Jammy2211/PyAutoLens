@@ -1,4 +1,4 @@
-import autoarray as aa
+from autoarray.structures import grids
 from autoarray.masked import masked_data
 from autolens.fit import fit
 from autolens import exc
@@ -10,7 +10,7 @@ class AbstractLensMasked(object):
     ):
 
         if positions is not None:
-            self.positions = aa.positions(positions=positions)
+            self.positions = grids.Positions(positions=positions)
         else:
             self.positions = None
 
