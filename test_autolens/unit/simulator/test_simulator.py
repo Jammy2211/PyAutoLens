@@ -19,13 +19,13 @@ class TestSimulatorImaging:
 
         grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
-        lens_galaxy = al.Galaxy(
+        lens_galaxy = al.galaxy(
             redshift=0.5,
             light=al.lp.EllipticalSersic(intensity=1.0),
             mass=al.mp.EllipticalIsothermal(einstein_radius=1.6),
         )
 
-        source_galaxy = al.Galaxy(
+        source_galaxy = al.galaxy(
             redshift=1.0, light=al.lp.EllipticalSersic(intensity=0.3)
         )
 
@@ -77,11 +77,11 @@ class TestSimulatorImaging:
 
         grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
-        lens_galaxy = al.Galaxy(
+        lens_galaxy = al.galaxy(
             redshift=0.5, mass=al.mp.EllipticalIsothermal(einstein_radius=1.6)
         )
 
-        source_galaxy = al.Galaxy(
+        source_galaxy = al.galaxy(
             redshift=1.0, light=al.lp.EllipticalSersic(intensity=0.3)
         )
 
@@ -127,14 +127,14 @@ class TestSimulatorImaging:
         self
     ):
 
-        lens_galaxy = al.Galaxy(
+        lens_galaxy = al.galaxy(
             redshift=0.5,
             mass=al.mp.EllipticalIsothermal(
                 centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
             ),
         )
 
-        source_galaxy = al.Galaxy(
+        source_galaxy = al.galaxy(
             redshift=0.5,
             light=al.lp.EllipticalSersic(
                 centre=(0.1, 0.1),
@@ -196,14 +196,14 @@ class TestSimulatorImaging:
 
     def test__simulate_imaging_from_lens__source_galaxy__and_write_to_fits(self):
 
-        lens_galaxy = al.Galaxy(
+        lens_galaxy = al.galaxy(
             redshift=0.5,
             mass=al.mp.EllipticalIsothermal(
                 centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
             ),
         )
 
-        source_galaxy = al.Galaxy(
+        source_galaxy = al.galaxy(
             redshift=0.5,
             light=al.lp.EllipticalSersic(
                 centre=(0.1, 0.1),

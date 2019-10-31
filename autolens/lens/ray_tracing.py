@@ -7,7 +7,7 @@ from autoarray.operators.inversion import inversions as inv
 from autoastro.util import cosmology_util
 from autoastro.galaxy import galaxy as g
 from autolens.lens import plane as pl
-from autolens.lens.util import lens_util
+from autolens.util import lens_util
 
 
 class AbstractTracer(object):

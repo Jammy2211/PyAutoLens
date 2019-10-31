@@ -9,14 +9,14 @@ from test_autolens.mock import mock_pipeline
 
 @pytest.fixture(name="lens_galaxy")
 def make_lens_galaxy():
-    return al.Galaxy(
+    return al.galaxy(
         redshift=1.0, light=al.lp.SphericalSersic(), mass=al.mp.SphericalIsothermal()
     )
 
 
 @pytest.fixture(name="source_galaxy")
 def make_source_galaxy():
-    return al.Galaxy(redshift=2.0, light=al.lp.SphericalSersic())
+    return al.galaxy(redshift=2.0, light=al.lp.SphericalSersic())
 
 
 @pytest.fixture(name="all_galaxies")
@@ -155,12 +155,12 @@ class TestVariableFixing(object):
 
         assert mapper.prior_count == 9
 
-        instance.lens_galaxy = al.Galaxy(
+        instance.lens_galaxy = al.galaxy(
             pixelization=al.pix.Rectangular(),
             regularization=al.reg.Constant(),
             redshift=1.0,
         )
-        instance.source_galaxy = al.Galaxy(
+        instance.source_galaxy = al.galaxy(
             redshift=1.0, light=al.lp.EllipticalLightProfile()
         )
 
@@ -184,7 +184,7 @@ class TestImagePassing(object):
         assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
-        result.constant.galaxies.lens = al.Galaxy(redshift=0.5)
+        result.constant.galaxies.lens = al.galaxy(redshift=0.5)
 
         image_dict = result.image_galaxy_dict
         assert (image_dict[("galaxies", "lens")].in_2d == np.zeros((7, 7))).all()
@@ -197,8 +197,8 @@ class TestImagePassing(object):
         mask = mask_function_7x7(image=imaging_7x7.image)
 
         results_collection_7x7[0].galaxy_images = [
-            al.masked_array.full(fill_value=2.0, mask=mask),
-            al.masked_array.full(fill_value=2.0, mask=mask),
+            al.masked.array.full(fill_value=2.0, mask=mask),
+            al.masked.array.full(fill_value=2.0, mask=mask),
         ]
         results_collection_7x7[0].galaxy_images[0][3] = -1.0
         results_collection_7x7[0].galaxy_images[1][5] = -1.0
@@ -285,7 +285,7 @@ class TestImagePassing(object):
 
         hyper_model_image = lens_hyper_image + source_hyper_image
 
-        g0 = al.Galaxy(
+        g0 = al.galaxy(
             redshift=0.5,
             light_profile=instance.galaxies.lens.light,
             mass_profile=instance.galaxies.lens.mass,
@@ -294,7 +294,7 @@ class TestImagePassing(object):
             hyper_galaxy_image=lens_hyper_image,
             hyper_minimum_value=0.0,
         )
-        g1 = al.Galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
+        g1 = al.galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
@@ -397,7 +397,7 @@ class TestHyperGalaxyPhase(object):
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        lens_galaxy = al.Galaxy(
+        lens_galaxy = al.galaxy(
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 

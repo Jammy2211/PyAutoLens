@@ -18,7 +18,7 @@ mask = al.mask.circular(
 
 # The lines of code below do everything we're used to, that is, setup an image and its al.ogrid, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
-lens_galaxy = al.Galaxy(
+lens_galaxy = al.galaxy(
     redshift=0.5,
     bulge=al.EllipticalDevVaucouleurs(
         centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.1, effective_radius=1.0

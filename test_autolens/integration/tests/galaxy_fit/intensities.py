@@ -21,7 +21,7 @@ def galaxy_fit_phase():
 
     grid = al.grid.uniform(shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=4)
 
-    galaxy = al.Galaxy(
+    galaxy = al.galaxy(
         redshift=0.5,
         light=al.lp.SphericalExponential(
             centre=(0.0, 0.0), intensity=1.0, effective_radius=0.5

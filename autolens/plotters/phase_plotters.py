@@ -1,7 +1,7 @@
 import autofit as af
 import autoarray as aa
 from autolens.plotters import ray_tracing_plotters, hyper_plotters
-from autolens.plotters import imaging_fit_plotters
+from autolens.plotters import fit_imaging_plotters
 
 
 def imaging_of_phase(
@@ -176,7 +176,7 @@ def imaging_fit_of_phase(
 
     if should_plot_fit_as_subplot:
 
-        imaging_fit_plotters.subplot(
+        fit_imaging_plotters.subplot(
             fit=fit,
             should_plot_mask_overlay=should_plot_mask_overlay,
             positions=positions,
@@ -188,7 +188,7 @@ def imaging_fit_of_phase(
 
     if should_plot_fit_of_planes_as_subplot:
 
-        imaging_fit_plotters.subplot_of_planes(
+        fit_imaging_plotters.subplot_of_planes(
             fit=fit,
             should_plot_mask_overlay=should_plot_mask_overlay,
             positions=positions,
@@ -208,7 +208,7 @@ def imaging_fit_of_phase(
             output_format="png",
         )
 
-    imaging_fit_plotters.individuals(
+    fit_imaging_plotters.individuals(
         fit=fit,
         should_plot_mask_overlay=should_plot_mask_overlay,
         positions=positions,
@@ -236,7 +236,7 @@ def imaging_fit_of_phase(
 
         if should_plot_all_at_end_png:
 
-            imaging_fit_plotters.individuals(
+            fit_imaging_plotters.individuals(
                 fit=fit,
                 should_plot_mask_overlay=should_plot_mask_overlay,
                 positions=positions,
@@ -266,7 +266,7 @@ def imaging_fit_of_phase(
                 path=output_path, folder_names=["fits"]
             )
 
-            imaging_fit_plotters.individuals(
+            fit_imaging_plotters.individuals(
                 fit=fit,
                 should_plot_mask_overlay=should_plot_mask_overlay,
                 positions=positions,

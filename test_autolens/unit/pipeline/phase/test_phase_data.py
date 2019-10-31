@@ -174,7 +174,7 @@ class TestPhase(object):
         self, phase_imaging_7x7, imaging_7x7, mask_function_7x7
     ):
         phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=dict(source=al.Galaxy(redshift=0.5)),
+            galaxies=dict(source=al.galaxy(redshift=0.5)),
             mask_function=mask_function_7x7,
             positions_threshold=50.0,
             cosmology=cosmo.FLRW,
@@ -192,7 +192,7 @@ class TestPhase(object):
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=dict(source=al.Galaxy(redshift=0.5)),
+            galaxies=dict(source=al.galaxy(redshift=0.5)),
             mask_function=mask_function_7x7,
             positions_threshold=0.0,
             cosmology=cosmo.FLRW,
@@ -211,7 +211,7 @@ class TestPhase(object):
             )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=dict(source=al.Galaxy(redshift=0.5)),
+            galaxies=dict(source=al.galaxy(redshift=0.5)),
             mask_function=mask_function_7x7,
             positions_threshold=0.5,
             cosmology=cosmo.FLRW,
@@ -223,10 +223,10 @@ class TestPhase(object):
         )
         tracer = al.Tracer.from_galaxies(
             galaxies=[
-                al.Galaxy(
+                al.galaxy(
                     redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
                 ),
-                al.Galaxy(redshift=1.0),
+                al.galaxy(redshift=1.0),
             ]
         )
 
@@ -236,10 +236,10 @@ class TestPhase(object):
 
         tracer = al.Tracer.from_galaxies(
             galaxies=[
-                al.Galaxy(
+                al.galaxy(
                     redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=0.0)
                 ),
-                al.Galaxy(redshift=1.0),
+                al.galaxy(redshift=1.0),
             ]
         )
 
@@ -276,7 +276,7 @@ class TestPhase(object):
     ):
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
-                source=al.Galaxy(
+                source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(3, 3)),
                     regularization=al.reg.Constant(),
@@ -299,7 +299,7 @@ class TestPhase(object):
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
-                source=al.Galaxy(
+                source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(4, 4)),
                     regularization=al.reg.Constant(),
@@ -323,7 +323,7 @@ class TestPhase(object):
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
-                source=al.Galaxy(
+                source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(3, 3)),
                     regularization=al.reg.Constant(),
@@ -345,7 +345,7 @@ class TestPhase(object):
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
-                source=al.Galaxy(
+                source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(4, 4)),
                     regularization=al.reg.Constant(),
@@ -382,7 +382,7 @@ class TestPhase(object):
     def test__pixelization_property_extracts_pixelization(
         self, mask_function_7x7, imaging_7x7
     ):
-        source_galaxy = al.Galaxy(redshift=0.5)
+        source_galaxy = al.galaxy(redshift=0.5)
 
         phase_imaging_7x7 = al.PhaseImaging(
             mask_function=mask_function_7x7,
@@ -393,7 +393,7 @@ class TestPhase(object):
 
         assert phase_imaging_7x7.meta_data_fit.pixelization is None
 
-        source_galaxy = al.Galaxy(
+        source_galaxy = al.galaxy(
             redshift=0.5,
             pixelization=al.pix.Rectangular(),
             regularization=al.reg.Constant(),
@@ -519,10 +519,10 @@ class TestPhase(object):
     ):
         # noinspection PyTypeChecker
 
-        lens_galaxy = al.Galaxy(
+        lens_galaxy = al.galaxy(
             redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=100.0)
         )
-        source_galaxy = al.Galaxy(
+        source_galaxy = al.galaxy(
             redshift=1.0,
             pixelization=al.pix.Rectangular(shape=(3, 3)),
             regularization=al.reg.Constant(coefficient=1.0),
@@ -630,7 +630,7 @@ class TestPhase(object):
             phase_name="test_phase",
             mask_function=mask_function_7x7,
             galaxies=[
-                al.Galaxy(
+                al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular,
                     regularization=al.reg.Constant,
@@ -650,7 +650,7 @@ class TestPhase(object):
             phase_name="test_phase",
             mask_function=mask_function_7x7,
             galaxies=[
-                al.Galaxy(
+                al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular,
                     regularization=al.reg.Constant,
@@ -677,7 +677,7 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=[
-                al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+                al.galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
             phase_name="test_phase_2",
         )
@@ -695,7 +695,7 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=[
-                al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+                al.galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
             sub_size=2,
             phase_name="test_phase_2",
@@ -716,7 +716,7 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=[
-                al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+                al.galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
             phase_name="test_phase_2",
         )
@@ -729,10 +729,10 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=dict(
-                lens=al.Galaxy(
+                lens=al.galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
                 ),
-                source=al.Galaxy(redshift=1.0),
+                source=al.galaxy(redshift=1.0),
             ),
             positions_threshold=1.0,
             phase_name="test_phase_2",
@@ -751,10 +751,10 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=dict(
-                lens=al.Galaxy(
+                lens=al.galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
                 ),
-                source=al.Galaxy(
+                source=al.galaxy(
                     redshift=1.0,
                     pixelization=al.pix.VoronoiMagnification(shape=(2, 3)),
                     regularization=al.reg.Constant(),
@@ -773,10 +773,10 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=dict(
-                lens=al.Galaxy(
+                lens=al.galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
                 ),
-                source=al.Galaxy(
+                source=al.galaxy(
                     redshift=1.0,
                     pixelization=al.pix.VoronoiBrightnessImage(pixels=6),
                     regularization=al.reg.Constant(),
@@ -802,7 +802,7 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=[
-                al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+                al.galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
             phase_name="test_phase_2",
         )
@@ -815,10 +815,10 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=dict(
-                lens=al.Galaxy(
+                lens=al.galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
                 ),
-                source=al.Galaxy(
+                source=al.galaxy(
                     redshift=1.0,
                     pixelization=al.pix.VoronoiBrightnessImage(pixels=6),
                     regularization=al.reg.Constant(),
@@ -847,7 +847,7 @@ class TestPhasePickle(object):
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
-                lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
+                lens=al.galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
         )
 
@@ -862,7 +862,7 @@ class TestPhasePickle(object):
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
-                lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
+                lens=al.galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
         )
 
@@ -881,7 +881,7 @@ class TestPhasePickle(object):
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
-                lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
+                lens=al.galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
         )
         phase_imaging_7x7.make_analysis = make_analysis

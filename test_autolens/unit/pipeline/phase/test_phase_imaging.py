@@ -92,8 +92,8 @@ class TestPhase(object):
         )
 
         result = phase_imaging_7x7.run(data=imaging_7x7)
-        assert isinstance(result.constant.galaxies[0], al.Galaxy)
-        assert isinstance(result.constant.galaxies[0], al.Galaxy)
+        assert isinstance(result.constant.galaxies[0], al.galaxy)
+        assert isinstance(result.constant.galaxies[0], al.galaxy)
 
     def test_modify_image(self, mask_function_7x7, imaging_7x7, mask_7x7):
         class MyPhase(al.PhaseImaging):
@@ -259,7 +259,7 @@ class TestPhase(object):
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, imaging_7x7, mask_function_7x7
     ):
-        lens_galaxy = al.Galaxy(
+        lens_galaxy = al.galaxy(
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
@@ -291,7 +291,7 @@ class TestPhase(object):
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        lens_galaxy = al.Galaxy(
+        lens_galaxy = al.galaxy(
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 

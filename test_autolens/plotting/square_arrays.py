@@ -26,12 +26,12 @@ mask = al.mask.elliptical(
 
 # The lines of code below do everything we're used to, that is, setup an image and its al.ogrid, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
-lens_galaxy = al.Galaxy(
+lens_galaxy = al.galaxy(
     mass=al.mp.EllipticalIsothermal(
         centre=(1.0, 1.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
     )
 )
-source_galaxy = al.Galaxy(
+source_galaxy = al.galaxy(
     pixelization=al.pix.VoronoiMagnification(shape=(20, 20)),
     regularization=al.reg.Constant(coefficient=1.0),
 )
