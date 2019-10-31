@@ -11,7 +11,7 @@ data_resolution = "LSST"
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     def modify_mask_function(image):
         return al.mask.circular(
-            shape_2d=image.shape, pixel_scales=image.pixel_scales, radius_arcsec=5.0
+            shape_2d=image.shape_2d, pixel_scales=image.pixel_scales, radius_arcsec=5.0
         )
 
     class LensPlaneGalaxy0Phase(al.PhaseImaging):

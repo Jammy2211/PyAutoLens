@@ -8,7 +8,7 @@ from autolens.lens import ray_tracing
 class ImagingSimulator(simulator.ImagingSimulator):
     def __init__(
         self, shape_2d, pixel_scales, sub_size, psf, exposure_time, background_sky_level, add_noise=True, noise_if_add_noise_false=0.1,
-        noise_seed=-1,
+        noise_seed=-1, origin=(0.0, 0.0),
     ):
         """A class representing a Imaging observation, using the shape of the image, the pixel scale,
         psf, exposure time, etc.
@@ -28,22 +28,9 @@ class ImagingSimulator(simulator.ImagingSimulator):
             The level of the background sky of an observationg using this data_type.
         """
 
-        super(ImagingSimulator, self).__init__(shape_2d=shape_2d, pixel_scales=pixel_scales, psf=psf, exposure_time=exposure_time,
+        super(ImagingSimulator, self).__init__(shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, psf=psf, exposure_time=exposure_time,
                                                background_sky_level=background_sky_level, add_noise=add_noise, noise_if_add_noise_false=noise_if_add_noise_false,
-                                               noise_seed=noise_seed)
-
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
-
-        self.shape_2d = shape_2d
-        self.pixel_scales = pixel_scales
-        self.sub_size = sub_size
-        self.psf = psf
-        self.exposure_time = exposure_time
-        self.background_sky_level = background_sky_level
-        self.add_noise = add_noise
-        self.noise_if_add_noise_false = noise_if_add_noise_false
-        self.noise_seed = noise_seed
+                                               noise_seed=noise_seed, origin=origin)
 
     def from_galaxies(
         self,
@@ -53,7 +40,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
     ):
         """Simulate Imaging data_type for this data_type, as follows:
 
-        1)  Setup the image-plane al.ogrid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
+        1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
 
         2) Use this grid and the lens and source galaxies to setup a tracer, which generates the image of \
            the simulated Imaging data_type.
@@ -63,7 +50,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
 
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
 
-        5) Output the simulator to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
+        5) Output the data to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
         grid = grids.Grid.uniform(
@@ -77,7 +64,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
         )
 
         if should_plot_imaging:
-            imaging_plotters.subplot(imaging=imaging)
+            al.plot.imaging.subplot(imaging=imaging)
 
         return imaging
 
@@ -91,7 +78,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
     ):
         """Simulate Imaging data_type for this data_type, as follows:
 
-        1)  Setup the image-plane al.ogrid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
+        1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
 
         2) Use this grid and the lens and source galaxies to setup a tracer, which generates the image of \
            the simulated Imaging data_type.
@@ -101,7 +88,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
 
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
 
-        5) Output the simulator to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
+        5) Output the data to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
         imaging = self.from_galaxies(

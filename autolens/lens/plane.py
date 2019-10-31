@@ -239,7 +239,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         grid : Grid
             The grid (or sub) of (y,x) arc-second coordinates at the centre of every unmasked pixel which the \
             potential is calculated on.
-        galaxies : [galaxy.Galaxy]
+        galaxies : [al.galaxy]
             The galaxies whose mass profiles are used to compute the surface densities.
         """
         if self.galaxies:
@@ -267,7 +267,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         grid : Grid
             The grid (or sub) of (y,x) arc-second coordinates at the centre of every unmasked pixel which the \
             potential is calculated on.
-        galaxies : [galaxy.Galaxy]
+        galaxies : [al.galaxy]
             The galaxies whose mass profiles are used to compute the surface densities.
         """
         if self.galaxies:

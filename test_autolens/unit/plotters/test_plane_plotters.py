@@ -17,7 +17,7 @@ def test__all_individual_plotters__output_file_with_default_name(
     al.plot.plane.profile_image(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         positions=positions_7x7,
         plot_critical_curves=True,
         plot_caustics=True,
@@ -44,7 +44,7 @@ def test__all_individual_plotters__output_file_with_default_name(
     al.plot.plane.convergence(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         plot_critical_curves=True,
         plot_caustics=True,
         cb_tick_values=[1.0],
@@ -58,7 +58,7 @@ def test__all_individual_plotters__output_file_with_default_name(
     al.plot.plane.potential(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         plot_critical_curves=True,
         plot_caustics=True,
         cb_tick_values=[1.0],
@@ -72,7 +72,7 @@ def test__all_individual_plotters__output_file_with_default_name(
     al.plot.plane.deflections_y(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         plot_critical_curves=True,
         plot_caustics=True,
         cb_tick_values=[1.0],
@@ -86,7 +86,7 @@ def test__all_individual_plotters__output_file_with_default_name(
     al.plot.plane.deflections_x(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         plot_critical_curves=True,
         plot_caustics=True,
         cb_tick_values=[1.0],
@@ -100,7 +100,7 @@ def test__all_individual_plotters__output_file_with_default_name(
     al.plot.plane.magnification(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         plot_critical_curves=True,
         plot_caustics=True,
         cb_tick_values=[1.0],

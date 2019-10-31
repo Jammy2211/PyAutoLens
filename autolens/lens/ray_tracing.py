@@ -28,7 +28,7 @@ class AbstractTracer(object):
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         image_plane_grid : grid_stacks.GridStack
-            The image-plane al.ogrid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
+            The image-plane grid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
         border : masks.GridBorder
             The border of the grid, which is used to relocate demagnified traced pixels to the \
             source-plane borders.
@@ -820,7 +820,7 @@ class AbstractTracerData(AbstractTracerLensing):
             for plane in self.planes
         ]
 
-    def galaxy_profile_image_dict_from_grid(self, grid) -> {g.Galaxy: np.ndarray}:
+    def galaxy_profile_image_dict_from_grid(self, grid) -> {al.galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
@@ -842,7 +842,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
     def galaxy_blurred_profile_image_dict_from_grid_and_convolver(
         self, grid, convolver, blurring_grid
-    ) -> {g.Galaxy: np.ndarray}:
+    ) -> {al.galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
@@ -870,7 +870,7 @@ class AbstractTracerData(AbstractTracerLensing):
 
     def galaxy_profile_visibilities_dict_from_grid_and_transformer(
         self, grid, transformer
-    ) -> {g.Galaxy: np.ndarray}:
+    ) -> {al.galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
@@ -942,7 +942,7 @@ class Tracer(AbstractTracerData):
         lens_galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         image_plane_grid : grid_stacks.GridStack
-            The image-plane al.ogrid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
+            The image-plane grid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
         planes_between_lenses : [int]
             The number of slices between each main plane. The first entry in this list determines the number of slices \
             between Earth (redshift 0.0) and main plane 0, the next between main planes 0 and 1, etc.

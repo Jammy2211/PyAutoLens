@@ -12,7 +12,7 @@ import autoarray as aa
 def profile_image(
     plane,
     grid,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     plot_grid=False,
     plot_critical_curves=False,
@@ -37,7 +37,7 @@ def profile_image(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10.0,
     grid_pointsize=1,
     output_path=None,
@@ -62,7 +62,7 @@ def profile_image(
 
     aa.plot.array(
         array=profile_image,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         grid=grid,
         lines=lines,
@@ -87,7 +87,7 @@ def profile_image(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         grid_pointsize=grid_pointsize,
         output_path=output_path,
@@ -180,7 +180,7 @@ def plane_image(
 def convergence(
     plane,
     grid,
-    mask_overlay=None,
+    mask=None,
     plot_critical_curves=False,
     plot_caustics=False,
     as_subplot=False,
@@ -219,7 +219,7 @@ def convergence(
 
     aa.plot.array(
         array=convergence,
-        mask_overlay=mask_overlay,
+        mask=mask,
         lines=lines,
         as_subplot=as_subplot,
         units=units,
@@ -251,7 +251,7 @@ def convergence(
 def potential(
     plane,
     grid,
-    mask_overlay=None,
+    mask=None,
     plot_critical_curves=False,
     plot_caustics=False,
     as_subplot=False,
@@ -290,7 +290,7 @@ def potential(
 
     aa.plot.array(
         array=potential,
-        mask_overlay=mask_overlay,
+        mask=mask,
         lines=lines,
         as_subplot=as_subplot,
         units=units,
@@ -322,7 +322,7 @@ def potential(
 def deflections_y(
     plane,
     grid,
-    mask_overlay=None,
+    mask=None,
     plot_critical_curves=False,
     plot_caustics=False,
     as_subplot=False,
@@ -362,7 +362,7 @@ def deflections_y(
 
     aa.plot.array(
         array=deflections_y,
-        mask_overlay=mask_overlay,
+        mask=mask,
         lines=lines,
         as_subplot=as_subplot,
         units=units,
@@ -394,7 +394,7 @@ def deflections_y(
 def deflections_x(
     plane,
     grid,
-    mask_overlay=None,
+    mask=None,
     plot_critical_curves=False,
     plot_caustics=False,
     as_subplot=False,
@@ -434,7 +434,7 @@ def deflections_x(
 
     aa.plot.array(
         array=deflections_x,
-        mask_overlay=mask_overlay,
+        mask=mask,
         lines=lines,
         as_subplot=as_subplot,
         units=units,
@@ -466,7 +466,7 @@ def deflections_x(
 def magnification(
     plane,
     grid,
-    mask_overlay=None,
+    mask=None,
     plot_critical_curves=False,
     plot_caustics=False,
     as_subplot=False,
@@ -505,7 +505,7 @@ def magnification(
 
     aa.plot.array(
         array=magnification,
-        mask_overlay=mask_overlay,
+        mask=mask,
         lines=lines,
         as_subplot=as_subplot,
         units=units,

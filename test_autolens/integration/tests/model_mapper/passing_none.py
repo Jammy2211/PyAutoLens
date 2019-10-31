@@ -42,7 +42,47 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 20
     phase2.optimizer.sampling_efficiency = 0.8
 
-    return al.PipelineImaging(name, phase1, phase2)
+    phase3 = al.PhaseImaging(
+        phase_name="phase_3",
+        phase_folders=phase_folders,
+        galaxies=dict(
+            lens=al.GalaxyModel(
+                redshift=0.5,
+                light=al.lp.EllipticalSersic,
+                light_1=phase1.result.variable.galaxies.lens.light_1,
+            )
+        ),
+        optimizer_class=optimizer_class,
+    )
+
+    phase3.optimizer.const_efficiency_mode = True
+    phase3.optimizer.n_live_points = 20
+    phase3.optimizer.sampling_efficiency = 0.8
+
+    phase4 = al.PhaseImaging(
+        phase_name="phase_4",
+        phase_folders=phase_folders,
+        galaxies=phase1.result.variable.galaxies,
+        optimizer_class=optimizer_class,
+    )
+
+    phase4.optimizer.const_efficiency_mode = True
+    phase4.optimizer.n_live_points = 20
+    phase4.optimizer.sampling_efficiency = 0.8
+
+    phase5 = al.PhaseImaging(
+        phase_name="phase_5",
+        phase_folders=phase_folders,
+        galaxies=phase1.result.constant.galaxies,
+        hyper_image_sky=al.hyper_data.HyperImageSky,
+        optimizer_class=optimizer_class,
+    )
+
+    phase5.optimizer.const_efficiency_mode = True
+    phase5.optimizer.n_live_points = 20
+    phase5.optimizer.sampling_efficiency = 0.8
+
+    return al.PipelineImaging(name, phase1, phase2, phase3, phase4, phase5)
 
 
 if __name__ == "__main__":

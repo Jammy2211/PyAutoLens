@@ -31,7 +31,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
     # Simulate the Imaging data_type, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.al. the PSF convolution).
 
-    imaging_simulator = al.simulator.imaging(
+    simulator = al.simulator.imaging(
         shape_2d=shape_2d,
         pixel_scales=pixel_scales,
         sub_size=sub_size,
@@ -41,7 +41,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         add_noise=True,
     )
 
-    imaging = imaging_simulator.from_tracer(
+    imaging = simulator.from_tracer(
         tracer=tracer,
     )
 
@@ -76,16 +76,17 @@ def simulate_image_from_galaxies_and_output_to_fits(
         output_format="png",
     )
 
-    al.plot.ray_tracing.subplot(
+    al.plot.tracer.subplot(
         tracer=tracer,
-        grid=imaging.mask
+        grid=simulator.grid,
         output_filename="tracer",
         output_path=data_path,
         output_format="png",
     )
 
-    al.plot.ray_tracing.individual(
+    al.plot.tracer.individual(
         tracer=tracer,
+        grid=simulator.grid,
         should_plot_profile_image=True,
         should_plot_source_plane=True,
         should_plot_convergence=True,

@@ -187,26 +187,26 @@ class TestPhase(object):
 
         masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
 
-        binned_up_lens_data = masked_imaging.binned_from_bin_up_factor(bin_up_factor=2)
+        binned_up_masked_imaging = masked_imaging.binned_from_bin_up_factor(bin_up_factor=2)
 
         assert (
             analysis.masked_imaging.image.in_2d
-            == binned_up_lens_data.image.in_2d * np.invert(binned_up_mask)
+            == binned_up_masked_imaging.image.in_2d * np.invert(binned_up_mask)
         ).all()
-        assert (analysis.masked_imaging.psf == binned_up_lens_data.psf).all()
+        assert (analysis.masked_imaging.psf == binned_up_masked_imaging.psf).all()
         assert (
             analysis.masked_imaging.noise_map.in_2d
-            == binned_up_lens_data.noise_map.in_2d * np.invert(binned_up_mask)
+            == binned_up_masked_imaging.noise_map.in_2d * np.invert(binned_up_mask)
         ).all()
 
-        assert (analysis.masked_imaging.mask == binned_up_lens_data.mask).all()
+        assert (analysis.masked_imaging.mask == binned_up_masked_imaging.mask).all()
 
         assert (
-            analysis.masked_imaging.image.in_1d == binned_up_lens_data.image.in_1d
+            analysis.masked_imaging.image.in_1d == binned_up_masked_imaging.image.in_1d
         ).all()
         assert (
             analysis.masked_imaging.noise_map.in_1d
-            == binned_up_lens_data.noise_map.in_1d
+            == binned_up_masked_imaging.noise_map.in_1d
         ).all()
 
     def test__phase_can_receive_hyper_image_and_noise_maps(self):

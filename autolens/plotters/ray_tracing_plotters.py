@@ -13,7 +13,7 @@ from autolens.plotters import plane_plotters
 def subplot(
     tracer,
     grid,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     units="arcsec",
     figsize=None,
@@ -33,7 +33,7 @@ def subplot(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10.0,
     grid_pointsize=1.0,
     output_path=None,
@@ -69,7 +69,7 @@ def subplot(
     profile_image(
         tracer=tracer,
         grid=grid,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=True,
         units=units,
@@ -90,7 +90,7 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_filename="",
@@ -104,7 +104,7 @@ def subplot(
         convergence(
             tracer=tracer,
             grid=grid,
-            mask_overlay=mask_overlay,
+            mask=mask,
             as_subplot=True,
             units=units,
             figsize=figsize,
@@ -134,7 +134,7 @@ def subplot(
         potential(
             tracer=tracer,
             grid=grid,
-            mask_overlay=mask_overlay,
+            mask=mask,
             as_subplot=True,
             units=units,
             figsize=figsize,
@@ -163,7 +163,7 @@ def subplot(
 
     source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-    plane_plotters.plane_image(
+    al.plot.plane.plane_image(
         plane=tracer.source_plane,
         grid=source_plane_grid,
         as_subplot=True,
@@ -197,7 +197,7 @@ def subplot(
         deflections_y(
             tracer=tracer,
             grid=grid,
-            mask_overlay=mask_overlay,
+            mask=mask,
             as_subplot=True,
             units=units,
             figsize=figsize,
@@ -227,7 +227,7 @@ def subplot(
         deflections_x(
             tracer=tracer,
             grid=grid,
-            mask_overlay=mask_overlay,
+            mask=mask,
             as_subplot=True,
             units=units,
             figsize=figsize,
@@ -264,7 +264,7 @@ def subplot(
 def individual(
     tracer,
     grid,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     should_plot_profile_image=False,
     should_plot_source_plane=False,
@@ -296,7 +296,7 @@ def individual(
         profile_image(
             tracer=tracer,
             grid=grid,
-            mask_overlay=mask_overlay,
+            mask=mask,
             positions=positions,
             units=units,
             output_path=output_path,
@@ -308,7 +308,7 @@ def individual(
         convergence(
             tracer=tracer,
             grid=grid,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             output_path=output_path,
             output_format=output_format,
@@ -319,7 +319,7 @@ def individual(
         potential(
             tracer=tracer,
             grid=grid,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             output_path=output_path,
             output_format=output_format,
@@ -329,7 +329,7 @@ def individual(
 
         source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-        plane_plotters.plane_image(
+        al.plot.plane.plane_image(
             plane=tracer.source_plane,
             grid=source_plane_grid,
             positions=None,
@@ -345,7 +345,7 @@ def individual(
         deflections_y(
             tracer=tracer,
             grid=grid,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             output_path=output_path,
             output_format=output_format,
@@ -356,7 +356,7 @@ def individual(
         deflections_x(
             tracer=tracer,
             grid=grid,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             output_path=output_path,
             output_format=output_format,
@@ -366,7 +366,7 @@ def individual(
 def profile_image(
     tracer,
     grid,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -388,7 +388,7 @@ def profile_image(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10.0,
     output_path=None,
     output_format="show",
@@ -399,7 +399,7 @@ def profile_image(
 
     aa.plot.array(
         array=profile_image,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -422,7 +422,7 @@ def profile_image(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -433,7 +433,7 @@ def profile_image(
 def convergence(
     tracer,
     grid,
-    mask_overlay=None,
+    mask=None,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -463,7 +463,7 @@ def convergence(
 
     aa.plot.array(
         array=convergence,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec,
@@ -494,7 +494,7 @@ def convergence(
 def potential(
     tracer,
     grid,
-    mask_overlay=None,
+    mask=None,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -524,7 +524,7 @@ def potential(
 
     aa.plot.array(
         array=potential,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec,
@@ -555,7 +555,7 @@ def potential(
 def deflections_y(
     tracer,
     grid,
-    mask_overlay=None,
+    mask=None,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -586,7 +586,7 @@ def deflections_y(
 
     aa.plot.array(
         array=deflections_y,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec,
@@ -617,7 +617,7 @@ def deflections_y(
 def deflections_x(
     tracer,
     grid,
-    mask_overlay=None,
+    mask=None,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -648,7 +648,7 @@ def deflections_x(
 
     aa.plot.array(
         array=deflections_x,
-        mask_overlay=mask_overlay,
+        mask=mask,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec,

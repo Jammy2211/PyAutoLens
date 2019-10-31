@@ -27,7 +27,7 @@ class AbstractVisualizer:
         self.plot_units = af.conf.instance.visualize.get(
             "figures", "plot_units", str
         ).strip()
-        self.should_plot_mask_overlay = figure_setting("plot_mask_on_images")
+        self.should_plot_mask = figure_setting("plot_mask_on_images")
         self.plot_ray_tracing_all_at_end_png = plot_setting(
             "plot_ray_tracing_all_at_end_png"
         )
@@ -68,7 +68,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
         if self.plot_galaxy_fit_as_subplot:
             fit_galaxy_plotters.subplot(
                 fit=fit,
-                should_plot_mask_overlay=self.should_plot_mask_overlay,
+                should_plot_mask=self.should_plot_mask,
                 units=self.plot_units,
                 output_path=f"{self.image_path}/{path_suffix}",
                 output_format="png",
@@ -91,7 +91,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
             should_plot_chi_squared_map = self.plot_galaxy_fit_chi_squared_map
         fit_galaxy_plotters.individuals(
             fit=fit,
-            should_plot_mask_overlay=self.should_plot_mask_overlay,
+            should_plot_mask=self.should_plot_mask,
             should_plot_image=should_plot_image,
             should_plot_noise_map=should_plot_noise_map,
             should_plot_model_image=should_plot_model_image,
@@ -196,12 +196,12 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         positions = (
             self.masked_imaging.positions if self.should_plot_positions else None
         )
-        mask = self.masked_imaging.mask if self.should_plot_mask_overlay else None
+        mask = self.masked_imaging.mask if self.should_plot_mask else None
         phase_plotters.ray_tracing_of_phase(
             tracer=tracer,
             grid=self.masked_imaging.grid,
             during_analysis=during_analysis,
-            mask_overlay=mask,
+            mask=mask,
             positions=positions,
             units=self.plot_units,
             should_plot_as_subplot=self.plot_ray_tracing_as_subplot,
@@ -223,7 +223,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         phase_plotters.imaging_fit_of_phase(
             fit=fit,
             during_analysis=during_analysis,
-            should_plot_mask_overlay=self.should_plot_mask_overlay,
+            should_plot_mask=self.should_plot_mask,
             positions=positions,
             should_plot_image_plane_pix=self.should_plot_image_plane_pix,
             should_plot_all_at_end_png=self.plot_fit_all_at_end_png,
@@ -253,14 +253,14 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
         )
 
     def plot_imaging(self):
-        mask = self.masked_imaging.mask if self.should_plot_mask_overlay else None
+        mask = self.masked_imaging.mask if self.should_plot_mask else None
         positions = (
             self.masked_imaging.positions if self.should_plot_positions else None
         )
 
         phase_plotters.imaging_of_phase(
             imaging=self.masked_imaging.imaging,
-            mask_overlay=mask,
+            mask=mask,
             positions=positions,
             units=self.plot_units,
             should_plot_as_subplot=self.plot_data_as_subplot,
@@ -277,14 +277,14 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
     def plot_hyper_images(self, last_results):
         mask = self.masked_imaging.mask
         if (
-            self.should_plot_mask_overlay
+            self.should_plot_mask
             and mask is not None
             and last_results is not None
         ):
             phase_plotters.plot_hyper_images_for_phase(
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
-                mask_overlay=self.masked_imaging.mask,
+                mask=self.masked_imaging.mask,
                 units=self.plot_units,
                 should_plot_hyper_model_image=self.plot_hyper_model_image,
                 should_plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,

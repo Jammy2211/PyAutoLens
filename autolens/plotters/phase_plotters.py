@@ -6,7 +6,7 @@ from autolens.plotters.fit_imaging_plotters import fit_imaging_plotters
 
 def imaging_of_phase(
     imaging,
-    mask_overlay,
+    mask,
     positions,
     units,
     should_plot_as_subplot,
@@ -28,7 +28,7 @@ def imaging_of_phase(
 
         aa.plot.imaging.subplot(
             imaging=imaging,
-            mask_overlay=mask_overlay,
+            mask=mask,
             positions=positions,
             units=units,
             output_path=subplot_path,
@@ -37,7 +37,7 @@ def imaging_of_phase(
 
     aa.plot.imaging.individual(
         imaging=imaging,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         should_plot_image=should_plot_image,
         should_plot_noise_map=should_plot_noise_map,
@@ -55,7 +55,7 @@ def ray_tracing_of_phase(
     tracer,
     grid,
     during_analysis,
-    mask_overlay,
+    mask,
     positions,
     units,
     should_plot_as_subplot,
@@ -75,20 +75,20 @@ def ray_tracing_of_phase(
 
     if should_plot_as_subplot:
 
-        ray_tracing_plotters.subplot(
+        al.plot.tracer.subplot(
             tracer=tracer,
             grid=grid,
-            mask_overlay=mask_overlay,
+            mask=mask,
             positions=positions,
             units=units,
             output_path=subplot_path,
             output_format="png",
         )
 
-    ray_tracing_plotters.individual(
+    al.plot.tracer.individual(
         tracer=tracer,
         grid=grid,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         should_plot_profile_image=should_plot_image,
         should_plot_source_plane=should_plot_source_plane,
@@ -104,10 +104,10 @@ def ray_tracing_of_phase(
 
         if should_plot_all_at_end_png:
 
-            ray_tracing_plotters.individual(
+            al.plot.tracer.individual(
                 tracer=tracer,
                 grid=grid,
-                mask_overlay=mask_overlay,
+                mask=mask,
                 positions=positions,
                 should_plot_profile_image=True,
                 should_plot_source_plane=True,
@@ -125,10 +125,10 @@ def ray_tracing_of_phase(
                 path=output_path, folder_names=["fits"]
             )
 
-            ray_tracing_plotters.individual(
+            al.plot.tracer.individual(
                 tracer=tracer,
                 grid=grid,
-                mask_overlay=mask_overlay,
+                mask=mask,
                 positions=positions,
                 should_plot_profile_image=True,
                 should_plot_source_plane=True,
@@ -145,7 +145,7 @@ def imaging_fit_of_phase(
     during_analysis,
     positions,
     units,
-    should_plot_mask_overlay,
+    should_plot_mask,
     should_plot_image_plane_pix,
     should_plot_all_at_end_png,
     should_plot_all_at_end_fits,
@@ -178,7 +178,7 @@ def imaging_fit_of_phase(
 
         fit_imaging_plotters.subplot(
             fit=fit,
-            should_plot_mask_overlay=should_plot_mask_overlay,
+            should_plot_mask=should_plot_mask,
             positions=positions,
             should_plot_image_plane_pix=should_plot_image_plane_pix,
             units=units,
@@ -190,7 +190,7 @@ def imaging_fit_of_phase(
 
         fit_imaging_plotters.subplot_of_planes(
             fit=fit,
-            should_plot_mask_overlay=should_plot_mask_overlay,
+            should_plot_mask=should_plot_mask,
             positions=positions,
             should_plot_image_plane_pix=should_plot_image_plane_pix,
             units=units,
@@ -202,7 +202,7 @@ def imaging_fit_of_phase(
 
         aa.plot.inversion.subplot(
             inversion=fit.inversion,
-            mask_overlay=fit.mask,
+            mask=fit.mask,
             positions=positions,
             output_path=subplot_path,
             output_format="png",
@@ -210,7 +210,7 @@ def imaging_fit_of_phase(
 
     fit_imaging_plotters.individuals(
         fit=fit,
-        should_plot_mask_overlay=should_plot_mask_overlay,
+        should_plot_mask=should_plot_mask,
         positions=positions,
         should_plot_image_plane_pix=should_plot_image_plane_pix,
         should_plot_image=should_plot_image,
@@ -238,7 +238,7 @@ def imaging_fit_of_phase(
 
             fit_imaging_plotters.individuals(
                 fit=fit,
-                should_plot_mask_overlay=should_plot_mask_overlay,
+                should_plot_mask=should_plot_mask,
                 positions=positions,
                 should_plot_image_plane_pix=should_plot_image_plane_pix,
                 should_plot_image=True,
@@ -268,7 +268,7 @@ def imaging_fit_of_phase(
 
             fit_imaging_plotters.individuals(
                 fit=fit,
-                should_plot_mask_overlay=should_plot_mask_overlay,
+                should_plot_mask=should_plot_mask,
                 positions=positions,
                 should_plot_image_plane_pix=should_plot_image_plane_pix,
                 should_plot_image=True,
@@ -293,7 +293,7 @@ def imaging_fit_of_phase(
 def plot_hyper_images_for_phase(
     hyper_model_image,
     hyper_galaxy_image_path_dict,
-    mask_overlay,
+    mask,
     units,
     should_plot_hyper_model_image,
     should_plot_hyper_galaxy_images,
@@ -308,7 +308,7 @@ def plot_hyper_images_for_phase(
 
         hyper_plotters.hyper_model_image(
             hyper_model_image=hyper_model_image,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             output_path=output_path,
             output_format="png",
@@ -318,7 +318,7 @@ def plot_hyper_images_for_phase(
 
         hyper_plotters.subplot_of_hyper_galaxy_images(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-            mask_overlay=mask_overlay,
+            mask=mask,
             units=units,
             output_path=output_path,
             output_format="png",
