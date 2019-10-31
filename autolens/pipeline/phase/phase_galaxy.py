@@ -63,7 +63,7 @@ class AnalysisSingle(Analysis):
             A fractional value indicating how well this model fit and the model
             masked_imaging itself
         """
-        return fit_al.galaxyFit(
+        return fit_galaxy.GalaxyFit(
             galaxy_data=self.galaxy_data, model_galaxies=instance.galaxies
         )
 
@@ -114,10 +114,10 @@ class AnalysisDeflections(Analysis):
 
     def fit_for_instance(self, instance):
 
-        fit_y = fit_al.galaxyFit(
+        fit_y = fit_galaxy.GalaxyFit(
             galaxy_data=self.galaxy_data_y, model_galaxies=instance.galaxies
         )
-        fit_x = fit_al.galaxyFit(
+        fit_x = fit_galaxy.GalaxyFit(
             galaxy_data=self.galaxy_data_x, model_galaxies=instance.galaxies
         )
 

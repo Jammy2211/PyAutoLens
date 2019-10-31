@@ -75,7 +75,7 @@ def ray_tracing_of_phase(
 
     if should_plot_as_subplot:
 
-        al.plot.tracer.subplot(
+        ray_tracing_plotters.subplot(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -85,7 +85,7 @@ def ray_tracing_of_phase(
             output_format="png",
         )
 
-    al.plot.tracer.individual(
+    ray_tracing_plotters.individual(
         tracer=tracer,
         grid=grid,
         mask=mask,
@@ -104,7 +104,7 @@ def ray_tracing_of_phase(
 
         if should_plot_all_at_end_png:
 
-            al.plot.tracer.individual(
+            ray_tracing_plotters.individual(
                 tracer=tracer,
                 grid=grid,
                 mask=mask,
@@ -125,7 +125,7 @@ def ray_tracing_of_phase(
                 path=output_path, folder_names=["fits"]
             )
 
-            al.plot.tracer.individual(
+            ray_tracing_plotters.individual(
                 tracer=tracer,
                 grid=grid,
                 mask=mask,
