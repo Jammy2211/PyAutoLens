@@ -7,7 +7,7 @@ from autolens.lens import ray_tracing
 
 class ImagingSimulator(simulator.ImagingSimulator):
     def __init__(
-        self, shape_2d, pixel_scales, psf, exposure_time, background_sky_level, add_noise=True,        noise_if_add_noise_false=0.1,
+        self, shape_2d, pixel_scales, sub_size, psf, exposure_time, background_sky_level, add_noise=True, noise_if_add_noise_false=0.1,
         noise_seed=-1,
     ):
         """A class representing a Imaging observation, using the shape of the image, the pixel scale,
@@ -37,6 +37,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
 
         self.shape_2d = shape_2d
         self.pixel_scales = pixel_scales
+        self.sub_size = sub_size
         self.psf = psf
         self.exposure_time = exposure_time
         self.background_sky_level = background_sky_level
@@ -71,9 +72,8 @@ class ImagingSimulator(simulator.ImagingSimulator):
 
         tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
 
-        imaging = self.from_tracer_and_grid(
+        imaging = self.from_tracer(
             tracer=tracer,
-            grid=grid,
         )
 
         if should_plot_imaging:
@@ -149,10 +149,9 @@ class ImagingSimulator(simulator.ImagingSimulator):
             name=name,
         )
 
-    def from_tracer_and_grid(
+    def from_tracer(
         self,
         tracer,
-        grid,
         name=None,
     ):
         """
@@ -177,6 +176,12 @@ class ImagingSimulator(simulator.ImagingSimulator):
         noise_seed: int
             A seed for random noise_maps generation
         """
+
+        grid = grids.Grid.uniform(
+            shape_2d=self.shape_2d,
+            pixel_scales=self.pixel_scales,
+            sub_size=self.sub_size,
+        )
 
         image = tracer.padded_profile_image_from_grid_and_psf_shape(
             grid=grid, psf_shape=self.psf.shape_2d

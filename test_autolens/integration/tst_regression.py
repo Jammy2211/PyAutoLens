@@ -40,7 +40,7 @@ def simulate_integration_image(test_name, pixel_scales, galaxies):
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    imaging_simulated = al.SimulatedImagingData.from_tracer_and_grid(
+    imaging_simulated = al.SimulatedImagingData.from_tracer(
         tracer=tracer,
         pixel_scales=pixel_scales,
         exposure_time=100.0,
