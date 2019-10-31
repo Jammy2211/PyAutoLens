@@ -36,8 +36,8 @@ def clean_images():
 
 class TestPhase(object):
     def test__set_constants(self, phase_data_7x7):
-        phase_data_7x7.galaxies = [al.Galaxy(redshift=0.5)]
-        assert phase_data_7x7.variable.galaxies == [al.Galaxy(redshift=0.5)]
+        phase_data_7x7.galaxies = [al.galaxy(redshift=0.5)]
+        assert phase_data_7x7.variable.galaxies == [al.galaxy(redshift=0.5)]
 
     def test__set_variables(self, phase_data_7x7):
         phase_data_7x7.galaxies = [al.GalaxyModel(redshift=0.5)]
@@ -50,7 +50,7 @@ class TestPhase(object):
             def customize_priors(self, results):
                 self.galaxies = results.last.constant.galaxies
 
-        galaxy = al.Galaxy(redshift=0.5)
+        galaxy = al.galaxy(redshift=0.5)
         galaxy_model = al.GalaxyModel(redshift=0.5)
 
         setattr(results_7x7.constant, "galaxies", [galaxy])
@@ -71,7 +71,7 @@ class TestPhase(object):
             def customize_priors(self, results):
                 self.galaxies = results.last.variable.galaxies
 
-        galaxy = al.Galaxy(redshift=0.5)
+        galaxy = al.galaxy(redshift=0.5)
         galaxy_model = al.GalaxyModel(redshift=0.5)
 
         setattr(results_7x7.constant, "galaxies", [galaxy])
@@ -231,7 +231,7 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=[
-                al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+                al.galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
             phase_name="test_phase_2",
         )
@@ -248,10 +248,10 @@ class TestResult(object):
             optimizer_class=mock_pipeline.MockNLO,
             mask_function=mask_function_7x7,
             galaxies=dict(
-                lens=al.Galaxy(
+                lens=al.galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
                 ),
-                source=al.Galaxy(
+                source=al.galaxy(
                     redshift=1.0, light=al.lp.EllipticalCoreSersic(intensity=2.0)
                 ),
             ),
@@ -277,7 +277,7 @@ class TestPhasePickle(object):
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
-                lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
+                lens=al.galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
         )
 
@@ -292,7 +292,7 @@ class TestPhasePickle(object):
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
-                lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
+                lens=al.galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
         )
 
@@ -311,7 +311,7 @@ class TestPhasePickle(object):
             mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
-                lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
+                lens=al.galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
         )
         phase_data_7x7.make_analysis = make_analysis

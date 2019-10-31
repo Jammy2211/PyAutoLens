@@ -52,7 +52,7 @@ def make_masked_interferometer_6x6(
 
 @pytest.fixture(name="plane_7x7")
 def make_plane_7x7(gal_x1_lp_x1_mp):
-    return al.Plane(galaxies=[gal_x1_lp_x1_mp])
+    return al.plane(galaxies=[gal_x1_lp_x1_mp])
 
 
 # Ray Tracing #
@@ -65,7 +65,7 @@ def make_tracer_x1_plane_7x7(gal_x1_lp):
 
 @pytest.fixture(name="tracer_x2_plane_7x7")
 def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp):
-    source_gal_x1_lp = al.Galaxy(redshift=1.0, light_profile_0=lp_0)
+    source_gal_x1_lp = al.galaxy(redshift=1.0, light_profile_0=lp_0)
 
     return al.Tracer.from_galaxies(galaxies=[gal_x1_mp, gal_x1_lp, source_gal_x1_lp])
 
@@ -143,17 +143,17 @@ def make_phase_imaging_7x7(mask_function_7x7):
 
 @pytest.fixture(name="hyper_model_image_7x7")
 def make_hyper_model_image_7x7(mask_7x7):
-    return al.masked_array.full(fill_value=5.0, mask=mask_7x7)
+    return al.masked.array.full(fill_value=5.0, mask=mask_7x7)
 
 
 @pytest.fixture(name="hyper_galaxy_image_0_7x7")
 def make_hyper_galaxy_image_0_7x7(mask_7x7):
-    return al.masked_array.full(fill_value=2.0, mask=mask_7x7)
+    return al.masked.array.full(fill_value=2.0, mask=mask_7x7)
 
 
 @pytest.fixture(name="hyper_galaxy_image_1_7x7")
 def make_hyper_galaxy_image_1_7x7(mask_7x7):
-    return al.masked_array.full(fill_value=3.0, mask=mask_7x7)
+    return al.masked.array.full(fill_value=3.0, mask=mask_7x7)
 
 
 @pytest.fixture(name="contribution_map_7x7")

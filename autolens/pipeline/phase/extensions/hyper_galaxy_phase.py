@@ -6,7 +6,7 @@ from typing import cast
 import autoarray as aa
 import autofit as af
 from autolens.fit import fit
-from autolens.fit import masked_data
+from autolens.masked import masked_data
 from autoastro.galaxy import galaxy as g
 from autoastro.hyper import hyper_data as hd
 from autolens.pipeline.phase import imaging

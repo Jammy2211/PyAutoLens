@@ -108,7 +108,7 @@ def make_lens_light_dev_vaucouleurs(data_resolutions, sub_size):
 
     # This lens-only system has a Dev Vaucouleurs spheroid / bulge.
 
-    lens_galaxy = al.Galaxy(
+    lens_galaxy = al.galaxy(
         redshift=0.5,
         bulge=al.lp.EllipticalDevVaucouleurs(
             centre=(0.0, 0.0),
@@ -125,7 +125,7 @@ def make_lens_light_dev_vaucouleurs(data_resolutions, sub_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_size=sub_size,
-            galaxies=[lens_galaxy, al.Galaxy(redshift=1.0)],
+            galaxies=[lens_galaxy, al.galaxy(redshift=1.0)],
         )
 
 
@@ -135,7 +135,7 @@ def make_lens_bulge_disk(data_resolutions, sub_size):
 
     # This source-only system has a Dev Vaucouleurs spheroid / bulge and surrounding Exponential envelope
 
-    lens_galaxy = al.Galaxy(
+    lens_galaxy = al.galaxy(
         redshift=0.5,
         bulge=al.lp.EllipticalDevVaucouleurs(
             centre=(0.0, 0.0),
@@ -159,7 +159,7 @@ def make_lens_bulge_disk(data_resolutions, sub_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_size=sub_size,
-            galaxies=[lens_galaxy, al.Galaxy(redshift=1.0)],
+            galaxies=[lens_galaxy, al.galaxy(redshift=1.0)],
         )
 
 
@@ -169,7 +169,7 @@ def make_lens_x2_light(data_resolutions, sub_size):
 
     # This source-only system has two Sersic bulges separated by 2.0"
 
-    lens_galaxy_0 = al.Galaxy(
+    lens_galaxy_0 = al.galaxy(
         redshift=0.5,
         bulge=al.lp.EllipticalSersic(
             centre=(-1.0, -1.0),
@@ -181,7 +181,7 @@ def make_lens_x2_light(data_resolutions, sub_size):
         ),
     )
 
-    lens_galaxy_1 = al.Galaxy(
+    lens_galaxy_1 = al.galaxy(
         redshift=0.5,
         bulge=al.lp.EllipticalSersic(
             centre=(1.0, 1.0),
@@ -199,7 +199,7 @@ def make_lens_x2_light(data_resolutions, sub_size):
             data_type=data_type,
             data_resolution=data_resolution,
             sub_size=sub_size,
-            galaxies=[lens_galaxy_0, lens_galaxy_1, al.Galaxy(redshift=1.0)],
+            galaxies=[lens_galaxy_0, lens_galaxy_1, al.galaxy(redshift=1.0)],
         )
 
 
@@ -209,14 +209,14 @@ def make_lens_mass__source_smooth(data_resolutions, sub_size):
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
-    lens_galaxy = al.Galaxy(
+    lens_galaxy = al.galaxy(
         redshift=0.5,
         mass=al.mp.EllipticalIsothermal(
             centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
         ),
     )
 
-    source_galaxy = al.Galaxy(
+    source_galaxy = al.galaxy(
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),
@@ -244,14 +244,14 @@ def make_lens_mass__source_cuspy(data_resolutions, sub_size):
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
-    lens_galaxy = al.Galaxy(
+    lens_galaxy = al.galaxy(
         redshift=0.5,
         mass=al.mp.EllipticalIsothermal(
             centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
         ),
     )
 
-    source_galaxy = al.Galaxy(
+    source_galaxy = al.galaxy(
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),
@@ -279,12 +279,12 @@ def make_lens_sis__source_smooth(data_resolutions, sub_size):
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
-    lens_galaxy = al.Galaxy(
+    lens_galaxy = al.galaxy(
         redshift=0.5,
         mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6),
     )
 
-    source_galaxy = al.Galaxy(
+    source_galaxy = al.galaxy(
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),
@@ -312,12 +312,12 @@ def make_lens_sis__source_smooth__offset_centre(data_resolutions, sub_size):
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
-    lens_galaxy = al.Galaxy(
+    lens_galaxy = al.galaxy(
         redshift=0.5,
         mass=al.mp.SphericalIsothermal(centre=(4.0, 4.0), einstein_radius=1.6),
     )
 
-    source_galaxy = al.Galaxy(
+    source_galaxy = al.galaxy(
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(4.0, 4.0),
@@ -345,7 +345,7 @@ def make_lens_light__source_smooth(data_resolutions, sub_size):
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
-    lens_galaxy = al.Galaxy(
+    lens_galaxy = al.galaxy(
         redshift=0.5,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),
@@ -360,7 +360,7 @@ def make_lens_light__source_smooth(data_resolutions, sub_size):
         ),
     )
 
-    source_galaxy = al.Galaxy(
+    source_galaxy = al.galaxy(
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),
@@ -388,7 +388,7 @@ def make_lens_light__source_cuspy(data_resolutions, sub_size):
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
-    lens_galaxy = al.Galaxy(
+    lens_galaxy = al.galaxy(
         redshift=0.5,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),
@@ -403,7 +403,7 @@ def make_lens_light__source_cuspy(data_resolutions, sub_size):
         ),
     )
 
-    source_galaxy = al.Galaxy(
+    source_galaxy = al.galaxy(
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),

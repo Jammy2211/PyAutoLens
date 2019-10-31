@@ -16,13 +16,13 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     grid = al.grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=2)
 
-    lens_galaxy = al.Galaxy(
+    lens_galaxy = al.galaxy(
         redshift=0.5,
         light=al.lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
         mass=al.mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
     )
 
-    source_galaxy = al.Galaxy(
+    source_galaxy = al.galaxy(
         redshift=1.0,
         light=al.lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5),
     )
@@ -97,12 +97,12 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     grid = al.grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=1)
 
-    lens_galaxy = al.Galaxy(
+    lens_galaxy = al.galaxy(
         redshift=0.5,
         light=al.lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
         mass=al.mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
     )
-    source_galaxy = al.Galaxy(
+    source_galaxy = al.galaxy(
         redshift=1.0,
         light=al.lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5),
     )

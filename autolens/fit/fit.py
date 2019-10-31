@@ -1,10 +1,13 @@
 import numpy as np
 
-from autoarray.fit import fit
+from autoarray.fit import fit as aa_fit
 from autoastro.galaxy import galaxy as g
 
+def fit():
 
-class ImagingFit(fit.ImagingFit):
+    pass
+
+class ImagingFit(aa_fit.ImagingFit):
     def __init__(
         self, masked_imaging, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
@@ -163,7 +166,7 @@ def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
     return noise_map
 
 
-class InterferometerFit(fit.InterferometerFit):
+class InterferometerFit(aa_fit.InterferometerFit):
     def __init__(self, masked_interferometer, tracer):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens simulator's hyper_galaxies.

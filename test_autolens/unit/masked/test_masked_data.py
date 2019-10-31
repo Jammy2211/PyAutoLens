@@ -47,7 +47,7 @@ class TestMaskedImaging(object):
         assert masked_imaging_7x7.inversion_uses_border == False
         assert masked_imaging_7x7.preload_sparse_grids_of_planes == 1
 
-        grid = al.masked_grid.from_mask(mask=sub_mask_7x7)
+        grid = al.masked.grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (masked_imaging_7x7.grid == new_grid).all()
@@ -216,7 +216,7 @@ class TestMaskedInterferometer(object):
         assert masked_interferometer_7.inversion_uses_border == False
         assert masked_interferometer_7.preload_sparse_grids_of_planes == 1
 
-        grid = al.masked_grid.from_mask(mask=sub_mask_7x7)
+        grid = al.masked.grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (masked_interferometer_7.grid == new_grid).all()

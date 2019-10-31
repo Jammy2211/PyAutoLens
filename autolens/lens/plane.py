@@ -2,14 +2,13 @@ import numpy as np
 from astropy import cosmology as cosmo
 from skimage import measure
 
-from autoarray.structures import visibilities as vis
-from autoarray.structures import grids
-from autoarray.structures.array import arrays
+from autoarray.structures import arrays, grids, visibilities as vis
+from autoarray.masked import masked_structures
 import autofit as af
 from autoastro.util import cosmology_util
 from autolens import exc
 from autoastro import dimensions as dim
-from autolens.lens.util import lens_util
+from autolens.util import lens_util
 
 
 class AbstractPlane(object):
@@ -775,7 +774,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
             else:
 
-                hyper_noise_maps.append(arrays.MaskedArray.zeros(mask=noise_map.mask))
+                hyper_noise_maps.append(masked_structures.MaskedArray.zeros(mask=noise_map.mask))
 
         return hyper_noise_maps
 

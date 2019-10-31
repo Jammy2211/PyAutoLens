@@ -14,7 +14,7 @@ profile_plotters.plot_convergence(
     plot_caustics=False,
 )
 
-# galaxy = al.Galaxy(mass=sis_mass_profile, redshift=1)
+# galaxy = al.galaxy(mass=sis_mass_profile, redshift=1)
 #
 # galaxy_plotters.plot_convergence(
 #     galaxy=galaxy,
