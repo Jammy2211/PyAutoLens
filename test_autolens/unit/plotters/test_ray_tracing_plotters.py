@@ -96,9 +96,9 @@ def test__tracer_individuals__dependent_on_input(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        should_plot_profile_image=True,
-        should_plot_source_plane=True,
-        should_plot_potential=True,
+        plot_profile_image=True,
+        plot_source_plane=True,
+        plot_potential=True,
         output_path=ray_tracing_plotter_path,
         output_format="png",
     )

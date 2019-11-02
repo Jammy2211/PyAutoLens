@@ -66,10 +66,10 @@ def simulate_image_from_galaxies_and_output_to_fits(
 
     al.plot.imaging.individual(
         imaging=imaging,
-        should_plot_image=True,
-        should_plot_noise_map=True,
-        should_plot_psf=True,
-        should_plot_signal_to_noise_map=True,
+        plot_image=True,
+        plot_noise_map=True,
+        plot_psf=True,
+        plot_signal_to_noise_map=True,
         output_path=data_path,
         output_format="png",
     )
@@ -85,11 +85,11 @@ def simulate_image_from_galaxies_and_output_to_fits(
     al.plot.tracer.individual(
         tracer=tracer,
         grid=simulator.grid,
-        should_plot_profile_image=True,
-        should_plot_source_plane=True,
-        should_plot_convergence=True,
-        should_plot_potential=True,
-        should_plot_deflections=True,
+        plot_profile_image=True,
+        plot_source_plane=True,
+        plot_convergence=True,
+        plot_potential=True,
+        plot_deflections=True,
         output_path=data_path,
         output_format="png",
     )

@@ -120,7 +120,7 @@ def test__fit_sub_plot(
 
     al.plot.fit_imaging.subplot(
         fit=masked_imaging_fit_x2_plane_7x7,
-        should_plot_mask=True,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -140,7 +140,7 @@ def test__fit_for_plane_subplot(
     al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        should_plot_mask=True,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -152,7 +152,7 @@ def test__fit_for_plane_subplot(
     al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        should_plot_mask=True,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -164,7 +164,7 @@ def test__fit_for_plane_subplot(
     al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        should_plot_mask=True,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -183,7 +183,7 @@ def test__fit_for_planes_subplot(
 
     al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x1_plane_7x7,
-        should_plot_mask=True,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -194,7 +194,7 @@ def test__fit_for_planes_subplot(
 
     al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x2_plane_7x7,
-        should_plot_mask=True,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -214,14 +214,14 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     al.plot.fit_imaging.individuals(
         fit=masked_imaging_fit_x1_plane_7x7,
-        should_plot_image=True,
-        should_plot_noise_map=False,
-        should_plot_signal_to_noise_map=False,
-        should_plot_model_image=True,
-        should_plot_chi_squared_map=True,
-        should_plot_subtracted_images_of_planes=True,
-        should_plot_model_images_of_planes=True,
-        should_plot_plane_images_of_planes=True,
+        plot_image=True,
+        plot_noise_map=False,
+        plot_signal_to_noise_map=False,
+        plot_model_image=True,
+        plot_chi_squared_map=True,
+        plot_subtracted_images_of_planes=True,
+        plot_model_images_of_planes=True,
+        plot_plane_images_of_planes=True,
         output_path=imaging_fit_plotter_path,
         output_format="png",
     )
@@ -260,14 +260,14 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     al.plot.fit_imaging.individuals(
         fit=masked_imaging_fit_x2_plane_7x7,
-        should_plot_image=True,
-        should_plot_noise_map=False,
-        should_plot_signal_to_noise_map=False,
-        should_plot_model_image=True,
-        should_plot_chi_squared_map=True,
-        should_plot_subtracted_images_of_planes=True,
-        should_plot_model_images_of_planes=True,
-        should_plot_plane_images_of_planes=True,
+        plot_image=True,
+        plot_noise_map=False,
+        plot_signal_to_noise_map=False,
+        plot_model_image=True,
+        plot_chi_squared_map=True,
+        plot_subtracted_images_of_planes=True,
+        plot_model_images_of_planes=True,
+        plot_plane_images_of_planes=True,
         output_path=imaging_fit_plotter_path,
         output_format="png",
     )

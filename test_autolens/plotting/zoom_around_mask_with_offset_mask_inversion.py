@@ -44,15 +44,15 @@ def fit_with_offset_centre(centre):
 
 fit = fit_with_offset_centre(centre=(2.0, 2.0))
 
-al.plot.fit_imaging.subplot_for_plane(fit=fit, plane_index=1, should_plot_source_grid=True)
+al.plot.fit_imaging.subplot_for_plane(fit=fit, plane_index=1, plot_source_grid=True)
 
 stop
 
 al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask=True,
+    include_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
-    should_plot_image_plane_pix=True,
+    include_image_plane_pix=True,
 )
 
 fit = fit_with_offset_centre(centre=(2.05, 2.05))
@@ -60,34 +60,34 @@ fit = fit_with_offset_centre(centre=(2.05, 2.05))
 
 al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask=True,
+    include_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
-    should_plot_image_plane_pix=True,
+    include_image_plane_pix=True,
 )
 
 fit = fit_with_offset_centre(centre=(2.1, 2.1))
 
 al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask=True,
+    include_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
-    should_plot_image_plane_pix=True,
+    include_image_plane_pix=True,
 )
 
 fit = fit_with_offset_centre(centre=(2.95, 2.95))
 
 al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask=True,
+    include_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
-    should_plot_image_plane_pix=True,
+    include_image_plane_pix=True,
 )
 
 fit = fit_with_offset_centre(centre=(5.9, 5.9))
 
 al.plot.fit_imaging.subplot(
     fit=fit,
-    should_plot_mask=True,
+    include_mask=True,
     positions=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
-    should_plot_image_plane_pix=True,
+    include_image_plane_pix=True,
 )

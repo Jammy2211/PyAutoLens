@@ -28,5 +28,5 @@ fit = al.fit(
     masked_data=masked_imaging, tracer=tracer
 )
 al.plot.fit_imaging.subplot(
-    fit=fit, should_plot_mask=True
+    fit=fit, include_mask=True
 )

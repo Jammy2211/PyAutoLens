@@ -44,13 +44,13 @@ fit = al.fit(
 )
 
 al.plot.fit_imaging.subplot(
-    fit=fit, should_plot_mask=True, should_plot_image_plane_pix=True, aspect="auto"
+    fit=fit, include_mask=True, include_image_plane_pix=True, aspect="auto"
 )
 
 al.plot.fit_imaging.subplot(
-    fit=fit, should_plot_mask=True, should_plot_image_plane_pix=True, aspect="equal"
+    fit=fit, include_mask=True, include_image_plane_pix=True, aspect="equal"
 )
 
 al.plot.fit_imaging.subplot(
-    fit=fit, should_plot_mask=True, should_plot_image_plane_pix=True, aspect="square"
+    fit=fit, include_mask=True, include_image_plane_pix=True, aspect="square"
 )

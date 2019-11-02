@@ -14,8 +14,8 @@ def subplot(
     tracer,
     grid,
     mask=None,
-    plot_critical_curves=False,
-    plot_caustics=False,
+    include_critical_curves=False,
+    include_caustics=False,
     positions=None,
     units="arcsec",
     figsize=None,
@@ -72,7 +72,7 @@ def subplot(
         tracer=tracer,
         grid=grid,
         mask=mask,
-        plot_critical_curves=plot_critical_curves,
+        include_critical_curves=include_critical_curves,
         positions=positions,
         as_subplot=True,
         units=units,
@@ -171,8 +171,8 @@ def subplot(
         caustics = plotter_util.get_critical_curve_and_caustic(
             obj=tracer,
             grid=grid,
-            plot_critical_curves=False,
-            plot_caustics=plot_caustics,
+            include_critical_curves=False,
+            include_caustics=include_caustics,
         )
 
     else:
@@ -185,7 +185,7 @@ def subplot(
         lines=caustics,
         as_subplot=True,
         positions=None,
-        plot_grid=False,
+        include_grid=False,
         cmap=cmap,
         norm=norm,
         norm_min=norm_min,
@@ -282,14 +282,14 @@ def individual(
     tracer,
     grid,
     mask=None,
-    plot_critical_curves=False,
-    plot_caustics=False,
+    include_critical_curves=False,
+    include_caustics=False,
     positions=None,
-    should_plot_profile_image=False,
-    should_plot_source_plane=False,
-    should_plot_convergence=False,
-    should_plot_potential=False,
-    should_plot_deflections=False,
+    plot_profile_image=False,
+    plot_source_plane=False,
+    plot_convergence=False,
+    plot_potential=False,
+    plot_deflections=False,
     units="arcsec",
     output_path=None,
     output_format="show",
@@ -310,20 +310,20 @@ def individual(
         in the python interpreter window.
     """
 
-    if should_plot_profile_image:
+    if plot_profile_image:
 
         profile_image(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            plot_critical_curves=plot_critical_curves,
+            include_critical_curves=include_critical_curves,
             positions=positions,
             units=units,
             output_path=output_path,
             output_format=output_format,
         )
 
-    if should_plot_convergence:
+    if plot_convergence:
 
         convergence(
             tracer=tracer,
@@ -334,7 +334,7 @@ def individual(
             output_format=output_format,
         )
 
-    if should_plot_potential:
+    if plot_potential:
 
         potential(
             tracer=tracer,
@@ -345,7 +345,7 @@ def individual(
             output_format=output_format,
         )
 
-    if should_plot_source_plane:
+    if plot_source_plane:
 
         source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
@@ -354,8 +354,8 @@ def individual(
             caustics = plotter_util.get_critical_curve_and_caustic(
                 obj=tracer,
                 grid=grid,
-                plot_critical_curves=False,
-                plot_caustics=plot_caustics,
+                include_critical_curves=False,
+                include_caustics=include_caustics,
             )
 
         else:
@@ -367,14 +367,14 @@ def individual(
             grid=source_plane_grid,
             lines=caustics,
             positions=None,
-            plot_grid=False,
+            include_grid=False,
             units=units,
             output_path=output_path,
             output_filename="tracer_source_plane",
             output_format=output_format,
         )
 
-    if should_plot_deflections:
+    if plot_deflections:
 
         deflections_y(
             tracer=tracer,
@@ -385,7 +385,7 @@ def individual(
             output_format=output_format,
         )
 
-    if should_plot_deflections:
+    if plot_deflections:
 
         deflections_x(
             tracer=tracer,
@@ -401,8 +401,8 @@ def profile_image(
     tracer,
     grid,
     mask=None,
-    plot_critical_curves=False,
-    plot_caustics=False,
+    include_critical_curves=False,
+    include_caustics=False,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -419,7 +419,7 @@ def profile_image(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Tracer Imaging-Plane Imaging",
+    title="Tracer Profile Image",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
@@ -438,8 +438,8 @@ def profile_image(
         lines = plotter_util.get_critical_curve_and_caustic(
             obj=tracer,
             grid=grid,
-            plot_critical_curves=plot_critical_curves,
-            plot_caustics=plot_caustics,
+            include_critical_curves=include_critical_curves,
+            include_caustics=include_caustics,
         )
 
     else:
@@ -484,8 +484,8 @@ def convergence(
     tracer,
     grid,
     mask=None,
-    plot_critical_curves=False,
-    plot_caustics=False,
+    include_critical_curves=False,
+    include_caustics=False,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -516,8 +516,8 @@ def convergence(
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=tracer,
         grid=grid,
-        plot_critical_curves=plot_critical_curves,
-        plot_caustics=plot_caustics,
+        include_critical_curves=include_critical_curves,
+        include_caustics=include_caustics,
     )
 
     aa.plot.array(
@@ -555,8 +555,8 @@ def potential(
     tracer,
     grid,
     mask=None,
-    plot_critical_curves=False,
-    plot_caustics=False,
+    include_critical_curves=False,
+    include_caustics=False,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -587,8 +587,8 @@ def potential(
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=tracer,
         grid=grid,
-        plot_critical_curves=plot_critical_curves,
-        plot_caustics=plot_caustics,
+        include_critical_curves=include_critical_curves,
+        include_caustics=include_caustics,
     )
 
     aa.plot.array(
@@ -626,8 +626,8 @@ def deflections_y(
     tracer,
     grid,
     mask=None,
-    plot_critical_curves=False,
-    plot_caustics=False,
+    include_critical_curves=False,
+    include_caustics=False,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -659,8 +659,8 @@ def deflections_y(
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=tracer,
         grid=grid,
-        plot_critical_curves=plot_critical_curves,
-        plot_caustics=plot_caustics,
+        include_critical_curves=include_critical_curves,
+        include_caustics=include_caustics,
     )
 
     aa.plot.array(
@@ -698,8 +698,8 @@ def deflections_x(
     tracer,
     grid,
     mask=None,
-    plot_critical_curves=False,
-    plot_caustics=False,
+    include_critical_curves=False,
+    include_caustics=False,
     as_subplot=False,
     units="arcsec",
     figsize=(7, 7),
@@ -731,8 +731,8 @@ def deflections_x(
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=tracer,
         grid=grid,
-        plot_critical_curves=plot_critical_curves,
-        plot_caustics=plot_caustics,
+        include_critical_curves=include_critical_curves,
+        include_caustics=include_caustics,
     )
 
     aa.plot.array(
