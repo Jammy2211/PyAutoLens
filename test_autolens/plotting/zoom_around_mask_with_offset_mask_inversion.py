@@ -1,15 +1,14 @@
-from autolens.fit.plotters import masked_imaging_fit_plotters
-from test import simulate_util
+import autolens as al
+from test_autolens.simulate import simulate_util
 
 imaging = simulate_util.load_test_imaging(
-    data_type="lens_sis__source_smooth__offset_centre", data_resolution="LSST"
+    data_type="lens_mass__source_smooth__offset_centre", data_resolution="LSST"
 )
-
 
 def fit_with_offset_centre(centre):
 
     mask = al.mask.elliptical(
-        shape=imaging.shape,
+        shape_2d=imaging.shape_2d,
         pixel_scales=imaging.pixel_scales,
         major_axis_radius_arcsec=3.0,
         axis_ratio=1.0,
@@ -22,7 +21,7 @@ def fit_with_offset_centre(centre):
     lens_galaxy = al.galaxy(
         redshift=0.5,
         mass=al.mp.EllipticalIsothermal(
-            centre=(1.0, 1.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
+            centre=(2.0, 2.0), einstein_radius=1.2, axis_ratio=0.7, phi=45.0
         ),
     )
     source_galaxy = al.galaxy(
@@ -33,17 +32,8 @@ def fit_with_offset_centre(centre):
 
     masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 
-    pixelization_grid = source_galaxy.pixelization.traced_sparse_grids_of_planes_from_grid(
-        grid=masked_imaging.grid
-    )
-
-    grid_stack_with_pixelization_grid = masked_imaging.grid.new_grid_stack_with_grids_added(
-        pixelization=pixelization_grid
-    )
-
     tracer = al.tracer.from_galaxies(
         galaxies=[lens_galaxy, source_galaxy],
-        image_plane_grid=grid_stack_with_pixelization_grid,
     )
     fit = al.fit(
         masked_data=masked_imaging, tracer=tracer
@@ -52,7 +42,11 @@ def fit_with_offset_centre(centre):
     return fit
 
 
-fit = fit_with_offset_centre(centre=(1.0, 1.0))
+fit = fit_with_offset_centre(centre=(2.0, 2.0))
+
+al.plot.fit_imaging.subplot_for_plane(fit=fit, plane_index=1, should_plot_source_grid=True)
+
+stop
 
 al.plot.fit_imaging.subplot(
     fit=fit,
@@ -61,7 +55,7 @@ al.plot.fit_imaging.subplot(
     should_plot_image_plane_pix=True,
 )
 
-fit = fit_with_offset_centre(centre=(1.05, 1.05))
+fit = fit_with_offset_centre(centre=(2.05, 2.05))
 
 
 al.plot.fit_imaging.subplot(
@@ -71,7 +65,7 @@ al.plot.fit_imaging.subplot(
     should_plot_image_plane_pix=True,
 )
 
-fit = fit_with_offset_centre(centre=(1.1, 1.1))
+fit = fit_with_offset_centre(centre=(2.1, 2.1))
 
 al.plot.fit_imaging.subplot(
     fit=fit,
@@ -80,7 +74,7 @@ al.plot.fit_imaging.subplot(
     should_plot_image_plane_pix=True,
 )
 
-fit = fit_with_offset_centre(centre=(0.95, 0.95))
+fit = fit_with_offset_centre(centre=(2.95, 2.95))
 
 al.plot.fit_imaging.subplot(
     fit=fit,

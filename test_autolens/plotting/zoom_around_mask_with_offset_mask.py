@@ -13,7 +13,7 @@ mask = al.mask.circular(
     shape_2d=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     radius_arcsec=3.0,
-    centre=(2.0, 2.0),
+    centre=(4.0, 4.0),
 )
 
 # The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it
@@ -32,5 +32,5 @@ fit = al.fit(
     masked_data=masked_imaging, tracer=tracer
 )
 al.plot.fit_imaging.subplot(
-    fit=fit, should_plot_mask=True
+    fit=fit, should_plot_mask=True,
 )

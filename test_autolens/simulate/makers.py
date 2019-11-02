@@ -307,13 +307,13 @@ def make_lens_mass__source_smooth__offset_centre(data_resolutions, sub_size):
 
     lens_galaxy = al.galaxy(
         redshift=0.5,
-        mass=al.mp.SphericalIsothermal(centre=(2.0, 2.0), einstein_radius=1.6),
+        mass=al.mp.SphericalIsothermal(centre=(2.0, 2.0), einstein_radius=1.2),
     )
 
     source_galaxy = al.galaxy(
         redshift=1.0,
         light=al.lp.EllipticalSersic(
-            centre=(4.0, 4.0),
+            centre=(2.0, 2.0),
             axis_ratio=0.8,
             phi=60.0,
             intensity=0.4,

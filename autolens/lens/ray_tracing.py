@@ -323,7 +323,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     def jacobian_a12_from_grid(self, grid):
 
-        deflections = self.deflections_from_grid(grid=grid)
+        deflections = self.deflections_between_planes_from_grid(grid=grid)
 
         return grid.mapping.array_from_sub_array_2d(
             sub_array_2d=-1.0
@@ -332,7 +332,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     def jacobian_a21_from_grid(self, grid):
 
-        deflections = self.deflections_from_grid(grid=grid)
+        deflections = self.deflections_between_planes_from_grid(grid=grid)
 
         return grid.mapping.array_from_sub_array_2d(
             sub_array_2d=-1.0
@@ -341,7 +341,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     def jacobian_a22_from_grid(self, grid):
 
-        deflections = self.deflections_from_grid(grid=grid)
+        deflections = self.deflections_between_planes_from_grid(grid=grid)
 
         return grid.mapping.array_from_sub_array_2d(
             sub_array_2d=1
@@ -422,7 +422,6 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             grid_pixels_1d=tangential_critical_curve_indices[0],
             shape_2d=tangential_eigen_values.sub_shape_2d,
         )
-
         return grids.GridIrregular(grid=tangential_critical_curve)
 
     def radial_critical_curve_from_grid(self, grid):

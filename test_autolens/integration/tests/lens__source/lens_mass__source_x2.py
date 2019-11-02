@@ -5,7 +5,7 @@ from test_autolens.integration.tests import runner
 test_type = "lens__source"
 test_name = "lens_mass__source_x2"
 data_type = "lens_mass__source_smooth"
-data_resolution = "LSST"
+data_resolution = "Euclid"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):

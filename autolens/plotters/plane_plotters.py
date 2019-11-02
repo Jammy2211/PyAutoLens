@@ -51,7 +51,7 @@ def profile_image(
         lines = plotter_util.get_critical_curve_and_caustic(
             obj=plane,
             grid=grid,
-            plot_critical_curve=plot_critical_curves,
+            plot_critical_curves=plot_critical_curves,
             plot_caustics=plot_caustics,
         )
     else:
@@ -213,7 +213,7 @@ def convergence(
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
-        plot_critical_curve=plot_critical_curves,
+        plot_critical_curves=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
@@ -284,7 +284,7 @@ def potential(
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
-        plot_critical_curve=plot_critical_curves,
+        plot_critical_curves=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
@@ -356,7 +356,7 @@ def deflections_y(
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
-        plot_critical_curve=plot_critical_curves,
+        plot_critical_curves=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
@@ -428,7 +428,7 @@ def deflections_x(
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
-        plot_critical_curve=plot_critical_curves,
+        plot_critical_curves=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
@@ -499,7 +499,7 @@ def magnification(
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
         grid=grid,
-        plot_critical_curve=plot_critical_curves,
+        plot_critical_curves=plot_critical_curves,
         plot_caustics=plot_caustics,
     )
 
@@ -553,7 +553,7 @@ def image_and_source_plane_subplot(
     )
 
     lines = plotter_util.get_critical_curve_and_caustic(
-        obj=image_plane, grid=grid, plot_critical_curve=True, plot_caustics=True
+        obj=image_plane, grid=grid, plot_critical_curves=True, plot_caustics=True
     )
 
     if plot_critical_curves:

@@ -19,4 +19,4 @@ mask = al.mask.elliptical(
     phi=0.0,
     centre=(0.0, 0.0),
 )
-al.plot_array(array=array)
+al.plot.array(array=array)

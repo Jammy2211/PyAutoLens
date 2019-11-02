@@ -28,6 +28,8 @@ class AbstractVisualizer:
             "figures", "plot_units", str
         ).strip()
         self.should_plot_mask = figure_setting("plot_mask_on_images")
+        self.should_plot_critical_curves = figure_setting("plot_critical_curves_on_images")
+        self.should_plot_caustics = figure_setting("plot_caustics_on_images")
         self.plot_ray_tracing_all_at_end_png = plot_setting(
             "plot_ray_tracing_all_at_end_png"
         )
@@ -194,6 +196,8 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
             grid=self.masked_imaging.grid,
             during_analysis=during_analysis,
             mask=mask,
+            plot_critical_curves=self.should_plot_critical_curves,
+            plot_caustics=self.should_plot_caustics,
             positions=positions,
             units=self.plot_units,
             should_plot_as_subplot=self.plot_ray_tracing_as_subplot,
@@ -208,7 +212,7 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
             subplot_path=self.subplot_path,
         )
 
-    def plot_masked_imaging(self, fit, during_analysis):
+    def plot_fit(self, fit, during_analysis):
         positions = (
             self.masked_imaging.positions if self.should_plot_positions else None
         )
@@ -216,6 +220,8 @@ class PhaseImagingVisualizer(SubPlotVisualizer):
             fit=fit,
             during_analysis=during_analysis,
             should_plot_mask=self.should_plot_mask,
+            plot_critical_curves=self.should_plot_critical_curves,
+            plot_caustics=self.should_plot_caustics,
             positions=positions,
             should_plot_image_plane_pix=self.should_plot_image_plane_pix,
             should_plot_all_at_end_png=self.plot_fit_all_at_end_png,
