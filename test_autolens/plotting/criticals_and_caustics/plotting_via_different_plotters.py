@@ -9,8 +9,8 @@ sis_mass_profile = al.mp.EllipticalIsothermal(
 al.plot.profile.convergence(
     mass_profile=sis_mass_profile,
     grid=grid,
-    plot_critical_curves=False,
-    plot_caustics=False,
+    include_critical_curves=False,
+    include_caustics=False,
 )
 
 # galaxy = al.galaxy(mass=sis_mass_profile, redshift=1)
@@ -18,6 +18,6 @@ al.plot.profile.convergence(
 # al.plot.galaxy.convergence(
 #     galaxy=galaxy,
 #     grid=grid,
-#     plot_critical_curves=False,
-#     plot_caustics=True,
+#     include_critical_curves=False,
+#     include_caustics=True,
 # )

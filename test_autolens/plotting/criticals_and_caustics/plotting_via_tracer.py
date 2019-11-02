@@ -18,24 +18,24 @@ source_galaxy = al.galaxy(
 
 tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-# al.plot.plane.profile_image(plane=tracer.source_plane, grid=grid, plot_critical_curves=True)
+# al.plot.plane.profile_image(plane=tracer.source_plane, grid=grid, include_critical_curves=True)
 
-al.plot.tracer.subplot(tracer=tracer, grid=grid, plot_critical_curves=True, plot_caustics=True)
+al.plot.tracer.subplot(tracer=tracer, grid=grid, include_critical_curves=True, include_caustics=True)
 
 # phase_plotters.ray_tracing_of_phase(tracer=tracer, grid=grid,     during_analysis=True,
 #     mask=None,
-#     plot_critical_curves,
-#     plot_caustics,
+#     include_critical_curves,
+#     include_caustics,
 #     positions,
 #     units,
-#     should_plot_as_subplot,
-#     should_plot_all_at_end_png,
-#     should_plot_all_at_end_fits,
-#     should_plot_image,
-#     should_plot_source_plane,
-#     should_plot_convergence,
-#     should_plot_potential,
-#     should_plot_deflections,
+#     plot_as_subplot,
+#     plot_all_at_end_png,
+#     plot_all_at_end_fits,
+#     plot_image,
+#     plot_source_plane,
+#     plot_convergence,
+#     plot_potential,
+#     plot_deflections,
 #     visualize_path,
 #     subplot_path,)
 
@@ -44,6 +44,6 @@ al.plot.tracer.subplot(tracer=tracer, grid=grid, plot_critical_curves=True, plot
 # al.plot.galaxy.convergence(
 #     galaxy=galaxy,
 #     grid=grid,
-#     plot_critical_curves=False,
-#     plot_caustics=True,
+#     include_critical_curves=False,
+#     include_caustics=True,
 # )

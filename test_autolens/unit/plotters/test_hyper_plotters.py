@@ -121,7 +121,7 @@ def test__plot_hyper_galaxy_images(
     al.plot.hyper.subplot_of_hyper_galaxy_images(
         hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
         mask=mask_7x7,
-        should_plot_mask=True,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,

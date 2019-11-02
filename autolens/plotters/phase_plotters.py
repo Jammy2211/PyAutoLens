@@ -9,13 +9,13 @@ def imaging_of_phase(
     mask,
     positions,
     units,
-    should_plot_as_subplot,
-    should_plot_image,
-    should_plot_noise_map,
-    should_plot_psf,
-    should_plot_signal_to_noise_map,
-    should_plot_absolute_signal_to_noise_map,
-    should_plot_potential_chi_squared_map,
+    plot_as_subplot,
+    plot_image,
+    plot_noise_map,
+    plot_psf,
+    plot_signal_to_noise_map,
+    plot_absolute_signal_to_noise_map,
+    plot_potential_chi_squared_map,
     visualize_path,
     subplot_path,
 ):
@@ -24,7 +24,7 @@ def imaging_of_phase(
         path=visualize_path, folder_names=["imaging"]
     )
 
-    if should_plot_as_subplot:
+    if plot_as_subplot:
 
         aa.plot.imaging.subplot(
             imaging=imaging,
@@ -39,12 +39,12 @@ def imaging_of_phase(
         imaging=imaging,
         mask=mask,
         positions=positions,
-        should_plot_image=should_plot_image,
-        should_plot_noise_map=should_plot_noise_map,
-        should_plot_psf=should_plot_psf,
-        should_plot_signal_to_noise_map=should_plot_signal_to_noise_map,
-        should_plot_absolute_signal_to_noise_map=should_plot_absolute_signal_to_noise_map,
-        should_plot_potential_chi_squared_map=should_plot_potential_chi_squared_map,
+        plot_image=plot_image,
+        plot_noise_map=plot_noise_map,
+        plot_psf=plot_psf,
+        plot_signal_to_noise_map=plot_signal_to_noise_map,
+        plot_absolute_signal_to_noise_map=plot_absolute_signal_to_noise_map,
+        plot_potential_chi_squared_map=plot_potential_chi_squared_map,
         units=units,
         output_path=output_path,
         output_format="png",
@@ -56,18 +56,18 @@ def ray_tracing_of_phase(
     grid,
     during_analysis,
     mask,
-    plot_critical_curves,
-    plot_caustics,
+    include_critical_curves,
+    include_caustics,
     positions,
     units,
-    should_plot_as_subplot,
-    should_plot_all_at_end_png,
-    should_plot_all_at_end_fits,
-    should_plot_image,
-    should_plot_source_plane,
-    should_plot_convergence,
-    should_plot_potential,
-    should_plot_deflections,
+    plot_as_subplot,
+    plot_all_at_end_png,
+    plot_all_at_end_fits,
+    plot_image,
+    plot_source_plane,
+    plot_convergence,
+    plot_potential,
+    plot_deflections,
     visualize_path,
     subplot_path,
 ):
@@ -75,14 +75,14 @@ def ray_tracing_of_phase(
         path=visualize_path, folder_names=["ray_tracing"]
     )
 
-    if should_plot_as_subplot:
+    if plot_as_subplot:
 
         ray_tracing_plotters.subplot(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            plot_critical_curves=plot_critical_curves,
-            plot_caustics=plot_caustics,
+            include_critical_curves=include_critical_curves,
+            include_caustics=include_caustics,
             positions=positions,
             units=units,
             output_path=subplot_path,
@@ -93,14 +93,14 @@ def ray_tracing_of_phase(
         tracer=tracer,
         grid=grid,
         mask=mask,
-        plot_critical_curves=plot_critical_curves,
-        plot_caustics=plot_caustics,
+        include_critical_curves=include_critical_curves,
+        include_caustics=include_caustics,
         positions=positions,
-        should_plot_profile_image=should_plot_image,
-        should_plot_source_plane=should_plot_source_plane,
-        should_plot_convergence=should_plot_convergence,
-        should_plot_potential=should_plot_potential,
-        should_plot_deflections=should_plot_deflections,
+        plot_profile_image=plot_image,
+        plot_source_plane=plot_source_plane,
+        plot_convergence=plot_convergence,
+        plot_potential=plot_potential,
+        plot_deflections=plot_deflections,
         units=units,
         output_path=output_path,
         output_format="png",
@@ -108,26 +108,26 @@ def ray_tracing_of_phase(
 
     if not during_analysis:
 
-        if should_plot_all_at_end_png:
+        if plot_all_at_end_png:
 
             ray_tracing_plotters.individual(
                 tracer=tracer,
                 grid=grid,
                 mask=mask,
-                plot_critical_curves=plot_critical_curves,
-                plot_caustics=plot_caustics,
+                include_critical_curves=include_critical_curves,
+                include_caustics=include_caustics,
                 positions=positions,
-                should_plot_profile_image=True,
-                should_plot_source_plane=True,
-                should_plot_convergence=True,
-                should_plot_potential=True,
-                should_plot_deflections=True,
+                plot_profile_image=True,
+                plot_source_plane=True,
+                plot_convergence=True,
+                plot_potential=True,
+                plot_deflections=True,
                 units=units,
                 output_path=output_path,
                 output_format="png",
             )
 
-        if should_plot_all_at_end_fits:
+        if plot_all_at_end_fits:
 
             fits_path = af.path_util.make_and_return_path_from_path_and_folder_names(
                 path=output_path, folder_names=["fits"]
@@ -137,14 +137,14 @@ def ray_tracing_of_phase(
                 tracer=tracer,
                 grid=grid,
                 mask=mask,
-                plot_critical_curves=plot_critical_curves,
-                plot_caustics=plot_caustics,
+                include_critical_curves=include_critical_curves,
+                include_caustics=include_caustics,
                 positions=positions,
-                should_plot_profile_image=True,
-                should_plot_source_plane=True,
-                should_plot_convergence=True,
-                should_plot_potential=True,
-                should_plot_deflections=True,
+                plot_profile_image=True,
+                plot_source_plane=True,
+                plot_convergence=True,
+                plot_potential=True,
+                plot_deflections=True,
                 output_path=fits_path,
                 output_format="fits",
             )
@@ -155,29 +155,29 @@ def imaging_fit_of_phase(
     during_analysis,
     positions,
     units,
-    should_plot_mask,
-    plot_critical_curves,
-    plot_caustics,
-    should_plot_image_plane_pix,
-    should_plot_all_at_end_png,
-    should_plot_all_at_end_fits,
-    should_plot_fit_as_subplot,
-    should_plot_fit_of_planes_as_subplot,
-    should_plot_inversion_as_subplot,
-    should_plot_image,
-    should_plot_noise_map,
-    should_plot_signal_to_noise_map,
-    should_plot_model_image,
-    should_plot_residual_map,
-    should_plot_normalized_residual_map,
-    should_plot_chi_squared_map,
-    should_plot_inversion_residual_map,
-    should_plot_inversion_normalized_residual_map,
-    should_plot_inversion_chi_squared_map,
-    should_plot_inversion_regularization_weights,
-    should_plot_subtracted_images_of_planes,
-    should_plot_model_images_of_planes,
-    should_plot_plane_images_of_planes,
+    include_mask,
+    include_critical_curves,
+    include_caustics,
+    include_image_plane_pix,
+    plot_all_at_end_png,
+    plot_all_at_end_fits,
+    plot_fit_as_subplot,
+    plot_fit_of_planes_as_subplot,
+    plot_inversion_as_subplot,
+    plot_image,
+    plot_noise_map,
+    plot_signal_to_noise_map,
+    plot_model_image,
+    plot_residual_map,
+    plot_normalized_residual_map,
+    plot_chi_squared_map,
+    plot_inversion_residual_map,
+    plot_inversion_normalized_residual_map,
+    plot_inversion_chi_squared_map,
+    plot_inversion_regularization_weights,
+    plot_subtracted_images_of_planes,
+    plot_model_images_of_planes,
+    plot_plane_images_of_planes,
     visualize_path,
     subplot_path,
 ):
@@ -186,35 +186,35 @@ def imaging_fit_of_phase(
         path=visualize_path, folder_names=["fit"]
     )
 
-    if should_plot_fit_as_subplot:
+    if plot_fit_as_subplot:
 
         fit_imaging_plotters.subplot(
             fit=fit,
-            should_plot_mask=should_plot_mask,
-            plot_critical_curves=plot_critical_curves,
-            plot_caustics=plot_caustics,
+            include_mask=include_mask,
+            include_critical_curves=include_critical_curves,
+            include_caustics=include_caustics,
             positions=positions,
-            should_plot_image_plane_pix=should_plot_image_plane_pix,
+            include_image_plane_pix=include_image_plane_pix,
             units=units,
             output_path=subplot_path,
             output_format="png",
         )
 
-    if should_plot_fit_of_planes_as_subplot:
+    if plot_fit_of_planes_as_subplot:
 
         fit_imaging_plotters.subplot_of_planes(
             fit=fit,
-            should_plot_mask=should_plot_mask,
-            plot_critical_curves=plot_critical_curves,
-            plot_caustics=plot_caustics,
+            include_mask=include_mask,
+            include_critical_curves=include_critical_curves,
+            include_caustics=include_caustics,
             positions=positions,
-            should_plot_image_plane_pix=should_plot_image_plane_pix,
+            include_image_plane_pix=include_image_plane_pix,
             units=units,
             output_path=subplot_path,
             output_format="png",
         )
 
-    if should_plot_inversion_as_subplot and fit.tracer.has_pixelization:
+    if plot_inversion_as_subplot and fit.tracer.has_pixelization:
 
         aa.plot.inversion.subplot(
             inversion=fit.inversion,
@@ -226,25 +226,25 @@ def imaging_fit_of_phase(
 
     fit_imaging_plotters.individuals(
         fit=fit,
-        should_plot_mask=should_plot_mask,
-        plot_critical_curves=plot_critical_curves,
-        plot_caustics=plot_caustics,
+        include_mask=include_mask,
+        include_critical_curves=include_critical_curves,
+        include_caustics=include_caustics,
         positions=positions,
-        should_plot_image_plane_pix=should_plot_image_plane_pix,
-        should_plot_image=should_plot_image,
-        should_plot_noise_map=should_plot_noise_map,
-        should_plot_signal_to_noise_map=should_plot_signal_to_noise_map,
-        should_plot_model_image=should_plot_model_image,
-        should_plot_residual_map=should_plot_residual_map,
-        should_plot_chi_squared_map=should_plot_chi_squared_map,
-        should_plot_normalized_residual_map=should_plot_normalized_residual_map,
-        should_plot_inversion_residual_map=should_plot_inversion_residual_map,
-        should_plot_inversion_normalized_residual_map=should_plot_inversion_normalized_residual_map,
-        should_plot_inversion_chi_squared_map=should_plot_inversion_chi_squared_map,
-        should_plot_inversion_regularization_weight_map=should_plot_inversion_regularization_weights,
-        should_plot_subtracted_images_of_planes=should_plot_subtracted_images_of_planes,
-        should_plot_model_images_of_planes=should_plot_model_images_of_planes,
-        should_plot_plane_images_of_planes=should_plot_plane_images_of_planes,
+        include_image_plane_pix=include_image_plane_pix,
+        plot_image=plot_image,
+        plot_noise_map=plot_noise_map,
+        plot_signal_to_noise_map=plot_signal_to_noise_map,
+        plot_model_image=plot_model_image,
+        plot_residual_map=plot_residual_map,
+        plot_chi_squared_map=plot_chi_squared_map,
+        plot_normalized_residual_map=plot_normalized_residual_map,
+        plot_inversion_residual_map=plot_inversion_residual_map,
+        plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
+        plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
+        plot_inversion_regularization_weight_map=plot_inversion_regularization_weights,
+        plot_subtracted_images_of_planes=plot_subtracted_images_of_planes,
+        plot_model_images_of_planes=plot_model_images_of_planes,
+        plot_plane_images_of_planes=plot_plane_images_of_planes,
         units=units,
         output_path=output_path,
         output_format="png",
@@ -252,35 +252,35 @@ def imaging_fit_of_phase(
 
     if not during_analysis:
 
-        if should_plot_all_at_end_png:
+        if plot_all_at_end_png:
 
             fit_imaging_plotters.individuals(
                 fit=fit,
-                should_plot_mask=should_plot_mask,
-                plot_critical_curves=plot_critical_curves,
-                plot_caustics=plot_caustics,
+                include_mask=include_mask,
+                include_critical_curves=include_critical_curves,
+                include_caustics=include_caustics,
                 positions=positions,
-                should_plot_image_plane_pix=should_plot_image_plane_pix,
-                should_plot_image=True,
-                should_plot_noise_map=True,
-                should_plot_signal_to_noise_map=True,
-                should_plot_model_image=True,
-                should_plot_residual_map=True,
-                should_plot_normalized_residual_map=True,
-                should_plot_chi_squared_map=True,
-                should_plot_inversion_residual_map=True,
-                should_plot_inversion_normalized_residual_map=True,
-                should_plot_inversion_chi_squared_map=True,
-                should_plot_inversion_regularization_weight_map=True,
-                should_plot_subtracted_images_of_planes=True,
-                should_plot_model_images_of_planes=True,
-                should_plot_plane_images_of_planes=True,
+                include_image_plane_pix=include_image_plane_pix,
+                plot_image=True,
+                plot_noise_map=True,
+                plot_signal_to_noise_map=True,
+                plot_model_image=True,
+                plot_residual_map=True,
+                plot_normalized_residual_map=True,
+                plot_chi_squared_map=True,
+                plot_inversion_residual_map=True,
+                plot_inversion_normalized_residual_map=True,
+                plot_inversion_chi_squared_map=True,
+                plot_inversion_regularization_weight_map=True,
+                plot_subtracted_images_of_planes=True,
+                plot_model_images_of_planes=True,
+                plot_plane_images_of_planes=True,
                 units=units,
                 output_path=output_path,
                 output_format="png",
             )
 
-        if should_plot_all_at_end_fits:
+        if plot_all_at_end_fits:
 
             fits_path = af.path_util.make_and_return_path_from_path_and_folder_names(
                 path=output_path, folder_names=["fits"]
@@ -288,25 +288,25 @@ def imaging_fit_of_phase(
 
             fit_imaging_plotters.individuals(
                 fit=fit,
-                should_plot_mask=should_plot_mask,
-                plot_critical_curves=plot_critical_curves,
-                plot_caustics=plot_caustics,
+                include_mask=include_mask,
+                include_critical_curves=include_critical_curves,
+                include_caustics=include_caustics,
                 positions=positions,
-                should_plot_image_plane_pix=should_plot_image_plane_pix,
-                should_plot_image=True,
-                should_plot_noise_map=True,
-                should_plot_signal_to_noise_map=True,
-                should_plot_model_image=True,
-                should_plot_residual_map=True,
-                should_plot_normalized_residual_map=True,
-                should_plot_chi_squared_map=True,
-                should_plot_inversion_residual_map=True,
-                should_plot_inversion_normalized_residual_map=True,
-                should_plot_inversion_chi_squared_map=True,
-                should_plot_inversion_regularization_weight_map=True,
-                should_plot_subtracted_images_of_planes=True,
-                should_plot_model_images_of_planes=True,
-                should_plot_plane_images_of_planes=True,
+                include_image_plane_pix=include_image_plane_pix,
+                plot_image=True,
+                plot_noise_map=True,
+                plot_signal_to_noise_map=True,
+                plot_model_image=True,
+                plot_residual_map=True,
+                plot_normalized_residual_map=True,
+                plot_chi_squared_map=True,
+                plot_inversion_residual_map=True,
+                plot_inversion_normalized_residual_map=True,
+                plot_inversion_chi_squared_map=True,
+                plot_inversion_regularization_weight_map=True,
+                plot_subtracted_images_of_planes=True,
+                plot_model_images_of_planes=True,
+                plot_plane_images_of_planes=True,
                 output_path=fits_path,
                 output_format="fits",
             )
@@ -317,8 +317,8 @@ def plot_hyper_images_for_phase(
     hyper_galaxy_image_path_dict,
     mask,
     units,
-    should_plot_hyper_model_image,
-    should_plot_hyper_galaxy_images,
+    plot_hyper_model_image,
+    plot_hyper_galaxy_images,
     visualize_path,
 ):
 
@@ -326,7 +326,7 @@ def plot_hyper_images_for_phase(
         path=visualize_path, folder_names=["hyper_galaxies"]
     )
 
-    if should_plot_hyper_model_image:
+    if plot_hyper_model_image:
 
         hyper_plotters.hyper_model_image(
             hyper_model_image=hyper_model_image,
@@ -336,7 +336,7 @@ def plot_hyper_images_for_phase(
             output_format="png",
         )
 
-    if should_plot_hyper_galaxy_images:
+    if plot_hyper_galaxy_images:
 
         hyper_plotters.subplot_of_hyper_galaxy_images(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,

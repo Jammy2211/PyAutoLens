@@ -50,7 +50,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
             origin=origin,
         )
 
-    def from_galaxies(self, galaxies, sub_size=16, should_plot_imaging=False):
+    def from_galaxies(self, galaxies, sub_size=16, plot_imaging=False):
         """Simulate Imaging data_type for this data_type, as follows:
 
         1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
@@ -76,13 +76,13 @@ class ImagingSimulator(simulator.ImagingSimulator):
 
         imaging = self.from_tracer(tracer=tracer)
 
-        if should_plot_imaging:
+        if plot_imaging:
             al.plot.imaging.subplot(imaging=imaging)
 
         return imaging
 
     def from_galaxies_and_write_to_fits(
-        self, galaxies, data_path, data_name, sub_size=16, should_plot_imaging=False
+        self, galaxies, data_path, data_name, sub_size=16, plot_imaging=False
     ):
         """Simulate Imaging data_type for this data_type, as follows:
 
@@ -102,7 +102,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
         imaging = self.from_galaxies(
             galaxies=galaxies,
             sub_size=sub_size,
-            should_plot_imaging=should_plot_imaging,
+            plot_imaging=plot_imaging,
         )
 
         data_output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
