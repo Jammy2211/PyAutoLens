@@ -582,9 +582,9 @@ def subplot_for_plane(
 
         aa.plot.inversion.reconstruction(
             inversion=fit.inversion,
-            include_caustics=True,
+            lines=lines,
             include_grid=False,
-            plot_centres=False,
+            include_centres=False,
             as_subplot=True,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
@@ -848,15 +848,14 @@ def individuals(
 
         for plane_index in range(fit.tracer.total_planes):
 
-            if fit.tracer.planes[plane_index].has_light_profile:
+            output_filename = "fit_plane_image_of_plane_" + str(plane_index)
 
-                output_filename = "fit_plane_image_of_plane_" + str(plane_index)
+            if fit.tracer.planes[plane_index].has_light_profile:
 
                 plane_plotters.plane_image(
                     plane=fit.tracer.planes[plane_index],
                     grid=traced_grids[plane_index],
                     lines=lines,
-                    include_grid=True,
                     units=units,
                     output_path=output_path,
                     output_filename=output_filename,
@@ -868,14 +867,11 @@ def individuals(
 
                 aa.plot.inversion.reconstruction(
                     inversion=fit.inversion,
-                    include_caustics=True,
-                    include_grid=False,
-                    plot_centres=False,
-                    as_subplot=False,
+                    lines=lines,
                     units=units,
                     kpc_per_arcsec=kpc_per_arcsec,
                     output_path=output_path,
-                    output_filename=None,
+                    output_filename=output_filename,
                     output_format=output_format,
                 )
 
