@@ -1,5 +1,4 @@
-from autolens.model.profiles import mass_profiles
-from autolens.model.profiles.plotters import profile_plotters
+import autolens as al
 
 grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=4)
 

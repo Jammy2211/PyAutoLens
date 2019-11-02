@@ -10,7 +10,7 @@ imaging = simulate_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
 )
 mask = al.mask.elliptical(
-    shape=imaging.shape,
+    shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius_arcsec=3.0,
     axis_ratio=0.5,
@@ -26,13 +26,13 @@ mask = al.mask.elliptical(
 
 # The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
-lens_galaxy = al.galaxy(
+lens_galaxy = al.galaxy(redshift=0.5,
     mass=al.mp.EllipticalIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
     )
 )
-source_galaxy = al.galaxy(
-    pixelization=al.pix.VoronoiMagnification(shape=(20, 20)),
+source_galaxy = al.galaxy(redshift=1.0,
+    pixelization=al.pix.Rectangular(shape=(20, 20)),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 

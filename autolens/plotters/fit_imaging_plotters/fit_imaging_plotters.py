@@ -13,6 +13,8 @@ from autolens.plotters import plane_plotters
 def subplot(
     fit,
     should_plot_mask=True,
+    plot_critical_curves=False,
+    plot_caustics=False,
     positions=None,
     should_plot_image_plane_pix=False,
     plot_mass_profile_centres=True,
@@ -57,6 +59,10 @@ def subplot(
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
     image_plane_pix_grid = get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
+
+    critical_curves, caustics = get_critical_curves_and_caustics(fit=fit,
+                                                                 plot_critical_curves=plot_critical_curves,
+                                                                 plot_caustics=plot_caustics)
 
     aa.plot.fit_imaging.image(
         fit=fit,
@@ -128,6 +134,7 @@ def subplot(
     aa.plot.fit_imaging.model_image(
         fit=fit,
         mask=mask,
+        lines=critical_curves,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -255,6 +262,8 @@ def subplot(
 def subplot_of_planes(
     fit,
     should_plot_mask=True,
+    plot_critical_curves=False,
+    plot_caustics=False,
     positions=None,
     should_plot_image_plane_pix=False,
     plot_mass_profile_centres=True,
@@ -296,6 +305,8 @@ def subplot_of_planes(
                 plane_index=plane_index,
                 should_plot_mask=should_plot_mask,
                 should_plot_image_plane_pix=should_plot_image_plane_pix,
+                plot_critical_curves=plot_critical_curves,
+                plot_caustics=plot_caustics,
                 positions=positions,
                 units=units,
                 figsize=figsize,
@@ -329,6 +340,8 @@ def subplot_for_plane(
     plane_index,
     should_plot_mask=True,
     should_plot_source_grid=False,
+    plot_critical_curves=False,
+    plot_caustics=False,
     positions=None,
     should_plot_image_plane_pix=False,
     plot_mass_profile_centres=True,
@@ -468,6 +481,7 @@ def subplot_for_plane(
         plane_index=plane_index,
         mask=mask,
         plot_mass_profile_centres=plot_mass_profile_centres,
+        plot_critical_curves=plot_critical_curves,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -494,6 +508,19 @@ def subplot_for_plane(
         output_format=output_format,
     )
 
+    if fit.tracer.has_mass_profile:
+
+        lines = plotter_util.get_critical_curve_and_caustic(
+            obj=fit.tracer,
+            grid=fit.masked_imaging.grid,
+            plot_critical_curves=False,
+            plot_caustics=plot_caustics,
+        )
+
+    else:
+
+        lines = None
+
     if not fit.tracer.planes[plane_index].has_pixelization:
 
         plt.subplot(rows, columns, 4)
@@ -503,7 +530,7 @@ def subplot_for_plane(
         plane_plotters.plane_image(
             plane=fit.tracer.planes[plane_index],
             grid=traced_grids[plane_index],
-            positions=None,
+            lines=lines,
             plot_grid=should_plot_source_grid,
             as_subplot=True,
             units=units,
@@ -555,7 +582,7 @@ def subplot_for_plane(
 
         aa.plot.inversion.reconstruction(
             inversion=fit.inversion,
-            positions=None,
+            plot_caustics=True,
             should_plot_grid=False,
             should_plot_centres=False,
             as_subplot=True,
@@ -595,6 +622,8 @@ def subplot_for_plane(
 def individuals(
     fit,
     should_plot_mask=True,
+    plot_critical_curves=False,
+    plot_caustics=False,
     positions=None,
     should_plot_image_plane_pix=False,
     should_plot_image=False,
@@ -632,6 +661,10 @@ def individuals(
 
     mask = get_mask(fit=fit, should_plot_mask=should_plot_mask)
     image_plane_pix_grid = get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
+
+    critical_curves, caustics = get_critical_curves_and_caustics(fit=fit,
+                                                                 plot_critical_curves=plot_critical_curves,
+                                                                 plot_caustics=plot_caustics)
 
     traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
@@ -676,6 +709,7 @@ def individuals(
         aa.plot.fit_imaging.model_image(
             fit=fit,
             mask=mask,
+            lines=critical_curves,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -775,6 +809,7 @@ def individuals(
                 fit=fit,
                 plane_index=plane_index,
                 mask=mask,
+                plot_critical_curves=plot_critical_curves,
                 units=units,
                 kpc_per_arcsec=kpc_per_arcsec,
                 output_path=output_path,
@@ -789,6 +824,7 @@ def individuals(
                 fit=fit,
                 plane_index=plane_index,
                 mask=mask,
+                plot_critical_curves=plot_critical_curves,
                 units=units,
                 kpc_per_arcsec=kpc_per_arcsec,
                 output_path=output_path,
@@ -796,6 +832,19 @@ def individuals(
             )
 
     if should_plot_plane_images_of_planes:
+
+        if fit.tracer.has_mass_profile:
+
+            lines = plotter_util.get_critical_curve_and_caustic(
+                obj=fit.tracer,
+                grid=fit.grid,
+                plot_critical_curves=False,
+                plot_caustics=plot_caustics,
+            )
+
+        else:
+
+            lines = None
 
         for plane_index in range(fit.tracer.total_planes):
 
@@ -806,6 +855,7 @@ def individuals(
                 plane_plotters.plane_image(
                     plane=fit.tracer.planes[plane_index],
                     grid=traced_grids[plane_index],
+                    lines=lines,
                     plot_grid=True,
                     units=units,
                     output_path=output_path,
@@ -814,10 +864,28 @@ def individuals(
                 )
 
 
+            elif fit.tracer.planes[plane_index].has_pixelization:
+
+                aa.plot.inversion.reconstruction(
+                    inversion=fit.inversion,
+                    plot_caustics=True,
+                    should_plot_grid=False,
+                    should_plot_centres=False,
+                    as_subplot=False,
+                    units=units,
+                    kpc_per_arcsec=kpc_per_arcsec,
+                    output_path=output_path,
+                    output_filename=None,
+                    output_format=output_format,
+                )
+
+
 def subtracted_image_of_plane(
     fit,
     plane_index,
     mask=None,
+    plot_critical_curves=False,
+    plot_caustics=False,
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
@@ -877,11 +945,25 @@ def subtracted_image_of_plane(
 
         subtracted_image = fit.image
 
+    if fit.tracer.has_mass_profile:
+
+        lines = plotter_util.get_critical_curve_and_caustic(
+            obj=fit.tracer,
+            grid=fit.masked_imaging.grid,
+            plot_critical_curves=plot_critical_curves,
+            plot_caustics=plot_caustics,
+        )
+
+    else:
+
+        lines = None
+
     aa.plot.array(
         array=subtracted_image,
         mask=mask,
         grid=image_plane_pix_grid,
         positions=positions,
+        lines=lines,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -915,6 +997,8 @@ def model_image_of_plane(
     fit,
     plane_index,
     mask=None,
+    plot_critical_curves=False,
+    plot_caustics=False,
     positions=None,
     plot_mass_profile_centres=True,
     as_subplot=False,
@@ -962,9 +1046,23 @@ def model_image_of_plane(
         plot_mass_profile_centres=plot_mass_profile_centres, fit=fit
     )
 
+    if fit.tracer.has_mass_profile:
+
+        lines = plotter_util.get_critical_curve_and_caustic(
+            obj=fit.tracer,
+            grid=fit.masked_imaging.grid,
+            plot_critical_curves=plot_critical_curves,
+            plot_caustics=plot_caustics,
+        )
+
+    else:
+
+        lines = None
+
     aa.plot.array(
         array=fit.model_images_of_planes[plane_index],
         mask=mask,
+        lines=lines,
         positions=positions,
         centres=centres,
         as_subplot=as_subplot,
@@ -1116,3 +1214,28 @@ def get_mass_profile_centes(plot_mass_profile_centres, fit):
         return fit.tracer.image_plane.centres_of_galaxy_mass_profiles
     else:
         return None
+
+
+def get_critical_curves_and_caustics(fit, plot_critical_curves, plot_caustics):
+    if fit.tracer.has_mass_profile:
+
+        critical_curves = plotter_util.get_critical_curve_and_caustic(
+            obj=fit.tracer,
+            grid=fit.masked_imaging.grid,
+            plot_critical_curves=plot_critical_curves,
+            plot_caustics=False,
+        )
+
+        caustics = plotter_util.get_critical_curve_and_caustic(
+            obj=fit.tracer,
+            grid=fit.masked_imaging.grid,
+            plot_critical_curves=False,
+            plot_caustics=plot_caustics,
+        )
+
+    else:
+
+        critical_curves = None
+        caustics = None
+
+    return critical_curves, caustics

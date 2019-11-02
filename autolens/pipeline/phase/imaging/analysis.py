@@ -139,7 +139,7 @@ class Analysis(af.Analysis):
             hyper_background_noise=hyper_background_noise,
         )
         self.visualizer.plot_ray_tracing(fit.tracer, during_analysis)
-        self.visualizer.plot_masked_imaging(fit, during_analysis)
+        self.visualizer.plot_fit(fit, during_analysis)
 
     def tracer_for_instance(self, instance):
         return ray_tracing.Tracer.from_galaxies(

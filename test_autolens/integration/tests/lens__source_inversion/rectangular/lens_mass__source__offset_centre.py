@@ -12,20 +12,19 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class SourcePix(al.PhaseImaging):
         def customize_priors(self, results):
 
-            self.galaxies.lens.mass.centre.centre_0 = 0.0
-            self.galaxies.lens.mass.centre.centre_1 = 0.0
-            self.galaxies.lens.mass.einstein_radius_in_units = 1.6
+            self.galaxies.lens.mass.centre.centre_0 = 2.0
+            self.galaxies.lens.mass.centre.centre_1 = 2.0
+            self.galaxies.lens.mass.einstein_radius = 1.2
             self.galaxies.source.pixelization.shape_0 = 20.0
             self.galaxies.source.pixelization.shape_1 = 20.0
 
     def mask_function(image):
-        return al.mask.circular_annular(
+        return al.mask.circular(
             shape_2d=image.shape_2d,
             pixel_scales=image.pixel_scales,
             centre=(2.0, 2.0),
             sub_size=2,
-            inner_radius_arcsec=0.5,
-            outer_radius_arcsec=1.6,
+            radius_arcsec=2.4,
         )
 
     phase1 = SourcePix(
