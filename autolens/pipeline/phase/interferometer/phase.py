@@ -20,6 +20,8 @@ class PhaseInterferometer(dataset.PhaseDataset):
     def __init__(
         self,
         phase_name,
+        real_space_shape_2d,
+        real_space_pixel_scales,
         phase_folders=tuple(),
         galaxies=None,
         hyper_image_sky=None,
@@ -53,7 +55,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         phase_tag = phase_tagging.phase_tag_from_phase_settings(
             sub_size=sub_size,
             signal_to_noise_limit=signal_to_noise_limit,
-            primaary_beam_shape_2d=primary_beam_shape_2d,
+            primary_beam_shape_2d=primary_beam_shape_2d,
             positions_threshold=positions_threshold,
             inner_mask_radii=inner_mask_radii,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
@@ -104,7 +106,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         """
         return visibilities
 
-    def make_analysis(self, data, results=None, mask=None, positions=None):
+    def make_analysis(self, dataset, results=None, mask=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and masked_interferometer modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -114,7 +116,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         positions
         mask: Mask
             The default masks passed in by the pipeline
-        data: im.Interferometer
+        dataset: im.Interferometer
             An masked_interferometer that has been masked
         results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase
@@ -125,10 +127,10 @@ class PhaseInterferometer(dataset.PhaseDataset):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         self.meta_interferometer_fit.variable = self.variable
-        modified_visibilities = self.modify_visibilities(visibilities=data.visibilities, results=results)
+        modified_visibilities = self.modify_visibilities(visibilities=dataset.visibilities, results=results)
 
-        masked_interferometer = self.meta_interferometer_fit.data_fit_from(
-            data=data,
+        masked_interferometer = self.meta_interferometer_fit.masked_dataset_from(
+            dataset=dataset,
             mask=mask,
             positions=positions,
             results=results,

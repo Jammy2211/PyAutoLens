@@ -33,8 +33,8 @@ class MetaImagingFit(dataset.MetaDatasetFit):
         self.psf_shape_2d = psf_shape_2d
         self.bin_up_factor = bin_up_factor
 
-    def data_fit_from(self, data, mask, positions, results, modified_image):
-        mask = self.setup_phase_mask(data=data, mask=mask)
+    def masked_dataset_from(self, dataset, mask, positions, results, modified_image):
+        mask = self.setup_phase_mask(shape_2d=dataset.shape_2d, pixel_scales=dataset.pixel_scales, mask=mask)
 
         self.check_positions(positions=positions)
 
@@ -43,7 +43,7 @@ class MetaImagingFit(dataset.MetaDatasetFit):
         )
 
         masked_imaging = masked_dataset.MaskedImaging(
-            imaging=data.modified_image_from_image(modified_image),
+            imaging=dataset.modified_image_from_image(modified_image),
             mask=mask,
             psf_shape_2d=self.psf_shape_2d,
             positions=positions,

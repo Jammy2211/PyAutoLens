@@ -30,5 +30,5 @@ def add(module):
 
 class TestPipeline(object):
     # noinspection PyMethodMayBeStatic
-    def run(self, image):
-        print(image)
+    def run(self, dataset):
+        print(dataset)

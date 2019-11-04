@@ -52,23 +52,23 @@ class TestPhase(object):
             radius_arcsec=1.5,
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
 
         assert (analysis.masked_imaging.mask == mask_input).all()
 
         # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
 
-        def mask_function(image):
+        def mask_function(shape_2d, pixel_scales):
             return al.mask.circular(
-                shape_2d=image.shape_2d, pixel_scales=1.0, radius_arcsec=0.3
+                shape_2d=shape_2d, pixel_scales=1.0, radius_arcsec=0.3
             )
 
-        mask_from_function = mask_function(image=imaging_7x7.image)
+        mask_from_function = mask_function(shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales)
         phase_imaging_7x7.meta_imaging_fit.mask_function = mask_function
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=None)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=None)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
 
         # If no mask is suppled, nor a mask function, we should use the default mask. This extends behind the edge of
@@ -77,7 +77,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_imaging_fit.mask_function = None
 
         with pytest.raises(exc.MaskException):
-            phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=None)
+            phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=None)
 
     def test__make_analysis__mask_input_uses_mask__inner_mask_radius_included_which_masks_centre(
         self, phase_imaging_7x7, imaging_7x7
@@ -91,7 +91,7 @@ class TestPhase(object):
             shape_2d=imaging_7x7.shape_2d, pixel_scales=1, sub_size=1, radius_arcsec=1.5
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
 
         # The inner circulaar mask radii of 0.5" masks only the central pixel of the mask
 
@@ -101,22 +101,22 @@ class TestPhase(object):
 
         # If a mask function is supplied, we should use this mask, regardless of whether an input mask is supplied.
 
-        def mask_function(image):
+        def mask_function(shape_2d, pixel_scales):
             return al.mask.circular(
-                shape_2d=image.shape_2d, pixel_scales=1, radius_arcsec=1.4
+                shape_2d=shape_2d, pixel_scales=1, radius_arcsec=1.4
             )
 
-        mask_from_function = mask_function(image=imaging_7x7)
+        mask_from_function = mask_function(shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales)
 
         # The inner circulaar mask radii of 1.0" masks the centra pixels of the mask
         mask_from_function[3, 3] = True
 
         phase_imaging_7x7.meta_imaging_fit.mask_function = mask_function
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=None)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=None)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
 
         # If no mask is suppled, nor a mask function, we should use the default mask.
@@ -124,7 +124,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_imaging_fit.mask_function = None
 
         with pytest.raises(exc.MaskException):
-            phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=None)
+            phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=None)
 
     def test__make_analysis__mask_changes_sub_size_depending_on_phase_attribute(
         self, phase_imaging_7x7, imaging_7x7
@@ -138,13 +138,13 @@ class TestPhase(object):
         )
 
         phase_imaging_7x7.meta_imaging_fit.sub_size = 1
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
 
         assert (analysis.masked_imaging.mask == mask_input).all()
         assert analysis.masked_imaging.mask.sub_size == 1
 
         phase_imaging_7x7.meta_imaging_fit.sub_size = 2
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7, mask=mask_input)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
 
         assert (analysis.masked_imaging.mask == mask_input).all()
         assert analysis.masked_imaging.mask.sub_size == 2
@@ -157,7 +157,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_imaging_fit.positions_threshold = 0.2
 
         analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
+            dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
         )
 
         assert (analysis.masked_imaging.positions[0][0] == np.array([1.0, 1.0])).all()
@@ -167,8 +167,8 @@ class TestPhase(object):
         # If position threshold is input (not None) and but no positions are supplied, raise an error
 
         with pytest.raises(exc.PhaseException):
-            phase_imaging_7x7.make_analysis(data=imaging_7x7, positions=None)
-            phase_imaging_7x7.make_analysis(data=imaging_7x7)
+            phase_imaging_7x7.make_analysis(dataset=imaging_7x7, positions=None)
+            phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
 
     def test__make_analysis__positions_do_not_trace_within_threshold__raises_exception(
         self, phase_imaging_7x7, imaging_7x7, mask_function_7x7
@@ -182,7 +182,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
+            dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
         )
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -200,7 +200,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
+            dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
         )
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -219,7 +219,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, positions=[[[1.0, 0.0], [-1.0, 0.0]]]
+            dataset=imaging_7x7, positions=[[[1.0, 0.0], [-1.0, 0.0]]]
         )
         tracer = al.tracer.from_galaxies(
             galaxies=[
@@ -249,7 +249,7 @@ class TestPhase(object):
             )
 
         analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7,
+            dataset=imaging_7x7,
             positions=[[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]],
         )
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
@@ -260,7 +260,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7,
+            dataset=imaging_7x7,
             positions=[[[0.0, 0.0], [0.0, 0.0]], [[100.0, 0.0], [0.0, 0.0]]],
         )
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
@@ -288,7 +288,7 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
 
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -311,7 +311,7 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
@@ -335,7 +335,7 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
@@ -357,7 +357,7 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
@@ -374,7 +374,7 @@ class TestPhase(object):
 
         phase_imaging_7x7.meta_imaging_fit.pixel_scale_interpolation_grid = 0.1
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         assert analysis.masked_imaging.pixel_scale_interpolation_grid == 0.1
         assert hasattr(analysis.masked_imaging.grid, "interpolator")
         assert hasattr(analysis.masked_imaging.blurring_grid, "interpolator")
@@ -430,7 +430,7 @@ class TestPhase(object):
     def test__default_mask_function(self, phase_imaging_7x7, imaging_7x7):
         masked_imaging = al.masked.imaging(
             imaging=imaging_7x7,
-            mask=phase_imaging_7x7.meta_imaging_fit.mask_function(image=imaging_7x7.image),
+            mask=phase_imaging_7x7.meta_imaging_fit.mask_function(shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales),
         )
 
         assert len(masked_imaging.image.in_1d) == 9
@@ -536,7 +536,7 @@ class TestPhase(object):
             inversion_uses_border=True,
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         analysis.masked_imaging.grid[4] = np.array([[500.0, 0.0]])
 
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
@@ -556,7 +556,7 @@ class TestPhase(object):
             inversion_uses_border=False,
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
 
         analysis.masked_imaging.grid[4] = np.array([300.0, 0.0])
 
@@ -607,7 +607,7 @@ class TestPhase(object):
         results_collection_7x7.last.pixelization = None
 
         analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, results=results_collection_7x7
         )
 
         assert analysis.masked_imaging.preload_sparse_grids_of_planes is None
@@ -619,7 +619,7 @@ class TestPhase(object):
         results_collection_7x7.last.pixelization = al.pix.Rectangular
 
         analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, results=results_collection_7x7
         )
 
         assert analysis.masked_imaging.preload_sparse_grids_of_planes is None
@@ -639,7 +639,7 @@ class TestPhase(object):
         results_collection_7x7.last.pixelization = None
 
         analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, results=results_collection_7x7
         )
 
         assert analysis.masked_imaging.preload_sparse_grids_of_planes is None
@@ -659,7 +659,7 @@ class TestPhase(object):
         results_collection_7x7.last.pixelization = al.pix.Rectangular
 
         analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, results=results_collection_7x7
         )
 
         assert analysis.masked_imaging.preload_sparse_grids_of_planes == 1
@@ -680,7 +680,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_7x7)
+        result = phase_imaging_7x7.run(dataset=imaging_7x7)
 
         assert isinstance(result, al.AbstractPhase.Result)
 
@@ -699,9 +699,9 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_7x7)
+        result = phase_imaging_7x7.run(dataset=imaging_7x7)
 
-        mask = mask_function_7x7(image=imaging_7x7.image)
+        mask = mask_function_7x7(shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales)
 
         assert (result.mask == mask).all()
 
@@ -719,7 +719,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_7x7)
+        result = phase_imaging_7x7.run(dataset=imaging_7x7)
 
         assert result.positions == None
 
@@ -736,7 +736,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_7x7, positions=[[[1.0, 1.0]]])
+        result = phase_imaging_7x7.run(dataset=imaging_7x7, positions=[[[1.0, 1.0]]])
 
         assert (result.positions[0] == np.array([1.0, 1.0])).all()
 
@@ -762,7 +762,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_7x7)
+        result = phase_imaging_7x7.run(dataset=imaging_7x7)
 
         assert isinstance(result.pixelization, al.pix.VoronoiMagnification)
         assert result.pixelization.shape == (2, 3)
@@ -786,7 +786,7 @@ class TestResult(object):
 
         phase_imaging_7x7.galaxies.source.hyper_galaxy_image = np.ones(9)
 
-        result = phase_imaging_7x7.run(data=imaging_7x7)
+        result = phase_imaging_7x7.run(dataset=imaging_7x7)
 
         assert isinstance(result.pixelization, al.pix.VoronoiBrightnessImage)
         assert result.pixelization.pixels == 6
@@ -805,7 +805,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_7x7)
+        result = phase_imaging_7x7.run(dataset=imaging_7x7)
 
         assert result.most_likely_pixelization_grids_of_planes == [None]
 
@@ -828,7 +828,7 @@ class TestResult(object):
 
         phase_imaging_7x7.galaxies.source.hyper_galaxy_image = np.ones(9)
 
-        result = phase_imaging_7x7.run(data=imaging_7x7)
+        result = phase_imaging_7x7.run(dataset=imaging_7x7)
 
         assert result.most_likely_pixelization_grids_of_planes[-1].shape == (6, 2)
 
@@ -851,7 +851,7 @@ class TestPhasePickle(object):
 
         phase_imaging_7x7.make_analysis = make_analysis
         result = phase_imaging_7x7.run(
-            data=imaging_7x7, results=None, mask=None, positions=None
+            dataset=imaging_7x7, results=None, mask=None, positions=None
         )
         assert result is not None
 
@@ -866,7 +866,7 @@ class TestPhasePickle(object):
 
         phase_imaging_7x7.make_analysis = make_analysis
         result = phase_imaging_7x7.run(
-            data=imaging_7x7, results=None, mask=None, positions=None
+            dataset=imaging_7x7, results=None, mask=None, positions=None
         )
         assert result is not None
 

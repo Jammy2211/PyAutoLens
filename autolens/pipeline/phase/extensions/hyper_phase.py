@@ -69,13 +69,13 @@ class HyperPhase(object):
     def customize_priors(self, results):
         pass
 
-    def run(self, data, results: af.ResultsCollection = None, **kwargs) -> af.Result:
+    def run(self, dataset, results: af.ResultsCollection = None, **kwargs) -> af.Result:
         """
         Run the hyper phase and then the hyper_galaxies phase.
 
         Parameters
         ----------
-        data
+        dataset
             Data
         results
             Results from previous phases.
@@ -92,9 +92,9 @@ class HyperPhase(object):
             copy.deepcopy(results) if results is not None else af.ResultsCollection()
         )
 
-        result = self.phase.run(data, results=results, **kwargs)
+        result = self.phase.run(dataset, results=results, **kwargs)
         results.add(self.phase.paths.phase_name, result)
-        hyper_result = self.run_hyper(data=data, results=results, **kwargs)
+        hyper_result = self.run_hyper(dataset=dataset, results=results, **kwargs)
         setattr(result, self.hyper_name, hyper_result)
         return result
 

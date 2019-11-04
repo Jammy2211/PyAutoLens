@@ -40,7 +40,7 @@ class TestPhase(object):
     def test__make_analysis__masks_image_and_noise_map_correctly(
         self, phase_imaging_7x7, imaging_7x7, mask_7x7
     ):
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
 
         assert (
             analysis.masked_imaging.image.in_2d
@@ -52,7 +52,7 @@ class TestPhase(object):
         ).all()
 
     def test__make_analysis__phase_info_is_made(self, phase_imaging_7x7, imaging_7x7):
-        phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
 
         file_phase_info = "{}/{}".format(
             phase_imaging_7x7.optimizer.paths.phase_output_path, "phase.info"
@@ -92,7 +92,7 @@ class TestPhase(object):
             phase_name="test_phase_test_fit",
         )
 
-        result = phase_imaging_7x7.run(data=imaging_7x7)
+        result = phase_imaging_7x7.run(dataset=imaging_7x7)
         assert isinstance(result.constant.galaxies[0], al.galaxy)
         assert isinstance(result.constant.galaxies[0], al.galaxy)
 
@@ -107,7 +107,7 @@ class TestPhase(object):
             phase_name="phase_imaging_7x7", mask_function=mask_function_7x7
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         assert (
             analysis.masked_imaging.image.in_2d
             == 20.0 * np.ones(shape=(7, 7)) * np.invert(mask_7x7)
@@ -127,7 +127,7 @@ class TestPhase(object):
             mask_function=mask_function_7x7_1_pix,
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         assert (
             analysis.masked_imaging.image.in_2d
             == imaging_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
@@ -147,7 +147,7 @@ class TestPhase(object):
             mask_function=mask_function_7x7_1_pix,
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         assert (
             analysis.masked_imaging.image.in_2d
             == imaging_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
@@ -172,7 +172,7 @@ class TestPhase(object):
             mask_function=mask_function_7x7_1_pix,
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         assert (
             analysis.masked_imaging.image.in_2d
             == binned_up_imaging.image.in_2d * np.invert(binned_up_mask)
@@ -274,12 +274,12 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.meta_imaging_fit.setup_phase_mask(
-            data=imaging_7x7, mask=None
+            shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales, mask=None
         )
         masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -308,12 +308,12 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.meta_imaging_fit.setup_phase_mask(
-            data=imaging_7x7, mask=None
+            shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales, mask=None
         )
         assert mask.sub_size == 4
 

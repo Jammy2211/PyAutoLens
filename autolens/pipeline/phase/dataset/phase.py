@@ -7,10 +7,10 @@ from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.dataset.result import Result
 
 
-def default_mask_function(image):
+def default_mask_function(shape_2d, pixel_scales):
     return aa.mask.circular(
-        shape_2d=image.shape_2d,
-        pixel_scales=image.pixel_scales,
+        shape_2d=shape_2d,
+        pixel_scales=pixel_scales,
         sub_size=1,
         radius_arcsec=3.0,
     )
@@ -60,7 +60,7 @@ class PhaseDataset(abstract.AbstractPhase):
 
         self.is_hyper_phase = False
 
-    def run(self, data, results=None, mask=None, positions=None):
+    def run(self, dataset, results=None, mask=None, positions=None):
         """
         Run this phase.
 
@@ -71,7 +71,7 @@ class PhaseDataset(abstract.AbstractPhase):
             The default masks passed in by the pipeline
         results: autofit.tools.pipeline.ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
-        data: scaled_array.ScaledSquarePixelArray
+        dataset: scaled_array.ScaledSquarePixelArray
             An masked_imaging that has been masked
 
         Returns
@@ -82,7 +82,7 @@ class PhaseDataset(abstract.AbstractPhase):
         self.variable = self.variable.populate(results)
 
         analysis = self.make_analysis(
-            data=data, results=results, mask=mask, positions=positions
+            dataset=dataset, results=results, mask=mask, positions=positions
         )
 
         self.customize_priors(results)
@@ -92,7 +92,7 @@ class PhaseDataset(abstract.AbstractPhase):
 
         return self.make_result(result=result, analysis=analysis)
 
-    def make_analysis(self, data, results=None, mask=None, positions=None):
+    def make_analysis(self, dataset, results=None, mask=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -102,7 +102,7 @@ class PhaseDataset(abstract.AbstractPhase):
         positions
         mask: Mask
             The default masks passed in by the pipeline
-        data: im.Imaging
+        dataset: im.Imaging
             An masked_imaging that has been masked
         results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase

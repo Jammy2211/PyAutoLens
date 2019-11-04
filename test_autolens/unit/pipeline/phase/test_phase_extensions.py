@@ -195,7 +195,7 @@ class TestImagePassing(object):
         self, mask_function_7x7, results_collection_7x7, imaging_7x7
     ):
 
-        mask = mask_function_7x7(image=imaging_7x7.image)
+        mask = mask_function_7x7(shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales)
 
         results_collection_7x7[0].galaxy_images = [
             al.masked.array.full(fill_value=2.0, mask=mask),
@@ -214,7 +214,7 @@ class TestImagePassing(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            data=imaging_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -412,11 +412,11 @@ class TestHyperGalaxyPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
 
         mask = phase_imaging_7x7.meta_imaging_fit.setup_phase_mask(
-            data=imaging_7x7, mask=None
+            shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales, mask=None
         )
         assert mask.sub_size == 2
 

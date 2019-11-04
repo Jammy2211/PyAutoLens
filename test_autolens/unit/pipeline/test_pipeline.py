@@ -32,21 +32,17 @@ class DummyPhaseImaging(af.AbstractPhase):
     def make_result(self, result, analysis):
         pass
 
-    def __init__(self, phase_name, phase_tag="", phase_path=None):
-        super().__init__(
-            paths=af.Paths(
-                phase_name=phase_name, phase_tag=phase_tag, phase_path=phase_path
-            )
-        )
-        self.data = None
+    def __init__(self, phase_name, phase_tag=""):
+        super().__init__(phase_name=phase_name, phase_tag=phase_tag)
+        self.dataset = None
         self.positions = None
         self.results = None
         self.mask = None
 
         self.optimizer = Optimizer(phase_name)
 
-    def run(self, data, results, mask=None, positions=None):
-        self.data = data
+    def run(self, dataset, results, mask=None, positions=None):
+        self.dataset = dataset
         self.results = results
         self.mask = mask
         self.positions = positions
@@ -92,7 +88,7 @@ class TestMetaData(object):
     def test_files(self, mock_files):
         pipeline = al.PipelineImaging(
             "pipeline_name",
-            DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"),
+            DummyPhaseImaging(phase_name="phase_name"),
         )
         pipeline.run(MockImagingData(), data_name="data_name")
 
@@ -110,7 +106,7 @@ class TestPassMask(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = al.PipelineImaging("", phase_1, phase_2)
-        pipeline.run(data=MockImagingData(), mask=mask)
+        pipeline.run(dataset=MockImagingData(), mask=mask)
 
         assert phase_1.mask is mask
         assert phase_2.mask is mask
@@ -122,7 +118,7 @@ class TestPassPositions(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = al.PipelineImaging("", phase_1, phase_2)
-        pipeline.run(data=MockImagingData(), positions=positions)
+        pipeline.run(dataset=MockImagingData(), positions=positions)
 
         assert phase_1.positions == positions
         assert phase_2.positions == positions
@@ -162,7 +158,7 @@ class TestPipelineImaging(object):
         with pytest.raises(exc.PhaseException):
             pipeline.run(MockImagingData())
 
-        pipeline.run(data=MockImagingData, mask=1.0)
+        pipeline.run(dataset=MockImagingData, mask=1.0)
 
 
 class DummyPhasePositions(af.AbstractPhase):
@@ -170,9 +166,7 @@ class DummyPhasePositions(af.AbstractPhase):
         pass
 
     def __init__(self, phase_name):
-        super().__init__(
-            paths=af.Paths(phase_name=phase_name, phase_tag="", phase_path=phase_name)
-        )
+        super().__init__(phase_name=phase_name, phase_tag="",)
         self.positions = None
         self.results = None
         self.pixel_scales = None

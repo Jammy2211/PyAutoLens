@@ -28,7 +28,7 @@ def run(
         name=test_name,
         phase_folders=[module.test_type, test_name],
         optimizer_class=optimizer_class,
-    ).run(data=imaging, positions=positions)
+    ).run(dataset=imaging, positions=positions)
 
 
 def run_a_mock(module):

@@ -36,7 +36,7 @@ class CombinedHyperPhase(HyperPhase):
 
     def run(
         self,
-        data,
+        dataset,
         results: af.ResultsCollection = None,
         mask=None,
         positions=None,
@@ -65,15 +65,15 @@ class CombinedHyperPhase(HyperPhase):
         """
         results = results.copy() if results is not None else af.ResultsCollection()
         result = self.phase.run(
-            data, results=results, mask=mask, positions=positions, **kwargs
+            dataset, results=results, mask=mask, positions=positions, **kwargs
         )
         results.add(self.phase.paths.phase_name, result)
 
         for phase in self.hyper_phases:
-            hyper_result = phase.run_hyper(data=data, results=results, **kwargs)
+            hyper_result = phase.run_hyper(dataset=dataset, results=results, **kwargs)
             setattr(result, phase.hyper_name, hyper_result)
 
-        setattr(result, self.hyper_name, self.run_hyper(data=data, results=results))
+        setattr(result, self.hyper_name, self.run_hyper(dataset=dataset, results=results))
         return result
 
     def combine_variables(self, result) -> af.ModelMapper:
@@ -98,13 +98,13 @@ class CombinedHyperPhase(HyperPhase):
             variable += getattr(result, name).variable
         return variable
 
-    def run_hyper(self, data, results, **kwargs) -> af.Result:
+    def run_hyper(self, dataset, results, **kwargs) -> af.Result:
 
         phase = self.make_hyper_phase()
         phase.variable = self.combine_variables(results.last)
 
         return phase.run(
-            data,
+            dataset,
             results=results,
             mask=results.last.mask,
             positions=results.last.positions,

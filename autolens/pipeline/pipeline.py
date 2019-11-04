@@ -74,7 +74,7 @@ class PipelineImaging(af.Pipeline):
 
         self.hyper_mode = hyper_mode
 
-    def run(self, data, mask=None, positions=None, data_name=None):
+    def run(self, dataset, mask=None, positions=None, data_name=None):
 
         if self.hyper_mode and mask is None:
             raise exc.PhaseException(
@@ -83,7 +83,7 @@ class PipelineImaging(af.Pipeline):
             )
 
         def runner(phase, results):
-            return phase.run(data=data, results=results, mask=mask, positions=positions)
+            return phase.run(dataset=dataset, results=results, mask=mask, positions=positions)
 
         return self.run_function(runner, data_name)
 

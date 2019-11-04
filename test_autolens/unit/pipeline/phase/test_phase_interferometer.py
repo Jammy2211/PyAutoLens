@@ -22,7 +22,7 @@
 # @pytest.fixture(scope="session", autouse=True)
 # def do_something():
 #     af.conf.instance = af.conf.Config(
-#         "{}/../test_files/config/phase_interferometer_7x7".format(directory)
+#         "{}/../test_files/config/phase_interferometer_7".format(directory)
 #     )
 #
 #
@@ -38,24 +38,24 @@
 #
 # class TestPhase(object):
 #     def test__make_analysis__masks_visibilities_and_noise_map_correctly(
-#         self, phase_interferometer_7x7, interferometer_7x7, mask_7x7
+#         self, phase_interferometer_7, interferometer_7, mask_7x7
 #     ):
-#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
+#         analysis = phase_interferometer_7.make_analysis(dataset=interferometer_7)
 #
 #         assert (
-#             analysis.masked_interferometer.visibilities.in_2d
-#             == interferometer_7x7.visibilities.in_2d * np.invert(mask_7x7)
+#             analysis.masked_interferometer.visibilities
+#             == interferometer_7.visibilities
 #         ).all()
 #         assert (
-#             analysis.masked_interferometer.noise_map.in_2d
-#             == interferometer_7x7.noise_map.in_2d * np.invert(mask_7x7)
+#             analysis.masked_interferometer.noise_map
+#             == interferometer_7.noise_map
 #         ).all()
 #
-#     def test__make_analysis__phase_info_is_made(self, phase_interferometer_7x7, interferometer_7x7):
-#         phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
+#     def test__make_analysis__phase_info_is_made(self, phase_interferometer_7, interferometer_7):
+#         phase_interferometer_7.make_analysis(dataset=interferometer_7)
 #
 #         file_phase_info = "{}/{}".format(
-#             phase_interferometer_7x7.optimizer.paths.phase_output_path, "phase.info"
+#             phase_interferometer_7.optimizer.paths.phase_output_path, "phase.info"
 #         )
 #
 #         phase_info = open(file_phase_info, "r")
@@ -78,9 +78,9 @@
 #             "Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n"
 #         )
 #
-#     def test__fit_using_interferometer(self, interferometer_7x7, mask_function_7x7):
+#     def test__fit_using_interferometer(self, interferometer_7, mask_function_7x7):
 #
-#         phase_interferometer_7x7 = al.PhaseInterferometer(
+#         phase_interferometer_7 = al.PhaseInterferometer(
 #             optimizer_class=mock_pipeline.MockNLO,
 #             galaxies=dict(
 #                 lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
@@ -90,22 +90,22 @@
 #             phase_name="test_phase_test_fit",
 #         )
 #
-#         result = phase_interferometer_7x7.run(dataset=interferometer_7x7)
+#         result = phase_interferometer_7.run(dataset=interferometer_7)
 #         assert isinstance(result.constant.galaxies[0], al.galaxy)
 #         assert isinstance(result.constant.galaxies[0], al.galaxy)
 #
-#     def test_modify_visibilities(self, mask_function_7x7, interferometer_7x7, mask_7x7):
+#     def test_modify_visibilities(self, mask_function_7x7, interferometer_7, mask_7x7):
 #         class MyPhase(al.PhaseInterferometer):
 #             def modify_visibilities(self, visibilities, results):
-#                 assert interferometer_7x7.visibilities.shape_2d == visibilities.shape_2d
+#                 assert interferometer_7.visibilities.shape_2d == visibilities.shape_2d
 #                 visibilities = al.array.full(fill_value=20.0, shape_2d=(7, 7))
 #                 return visibilities
 #
-#         phase_interferometer_7x7 = MyPhase(
-#             phase_name="phase_interferometer_7x7", mask_function=mask_function_7x7
+#         phase_interferometer_7 = MyPhase(
+#             phase_name="phase_interferometer_7", mask_function=mask_function_7x7
 #         )
 #
-#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
+#         analysis = phase_interferometer_7.make_analysis(dataset=interferometer_7)
 #         assert (
 #             analysis.masked_interferometer.visibilities
 #             == 20.0 * np.ones(shape=(7, 7)) * np.invert(mask_7x7)
@@ -113,7 +113,7 @@
 #         assert (analysis.masked_interferometer.visibilities.in_1d == 20.0 * np.ones(shape=9)).all()
 #
 #     def test__phase_can_receive_hyper_image_and_noise_maps(self):
-#         phase_interferometer_7x7 = al.PhaseInterferometer(
+#         phase_interferometer_7 = al.PhaseInterferometer(
 #             galaxies=dict(
 #                 lens=al.GalaxyModel(redshift=al.Redshift),
 #                 lens1=al.GalaxyModel(redshift=al.Redshift),
@@ -124,7 +124,7 @@
 #             phase_name="test_phase",
 #         )
 #
-#         instance = phase_interferometer_7x7.variable.instance_from_physical_vector(
+#         instance = phase_interferometer_7.variable.instance_from_physical_vector(
 #             [0.1, 0.2, 0.3, 0.4]
 #         )
 #
@@ -133,41 +133,41 @@
 #         assert instance.hyper_image_sky.sky_scale == 0.3
 #         assert instance.hyper_background_noise.noise_scale == 0.4
 #
-#     def test__extended_with_hyper_and_pixelizations(self, phase_interferometer_7x7):
-#         phase_extended = phase_interferometer_7x7.extend_with_multiple_hyper_phases(
+#     def test__extended_with_hyper_and_pixelizations(self, phase_interferometer_7):
+#         phase_extended = phase_interferometer_7.extend_with_multiple_hyper_phases(
 #             hyper_galaxy=False, inversion=False
 #         )
-#         assert phase_extended == phase_interferometer_7x7
+#         assert phase_extended == phase_interferometer_7
 #
-#         phase_extended = phase_interferometer_7x7.extend_with_multiple_hyper_phases(
+#         phase_extended = phase_interferometer_7.extend_with_multiple_hyper_phases(
 #             inversion=True
 #         )
 #         assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
 #
-#         phase_extended = phase_interferometer_7x7.extend_with_multiple_hyper_phases(
+#         phase_extended = phase_interferometer_7.extend_with_multiple_hyper_phases(
 #             hyper_galaxy=True, inversion=False
 #         )
 #         assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
 #
-#         phase_extended = phase_interferometer_7x7.extend_with_multiple_hyper_phases(
+#         phase_extended = phase_interferometer_7.extend_with_multiple_hyper_phases(
 #             hyper_galaxy=False, inversion=True
 #         )
 #         assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
 #
-#         phase_extended = phase_interferometer_7x7.extend_with_multiple_hyper_phases(
+#         phase_extended = phase_interferometer_7.extend_with_multiple_hyper_phases(
 #             hyper_galaxy=True, inversion=True
 #         )
 #         assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
 #         assert type(phase_extended.hyper_phases[1]) == al.InversionPhase
 #
 #     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
-#         self, interferometer_7x7, mask_function_7x7
+#         self, interferometer_7, mask_function_7x7
 #     ):
 #         lens_galaxy = al.galaxy(
 #             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
 #         )
 #
-#         phase_interferometer_7x7 = al.PhaseInterferometer(
+#         phase_interferometer_7 = al.PhaseInterferometer(
 #             mask_function=mask_function_7x7,
 #             galaxies=[lens_galaxy],
 #             cosmology=cosmo.FLRW,
@@ -175,14 +175,14 @@
 #             phase_name="test_phase",
 #         )
 #
-#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
-#         instance = phase_interferometer_7x7.variable.instance_from_unit_vector([])
+#         analysis = phase_interferometer_7.make_analysis(dataset=interferometer_7)
+#         instance = phase_interferometer_7.variable.instance_from_unit_vector([])
 #         fit_figure_of_merit = analysis.fit(instance=instance)
 #
-#         mask = phase_interferometer_7x7.phase.meta_dataset_fit.setup_phase_mask(
-#             dataset=interferometer_7x7, mask=None
+#         mask = phase_interferometer_7.phase.meta_dataset_fit.setup_phase_mask(
+#             dataset=interferometer_7, mask=None
 #         )
-#         masked_interferometer = al.masked.interferometer(interferometer=interferometer_7x7, mask=mask)
+#         masked_interferometer = al.masked.interferometer(interferometer=interferometer_7, mask=mask)
 #         tracer = analysis.tracer_for_instance(instance=instance)
 #
 #         fit = al.fit(masked_dataset=masked_interferometer, tracer=tracer)
@@ -190,7 +190,7 @@
 #         assert fit.likelihood == fit_figure_of_merit
 #
 #     def test__fit_figure_of_merit__includes_hyper_image_and_noise__matches_fit(
-#         self, interferometer_7x7, mask_function_7x7
+#         self, interferometer_7, mask_function_7x7
 #     ):
 #         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
 #         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
@@ -199,7 +199,7 @@
 #             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
 #         )
 #
-#         phase_interferometer_7x7 = al.PhaseInterferometer(
+#         phase_interferometer_7 = al.PhaseInterferometer(
 #             mask_function=mask_function_7x7,
 #             galaxies=[lens_galaxy],
 #             hyper_image_sky=hyper_image_sky,
@@ -209,16 +209,16 @@
 #             phase_name="test_phase",
 #         )
 #
-#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
-#         instance = phase_interferometer_7x7.variable.instance_from_unit_vector([])
+#         analysis = phase_interferometer_7.make_analysis(dataset=interferometer_7)
+#         instance = phase_interferometer_7.variable.instance_from_unit_vector([])
 #         fit_figure_of_merit = analysis.fit(instance=instance)
 #
-#         mask = phase_interferometer_7x7.phase.meta_dataset_fit.setup_phase_mask(
-#             dataset=interferometer_7x7, mask=None
+#         mask = phase_interferometer_7.phase.meta_dataset_fit.setup_phase_mask(
+#             dataset=interferometer_7, mask=None
 #         )
 #         assert mask.sub_size == 4
 #
-#         masked_interferometer = al.masked.interferometer(interferometer=interferometer_7x7, mask=mask)
+#         masked_interferometer = al.masked.interferometer(interferometer=interferometer_7, mask=mask)
 #         tracer = analysis.tracer_for_instance(instance=instance)
 #         fit = InterferometerFit(
 #             masked_interferometer=masked_interferometer,

@@ -87,7 +87,7 @@ def make_masked_imaging_fit_x2_plane_7x7(masked_imaging_7x7, tracer_x2_plane_7x7
 @pytest.fixture(name="mask_function_7x7_1_pix")
 def make_mask_function_7x7_1_pix():
     # noinspection PyUnusedLocal
-    def mask_function_7x7_1_pix(image):
+    def mask_function_7x7_1_pix(shape_2d, pixel_scales):
         array = np.array(
             [
                 [True, True, True, True, True, True, True],
@@ -108,7 +108,7 @@ def make_mask_function_7x7_1_pix():
 @pytest.fixture(name="mask_function_7x7")
 def make_mask_function_7x7():
     # noinspection PyUnusedLocal
-    def mask_function_7x7(image):
+    def mask_function_7x7(shape_2d, pixel_scales):
         array = np.array(
             [
                 [True, True, True, True, True, True, True],
@@ -126,7 +126,7 @@ def make_mask_function_7x7():
     return mask_function_7x7
 
 
-@pytest.fixture(name="phase_data_7x7")
+@pytest.fixture(name="phase_dataset_7x7")
 def make_phase_data(mask_function_7x7):
     return al.PhaseDataset(
         optimizer_class=mock_pipeline.MockNLO, phase_tag="", phase_name="test_phase"
@@ -136,6 +136,15 @@ def make_phase_data(mask_function_7x7):
 @pytest.fixture(name="phase_imaging_7x7")
 def make_phase_imaging_7x7(mask_function_7x7):
     return al.PhaseImaging(
+        optimizer_class=mock_pipeline.MockNLO,
+        mask_function=mask_function_7x7,
+        phase_name="test_phase",
+    )
+
+
+@pytest.fixture(name="phase_interferometer_7")
+def make_phase_interferometer_7(mask_function_7x7):
+    return al.PhaseInterferometer(
         optimizer_class=mock_pipeline.MockNLO,
         mask_function=mask_function_7x7,
         phase_name="test_phase",

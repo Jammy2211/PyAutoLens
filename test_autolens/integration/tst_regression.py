@@ -143,7 +143,7 @@ class TestPhaseModelMapper(object):
         )
 
         initial_total_priors = phase.variable.prior_count
-        phase.make_analysis(data=imaging)
+        phase.make_analysis(dataset=imaging)
 
         assert phase.galaxies[0].sersic.intensity == al.Galaxies[0].sersic.axis_ratio
         assert initial_total_priors - 1 == phase.variable.prior_count
@@ -221,7 +221,7 @@ class TestPhaseModelMapper(object):
         phase.optimizer.n_live_points = 20
         phase.optimizer.sampling_efficiency = 0.8
 
-        phase.make_analysis(data=imaging)
+        phase.make_analysis(dataset=imaging)
 
         sersic = phase.variable.galaxies[0].sersic
 
