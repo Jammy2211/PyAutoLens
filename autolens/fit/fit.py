@@ -16,7 +16,7 @@ def fit(masked_dataset, tracer, hyper_image_sky=None, hyper_background_noise=Non
         )
     elif isinstance(masked_dataset, md.MaskedInterferometer):
         return InterferometerFit(
-            masked_visibilities=masked_dataset,
+            masked_interferometer=masked_dataset,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -161,7 +161,7 @@ class ImagingFit(aa_fit.ImagingFit):
 
 
 class InterferometerFit(aa_fit.InterferometerFit):
-    def __init__(self, masked_interferometer, tracer):
+    def __init__(self, masked_interferometer, tracer, hyper_image_sky=None, hyper_background_noise=None):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
 

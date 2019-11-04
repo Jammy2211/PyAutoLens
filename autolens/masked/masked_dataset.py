@@ -143,7 +143,7 @@ class MaskedImaging(masked_dataset.MaskedImaging, AbstractLensMasked):
         )
 
 
-class MaskedInterferometer(masked_dataset.MaskedInterferometer):
+class MaskedInterferometer(masked_dataset.MaskedInterferometer, AbstractLensMasked):
     def __init__(
         self,
         interferometer,
