@@ -167,7 +167,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
         )
 
         image = tracer.padded_profile_image_from_grid_and_psf_shape(
-            grid=grid, psf_shape=self.psf.shape_2d
+            grid=grid, psf_shape_2d=self.psf.shape_2d
         )
 
         return self.from_image(image=image.in_1d_binned, name=name)

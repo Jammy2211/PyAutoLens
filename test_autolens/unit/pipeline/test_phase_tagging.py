@@ -8,7 +8,7 @@ class TestPhaseTag:
             sub_size=2,
             signal_to_noise_limit=2,
             bin_up_factor=None,
-            psf_shape=None,
+            psf_shape_2d=None,
             inner_mask_radii=0.3,
             positions_threshold=2.0,
             pixel_scale_interpolation_grid=None,
@@ -20,13 +20,20 @@ class TestPhaseTag:
             sub_size=1,
             signal_to_noise_limit=None,
             bin_up_factor=3,
-            psf_shape=(2, 2),
+            psf_shape_2d=(2, 2),
             inner_mask_radii=None,
             positions_threshold=None,
             pixel_scale_interpolation_grid=0.2,
         )
 
         assert phase_tag == "phase_tag__sub_1__bin_3__psf_2x2__interp_0.200"
+
+        phase_tag = al.phase_tagging.phase_tag_from_phase_settings(
+            sub_size=1,
+            primary_beam_shape_2d=(2, 2),
+        )
+
+        assert phase_tag == "phase_tag__sub_1__pb_2x2"
 
 
 class TestPhaseTaggers:
@@ -100,14 +107,23 @@ class TestPhaseTaggers:
         tag = al.phase_tagging.bin_up_factor_tag_from_bin_up_factor(bin_up_factor=3)
         assert tag == "__bin_3"
 
-    def test__psf_shape_tagger(self):
+    def test__psf_shape_2d_tagger(self):
 
-        tag = al.phase_tagging.psf_shape_tag_from_image_psf_shape(psf_shape=None)
+        tag = al.phase_tagging.psf_shape_tag_from_psf_shape_2d(psf_shape_2d=None)
         assert tag == ""
-        tag = al.phase_tagging.psf_shape_tag_from_image_psf_shape(psf_shape=(2, 2))
+        tag = al.phase_tagging.psf_shape_tag_from_psf_shape_2d(psf_shape_2d=(2, 2))
         assert tag == "__psf_2x2"
-        tag = al.phase_tagging.psf_shape_tag_from_image_psf_shape(psf_shape=(3, 4))
+        tag = al.phase_tagging.psf_shape_tag_from_psf_shape_2d(psf_shape_2d=(3, 4))
         assert tag == "__psf_3x4"
+
+    def test__primary_beam_shape_2d_tagger(self):
+        
+        tag = al.phase_tagging.primary_beam_shape_tag_from_primary_beam_shape_2d(primary_beam_shape_2d=None)
+        assert tag == ""
+        tag = al.phase_tagging.primary_beam_shape_tag_from_primary_beam_shape_2d(primary_beam_shape_2d=(2, 2))
+        assert tag == "__pb_2x2"
+        tag = al.phase_tagging.primary_beam_shape_tag_from_primary_beam_shape_2d(primary_beam_shape_2d=(3, 4))
+        assert tag == "__pb_3x4"
 
     def test__pixel_scale_interpolation_grid_tagger(self):
 

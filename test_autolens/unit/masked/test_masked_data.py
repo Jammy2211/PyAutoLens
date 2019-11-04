@@ -25,7 +25,7 @@ class TestMaskedImaging(object):
 
         assert (masked_imaging_7x7.psf.in_1d == np.ones(9)).all()
         assert (masked_imaging_7x7.psf.in_2d == np.ones((3, 3))).all()
-        assert masked_imaging_7x7.trimmed_psf_shape_2d == (3, 3)
+        assert masked_imaging_7x7.psf_shape_2d == (3, 3)
 
         assert type(masked_imaging_7x7.convolver) == convolution.Convolver
 
@@ -37,7 +37,7 @@ class TestMaskedImaging(object):
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
             pixel_scale_interpolation_grid=1.0,
-            trimmed_psf_shape_2d=(3, 3),
+            psf_shape_2d=(3, 3),
             inversion_pixel_limit=20.0,
             inversion_uses_border=False,
             preload_sparse_grids_of_planes=1,
@@ -58,7 +58,7 @@ class TestMaskedImaging(object):
             masked_imaging_7x7.grid.interpolator.wts == new_grid.interpolator.wts
         ).all()
 
-        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape=(3, 3))
+        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
         new_blurring_grid = blurring_grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=1.0
         )
@@ -111,7 +111,7 @@ class TestMaskedImaging(object):
         )
 
         assert (masked_imaging_snr_limit.psf.in_2d == np.ones((3, 3))).all()
-        assert masked_imaging_snr_limit.trimmed_psf_shape_2d == (3, 3)
+        assert masked_imaging_snr_limit.psf_shape_2d == (3, 3)
 
         assert (masked_imaging_snr_limit.image.in_1d == np.ones(9)).all()
         assert (masked_imaging_snr_limit.noise_map.in_1d == 4.0 * np.ones(9)).all()
@@ -180,7 +180,7 @@ class TestMaskedInterferometer(object):
         ).all()
 
         assert (masked_interferometer_7.primary_beam.in_2d == np.ones((3, 3))).all()
-        assert masked_interferometer_7.trimmed_primary_beam_shape_2d == (3, 3)
+        assert masked_interferometer_7.primary_beam_shape_2d == (3, 3)
 
         assert (
             masked_interferometer_7.interferometer.uv_wavelengths
@@ -203,7 +203,7 @@ class TestMaskedInterferometer(object):
             interferometer=interferometer_7,
             real_space_mask=sub_mask_7x7,
             pixel_scale_interpolation_grid=1.0,
-            trimmed_primary_beam_shape_2d=(3, 3),
+            primary_beam_shape_2d=(3, 3),
             inversion_pixel_limit=20.0,
             inversion_uses_border=False,
             preload_sparse_grids_of_planes=1,
@@ -244,7 +244,7 @@ class TestMaskedInterferometer(object):
         masked_interferometer = al.masked.interferometer(
             interferometer=interferometer,
             real_space_mask=mask,
-            trimmed_primary_beam_shape_2d=(5, 5),
+            primary_beam_shape_2d=(5, 5),
             positions=[al.grid_irregular.manual_1d([[1.0, 1.0]])],
             positions_threshold=1.0,
         )
@@ -256,7 +256,7 @@ class TestMaskedInterferometer(object):
             == 3.0 * np.ones((19, 2))
         ).all()
         assert (masked_interferometer.primary_beam.in_2d == np.ones((5, 5))).all()
-        assert masked_interferometer.trimmed_primary_beam_shape_2d == (5, 5)
+        assert masked_interferometer.primary_beam_shape_2d == (5, 5)
 
         assert (masked_interferometer.positions[0] == np.array([[1.0, 1.0]])).all()
         assert masked_interferometer.positions_threshold == 1.0

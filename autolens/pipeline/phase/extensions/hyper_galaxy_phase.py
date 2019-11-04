@@ -173,7 +173,7 @@ class HyperGalaxyPhase(HyperPhase):
         masked_imaging = masked_data.MaskedImaging(
             imaging=data,
             mask=results.last.mask,
-            trimmed_psf_shape_2d=data.psf.shape_2d,
+            psf_shape_2d=data.psf.shape_2d,
             positions=results.last.positions,
             positions_threshold=cast(
                 imaging.PhaseImaging, phase

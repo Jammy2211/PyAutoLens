@@ -45,7 +45,7 @@ class TestSimulatorImaging:
 
         imaging_manual = al.imaging.simulate(
             image=tracer.padded_profile_image_from_grid_and_psf_shape(
-                grid=grid, psf_shape=(3, 3)
+                grid=grid, psf_shape_2d=(3, 3)
             ),
             exposure_time=10000.0,
             psf=psf,
@@ -103,7 +103,7 @@ class TestSimulatorImaging:
 
         imaging_manual = al.imaging.simulate(
             image=tracer.padded_profile_image_from_grid_and_psf_shape(
-                grid=grid, psf_shape=(1, 1)
+                grid=grid, psf_shape_2d=(1, 1)
             ),
             exposure_time=10000.0,
             psf=psf,
@@ -168,7 +168,7 @@ class TestSimulatorImaging:
 
         imaging_manual = al.imaging.simulate(
             image=tracer.padded_profile_image_from_grid_and_psf_shape(
-                grid=grid, psf_shape=(7, 7)
+                grid=grid, psf_shape_2d=(7, 7)
             ),
             exposure_time=100.0,
             psf=psf,

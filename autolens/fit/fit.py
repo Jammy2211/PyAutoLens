@@ -157,31 +157,6 @@ class ImagingFit(aa_fit.ImagingFit):
         return len(list(filter(None, self.tracer.regularizations_of_planes)))
 
 
-def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
-
-    if hyper_image_sky is not None:
-        return hyper_image_sky.hyper_image_from_image(image=image)
-    else:
-        return image
-
-
-def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
-    noise_map, tracer, hyper_background_noise
-):
-
-    hyper_noise_map = tracer.hyper_noise_map_from_noise_map(noise_map=noise_map)
-
-    if hyper_background_noise is not None:
-        noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
-            noise_map=noise_map
-        )
-
-    if hyper_noise_map is not None:
-        noise_map = noise_map + hyper_noise_map
-
-    return noise_map
-
-
 class InterferometerFit(aa_fit.InterferometerFit):
     def __init__(self, masked_interferometer, tracer):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
@@ -318,3 +293,28 @@ class PositionsFit(object):
             ydists = np.square(np.subtract(grid[i, 1], grid[:, 1]))
             rdist_max[i] = np.max(np.add(xdists, ydists))
         return np.max(np.sqrt(rdist_max))
+
+
+def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
+
+    if hyper_image_sky is not None:
+        return hyper_image_sky.hyper_image_from_image(image=image)
+    else:
+        return image
+
+
+def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
+    noise_map, tracer, hyper_background_noise
+):
+
+    hyper_noise_map = tracer.hyper_noise_map_from_noise_map(noise_map=noise_map)
+
+    if hyper_background_noise is not None:
+        noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
+            noise_map=noise_map
+        )
+
+    if hyper_noise_map is not None:
+        noise_map = noise_map + hyper_noise_map
+
+    return noise_map

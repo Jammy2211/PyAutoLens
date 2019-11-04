@@ -117,7 +117,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     imaging_simulated = imaging_simulator.from_image(
         image=tracer.padded_profile_image_from_grid_and_psf_shape(
-            grid=grid, psf_shape=psf.shape_2d
+            grid=grid, psf_shape_2d=psf.shape_2d
         )
     )
     imaging_simulated.noise_map = al.array.ones(
