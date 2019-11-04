@@ -74,14 +74,14 @@ def data_resolution_from_pixel_scale(pixel_scales):
 def load_test_imaging(data_type, data_resolution, psf_shape_2d=(11, 11), lens_name=None):
     pixel_scales = pixel_scale_from_data_resolution(data_resolution=data_resolution)
 
-    data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+    dataset_path = af.path_util.make_and_return_path_from_path_and_folder_names(
         path=test_path, folder_names=["dataset", data_type, data_resolution]
     )
 
     return al.imaging.from_fits(
-        image_path=data_path + "/image.fits",
-        psf_path=data_path + "/psf.fits",
-        noise_map_path=data_path + "/noise_map.fits",
+        image_path=dataset_path + "/image.fits",
+        psf_path=dataset_path + "/psf.fits",
+        noise_map_path=dataset_path + "/noise_map.fits",
         pixel_scales=pixel_scales,
         resized_psf_shape=psf_shape_2d,
         lens_name=lens_name,

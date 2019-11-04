@@ -241,7 +241,7 @@ class TestSimulatorImaging:
 
         simulator.from_galaxies_and_write_to_fits(
             galaxies=[lens_galaxy, source_galaxy],
-            data_path=output_data_dir,
+            dataset_path=output_data_dir,
             data_name="observation",
             sub_size=1,
         )

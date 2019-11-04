@@ -33,7 +33,7 @@
 #         os.remove("{}/source_lens_phase/model_image_0.fits".format(directory))
 #     except FileNotFoundError:
 #         pass
-#     af.conf.instance.data_path = directory
+#     af.conf.instance.dataset_path = directory
 #
 #
 # class TestPhase(object):
