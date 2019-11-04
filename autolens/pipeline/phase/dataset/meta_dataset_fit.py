@@ -38,13 +38,13 @@ class MetaDatasetFit:
             )
         )
 
-    def setup_phase_mask(self, data, mask):
+    def setup_phase_mask(self, shape_2d, pixel_scales, mask):
 
         if self.mask_function is not None:
-            mask = self.mask_function(image=data.image)
+            mask = self.mask_function(shape_2d=shape_2d, pixel_scales=pixel_scales)
 
         elif mask is None and self.mask_function is None:
-            mask = default_mask_function(image=data.image)
+            mask = default_mask_function(shape_2d=shape_2d, pixel_scales=pixel_scales)
 
         if self.inner_mask_radii is not None:
             inner_mask = aa.mask.circular(

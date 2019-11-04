@@ -108,7 +108,7 @@ class PhaseImaging(dataset.PhaseDataset):
         """
         return image
 
-    def make_analysis(self, data, results=None, mask=None, positions=None):
+    def make_analysis(self, dataset, results=None, mask=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -118,7 +118,7 @@ class PhaseImaging(dataset.PhaseDataset):
         positions
         mask: Mask
             The default masks passed in by the pipeline
-        data: im.Imaging
+        dataset: im.Imaging
             An masked_imaging that has been masked
         results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase
@@ -129,10 +129,10 @@ class PhaseImaging(dataset.PhaseDataset):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         self.meta_imaging_fit.variable = self.variable
-        modified_image = self.modify_image(image=data.image, results=results)
+        modified_image = self.modify_image(image=dataset.image, results=results)
 
-        masked_imaging = self.meta_imaging_fit.data_fit_from(
-            data=data,
+        masked_imaging = self.meta_imaging_fit.masked_dataset_from(
+            dataset=dataset,
             mask=mask,
             positions=positions,
             results=results,

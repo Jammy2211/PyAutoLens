@@ -27,10 +27,7 @@ class AbstractPhase(af.AbstractPhase):
             The name of this phase
         """
 
-        super().__init__(
-            paths=af.Paths(
-                phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders
-            ),
+        super().__init__(phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders,
             optimizer_class=optimizer_class,
         )
 
@@ -64,5 +61,5 @@ class AbstractPhase(af.AbstractPhase):
             optimizer=self.optimizer,
         )
 
-    def run(self, image, results=None, mask=None, positions=None):
+    def run(self, dataset, results=None, mask=None, positions=None):
         raise NotImplementedError()

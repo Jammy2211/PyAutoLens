@@ -155,12 +155,12 @@ class HyperGalaxyPhase(HyperPhase):
         self.include_sky_background = False
         self.include_noise_background = False
 
-    def run_hyper(self, data, results=None):
+    def run_hyper(self, dataset, results=None):
         """
         Run a fit for each galaxy from the previous phase.
         Parameters
         ----------
-        data: LensData
+        dataset: LensData
         results: ResultsCollection
             Results from all previous phases
         Returns
@@ -171,9 +171,9 @@ class HyperGalaxyPhase(HyperPhase):
         phase = self.make_hyper_phase()
 
         masked_imaging = masked_dataset.MaskedImaging(
-            imaging=data,
+            imaging=dataset,
             mask=results.last.mask,
-            psf_shape_2d=data.psf.shape_2d,
+            psf_shape_2d=dataset.psf.shape_2d,
             positions=results.last.positions,
             positions_threshold=cast(
                 imaging.PhaseImaging, phase
