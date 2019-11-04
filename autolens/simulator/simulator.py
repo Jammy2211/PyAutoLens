@@ -63,7 +63,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
 
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
 
-        5) Output the dataset to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
+        5) Output the dataset to .fits format if a dataset_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
         grid = grids.Grid.uniform(
@@ -82,7 +82,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
         return imaging
 
     def from_galaxies_and_write_to_fits(
-        self, galaxies, data_path, data_name, sub_size=16, plot_imaging=False
+        self, galaxies, dataset_path, data_name, sub_size=16, plot_imaging=False
     ):
         """Simulate Imaging data_type for this data_type, as follows:
 
@@ -96,7 +96,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
 
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
 
-        5) Output the dataset to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
+        5) Output the dataset to .fits format if a dataset_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
         imaging = self.from_galaxies(
@@ -106,7 +106,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
         )
 
         data_output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-            path=data_path, folder_names=[data_name]
+            path=dataset_path, folder_names=[data_name]
         )
 
         imaging.output_to_fits(

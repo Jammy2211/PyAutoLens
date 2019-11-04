@@ -46,21 +46,21 @@ def simulate_image_from_galaxies_and_output_to_fits(
     # Now, lets output this simulated imaging-simulator to the test_autoarray/simulator folder.
     test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
-    data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+    dataset_path = af.path_util.make_and_return_path_from_path_and_folder_names(
         path=test_path, folder_names=["dataset", data_type, data_resolution]
     )
 
     imaging.output_to_fits(
-        image_path=data_path + "image.fits",
-        psf_path=data_path + "psf.fits",
-        noise_map_path=data_path + "noise_map.fits",
+        image_path=dataset_path + "image.fits",
+        psf_path=dataset_path + "psf.fits",
+        noise_map_path=dataset_path + "noise_map.fits",
         overwrite=True,
     )
 
     al.plot.imaging.subplot(
         imaging=imaging,
         output_filename="imaging",
-        output_path=data_path,
+        output_path=dataset_path,
         output_format="png",
     )
 
@@ -70,7 +70,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         plot_noise_map=True,
         plot_psf=True,
         plot_signal_to_noise_map=True,
-        output_path=data_path,
+        output_path=dataset_path,
         output_format="png",
     )
 
@@ -78,7 +78,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         tracer=tracer,
         grid=simulator.grid,
         output_filename="tracer",
-        output_path=data_path,
+        output_path=dataset_path,
         output_format="png",
     )
 
@@ -90,7 +90,7 @@ def simulate_image_from_galaxies_and_output_to_fits(
         plot_convergence=True,
         plot_potential=True,
         plot_deflections=True,
-        output_path=data_path,
+        output_path=dataset_path,
         output_format="png",
     )
 

@@ -39,7 +39,6 @@ class ImagingFit(aa_fit.ImagingFit):
         """
 
         self.masked_dataset = masked_imaging
-        self.masked_imaging = masked_imaging
         self.tracer = tracer
 
         image = hyper_image_from_image_and_hyper_image_sky(
@@ -87,6 +86,10 @@ class ImagingFit(aa_fit.ImagingFit):
             model_image=model_image,
             inversion=inversion,
         )
+
+    @property
+    def masked_imaging(self):
+        return self.masked_dataset
 
     @property
     def grid(self):
@@ -170,7 +173,6 @@ class InterferometerFit(aa_fit.InterferometerFit):
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
         self.masked_dataset = masked_interferometer
-        self.masked_interferometer = masked_interferometer
         self.tracer = tracer
 
         profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
@@ -205,6 +207,10 @@ class InterferometerFit(aa_fit.InterferometerFit):
             model_visibilities=model_visibilities,
             inversion=inversion,
         )
+
+    @property
+    def masked_interferometer(self):
+        return self.masked_dataset
 
     @property
     def galaxy_model_visibilities_dict(self) -> {g.Galaxy: np.ndarray}:
