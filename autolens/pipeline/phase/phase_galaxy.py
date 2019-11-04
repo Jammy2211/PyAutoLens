@@ -6,7 +6,7 @@ from autoastro.galaxy import fit_galaxy
 from autoastro.galaxy import masked
 from autolens.pipeline.phase import abstract
 from autolens.pipeline import visualizer
-from autolens.pipeline.phase.data.phase import default_mask_function
+from autolens.pipeline.phase.dataset.phase import default_mask_function
 
 
 class Analysis(af.Analysis):

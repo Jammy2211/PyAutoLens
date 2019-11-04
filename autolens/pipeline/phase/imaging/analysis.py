@@ -2,11 +2,11 @@ import autofit as af
 from autolens.fit import fit
 from autolens.lens import ray_tracing
 from autoastro.galaxy import galaxy as g
-from autolens.pipeline.phase.data import analysis as analysis_data
+from autolens.pipeline.phase.dataset import analysis as analysis_dataset
 from autolens.pipeline import visualizer
 
 
-class Analysis(analysis_data.Analysis):
+class Analysis(analysis_dataset.Analysis):
     def __init__(self, masked_imaging, cosmology, image_path=None, results=None):
 
         super(Analysis, self).__init__(cosmology=cosmology)

@@ -37,14 +37,14 @@
 #
 #
 # class TestPhase(object):
-#     def test__make_analysis__masks_image_and_noise_map_correctly(
+#     def test__make_analysis__masks_visibilities_and_noise_map_correctly(
 #         self, phase_interferometer_7x7, interferometer_7x7, mask_7x7
 #     ):
 #         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
 #
 #         assert (
-#             analysis.masked_interferometer.image.in_2d
-#             == interferometer_7x7.image.in_2d * np.invert(mask_7x7)
+#             analysis.masked_interferometer.visibilities.in_2d
+#             == interferometer_7x7.visibilities.in_2d * np.invert(mask_7x7)
 #         ).all()
 #         assert (
 #             analysis.masked_interferometer.noise_map.in_2d
@@ -65,7 +65,6 @@
 #         psf_shape_2d = phase_info.readline()
 #         positions_threshold = phase_info.readline()
 #         cosmology = phase_info.readline()
-#         auto_link_priors = phase_info.readline()
 #
 #         phase_info.close()
 #
@@ -80,7 +79,6 @@
 #         )
 #
 #     def test__fit_using_interferometer(self, interferometer_7x7, mask_function_7x7):
-#         clean_images()
 #
 #         phase_interferometer_7x7 = al.PhaseInterferometer(
 #             optimizer_class=mock_pipeline.MockNLO,
@@ -96,12 +94,12 @@
 #         assert isinstance(result.constant.galaxies[0], al.galaxy)
 #         assert isinstance(result.constant.galaxies[0], al.galaxy)
 #
-#     def test_modify_image(self, mask_function_7x7, interferometer_7x7, mask_7x7):
+#     def test_modify_visibilities(self, mask_function_7x7, interferometer_7x7, mask_7x7):
 #         class MyPhase(al.PhaseInterferometer):
-#             def modify_image(self, image, results):
-#                 assert interferometer_7x7.image.shape_2d == image.shape_2d
-#                 image = al.array.full(fill_value=20.0, shape_2d=(7, 7))
-#                 return image
+#             def modify_visibilities(self, visibilities, results):
+#                 assert interferometer_7x7.visibilities.shape_2d == visibilities.shape_2d
+#                 visibilities = al.array.full(fill_value=20.0, shape_2d=(7, 7))
+#                 return visibilities
 #
 #         phase_interferometer_7x7 = MyPhase(
 #             phase_name="phase_interferometer_7x7", mask_function=mask_function_7x7
@@ -109,107 +107,10 @@
 #
 #         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
 #         assert (
-#             analysis.masked_interferometer.image.in_2d
+#             analysis.masked_interferometer.visibilities
 #             == 20.0 * np.ones(shape=(7, 7)) * np.invert(mask_7x7)
 #         ).all()
-#         assert (analysis.masked_interferometer.image.in_1d == 20.0 * np.ones(shape=9)).all()
-#
-#     def test__masked_interferometer_signal_to_noise_limit(
-#         self, interferometer_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
-#     ):
-#         interferometer_snr_limit = interferometer_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
-#             signal_to_noise_limit=1.0
-#         )
-#
-#         phase_interferometer_7x7 = al.PhaseInterferometer(
-#             phase_name="phase_interferometer_7x7",
-#             signal_to_noise_limit=1.0,
-#             mask_function=mask_function_7x7_1_pix,
-#         )
-#
-#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
-#         assert (
-#             analysis.masked_interferometer.image.in_2d
-#             == interferometer_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
-#         ).all()
-#         assert (
-#             analysis.masked_interferometer.noise_map.in_2d
-#             == interferometer_snr_limit.noise_map.in_2d * np.invert(mask_7x7_1_pix)
-#         ).all()
-#
-#         interferometer_snr_limit = interferometer_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
-#             signal_to_noise_limit=0.1
-#         )
-#
-#         phase_interferometer_7x7 = al.PhaseInterferometer(
-#             phase_name="phase_interferometer_7x7",
-#             signal_to_noise_limit=0.1,
-#             mask_function=mask_function_7x7_1_pix,
-#         )
-#
-#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
-#         assert (
-#             analysis.masked_interferometer.image.in_2d
-#             == interferometer_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
-#         ).all()
-#         assert (
-#             analysis.masked_interferometer.noise_map.in_2d
-#             == interferometer_snr_limit.noise_map.in_2d * np.invert(mask_7x7_1_pix)
-#         ).all()
-#
-#     def test__masked_interferometer_is_binned_up(
-#         self, interferometer_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
-#     ):
-#         binned_up_interferometer = interferometer_7x7.binned_from_bin_up_factor(bin_up_factor=2)
-#
-#         binned_up_mask = mask_7x7_1_pix.mapping.binned_mask_from_bin_up_factor(
-#             bin_up_factor=2
-#         )
-#
-#         phase_interferometer_7x7 = al.PhaseInterferometer(
-#             phase_name="phase_interferometer_7x7",
-#             bin_up_factor=2,
-#             mask_function=mask_function_7x7_1_pix,
-#         )
-#
-#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
-#         assert (
-#             analysis.masked_interferometer.image.in_2d
-#             == binned_up_interferometer.image.in_2d * np.invert(binned_up_mask)
-#         ).all()
-#         assert (analysis.masked_interferometer.psf == binned_up_interferometer.psf).all()
-#         assert (
-#             analysis.masked_interferometer.noise_map.in_2d
-#             == binned_up_interferometer.noise_map.in_2d * np.invert(binned_up_mask)
-#         ).all()
-#
-#         assert (analysis.masked_interferometer.mask == binned_up_mask).all()
-#
-#         masked_interferometer = al.masked.interferometer(interferometer=interferometer_7x7, mask=mask_7x7_1_pix)
-#
-#         binned_up_masked_interferometer = masked_interferometer.binned_from_bin_up_factor(
-#             bin_up_factor=2
-#         )
-#
-#         assert (
-#             analysis.masked_interferometer.image.in_2d
-#             == binned_up_masked_interferometer.image.in_2d * np.invert(binned_up_mask)
-#         ).all()
-#         assert (analysis.masked_interferometer.psf == binned_up_masked_interferometer.psf).all()
-#         assert (
-#             analysis.masked_interferometer.noise_map.in_2d
-#             == binned_up_masked_interferometer.noise_map.in_2d * np.invert(binned_up_mask)
-#         ).all()
-#
-#         assert (analysis.masked_interferometer.mask == binned_up_masked_interferometer.mask).all()
-#
-#         assert (
-#             analysis.masked_interferometer.image.in_1d == binned_up_masked_interferometer.image.in_1d
-#         ).all()
-#         assert (
-#             analysis.masked_interferometer.noise_map.in_1d
-#             == binned_up_masked_interferometer.noise_map.in_1d
-#         ).all()
+#         assert (analysis.masked_interferometer.visibilities.in_1d == 20.0 * np.ones(shape=9)).all()
 #
 #     def test__phase_can_receive_hyper_image_and_noise_maps(self):
 #         phase_interferometer_7x7 = al.PhaseInterferometer(
@@ -278,7 +179,7 @@
 #         instance = phase_interferometer_7x7.variable.instance_from_unit_vector([])
 #         fit_figure_of_merit = analysis.fit(instance=instance)
 #
-#         mask = phase_interferometer_7x7.meta_data_fit.setup_phase_mask(
+#         mask = phase_interferometer_7x7.phase.meta_dataset_fit.setup_phase_mask(
 #             dataset=interferometer_7x7, mask=None
 #         )
 #         masked_interferometer = al.masked.interferometer(interferometer=interferometer_7x7, mask=mask)
@@ -312,7 +213,7 @@
 #         instance = phase_interferometer_7x7.variable.instance_from_unit_vector([])
 #         fit_figure_of_merit = analysis.fit(instance=instance)
 #
-#         mask = phase_interferometer_7x7.meta_data_fit.setup_phase_mask(
+#         mask = phase_interferometer_7x7.phase.meta_dataset_fit.setup_phase_mask(
 #             dataset=interferometer_7x7, mask=None
 #         )
 #         assert mask.sub_size == 4

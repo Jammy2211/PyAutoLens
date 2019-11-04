@@ -4,7 +4,7 @@ import autofit as af
 import autoarray as aa
 from autolens.pipeline.phase import abstract
 from autolens.pipeline.phase import extensions
-from autolens.pipeline.phase.data.result import Result
+from autolens.pipeline.phase.dataset.result import Result
 
 
 def default_mask_function(image):
@@ -24,7 +24,7 @@ def isinstance_or_prior(obj, cls):
     return False
 
 
-class PhaseData(abstract.AbstractPhase):
+class PhaseDataset(abstract.AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
     Result = Result
@@ -49,7 +49,7 @@ class PhaseData(abstract.AbstractPhase):
             The class of a non_linear optimizer
         """
 
-        super(PhaseData, self).__init__(
+        super(PhaseDataset, self).__init__(
             phase_name=phase_name,
             phase_tag=phase_tag,
             phase_folders=phase_folders,

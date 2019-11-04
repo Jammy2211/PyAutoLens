@@ -177,16 +177,16 @@ class HyperGalaxyPhase(HyperPhase):
             positions=results.last.positions,
             positions_threshold=cast(
                 imaging.PhaseImaging, phase
-            ).meta_data_fit.positions_threshold,
+            ).meta_imaging_fit.positions_threshold,
             pixel_scale_interpolation_grid=cast(
                 imaging.PhaseImaging, phase
-            ).meta_data_fit.pixel_scale_interpolation_grid,
+            ).meta_imaging_fit.pixel_scale_interpolation_grid,
             inversion_pixel_limit=cast(
                 imaging.PhaseImaging, phase
-            ).meta_data_fit.inversion_pixel_limit,
+            ).meta_imaging_fit.inversion_pixel_limit,
             inversion_uses_border=cast(
                 imaging.PhaseImaging, phase
-            ).meta_data_fit.inversion_uses_border,
+            ).meta_imaging_fit.inversion_uses_border,
             preload_sparse_grids_of_planes=None,
         )
 

@@ -3,10 +3,10 @@ import numpy as np
 import autofit as af
 import autoarray as aa
 from autoastro.galaxy import galaxy as g
-from autolens.pipeline.phase import data
+from autolens.pipeline.phase import dataset
 
 
-class Result(data.Result):
+class Result(dataset.Result):
     @property
     def most_likely_fit(self):
 

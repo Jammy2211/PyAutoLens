@@ -1,7 +1,7 @@
 import autofit as af
 from autolens.fit import fit
 from autoastro.galaxy import galaxy as g
-from autolens.pipeline.phase.data import analysis as analysis_data
+from autolens.pipeline.phase.dataset import analysis as analysis_data
 from autolens.pipeline import visualizer
 
 

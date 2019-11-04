@@ -2,14 +2,14 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens.pipeline import phase_tagging
-from autolens.pipeline.phase import data
+from autolens.pipeline.phase import dataset
 from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.interferometer.analysis import Analysis
 from autolens.pipeline.phase.interferometer.meta_interferometer_fit import MetaInterferometerFit
 from autolens.pipeline.phase.interferometer.result import Result
 
 
-class PhaseInterferometer(data.PhaseData):
+class PhaseInterferometer(dataset.PhaseDataset):
     galaxies = af.PhaseProperty("galaxies")
     hyper_image_sky = af.PhaseProperty("hyper_image_sky")
     hyper_background_noise = af.PhaseProperty("hyper_background_noise")
@@ -73,10 +73,10 @@ class PhaseInterferometer(data.PhaseData):
 
         self.is_hyper_phase = False
 
-        self.meta_data_fit = MetaInterferometerFit(
+        self.meta_interferometer_fit = MetaInterferometerFit(
             variable=self.variable,
             sub_size=sub_size,
-            signal_to_noise_limit=signal_to_noise_limit,
+            primary_beam_shape_2d=primary_beam_shape_2d,
             positions_threshold=positions_threshold,
             mask_function=mask_function,
             inner_mask_radii=inner_mask_radii,
@@ -124,10 +124,10 @@ class PhaseInterferometer(data.PhaseData):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        self.meta_data_fit.variable = self.variable
+        self.meta_interferometer_fit.variable = self.variable
         modified_visibilities = self.modify_visibilities(visibilities=data.visibilities, results=results)
 
-        masked_interferometer = self.meta_data_fit.data_fit_from(
+        masked_interferometer = self.meta_interferometer_fit.data_fit_from(
             data=data,
             mask=mask,
             positions=positions,
@@ -155,12 +155,12 @@ class PhaseInterferometer(data.PhaseData):
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.optimizer).__name__))
             phase_info.write(
-                "Sub-grid size = {} \n".format(self.meta_data_fit.sub_size)
+                "Sub-grid size = {} \n".format(self.meta_interferometer_fit.sub_size)
             )
-            phase_info.write("Primary Beam shape = {} \n".format(self.meta_data_fit.primary_beam_shape_2d))
+            phase_info.write("Primary Beam shape = {} \n".format(self.meta_interferometer_fit.primary_beam_shape_2d))
             phase_info.write(
                 "Positions Threshold = {} \n".format(
-                    self.meta_data_fit.positions_threshold
+                    self.meta_interferometer_fit.positions_threshold
                 )
             )
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
