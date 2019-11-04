@@ -1415,7 +1415,7 @@ class TestAbstractTracerLensing(object):
             self, sub_grid_7x7
         ):
             padded_grid = sub_grid_7x7.padded_grid_from_kernel_shape(
-                kernel_shape=(3, 3)
+                kernel_shape_2d=(3, 3)
             )
 
             g0 = al.galaxy(
@@ -1437,7 +1437,7 @@ class TestAbstractTracerLensing(object):
             tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             padded_tracer_profile_image = tracer.padded_profile_image_from_grid_and_psf_shape(
-                grid=sub_grid_7x7, psf_shape=(3, 3)
+                grid=sub_grid_7x7, psf_shape_2d=(3, 3)
             )
 
             assert padded_tracer_profile_image.shape_2d == (9, 9)
@@ -1449,7 +1449,7 @@ class TestAbstractTracerLensing(object):
             self, sub_grid_7x7
         ):
             padded_grid = sub_grid_7x7.padded_grid_from_kernel_shape(
-                kernel_shape=(3, 3)
+                kernel_shape_2d=(3, 3)
             )
 
             g0 = al.galaxy(
@@ -1473,7 +1473,7 @@ class TestAbstractTracerLensing(object):
             )
 
             padded_tracer_profile_image = tracer.padded_profile_image_from_grid_and_psf_shape(
-                grid=sub_grid_7x7, psf_shape=(3, 3)
+                grid=sub_grid_7x7, psf_shape_2d=(3, 3)
             )
 
             assert padded_tracer_profile_image.shape_2d == (9, 9)
@@ -2926,7 +2926,7 @@ class TestAbstractTracerData(object):
 
             tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2, g3])
 
-            padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=psf.shape_2d)
+            padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=psf.shape_2d)
 
             traced_padded_grids = tracer.traced_grids_of_planes_from_grid(
                 grid=padded_grid

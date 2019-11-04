@@ -62,7 +62,7 @@ class TestPhase(object):
 
         optimizer = phase_info.readline()
         sub_size = phase_info.readline()
-        psf_shape = phase_info.readline()
+        psf_shape_2d = phase_info.readline()
         positions_threshold = phase_info.readline()
         cosmology = phase_info.readline()
         auto_link_priors = phase_info.readline()
@@ -71,7 +71,7 @@ class TestPhase(object):
 
         assert optimizer == "Optimizer = MockNLO \n"
         assert sub_size == "Sub-grid size = 2 \n"
-        assert psf_shape == "PSF shape = None \n"
+        assert psf_shape_2d == "PSF shape = None \n"
         assert positions_threshold == "Positions Threshold = None \n"
         assert (
             cosmology

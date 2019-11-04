@@ -25,11 +25,11 @@ def simulate_integration_image(test_name, pixel_scales, galaxies):
         + test_name
         + "/"
     )
-    psf_shape = (11, 11)
+    psf_shape_2d = (11, 11)
     image_shape = (150, 150)
 
     psf = al.kernel.from_gaussian(
-        shape_2d=psf_shape, pixel_scales=pixel_scales, sigma=pixel_scales
+        shape_2d=psf_shape_2d, pixel_scales=pixel_scales, sigma=pixel_scales
     )
 
     grid = al.Grid.from_shape_2d_pixel_scale_and_sub_size(
