@@ -2,7 +2,7 @@ import autofit as af
 import autolens as al
 from autolens.fit.fit import ImagingFit, InterferometerFit
 
-from test_autolens.mock import mock_masked_data, mock_pipeline
+from test_autolens.mock import mock_masked_dataset, mock_pipeline
 from test_autoastro.unit.conftest import *
 from test_autoarray.mock import mock_mask
 
@@ -27,7 +27,7 @@ def set_config_path():
 def make_masked_imaging_7x7(
     imaging_7x7, mask_7x7, sub_grid_7x7, blurring_grid_7x7, convolver_7x7
 ):
-    return mock_masked_data.MockMaskedImaging(
+    return mock_masked_dataset.MockMaskedImaging(
         imaging=imaging_7x7,
         mask=mask_7x7,
         grid=sub_grid_7x7,
@@ -40,7 +40,7 @@ def make_masked_imaging_7x7(
 def make_masked_interferometer_6x6(
     interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
-    return mock_masked_data.MockMaskedInterferometer(
+    return mock_masked_dataset.MockMaskedInterferometer(
         interferometer=interferometer_7,
         real_space_mask=mask_7x7,
         grid=sub_grid_7x7,

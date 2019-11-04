@@ -53,7 +53,7 @@ class CombinedHyperPhase(HyperPhase):
         positions
         mask
         data
-            the data
+            the dataset
         results
             Results from previous phases
         kwargs

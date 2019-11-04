@@ -1,4 +1,4 @@
-from autolens.masked import masked_data
+from autolens.masked import masked_dataset
 from autolens.pipeline.phase import data
 
 
@@ -40,7 +40,7 @@ class MetaInterferometerFit(data.MetaDataFit):
             results=results
         )
 
-        masked_interferometer = masked_data.MaskedInterferometer(
+        masked_interferometer = masked_dataset.MaskedInterferometer(
             interferometer=data.modified_image_from_image(modified_image),
             mask=mask,
             psf_shape_2d=self.primary_beam_shape_2d,

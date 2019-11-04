@@ -6,7 +6,7 @@ from typing import cast
 import autofit as af
 from autoarray.fit import fit as aa_fit
 from autolens.fit import fit
-from autolens.masked import masked_data
+from autolens.masked import masked_dataset
 from autoastro.galaxy import galaxy as g
 from autoastro.hyper import hyper_data as hd
 from autolens.pipeline.phase import imaging
@@ -23,7 +23,7 @@ class Analysis(af.Analysis):
         Parameters
         ----------
         masked_imaging: LensData
-            lens data, including an image and noise
+            lens dataset, including an image and noise
         hyper_model_image: ndarray
             An image produce of the overall system by a model
         hyper_galaxy_image: ndarray
@@ -170,7 +170,7 @@ class HyperGalaxyPhase(HyperPhase):
         """
         phase = self.make_hyper_phase()
 
-        masked_imaging = masked_data.MaskedImaging(
+        masked_imaging = masked_dataset.MaskedImaging(
             imaging=data,
             mask=results.last.mask,
             psf_shape_2d=data.psf.shape_2d,

@@ -284,7 +284,7 @@ class TestPhase(object):
         masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        fit = al.fit(masked_data=masked_imaging, tracer=tracer)
+        fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
 
         assert fit.likelihood == fit_figure_of_merit
 

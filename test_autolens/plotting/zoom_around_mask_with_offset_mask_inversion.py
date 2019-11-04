@@ -36,7 +36,7 @@ def fit_with_offset_centre(centre):
         galaxies=[lens_galaxy, source_galaxy],
     )
     fit = al.fit(
-        masked_data=masked_imaging, tracer=tracer
+        masked_dataset=masked_imaging, tracer=tracer
     )
 
     return fit

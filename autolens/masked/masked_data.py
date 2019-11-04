@@ -1,5 +1,5 @@
 from autoarray.structures import grids
-from autoarray.masked import masked_data
+from autoarray.masked import masked_dataset
 from autolens.fit import fit
 from autolens import exc
 
@@ -44,7 +44,7 @@ class AbstractLensMasked(object):
                         raise exc.PixelizationException
 
 
-class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
+class MaskedImaging(masked_dataset.MaskedImaging, AbstractLensMasked):
     def __init__(
         self,
         imaging,
@@ -58,10 +58,10 @@ class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
         preload_sparse_grids_of_planes=None,
     ):
         """
-        The lens data is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
         for lensing calculations.
 
         Parameters
@@ -143,7 +143,7 @@ class MaskedImaging(masked_data.MaskedImaging, AbstractLensMasked):
         )
 
 
-class MaskedInterferometer(masked_data.MaskedInterferometer):
+class MaskedInterferometer(masked_dataset.MaskedInterferometer):
     def __init__(
         self,
         interferometer,
@@ -157,10 +157,10 @@ class MaskedInterferometer(masked_data.MaskedInterferometer):
         preload_sparse_grids_of_planes=None,
     ):
         """
-        The lens data is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
+        The lens dataset is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
         for lensing calculations.
 
         Parameters
