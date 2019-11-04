@@ -36,6 +36,19 @@ class AbstractVisualizer:
         self.plot_ray_tracing_all_at_end_fits = plot_setting(
             "plot_ray_tracing_all_at_end_fits"
         )
+        self.plot_ray_tracing_as_subplot = plot_setting("plot_ray_tracing_as_subplot")
+        self.plot_ray_tracing_profile_image = plot_setting(
+            "plot_ray_tracing_profile_image"
+        )
+        self.plot_ray_tracing_source_plane = plot_setting(
+            "plot_ray_tracing_source_plane_image"
+        )
+        self.plot_ray_tracing_convergence = plot_setting("plot_ray_tracing_convergence")
+        self.plot_ray_tracing_potential = plot_setting("plot_ray_tracing_potential")
+        self.plot_ray_tracing_deflections = plot_setting("plot_ray_tracing_deflections")
+        self.plot_ray_tracing_magnification = plot_setting(
+            "plot_ray_tracing_magnification"
+        )
 
 
 class SubPlotVisualizer(AbstractVisualizer):
@@ -105,7 +118,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
         )
 
 
-class PhaseDataVisualize(SubPlotVisualizer):
+class PhaseDatasetVisualize(SubPlotVisualizer):
 
     def __init__(self, masked_dataset, image_path):
         super().__init__(image_path)
@@ -114,19 +127,21 @@ class PhaseDataVisualize(SubPlotVisualizer):
         self.include_image_plane_pix = figure_setting(
             "include_image_plane_pixelization_grid"
         )
-        self.plot_data_as_subplot = plot_setting("plot_data_as_subplot")
-        self.plot_data_image = plot_setting("plot_data_image")
-        self.plot_data_noise_map = plot_setting("plot_data_noise_map")
-        self.plot_data_psf = plot_setting("plot_data_psf")
+        self.include_positions = figure_setting("include_positions")
 
-        self.plot_data_signal_to_noise_map = plot_setting(
-            "plot_data_signal_to_noise_map"
+        self.plot_dataset_as_subplot = plot_setting("plot_dataset_as_subplot")
+        self.plot_dataset_data = plot_setting("plot_dataset_data")
+        self.plot_dataset_noise_map = plot_setting("plot_dataset_noise_map")
+        self.plot_dataset_psf = plot_setting("plot_dataset_psf")
+
+        self.plot_dataset_signal_to_noise_map = plot_setting(
+            "plot_dataset_signal_to_noise_map"
         )
-        self.plot_data_absolute_signal_to_noise_map = plot_setting(
-            "plot_data_absolute_signal_to_noise_map"
+        self.plot_dataset_absolute_signal_to_noise_map = plot_setting(
+            "plot_dataset_absolute_signal_to_noise_map"
         )
-        self.plot_data_potential_chi_squared_map = plot_setting(
-            "plot_data_potential_chi_squared_map"
+        self.plot_dataset_potential_chi_squared_map = plot_setting(
+            "plot_dataset_potential_chi_squared_map"
         )
         self.plot_fit_all_at_end_png = plot_setting("plot_fit_all_at_end_png")
         self.plot_fit_all_at_end_fits = plot_setting("plot_fit_all_at_end_fits")
@@ -137,10 +152,10 @@ class PhaseDataVisualize(SubPlotVisualizer):
         self.plot_fit_inversion_as_subplot = plot_setting(
             "plot_fit_inversion_as_subplot"
         )
-        self.plot_fit_image = plot_setting("plot_fit_image")
+        self.plot_fit_data = plot_setting("plot_fit_data")
         self.plot_fit_noise_map = plot_setting("plot_fit_noise_map")
         self.plot_fit_signal_to_noise_map = plot_setting("plot_fit_signal_to_noise_map")
-        self.plot_fit_model_image = plot_setting("plot_fit_model_image")
+        self.plot_fit_model_data = plot_setting("plot_fit_model_data")
         self.plot_fit_residual_map = plot_setting("plot_fit_residual_map")
         self.plot_fit_normalized_residual_map = plot_setting(
             "plot_fit_normalized_residual_map"
@@ -171,22 +186,6 @@ class PhaseDataVisualize(SubPlotVisualizer):
         self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
         self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
 
-        self.include_positions = figure_setting("include_positions")
-
-        self.plot_ray_tracing_as_subplot = plot_setting("plot_ray_tracing_as_subplot")
-        self.plot_ray_tracing_profile_image = plot_setting(
-            "plot_ray_tracing_profile_image"
-        )
-        self.plot_ray_tracing_source_plane = plot_setting(
-            "plot_ray_tracing_source_plane_image"
-        )
-        self.plot_ray_tracing_convergence = plot_setting("plot_ray_tracing_convergence")
-        self.plot_ray_tracing_potential = plot_setting("plot_ray_tracing_potential")
-        self.plot_ray_tracing_deflections = plot_setting("plot_ray_tracing_deflections")
-        self.plot_ray_tracing_magnification = plot_setting(
-            "plot_ray_tracing_magnification"
-        )
-
     def plot_ray_tracing(self, tracer, during_analysis):
         positions = (
             self.masked_dataset.positions if self.include_positions else None
@@ -213,9 +212,23 @@ class PhaseDataVisualize(SubPlotVisualizer):
             subplot_path=self.subplot_path,
         )
 
+
+class PhaseImagingVisualizer(PhaseDatasetVisualize):
+    def __init__(self, masked_dataset, image_path):
+        super(PhaseImagingVisualizer, self).__init__(masked_dataset=masked_dataset, image_path=image_path)
+
+        self.plot_dataset_psf = plot_setting("plot_dataset_psf")
+
+        self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
+        self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
+
+    @property
+    def masked_imaging(self):
+        return self.masked_dataset
+
     def plot_fit(self, fit, during_analysis):
         positions = (
-            self.masked_dataset.positions if self.include_positions else None
+            self.masked_imaging.positions if self.include_positions else None
         )
         phase_plotters.imaging_fit_of_phase(
             fit=fit,
@@ -230,10 +243,10 @@ class PhaseDataVisualize(SubPlotVisualizer):
             plot_fit_as_subplot=self.plot_fit_as_subplot,
             plot_fit_of_planes_as_subplot=self.plot_fit_of_planes_as_subplot,
             plot_inversion_as_subplot=self.plot_fit_inversion_as_subplot,
-            plot_image=self.plot_fit_image,
+            plot_image=self.plot_fit_data,
             plot_noise_map=self.plot_fit_noise_map,
             plot_signal_to_noise_map=self.plot_fit_signal_to_noise_map,
-            plot_model_image=self.plot_fit_model_image,
+            plot_model_image=self.plot_fit_model_data,
             plot_residual_map=self.plot_fit_residual_map,
             plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
             plot_chi_squared_map=self.plot_fit_chi_squared_map,
@@ -262,13 +275,13 @@ class PhaseDataVisualize(SubPlotVisualizer):
             mask=mask,
             positions=positions,
             units=self.plot_units,
-            plot_as_subplot=self.plot_data_as_subplot,
-            plot_image=self.plot_data_image,
-            plot_noise_map=self.plot_data_noise_map,
-            plot_psf=self.plot_data_psf,
-            plot_signal_to_noise_map=self.plot_data_signal_to_noise_map,
-            plot_absolute_signal_to_noise_map=self.plot_data_absolute_signal_to_noise_map,
-            plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
+            plot_as_subplot=self.plot_dataset_as_subplot,
+            plot_image=self.plot_dataset_data,
+            plot_noise_map=self.plot_dataset_noise_map,
+            plot_psf=self.plot_dataset_psf,
+            plot_signal_to_noise_map=self.plot_dataset_signal_to_noise_map,
+            plot_absolute_signal_to_noise_map=self.plot_dataset_absolute_signal_to_noise_map,
+            plot_potential_chi_squared_map=self.plot_dataset_potential_chi_squared_map,
             visualize_path=self.image_path,
             subplot_path=self.subplot_path,
         )
@@ -287,109 +300,78 @@ class PhaseDataVisualize(SubPlotVisualizer):
             )
 
 
-
-class PhaseImagingVisualizer(PhaseDataVisualize):
+class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
     def __init__(self, masked_dataset, image_path):
-        super(PhaseImagingVisualizer, self).__init__(masked_dataset=masked_dataset, image_path=image_path)
+        super(PhaseInterferometerVisualizer, self).__init__(masked_dataset=masked_dataset, image_path=image_path)
 
-        self.include_image_plane_pix = figure_setting(
-            "include_image_plane_pixelization_grid"
-        )
-        self.plot_data_as_subplot = plot_setting("plot_data_as_subplot")
-        self.plot_data_psf = plot_setting("plot_data_psf")
+        self.plot_dataset_primary_beam = plot_setting("plot_dataset_primary_beam")
 
         self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
         self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
 
     @property
-    def masked_imaging(self):
+    def masked_interferometer(self):
         return self.masked_dataset
-
-    def plot_ray_tracing(self, tracer, during_analysis):
-        positions = (
-            self.masked_dataset.positions if self.include_positions else None
-        )
-        mask = self.masked_dataset.mask if self.include_mask else None
-        phase_plotters.ray_tracing_of_phase(
-            tracer=tracer,
-            grid=self.masked_dataset.grid,
-            during_analysis=during_analysis,
-            mask=mask,
-            include_critical_curves=self.include_critical_curves,
-            include_caustics=self.include_caustics,
-            positions=positions,
-            units=self.plot_units,
-            plot_as_subplot=self.plot_ray_tracing_as_subplot,
-            plot_all_at_end_png=self.plot_ray_tracing_all_at_end_png,
-            plot_all_at_end_fits=self.plot_ray_tracing_all_at_end_fits,
-            plot_image=self.plot_ray_tracing_profile_image,
-            plot_source_plane=self.plot_ray_tracing_source_plane,
-            plot_convergence=self.plot_ray_tracing_convergence,
-            plot_potential=self.plot_ray_tracing_potential,
-            plot_deflections=self.plot_ray_tracing_deflections,
-            visualize_path=self.image_path,
-            subplot_path=self.subplot_path,
-        )
 
     def plot_fit(self, fit, during_analysis):
         positions = (
-            self.masked_dataset.positions if self.include_positions else None
+            self.masked_interferometer.positions if self.include_positions else None
         )
-        phase_plotters.imaging_fit_of_phase(
-            fit=fit,
-            during_analysis=during_analysis,
-            include_mask=self.include_mask,
-            include_critical_curves=self.include_critical_curves,
-            include_caustics=self.include_caustics,
-            positions=positions,
-            include_image_plane_pix=self.include_image_plane_pix,
-            plot_all_at_end_png=self.plot_fit_all_at_end_png,
-            plot_all_at_end_fits=self.plot_fit_all_at_end_fits,
-            plot_fit_as_subplot=self.plot_fit_as_subplot,
-            plot_fit_of_planes_as_subplot=self.plot_fit_of_planes_as_subplot,
-            plot_inversion_as_subplot=self.plot_fit_inversion_as_subplot,
-            plot_image=self.plot_fit_image,
-            plot_noise_map=self.plot_fit_noise_map,
-            plot_signal_to_noise_map=self.plot_fit_signal_to_noise_map,
-            plot_model_image=self.plot_fit_model_image,
-            plot_residual_map=self.plot_fit_residual_map,
-            plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
-            plot_chi_squared_map=self.plot_fit_chi_squared_map,
-            plot_inversion_residual_map=self.plot_fit_inversion_residual_map,
-            plot_inversion_normalized_residual_map=self.plot_fit_normalized_residual_map,
-            plot_inversion_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
-            plot_inversion_regularization_weights=(
-                self.plot_fit_inversion_regularization_weights
-            ),
-            plot_subtracted_images_of_planes=self.plot_fit_subtracted_images_of_planes,
-            plot_model_images_of_planes=self.plot_fit_model_images_of_planes,
-            plot_plane_images_of_planes=self.plot_fit_plane_images_of_planes,
-            units=self.plot_units,
-            visualize_path=self.image_path,
-            subplot_path=self.subplot_path,
-        )
+        # phase_plotters.interferometer_fit_of_phase(
+        #     fit=fit,
+        #     during_analysis=during_analysis,
+        #     include_mask=self.include_mask,
+        #     include_critical_curves=self.include_critical_curves,
+        #     include_caustics=self.include_caustics,
+        #     positions=positions,
+        #     include_image_plane_pix=self.include_image_plane_pix,
+        #     plot_all_at_end_png=self.plot_fit_all_at_end_png,
+        #     plot_all_at_end_fits=self.plot_fit_all_at_end_fits,
+        #     plot_fit_as_subplot=self.plot_fit_as_subplot,
+        #     plot_fit_of_planes_as_subplot=self.plot_fit_of_planes_as_subplot,
+        #     plot_inversion_as_subplot=self.plot_fit_inversion_as_subplot,
+        #     plot_image=self.plot_fit_data,
+        #     plot_noise_map=self.plot_fit_noise_map,
+        #     plot_signal_to_noise_map=self.plot_fit_signal_to_noise_map,
+        #     plot_model_image=self.plot_fit_model_data,
+        #     plot_residual_map=self.plot_fit_residual_map,
+        #     plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
+        #     plot_chi_squared_map=self.plot_fit_chi_squared_map,
+        #     plot_inversion_residual_map=self.plot_fit_inversion_residual_map,
+        #     plot_inversion_normalized_residual_map=self.plot_fit_normalized_residual_map,
+        #     plot_inversion_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
+        #     plot_inversion_regularization_weights=(
+        #         self.plot_fit_inversion_regularization_weights
+        #     ),
+        #     plot_subtracted_images_of_planes=self.plot_fit_subtracted_images_of_planes,
+        #     plot_model_images_of_planes=self.plot_fit_model_images_of_planes,
+        #     plot_plane_images_of_planes=self.plot_fit_plane_images_of_planes,
+        #     units=self.plot_units,
+        #     visualize_path=self.image_path,
+        #     subplot_path=self.subplot_path,
+        # )
 
-    def plot_imaging(self):
-        mask = self.masked_dataset.mask if self.include_mask else None
+    def plot_interferometer(self):
+        mask = self.masked_interferometer.mask if self.include_mask else None
         positions = (
-            self.masked_dataset.positions if self.include_positions else None
+            self.masked_interferometer.positions if self.include_positions else None
         )
 
-        phase_plotters.imaging_of_phase(
-            imaging=self.masked_dataset.imaging,
-            mask=mask,
-            positions=positions,
-            units=self.plot_units,
-            plot_as_subplot=self.plot_data_as_subplot,
-            plot_image=self.plot_data_image,
-            plot_noise_map=self.plot_data_noise_map,
-            plot_psf=self.plot_data_psf,
-            plot_signal_to_noise_map=self.plot_data_signal_to_noise_map,
-            plot_absolute_signal_to_noise_map=self.plot_data_absolute_signal_to_noise_map,
-            plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
-            visualize_path=self.image_path,
-            subplot_path=self.subplot_path,
-        )
+        # phase_plotters.interferometer_of_phase(
+        #     imaging=self.masked_interferometer.intererometer,
+        #     mask=mask,
+        #     positions=positions,
+        #     units=self.plot_units,
+        #     plot_as_subplot=self.plot_dataset_as_subplot,
+        #     plot_visibilities=self.plot_dataset_data,
+        #     plot_noise_map=self.plot_dataset_noise_map,
+        #     plot_primary_beam=self.plot_dataset_primary_beam,
+        #     plot_signal_to_noise_map=self.plot_dataset_signal_to_noise_map,
+        #     plot_absolute_signal_to_noise_map=self.plot_dataset_absolute_signal_to_noise_map,
+        #     plot_potential_chi_squared_map=self.plot_dataset_potential_chi_squared_map,
+        #     visualize_path=self.image_path,
+        #     subplot_path=self.subplot_path,
+        # )
 
     def plot_hyper_images(self, last_results):
         mask = self.masked_dataset.mask
@@ -397,7 +379,7 @@ class PhaseImagingVisualizer(PhaseDataVisualize):
             phase_plotters.plot_hyper_images_for_phase(
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
-                mask=self.masked_dataset.mask,
+                mask=self.masked_interferometer.mask,
                 units=self.plot_units,
                 plot_hyper_model_image=self.plot_hyper_model_image,
                 plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
