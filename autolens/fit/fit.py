@@ -2,21 +2,21 @@ import numpy as np
 
 from autoarray.fit import fit as aa_fit
 from autoastro.galaxy import galaxy as g
-from autolens.masked import masked_data as md
+from autolens.masked import masked_dataset as md
 
 
-def fit(masked_data, tracer, hyper_image_sky=None, hyper_background_noise=None):
+def fit(masked_dataset, tracer, hyper_image_sky=None, hyper_background_noise=None):
 
-    if isinstance(masked_data, md.MaskedImaging):
+    if isinstance(masked_dataset, md.MaskedImaging):
         return ImagingFit(
-            masked_imaging=masked_data,
+            masked_imaging=masked_dataset,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
-    elif isinstance(masked_data, md.MaskedInterferometer):
+    elif isinstance(masked_dataset, md.MaskedInterferometer):
         return InterferometerFit(
-            masked_visibilities=masked_data,
+            masked_visibilities=masked_dataset,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -28,7 +28,7 @@ class ImagingFit(aa_fit.ImagingFit):
         self, masked_imaging, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens data's hyper_galaxies.
+        the lens dataset's hyper_galaxies.
 
         Parameters
         -----------
@@ -38,7 +38,7 @@ class ImagingFit(aa_fit.ImagingFit):
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
 
-        self.masked_data = masked_imaging
+        self.masked_dataset = masked_imaging
         self.masked_imaging = masked_imaging
         self.tracer = tracer
 
@@ -160,7 +160,7 @@ class ImagingFit(aa_fit.ImagingFit):
 class InterferometerFit(aa_fit.InterferometerFit):
     def __init__(self, masked_interferometer, tracer):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens data's hyper_galaxies.
+        the lens dataset's hyper_galaxies.
 
         Parameters
         -----------
@@ -169,7 +169,7 @@ class InterferometerFit(aa_fit.InterferometerFit):
         scaled_array_2d_from_array_1d : func
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
-        self.masked_data = masked_interferometer
+        self.masked_dataset = masked_interferometer
         self.masked_interferometer = masked_interferometer
         self.tracer = tracer
 

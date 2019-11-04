@@ -40,7 +40,7 @@
 #     def test__make_analysis__masks_image_and_noise_map_correctly(
 #         self, phase_interferometer_7x7, interferometer_7x7, mask_7x7
 #     ):
-#         analysis = phase_interferometer_7x7.make_analysis(data=interferometer_7x7)
+#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
 #
 #         assert (
 #             analysis.masked_interferometer.image.in_2d
@@ -52,7 +52,7 @@
 #         ).all()
 #
 #     def test__make_analysis__phase_info_is_made(self, phase_interferometer_7x7, interferometer_7x7):
-#         phase_interferometer_7x7.make_analysis(data=interferometer_7x7)
+#         phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
 #
 #         file_phase_info = "{}/{}".format(
 #             phase_interferometer_7x7.optimizer.paths.phase_output_path, "phase.info"
@@ -92,7 +92,7 @@
 #             phase_name="test_phase_test_fit",
 #         )
 #
-#         result = phase_interferometer_7x7.run(data=interferometer_7x7)
+#         result = phase_interferometer_7x7.run(dataset=interferometer_7x7)
 #         assert isinstance(result.constant.galaxies[0], al.galaxy)
 #         assert isinstance(result.constant.galaxies[0], al.galaxy)
 #
@@ -107,7 +107,7 @@
 #             phase_name="phase_interferometer_7x7", mask_function=mask_function_7x7
 #         )
 #
-#         analysis = phase_interferometer_7x7.make_analysis(data=interferometer_7x7)
+#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
 #         assert (
 #             analysis.masked_interferometer.image.in_2d
 #             == 20.0 * np.ones(shape=(7, 7)) * np.invert(mask_7x7)
@@ -127,7 +127,7 @@
 #             mask_function=mask_function_7x7_1_pix,
 #         )
 #
-#         analysis = phase_interferometer_7x7.make_analysis(data=interferometer_7x7)
+#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
 #         assert (
 #             analysis.masked_interferometer.image.in_2d
 #             == interferometer_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
@@ -147,7 +147,7 @@
 #             mask_function=mask_function_7x7_1_pix,
 #         )
 #
-#         analysis = phase_interferometer_7x7.make_analysis(data=interferometer_7x7)
+#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
 #         assert (
 #             analysis.masked_interferometer.image.in_2d
 #             == interferometer_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
@@ -172,7 +172,7 @@
 #             mask_function=mask_function_7x7_1_pix,
 #         )
 #
-#         analysis = phase_interferometer_7x7.make_analysis(data=interferometer_7x7)
+#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
 #         assert (
 #             analysis.masked_interferometer.image.in_2d
 #             == binned_up_interferometer.image.in_2d * np.invert(binned_up_mask)
@@ -274,17 +274,17 @@
 #             phase_name="test_phase",
 #         )
 #
-#         analysis = phase_interferometer_7x7.make_analysis(data=interferometer_7x7)
+#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
 #         instance = phase_interferometer_7x7.variable.instance_from_unit_vector([])
 #         fit_figure_of_merit = analysis.fit(instance=instance)
 #
 #         mask = phase_interferometer_7x7.meta_data_fit.setup_phase_mask(
-#             data=interferometer_7x7, mask=None
+#             dataset=interferometer_7x7, mask=None
 #         )
 #         masked_interferometer = al.masked.interferometer(interferometer=interferometer_7x7, mask=mask)
 #         tracer = analysis.tracer_for_instance(instance=instance)
 #
-#         fit = al.fit(masked_data=masked_interferometer, tracer=tracer)
+#         fit = al.fit(masked_dataset=masked_interferometer, tracer=tracer)
 #
 #         assert fit.likelihood == fit_figure_of_merit
 #
@@ -308,12 +308,12 @@
 #             phase_name="test_phase",
 #         )
 #
-#         analysis = phase_interferometer_7x7.make_analysis(data=interferometer_7x7)
+#         analysis = phase_interferometer_7x7.make_analysis(dataset=interferometer_7x7)
 #         instance = phase_interferometer_7x7.variable.instance_from_unit_vector([])
 #         fit_figure_of_merit = analysis.fit(instance=instance)
 #
 #         mask = phase_interferometer_7x7.meta_data_fit.setup_phase_mask(
-#             data=interferometer_7x7, mask=None
+#             dataset=interferometer_7x7, mask=None
 #         )
 #         assert mask.sub_size == 4
 #

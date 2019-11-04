@@ -63,7 +63,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
 
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
 
-        5) Output the data to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
+        5) Output the dataset to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
         grid = grids.Grid.uniform(
@@ -96,7 +96,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
 
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
 
-        5) Output the data to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
+        5) Output the dataset to .fits format if a data_path and data_name are specified. Otherwise, return the simulated \
            imaging data_type instance."""
 
         imaging = self.from_galaxies(

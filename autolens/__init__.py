@@ -9,9 +9,9 @@ from autoarray.structures.grids import (
 )
 from autoarray.structures.kernel import Kernel as kernel
 from autoarray.structures.visibilities import Visibilities as visibilities
-from autoarray.data.imaging import Imaging as imaging
-from autoarray.data.interferometer import Interferometer as interferometer
-from autoarray.data import data_converter
+from autoarray.dataset.imaging import Imaging as imaging
+from autoarray.dataset.interferometer import Interferometer as interferometer
+from autoarray.dataset import data_converter
 from autoarray.operators.convolution import Convolver as convolver
 from autoarray.operators.fourier_transform import Transformer as transformer
 from autoarray.operators.inversion.mappers import mapper

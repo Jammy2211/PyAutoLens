@@ -25,7 +25,7 @@ class Result(abstract.result.Result):
 
     @property
     def positions(self):
-        return self.most_likely_fit.masked_data.positions
+        return self.most_likely_fit.masked_dataset.positions
 
     @property
     def pixelization(self):

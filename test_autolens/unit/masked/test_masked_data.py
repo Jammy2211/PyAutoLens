@@ -5,7 +5,7 @@ import pytest
 
 
 class TestMaskedImaging(object):
-    def test__masked_data_via_autoarray(self, imaging_7x7, sub_mask_7x7):
+    def test__masked_dataset_via_autoarray(self, imaging_7x7, sub_mask_7x7):
 
         masked_imaging_7x7 = al.masked.imaging.manual(
             imaging=imaging_7x7, mask=sub_mask_7x7
@@ -161,7 +161,7 @@ class TestMaskedImaging(object):
 
 
 class TestMaskedInterferometer(object):
-    def test__masked_data_via_autoarray(self, interferometer_7, sub_mask_7x7):
+    def test__masked_dataset_via_autoarray(self, interferometer_7, sub_mask_7x7):
 
         masked_interferometer_7 = al.masked.interferometer(
             interferometer=interferometer_7, real_space_mask=sub_mask_7x7

@@ -107,9 +107,9 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
 
 class PhaseDataVisualize(SubPlotVisualizer):
 
-    def __init__(self, masked_data, image_path):
+    def __init__(self, masked_dataset, image_path):
         super().__init__(image_path)
-        self.masked_data = masked_data
+        self.masked_dataset = masked_dataset
 
         self.include_image_plane_pix = figure_setting(
             "include_image_plane_pixelization_grid"
@@ -189,12 +189,12 @@ class PhaseDataVisualize(SubPlotVisualizer):
 
     def plot_ray_tracing(self, tracer, during_analysis):
         positions = (
-            self.masked_data.positions if self.include_positions else None
+            self.masked_dataset.positions if self.include_positions else None
         )
-        mask = self.masked_data.mask if self.include_mask else None
+        mask = self.masked_dataset.mask if self.include_mask else None
         phase_plotters.ray_tracing_of_phase(
             tracer=tracer,
-            grid=self.masked_data.grid,
+            grid=self.masked_dataset.grid,
             during_analysis=during_analysis,
             mask=mask,
             include_critical_curves=self.include_critical_curves,
@@ -215,7 +215,7 @@ class PhaseDataVisualize(SubPlotVisualizer):
 
     def plot_fit(self, fit, during_analysis):
         positions = (
-            self.masked_data.positions if self.include_positions else None
+            self.masked_dataset.positions if self.include_positions else None
         )
         phase_plotters.imaging_fit_of_phase(
             fit=fit,
@@ -252,13 +252,13 @@ class PhaseDataVisualize(SubPlotVisualizer):
         )
 
     def plot_imaging(self):
-        mask = self.masked_data.mask if self.include_mask else None
+        mask = self.masked_dataset.mask if self.include_mask else None
         positions = (
-            self.masked_data.positions if self.include_positions else None
+            self.masked_dataset.positions if self.include_positions else None
         )
 
         phase_plotters.imaging_of_phase(
-            imaging=self.masked_data.imaging,
+            imaging=self.masked_dataset.imaging,
             mask=mask,
             positions=positions,
             units=self.plot_units,
@@ -274,12 +274,12 @@ class PhaseDataVisualize(SubPlotVisualizer):
         )
 
     def plot_hyper_images(self, last_results):
-        mask = self.masked_data.mask
+        mask = self.masked_dataset.mask
         if self.include_mask and mask is not None and last_results is not None:
             phase_plotters.plot_hyper_images_for_phase(
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
-                mask=self.masked_data.mask,
+                mask=self.masked_dataset.mask,
                 units=self.plot_units,
                 plot_hyper_model_image=self.plot_hyper_model_image,
                 plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
@@ -289,8 +289,8 @@ class PhaseDataVisualize(SubPlotVisualizer):
 
 
 class PhaseImagingVisualizer(PhaseDataVisualize):
-    def __init__(self, masked_data, image_path):
-        super(PhaseImagingVisualizer, self).__init__(masked_data=masked_data, image_path=image_path)
+    def __init__(self, masked_dataset, image_path):
+        super(PhaseImagingVisualizer, self).__init__(masked_dataset=masked_dataset, image_path=image_path)
 
         self.include_image_plane_pix = figure_setting(
             "include_image_plane_pixelization_grid"
@@ -303,16 +303,16 @@ class PhaseImagingVisualizer(PhaseDataVisualize):
 
     @property
     def masked_imaging(self):
-        return self.masked_data
+        return self.masked_dataset
 
     def plot_ray_tracing(self, tracer, during_analysis):
         positions = (
-            self.masked_data.positions if self.include_positions else None
+            self.masked_dataset.positions if self.include_positions else None
         )
-        mask = self.masked_data.mask if self.include_mask else None
+        mask = self.masked_dataset.mask if self.include_mask else None
         phase_plotters.ray_tracing_of_phase(
             tracer=tracer,
-            grid=self.masked_data.grid,
+            grid=self.masked_dataset.grid,
             during_analysis=during_analysis,
             mask=mask,
             include_critical_curves=self.include_critical_curves,
@@ -333,7 +333,7 @@ class PhaseImagingVisualizer(PhaseDataVisualize):
 
     def plot_fit(self, fit, during_analysis):
         positions = (
-            self.masked_data.positions if self.include_positions else None
+            self.masked_dataset.positions if self.include_positions else None
         )
         phase_plotters.imaging_fit_of_phase(
             fit=fit,
@@ -370,13 +370,13 @@ class PhaseImagingVisualizer(PhaseDataVisualize):
         )
 
     def plot_imaging(self):
-        mask = self.masked_data.mask if self.include_mask else None
+        mask = self.masked_dataset.mask if self.include_mask else None
         positions = (
-            self.masked_data.positions if self.include_positions else None
+            self.masked_dataset.positions if self.include_positions else None
         )
 
         phase_plotters.imaging_of_phase(
-            imaging=self.masked_data.imaging,
+            imaging=self.masked_dataset.imaging,
             mask=mask,
             positions=positions,
             units=self.plot_units,
@@ -392,12 +392,12 @@ class PhaseImagingVisualizer(PhaseDataVisualize):
         )
 
     def plot_hyper_images(self, last_results):
-        mask = self.masked_data.mask
+        mask = self.masked_dataset.mask
         if self.include_mask and mask is not None and last_results is not None:
             phase_plotters.plot_hyper_images_for_phase(
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
-                mask=self.masked_data.mask,
+                mask=self.masked_dataset.mask,
                 units=self.plot_units,
                 plot_hyper_model_image=self.plot_hyper_model_image,
                 plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,

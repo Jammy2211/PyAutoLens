@@ -75,7 +75,7 @@ def load_test_imaging(data_type, data_resolution, psf_shape_2d=(11, 11), lens_na
     pixel_scales = pixel_scale_from_data_resolution(data_resolution=data_resolution)
 
     data_path = af.path_util.make_and_return_path_from_path_and_folder_names(
-        path=test_path, folder_names=["data", data_type, data_resolution]
+        path=test_path, folder_names=["dataset", data_type, data_resolution]
     )
 
     return al.imaging.from_fits(
