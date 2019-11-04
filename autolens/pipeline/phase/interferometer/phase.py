@@ -54,7 +54,8 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         phase_tag = phase_tagging.phase_tag_from_phase_settings(
             sub_size=sub_size,
-            signal_to_noise_limit=signal_to_noise_limit,
+            real_space_shape_2d=real_space_shape_2d,
+            real_space_pixel_scales=real_space_pixel_scales,
             primary_beam_shape_2d=primary_beam_shape_2d,
             positions_threshold=positions_threshold,
             inner_mask_radii=inner_mask_radii,
@@ -78,6 +79,8 @@ class PhaseInterferometer(dataset.PhaseDataset):
         self.meta_interferometer_fit = MetaInterferometerFit(
             variable=self.variable,
             sub_size=sub_size,
+            real_space_shape_2d=real_space_shape_2d,
+            real_space_pixel_scales=real_space_pixel_scales,
             primary_beam_shape_2d=primary_beam_shape_2d,
             positions_threshold=positions_threshold,
             mask_function=mask_function,

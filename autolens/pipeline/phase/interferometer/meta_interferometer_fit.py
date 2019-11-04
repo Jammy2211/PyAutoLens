@@ -6,6 +6,8 @@ class MetaInterferometerFit(dataset.MetaDatasetFit):
     def __init__(
         self,
         variable,
+        real_space_shape_2d,
+        real_space_pixel_scales,
         sub_size=2,
         is_hyper_phase=False,
         positions_threshold=None,
@@ -28,11 +30,13 @@ class MetaInterferometerFit(dataset.MetaDatasetFit):
             inversion_uses_border=inversion_uses_border,
             inversion_pixel_limit=inversion_pixel_limit,
         )
+        self.real_space_shape_2d = real_space_shape_2d
+        self.real_space_pixel_scales = real_space_pixel_scales
         self.primary_beam_shape_2d = primary_beam_shape_2d
         self.bin_up_factor = bin_up_factor
 
     def masked_dataset_from(self, dataset, mask, positions, results, modified_visibilities):
-        mask = self.setup_phase_mask(dataset=dataset, mask=mask)
+        mask = self.setup_phase_mask(shape_2d=self.real_space_shape_2d, pixel_scales=self.real_space_pixel_scales, mask=mask)
 
         self.check_positions(positions=positions)
 
@@ -41,9 +45,9 @@ class MetaInterferometerFit(dataset.MetaDatasetFit):
         )
 
         masked_interferometer = masked_dataset.MaskedInterferometer(
-            interferometer=dataset.modified_image_from_image(modified_visibilities),
+            interferometer=dataset.modified_visibilities_from_visibilities(modified_visibilities),
             real_space_mask=mask,
-            psf_shape_2d=self.primary_beam_shape_2d,
+            primary_beam_shape_2d=self.primary_beam_shape_2d,
             positions=positions,
             positions_threshold=self.positions_threshold,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,

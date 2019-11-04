@@ -36,8 +36,8 @@ def make_masked_imaging_7x7(
     )
 
 
-@pytest.fixture(name="masked_interferometer_6x6")
-def make_masked_interferometer_6x6(
+@pytest.fixture(name="masked_interferometer_7")
+def make_masked_interferometer_7(
     interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
     return mock_masked_dataset.MockMaskedInterferometer(
@@ -146,6 +146,8 @@ def make_phase_imaging_7x7(mask_function_7x7):
 def make_phase_interferometer_7(mask_function_7x7):
     return al.PhaseInterferometer(
         optimizer_class=mock_pipeline.MockNLO,
+        real_space_shape_2d=(7, 7),
+        real_space_pixel_scales=(0.1, 0.1),
         mask_function=mask_function_7x7,
         phase_name="test_phase",
     )
