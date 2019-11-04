@@ -1,8 +1,8 @@
 from autolens.masked import masked_dataset
-from autolens.pipeline.phase import data
+from autolens.pipeline.phase import dataset
 
 
-class MetaImagingFit(data.MetaDataFit):
+class MetaImagingFit(dataset.MetaDatasetFit):
     def __init__(
         self,
         variable,

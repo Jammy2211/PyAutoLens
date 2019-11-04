@@ -2,13 +2,13 @@ import autofit as af
 import autoarray as aa
 from autolens import exc
 from autoarray.operators.inversion import pixelizations as pix
-from autolens.pipeline.phase.data.phase import (
+from autolens.pipeline.phase.dataset.phase import (
     default_mask_function,
     isinstance_or_prior,
 )
 
 
-class MetaDataFit:
+class MetaDatasetFit:
     def __init__(
         self,
         variable,

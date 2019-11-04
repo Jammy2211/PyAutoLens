@@ -278,7 +278,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(
+        mask = phase_imaging_7x7.meta_imaging_fit.setup_phase_mask(
             data=imaging_7x7, mask=None
         )
         masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask)
@@ -312,7 +312,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(
+        mask = phase_imaging_7x7.meta_imaging_fit.setup_phase_mask(
             data=imaging_7x7, mask=None
         )
         assert mask.sub_size == 4

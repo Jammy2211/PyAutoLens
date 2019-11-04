@@ -128,7 +128,7 @@ def make_mask_function_7x7():
 
 @pytest.fixture(name="phase_data_7x7")
 def make_phase_data(mask_function_7x7):
-    return al.PhaseData(
+    return al.PhaseDataset(
         optimizer_class=mock_pipeline.MockNLO, phase_tag="", phase_name="test_phase"
     )
 

@@ -415,7 +415,7 @@ class TestHyperGalaxyPhase(object):
         analysis = phase_imaging_7x7.make_analysis(data=imaging_7x7)
         instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
 
-        mask = phase_imaging_7x7.meta_data_fit.setup_phase_mask(
+        mask = phase_imaging_7x7.meta_imaging_fit.setup_phase_mask(
             data=imaging_7x7, mask=None
         )
         assert mask.sub_size == 2
