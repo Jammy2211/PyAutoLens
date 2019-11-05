@@ -3,7 +3,7 @@ import os
 import autofit as af
 from test_autolens.integration import integration_util
 from autofit.optimize.non_linear.mock_nlo import MockNLO
-from test_autolens.simulate import simulate_util
+from test_autolens.simulate.imaging import simulate_util
 
 
 def run(

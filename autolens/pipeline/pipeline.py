@@ -67,10 +67,10 @@ class PipelineSettingsHyper(PipelineSettings):
         self.hyper_background_noise = hyper_background_noise
 
 
-class PipelineImaging(af.Pipeline):
+class PipelineDataset(af.Pipeline):
     def __init__(self, pipeline_name, pipeline_tag, *phases, hyper_mode=False):
 
-        super(PipelineImaging, self).__init__(pipeline_name, pipeline_tag, *phases)
+        super(PipelineDataset, self).__init__(pipeline_name, pipeline_tag, *phases)
 
         self.hyper_mode = hyper_mode
 

@@ -86,7 +86,7 @@ def make_mock_file(monkeypatch):
 
 class TestMetaData(object):
     def test_files(self, mock_files):
-        pipeline = al.PipelineImaging(
+        pipeline = al.PipelineDataset(
             "pipeline_name",
             DummyPhaseImaging(phase_name="phase_name"),
         )
@@ -105,7 +105,7 @@ class TestPassMask(object):
         mask = MockMask()
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
-        pipeline = al.PipelineImaging("", phase_1, phase_2)
+        pipeline = al.PipelineDataset("", phase_1, phase_2)
         pipeline.run(dataset=MockImagingData(), mask=mask)
 
         assert phase_1.mask is mask
@@ -117,7 +117,7 @@ class TestPassPositions(object):
         positions = [[[1.0, 1.0], [2.0, 2.0]]]
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
-        pipeline = al.PipelineImaging("", phase_1, phase_2)
+        pipeline = al.PipelineDataset("", phase_1, phase_2)
         pipeline.run(dataset=MockImagingData(), positions=positions)
 
         assert phase_1.positions == positions
@@ -129,7 +129,7 @@ class TestPipelineImaging(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
 
-        pipeline = al.PipelineImaging("", phase_1, phase_2)
+        pipeline = al.PipelineDataset("", phase_1, phase_2)
 
         pipeline.run(MockImagingData())
 
@@ -140,8 +140,8 @@ class TestPipelineImaging(object):
         phase_2 = DummyPhaseImaging("two")
         phase_3 = DummyPhaseImaging("three")
 
-        pipeline1 = al.PipelineImaging("", phase_1, phase_2)
-        pipeline2 = al.PipelineImaging("", phase_3)
+        pipeline1 = al.PipelineDataset("", phase_1, phase_2)
+        pipeline2 = al.PipelineDataset("", phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
 
@@ -149,11 +149,11 @@ class TestPipelineImaging(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
 
-        pipeline = al.PipelineImaging("", phase_1, phase_2, hyper_mode=False)
+        pipeline = al.PipelineDataset("", phase_1, phase_2, hyper_mode=False)
 
         pipeline.run(MockImagingData())
 
-        pipeline = al.PipelineImaging("", phase_1, phase_2, hyper_mode=True)
+        pipeline = al.PipelineDataset("", phase_1, phase_2, hyper_mode=True)
 
         with pytest.raises(exc.PhaseException):
             pipeline.run(MockImagingData())

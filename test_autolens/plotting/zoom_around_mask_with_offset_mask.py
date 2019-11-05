@@ -1,5 +1,5 @@
 import autolens as al
-from test_autolens.simulate import simulate_util
+from test_autolens.simulate.imaging import simulate_util
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use
 # uniform grid of rectangular pixels, but instead uses ir'Voronoi' pixels. So, why would we want to do that?
