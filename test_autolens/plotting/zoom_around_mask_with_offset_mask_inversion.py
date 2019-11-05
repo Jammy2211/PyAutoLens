@@ -1,5 +1,5 @@
 import autolens as al
-from test_autolens.simulate import simulate_util
+from test_autolens.simulate.imaging import simulate_util
 
 imaging = simulate_util.load_test_imaging(
     data_type="lens_mass__source_smooth__offset_centre", data_resolution="LSST"

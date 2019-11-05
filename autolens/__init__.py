@@ -61,7 +61,7 @@ from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
 from autolens.pipeline.pipeline import (
     PipelineSettings,
     PipelineSettingsHyper,
-    PipelineImaging,
+    PipelineDataset,
     PipelinePositions,
 )
 from autolens import plotters as plot
