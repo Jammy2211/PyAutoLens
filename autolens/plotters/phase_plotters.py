@@ -51,6 +51,42 @@ def imaging_of_phase(
     )
 
 
+def interferometer_of_phase(
+    interferometer,
+    units,
+    plot_as_subplot,
+    plot_visibilities,
+    plot_uv_wavelengths,
+    plot_primary_beam,
+    visualize_path,
+    subplot_path,
+):
+
+    output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+        path=visualize_path, folder_names=["interferometer"]
+    )
+
+    if plot_as_subplot:
+
+        aa.plot.interferometer.subplot(
+            interferometer=interferometer,
+            units=units,
+            output_path=subplot_path,
+            output_format="png",
+        )
+
+    aa.plot.interferometer.individual(
+        interferometer=interferometer,
+        plot_visibilities=plot_visibilities,
+        plot_u_wavelengths=plot_uv_wavelengths,
+        plot_v_wavelengths=plot_uv_wavelengths,
+        plot_primary_beam=plot_primary_beam,
+        units=units,
+        output_path=output_path,
+        output_format="png",
+    )
+
+
 def ray_tracing_of_phase(
     tracer,
     grid,

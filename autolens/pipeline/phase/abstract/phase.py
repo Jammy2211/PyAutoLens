@@ -27,7 +27,10 @@ class AbstractPhase(af.AbstractPhase):
             The name of this phase
         """
 
-        super().__init__(phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders,
+        super().__init__(
+            phase_name=phase_name,
+            phase_tag=phase_tag,
+            phase_folders=phase_folders,
             optimizer_class=optimizer_class,
         )
 

@@ -161,7 +161,7 @@ class TestSimulatorImaging:
         )
 
         imaging_simulated = simulator.from_galaxies(
-            galaxies=[lens_galaxy, source_galaxy],
+            galaxies=[lens_galaxy, source_galaxy]
         )
 
         tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -214,7 +214,7 @@ class TestSimulatorInterferometer:
         simulator = al.simulator.interferometer(
             real_space_shape_2d=(20, 20),
             real_space_pixel_scales=0.05,
-            uv_wavelengths=np.ones(shape=(7,2)),
+            uv_wavelengths=np.ones(shape=(7, 2)),
             sub_size=1,
             exposure_time=10000.0,
             background_sky_level=100.0,
@@ -225,9 +225,7 @@ class TestSimulatorInterferometer:
         interferometer_simulated = simulator.from_tracer(tracer=tracer)
 
         interferometer_manual = al.interferometer.simulate(
-            real_space_image=tracer.profile_image_from_grid(
-                grid=grid,
-            ),
+            real_space_image=tracer.profile_image_from_grid(grid=grid),
             transformer=simulator.transformer,
             real_space_pixel_scales=0.05,
             exposure_time=10000.0,
@@ -236,9 +234,16 @@ class TestSimulatorInterferometer:
             noise_seed=1,
         )
 
-        assert (interferometer_simulated.visibilities == interferometer_manual.visibilities).all()
-        assert (interferometer_simulated.uv_wavelengths == interferometer_manual.uv_wavelengths).all()
-        assert (interferometer_simulated.noise_map == interferometer_manual.noise_map).all()
+        assert (
+            interferometer_simulated.visibilities == interferometer_manual.visibilities
+        ).all()
+        assert (
+            interferometer_simulated.uv_wavelengths
+            == interferometer_manual.uv_wavelengths
+        ).all()
+        assert (
+            interferometer_simulated.noise_map == interferometer_manual.noise_map
+        ).all()
 
     def test__from_deflections_and_galaxies__same_as_manual_calculation_using_tracer(
         self
@@ -259,7 +264,7 @@ class TestSimulatorInterferometer:
         simulator = al.simulator.interferometer(
             real_space_shape_2d=(20, 20),
             real_space_pixel_scales=0.05,
-            uv_wavelengths=np.ones(shape=(7,2)),
+            uv_wavelengths=np.ones(shape=(7, 2)),
             sub_size=1,
             exposure_time=10000.0,
             background_sky_level=100.0,
@@ -273,9 +278,7 @@ class TestSimulatorInterferometer:
         )
 
         interferometer_manual = al.interferometer.simulate(
-            real_space_image=tracer.profile_image_from_grid(
-                grid=grid,
-            ),
+            real_space_image=tracer.profile_image_from_grid(grid=grid),
             real_space_pixel_scales=0.05,
             transformer=simulator.transformer,
             exposure_time=10000.0,
@@ -284,9 +287,16 @@ class TestSimulatorInterferometer:
             noise_seed=1,
         )
 
-        assert (interferometer_simulated.visibilities == interferometer_manual.visibilities).all()
-        assert (interferometer_simulated.uv_wavelengths == interferometer_manual.uv_wavelengths).all()
-        assert (interferometer_simulated.noise_map == interferometer_manual.noise_map).all()
+        assert (
+            interferometer_simulated.visibilities == interferometer_manual.visibilities
+        ).all()
+        assert (
+            interferometer_simulated.uv_wavelengths
+            == interferometer_manual.uv_wavelengths
+        ).all()
+        assert (
+            interferometer_simulated.noise_map == interferometer_manual.noise_map
+        ).all()
 
     def test__simulate_interferometer_from_lens__source_galaxy__compare_to_manual_interferometer(
         self
@@ -316,7 +326,7 @@ class TestSimulatorInterferometer:
         simulator = al.simulator.interferometer(
             real_space_shape_2d=(11, 11),
             real_space_pixel_scales=0.05,
-            uv_wavelengths=np.ones(shape=(7,2)),
+            uv_wavelengths=np.ones(shape=(7, 2)),
             sub_size=1,
             exposure_time=10000.0,
             background_sky_level=100.0,
@@ -325,15 +335,13 @@ class TestSimulatorInterferometer:
         )
 
         interferometer_simulated = simulator.from_galaxies(
-            galaxies=[lens_galaxy, source_galaxy],
+            galaxies=[lens_galaxy, source_galaxy]
         )
 
         tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         interferometer_manual = al.interferometer.simulate(
-            real_space_image=tracer.profile_image_from_grid(
-                grid=grid,
-            ),
+            real_space_image=tracer.profile_image_from_grid(grid=grid),
             real_space_pixel_scales=0.05,
             transformer=simulator.transformer,
             exposure_time=10000.0,
@@ -342,6 +350,13 @@ class TestSimulatorInterferometer:
             noise_seed=1,
         )
 
-        assert interferometer_manual.visibilities == pytest.approx(interferometer_simulated.visibilities, 1.0e-4)
-        assert (interferometer_manual.uv_wavelengths == interferometer_simulated.uv_wavelengths).all()
-        assert (interferometer_manual.noise_map == interferometer_simulated.noise_map).all()
+        assert interferometer_manual.visibilities == pytest.approx(
+            interferometer_simulated.visibilities, 1.0e-4
+        )
+        assert (
+            interferometer_manual.uv_wavelengths
+            == interferometer_simulated.uv_wavelengths
+        ).all()
+        assert (
+            interferometer_manual.noise_map == interferometer_simulated.noise_map
+        ).all()

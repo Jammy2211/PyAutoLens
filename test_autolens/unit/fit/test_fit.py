@@ -1738,8 +1738,7 @@ class TestInterferometerFit:
             assert model_visibilities == pytest.approx(fit.model_visibilities, 1e-4)
 
             residual_map = al.util.fit.residual_map_from_data_and_model_data(
-                data=masked_interferometer_7.visibilities,
-                model_data=model_visibilities,
+                data=masked_interferometer_7.visibilities, model_data=model_visibilities
             )
 
             assert residual_map == pytest.approx(fit.residual_map, 1e-4)

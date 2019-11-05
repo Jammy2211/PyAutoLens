@@ -63,7 +63,9 @@ class TestPhase(object):
                 shape_2d=shape_2d, pixel_scales=1.0, radius_arcsec=0.3
             )
 
-        mask_from_function = mask_function(shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales)
+        mask_from_function = mask_function(
+            shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales
+        )
         phase_imaging_7x7.meta_imaging_fit.mask_function = mask_function
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=None)
@@ -106,7 +108,9 @@ class TestPhase(object):
                 shape_2d=shape_2d, pixel_scales=1, radius_arcsec=1.4
             )
 
-        mask_from_function = mask_function(shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales)
+        mask_from_function = mask_function(
+            shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales
+        )
 
         # The inner circulaar mask radii of 1.0" masks the centra pixels of the mask
         mask_from_function[3, 3] = True
@@ -430,7 +434,9 @@ class TestPhase(object):
     def test__default_mask_function(self, phase_imaging_7x7, imaging_7x7):
         masked_imaging = al.masked.imaging(
             imaging=imaging_7x7,
-            mask=phase_imaging_7x7.meta_imaging_fit.mask_function(shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales),
+            mask=phase_imaging_7x7.meta_imaging_fit.mask_function(
+                shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales
+            ),
         )
 
         assert len(masked_imaging.image.in_1d) == 9
@@ -701,7 +707,9 @@ class TestResult(object):
 
         result = phase_imaging_7x7.run(dataset=imaging_7x7)
 
-        mask = mask_function_7x7(shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales)
+        mask = mask_function_7x7(
+            shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales
+        )
 
         assert (result.mask == mask).all()
 

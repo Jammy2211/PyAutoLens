@@ -34,7 +34,9 @@ class MetaImagingFit(dataset.MetaDatasetFit):
         self.bin_up_factor = bin_up_factor
 
     def masked_dataset_from(self, dataset, mask, positions, results, modified_image):
-        mask = self.setup_phase_mask(shape_2d=dataset.shape_2d, pixel_scales=dataset.pixel_scales, mask=mask)
+        mask = self.setup_phase_mask(
+            shape_2d=dataset.shape_2d, pixel_scales=dataset.pixel_scales, mask=mask
+        )
 
         self.check_positions(positions=positions)
 

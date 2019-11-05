@@ -17,12 +17,7 @@ mask = al.mask.circular(
     radius_arcsec=5.0,
     centre=(0.0, 0.0),
 )
-al.plot.array(
-    array=array,
-    mask=mask,
-    positions=[[[1.0, 1.0]]],
-    centres=[[(0.0, 0.0)]],
-)
+al.plot.array(array=array, mask=mask, positions=[[[1.0, 1.0]]], centres=[[(0.0, 0.0)]])
 
 imaging = simulate_util.load_test_imaging(
     data_type="lens_sis__source_smooth__offset_centre", data_resolution="lsst"
@@ -36,9 +31,4 @@ mask = al.mask.circular(
     centre=(1.0, 1.0),
 )
 al.plot.array(array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]])
-al.plot.array(
-    array=array,
-    mask=mask,
-    positions=[[[2.0, 2.0]]],
-    centres=[[(1.0, 1.0)]],
-)
+al.plot.array(array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]])

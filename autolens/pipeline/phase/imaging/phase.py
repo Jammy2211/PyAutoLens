@@ -161,7 +161,9 @@ class PhaseImaging(dataset.PhaseDataset):
             phase_info.write(
                 "Sub-grid size = {} \n".format(self.meta_imaging_fit.sub_size)
             )
-            phase_info.write("PSF shape = {} \n".format(self.meta_imaging_fit.psf_shape_2d))
+            phase_info.write(
+                "PSF shape = {} \n".format(self.meta_imaging_fit.psf_shape_2d)
+            )
             phase_info.write(
                 "Positions Threshold = {} \n".format(
                     self.meta_imaging_fit.positions_threshold

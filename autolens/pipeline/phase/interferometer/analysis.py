@@ -10,7 +10,9 @@ class Analysis(analysis_data.Analysis):
 
         super(Analysis, self).__init__(cosmology=cosmology)
 
-        self.visualizer = visualizer.PhaseInterferometerVisualizer(masked_interferometer, image_path)
+        self.visualizer = visualizer.PhaseInterferometerVisualizer(
+            masked_interferometer, image_path
+        )
 
         self.masked_interferometer = masked_interferometer
 

@@ -30,7 +30,7 @@ class TestPhaseTag:
 
         phase_tag = al.phase_tagging.phase_tag_from_phase_settings(
             sub_size=1,
-            real_space_shape_2d=(3,3),
+            real_space_shape_2d=(3, 3),
             real_space_pixel_scales=(1.0, 2.0),
             primary_beam_shape_2d=(2, 2),
         )
@@ -138,27 +138,45 @@ class TestPhaseTaggers:
         assert tag == "__interp_0.234"
 
     def test__primary_beam_shape_2d_tagger(self):
-        tag = al.phase_tagging.primary_beam_shape_tag_from_primary_beam_shape_2d(primary_beam_shape_2d=None)
+        tag = al.phase_tagging.primary_beam_shape_tag_from_primary_beam_shape_2d(
+            primary_beam_shape_2d=None
+        )
         assert tag == ""
-        tag = al.phase_tagging.primary_beam_shape_tag_from_primary_beam_shape_2d(primary_beam_shape_2d=(2, 2))
+        tag = al.phase_tagging.primary_beam_shape_tag_from_primary_beam_shape_2d(
+            primary_beam_shape_2d=(2, 2)
+        )
         assert tag == "__pb_2x2"
-        tag = al.phase_tagging.primary_beam_shape_tag_from_primary_beam_shape_2d(primary_beam_shape_2d=(3, 4))
+        tag = al.phase_tagging.primary_beam_shape_tag_from_primary_beam_shape_2d(
+            primary_beam_shape_2d=(3, 4)
+        )
         assert tag == "__pb_3x4"
 
     def test__real_space_shape_2d_tagger(self):
 
-        tag = al.phase_tagging.real_space_shape_2d_tag_from_real_space_shape_2d(real_space_shape_2d=None)
+        tag = al.phase_tagging.real_space_shape_2d_tag_from_real_space_shape_2d(
+            real_space_shape_2d=None
+        )
         assert tag == ""
-        tag = al.phase_tagging.real_space_shape_2d_tag_from_real_space_shape_2d(real_space_shape_2d=(2, 2))
+        tag = al.phase_tagging.real_space_shape_2d_tag_from_real_space_shape_2d(
+            real_space_shape_2d=(2, 2)
+        )
         assert tag == "__rs_shape_2x2"
-        tag = al.phase_tagging.real_space_shape_2d_tag_from_real_space_shape_2d(real_space_shape_2d=(3, 4))
+        tag = al.phase_tagging.real_space_shape_2d_tag_from_real_space_shape_2d(
+            real_space_shape_2d=(3, 4)
+        )
         assert tag == "__rs_shape_3x4"
-        
+
     def test__real_space_pixel_scales_tagger(self):
 
-        tag = al.phase_tagging.real_space_pixel_scales_tag_from_real_space_pixel_scales(real_space_pixel_scales=None)
+        tag = al.phase_tagging.real_space_pixel_scales_tag_from_real_space_pixel_scales(
+            real_space_pixel_scales=None
+        )
         assert tag == ""
-        tag = al.phase_tagging.real_space_pixel_scales_tag_from_real_space_pixel_scales(real_space_pixel_scales=(0.01, 0.02))
+        tag = al.phase_tagging.real_space_pixel_scales_tag_from_real_space_pixel_scales(
+            real_space_pixel_scales=(0.01, 0.02)
+        )
         assert tag == "__rs_pix_0.01x0.02"
-        tag = al.phase_tagging.real_space_pixel_scales_tag_from_real_space_pixel_scales(real_space_pixel_scales=(2.0, 1.0))
+        tag = al.phase_tagging.real_space_pixel_scales_tag_from_real_space_pixel_scales(
+            real_space_pixel_scales=(2.0, 1.0)
+        )
         assert tag == "__rs_pix_2.00x1.00"

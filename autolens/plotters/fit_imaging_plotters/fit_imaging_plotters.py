@@ -60,9 +60,11 @@ def subplot(
 
     image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix, fit)
 
-    critical_curves, caustics = get_critical_curves_and_caustics(fit=fit,
-                                                                 include_critical_curves=include_critical_curves,
-                                                                 include_caustics=include_caustics)
+    critical_curves, caustics = get_critical_curves_and_caustics(
+        fit=fit,
+        include_critical_curves=include_critical_curves,
+        include_caustics=include_caustics,
+    )
 
     aa.plot.fit_imaging.image(
         fit=fit,
@@ -662,9 +664,11 @@ def individuals(
     mask = get_mask(fit=fit, include_mask=include_mask)
     image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix, fit)
 
-    critical_curves, caustics = get_critical_curves_and_caustics(fit=fit,
-                                                                 include_critical_curves=include_critical_curves,
-                                                                 include_caustics=include_caustics)
+    critical_curves, caustics = get_critical_curves_and_caustics(
+        fit=fit,
+        include_critical_curves=include_critical_curves,
+        include_caustics=include_caustics,
+    )
 
     traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
@@ -861,7 +865,6 @@ def individuals(
                     output_filename=output_filename,
                     output_format=output_format,
                 )
-
 
             elif fit.tracer.planes[plane_index].has_pixelization:
 
@@ -1174,10 +1177,7 @@ def contribution_maps(
 def get_image_plane_pix_grid(include_image_plane_pix, fit):
 
     if fit.inversion is not None:
-        if (
-            include_image_plane_pix
-            and fit.inversion.mapper.is_image_plane_pixelization
-        ):
+        if include_image_plane_pix and fit.inversion.mapper.is_image_plane_pixelization:
             return fit.tracer.sparse_image_plane_grids_of_planes_from_grid(
                 grid=fit.grid
             )[-1]
