@@ -188,9 +188,7 @@ class InterferometerSimulator(simulator.InterferometerSimulator):
             A seed for random noise_maps generation
         """
 
-        image = tracer.profile_image_from_grid(
-            grid=self.grid,
-        )
+        image = tracer.profile_image_from_grid(grid=self.grid)
 
         return self.from_real_space_image(real_space_image=image.in_1d_binned)
 
@@ -229,4 +227,3 @@ class InterferometerSimulator(simulator.InterferometerSimulator):
         )
 
         return self.from_real_space_image(real_space_image=image)
-

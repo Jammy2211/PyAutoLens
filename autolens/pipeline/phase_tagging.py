@@ -29,10 +29,16 @@ def phase_tag_from_phase_settings(
     pixel_scale_interpolation_grid_tag = pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
         pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
     )
-    
-    primary_beam_shape_tag = primary_beam_shape_tag_from_primary_beam_shape_2d(primary_beam_shape_2d=primary_beam_shape_2d)
-    real_space_shape_2d_tag = real_space_shape_2d_tag_from_real_space_shape_2d(real_space_shape_2d=real_space_shape_2d)
-    real_space_pixel_scales_tag = real_space_pixel_scales_tag_from_real_space_pixel_scales(real_space_pixel_scales=real_space_pixel_scales)
+
+    primary_beam_shape_tag = primary_beam_shape_tag_from_primary_beam_shape_2d(
+        primary_beam_shape_2d=primary_beam_shape_2d
+    )
+    real_space_shape_2d_tag = real_space_shape_2d_tag_from_real_space_shape_2d(
+        real_space_shape_2d=real_space_shape_2d
+    )
+    real_space_pixel_scales_tag = real_space_pixel_scales_tag_from_real_space_pixel_scales(
+        real_space_pixel_scales=real_space_pixel_scales
+    )
 
     return (
         "phase_tag"
@@ -177,7 +183,7 @@ def primary_beam_shape_tag_from_primary_beam_shape_2d(primary_beam_shape_2d):
         y = str(primary_beam_shape_2d[0])
         x = str(primary_beam_shape_2d[1])
         return "__pb_" + y + "x" + x
-    
+
 
 def real_space_shape_2d_tag_from_real_space_shape_2d(real_space_shape_2d):
     """Generate a sub-grid tag, to customize phase names based on the sub-grid size used.

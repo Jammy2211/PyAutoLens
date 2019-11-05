@@ -119,7 +119,6 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
 
 
 class PhaseDatasetVisualize(SubPlotVisualizer):
-
     def __init__(self, masked_dataset, image_path):
         super().__init__(image_path)
         self.masked_dataset = masked_dataset
@@ -187,9 +186,7 @@ class PhaseDatasetVisualize(SubPlotVisualizer):
         self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
 
     def plot_ray_tracing(self, tracer, during_analysis):
-        positions = (
-            self.masked_dataset.positions if self.include_positions else None
-        )
+        positions = self.masked_dataset.positions if self.include_positions else None
         mask = self.masked_dataset.mask if self.include_mask else None
         phase_plotters.ray_tracing_of_phase(
             tracer=tracer,
@@ -215,21 +212,43 @@ class PhaseDatasetVisualize(SubPlotVisualizer):
 
 class PhaseImagingVisualizer(PhaseDatasetVisualize):
     def __init__(self, masked_dataset, image_path):
-        super(PhaseImagingVisualizer, self).__init__(masked_dataset=masked_dataset, image_path=image_path)
+        super(PhaseImagingVisualizer, self).__init__(
+            masked_dataset=masked_dataset, image_path=image_path
+        )
 
         self.plot_dataset_psf = plot_setting("plot_dataset_psf")
 
         self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
         self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
 
+        self.plot_imaging()
+
     @property
     def masked_imaging(self):
         return self.masked_dataset
 
-    def plot_fit(self, fit, during_analysis):
-        positions = (
-            self.masked_imaging.positions if self.include_positions else None
+    def plot_imaging(self):
+        mask = self.masked_dataset.mask if self.include_mask else None
+        positions = self.masked_dataset.positions if self.include_positions else None
+
+        phase_plotters.imaging_of_phase(
+            imaging=self.masked_dataset.imaging,
+            mask=mask,
+            positions=positions,
+            units=self.plot_units,
+            plot_as_subplot=self.plot_dataset_as_subplot,
+            plot_image=self.plot_dataset_data,
+            plot_noise_map=self.plot_dataset_noise_map,
+            plot_psf=self.plot_dataset_psf,
+            plot_signal_to_noise_map=self.plot_dataset_signal_to_noise_map,
+            plot_absolute_signal_to_noise_map=self.plot_dataset_absolute_signal_to_noise_map,
+            plot_potential_chi_squared_map=self.plot_dataset_potential_chi_squared_map,
+            visualize_path=self.image_path,
+            subplot_path=self.subplot_path,
         )
+
+    def plot_fit(self, fit, during_analysis):
+        positions = self.masked_imaging.positions if self.include_positions else None
         phase_plotters.imaging_fit_of_phase(
             fit=fit,
             during_analysis=during_analysis,
@@ -264,28 +283,6 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
             subplot_path=self.subplot_path,
         )
 
-    def plot_imaging(self):
-        mask = self.masked_dataset.mask if self.include_mask else None
-        positions = (
-            self.masked_dataset.positions if self.include_positions else None
-        )
-
-        phase_plotters.imaging_of_phase(
-            imaging=self.masked_dataset.imaging,
-            mask=mask,
-            positions=positions,
-            units=self.plot_units,
-            plot_as_subplot=self.plot_dataset_as_subplot,
-            plot_image=self.plot_dataset_data,
-            plot_noise_map=self.plot_dataset_noise_map,
-            plot_psf=self.plot_dataset_psf,
-            plot_signal_to_noise_map=self.plot_dataset_signal_to_noise_map,
-            plot_absolute_signal_to_noise_map=self.plot_dataset_absolute_signal_to_noise_map,
-            plot_potential_chi_squared_map=self.plot_dataset_potential_chi_squared_map,
-            visualize_path=self.image_path,
-            subplot_path=self.subplot_path,
-        )
-
     def plot_hyper_images(self, last_results):
         mask = self.masked_dataset.mask
         if self.include_mask and mask is not None and last_results is not None:
@@ -302,16 +299,35 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
 
 class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
     def __init__(self, masked_dataset, image_path):
-        super(PhaseInterferometerVisualizer, self).__init__(masked_dataset=masked_dataset, image_path=image_path)
+        super(PhaseInterferometerVisualizer, self).__init__(
+            masked_dataset=masked_dataset, image_path=image_path
+        )
 
+        self.plot_dataset_uv_wavelengths = plot_setting("plot_dataset_uv_wavelengths")
         self.plot_dataset_primary_beam = plot_setting("plot_dataset_primary_beam")
 
         self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
         self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
 
+        self.plot_interferometer()
+
     @property
     def masked_interferometer(self):
         return self.masked_dataset
+
+    def plot_interferometer(self):
+
+        phase_plotters.interferometer_of_phase(
+            interferometer=self.masked_interferometer.interferometer,
+            units=self.plot_units,
+            plot_as_subplot=self.plot_dataset_as_subplot,
+            plot_visibilities=self.plot_dataset_data,
+            plot_uv_wavelengths=self.plot_dataset_uv_wavelengths,
+            plot_primary_beam=self.plot_dataset_primary_beam,
+            visualize_path=self.image_path,
+            subplot_path=self.subplot_path,
+        )
+
 
     def plot_fit(self, fit, during_analysis):
         positions = (
@@ -347,28 +363,6 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
         #     plot_model_images_of_planes=self.plot_fit_model_images_of_planes,
         #     plot_plane_images_of_planes=self.plot_fit_plane_images_of_planes,
         #     units=self.plot_units,
-        #     visualize_path=self.image_path,
-        #     subplot_path=self.subplot_path,
-        # )
-
-    def plot_interferometer(self):
-        mask = self.masked_interferometer.mask if self.include_mask else None
-        positions = (
-            self.masked_interferometer.positions if self.include_positions else None
-        )
-
-        # phase_plotters.interferometer_of_phase(
-        #     imaging=self.masked_interferometer.intererometer,
-        #     mask=mask,
-        #     positions=positions,
-        #     units=self.plot_units,
-        #     plot_as_subplot=self.plot_dataset_as_subplot,
-        #     plot_visibilities=self.plot_dataset_data,
-        #     plot_noise_map=self.plot_dataset_noise_map,
-        #     plot_primary_beam=self.plot_dataset_primary_beam,
-        #     plot_signal_to_noise_map=self.plot_dataset_signal_to_noise_map,
-        #     plot_absolute_signal_to_noise_map=self.plot_dataset_absolute_signal_to_noise_map,
-        #     plot_potential_chi_squared_map=self.plot_dataset_potential_chi_squared_map,
         #     visualize_path=self.image_path,
         #     subplot_path=self.subplot_path,
         # )

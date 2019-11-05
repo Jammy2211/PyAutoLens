@@ -5,6 +5,7 @@ imaging = simulate_util.load_test_imaging(
     data_type="lens_mass__source_smooth__offset_centre", data_resolution="lsst"
 )
 
+
 def fit_with_offset_centre(centre):
 
     mask = al.mask.elliptical(
@@ -32,12 +33,8 @@ def fit_with_offset_centre(centre):
 
     masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 
-    tracer = al.tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy],
-    )
-    fit = al.fit(
-        masked_dataset=masked_imaging, tracer=tracer
-    )
+    tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
 
     return fit
 

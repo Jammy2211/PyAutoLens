@@ -62,7 +62,9 @@ class TestPhase(object):
             mask_function=mask_function_7x7,
         )
 
-        phase_dataset_7x7.make_analysis(dataset=imaging_7x7, results=results_collection_7x7)
+        phase_dataset_7x7.make_analysis(
+            dataset=imaging_7x7, results=results_collection_7x7
+        )
         phase_dataset_7x7.customize_priors(results_collection_7x7)
 
         assert phase_dataset_7x7.galaxies == [galaxy]
@@ -83,7 +85,9 @@ class TestPhase(object):
             mask_function=mask_function_7x7,
         )
 
-        phase_dataset_7x7.make_analysis(dataset=imaging_7x7, results=results_collection_7x7)
+        phase_dataset_7x7.make_analysis(
+            dataset=imaging_7x7, results=results_collection_7x7
+        )
         phase_dataset_7x7.customize_priors(results_collection_7x7)
 
         assert phase_dataset_7x7.galaxies == [galaxy_model]
@@ -152,7 +156,9 @@ class TestPhase(object):
             phase_dataset_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
         }
 
-        instance = phase_dataset_7x7.variable.instance_for_arguments(arguments=arguments)
+        instance = phase_dataset_7x7.variable.instance_for_arguments(
+            arguments=arguments
+        )
 
         assert instance.galaxies[0].sersic.centre[0] == 0.2
         assert instance.galaxies[0].sis.centre[0] == 0.1

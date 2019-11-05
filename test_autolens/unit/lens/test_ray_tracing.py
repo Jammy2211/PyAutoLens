@@ -2926,7 +2926,9 @@ class TestAbstractTracerData(object):
 
             tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2, g3])
 
-            padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=psf.shape_2d)
+            padded_grid = grid.padded_grid_from_kernel_shape(
+                kernel_shape_2d=psf.shape_2d
+            )
 
             traced_padded_grids = tracer.traced_grids_of_planes_from_grid(
                 grid=padded_grid

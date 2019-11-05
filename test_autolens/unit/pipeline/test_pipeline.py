@@ -87,8 +87,7 @@ def make_mock_file(monkeypatch):
 class TestMetaData(object):
     def test_files(self, mock_files):
         pipeline = al.PipelineDataset(
-            "pipeline_name",
-            DummyPhaseImaging(phase_name="phase_name"),
+            "pipeline_name", DummyPhaseImaging(phase_name="phase_name")
         )
         pipeline.run(MockImagingData(), data_name="data_name")
 
@@ -166,7 +165,7 @@ class DummyPhasePositions(af.AbstractPhase):
         pass
 
     def __init__(self, phase_name):
-        super().__init__(phase_name=phase_name, phase_tag="",)
+        super().__init__(phase_name=phase_name, phase_tag="")
         self.positions = None
         self.results = None
         self.pixel_scales = None

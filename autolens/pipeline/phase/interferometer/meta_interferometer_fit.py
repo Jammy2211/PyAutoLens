@@ -35,8 +35,14 @@ class MetaInterferometerFit(dataset.MetaDatasetFit):
         self.primary_beam_shape_2d = primary_beam_shape_2d
         self.bin_up_factor = bin_up_factor
 
-    def masked_dataset_from(self, dataset, mask, positions, results, modified_visibilities):
-        mask = self.setup_phase_mask(shape_2d=self.real_space_shape_2d, pixel_scales=self.real_space_pixel_scales, mask=mask)
+    def masked_dataset_from(
+        self, dataset, mask, positions, results, modified_visibilities
+    ):
+        mask = self.setup_phase_mask(
+            shape_2d=self.real_space_shape_2d,
+            pixel_scales=self.real_space_pixel_scales,
+            mask=mask,
+        )
 
         self.check_positions(positions=positions)
 
@@ -45,7 +51,9 @@ class MetaInterferometerFit(dataset.MetaDatasetFit):
         )
 
         masked_interferometer = masked_dataset.MaskedInterferometer(
-            interferometer=dataset.modified_visibilities_from_visibilities(modified_visibilities),
+            interferometer=dataset.modified_visibilities_from_visibilities(
+                modified_visibilities
+            ),
             real_space_mask=mask,
             primary_beam_shape_2d=self.primary_beam_shape_2d,
             positions=positions,

@@ -5,7 +5,9 @@ from autolens.pipeline import phase_tagging
 from autolens.pipeline.phase import dataset
 from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.interferometer.analysis import Analysis
-from autolens.pipeline.phase.interferometer.meta_interferometer_fit import MetaInterferometerFit
+from autolens.pipeline.phase.interferometer.meta_interferometer_fit import (
+    MetaInterferometerFit,
+)
 from autolens.pipeline.phase.interferometer.result import Result
 
 
@@ -29,7 +31,6 @@ class PhaseInterferometer(dataset.PhaseDataset):
         optimizer_class=af.MultiNest,
         cosmology=cosmo.Planck15,
         sub_size=2,
-        signal_to_noise_limit=None,
         primary_beam_shape_2d=None,
         positions_threshold=None,
         mask_function=None,
@@ -130,7 +131,9 @@ class PhaseInterferometer(dataset.PhaseDataset):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         self.meta_interferometer_fit.variable = self.variable
-        modified_visibilities = self.modify_visibilities(visibilities=dataset.visibilities, results=results)
+        modified_visibilities = self.modify_visibilities(
+            visibilities=dataset.visibilities, results=results
+        )
 
         masked_interferometer = self.meta_interferometer_fit.masked_dataset_from(
             dataset=dataset,
@@ -162,7 +165,11 @@ class PhaseInterferometer(dataset.PhaseDataset):
             phase_info.write(
                 "Sub-grid size = {} \n".format(self.meta_interferometer_fit.sub_size)
             )
-            phase_info.write("Primary Beam shape = {} \n".format(self.meta_interferometer_fit.primary_beam_shape_2d))
+            phase_info.write(
+                "Primary Beam shape = {} \n".format(
+                    self.meta_interferometer_fit.primary_beam_shape_2d
+                )
+            )
             phase_info.write(
                 "Positions Threshold = {} \n".format(
                     self.meta_interferometer_fit.positions_threshold

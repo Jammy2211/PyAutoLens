@@ -88,10 +88,6 @@ class ImagingFit(aa_fit.ImagingFit):
         )
 
     @property
-    def masked_imaging(self):
-        return self.masked_dataset
-
-    @property
     def grid(self):
         return self.masked_imaging.grid
 
@@ -161,7 +157,13 @@ class ImagingFit(aa_fit.ImagingFit):
 
 
 class InterferometerFit(aa_fit.InterferometerFit):
-    def __init__(self, masked_interferometer, tracer, hyper_image_sky=None, hyper_background_noise=None):
+    def __init__(
+        self,
+        masked_interferometer,
+        tracer,
+        hyper_image_sky=None,
+        hyper_background_noise=None,
+    ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
 
@@ -207,10 +209,6 @@ class InterferometerFit(aa_fit.InterferometerFit):
             model_visibilities=model_visibilities,
             inversion=inversion,
         )
-
-    @property
-    def masked_interferometer(self):
-        return self.masked_dataset
 
     @property
     def galaxy_model_visibilities_dict(self) -> {g.Galaxy: np.ndarray}:

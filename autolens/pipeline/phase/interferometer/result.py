@@ -79,7 +79,9 @@ class Result(dataset.Result):
 
             if not np.all(galaxy_visibilities == 0):
                 minimum_galaxy_value = hyper_minimum_percent * max(galaxy_visibilities)
-                galaxy_visibilities[galaxy_visibilities < minimum_galaxy_value] = minimum_galaxy_value
+                galaxy_visibilities[
+                    galaxy_visibilities < minimum_galaxy_value
+                ] = minimum_galaxy_value
 
             hyper_galaxy_visibilities_path_dict[path] = galaxy_visibilities
 
