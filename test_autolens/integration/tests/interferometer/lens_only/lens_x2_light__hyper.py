@@ -1,17 +1,17 @@
 import autofit as af
 import autolens as al
-from test_autolens.integration.tests import runner
+from test_autolens.integration.tests.imaging import runner
 
 test_type = "lens_only"
 test_name = "lens_x2_light__hyper"
 data_type = "lens_x2_light"
-data_resolution = "LSST"
+data_resolution = "lsst"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     def modify_mask_function(shape_2d, pixel_scales):
         return al.mask.circular(
-            shape_2d=image.shape_2d, pixel_scales=image.pixel_scales, radius_arcsec=5.0
+            shape_2d=shape_2d, pixel_scales=pixel_scales, radius_arcsec=5.0
         )
 
     class LensPlaneGalaxyX2Phase(al.PhaseImaging):

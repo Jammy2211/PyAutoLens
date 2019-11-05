@@ -7,7 +7,7 @@ from autolens.plotters import array_plotters
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
 imaging = simulate_util.load_test_imaging(
-    data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
+    data_type="lens_light_dev_vaucouleurs", data_resolution="lsst"
 )
 array = imaging.image
 
@@ -25,7 +25,7 @@ al.plot.array(
 )
 
 imaging = simulate_util.load_test_imaging(
-    data_type="lens_sis__source_smooth__offset_centre", data_resolution="LSST"
+    data_type="lens_sis__source_smooth__offset_centre", data_resolution="lsst"
 )
 array = imaging.image
 
