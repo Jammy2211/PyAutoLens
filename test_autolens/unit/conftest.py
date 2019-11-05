@@ -84,6 +84,16 @@ def make_masked_imaging_fit_x2_plane_7x7(masked_imaging_7x7, tracer_x2_plane_7x7
     return ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer_x2_plane_7x7)
 
 
+@pytest.fixture(name="masked_interferometer_fit_x1_plane_7x7")
+def make_masked_interferometer_fit_x1_plane_7x7(masked_interferometer_7, tracer_x1_plane_7x7):
+    return InterferometerFit(masked_interferometer=masked_interferometer_7, tracer=tracer_x1_plane_7x7)
+
+
+@pytest.fixture(name="masked_interferometer_fit_x2_plane_7x7")
+def make_masked_interferometer_fit_x2_plane_7x7(masked_interferometer_7, tracer_x2_plane_7x7):
+    return InterferometerFit(masked_interferometer=masked_interferometer_7, tracer=tracer_x2_plane_7x7)
+
+
 @pytest.fixture(name="mask_function_7x7_1_pix")
 def make_mask_function_7x7_1_pix():
     # noinspection PyUnusedLocal
