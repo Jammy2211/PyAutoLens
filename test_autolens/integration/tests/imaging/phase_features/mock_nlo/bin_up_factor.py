@@ -1,5 +1,5 @@
 from test import bin_up_factor
-from test_autolens.integration.tests.runner import run_a_mock
+from test_autolens.integration.tests.imaging.runner import run_a_mock
 
 
 class TestCase:

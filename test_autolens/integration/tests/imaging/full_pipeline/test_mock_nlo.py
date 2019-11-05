@@ -4,7 +4,7 @@ from test_autolens.integration.tests.imaging.full_pipeline import hyper_with_len
 from test_autolens.integration.tests.imaging.full_pipeline import (
     hyper_with_lens_light_bg_new_api,
 )
-from test_autolens.integration.tests.runner import run_a_mock
+from test_autolens.integration.tests.imaging.runner import run_a_mock
 
 
 class TestCase:

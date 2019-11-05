@@ -1,11 +1,11 @@
 import autofit as af
 import autolens as al
-from test_autolens.integration.tests import runner
+from test_autolens.integration.tests.imaging import runner
 
 test_type = "lens_only"
 test_name = "lens_light__hyper"
 data_type = "lens_bulge_disk"
-data_resolution = "LSST"
+data_resolution = "lsst"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):

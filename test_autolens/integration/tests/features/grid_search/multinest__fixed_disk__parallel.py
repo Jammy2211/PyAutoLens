@@ -1,11 +1,11 @@
 import autofit as af
 import autolens as al
-from test_autolens.integration.tests import runner
+from test_autolens.integration.tests.imaging import runner
 
 test_type = "grid_search"
 test_name = "multinest__fixed_disk__parallel"
 data_type = "lens_light_dev_vaucouleurs"
-data_resolution = "Euclid"
+data_resolution = "euclid"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):

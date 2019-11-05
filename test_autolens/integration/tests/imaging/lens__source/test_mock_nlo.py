@@ -1,7 +1,7 @@
 from test_autolens.integration.tests.imaging.lens__source import lens_mass__source_x2, \
     lens_light_mass__source__hyper_bg, lens_light_mass__source__hyper, lens_mass__source_x2__hyper, \
     lens_light_mass__source
-from test_autolens.integration.tests.runner import run_a_mock
+from test_autolens.integration.tests.imaging.runner import run_a_mock
 
 
 class TestCase:

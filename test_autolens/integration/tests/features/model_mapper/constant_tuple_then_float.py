@@ -1,11 +1,11 @@
 import autofit as af
 import autolens as al
-from test_autolens.integration.tests import runner
+from test_autolens.integration.tests.imaging import runner
 
 test_type = "model_mapper"
 test_name = "constant_tuple_then_float"
 data_type = "lens_light_dev_vaucouleurs"
-data_resolution = "LSST"
+data_resolution = "lsst"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):

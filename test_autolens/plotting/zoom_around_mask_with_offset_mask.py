@@ -1,5 +1,5 @@
 import autolens as al
-from test_autolens.simulate.imaging import simulate_util
+
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use
 # uniform grid of rectangular pixels, but instead uses ir'Voronoi' pixels. So, why would we want to do that?
@@ -7,7 +7,7 @@ from test_autolens.simulate.imaging import simulate_util
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
 imaging = simulate_util.load_test_imaging(
-    data_type="lens_light_dev_vaucouleurs", data_resolution="LSST"
+    data_type="lens_light_dev_vaucouleurs", data_resolution="lsst"
 )
 mask = al.mask.circular(
     shape_2d=imaging.shape,

@@ -1,11 +1,11 @@
 import autofit as af
 import autolens as al
-from test_autolens.integration.tests import runner
+from test_autolens.integration.tests.imaging import runner
 
 test_type = "full_pipeline"
 test_name = "hyper_with_lens_light_bg"
 data_type = "lens_mass__source_smooth"
-data_resolution = "LSST"
+data_resolution = "lsst"
 
 
 def make_pipeline(

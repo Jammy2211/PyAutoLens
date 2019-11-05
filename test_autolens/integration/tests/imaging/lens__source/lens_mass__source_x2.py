@@ -1,11 +1,11 @@
 import autofit as af
 import autolens as al
-from test_autolens.integration.tests import runner
+from test_autolens.integration.tests.imaging import runner
 
 test_type = "lens__source"
 test_name = "lens_mass__source_x2"
 data_type = "lens_mass__source_smooth"
-data_resolution = "Euclid"
+data_resolution = "euclid"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):

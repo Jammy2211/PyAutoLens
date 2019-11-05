@@ -2,8 +2,8 @@ import os
 
 import autofit as af
 from test_autolens.integration import integration_util
-from autofit.optimize.non_linear.mock_nlo import MockNLO
 from test_autolens.simulate.imaging import simulate_util
+from autofit.optimize.non_linear.mock_nlo import MockNLO
 
 
 def run(
@@ -14,14 +14,15 @@ def run(
     positions=None,
 ):
     test_name = test_name or module.test_name
-    test_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
+    test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
     output_path = test_path + "output/"
     config_path = test_path + config_folder
     af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
     imaging = simulate_util.load_test_imaging(
-        data_type=module.data_type, data_resolution=module.data_resolution
+        data_type=module.data_type,
+        data_resolution=module.data_resolution,
     )
 
     module.make_pipeline(
@@ -49,3 +50,5 @@ def run_with_multi_nest(module):
         optimizer_class=af.MultiNest,
         config_folder="config_mock",
     )
+
+
