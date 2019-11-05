@@ -43,7 +43,7 @@ class MockMaskedInterferometer(object):
     def __init__(self, interferometer, real_space_mask, grid, transformer):
 
         self.interferometer = interferometer
-        self.real_space_mask = real_space_mask
+        self.mask = real_space_mask
 
         self.visibilities = interferometer.visibilities
         self.noise_map = self.interferometer.noise_map

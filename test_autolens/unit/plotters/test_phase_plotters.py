@@ -161,6 +161,51 @@ def test__imaging_fit_for_phase__source_and_lens__depedent_on_input(
     assert phase_plotter_path + "fit/fit_plane_image_of_plane_1.png" in plot_patch.paths
 
 
+def test__interferometer_fit_for_phase__source_and_lens__depedent_on_input(
+    masked_interferometer_fit_x2_plane_7x7, phase_plotter_path, plot_patch
+):
+    al.plot.phase.interferometer_fit_of_phase(
+        fit=masked_interferometer_fit_x2_plane_7x7,
+        during_analysis=False,
+        include_mask=True,
+        positions=None,
+        units="arcsec",
+        include_critical_curves=True,
+        include_caustics=True,
+        include_image_plane_pix=True,
+        plot_all_at_end_png=False,
+        plot_all_at_end_fits=False,
+        plot_fit_as_subplot=True,
+        plot_inversion_as_subplot=False,
+        plot_visibilities=True,
+        plot_noise_map=False,
+        plot_signal_to_noise_map=False,
+        plot_model_visibilities=True,
+        plot_residual_map=False,
+        plot_normalized_residual_map=True,
+        plot_chi_squared_map=True,
+        plot_inversion_residual_map=False,
+        plot_inversion_normalized_residual_map=False,
+        plot_inversion_chi_squared_map=False,
+        plot_inversion_regularization_weights=False,
+        visualize_path=phase_plotter_path,
+        subplot_path=phase_plotter_path,
+    )
+
+    assert phase_plotter_path + "fit.png" in plot_patch.paths
+    assert phase_plotter_path + "fit/fit_visibilities.png" in plot_patch.paths
+    assert phase_plotter_path + "fit/fit_noise_map.png" not in plot_patch.paths
+    assert (
+        phase_plotter_path + "fit/fit_signal_to_noise_map.png" not in plot_patch.paths
+    )
+    assert phase_plotter_path + "fit/fit_model_visibilities.png" in plot_patch.paths
+    assert phase_plotter_path + "fit/fit_residual_map.png" not in plot_patch.paths
+    assert (
+        phase_plotter_path + "fit/fit_normalized_residual_map.png" in plot_patch.paths
+    )
+    assert phase_plotter_path + "fit/fit_chi_squared_map.png" in plot_patch.paths
+
+
 def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
     hyper_model_image_7x7, mask_7x7, phase_plotter_path, plot_patch
 ):

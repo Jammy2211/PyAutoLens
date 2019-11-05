@@ -333,39 +333,35 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
         positions = (
             self.masked_interferometer.positions if self.include_positions else None
         )
-        # phase_plotters.interferometer_fit_of_phase(
-        #     fit=fit,
-        #     during_analysis=during_analysis,
-        #     include_mask=self.include_mask,
-        #     include_critical_curves=self.include_critical_curves,
-        #     include_caustics=self.include_caustics,
-        #     positions=positions,
-        #     include_image_plane_pix=self.include_image_plane_pix,
-        #     plot_all_at_end_png=self.plot_fit_all_at_end_png,
-        #     plot_all_at_end_fits=self.plot_fit_all_at_end_fits,
-        #     plot_fit_as_subplot=self.plot_fit_as_subplot,
-        #     plot_fit_of_planes_as_subplot=self.plot_fit_of_planes_as_subplot,
-        #     plot_inversion_as_subplot=self.plot_fit_inversion_as_subplot,
-        #     plot_image=self.plot_fit_data,
-        #     plot_noise_map=self.plot_fit_noise_map,
-        #     plot_signal_to_noise_map=self.plot_fit_signal_to_noise_map,
-        #     plot_model_image=self.plot_fit_model_data,
-        #     plot_residual_map=self.plot_fit_residual_map,
-        #     plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
-        #     plot_chi_squared_map=self.plot_fit_chi_squared_map,
-        #     plot_inversion_residual_map=self.plot_fit_inversion_residual_map,
-        #     plot_inversion_normalized_residual_map=self.plot_fit_normalized_residual_map,
-        #     plot_inversion_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
-        #     plot_inversion_regularization_weights=(
-        #         self.plot_fit_inversion_regularization_weights
-        #     ),
-        #     plot_subtracted_images_of_planes=self.plot_fit_subtracted_images_of_planes,
-        #     plot_model_images_of_planes=self.plot_fit_model_images_of_planes,
-        #     plot_plane_images_of_planes=self.plot_fit_plane_images_of_planes,
-        #     units=self.plot_units,
-        #     visualize_path=self.image_path,
-        #     subplot_path=self.subplot_path,
-        # )
+        phase_plotters.interferometer_fit_of_phase(
+            fit=fit,
+            during_analysis=during_analysis,
+            positions=positions,
+            units=self.plot_units,
+            include_mask=self.include_mask,
+            include_critical_curves=self.include_critical_curves,
+            include_caustics=self.include_caustics,
+            include_image_plane_pix=self.include_image_plane_pix,
+            plot_all_at_end_png=self.plot_fit_all_at_end_png,
+            plot_all_at_end_fits=self.plot_fit_all_at_end_fits,
+            plot_fit_as_subplot=self.plot_fit_as_subplot,
+            plot_inversion_as_subplot=self.plot_fit_inversion_as_subplot,
+            plot_visibilities=self.plot_fit_data,
+            plot_noise_map=self.plot_fit_noise_map,
+            plot_signal_to_noise_map=self.plot_fit_signal_to_noise_map,
+            plot_model_visibilities=self.plot_fit_model_data,
+            plot_residual_map=self.plot_fit_residual_map,
+            plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
+            plot_chi_squared_map=self.plot_fit_chi_squared_map,
+            plot_inversion_residual_map=self.plot_fit_inversion_residual_map,
+            plot_inversion_normalized_residual_map=self.plot_fit_normalized_residual_map,
+            plot_inversion_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
+            plot_inversion_regularization_weights=(
+                self.plot_fit_inversion_regularization_weights
+            ),
+            visualize_path=self.image_path,
+            subplot_path=self.subplot_path,
+        )
 
     def plot_hyper_images(self, last_results):
         mask = self.masked_dataset.mask

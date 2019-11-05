@@ -2,6 +2,7 @@ import autofit as af
 import autoarray as aa
 from autolens.plotters import ray_tracing_plotters, hyper_plotters
 from autolens.plotters.fit_imaging_plotters import fit_imaging_plotters
+from autolens.plotters.fit_interferometer_plotters import fit_interferometer_plotters
 
 
 def imaging_of_phase(
@@ -343,6 +344,126 @@ def imaging_fit_of_phase(
                 plot_subtracted_images_of_planes=True,
                 plot_model_images_of_planes=True,
                 plot_plane_images_of_planes=True,
+                output_path=fits_path,
+                output_format="fits",
+            )
+
+
+def interferometer_fit_of_phase(
+    fit,
+    during_analysis,
+    positions,
+    units,
+    include_mask,
+    include_critical_curves,
+    include_caustics,
+    include_image_plane_pix,
+    plot_all_at_end_png,
+    plot_all_at_end_fits,
+    plot_fit_as_subplot,
+    plot_inversion_as_subplot,
+    plot_visibilities,
+    plot_noise_map,
+    plot_signal_to_noise_map,
+    plot_model_visibilities,
+    plot_residual_map,
+    plot_normalized_residual_map,
+    plot_chi_squared_map,
+    plot_inversion_residual_map,
+    plot_inversion_normalized_residual_map,
+    plot_inversion_chi_squared_map,
+    plot_inversion_regularization_weights,
+    visualize_path,
+    subplot_path,
+):
+
+    output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+        path=visualize_path, folder_names=["fit"]
+    )
+
+    if plot_fit_as_subplot:
+
+        fit_interferometer_plotters.subplot(
+            fit=fit,
+            include_mask=include_mask,
+            include_critical_curves=include_critical_curves,
+            include_caustics=include_caustics,
+            positions=positions,
+            include_image_plane_pix=include_image_plane_pix,
+            units=units,
+            output_path=subplot_path,
+            output_format="png",
+        )
+
+    if plot_inversion_as_subplot and fit.tracer.has_pixelization:
+
+        aa.plot.inversion.subplot(
+            inversion=fit.inversion,
+            mask=fit.mask,
+            positions=positions,
+            output_path=subplot_path,
+            output_format="png",
+        )
+
+    fit_interferometer_plotters.individuals(
+        fit=fit,
+        plot_visibilities=plot_visibilities,
+        plot_noise_map=plot_noise_map,
+        plot_signal_to_noise_map=plot_signal_to_noise_map,
+        plot_model_visibilities=plot_model_visibilities,
+        plot_residual_map=plot_residual_map,
+        plot_chi_squared_map=plot_chi_squared_map,
+        plot_normalized_residual_map=plot_normalized_residual_map,
+        plot_inversion_residual_map=plot_inversion_residual_map,
+        plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
+        plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
+        plot_inversion_regularization_weight_map=plot_inversion_regularization_weights,
+        units=units,
+        output_path=output_path,
+        output_format="png",
+    )
+
+    if not during_analysis:
+
+        if plot_all_at_end_png:
+
+            fit_interferometer_plotters.individuals(
+                fit=fit,
+                plot_visibilities=True,
+                plot_noise_map=True,
+                plot_signal_to_noise_map=True,
+                plot_model_visibilities=True,
+                plot_residual_map=True,
+                plot_normalized_residual_map=True,
+                plot_chi_squared_map=True,
+                plot_inversion_residual_map=True,
+                plot_inversion_normalized_residual_map=True,
+                plot_inversion_chi_squared_map=True,
+                plot_inversion_regularization_weight_map=True,
+                units=units,
+                output_path=output_path,
+                output_format="png",
+            )
+
+        if plot_all_at_end_fits:
+
+            fits_path = af.path_util.make_and_return_path_from_path_and_folder_names(
+                path=output_path, folder_names=["fits"]
+            )
+
+            fit_interferometer_plotters.individuals(
+                fit=fit,
+                plot_visibilities=True,
+                plot_noise_map=True,
+                plot_signal_to_noise_map=True,
+                plot_model_visibilities=True,
+                plot_residual_map=True,
+                plot_normalized_residual_map=True,
+                plot_chi_squared_map=True,
+                plot_inversion_residual_map=True,
+                plot_inversion_normalized_residual_map=True,
+                plot_inversion_chi_squared_map=True,
+                plot_inversion_regularization_weight_map=True,
                 output_path=fits_path,
                 output_format="fits",
             )
