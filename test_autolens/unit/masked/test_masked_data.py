@@ -1,4 +1,4 @@
-from autoarray.operators import convolution, fourier_transform
+from autoarray.operators import convolver, transformer
 import autolens as al
 import numpy as np
 import pytest
@@ -27,7 +27,7 @@ class TestMaskedImaging(object):
         assert (masked_imaging_7x7.psf.in_2d == np.ones((3, 3))).all()
         assert masked_imaging_7x7.psf_shape_2d == (3, 3)
 
-        assert type(masked_imaging_7x7.convolver) == convolution.Convolver
+        assert type(masked_imaging_7x7.convolver) == convolver.Convolver
 
     def test__inheritance_from_autoarray(
         self, imaging_7x7, sub_mask_7x7, blurring_grid_7x7
@@ -192,7 +192,7 @@ class TestMaskedInterferometer(object):
         )
 
         assert (
-            type(masked_interferometer_7.transformer) == fourier_transform.Transformer
+                type(masked_interferometer_7.transformer) == transformer.Transformer
         )
 
     def test__inheritance_via_autoarray(

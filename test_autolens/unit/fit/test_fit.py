@@ -1,5 +1,5 @@
 from autoarray.operators.inversion import inversions
-from autoarray.operators import fourier_transform
+from autoarray.operators import transformer
 import autolens as al
 from autolens.fit.fit import ImagingFit, InterferometerFit
 import numpy as np
@@ -1619,7 +1619,7 @@ class TestInterferometerFit:
                 primary_beam=None,
             )
 
-            transformer = fourier_transform.Transformer(
+            transformer = transformer.Transformer(
                 uv_wavelengths=uv_wavelengths,
                 grid_radians=al.grid.manual_2d([[[0.0, -1.0], [0.0, 1.0], [1.0, 1.0]]]),
             )

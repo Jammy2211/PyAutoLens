@@ -53,6 +53,9 @@ class PhaseInterferometer(dataset.PhaseDataset):
             The side length of the subgrid
         """
 
+        if type(real_space_pixel_scales) is float:
+            real_space_pixel_scales = (real_space_pixel_scales, real_space_pixel_scales)
+
         phase_tag = phase_tagging.phase_tag_from_phase_settings(
             sub_size=sub_size,
             real_space_shape_2d=real_space_shape_2d,
