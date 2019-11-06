@@ -12,8 +12,8 @@ from autoarray.structures.visibilities import Visibilities as visibilities
 from autoarray.dataset.imaging import Imaging as imaging
 from autoarray.dataset.interferometer import Interferometer as interferometer
 from autoarray.dataset import data_converter
-from autoarray.operators.convolution import Convolver as convolver
-from autoarray.operators.fourier_transform import Transformer as transformer
+from autoarray.operators.convolver import Convolver as convolver
+from autoarray.operators.transformer import Transformer as transformer
 from autoarray.operators.inversion.mappers import mapper
 from autoarray.operators.inversion.inversions import inversion
 from autoarray.operators.inversion import pixelizations as pix, regularization as reg
