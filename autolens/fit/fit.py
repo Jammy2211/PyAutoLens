@@ -177,30 +177,30 @@ class InterferometerFit(aa_fit.InterferometerFit):
         self.masked_dataset = masked_interferometer
         self.tracer = tracer
 
-        profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
+        self.profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
             grid=masked_interferometer.grid,
             transformer=masked_interferometer.transformer,
         )
 
-        # profile_subtracted_visibilities_1d = visibilities_1d - blurred_profile_visibilities_1d
-        #
-        # if not tracer.has_pixelization:
+        self.profile_subtracted_visibilities =  masked_interferometer.visibilities - self.profile_visibilities
 
-        inversion = None
-        model_visibilities = profile_visibilities
+        if not tracer.has_pixelization:
 
-        # else:
-        #
-        #     inversion = tracer.inversion_from_grid_visibilities_1d_noise_map_1d_and_convolver(
-        #         grid=lens_interferometer.grid,
-        #         visibilities_1d=profile_subtracted_visibilities_1d,
-        #         noise_map_1d=noise_map_1d,
-        #         convolver=lens_interferometer.convolver,
-        #         inversion_uses_border=lens_interferometer.inversion_uses_border,
-        #         preload_sparse_grids_of_planes=lens_interferometer.preload_sparse_grids_of_planes,
-        #     )
-        #
-        #     model_visibilities_1d = blurred_profile_visibilities_1d + inversion.reconstructed_data_1d
+            inversion = None
+            model_visibilities = self.profile_visibilities
+
+        else:
+
+            inversion = tracer.inversion_intererometer_from_grid_and_data(
+                grid=masked_interferometer.grid,
+                visibilities=self.profile_subtracted_visibilities,
+                noise_map=masked_interferometer.noise_map,
+                transformer=masked_interferometer.transformer,
+                inversion_uses_border=masked_interferometer.inversion_uses_border,
+                preload_sparse_grids_of_planes=masked_interferometer.preload_sparse_grids_of_planes,
+            )
+
+            model_visibilities = self.profile_visibilities + inversion.mapped_reconstructed_visibilities
 
         super().__init__(
             visibilities_mask=masked_interferometer.visibilities_mask,

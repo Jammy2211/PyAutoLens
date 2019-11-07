@@ -801,6 +801,30 @@ class AbstractTracerData(AbstractTracerLensing):
             regularization=self.regularizations_of_planes[-1],
         )
 
+    def inversion_intererometer_from_grid_and_data(
+        self,
+        grid,
+        visibilities,
+        noise_map,
+        transformer,
+        inversion_uses_border=False,
+        preload_sparse_grids_of_planes=None,
+    ):
+
+        mappers_of_planes = self.mappers_of_planes_from_grid(
+            grid=grid,
+            inversion_uses_border=inversion_uses_border,
+            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
+        )
+
+        return inv.InversionInterferometer.from_data_mapper_and_regularization(
+            visibilities=visibilities,
+            noise_map=noise_map,
+            transformer=transformer,
+            mapper=mappers_of_planes[-1],
+            regularization=self.regularizations_of_planes[-1],
+        )
+
     def hyper_noise_map_from_noise_map(self, noise_map):
         hyper_noise_maps = self.hyper_noise_maps_of_planes_from_noise_map(
             noise_map=noise_map

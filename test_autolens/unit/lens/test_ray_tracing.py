@@ -3394,7 +3394,7 @@ class TestAbstractTracerData(object):
             assert mappers_of_planes == [None, None, 1, None, 2]
 
     class TestInversion:
-        def test__x1_inversion_in_tracer__performs_inversion_correctly(
+        def test__x1_inversion_imaging_in_tracer__performs_inversion_correctly(
             self, sub_grid_7x7, masked_imaging_7x7
         ):
 
@@ -3415,6 +3415,29 @@ class TestAbstractTracerData(object):
 
             assert inversion.mapped_reconstructed_image == pytest.approx(
                 masked_imaging_7x7.image, 1.0e-2
+            )
+
+        def test__x1_inversion_interferometer_in_tracer__performs_inversion_correctly(
+            self, sub_grid_7x7, masked_interferometer_7
+        ):
+
+            pix = al.pix.Rectangular(shape=(7, 7))
+            reg = al.reg.Constant(coefficient=0.0)
+
+            g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+
+            tracer = al.tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
+
+            inversion = tracer.inversion_intererometer_from_grid_and_data(
+                grid=sub_grid_7x7,
+                visibilities=masked_interferometer_7.visibilities,
+                noise_map=masked_interferometer_7.noise_map,
+                transformer=masked_interferometer_7.transformer,
+                inversion_uses_border=False,
+            )
+
+            assert inversion.mapped_reconstructed_visibilities[:,0] == pytest.approx(
+                masked_interferometer_7.visibilities[:,0], 1.0e-2
             )
 
     class TestHyperNoiseMap:

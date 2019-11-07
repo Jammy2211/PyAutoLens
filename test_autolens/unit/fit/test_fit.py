@@ -1,5 +1,5 @@
 from autoarray.operators.inversion import inversions
-from autoarray.operators import transformer
+from autoarray.operators import transformer as trans
 import autolens as al
 from autolens.fit.fit import ImagingFit, InterferometerFit
 import numpy as np
@@ -1619,7 +1619,7 @@ class TestInterferometerFit:
                 primary_beam=None,
             )
 
-            transformer = transformer.Transformer(
+            transformer = trans.Transformer(
                 uv_wavelengths=uv_wavelengths,
                 grid_radians=al.grid.manual_2d([[[0.0, -1.0], [0.0, 1.0], [1.0, 1.0]]]),
             )
@@ -1818,6 +1818,294 @@ class TestInterferometerFit:
             assert fit.model_visibilities.in_1d == pytest.approx(
                 fit.galaxy_model_visibilities_dict[g0].in_1d
                 + fit.galaxy_model_visibilities_dict[g1].in_1d,
+                1.0e-4,
+            )
+
+    class TestCompareToManualInversionOnly:
+
+        def test___all_lens_fit_quantities__no_hyper_methods(self, masked_interferometer_7):
+
+            pix = al.pix.Rectangular(shape=(3, 3))
+            reg = al.reg.Constant(coefficient=0.01)
+
+            g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+
+            tracer = al.tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
+
+            fit = InterferometerFit(masked_interferometer=masked_interferometer_7, tracer=tracer)
+
+            mapper = pix.mapper_from_grid_and_sparse_grid(
+                grid=masked_interferometer_7.grid, sparse_grid=None
+            )
+
+            inversion = inversions.InversionInterferometer.from_data_mapper_and_regularization(
+                mapper=mapper,
+                regularization=reg,
+                visibilities=masked_interferometer_7.visibilities,
+                noise_map=masked_interferometer_7.noise_map,
+                transformer=masked_interferometer_7.transformer,
+            )
+
+            assert inversion.mapped_reconstructed_visibilities == pytest.approx(
+                fit.model_visibilities, 1.0e-4
+            )
+
+            residual_map = al.util.fit.residual_map_from_data_and_model_data(
+                data=masked_interferometer_7.visibilities,
+                model_data=inversion.mapped_reconstructed_visibilities,
+            )
+
+            assert residual_map.in_1d == pytest.approx(fit.residual_map.in_1d, 1.0e-4)
+
+            normalized_residual_map = al.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
+                residual_map=residual_map, noise_map=masked_interferometer_7.noise_map
+            )
+
+            assert normalized_residual_map.in_1d == pytest.approx(
+                fit.normalized_residual_map.in_1d, 1.0e-4
+            )
+
+            chi_squared_map = al.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+                residual_map=residual_map, noise_map=masked_interferometer_7.noise_map
+            )
+
+            assert chi_squared_map.in_1d == pytest.approx(
+                fit.chi_squared_map.in_1d, 1.0e-4
+            )
+
+            chi_squared = al.util.fit.chi_squared_from_chi_squared_map(
+                chi_squared_map=chi_squared_map
+            )
+
+            noise_normalization = al.util.fit.noise_normalization_from_noise_map(
+                noise_map=masked_interferometer_7.noise_map
+            )
+
+            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+                chi_squared=chi_squared, noise_normalization=noise_normalization
+            )
+
+            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
+
+            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
+                chi_squared=chi_squared,
+                regularization_term=inversion.regularization_term,
+                noise_normalization=noise_normalization,
+            )
+
+            assert likelihood_with_regularization == pytest.approx(
+                fit.likelihood_with_regularization, 1e-4
+            )
+
+            evidence = al.util.fit.evidence_from_inversion_terms(
+                chi_squared=chi_squared,
+                regularization_term=inversion.regularization_term,
+                log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
+                log_regularization_term=inversion.log_det_regularization_matrix_term,
+                noise_normalization=noise_normalization,
+            )
+
+            assert evidence == fit.evidence
+            assert evidence == fit.figure_of_merit
+
+        def test___lens_fit_galaxy_model_visibilities_dict__has_inversion_mapped_reconstructed_visibilities(
+            self, masked_interferometer_7
+        ):
+            pix = al.pix.Rectangular(shape=(3, 3))
+            reg = al.reg.Constant(coefficient=1.0)
+
+            g0 = al.galaxy(redshift=0.5)
+            g1 = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
+
+            fit = InterferometerFit(masked_interferometer=masked_interferometer_7, tracer=tracer)
+
+            mapper = pix.mapper_from_grid_and_sparse_grid(
+                grid=masked_interferometer_7.grid, sparse_grid=None
+            )
+
+            inversion = inversions.InversionInterferometer.from_data_mapper_and_regularization(
+                mapper=mapper,
+                regularization=reg,
+                visibilities=masked_interferometer_7.visibilities,
+                noise_map=masked_interferometer_7.noise_map,
+                transformer=masked_interferometer_7.transformer,
+            )
+
+            assert (fit.galaxy_model_visibilities_dict[g0] == np.zeros((7,2))).all()
+
+            assert fit.galaxy_model_visibilities_dict[g1].in_1d == pytest.approx(
+                inversion.mapped_reconstructed_visibilities.in_1d, 1.0e-4
+            )
+
+            assert fit.model_visibilities.in_1d == pytest.approx(
+                fit.galaxy_model_visibilities_dict[g1].in_1d, 1.0e-4
+            )
+
+    class TestCompareToManualProfilesAndInversion:
+        def test___all_lens_fit_quantities__no_hyper_methods(self, masked_interferometer_7):
+            galaxy_light = al.galaxy(
+                redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
+            )
+
+            pix = al.pix.Rectangular(shape=(3, 3))
+            reg = al.reg.Constant(coefficient=1.0)
+            galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+
+            tracer = al.tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+
+            fit = InterferometerFit(masked_interferometer=masked_interferometer_7, tracer=tracer)
+
+            profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
+                grid=masked_interferometer_7.grid,
+                transformer=masked_interferometer_7.transformer,
+            )
+
+            assert profile_visibilities.in_1d == pytest.approx(
+                fit.profile_visibilities.in_1d
+            )
+
+            profile_subtracted_visibilities = masked_interferometer_7.visibilities - profile_visibilities
+
+            assert profile_subtracted_visibilities.in_1d == pytest.approx(
+                fit.profile_subtracted_visibilities.in_1d
+            )
+
+            mapper = pix.mapper_from_grid_and_sparse_grid(
+                grid=masked_interferometer_7.grid, inversion_uses_border=False
+            )
+
+            inversion = inversions.InversionInterferometer.from_data_mapper_and_regularization(
+                visibilities=profile_subtracted_visibilities,
+                noise_map=masked_interferometer_7.noise_map,
+                transformer=masked_interferometer_7.transformer,
+                mapper=mapper,
+                regularization=reg,
+            )
+
+            model_visibilities = profile_visibilities + inversion.mapped_reconstructed_visibilities
+
+            assert model_visibilities.in_1d == pytest.approx(fit.model_visibilities.in_1d)
+
+            residual_map = al.util.fit.residual_map_from_data_and_model_data(
+                data=masked_interferometer_7.visibilities, model_data=model_visibilities
+            )
+
+            assert residual_map.in_1d == pytest.approx(fit.residual_map.in_1d)
+
+            normalized_residual_map = al.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
+                residual_map=residual_map, noise_map=masked_interferometer_7.noise_map
+            )
+
+            assert normalized_residual_map.in_1d == pytest.approx(
+                fit.normalized_residual_map.in_1d
+            )
+
+            chi_squared_map = al.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+                residual_map=residual_map, noise_map=masked_interferometer_7.noise_map
+            )
+
+            assert chi_squared_map.in_1d == pytest.approx(fit.chi_squared_map.in_1d)
+
+            chi_squared = al.util.fit.chi_squared_from_chi_squared_map(
+                chi_squared_map=chi_squared_map
+            )
+
+            noise_normalization = al.util.fit.noise_normalization_from_noise_map(
+                noise_map=masked_interferometer_7.noise_map
+            )
+
+            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+                chi_squared=chi_squared, noise_normalization=noise_normalization
+            )
+
+            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
+
+            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
+                chi_squared=chi_squared,
+                regularization_term=inversion.regularization_term,
+                noise_normalization=noise_normalization,
+            )
+
+            assert likelihood_with_regularization == pytest.approx(
+                fit.likelihood_with_regularization, 1e-4
+            )
+
+            evidence = al.util.fit.evidence_from_inversion_terms(
+                chi_squared=chi_squared,
+                regularization_term=inversion.regularization_term,
+                log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
+                log_regularization_term=inversion.log_det_regularization_matrix_term,
+                noise_normalization=noise_normalization,
+            )
+
+            assert evidence == fit.evidence
+            assert evidence == fit.figure_of_merit
+
+        def test___lens_fit_galaxy_model_visibilities_dict__has_profile_visibilitiess_and_inversion_mapped_reconstructed_visibilities(
+            self, masked_interferometer_7
+        ):
+
+            g0 = al.galaxy(
+                redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
+            )
+            g1 = al.galaxy(
+                redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=2.0)
+            )
+            g2 = al.galaxy(redshift=0.5)
+
+            pix = al.pix.Rectangular(shape=(3, 3))
+            reg = al.reg.Constant(coefficient=1.0)
+            galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
+
+            fit = InterferometerFit(masked_interferometer=masked_interferometer_7, tracer=tracer)
+
+            traced_grids = tracer.traced_grids_of_planes_from_grid(
+                grid=masked_interferometer_7.grid
+            )
+
+            g0_visibilities = g0.profile_visibilities_from_grid_and_transformer(
+                grid=traced_grids[0],
+                transformer=masked_interferometer_7.transformer)
+
+            g1_visibilities = g1.profile_visibilities_from_grid_and_transformer(
+                grid=traced_grids[1],
+                transformer=masked_interferometer_7.transformer)
+
+            profile_visibilities = g0_visibilities + g1_visibilities
+
+            profile_subtracted_visibilities = masked_interferometer_7.visibilities - profile_visibilities
+            mapper = pix.mapper_from_grid_and_sparse_grid(
+                grid=masked_interferometer_7.grid, inversion_uses_border=False
+            )
+
+            inversion = inversions.InversionInterferometer.from_data_mapper_and_regularization(
+                visibilities=profile_subtracted_visibilities,
+                noise_map=masked_interferometer_7.noise_map,
+                transformer=masked_interferometer_7.transformer,
+                mapper=mapper,
+                regularization=reg,
+            )
+
+            assert (fit.galaxy_model_visibilities_dict[g2] == np.zeros((7,2))).all()
+
+            assert fit.galaxy_model_visibilities_dict[g0].in_1d == pytest.approx(
+                g0_visibilities.in_1d, 1.0e-4
+            )
+            assert fit.galaxy_model_visibilities_dict[g1].in_1d == pytest.approx(
+                g1_visibilities.in_1d, 1.0e-4
+            )
+            assert fit.galaxy_model_visibilities_dict[galaxy_pix].in_1d == pytest.approx(
+                inversion.mapped_reconstructed_visibilities.in_1d, 1.0e-4
+            )
+
+            assert fit.model_visibilities.in_1d == pytest.approx(
+                fit.galaxy_model_visibilities_dict[g0].in_1d
+                + fit.galaxy_model_visibilities_dict[g1].in_1d
+                + inversion.mapped_reconstructed_visibilities.in_1d,
                 1.0e-4,
             )
 
