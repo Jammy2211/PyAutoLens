@@ -1708,6 +1708,58 @@ class TestInterferometerFit:
                 -0.5 * (25.73579 + 6.0 * np.log(2 * np.pi * 2.0 ** 2.0)), 1.0e-4
             )
 
+        def test__hyper_background_changes_background_sky__reflected_in_likelihood(self):
+
+            uv_wavelengths = np.array([[1.0, 0.0], [1.0, 1.0], [2.0, 2.0]])
+
+            interferometer = al.interferometer.manual(
+                visibilities=al.visibilities.full(fill_value=5.0, shape_1d=(3,)),
+                noise_map=al.visibilities.full(fill_value=2.0, shape_1d=(3,)),
+                uv_wavelengths=uv_wavelengths,
+                primary_beam=None,
+            )
+
+            real_space_mask = al.mask.manual(
+                mask_2d=np.array(
+                    [
+                        [True, True, True, True, True],
+                        [True, False, False, False, True],
+                        [True, True, True, True, True],
+                    ]
+                ),
+                pixel_scales=1.0,
+                sub_size=1,
+            )
+
+            masked_interferometer = al.masked.interferometer(
+                interferometer=interferometer, real_space_mask=real_space_mask
+            )
+
+            # Setup as a ray trace instance, using a light profile for the lens
+
+            g0 = al.galaxy(
+                redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
+            )
+            tracer = al.tracer.from_galaxies(galaxies=[g0])
+
+            hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
+
+            fit = InterferometerFit(
+                masked_interferometer=masked_interferometer,
+                tracer=tracer,
+                hyper_background_noise=hyper_background_noise,
+            )
+
+            assert (
+                fit.visibilities.in_1d
+                == np.full(fill_value=5.0, shape=(3,2))
+            ).all()
+
+            assert (
+                fit.noise_map.in_1d
+                == np.full(fill_value=3.0, shape=(3,2))
+            ).all()
+
     class TestCompareToManualProfilesOnly:
         def test___all_lens_fit_quantities__no_hyper_methods(
             self, masked_interferometer_7
@@ -1820,6 +1872,34 @@ class TestInterferometerFit:
                 + fit.galaxy_model_visibilities_dict[g1].in_1d,
                 1.0e-4,
             )
+
+        def test___all_lens_fit_quantities__hyper_background_noise(
+            self, masked_interferometer_7
+        ):
+
+            hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
+
+            hyper_noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
+                noise_map=masked_interferometer_7.noise_map
+            )
+
+            g0 = al.galaxy(
+                redshift=0.5,
+                light_profile=al.lp.EllipticalSersic(intensity=1.0),
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            )
+
+            g1 = al.galaxy(
+                redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
+            )
+
+            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
+
+            fit = InterferometerFit(
+                masked_interferometer=masked_interferometer_7, tracer=tracer, hyper_background_noise=hyper_background_noise
+            )
+
+            assert hyper_noise_map.in_1d == pytest.approx(fit.noise_map.in_1d)
 
     class TestCompareToManualInversionOnly:
 
@@ -1942,6 +2022,29 @@ class TestInterferometerFit:
             assert fit.model_visibilities.in_1d == pytest.approx(
                 fit.galaxy_model_visibilities_dict[g1].in_1d, 1.0e-4
             )
+
+        def test___all_lens_fit_quantities__hyper_background_noise(self, masked_interferometer_7):
+
+            hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
+
+            hyper_noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
+                noise_map=masked_interferometer_7.noise_map
+            )
+
+            pix = al.pix.Rectangular(shape=(3, 3))
+            reg = al.reg.Constant(coefficient=0.01)
+
+            g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+
+            tracer = al.tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
+
+            fit = InterferometerFit(masked_interferometer=masked_interferometer_7, tracer=tracer, hyper_background_noise=hyper_background_noise)
+
+            assert hyper_noise_map.in_1d == pytest.approx(
+                fit.inversion.noise_map, 1.0e-4
+            )
+
+            assert hyper_noise_map.in_1d == pytest.approx(fit.noise_map.in_1d)
 
     class TestCompareToManualProfilesAndInversion:
         def test___all_lens_fit_quantities__no_hyper_methods(self, masked_interferometer_7):
@@ -2109,6 +2212,31 @@ class TestInterferometerFit:
                 1.0e-4,
             )
 
+        def test___all_lens_fit_quantities__hyper_background_noise(self, masked_interferometer_7):
+
+            hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
+
+            hyper_noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
+                noise_map=masked_interferometer_7.noise_map
+            )
+
+            galaxy_light = al.galaxy(
+                redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
+            )
+
+            pix = al.pix.Rectangular(shape=(3, 3))
+            reg = al.reg.Constant(coefficient=1.0)
+            galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+
+            tracer = al.tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+
+            fit = InterferometerFit(masked_interferometer=masked_interferometer_7, tracer=tracer, hyper_background_noise=hyper_background_noise)
+
+            assert hyper_noise_map.in_1d == pytest.approx(
+                fit.inversion.noise_map, 1.0e-4
+            )
+
+            assert hyper_noise_map.in_1d == pytest.approx(fit.noise_map.in_1d)
 
 class MockTracerPositions:
     def __init__(self, positions, noise=None):
