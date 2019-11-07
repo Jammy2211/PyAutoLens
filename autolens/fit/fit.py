@@ -161,7 +161,6 @@ class InterferometerFit(aa_fit.InterferometerFit):
         self,
         masked_interferometer,
         tracer,
-        hyper_image_sky=None,
         hyper_background_noise=None,
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
@@ -174,6 +173,14 @@ class InterferometerFit(aa_fit.InterferometerFit):
         scaled_array_2d_from_array_1d : func
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
+
+        if hyper_background_noise is not None:
+            noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
+                noise_map=masked_interferometer.noise_map
+            )
+        else:
+            noise_map = masked_interferometer.noise_map
+
         self.masked_dataset = masked_interferometer
         self.tracer = tracer
 
@@ -194,7 +201,7 @@ class InterferometerFit(aa_fit.InterferometerFit):
             inversion = tracer.inversion_intererometer_from_grid_and_data(
                 grid=masked_interferometer.grid,
                 visibilities=self.profile_subtracted_visibilities,
-                noise_map=masked_interferometer.noise_map,
+                noise_map=noise_map,
                 transformer=masked_interferometer.transformer,
                 inversion_uses_border=masked_interferometer.inversion_uses_border,
                 preload_sparse_grids_of_planes=masked_interferometer.preload_sparse_grids_of_planes,
@@ -205,7 +212,7 @@ class InterferometerFit(aa_fit.InterferometerFit):
         super().__init__(
             visibilities_mask=masked_interferometer.visibilities_mask,
             visibilities=masked_interferometer.visibilities,
-            noise_map=masked_interferometer.noise_map,
+            noise_map=noise_map,
             model_visibilities=model_visibilities,
             inversion=inversion,
         )
