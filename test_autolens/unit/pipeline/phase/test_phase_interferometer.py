@@ -123,20 +123,18 @@ class TestPhase(object):
             ),
             real_space_shape_2d=(7, 7),
             real_space_pixel_scales=(0.1, 0.1),
-            hyper_image_sky=al.hyper_data.HyperImageSky,
             hyper_background_noise=al.hyper_data.HyperBackgroundNoise,
             optimizer_class=af.MultiNest,
             phase_name="test_phase",
         )
 
         instance = phase_interferometer_7.variable.instance_from_physical_vector(
-            [0.1, 0.2, 0.3, 0.4]
+            [0.1, 0.2, 0.3]
         )
 
         assert instance.galaxies[0].redshift == 0.1
         assert instance.galaxies[1].redshift == 0.2
-        assert instance.hyper_image_sky.sky_scale == 0.3
-        assert instance.hyper_background_noise.noise_scale == 0.4
+        assert instance.hyper_background_noise.noise_scale == 0.3
 
     def test__extended_with_hyper_and_pixelizations(self, phase_interferometer_7):
         phase_extended = phase_interferometer_7.extend_with_multiple_hyper_phases(
@@ -201,7 +199,6 @@ class TestPhase(object):
     def test__fit_figure_of_merit__includes_hyper_image_and_noise__matches_fit(
         self, interferometer_7, mask_function_7x7
     ):
-        hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
         lens_galaxy = al.galaxy(
@@ -213,7 +210,6 @@ class TestPhase(object):
             real_space_shape_2d=(7, 7),
             real_space_pixel_scales=(0.1, 0.1),
             galaxies=[lens_galaxy],
-            hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
             cosmology=cosmo.FLRW,
             sub_size=4,
@@ -236,7 +232,6 @@ class TestPhase(object):
         fit = InterferometerFit(
             masked_interferometer=masked_interferometer,
             tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
 

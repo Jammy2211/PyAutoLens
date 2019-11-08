@@ -1822,11 +1822,6 @@ class TestInterferometerFit:
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
             assert likelihood == fit.figure_of_merit
 
-            mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
-                mapping_matrix=fit.inversion.mapper.mapping_matrix,
-                reconstruction=fit.inversion.reconstruction,
-            )
-
         def test___lens_fit_galaxy_visibilities_dict__corresponds_to_galaxy_visibilities(
             self, masked_interferometer_7
         ):
@@ -1995,6 +1990,13 @@ class TestInterferometerFit:
 
             assert evidence == fit.evidence
             assert evidence == fit.figure_of_merit
+
+            mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
+                mapping_matrix=fit.inversion.mapper.mapping_matrix,
+                reconstruction=fit.inversion.reconstruction,
+            )
+
+            assert (fit.inversion.mapped_reconstructed_image == mapped_reconstructed_image).all()
 
         def test___lens_fit_galaxy_model_visibilities_dict__has_inversion_mapped_reconstructed_visibilities(
             self, masked_interferometer_7
@@ -2171,6 +2173,13 @@ class TestInterferometerFit:
 
             assert evidence == fit.evidence
             assert evidence == fit.figure_of_merit
+
+            mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
+                mapping_matrix=fit.inversion.mapper.mapping_matrix,
+                reconstruction=fit.inversion.reconstruction,
+            )
+
+            assert (fit.inversion.mapped_reconstructed_image == mapped_reconstructed_image).all()
 
         def test___lens_fit_galaxy_model_visibilities_dict__has_profile_visibilitiess_and_inversion_mapped_reconstructed_visibilities(
             self, masked_interferometer_7
