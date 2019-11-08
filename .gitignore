@@ -45,3 +45,4 @@ test/integration/image/
 test/data/
 test/unit/data/test_files/
 test_autolens/integration/data_temp/
+test_autolens/dataset/
