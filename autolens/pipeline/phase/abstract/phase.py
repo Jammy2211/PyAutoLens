@@ -1,4 +1,5 @@
 import autofit as af
+from autofit import Paths
 from autolens.pipeline.phase.abstract.result import Result
 
 
@@ -9,11 +10,11 @@ class AbstractPhase(af.AbstractPhase):
     Result = Result
 
     def __init__(
-        self,
-        phase_name,
-        phase_tag=None,
-        phase_folders=tuple(),
-        optimizer_class=af.MultiNest,
+            self,
+            phase_name,
+            phase_tag=None,
+            phase_folders=tuple(),
+            optimizer_class=af.MultiNest,
     ):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
@@ -28,9 +29,11 @@ class AbstractPhase(af.AbstractPhase):
         """
 
         super().__init__(
-            phase_name=phase_name,
-            phase_tag=phase_tag,
-            phase_folders=phase_folders,
+            Paths(
+                phase_name=phase_name,
+                phase_tag=phase_tag,
+                phase_folders=phase_folders,
+            ),
             optimizer_class=optimizer_class,
         )
 
