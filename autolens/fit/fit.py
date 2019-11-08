@@ -18,7 +18,6 @@ def fit(masked_dataset, tracer, hyper_image_sky=None, hyper_background_noise=Non
         return InterferometerFit(
             masked_interferometer=masked_dataset,
             tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
 
