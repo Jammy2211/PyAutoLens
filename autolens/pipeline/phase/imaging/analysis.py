@@ -1,9 +1,10 @@
 import autofit as af
-from autolens.fit import fit
-from autolens.lens import ray_tracing
+from autoarray.exc import InversionException
 from autoastro.galaxy import galaxy as g
-from autolens.pipeline.phase.dataset import analysis as analysis_dataset
+from autofit.exc import FitException
+from autolens.fit import fit
 from autolens.pipeline import visualizer
+from autolens.pipeline.phase.dataset import analysis as analysis_dataset
 
 
 class Analysis(analysis_dataset.Analysis):
@@ -59,13 +60,16 @@ class Analysis(analysis_dataset.Analysis):
             instance=instance
         )
 
-        fit = self.masked_imaging_fit_for_tracer(
-            tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-        )
+        try:
+            fit = self.masked_imaging_fit_for_tracer(
+                tracer=tracer,
+                hyper_image_sky=hyper_image_sky,
+                hyper_background_noise=hyper_background_noise,
+            )
 
-        return fit.figure_of_merit
+            return fit.figure_of_merit
+        except InversionException as e:
+            raise FitException from e
 
     def associate_images(self, instance: af.ModelInstance) -> af.ModelInstance:
         """
@@ -93,7 +97,7 @@ class Analysis(analysis_dataset.Analysis):
         """
         if hasattr(self, "hyper_galaxy_image_path_dict"):
             for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                g.Galaxy
+                    g.Galaxy
             ):
                 if galaxy_path in self.hyper_galaxy_image_path_dict:
                     galaxy.hyper_model_image = self.hyper_model_image
@@ -104,7 +108,7 @@ class Analysis(analysis_dataset.Analysis):
         return instance
 
     def masked_imaging_fit_for_tracer(
-        self, tracer, hyper_image_sky, hyper_background_noise
+            self, tracer, hyper_image_sky, hyper_background_noise
     ):
 
         return fit.ImagingFit(
