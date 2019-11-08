@@ -2,10 +2,12 @@ import numpy as np
 from astropy import cosmology as cosmo
 from skimage import measure
 
-from autoarray.structures import grids
+from autoarray.exc import InversionException
 from autoarray.operators.inversion import inversions as inv
-from autoastro.util import cosmology_util
+from autoarray.structures import grids
 from autoastro.galaxy import galaxy as g
+from autoastro.util import cosmology_util
+from autofit.exc import FitException
 from autolens.lens import plane as pl
 from autolens.util import lens_util
 
@@ -121,7 +123,6 @@ class AbstractTracer(object):
 
 class AbstractTracerCosmology(AbstractTracer):
     def __init__(self, planes, cosmology):
-
         super(AbstractTracerCosmology, self).__init__(
             planes=planes, cosmology=cosmology
         )
@@ -135,7 +136,7 @@ class AbstractTracerCosmology(AbstractTracer):
         return 1.0 / self.arcsec_per_kpc_proper_of_plane(i=i)
 
     def angular_diameter_distance_of_plane_to_earth_in_units(
-        self, i, unit_length="arcsec"
+            self, i, unit_length="arcsec"
     ):
         return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
             redshift=self.plane_redshifts[i],
@@ -144,7 +145,7 @@ class AbstractTracerCosmology(AbstractTracer):
         )
 
     def angular_diameter_distance_between_planes_in_units(
-        self, i, j, unit_length="arcsec"
+            self, i, j, unit_length="arcsec"
     ):
         return cosmology_util.angular_diameter_distance_between_redshifts_from_redshifts_and_cosmlology(
             redshift_0=self.plane_redshifts[i],
@@ -161,7 +162,7 @@ class AbstractTracerCosmology(AbstractTracer):
         )
 
     def critical_surface_density_between_planes_in_units(
-        self, i, j, unit_length="arcsec", unit_mass="solMass"
+            self, i, j, unit_length="arcsec", unit_mass="solMass"
     ):
         return cosmology_util.critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
             redshift_0=self.plane_redshifts[i],
@@ -180,7 +181,7 @@ class AbstractTracerCosmology(AbstractTracer):
         )
 
     def angular_diameter_distance_from_image_to_source_plane_in_units(
-        self, unit_length="arcsec"
+            self, unit_length="arcsec"
     ):
         return self.angular_diameter_distance_between_planes_in_units(
             i=0, j=-1, unit_length=unit_length
@@ -204,7 +205,6 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-
                     scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
                         redshift_0=self.plane_redshifts[previous_plane_index],
                         redshift_1=plane.redshift,
@@ -213,7 +213,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
                     )
 
                     scaled_deflections = (
-                        scaling_factor * traced_deflections[previous_plane_index]
+                            scaling_factor * traced_deflections[previous_plane_index]
                     )
 
                     scaled_grid -= scaled_deflections
@@ -237,7 +237,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
                 grid=position_grid
             )
             for (plane_index, tracer_position_grid_of_plane) in enumerate(
-                traced_position_grids_of_planes
+                    traced_position_grids_of_planes
             ):
                 traced_positions_of_planes[plane_index].append(
                     traced_position_grids_of_planes[plane_index]
@@ -269,9 +269,8 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         if self.upper_plane_index_with_light_profile < self.total_planes - 1:
             for plane_index in range(
-                self.upper_plane_index_with_light_profile, self.total_planes - 1
+                    self.upper_plane_index_with_light_profile, self.total_planes - 1
             ):
-
                 profile_images_of_planes.append(
                     grid.mapping.array_from_sub_array_1d(
                         sub_array_1d=np.zeros(shape=profile_images_of_planes[0].shape)
@@ -318,7 +317,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return grid.mapping.array_from_sub_array_2d(
             sub_array_2d=1.0
-            - np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
+                         - np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
         )
 
     def jacobian_a12_from_grid(self, grid):
@@ -327,7 +326,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return grid.mapping.array_from_sub_array_2d(
             sub_array_2d=-1.0
-            * np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
+                         * np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
         )
 
     def jacobian_a21_from_grid(self, grid):
@@ -336,7 +335,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return grid.mapping.array_from_sub_array_2d(
             sub_array_2d=-1.0
-            * np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
+                         * np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
         )
 
     def jacobian_a22_from_grid(self, grid):
@@ -345,7 +344,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return grid.mapping.array_from_sub_array_2d(
             sub_array_2d=1
-            - np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
+                         - np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
         )
 
     def jacobian_from_grid(self, grid):
@@ -558,7 +557,7 @@ class AbstractTracerData(AbstractTracerLensing):
         )
 
     def blurred_profile_images_of_planes_from_grid_and_psf(
-        self, grid, psf, blurring_grid
+            self, grid, psf, blurring_grid
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a psf (see imaging.convolution).
@@ -586,7 +585,7 @@ class AbstractTracerData(AbstractTracerLensing):
         ]
 
     def blurred_profile_image_from_grid_and_convolver(
-        self, grid, convolver, blurring_grid
+            self, grid, convolver, blurring_grid
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a convolver (see imaging.convolution).
@@ -608,7 +607,7 @@ class AbstractTracerData(AbstractTracerLensing):
         )
 
     def blurred_profile_images_of_planes_from_grid_and_convolver(
-        self, grid, convolver, blurring_grid
+            self, grid, convolver, blurring_grid
     ):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a convolver (see imaging.convolution).
@@ -654,7 +653,6 @@ class AbstractTracerData(AbstractTracerLensing):
         unmasked_blurred_profile_images_of_planes = []
 
         for plane, traced_padded_grid in zip(self.planes, traced_padded_grids):
-
             padded_image_1d = plane.profile_image_from_grid(grid=traced_padded_grid)
 
             unmasked_blurred_array_2d = padded_grid.mapping.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
@@ -666,7 +664,7 @@ class AbstractTracerData(AbstractTracerLensing):
         return unmasked_blurred_profile_images_of_planes
 
     def unmasked_blurred_profile_image_of_planes_and_galaxies_from_grid_and_psf(
-        self, grid, psf
+            self, grid, psf
     ):
 
         unmasked_blurred_profile_images_of_planes_and_galaxies = []
@@ -676,14 +674,14 @@ class AbstractTracerData(AbstractTracerLensing):
         traced_padded_grids = self.traced_grids_of_planes_from_grid(grid=padded_grid)
 
         for plane, traced_padded_grid in zip(self.planes, traced_padded_grids):
-
             padded_image_1d_of_galaxies = plane.profile_images_of_galaxies_from_grid(
                 grid=traced_padded_grid
             )
 
             unmasked_blurred_array_2d_of_galaxies = list(
                 map(
-                    lambda padded_image_1d_of_galaxy: padded_grid.mapping.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
+                    lambda
+                        padded_image_1d_of_galaxy: padded_grid.mapping.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
                         padded_array=padded_image_1d_of_galaxy,
                         psf=psf,
                         image_shape=grid.mask.shape,
@@ -704,7 +702,7 @@ class AbstractTracerData(AbstractTracerLensing):
         return transformer.visibilities_from_image(image=profile_image)
 
     def profile_visibilities_of_planes_from_grid_and_transformer(
-        self, grid, transformer
+            self, grid, transformer
     ):
 
         profile_images_1d_of_planes = self.profile_images_of_planes_from_grid(grid=grid)
@@ -724,7 +722,7 @@ class AbstractTracerData(AbstractTracerLensing):
         return sparse_image_plane_grids_of_planes
 
     def traced_sparse_grids_of_planes_from_grid(
-        self, grid, preload_sparse_grids_of_planes=None
+            self, grid, preload_sparse_grids_of_planes=None
     ):
 
         if preload_sparse_grids_of_planes is None:
@@ -752,7 +750,7 @@ class AbstractTracerData(AbstractTracerLensing):
         return traced_sparse_grids_of_planes
 
     def mappers_of_planes_from_grid(
-        self, grid, inversion_uses_border=False, preload_sparse_grids_of_planes=None
+            self, grid, inversion_uses_border=False, preload_sparse_grids_of_planes=None
     ):
 
         mappers_of_planes = []
@@ -778,13 +776,13 @@ class AbstractTracerData(AbstractTracerLensing):
         return mappers_of_planes
 
     def inversion_imaging_from_grid_and_data(
-        self,
-        grid,
-        image,
-        noise_map,
-        convolver,
-        inversion_uses_border=False,
-        preload_sparse_grids_of_planes=None,
+            self,
+            grid,
+            image,
+            noise_map,
+            convolver,
+            inversion_uses_border=False,
+            preload_sparse_grids_of_planes=None,
     ):
 
         mappers_of_planes = self.mappers_of_planes_from_grid(
@@ -793,37 +791,42 @@ class AbstractTracerData(AbstractTracerLensing):
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
 
-        return inv.InversionImaging.from_data_mapper_and_regularization(
-            image=image,
-            noise_map=noise_map,
-            convolver=convolver,
-            mapper=mappers_of_planes[-1],
-            regularization=self.regularizations_of_planes[-1],
-        )
+        try:
+            return inv.InversionImaging.from_data_mapper_and_regularization(
+                image=image,
+                noise_map=noise_map,
+                convolver=convolver,
+                mapper=mappers_of_planes[-1],
+                regularization=self.regularizations_of_planes[-1],
+            )
+        except InversionException:
+            raise FitException from InversionException
 
-    def inversion_intererometer_from_grid_and_data(
-        self,
-        grid,
-        visibilities,
-        noise_map,
-        transformer,
-        inversion_uses_border=False,
-        preload_sparse_grids_of_planes=None,
+    def inversion_interferometer_from_grid_and_data(
+            self,
+            grid,
+            visibilities,
+            noise_map,
+            transformer,
+            inversion_uses_border=False,
+            preload_sparse_grids_of_planes=None,
     ):
-
         mappers_of_planes = self.mappers_of_planes_from_grid(
             grid=grid,
             inversion_uses_border=inversion_uses_border,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
 
-        return inv.InversionInterferometer.from_data_mapper_and_regularization(
-            visibilities=visibilities,
-            noise_map=noise_map,
-            transformer=transformer,
-            mapper=mappers_of_planes[-1],
-            regularization=self.regularizations_of_planes[-1],
-        )
+        try:
+            return inv.InversionInterferometer.from_data_mapper_and_regularization(
+                visibilities=visibilities,
+                noise_map=noise_map,
+                transformer=transformer,
+                mapper=mappers_of_planes[-1],
+                regularization=self.regularizations_of_planes[-1],
+            )
+        except InversionException:
+            raise FitException from InversionException
 
     def hyper_noise_map_from_noise_map(self, noise_map):
         hyper_noise_maps = self.hyper_noise_maps_of_planes_from_noise_map(
@@ -858,7 +861,7 @@ class AbstractTracerData(AbstractTracerLensing):
         return galaxy_profile_image_dict
 
     def galaxy_blurred_profile_image_dict_from_grid_and_convolver(
-        self, grid, convolver, blurring_grid
+            self, grid, convolver, blurring_grid
     ) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
@@ -886,7 +889,7 @@ class AbstractTracerData(AbstractTracerLensing):
         return galaxy_blurred_profile_image_dict
 
     def galaxy_profile_visibilities_dict_from_grid_and_transformer(
-        self, grid, transformer
+            self, grid, transformer
     ) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
@@ -926,7 +929,6 @@ class Tracer(AbstractTracerData):
         planes = []
 
         for plane_index in range(0, len(plane_redshifts)):
-
             planes.append(
                 pl.Plane(galaxies=galaxies_in_planes[plane_index], cosmology=cosmology)
             )
@@ -935,12 +937,12 @@ class Tracer(AbstractTracerData):
 
     @classmethod
     def sliced_tracer_from_lens_line_of_sight_and_source_galaxies(
-        cls,
-        lens_galaxies,
-        line_of_sight_galaxies,
-        source_galaxies,
-        planes_between_lenses,
-        cosmology=cosmo.Planck15,
+            cls,
+            lens_galaxies,
+            line_of_sight_galaxies,
+            source_galaxies,
+            planes_between_lenses,
+            cosmology=cosmo.Planck15,
     ):
 
         """Ray-tracer for a lens system with any number of planes.
@@ -991,7 +993,6 @@ class Tracer(AbstractTracerData):
         planes = []
 
         for plane_index in range(0, len(plane_redshifts)):
-
             planes.append(
                 pl.Plane(
                     redshift=plane_redshifts[plane_index],

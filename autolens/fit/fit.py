@@ -194,14 +194,12 @@ class InterferometerFit(aa_fit.InterferometerFit):
 
         else:
 
-            inversion = tracer.inversion_intererometer_from_grid_and_data(
-                grid=masked_interferometer.grid,
-                visibilities=self.profile_subtracted_visibilities,
-                noise_map=noise_map,
-                transformer=masked_interferometer.transformer,
-                inversion_uses_border=masked_interferometer.inversion_uses_border,
-                preload_sparse_grids_of_planes=masked_interferometer.preload_sparse_grids_of_planes,
-            )
+            inversion = tracer.inversion_interferometer_from_grid_and_data(grid=masked_interferometer.grid,
+                                                                           visibilities=self.profile_subtracted_visibilities,
+                                                                           noise_map=noise_map,
+                                                                           transformer=masked_interferometer.transformer,
+                                                                           inversion_uses_border=masked_interferometer.inversion_uses_border,
+                                                                           preload_sparse_grids_of_planes=masked_interferometer.preload_sparse_grids_of_planes)
 
             model_visibilities = (
                 self.profile_visibilities + inversion.mapped_reconstructed_visibilities

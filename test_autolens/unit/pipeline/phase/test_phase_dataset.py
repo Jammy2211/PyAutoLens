@@ -7,6 +7,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 import autolens as al
+import autoarray as aa
 from autofit.optimize.non_linear.multi_nest import Paths
 from autolens import exc
 from test_autolens.mock import mock_pipeline
@@ -78,7 +79,7 @@ class TestPhase(object):
 
         phase_imaging_7x7.meta_imaging_fit.mask_function = None
 
-        with pytest.raises(exc.MaskException):
+        with pytest.raises(aa.exc.MaskException):
             phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=None)
 
     def test__make_analysis__mask_input_uses_mask__inner_mask_radius_included_which_masks_centre(
@@ -127,7 +128,7 @@ class TestPhase(object):
 
         phase_imaging_7x7.meta_imaging_fit.mask_function = None
 
-        with pytest.raises(exc.MaskException):
+        with pytest.raises(aa.exc.MaskException):
             phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=None)
 
     def test__make_analysis__mask_changes_sub_size_depending_on_phase_attribute(
