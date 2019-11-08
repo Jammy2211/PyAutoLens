@@ -44,4 +44,4 @@ test/integration/hyper/
 test/integration/image/
 test/data/
 test/unit/data/test_files/
-test_autolens/simulate/
+test_autolens/integration/data_temp/
