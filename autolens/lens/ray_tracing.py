@@ -2,12 +2,10 @@ import numpy as np
 from astropy import cosmology as cosmo
 from skimage import measure
 
-from autoarray.exc import InversionException
 from autoarray.operators.inversion import inversions as inv
 from autoarray.structures import grids
 from autoastro.galaxy import galaxy as g
 from autoastro.util import cosmology_util
-from autofit.exc import FitException
 from autolens.lens import plane as pl
 from autolens.util import lens_util
 
@@ -791,16 +789,13 @@ class AbstractTracerData(AbstractTracerLensing):
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
 
-        try:
-            return inv.InversionImaging.from_data_mapper_and_regularization(
-                image=image,
-                noise_map=noise_map,
-                convolver=convolver,
-                mapper=mappers_of_planes[-1],
-                regularization=self.regularizations_of_planes[-1],
-            )
-        except InversionException:
-            raise FitException from InversionException
+        return inv.InversionImaging.from_data_mapper_and_regularization(
+            image=image,
+            noise_map=noise_map,
+            convolver=convolver,
+            mapper=mappers_of_planes[-1],
+            regularization=self.regularizations_of_planes[-1],
+        )
 
     def inversion_interferometer_from_grid_and_data(
             self,
@@ -817,16 +812,13 @@ class AbstractTracerData(AbstractTracerLensing):
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
 
-        try:
-            return inv.InversionInterferometer.from_data_mapper_and_regularization(
-                visibilities=visibilities,
-                noise_map=noise_map,
-                transformer=transformer,
-                mapper=mappers_of_planes[-1],
-                regularization=self.regularizations_of_planes[-1],
-            )
-        except InversionException:
-            raise FitException from InversionException
+        return inv.InversionInterferometer.from_data_mapper_and_regularization(
+            visibilities=visibilities,
+            noise_map=noise_map,
+            transformer=transformer,
+            mapper=mappers_of_planes[-1],
+            regularization=self.regularizations_of_planes[-1],
+        )
 
     def hyper_noise_map_from_noise_map(self, noise_map):
         hyper_noise_maps = self.hyper_noise_maps_of_planes_from_noise_map(
