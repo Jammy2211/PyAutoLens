@@ -157,12 +157,7 @@ class ImagingFit(aa_fit.ImagingFit):
 
 
 class InterferometerFit(aa_fit.InterferometerFit):
-    def __init__(
-        self,
-        masked_interferometer,
-        tracer,
-        hyper_background_noise=None,
-    ):
+    def __init__(self, masked_interferometer, tracer, hyper_background_noise=None):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
 
@@ -189,7 +184,9 @@ class InterferometerFit(aa_fit.InterferometerFit):
             transformer=masked_interferometer.transformer,
         )
 
-        self.profile_subtracted_visibilities =  masked_interferometer.visibilities - self.profile_visibilities
+        self.profile_subtracted_visibilities = (
+            masked_interferometer.visibilities - self.profile_visibilities
+        )
 
         if not tracer.has_pixelization:
 
@@ -207,7 +204,9 @@ class InterferometerFit(aa_fit.InterferometerFit):
                 preload_sparse_grids_of_planes=masked_interferometer.preload_sparse_grids_of_planes,
             )
 
-            model_visibilities = self.profile_visibilities + inversion.mapped_reconstructed_visibilities
+            model_visibilities = (
+                self.profile_visibilities + inversion.mapped_reconstructed_visibilities
+            )
 
         super().__init__(
             visibilities_mask=masked_interferometer.visibilities_mask,
@@ -216,6 +215,10 @@ class InterferometerFit(aa_fit.InterferometerFit):
             model_visibilities=model_visibilities,
             inversion=inversion,
         )
+
+    @property
+    def grid(self):
+        return self.masked_interferometer.grid
 
     @property
     def galaxy_model_visibilities_dict(self) -> {g.Galaxy: np.ndarray}:

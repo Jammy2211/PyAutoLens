@@ -187,7 +187,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     interferometer_simulator = simulator.InterferometerSimulator(
         real_space_shape_2d=(51, 51),
         real_space_pixel_scales=0.1,
-        uv_wavelengths=np.ones(shape=(7,2)),
+        uv_wavelengths=np.ones(shape=(7, 2)),
         sub_size=2,
         exposure_time=300.0,
         background_sky_level=0.0,
@@ -221,14 +221,11 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         uv_wavelengths_path=path + "/uv_wavelengths.fits",
     )
 
-    mask = al.mask.unmasked(
-        shape_2d=(51, 51), pixel_scales=0.1, sub_size=2,
-    )
+    mask = al.mask.unmasked(shape_2d=(51, 51), pixel_scales=0.1, sub_size=2)
 
     masked_interferometer = al.masked.interferometer(
-        interferometer=interferometer,
-        real_space_mask=mask,
-        inversion_uses_border=False)
+        interferometer=interferometer, real_space_mask=mask, inversion_uses_border=False
+    )
 
     tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
@@ -246,10 +243,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         mass=al.mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
     )
 
-    source_galaxy = al.galaxy(
-        redshift=1.0,
-        pixelization=pix, regularization=reg,
-    )
+    source_galaxy = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
     tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 

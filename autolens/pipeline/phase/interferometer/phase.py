@@ -13,7 +13,6 @@ from autolens.pipeline.phase.interferometer.result import Result
 
 class PhaseInterferometer(dataset.PhaseDataset):
     galaxies = af.PhaseProperty("galaxies")
-    hyper_image_sky = af.PhaseProperty("hyper_image_sky")
     hyper_background_noise = af.PhaseProperty("hyper_background_noise")
 
     Analysis = Analysis
@@ -26,7 +25,6 @@ class PhaseInterferometer(dataset.PhaseDataset):
         real_space_pixel_scales,
         phase_folders=tuple(),
         galaxies=None,
-        hyper_image_sky=None,
         hyper_background_noise=None,
         optimizer_class=af.MultiNest,
         cosmology=cosmo.Planck15,
@@ -75,7 +73,6 @@ class PhaseInterferometer(dataset.PhaseDataset):
             cosmology=cosmology,
         )
 
-        self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
 
         self.is_hyper_phase = False
