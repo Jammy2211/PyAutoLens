@@ -4,6 +4,7 @@ import pytest
 
 import autofit as af
 import autolens as al
+from autofit import Paths
 from autolens import exc
 
 
@@ -33,7 +34,7 @@ class DummyPhaseImaging(af.AbstractPhase):
         pass
 
     def __init__(self, phase_name, phase_tag=""):
-        super().__init__(phase_name=phase_name, phase_tag=phase_tag)
+        super().__init__(Paths(phase_name=phase_name, phase_tag=phase_tag))
         self.dataset = None
         self.positions = None
         self.results = None
@@ -165,7 +166,7 @@ class DummyPhasePositions(af.AbstractPhase):
         pass
 
     def __init__(self, phase_name):
-        super().__init__(phase_name=phase_name, phase_tag="")
+        super().__init__(Paths(phase_name=phase_name, phase_tag=""))
         self.positions = None
         self.results = None
         self.pixel_scales = None
