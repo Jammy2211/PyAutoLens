@@ -395,15 +395,15 @@ def interferometer_fit_of_phase(
             output_format="png",
         )
 
-    if plot_inversion_as_subplot and fit.tracer.has_pixelization:
-
-        aa.plot.inversion.subplot(
-            inversion=fit.inversion,
-            mask=fit.mask,
-            positions=positions,
-            output_path=subplot_path,
-            output_format="png",
-        )
+    # if plot_inversion_as_subplot and fit.tracer.has_pixelization:
+    #
+    #     aa.plot.inversion.subplot(
+    #         inversion=fit.inversion,
+    #         mask=fit.masked_interferometer.real_space_mask,
+    #         positions=positions,
+    #         output_path=subplot_path,
+    #         output_format="png",
+    #     )
 
     fit_interferometer_plotters.individuals(
         fit=fit,
@@ -414,9 +414,9 @@ def interferometer_fit_of_phase(
         plot_residual_map=plot_residual_map,
         plot_chi_squared_map=plot_chi_squared_map,
         plot_normalized_residual_map=plot_normalized_residual_map,
-        plot_inversion_residual_map=plot_inversion_residual_map,
-        plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
-        plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
+        # plot_inversion_residual_map=plot_inversion_residual_map,
+        # plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
+        # plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
         plot_inversion_regularization_weight_map=plot_inversion_regularization_weights,
         units=units,
         output_path=output_path,
@@ -436,9 +436,9 @@ def interferometer_fit_of_phase(
                 plot_residual_map=True,
                 plot_normalized_residual_map=True,
                 plot_chi_squared_map=True,
-                plot_inversion_residual_map=True,
-                plot_inversion_normalized_residual_map=True,
-                plot_inversion_chi_squared_map=True,
+                # plot_inversion_residual_map=True,
+                # plot_inversion_normalized_residual_map=True,
+                # plot_inversion_chi_squared_map=True,
                 plot_inversion_regularization_weight_map=True,
                 units=units,
                 output_path=output_path,
@@ -460,9 +460,9 @@ def interferometer_fit_of_phase(
                 plot_residual_map=True,
                 plot_normalized_residual_map=True,
                 plot_chi_squared_map=True,
-                plot_inversion_residual_map=True,
-                plot_inversion_normalized_residual_map=True,
-                plot_inversion_chi_squared_map=True,
+                # plot_inversion_residual_map=True,
+                # plot_inversion_normalized_residual_map=True,
+                # plot_inversion_chi_squared_map=True,
                 plot_inversion_regularization_weight_map=True,
                 output_path=fits_path,
                 output_format="fits",
