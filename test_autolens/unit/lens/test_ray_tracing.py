@@ -3436,8 +3436,8 @@ class TestAbstractTracerData(object):
                 inversion_uses_border=False,
             )
 
-            assert inversion.mapped_reconstructed_visibilities[:,0] == pytest.approx(
-                masked_interferometer_7.visibilities[:,0], 1.0e-2
+            assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
+                masked_interferometer_7.visibilities[:, 0], 1.0e-2
             )
 
     class TestHyperNoiseMap:

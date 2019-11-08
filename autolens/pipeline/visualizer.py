@@ -328,7 +328,6 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
             subplot_path=self.subplot_path,
         )
 
-
     def plot_fit(self, fit, during_analysis):
         positions = (
             self.masked_interferometer.positions if self.include_positions else None

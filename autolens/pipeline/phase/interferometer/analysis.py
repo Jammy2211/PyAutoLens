@@ -54,15 +54,12 @@ class Analysis(analysis_data.Analysis):
             tracer=tracer
         )
 
-        hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
-
         hyper_background_noise = self.hyper_background_noise_for_instance(
             instance=instance
         )
 
         fit = self.masked_interferometer_fit_for_tracer(
             tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
 
@@ -105,27 +102,24 @@ class Analysis(analysis_data.Analysis):
         return instance
 
     def masked_interferometer_fit_for_tracer(
-        self, tracer, hyper_image_sky, hyper_background_noise
+        self, tracer, hyper_background_noise
     ):
 
         return fit.InterferometerFit(
             masked_interferometer=self.masked_interferometer,
             tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
 
     def visualize(self, instance, during_analysis):
         instance = self.associate_visibilities(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
-        hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
         hyper_background_noise = self.hyper_background_noise_for_instance(
             instance=instance
         )
 
         fit = self.masked_interferometer_fit_for_tracer(
             tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
         self.visualizer.plot_ray_tracing(fit.tracer, during_analysis)

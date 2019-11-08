@@ -58,41 +58,6 @@ def subplot(
     mask = get_mask(fit=fit, include_mask=include_mask)
 
     plt.figure(figsize=figsize)
-    plt.subplot(rows, columns, 1)
-    
-    ray_tracing_plotters.profile_image(
-        tracer=fit.tracer,
-        grid=fit.masked_interferometer.grid,
-        mask=mask,
-        include_critical_curves=include_critical_curves,
-        positions=positions,
-        as_subplot=True,
-        units=units,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        position_pointsize=position_pointsize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 2)
 
     critical_curves, caustics = get_critical_curves_and_caustics(
         fit=fit,
@@ -100,35 +65,156 @@ def subplot(
         include_caustics=include_caustics,
     )
 
-    plane_plotters.plane_image(
-        plane=fit.tracer.source_plane,
-        grid=fit.masked_interferometer.grid,
-        as_subplot=True,
-        lines=caustics,
-        units=units,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        grid_pointsize=grid_pointsize,
-        position_pointsize=position_pointsize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
+    plt.subplot(rows, columns, 1)
+
+    if not fit.tracer.has_pixelization:
+
+        ray_tracing_plotters.profile_image(
+            tracer=fit.tracer,
+            grid=fit.masked_interferometer.grid,
+            mask=mask,
+            include_critical_curves=include_critical_curves,
+            positions=positions,
+            as_subplot=True,
+            units=units,
+            figsize=figsize,
+            aspect=aspect,
+            cmap=cmap,
+            norm=norm,
+            norm_min=norm_min,
+            norm_max=norm_max,
+            linthresh=linthresh,
+            linscale=linscale,
+            cb_ticksize=cb_ticksize,
+            cb_fraction=cb_fraction,
+            cb_pad=cb_pad,
+            cb_tick_values=cb_tick_values,
+            cb_tick_labels=cb_tick_labels,
+            titlesize=titlesize,
+            xlabelsize=xlabelsize,
+            ylabelsize=ylabelsize,
+            xyticksize=xyticksize,
+            position_pointsize=position_pointsize,
+            mask_pointsize=mask_pointsize,
+            output_path=output_path,
+            output_filename="",
+            output_format=output_format,
+        )
+
+        plt.subplot(rows, columns, 2)
+
+        plane_plotters.plane_image(
+            plane=fit.tracer.source_plane,
+            grid=fit.masked_interferometer.grid,
+            as_subplot=True,
+            lines=caustics,
+            units=units,
+            figsize=figsize,
+            aspect=aspect,
+            cmap=cmap,
+            norm=norm,
+            norm_min=norm_min,
+            norm_max=norm_max,
+            linthresh=linthresh,
+            linscale=linscale,
+            cb_ticksize=cb_ticksize,
+            cb_fraction=cb_fraction,
+            cb_pad=cb_pad,
+            cb_tick_values=cb_tick_values,
+            cb_tick_labels=cb_tick_labels,
+            titlesize=titlesize,
+            xlabelsize=xlabelsize,
+            ylabelsize=ylabelsize,
+            xyticksize=xyticksize,
+            grid_pointsize=grid_pointsize,
+            position_pointsize=position_pointsize,
+            output_path=output_path,
+            output_filename="",
+            output_format=output_format,
+        )
+
+    elif fit.tracer.has_pixelization:
+
+        aa.plot.inversion.reconstructed_image(
+            inversion=fit.inversion,
+            mask=mask,
+            lines=critical_curves,
+            positions=positions,
+            grid=image_plane_pix_grid,
+            as_subplot=True,
+            units=units,
+            kpc_per_arcsec=kpc_per_arcsec,
+            figsize=figsize,
+            aspect=aspect,
+            cmap=cmap,
+            norm=norm,
+            norm_min=norm_min,
+            norm_max=norm_max,
+            linthresh=linthresh,
+            linscale=linscale,
+            cb_ticksize=cb_ticksize,
+            cb_fraction=cb_fraction,
+            cb_pad=cb_pad,
+            cb_tick_values=cb_tick_values,
+            cb_tick_labels=cb_tick_labels,
+            titlesize=titlesize,
+            xlabelsize=xlabelsize,
+            ylabelsize=ylabelsize,
+            xyticksize=xyticksize,
+            output_path=output_path,
+            output_format=output_format,
+            output_filename=output_filename,
+        )
+
+        ratio = float(
+            (
+                fit.inversion.mapper.grid.arc_second_maxima[1]
+                - fit.inversion.mapper.grid.arc_second_minima[1]
+            )
+            / (
+                fit.inversion.mapper.grid.arc_second_maxima[0]
+                - fit.inversion.mapper.grid.arc_second_minima[0]
+            )
+        )
+
+        if aspect is "square":
+            aspect_inv = ratio
+        elif aspect is "auto":
+            aspect_inv = 1.0 / ratio
+        elif aspect is "equal":
+            aspect_inv = 1.0
+
+        plt.subplot(rows, columns, 2, aspect=float(aspect_inv))
+
+        aa.plot.inversion.reconstruction(
+            inversion=fit.inversion,
+            lines=caustics,
+            include_grid=False,
+            include_centres=False,
+            as_subplot=True,
+            units=units,
+            kpc_per_arcsec=kpc_per_arcsec,
+            figsize=figsize,
+            aspect=None,
+            cmap=cmap,
+            norm=norm,
+            norm_min=norm_min,
+            norm_max=norm_max,
+            linthresh=linthresh,
+            linscale=linscale,
+            cb_ticksize=cb_ticksize,
+            cb_fraction=cb_fraction,
+            cb_pad=cb_pad,
+            cb_tick_values=cb_tick_values,
+            cb_tick_labels=cb_tick_labels,
+            titlesize=titlesize,
+            xlabelsize=xlabelsize,
+            ylabelsize=ylabelsize,
+            xyticksize=xyticksize,
+            output_path=output_path,
+            output_filename=None,
+            output_format=output_format,
+        )
 
     plt.subplot(rows, columns, 4)
 
@@ -433,6 +519,7 @@ def individuals(
                 output_path=output_path,
                 output_format=output_format,
             )
+
 
 def get_mask(fit, include_mask):
     """Get the masks of the fit if the masks should be plotted on the fit.
