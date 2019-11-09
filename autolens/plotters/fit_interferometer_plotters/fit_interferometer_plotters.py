@@ -13,6 +13,188 @@ from autolens.plotters import plane_plotters, ray_tracing_plotters
 def subplot(
     fit,
     include_mask=True,
+    include_image_plane_pix=False,
+    plot_mass_profile_centres=True,
+    units="arcsec",
+    figsize=None,
+    cmap="jet",
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    titlesize=10,
+    xlabelsize=10,
+    ylabelsize=10,
+    xyticksize=10,
+    grid_pointsize=1,
+    output_path=None,
+    output_filename="fit",
+    output_format="show",
+):
+
+    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+        number_subplots=6
+    )
+
+    if figsize is None:
+        figsize = figsize_tool
+
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
+
+    plt.figure(figsize=figsize)
+
+    plt.subplot(rows, columns, 1)
+
+    aa.plot.fit_interferometer.visibilities(
+        fit=fit,
+        as_subplot=True,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        pointsize=grid_pointsize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 2)
+
+    aa.plot.fit_interferometer.signal_to_noise_map(
+        fit=fit,
+        as_subplot=True,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 3)
+
+    aa.plot.fit_interferometer.model_visibilities(
+        fit=fit,
+        as_subplot=True,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 4)
+
+    aa.plot.fit_interferometer.residual_map(
+        fit=fit,
+        as_subplot=True,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 5)
+
+    aa.plot.fit_interferometer.normalized_residual_map(
+        fit=fit,
+        as_subplot=True,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 6)
+
+    aa.plot.fit_interferometer.chi_squared_map(
+        fit=fit,
+        as_subplot=True,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plotter_util.output_subplot_array(
+        output_path=output_path,
+        output_filename=output_filename,
+        output_format=output_format,
+    )
+
+    plt.close()
+
+
+def subplot_real_space(
+    fit,
+    include_mask=True,
     include_critical_curves=False,
     include_caustics=False,
     positions=None,
@@ -40,12 +222,12 @@ def subplot(
     position_pointsize=10,
     grid_pointsize=1,
     output_path=None,
-    output_filename="fit",
+    output_filename="fit_real_space",
     output_format="show",
 ):
 
     rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
-        number_subplots=9
+        number_subplots=2
     )
 
     if figsize is None:
@@ -216,145 +398,6 @@ def subplot(
             output_format=output_format,
         )
 
-    plt.subplot(rows, columns, 4)
-
-    aa.plot.fit_interferometer.visibilities(
-        fit=fit,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        pointsize=grid_pointsize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 5)
-
-    aa.plot.fit_interferometer.signal_to_noise_map(
-        fit=fit,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 6)
-
-    aa.plot.fit_interferometer.model_visibilities(
-        fit=fit,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 7)
-
-    aa.plot.fit_interferometer.residual_map(
-        fit=fit,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 8)
-
-    aa.plot.fit_interferometer.normalized_residual_map(
-        fit=fit,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 9)
-
-    aa.plot.fit_interferometer.chi_squared_map(
-        fit=fit,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
     plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
@@ -362,6 +405,7 @@ def subplot(
     )
 
     plt.close()
+
 
 
 def individuals(

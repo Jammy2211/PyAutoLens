@@ -77,7 +77,7 @@ def make_pipeline(
         hyper_galaxy=True,
         include_background_sky=True,
         include_background_noise=True,
-        inversion=False,
+        inversion=True,
     )
 
     class InversionPhase(al.PhaseImaging):
