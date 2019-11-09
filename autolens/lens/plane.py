@@ -1,9 +1,10 @@
 import numpy as np
 from astropy import cosmology as cosmo
-from skimage import measure
 
 import autofit as af
-from autoarray.structures import grids, visibilities as vis
+from autoastro import lensing
+from autoastro.galaxy import galaxy as g
+from autoarray.structures import visibilities as vis
 from autoarray.masked import masked_structures
 from autoastro.util import cosmology_util
 from autolens import exc
@@ -11,7 +12,12 @@ from autoastro import dimensions as dim
 from autolens.util import lens_util
 
 
-class AbstractPlane(object):
+def is_galaxies(obj):
+    if isinstance(obj, list):
+        return isinstance(obj[0], g.Galaxy)
+
+
+class AbstractPlane(lensing.LensingObject):
     def __init__(self, redshift, galaxies, cosmology):
         """A plane of galaxies where all galaxies are at the same redshift.
 
@@ -65,6 +71,14 @@ class AbstractPlane(object):
     @property
     def has_regularization(self):
         return any([galaxy.regularization for galaxy in self.galaxies])
+
+    @property
+    def galaxies_with_light_profile(self):
+        return list(filter(lambda galaxy: galaxy.has_light_profile, self.galaxies))
+
+    @property
+    def galaxies_with_mass_profile(self):
+        return list(filter(lambda galaxy: galaxy.has_mass_profile, self.galaxies))
 
     @property
     def galaxies_with_pixelization(self):
@@ -152,6 +166,54 @@ class AbstractPlane(object):
             ]
         return mass_profile_phis
 
+    def new_object_with_units_converted(
+        self,
+        unit_length=None,
+        unit_luminosity=None,
+        unit_mass=None,
+        kpc_per_arcsec=None,
+        exposure_time=None,
+        critical_surface_density=None,
+        **kwargs,
+    ):
+
+        new_dict = {
+            key: list(map(lambda galaxy : galaxy.new_object_with_units_converted(unit_length=unit_length, unit_luminosity=unit_luminosity,
+                                                       unit_mass=unit_mass, kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time,
+                                                       critical_surface_density=critical_surface_density, kwargs=kwargs), value))
+            if is_galaxies(value) else value
+            for key, value in self.__dict__.items()
+        }
+
+        return self.__class__(
+            **new_dict
+        )
+
+    @property
+    def unit_length(self):
+        if self.has_light_profile:
+            return self.galaxies_with_light_profile[0].unit_length
+        elif self.has_mass_profile:
+            return self.galaxies_with_mass_profile[0].unit_length
+        else:
+            return None
+
+    @property
+    def unit_luminosity(self):
+        if self.has_light_profile:
+            return self.galaxies_with_light_profile[0].unit_luminosity
+        elif self.has_mass_profile:
+            return self.galaxies_with_mass_profile[0].unit_luminosity
+        else:
+            return None
+
+    @property
+    def unit_mass(self):
+        if self.has_mass_profile:
+            return self.galaxies_with_mass_profile[0].unit_mass
+        else:
+            return None
+
 
 class AbstractPlaneCosmology(AbstractPlane):
     def __init__(self, redshift, galaxies, cosmology):
@@ -176,7 +238,7 @@ class AbstractPlaneCosmology(AbstractPlane):
         )
 
     def cosmic_average_density_in_units(
-        self, unit_length="arcsec", unit_mass="solMass"
+        self, unit_length="arcsec", unit_mass="angular"
     ):
         return cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
             redshift=self.redshift,
@@ -223,6 +285,21 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         return list(
             map(lambda galaxy: galaxy.profile_image_from_grid(grid=grid), self.galaxies)
         )
+
+    def convergence_func(self, radius):
+        if self.has_mass_profile:
+            return sum([galaxy.convergence_func(radius=radius) for galaxy in self.galaxies])
+        else:
+            raise exc.RayTracingException("You cannot perform a mass-based calculation on a galaxy which does not have a mass-profile")
+
+    @dim.convert_units_to_input_units
+    def average_convergence_of_1_radius_in_units(
+            self,
+            unit_length="arcsec",
+            **kwargs,
+    ):
+        return sum([galaxy.average_convergence_of_1_radius_in_units(unit_length=unit_length, cosmology=self.cosmology, kwargs=kwargs)
+                    for galaxy in self.galaxies])
 
     def convergence_from_grid(self, grid):
         """Compute the convergence of the list of galaxies of the plane's sub-grid, by summing the individual convergences \
@@ -297,183 +374,6 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         traced_grid = grid - self.deflections_from_grid(grid=grid)
         return grid.mapping.grid_from_sub_grid_1d(sub_grid_1d=traced_grid)
 
-    def deflections_via_potential_from_grid(self, grid):
-        potential = self.potential_from_grid(grid=grid)
-
-        deflections_y_2d = np.gradient(potential.in_2d, grid.in_2d[:, 0, 0], axis=0)
-        deflections_x_2d = np.gradient(potential.in_2d, grid.in_2d[0, :, 1], axis=1)
-
-        return grid.mapping.grid_from_sub_grid_2d(
-            sub_grid_2d=np.stack((deflections_y_2d, deflections_x_2d), axis=-1)
-        )
-
-    def jacobian_a11_from_grid(self, grid):
-
-        deflections = self.deflections_from_grid(grid=grid)
-
-        return grid.mapping.array_from_sub_array_2d(
-            sub_array_2d=1.0
-            - np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[0, :, 1], axis=1)
-        )
-
-    def jacobian_a12_from_grid(self, grid):
-
-        deflections = self.deflections_from_grid(grid=grid)
-
-        return grid.mapping.array_from_sub_array_2d(
-            sub_array_2d=-1.0
-            * np.gradient(deflections.in_2d[:, :, 1], grid.in_2d[:, 0, 0], axis=0)
-        )
-
-    def jacobian_a21_from_grid(self, grid):
-
-        deflections = self.deflections_from_grid(grid=grid)
-
-        return grid.mapping.array_from_sub_array_2d(
-            sub_array_2d=-1.0
-            * np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[0, :, 1], axis=1)
-        )
-
-    def jacobian_a22_from_grid(self, grid):
-
-        deflections = self.deflections_from_grid(grid=grid)
-
-        return grid.mapping.array_from_sub_array_2d(
-            sub_array_2d=1
-            - np.gradient(deflections.in_2d[:, :, 0], grid.in_2d[:, 0, 0], axis=0)
-        )
-
-    def jacobian_from_grid(self, grid):
-
-        a11 = self.jacobian_a11_from_grid(grid=grid)
-
-        a12 = self.jacobian_a12_from_grid(grid=grid)
-
-        a21 = self.jacobian_a21_from_grid(grid=grid)
-
-        a22 = self.jacobian_a22_from_grid(grid=grid)
-
-        return [[a11, a12], [a21, a22]]
-
-    def convergence_via_jacobian_from_grid(self, grid):
-
-        jacobian = self.jacobian_from_grid(grid=grid)
-
-        convergence = 1 - 0.5 * (jacobian[0][0] + jacobian[1][1])
-
-        return grid.mapping.array_from_sub_array_1d(sub_array_1d=convergence)
-
-    def shear_via_jacobian_from_grid(self, grid):
-
-        jacobian = self.jacobian_from_grid(grid=grid)
-
-        gamma_1 = 0.5 * (jacobian[1][1] - jacobian[0][0])
-        gamma_2 = -0.5 * (jacobian[0][1] + jacobian[1][0])
-
-        return grid.mapping.array_from_sub_array_1d(
-            sub_array_1d=(gamma_1 ** 2 + gamma_2 ** 2) ** 0.5
-        )
-
-    def tangential_eigen_value_from_grid(self, grid):
-
-        convergence = self.convergence_via_jacobian_from_grid(grid=grid)
-
-        shear = self.shear_via_jacobian_from_grid(grid=grid)
-
-        return grid.mapping.array_from_sub_array_1d(
-            sub_array_1d=1 - convergence - shear
-        )
-
-    def radial_eigen_value_from_grid(self, grid):
-
-        convergence = self.convergence_via_jacobian_from_grid(grid=grid)
-
-        shear = self.shear_via_jacobian_from_grid(grid=grid)
-
-        return grid.mapping.array_from_sub_array_1d(
-            sub_array_1d=1 - convergence + shear
-        )
-
-    def magnification_from_grid(self, grid):
-
-        jacobian = self.jacobian_from_grid(grid=grid)
-
-        det_jacobian = jacobian[0][0] * jacobian[1][1] - jacobian[0][1] * jacobian[1][0]
-
-        return grid.mapping.array_from_sub_array_1d(sub_array_1d=1 / det_jacobian)
-
-    def tangential_critical_curve_from_grid(self, grid):
-
-        tangential_eigen_values = self.tangential_eigen_value_from_grid(grid=grid)
-
-        tangential_critical_curve_indices = measure.find_contours(
-            tangential_eigen_values.in_2d, 0
-        )
-
-        if len(tangential_critical_curve_indices) == 0:
-            return []
-
-        tangential_critical_curve = grid.geometry.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
-            grid_pixels_1d=tangential_critical_curve_indices[0],
-            shape_2d=tangential_eigen_values.sub_shape_2d,
-        )
-
-        return grids.GridIrregular(grid=tangential_critical_curve)
-
-    def radial_critical_curve_from_grid(self, grid):
-
-        radial_eigen_values = self.radial_eigen_value_from_grid(grid=grid)
-
-        radial_critical_curve_indices = measure.find_contours(
-            radial_eigen_values.in_2d, 0
-        )
-
-        if len(radial_critical_curve_indices) == 0:
-            return []
-
-        radial_critical_curve = grid.geometry.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
-            grid_pixels_1d=radial_critical_curve_indices[0],
-            shape_2d=radial_eigen_values.sub_shape_2d,
-        )
-
-        return grids.GridIrregular(grid=radial_critical_curve)
-
-    def tangential_caustic_from_grid(self, grid):
-
-        tangential_critical_curve = self.tangential_critical_curve_from_grid(grid=grid)
-
-        if len(tangential_critical_curve) == 0:
-            return []
-
-        deflections_1d = self.deflections_from_grid(grid=tangential_critical_curve)
-
-        return tangential_critical_curve - deflections_1d
-
-    def radial_caustic_from_grid(self, grid):
-
-        radial_critical_curve = self.radial_critical_curve_from_grid(grid=grid)
-
-        if len(radial_critical_curve) == 0:
-            return []
-
-        deflections_critical_curve = self.deflections_from_grid(
-            grid=radial_critical_curve
-        )
-
-        return radial_critical_curve - deflections_critical_curve
-
-    def critical_curves_from_grid(self, grid):
-        return [
-            self.tangential_critical_curve_from_grid(grid=grid),
-            self.radial_critical_curve_from_grid(grid=grid),
-        ]
-
-    def caustics_from_grid(self, grid):
-        return [
-            self.tangential_caustic_from_grid(grid=grid),
-            self.radial_caustic_from_grid(grid=grid),
-        ]
-
     def luminosities_of_galaxies_within_circles_in_units(
         self, radius: dim.Length, unit_luminosity="eps", exposure_time=None
     ):
@@ -504,7 +404,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         )
 
     def masses_of_galaxies_within_circles_in_units(
-        self, radius: dim.Length, unit_mass="solMass", redshift_source=None
+        self, radius: dim.Length, unit_mass="angular", redshift_source=None
     ):
         """Compute the total mass of all galaxies in this plane within a circle of specified radius.
 
@@ -517,7 +417,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         radius : float
             The radius of the circle to compute the dimensionless mass within.
         unit_mass : str
-            The units the mass is returned in (angular | solMass).
+            The units the mass is returned in (angular | angular).
 
         """
         return list(
@@ -531,42 +431,6 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                 self.galaxies,
             )
         )
-
-    def einstein_radius_in_units(self, unit_length="arcsec"):
-
-        if self.has_mass_profile:
-            return sum(
-                filter(
-                    None,
-                    list(
-                        map(
-                            lambda galaxy: galaxy.einstein_radius_in_units(
-                                unit_length=unit_length, cosmology=self.cosmology
-                            ),
-                            self.galaxies,
-                        )
-                    ),
-                )
-            )
-
-    def einstein_mass_in_units(self, unit_mass="solMass", redshift_source=None):
-
-        if self.has_mass_profile:
-            return sum(
-                filter(
-                    None,
-                    list(
-                        map(
-                            lambda galaxy: galaxy.einstein_mass_in_units(
-                                unit_mass=unit_mass,
-                                redshift_source=redshift_source,
-                                cosmology=self.cosmology,
-                            ),
-                            self.galaxies,
-                        )
-                    ),
-                )
-            )
 
 
 class AbstractPlaneData(AbstractPlaneLensing):
@@ -768,7 +632,7 @@ class Plane(AbstractPlaneData):
         whitespace=80,
         unit_length="arcsec",
         unit_luminosity="eps",
-        unit_mass="solMass",
+        unit_mass="angular",
         redshift_source=None,
         **kwargs
     ):
