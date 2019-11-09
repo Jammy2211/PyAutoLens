@@ -503,39 +503,6 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             )
         )
 
-    def luminosities_of_galaxies_within_ellipses_in_units(
-        self, major_axis: dim.Length, unit_luminosity="eps", exposure_time=None
-    ):
-        """
-        Compute the total luminosity of all galaxies in this plane within a ellipse of specified major-axis.
-
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the photometric zeropoint).
-
-        See *galaxy.light_within_ellipse* and *light_profiles.light_within_ellipse* for details
-        of how this is performed.
-
-        Parameters
-        ----------
-        major_axis : float
-            The major-axis radius of the ellipse.
-        unit_luminosity : str
-            The units the luminosity is returned in (eps | counts).
-        exposure_time : float
-            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
-        """
-        return list(
-            map(
-                lambda galaxy: galaxy.luminosity_within_ellipse_in_units(
-                    major_axis=major_axis,
-                    unit_luminosity=unit_luminosity,
-                    exposure_time=exposure_time,
-                    cosmology=self.cosmology,
-                ),
-                self.galaxies,
-            )
-        )
-
     def masses_of_galaxies_within_circles_in_units(
         self, radius: dim.Length, unit_mass="solMass", redshift_source=None
     ):
@@ -557,34 +524,6 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             map(
                 lambda galaxy: galaxy.mass_within_circle_in_units(
                     radius=radius,
-                    unit_mass=unit_mass,
-                    redshift_source=redshift_source,
-                    cosmology=self.cosmology,
-                ),
-                self.galaxies,
-            )
-        )
-
-    def masses_of_galaxies_within_ellipses_in_units(
-        self, major_axis: dim.Length, unit_mass="solMass", redshift_source=None
-    ):
-        """Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
-
-        See *galaxy.angular_mass_within_ellipse* and *mass_profiles.angular_mass_within_ellipse* for details \
-        of how this is performed.
-
-        Parameters
-        ----------
-        redshift_source
-        unit_mass
-        major_axis : float
-            The major-axis radius of the ellipse.
-
-        """
-        return list(
-            map(
-                lambda galaxy: galaxy.mass_within_ellipse_in_units(
-                    major_axis=major_axis,
                     unit_mass=unit_mass,
                     redshift_source=redshift_source,
                     cosmology=self.cosmology,
