@@ -36,7 +36,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
+    phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2",

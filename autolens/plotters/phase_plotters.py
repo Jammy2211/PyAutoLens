@@ -385,6 +385,13 @@ def interferometer_fit_of_phase(
 
         fit_interferometer_plotters.subplot(
             fit=fit,
+            units=units,
+            output_path=subplot_path,
+            output_format="png",
+        )
+
+        fit_interferometer_plotters.subplot_real_space(
+            fit=fit,
             include_mask=include_mask,
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
