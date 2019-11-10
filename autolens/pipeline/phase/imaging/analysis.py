@@ -97,7 +97,7 @@ class Analysis(analysis_dataset.Analysis):
         """
         if hasattr(self, "hyper_galaxy_image_path_dict"):
             for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                    g.Galaxy
+                g.Galaxy
             ):
                 if galaxy_path in self.hyper_galaxy_image_path_dict:
                     galaxy.hyper_model_image = self.hyper_model_image
@@ -108,7 +108,7 @@ class Analysis(analysis_dataset.Analysis):
         return instance
 
     def masked_imaging_fit_for_tracer(
-            self, tracer, hyper_image_sky, hyper_background_noise
+        self, tracer, hyper_image_sky, hyper_background_noise
     ):
 
         return fit.ImagingFit(

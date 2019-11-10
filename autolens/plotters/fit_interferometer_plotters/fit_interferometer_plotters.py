@@ -407,7 +407,6 @@ def subplot_real_space(
     plt.close()
 
 
-
 def individuals(
     fit,
     plot_visibilities=False,

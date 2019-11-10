@@ -15,19 +15,24 @@ planck = cosmo.Planck15
 
 
 class TestUnits:
-
     def test__light_profiles_conversions(self):
 
         profile_0 = al.lp.EllipticalGaussian(
-            centre=(al.dim.Length(value=3.0, unit_length="arcsec"), al.dim.Length(value=3.0, unit_length="arcsec")),
-                    intensity=al.dim.Luminosity(value=2.0, unit_luminosity="eps"),
+            centre=(
+                al.dim.Length(value=3.0, unit_length="arcsec"),
+                al.dim.Length(value=3.0, unit_length="arcsec"),
+            ),
+            intensity=al.dim.Luminosity(value=2.0, unit_luminosity="eps"),
         )
 
         galaxy_0 = al.galaxy(light=profile_0, redshift=1.0)
 
         profile_1 = al.lp.EllipticalGaussian(
-            centre=(al.dim.Length(value=4.0, unit_length="arcsec"), al.dim.Length(value=4.0, unit_length="arcsec")),
-                    intensity=al.dim.Luminosity(value=5.0, unit_luminosity="eps"),
+            centre=(
+                al.dim.Length(value=4.0, unit_length="arcsec"),
+                al.dim.Length(value=4.0, unit_length="arcsec"),
+            ),
+            intensity=al.dim.Luminosity(value=5.0, unit_luminosity="eps"),
         )
 
         galaxy_1 = al.galaxy(light=profile_1, redshift=1.0)
@@ -43,7 +48,12 @@ class TestUnits:
         assert plane.galaxies[1].light.intensity == 5.0
         assert plane.galaxies[1].light.intensity.unit_luminosity == "eps"
 
-        plane = plane.new_object_with_units_converted(unit_length='kpc', kpc_per_arcsec=2.0, unit_luminosity="counts", exposure_time=0.5)
+        plane = plane.new_object_with_units_converted(
+            unit_length="kpc",
+            kpc_per_arcsec=2.0,
+            unit_luminosity="counts",
+            exposure_time=0.5,
+        )
 
         assert plane.galaxies[0].light.centre == (6.0, 6.0)
         assert plane.galaxies[0].light.unit_length == "kpc"
@@ -57,17 +67,27 @@ class TestUnits:
     def test__mass_profiles_conversions(self):
 
         profile_0 = al.mp.EllipticalSersic(
-            centre=(al.dim.Length(value=3.0, unit_length="arcsec"), al.dim.Length(value=3.0, unit_length="arcsec")),
-                    intensity=al.dim.Luminosity(value=2.0, unit_luminosity="eps"),
-            mass_to_light_ratio=al.dim.MassOverLuminosity(value=5.0, unit_mass='angular', unit_luminosity='eps')
+            centre=(
+                al.dim.Length(value=3.0, unit_length="arcsec"),
+                al.dim.Length(value=3.0, unit_length="arcsec"),
+            ),
+            intensity=al.dim.Luminosity(value=2.0, unit_luminosity="eps"),
+            mass_to_light_ratio=al.dim.MassOverLuminosity(
+                value=5.0, unit_mass="angular", unit_luminosity="eps"
+            ),
         )
 
         galaxy_0 = al.galaxy(mass=profile_0, redshift=1.0)
 
         profile_1 = al.mp.EllipticalSersic(
-            centre=(al.dim.Length(value=4.0, unit_length="arcsec"), al.dim.Length(value=4.0, unit_length="arcsec")),
-                    intensity=al.dim.Luminosity(value=5.0, unit_luminosity="eps"),
-            mass_to_light_ratio=al.dim.MassOverLuminosity(value=10.0, unit_mass='angular', unit_luminosity='eps')
+            centre=(
+                al.dim.Length(value=4.0, unit_length="arcsec"),
+                al.dim.Length(value=4.0, unit_length="arcsec"),
+            ),
+            intensity=al.dim.Luminosity(value=5.0, unit_luminosity="eps"),
+            mass_to_light_ratio=al.dim.MassOverLuminosity(
+                value=10.0, unit_mass="angular", unit_luminosity="eps"
+            ),
         )
 
         galaxy_1 = al.galaxy(mass=profile_1, redshift=1.0)
@@ -88,9 +108,13 @@ class TestUnits:
         assert plane.galaxies[1].mass.mass_to_light_ratio.unit_mass == "angular"
 
         plane = plane.new_object_with_units_converted(
-            unit_length='kpc', kpc_per_arcsec=2.0,
-            unit_luminosity="counts", exposure_time=0.5,
-        unit_mass="solMass", critical_surface_density=3.0)
+            unit_length="kpc",
+            kpc_per_arcsec=2.0,
+            unit_luminosity="counts",
+            exposure_time=0.5,
+            unit_mass="solMass",
+            critical_surface_density=3.0,
+        )
 
         assert plane.galaxies[0].mass.centre == (6.0, 6.0)
         assert plane.galaxies[0].mass.unit_length == "kpc"
@@ -1676,12 +1700,16 @@ class TestAbstractPlaneLensing(object):
                 redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=2.0)
             )
 
-            g0_mass = g0.mass_within_circle_in_units(radius=radius, redshift_source=1.0, unit_mass="solMass")
-            g1_mass = g1.mass_within_circle_in_units(radius=radius, redshift_source=1.0, unit_mass="solMass")
+            g0_mass = g0.mass_within_circle_in_units(
+                radius=radius, redshift_source=1.0, unit_mass="solMass"
+            )
+            g1_mass = g1.mass_within_circle_in_units(
+                radius=radius, redshift_source=1.0, unit_mass="solMass"
+            )
 
             plane = al.plane(galaxies=[g0, g1], redshift=0.5)
             plane_masses = plane.masses_of_galaxies_within_circles_in_units(
-                radius=radius, redshift_source=1.0, unit_mass="solMass",
+                radius=radius, redshift_source=1.0, unit_mass="solMass"
             )
 
             assert plane_masses[0] == g0_mass
@@ -1691,14 +1719,20 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.plane(galaxies=[g0, g1], redshift=0.5)
             g0_mass = g0.mass_within_circle_in_units(
-                radius=radius, redshift_source=1.0, kpc_per_arcsec=plane.kpc_per_arcsec, unit_mass="solMass",
+                radius=radius,
+                redshift_source=1.0,
+                kpc_per_arcsec=plane.kpc_per_arcsec,
+                unit_mass="solMass",
             )
             g1_mass = g1.mass_within_circle_in_units(
-                radius=radius, redshift_source=1.0, kpc_per_arcsec=plane.kpc_per_arcsec, unit_mass="solMass",
+                radius=radius,
+                redshift_source=1.0,
+                kpc_per_arcsec=plane.kpc_per_arcsec,
+                unit_mass="solMass",
             )
 
             plane_masses = plane.masses_of_galaxies_within_circles_in_units(
-                radius=radius, redshift_source=1.0, unit_mass="solMass",
+                radius=radius, redshift_source=1.0, unit_mass="solMass"
             )
 
             assert plane_masses[0] == g0_mass
@@ -1731,7 +1765,7 @@ class TestAbstractPlaneLensing(object):
                 np.pi, 1.0e-4
             )
             assert plane.einstein_mass_in_units(
-                unit_mass="solMass", redshift_source=1.0,
+                unit_mass="solMass", redshift_source=1.0
             ) == pytest.approx(2.0 * np.pi, 1.0e-4)
 
             plane = al.plane(galaxies=[sis_1], redshift=0.5, cosmology=cosmology)
