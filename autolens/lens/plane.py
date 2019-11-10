@@ -178,16 +178,26 @@ class AbstractPlane(lensing.LensingObject):
     ):
 
         new_dict = {
-            key: list(map(lambda galaxy : galaxy.new_object_with_units_converted(unit_length=unit_length, unit_luminosity=unit_luminosity,
-                                                       unit_mass=unit_mass, kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time,
-                                                       critical_surface_density=critical_surface_density, kwargs=kwargs), value))
-            if is_galaxies(value) else value
+            key: list(
+                map(
+                    lambda galaxy: galaxy.new_object_with_units_converted(
+                        unit_length=unit_length,
+                        unit_luminosity=unit_luminosity,
+                        unit_mass=unit_mass,
+                        kpc_per_arcsec=kpc_per_arcsec,
+                        exposure_time=exposure_time,
+                        critical_surface_density=critical_surface_density,
+                        kwargs=kwargs,
+                    ),
+                    value,
+                )
+            )
+            if is_galaxies(value)
+            else value
             for key, value in self.__dict__.items()
         }
 
-        return self.__class__(
-            **new_dict
-        )
+        return self.__class__(**new_dict)
 
     @property
     def unit_length(self):
@@ -288,18 +298,23 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
     def convergence_func(self, radius):
         if self.has_mass_profile:
-            return sum([galaxy.convergence_func(radius=radius) for galaxy in self.galaxies])
+            return sum(
+                [galaxy.convergence_func(radius=radius) for galaxy in self.galaxies]
+            )
         else:
-            raise exc.RayTracingException("You cannot perform a mass-based calculation on a galaxy which does not have a mass-profile")
+            raise exc.RayTracingException(
+                "You cannot perform a mass-based calculation on a galaxy which does not have a mass-profile"
+            )
 
-    @dim.convert_units_to_input_units
-    def average_convergence_of_1_radius_in_units(
-            self,
-            unit_length="arcsec",
-            **kwargs,
-    ):
-        return sum([galaxy.average_convergence_of_1_radius_in_units(unit_length=unit_length, cosmology=self.cosmology, kwargs=kwargs)
-                    for galaxy in self.galaxies])
+    def average_convergence_of_1_radius_in_units(self, unit_length="arcsec", **kwargs):
+        return sum(
+            [
+                galaxy.average_convergence_of_1_radius_in_units(
+                    unit_length=unit_length, cosmology=self.cosmology, kwargs=kwargs
+                )
+                for galaxy in self.galaxies
+            ]
+        )
 
     def convergence_from_grid(self, grid):
         """Compute the convergence of the list of galaxies of the plane's sub-grid, by summing the individual convergences \
@@ -634,7 +649,7 @@ class Plane(AbstractPlaneData):
         unit_luminosity="eps",
         unit_mass="angular",
         redshift_source=None,
-        **kwargs
+        **kwargs,
     ):
 
         summary = ["Plane\n"]

@@ -62,8 +62,7 @@ class Analysis(analysis_data.Analysis):
 
         try:
             fit = self.masked_interferometer_fit_for_tracer(
-                tracer=tracer,
-                hyper_background_noise=hyper_background_noise,
+                tracer=tracer, hyper_background_noise=hyper_background_noise
             )
 
             return fit.figure_of_merit
@@ -96,7 +95,7 @@ class Analysis(analysis_data.Analysis):
         """
         if hasattr(self, "hyper_galaxy_visibilities_path_dict"):
             for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                    g.Galaxy
+                g.Galaxy
             ):
                 if galaxy_path in self.hyper_galaxy_visibilities_path_dict:
                     galaxy.hyper_model_visibilities = self.hyper_model_visibilities
@@ -106,9 +105,7 @@ class Analysis(analysis_data.Analysis):
 
         return instance
 
-    def masked_interferometer_fit_for_tracer(
-            self, tracer, hyper_background_noise
-    ):
+    def masked_interferometer_fit_for_tracer(self, tracer, hyper_background_noise):
 
         return fit.InterferometerFit(
             masked_interferometer=self.masked_interferometer,
@@ -124,8 +121,7 @@ class Analysis(analysis_data.Analysis):
         )
 
         fit = self.masked_interferometer_fit_for_tracer(
-            tracer=tracer,
-            hyper_background_noise=hyper_background_noise,
+            tracer=tracer, hyper_background_noise=hyper_background_noise
         )
         self.visualizer.plot_ray_tracing(fit.tracer, during_analysis)
         self.visualizer.plot_fit(fit, during_analysis)
