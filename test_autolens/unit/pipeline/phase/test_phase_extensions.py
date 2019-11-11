@@ -1,3 +1,4 @@
+import autofit.optimize.non_linear.paths
 import autolens as al
 import numpy as np
 import pytest
@@ -74,7 +75,7 @@ class MockOptimizer(af.NonLinearOptimizer):
         self, phase_name="mock_optimizer", phase_tag="tag", phase_folders=tuple()
     ):
         super().__init__(
-            paths=af.Paths(
+            paths=autofit.optimize.non_linear.paths.Paths(
                 phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders
             )
         )
@@ -86,7 +87,7 @@ class MockOptimizer(af.NonLinearOptimizer):
 
 class MockPhase(object):
     def __init__(self):
-        self.paths = af.Paths(
+        self.paths = autofit.optimize.non_linear.paths.Paths(
             phase_name="phase_name",
             phase_path="phase_path",
             phase_folders=("",),
