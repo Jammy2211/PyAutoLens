@@ -174,7 +174,6 @@ class AbstractPlane(lensing.LensingObject):
         kpc_per_arcsec=None,
         exposure_time=None,
         critical_surface_density=None,
-        **kwargs,
     ):
 
         new_dict = {
@@ -187,7 +186,6 @@ class AbstractPlane(lensing.LensingObject):
                         kpc_per_arcsec=kpc_per_arcsec,
                         exposure_time=exposure_time,
                         critical_surface_density=critical_surface_density,
-                        kwargs=kwargs,
                     ),
                     value,
                 )
@@ -294,26 +292,6 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
     def profile_images_of_galaxies_from_grid(self, grid):
         return list(
             map(lambda galaxy: galaxy.profile_image_from_grid(grid=grid), self.galaxies)
-        )
-
-    def convergence_func(self, radius):
-        if self.has_mass_profile:
-            return sum(
-                [galaxy.convergence_func(radius=radius) for galaxy in self.galaxies]
-            )
-        else:
-            raise exc.RayTracingException(
-                "You cannot perform a mass-based calculation on a galaxy which does not have a mass-profile"
-            )
-
-    def average_convergence_of_1_radius_in_units(self, unit_length="arcsec", **kwargs):
-        return sum(
-            [
-                galaxy.average_convergence_of_1_radius_in_units(
-                    unit_length=unit_length, cosmology=self.cosmology, kwargs=kwargs
-                )
-                for galaxy in self.galaxies
-            ]
         )
 
     def convergence_from_grid(self, grid):

@@ -1023,557 +1023,6 @@ class TestAbstractPlaneLensing(object):
             assert (deflections.in_1d_binned[1, 0] == 0.0).all()
             assert (deflections.in_1d_binned[0] == 0.0).all()
 
-    class TestDeflectionAnglesviaPotential(object):
-        def test__compare_plane_deflections_via_potential_and_calculation(self):
-            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=1)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
-            )
-
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
-            )
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            deflections_via_calculation = plane.deflections_from_grid(grid=grid)
-
-            deflections_via_potential = plane.deflections_via_potential_from_grid(
-                grid=grid
-            )
-
-            mean_error = np.mean(
-                deflections_via_potential - deflections_via_calculation
-            )
-
-            assert mean_error < 1e-4
-
-        def test__deflections_via_potential_same_as_its_galaxy___use_multiple_galaxies(
-            self
-        ):
-            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=1)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
-            )
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
-            )
-
-            g0_deflections = g0.deflections_via_potential_from_grid(grid=grid)
-
-            g1_deflections = g1.deflections_via_potential_from_grid(grid=grid)
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            deflections = plane.deflections_via_potential_from_grid(grid=grid)
-
-            assert deflections == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
-
-    class TestJacobian(object):
-        def test__jacobian_components__two_component_galaxy_plane(self):
-            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            jacobian = plane.jacobian_from_grid(grid=grid)
-
-            A_12 = jacobian[0][1]
-            A_21 = jacobian[1][0]
-
-            mean_error = np.mean(A_12 - A_21)
-
-            assert mean_error < 1e-4
-
-            jacobian = plane.jacobian_from_grid(grid=grid)
-
-            A_12 = jacobian[0][1]
-            A_21 = jacobian[1][0]
-
-            mean_error = np.mean(A_12 - A_21)
-
-            assert mean_error < 1e-4
-
-    class TestConvergenceviaJacobian(object):
-        def test__compare_plane_convergence_via_jacobian_and_calculation(self):
-            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            convergence_via_calculation = plane.convergence_from_grid(grid=grid)
-
-            convergence_via_jacobian = plane.convergence_via_jacobian_from_grid(
-                grid=grid
-            )
-
-            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
-
-            assert mean_error < 1e-1
-
-        def test__convergence_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=2)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            convergence = plane.convergence_via_jacobian_from_grid(grid=grid)
-
-            pixel_first_binned = convergence.in_1d_binned[0]
-            pixel_first_binned_manual = (
-                convergence[0] + convergence[1] + convergence[2] + convergence[3]
-            ) / 4
-
-            assert pixel_first_binned == pytest.approx(pixel_first_binned_manual, 1e-4)
-
-            last_pixel_binned = convergence.in_1d_binned[99]
-
-            last_pixel_binned_manual = (
-                convergence[399]
-                + convergence[398]
-                + convergence[397]
-                + convergence[396]
-            ) / 4
-
-            assert last_pixel_binned == pytest.approx(last_pixel_binned_manual, 1e-4)
-
-            convergence_via_calculation = plane.convergence_from_grid(grid=grid)
-
-            convergence_via_jacobian = plane.convergence_via_jacobian_from_grid(
-                grid=grid
-            )
-
-            mean_error = np.mean(convergence_via_jacobian - convergence_via_calculation)
-
-            assert convergence_via_jacobian.in_1d_binned.shape == (400,)
-            assert mean_error < 1e-1
-
-        def test__plane_convergence_via_jacobian_same_as_multiple_galaxies(self):
-            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=2)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
-            )
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
-            )
-
-            g0_convergence = g0.convergence_via_jacobian_from_grid(grid=grid)
-
-            g1_convergence = g1.convergence_via_jacobian_from_grid(grid=grid)
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            convergence = plane.convergence_via_jacobian_from_grid(grid=grid)
-
-            assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
-
-    class TestShearviaJacobian(object):
-        def test__shear_sub_grid_binning_two_component_galaxy_plane(self):
-            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=2)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            shear = plane.shear_via_jacobian_from_grid(grid=grid)
-
-            first_pixel_binned = shear.in_1d_binned[0]
-            first_pixel_binned_manual = (shear[0] + shear[1] + shear[2] + shear[3]) / 4
-
-            assert first_pixel_binned == pytest.approx(first_pixel_binned_manual, 1e-4)
-
-            last_pixel_binned = shear.in_1d_binned[99]
-
-            last_pixel_binned_manual = (
-                shear[399] + shear[398] + shear[397] + shear[396]
-            ) / 4
-
-            assert last_pixel_binned == pytest.approx(last_pixel_binned_manual, 1e-4)
-
-        def test__plane_shear_via_jacobian_same_as_multiple_galaxies(self):
-            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=2)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
-            )
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
-            )
-
-            g0_shear = g0.shear_via_jacobian_from_grid(grid=grid)
-
-            g1_shear = g1.shear_via_jacobian_from_grid(grid=grid)
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            shear = plane.shear_via_jacobian_from_grid(grid=grid)
-
-            assert shear == pytest.approx(g0_shear + g1_shear, 1.0e-8)
-
-    class TestMagnification(object):
-        def test__compare_magnification_from_eigen_values_and_from_determinant__two_component_galaxy_plane(
-            self
-        ):
-            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=1)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            magnification_via_determinant = plane.magnification_from_grid(grid=grid)
-
-            tangential_eigen_value = plane.tangential_eigen_value_from_grid(grid=grid)
-
-            radal_eigen_value = plane.radial_eigen_value_from_grid(grid=grid)
-
-            magnification_via_eigen_values = 1 / (
-                tangential_eigen_value * radal_eigen_value
-            )
-
-            mean_error = np.mean(
-                magnification_via_determinant - magnification_via_eigen_values
-            )
-
-            assert mean_error < 1e-4
-
-            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=2)
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            magnification_via_determinant = plane.magnification_from_grid(grid=grid)
-
-            tangential_eigen_value = plane.tangential_eigen_value_from_grid(grid=grid)
-
-            radal_eigen_value = plane.radial_eigen_value_from_grid(grid=grid)
-
-            magnification_via_eigen_values = 1 / (
-                tangential_eigen_value * radal_eigen_value
-            )
-
-            mean_error = np.mean(
-                magnification_via_determinant - magnification_via_eigen_values
-            )
-
-            assert mean_error < 1e-4
-
-        def test__compare_magnification_from_determinant_and_from_convergence_and_shear__two_component_galaxy(
-            self
-        ):
-            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=1)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.0
-                ),
-            )
-
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            magnification_via_determinant = plane.magnification_from_grid(grid=grid)
-
-            convergence = plane.convergence_via_jacobian_from_grid(grid=grid)
-
-            shear = plane.shear_via_jacobian_from_grid(grid=grid)
-
-            magnification_via_convergence_and_shear = 1 / (
-                (1 - convergence) ** 2 - shear ** 2
-            )
-
-            mean_error = np.mean(
-                magnification_via_determinant - magnification_via_convergence_and_shear
-            )
-
-            assert mean_error < 1e-4
-
-            grid = al.grid.uniform(shape_2d=(10, 10), pixel_scales=0.05, sub_size=2)
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            magnification_via_determinant = plane.magnification_from_grid(grid=grid)
-
-            convergence = plane.convergence_via_jacobian_from_grid(grid=grid)
-
-            shear = plane.shear_via_jacobian_from_grid(grid=grid)
-
-            magnification_via_convergence_and_shear = 1 / (
-                (1 - convergence) ** 2 - shear ** 2
-            )
-
-            mean_error = np.mean(
-                magnification_via_determinant - magnification_via_convergence_and_shear
-            )
-
-            assert mean_error < 1e-4
-
-    class TestCriticalCurvesandCaustics(object):
-        def test__compare_tangential_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
-            self
-        ):
-            grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.EllipticalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
-                ),
-            )
-
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_plane_and_grid(
-                plane=plane, grid=grid
-            )[
-                0
-            ]
-
-            critical_curve_tangential_from_lambda_t = plane.critical_curves(
-                grid=grid
-            )[0]
-
-            assert critical_curve_tangential_from_lambda_t == pytest.approx(
-                critical_curve_tangential_from_magnification, 1e-4
-            )
-
-            grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            critical_curve_tangential_from_magnification = critical_curve_via_magnification_from_plane_and_grid(
-                plane=plane, grid=grid
-            )[
-                0
-            ]
-
-            critical_curve_tangential_from_lambda_t = plane.critical_curves(
-                grid=grid
-            )[0]
-
-            assert critical_curve_tangential_from_lambda_t == pytest.approx(
-                critical_curve_tangential_from_magnification, 1e-4
-            )
-
-        def test__compare_radial_critical_curves_from_magnification_and_lamda_t__reg_grid_two_component_galaxy(
-            self
-        ):
-            grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.EllipticalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
-                ),
-            )
-
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            critical_curve_radial_from_magnification = critical_curve_via_magnification_from_plane_and_grid(
-                plane=plane, grid=grid
-            )[
-                1
-            ]
-
-            critical_curve_radial_from_lambda_t = plane.critical_curves(
-                grid=grid
-            )[1]
-
-            assert sum(critical_curve_radial_from_lambda_t) == pytest.approx(
-                sum(critical_curve_radial_from_magnification), 1e-2
-            )
-
-            grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            critical_curve_radial_from_magnification = critical_curve_via_magnification_from_plane_and_grid(
-                plane=plane, grid=grid
-            )[
-                1
-            ]
-
-            critical_curve_radial_from_lambda_t = plane.critical_curves(
-                grid=grid
-            )[1]
-
-            assert sum(critical_curve_radial_from_lambda_t) == pytest.approx(
-                sum(critical_curve_radial_from_magnification), 1e-2
-            )
-
-        def test__compare_tangential_caustic_from_magnification_and_lambda_t__two_component_galaxy(
-            self
-        ):
-            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.25, sub_size=1)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.EllipticalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
-                ),
-            )
-
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            caustic_tangential_from_magnification = caustics_via_magnification_from_plane_and_grid(
-                plane=plane, grid=grid
-            )[
-                0
-            ]
-
-            caustic_tangential_from_lambda_t = plane.caustics(grid=grid)[0]
-
-            assert caustic_tangential_from_lambda_t == pytest.approx(
-                caustic_tangential_from_magnification, 5e-1
-            )
-
-            grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.5, sub_size=2)
-
-            caustic_tangential_from_magnification = caustics_via_magnification_from_plane_and_grid(
-                plane=plane, grid=grid
-            )[
-                0
-            ]
-
-            caustic_tangential_from_lambda_t = plane.caustics(grid=grid)[0]
-
-            assert caustic_tangential_from_lambda_t == pytest.approx(
-                caustic_tangential_from_magnification, 5e-1
-            )
-
-        def test__compare_radial_caustic_from_magnification_and_lambda_t__two_component_galaxy(
-            self
-        ):
-            grid = al.grid.uniform(shape_2d=(60, 60), pixel_scales=0.5, sub_size=2)
-
-            g0 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.EllipticalIsothermal(
-                    centre=(0.0, 0.0), einstein_radius=1.4, axis_ratio=0.7, phi=40.0
-                ),
-            )
-
-            g1 = al.galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(
-                    centre=(1.0, 1.0), einstein_radius=2.0
-                ),
-            )
-
-            plane = al.plane(galaxies=[g0, g1], redshift=None)
-
-            caustic_radial_from_magnification = caustics_via_magnification_from_plane_and_grid(
-                plane=plane, grid=grid
-            )[
-                1
-            ]
-
-            caustic_radial_from_lambda_t = plane.caustics(grid=grid)[1]
-
-            assert sum(caustic_radial_from_lambda_t) == pytest.approx(
-                sum(caustic_radial_from_magnification), 1e-2
-            )
-
     class TestLuminosities:
         def test__within_circle_different_luminosity_units__same_as_galaxy_luminosities(
             self
@@ -1721,13 +1170,11 @@ class TestAbstractPlaneLensing(object):
             g0_mass = g0.mass_within_circle_in_units(
                 radius=radius,
                 redshift_source=1.0,
-                kpc_per_arcsec=plane.kpc_per_arcsec,
                 unit_mass="solMass",
             )
             g1_mass = g1.mass_within_circle_in_units(
                 radius=radius,
                 redshift_source=1.0,
-                kpc_per_arcsec=plane.kpc_per_arcsec,
                 unit_mass="solMass",
             )
 
@@ -1738,118 +1185,31 @@ class TestAbstractPlaneLensing(object):
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
 
-    class TestEinsteinRadiiAndMass:
-        def test__plane_has_galaxies_with_sis_profiles__einstein_radius_and_mass_sum_of_sis_profiles(
-            self
-        ):
-            cosmology = MockCosmology(
-                arcsec_per_kpc=0.5, kpc_per_arcsec=2.0, critical_surface_density=2.0
+    class TestLensingObject(object):
+
+        def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(self):
+            sis_0 = al.mp.SphericalIsothermal(
+                centre=(0.0, 0.0), einstein_radius=0.2
             )
 
-            sis_0 = al.galaxy(
-                redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
-            )
-            sis_1 = al.galaxy(
-                redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=2.0)
+            sis_1 = al.mp.SphericalIsothermal(
+                centre=(0.0, 0.0), einstein_radius=0.4
             )
 
-            plane = al.plane(galaxies=[sis_0], redshift=0.5, cosmology=cosmology)
-
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(1.0, 1.0e-4)
-            assert plane.einstein_radius_in_units(unit_length="kpc") == pytest.approx(
-                2.0, 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi, 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(
-                unit_mass="solMass", redshift_source=1.0
-            ) == pytest.approx(2.0 * np.pi, 1.0e-4)
-
-            plane = al.plane(galaxies=[sis_1], redshift=0.5, cosmology=cosmology)
-
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(2.0, 1.0e-4)
-            assert plane.einstein_radius_in_units(unit_length="kpc") == pytest.approx(
-                4.0, 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi * 2.0 ** 2.0, 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(
-                unit_mass="solMass", redshift_source=1.0
-            ) == pytest.approx(2.0 * np.pi * 2.0 ** 2.0, 1.0e-4)
-
-            plane = al.plane(galaxies=[sis_0, sis_1], redshift=0.5, cosmology=cosmology)
-
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(3.0, 1.0e-4)
-            assert plane.einstein_radius_in_units(unit_length="kpc") == pytest.approx(
-                2.0 * 3.0, 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi * (1.0 + 2.0) ** 2.0, 1.0e-4
-            )
-            assert plane.einstein_mass_in_units(
-                unit_mass="solMass", redshift_source=1.0
-            ) == pytest.approx(2.0 * np.pi * (1.0 + 2.0) ** 2.0, 1.0e-4)
-
-        def test__include_galaxy_with_no_mass_profile__does_not_impact_einstein_radius_or_mass(
-            self
-        ):
-            sis_0 = al.galaxy(
-                redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
-            )
-            sis_1 = al.galaxy(
-                redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=2.0)
-            )
-            g0 = al.galaxy(redshift=0.5)
-
-            plane = al.plane(galaxies=[sis_0, g0], redshift=0.5)
-
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(1.0, 1.0e-4)
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi, 1.0e-4
+            sis_2 = al.mp.SphericalIsothermal(
+                centre=(0.0, 0.0), einstein_radius=0.6
             )
 
-            plane = al.plane(galaxies=[sis_1, g0], redshift=0.5)
-
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(2.0, 1.0e-4)
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi * 2.0 ** 2.0, 1.0e-4
+            sis_3 = al.mp.SphericalIsothermal(
+                centre=(0.0, 0.0), einstein_radius=0.8
             )
 
-            plane = al.plane(galaxies=[sis_0, sis_1, g0], redshift=0.5)
+            galaxy_0 = al.galaxy(mass_profile_0=sis_0, mass_profile_1=sis_1, redshift=0.5)
+            galaxy_1 = al.galaxy(mass_profile_0=sis_2, mass_profile_1=sis_3, redshift=0.5)
 
-            assert plane.einstein_radius_in_units(
-                unit_length="arcsec"
-            ) == pytest.approx(3.0, 1.0e-4)
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi * (1.0 + 2.0 ** 2.0), 1.0e-4
-            )
+            plane = al.plane(galaxies=[galaxy_0, galaxy_1])
 
-        def test__only_galaxies_without_mass_profiles__einstein_radius_and_mass_are_none(
-            self
-        ):
-            g0 = al.galaxy(redshift=0.5)
-
-            plane = al.plane(galaxies=[g0], redshift=0.5)
-
-            assert plane.einstein_radius_in_units() is None
-            assert plane.einstein_mass_in_units() is None
-
-            plane = al.plane(galaxies=[g0, g0], redshift=0.5)
-
-            assert plane.einstein_radius_in_units() is None
-            assert plane.einstein_mass_in_units() is None
+            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(np.pi * 2.0 ** 2.0, 1.0e-4)
 
 
 class TestAbstractPlaneData(object):
@@ -2905,7 +2265,7 @@ class TestPlane(object):
             i += 1
             assert (
                 summary_text[i]
-                == "einstein_mass                                     1.5708e+01 angular"
+                == "einstein_mass                                     2.8274e+01 angular"
             )
             i += 1
             assert (
@@ -2929,7 +2289,7 @@ class TestPlane(object):
             i += 1
             assert (
                 summary_text[i]
-                == "einstein_mass                                     3.1416e+00 angular"
+                == "einstein_mass                                     3.1412e+00 angular"
             )
             i += 1
             assert (
@@ -3014,7 +2374,7 @@ class TestPlane(object):
             i += 1
             assert (
                 summary_text[i]
-                == "einstein_mass                                     3.1416e+00 angular"
+                == "einstein_mass                                     3.1412e+00 angular"
             )
             i += 1
             assert (
@@ -3038,7 +2398,7 @@ class TestPlane(object):
             i += 1
             assert (
                 summary_text[i]
-                == "einstein_mass                                     3.1416e+00 angular"
+                == "einstein_mass                                     3.1412e+00 angular"
             )
             i += 1
             assert (
