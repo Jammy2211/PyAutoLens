@@ -1415,7 +1415,7 @@ class TestAbstractPlaneLensing(object):
                 0
             ]
 
-            critical_curve_tangential_from_lambda_t = plane.critical_curves_from_grid(
+            critical_curve_tangential_from_lambda_t = plane.critical_curves(
                 grid=grid
             )[0]
 
@@ -1433,7 +1433,7 @@ class TestAbstractPlaneLensing(object):
                 0
             ]
 
-            critical_curve_tangential_from_lambda_t = plane.critical_curves_from_grid(
+            critical_curve_tangential_from_lambda_t = plane.critical_curves(
                 grid=grid
             )[0]
 
@@ -1468,7 +1468,7 @@ class TestAbstractPlaneLensing(object):
                 1
             ]
 
-            critical_curve_radial_from_lambda_t = plane.critical_curves_from_grid(
+            critical_curve_radial_from_lambda_t = plane.critical_curves(
                 grid=grid
             )[1]
 
@@ -1486,7 +1486,7 @@ class TestAbstractPlaneLensing(object):
                 1
             ]
 
-            critical_curve_radial_from_lambda_t = plane.critical_curves_from_grid(
+            critical_curve_radial_from_lambda_t = plane.critical_curves(
                 grid=grid
             )[1]
 
@@ -1521,7 +1521,7 @@ class TestAbstractPlaneLensing(object):
                 0
             ]
 
-            caustic_tangential_from_lambda_t = plane.caustics_from_grid(grid=grid)[0]
+            caustic_tangential_from_lambda_t = plane.caustics(grid=grid)[0]
 
             assert caustic_tangential_from_lambda_t == pytest.approx(
                 caustic_tangential_from_magnification, 5e-1
@@ -1535,7 +1535,7 @@ class TestAbstractPlaneLensing(object):
                 0
             ]
 
-            caustic_tangential_from_lambda_t = plane.caustics_from_grid(grid=grid)[0]
+            caustic_tangential_from_lambda_t = plane.caustics(grid=grid)[0]
 
             assert caustic_tangential_from_lambda_t == pytest.approx(
                 caustic_tangential_from_magnification, 5e-1
@@ -1568,7 +1568,7 @@ class TestAbstractPlaneLensing(object):
                 1
             ]
 
-            caustic_radial_from_lambda_t = plane.caustics_from_grid(grid=grid)[1]
+            caustic_radial_from_lambda_t = plane.caustics(grid=grid)[1]
 
             assert sum(caustic_radial_from_lambda_t) == pytest.approx(
                 sum(caustic_radial_from_magnification), 1e-2
