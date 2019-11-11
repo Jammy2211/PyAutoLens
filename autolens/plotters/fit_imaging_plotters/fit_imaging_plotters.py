@@ -514,7 +514,6 @@ def subplot_for_plane(
 
         lines = plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
-            grid=fit.masked_imaging.grid,
             include_critical_curves=False,
             include_caustics=include_caustics,
         )
@@ -841,7 +840,6 @@ def individuals(
 
             lines = plotter_util.get_critical_curve_and_caustic(
                 obj=fit.tracer,
-                grid=fit.grid,
                 include_critical_curves=False,
                 include_caustics=include_caustics,
             )
@@ -948,7 +946,6 @@ def subtracted_image_of_plane(
 
         lines = plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
-            grid=fit.masked_imaging.grid,
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
         )
@@ -1049,7 +1046,6 @@ def model_image_of_plane(
 
         lines = plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
-            grid=fit.masked_imaging.grid,
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
         )
@@ -1217,14 +1213,12 @@ def get_critical_curves_and_caustics(fit, include_critical_curves, include_caust
 
         critical_curves = plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
-            grid=fit.masked_imaging.grid,
             include_critical_curves=include_critical_curves,
             include_caustics=False,
         )
 
         caustics = plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
-            grid=fit.masked_imaging.grid,
             include_critical_curves=False,
             include_caustics=include_caustics,
         )

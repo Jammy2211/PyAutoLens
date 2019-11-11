@@ -49,8 +49,7 @@ def profile_image(
 
     if plane.has_mass_profile:
         lines = plotter_util.get_critical_curve_and_caustic(
-            obj=plane,
-            grid=grid,
+        obj=plane,
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
         )
@@ -212,7 +211,6 @@ def convergence(
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
     )
@@ -283,7 +281,6 @@ def potential(
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
     )
@@ -355,7 +352,6 @@ def deflections_y(
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
     )
@@ -427,7 +423,6 @@ def deflections_x(
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
     )
@@ -498,7 +493,6 @@ def magnification(
 
     lines = plotter_util.get_critical_curve_and_caustic(
         obj=plane,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
     )
@@ -553,7 +547,7 @@ def image_and_source_plane_subplot(
     )
 
     lines = plotter_util.get_critical_curve_and_caustic(
-        obj=image_plane, grid=grid, include_critical_curves=True, include_caustics=True
+        obj=image_plane, include_critical_curves=True, include_caustics=True
     )
 
     if include_critical_curves:

@@ -37,7 +37,7 @@ class TestUnits:
 
         galaxy_1 = al.galaxy(light=profile_1, redshift=1.0)
 
-        plane = al.plane(galaxies=[galaxy_0, galaxy_1])
+        plane = al.plane(galaxies=[galaxy_0, galaxy_1], cosmology=1)
 
         assert plane.galaxies[0].light.centre == (3.0, 3.0)
         assert plane.galaxies[0].light.unit_length == "arcsec"
@@ -47,6 +47,7 @@ class TestUnits:
         assert plane.galaxies[1].light.unit_length == "arcsec"
         assert plane.galaxies[1].light.intensity == 5.0
         assert plane.galaxies[1].light.intensity.unit_luminosity == "eps"
+        assert plane.cosmology == 1
 
         plane = plane.new_object_with_units_converted(
             unit_length="kpc",
@@ -63,6 +64,7 @@ class TestUnits:
         assert plane.galaxies[1].light.unit_length == "kpc"
         assert plane.galaxies[1].light.intensity == 2.5
         assert plane.galaxies[1].light.intensity.unit_luminosity == "counts"
+        assert plane.cosmology == 1
 
     def test__mass_profiles_conversions(self):
 
@@ -129,6 +131,32 @@ class TestUnits:
         assert plane.galaxies[1].mass.mass_to_light_ratio == 60.0
         assert plane.galaxies[1].mass.mass_to_light_ratio.unit_mass == "solMass"
 
+    def test__plane_keeps_attributes(self):
+
+        profile_0 = al.lp.EllipticalGaussian(
+            centre=(
+                al.dim.Length(value=3.0, unit_length="arcsec"),
+                al.dim.Length(value=3.0, unit_length="arcsec"),
+            ),
+            intensity=al.dim.Luminosity(value=2.0, unit_luminosity="eps"),
+        )
+
+        galaxy_0 = al.galaxy(light=profile_0, redshift=1.0)
+
+        plane = al.plane(galaxies=[galaxy_0], cosmology=1)
+
+        assert plane.cosmology == 1
+        assert plane.redshift == 1.0
+
+        plane = plane.new_object_with_units_converted(
+            unit_length="kpc",
+            kpc_per_arcsec=2.0,
+            unit_luminosity="counts",
+            exposure_time=0.5,
+        )
+
+        assert plane.cosmology == 1
+        assert plane.redshift == 1.0
 
 def critical_curve_via_magnification_from_plane_and_grid(plane, grid):
     magnification = plane.magnification_from_grid(grid=grid)
