@@ -3,7 +3,7 @@ import autolens as al
 from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens__source_inversion"
-test_name = "lens_mass__source_adaptive_brightness__hyper_constant_pass"
+test_name = "lens_mass__source_adaptive_brightness__hyper_instance_pass"
 data_type = "lens_mass__source_smooth"
 data_resolution = "sma"
 
@@ -39,14 +39,14 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                mass=phase1.result.constant.galaxies.lens.mass,
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                mass=phase1.result.instance.galaxies.lens.mass,
+                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiBrightnessImage,
                 regularization=al.reg.AdaptiveBrightness,
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.source.hyper_galaxy,
+                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
             ),
         ),
         inversion_pixel_limit=716,
@@ -68,12 +68,12 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=phase1.result.variable.galaxies.lens.mass
+                redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase2.result.hyper_combined.constant.galaxies.source.pixelization,
-                regularization=phase2.result.hyper_combined.constant.galaxies.source.regularization,
+                pixelization=phase2.result.hyper_combined.instance.galaxies.source.pixelization,
+                regularization=phase2.result.hyper_combined.instance.galaxies.source.regularization,
             ),
         ),
         inversion_pixel_limit=716,

@@ -39,7 +39,7 @@ def make_pipeline(
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.Constant,
+                regularization=al.reg.instance,
             ),
         ),
         mask_function=mask_function,
@@ -59,12 +59,12 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=phase1.result.variable.galaxies.lens.mass
+                redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase1.result.inversion.constant.galaxies.source.pixelization,
-                regularization=phase1.result.inversion.constant.galaxies.source.regularization,
+                pixelization=phase1.result.inversion.instance.galaxies.source.pixelization,
+                regularization=phase1.result.inversion.instance.galaxies.source.regularization,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,

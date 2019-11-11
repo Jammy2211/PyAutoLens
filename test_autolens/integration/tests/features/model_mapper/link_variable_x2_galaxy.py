@@ -3,7 +3,7 @@ import autolens as al
 from test_autolens.integration.tests.imaging import runner
 
 test_type = "model_mapper"
-test_name = "link_variable_x2_galaxy"
+test_name = "link_model_x2_galaxy"
 data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "lsst"
 
@@ -29,8 +29,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class MMPhase2(al.PhaseImaging):
         def customize_priors(self, results):
 
-            self.galaxies.lens_0 = results.from_phase("phase_1").variable.lens_0
-            self.galaxies.lens_1 = results.from_phase("phase_1").variable.lens_1
+            self.galaxies.lens_0 = results.from_phase("phase_1").model.lens_0
+            self.galaxies.lens_1 = results.from_phase("phase_1").model.lens_1
 
     phase2 = MMPhase2(
         phase_name="phase_2",

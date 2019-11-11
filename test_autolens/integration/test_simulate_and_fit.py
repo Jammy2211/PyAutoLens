@@ -235,7 +235,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
 
     pix = al.pix.Rectangular(shape=(7, 7))
 
-    reg = al.reg.Constant(coefficient=0.0001)
+    reg = al.reg.instance(coefficient=0.0001)
 
     lens_galaxy = al.galaxy(
         redshift=0.5,

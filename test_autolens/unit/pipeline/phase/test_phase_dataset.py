@@ -8,7 +8,7 @@ from astropy import cosmology as cosmo
 import autofit as af
 import autolens as al
 import autoarray as aa
-from autofit.optimize.non_linear.non_linear import Paths
+from autofit import Paths
 from autolens import exc
 from test_autolens.mock import mock_pipeline
 
@@ -189,7 +189,7 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
         )
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
         analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
@@ -207,7 +207,7 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
         )
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.RayTracingException):
@@ -257,7 +257,7 @@ class TestPhase(object):
             dataset=imaging_7x7,
             positions=[[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]],
         )
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
         analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
@@ -268,7 +268,7 @@ class TestPhase(object):
             dataset=imaging_7x7,
             positions=[[[0.0, 0.0], [0.0, 0.0]], [[100.0, 0.0], [0.0, 0.0]]],
         )
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.RayTracingException):
@@ -284,7 +284,7 @@ class TestPhase(object):
                 source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(3, 3)),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -295,7 +295,7 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
 
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
         analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
@@ -307,7 +307,7 @@ class TestPhase(object):
                 source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(4, 4)),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -317,7 +317,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
@@ -331,7 +331,7 @@ class TestPhase(object):
                 source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(3, 3)),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -341,7 +341,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
         analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
@@ -353,7 +353,7 @@ class TestPhase(object):
                 source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(4, 4)),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -363,7 +363,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
@@ -401,7 +401,7 @@ class TestPhase(object):
         source_galaxy = al.galaxy(
             redshift=0.5,
             pixelization=al.pix.Rectangular(),
-            regularization=al.reg.Constant(),
+            regularization=al.reg.instance(),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -418,7 +418,7 @@ class TestPhase(object):
         source_galaxy = al.GalaxyModel(
             redshift=0.5,
             pixelization=al.pix.Rectangular,
-            regularization=al.reg.Constant,
+            regularization=al.reg.instance,
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -460,7 +460,7 @@ class TestPhase(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
+                    regularization=al.reg.instance,
                 ),
                 source=al.GalaxyModel(redshift=1.0),
             ),
@@ -470,7 +470,7 @@ class TestPhase(object):
         source = al.GalaxyModel(
             redshift=1.0,
             pixelization=al.pix.VoronoiBrightnessImage,
-            regularization=al.reg.Constant,
+            regularization=al.reg.instance,
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -498,7 +498,7 @@ class TestPhase(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
+                    regularization=al.reg.instance,
                 ),
                 source=al.GalaxyModel(redshift=1.0),
             ),
@@ -514,7 +514,7 @@ class TestPhase(object):
                 source=al.GalaxyModel(
                     redshift=1.0,
                     pixelization=al.pix.VoronoiBrightnessImage,
-                    regularization=al.reg.Constant,
+                    regularization=al.reg.instance,
                 ),
             ),
         )
@@ -532,7 +532,7 @@ class TestPhase(object):
         source_galaxy = al.galaxy(
             redshift=1.0,
             pixelization=al.pix.Rectangular(shape=(3, 3)),
-            regularization=al.reg.Constant(coefficient=1.0),
+            regularization=al.reg.instance(coefficient=1.0),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -546,7 +546,7 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         analysis.masked_imaging.grid[4] = np.array([[500.0, 0.0]])
 
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = analysis.masked_imaging_fit_for_tracer(
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
@@ -567,7 +567,7 @@ class TestPhase(object):
 
         analysis.masked_imaging.grid[4] = np.array([300.0, 0.0])
 
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = analysis.masked_imaging_fit_for_tracer(
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
@@ -638,7 +638,7 @@ class TestPhase(object):
                 al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
+                    regularization=al.reg.instance,
                 )
             ],
         )
@@ -658,7 +658,7 @@ class TestPhase(object):
                 al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
+                    regularization=al.reg.instance,
                 )
             ],
         )
@@ -764,7 +764,7 @@ class TestResult(object):
                 source=al.galaxy(
                     redshift=1.0,
                     pixelization=al.pix.VoronoiMagnification(shape=(2, 3)),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 ),
             ),
             inversion_pixel_limit=6,
@@ -786,7 +786,7 @@ class TestResult(object):
                 source=al.galaxy(
                     redshift=1.0,
                     pixelization=al.pix.VoronoiBrightnessImage(pixels=6),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 ),
             ),
             inversion_pixel_limit=6,
@@ -828,7 +828,7 @@ class TestResult(object):
                 source=al.galaxy(
                     redshift=1.0,
                     pixelization=al.pix.VoronoiBrightnessImage(pixels=6),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 ),
             ),
             inversion_pixel_limit=6,

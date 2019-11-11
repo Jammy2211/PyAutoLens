@@ -41,7 +41,7 @@ lens_mass_profile = al.mp.EllipticalIsothermal
 source_light_profile = al.lp.EllipticalSersic
 
 # To setup our model galaxies, we use the GalaxyModel class, which represents a galaxy whose parameters 
-# are variable & fitted for by PyAutoLens. The galaxies are also assigned redshifts.
+# are model & fitted for by PyAutoLens. The galaxies are also assigned redshifts.
 lens_galaxy_model = al.GalaxyModel(redshift=0.5, mass=lens_mass_profile)
 source_galaxy_model = al.GalaxyModel(redshift=1.0, light=source_light_profile)
 
@@ -131,7 +131,7 @@ Install autolens:
 pip install autolens
 ```
 
-Clone autolens workspace & set WORKSPACE enviroment variable:
+Clone autolens workspace & set WORKSPACE enviroment model:
 ```
 cd /path/where/you/want/autolens_workspace
 git clone https://github.com/Jammy2211/autolens_workspace
@@ -156,7 +156,7 @@ Installation is also available via pip, however there are reported issues with i
 $ pip install autolens
 ```
 
-Clone autolens workspace & set WORKSPACE enviroment variable:
+Clone autolens workspace & set WORKSPACE enviroment model:
 ```
 cd /path/where/you/want/autolens_workspace
 git clone https://github.com/Jammy2211/autolens_workspace

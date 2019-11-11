@@ -45,14 +45,14 @@ def make_pipeline(
 
             self.galaxies.lens = results.from_phase(
                 "phase_1__lens_sie__source_sersic"
-            ).variable.galaxies.lens
+            ).model.galaxies.lens
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
-            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
 
             self.hyper_background_noise = (
-                results.last.hyper_combined.constant.hyper_background_noise
+                results.last.hyper_combined.instance.hyper_background_noise
             )
 
     phase2 = InversionPhase(
@@ -65,7 +65,7 @@ def make_pipeline(
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.Constant,
+                regularization=al.reg.instance,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,
@@ -91,20 +91,20 @@ def make_pipeline(
 
             self.galaxies.lens = results.from_phase(
                 "phase_1__lens_sie__source_sersic"
-            ).variable.galaxies.lens
+            ).model.galaxies.lens
 
             ### Source Inversion, Inv -> Inv ###
 
             self.galaxies.source = results.from_phase(
                 "phase_1_initialize_magnification_inversion"
-            ).variable.galaxies.source
+            ).model.galaxies.source
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
-            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
 
             self.hyper_background_noise = (
-                results.last.hyper_combined.constant.hyper_background_noise
+                results.last.hyper_combined.instance.hyper_background_noise
             )
 
     phase3 = InversionPhase(
@@ -117,7 +117,7 @@ def make_pipeline(
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.Constant,
+                regularization=al.reg.instance,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,
@@ -143,14 +143,14 @@ def make_pipeline(
 
             self.galaxies.lens = results.from_phase(
                 "phase_3__lens_sie__source_magnification_inversion"
-            ).variable.galaxies.lens
+            ).model.galaxies.lens
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
-            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
 
             self.hyper_background_noise = (
-                results.last.hyper_combined.constant.hyper_background_noise
+                results.last.hyper_combined.instance.hyper_background_noise
             )
 
     phase4 = InversionPhase(
@@ -189,24 +189,24 @@ def make_pipeline(
 
             self.galaxies.lens = results.from_phase(
                 "phase_3__lens_sie__source_magnification_inversion"
-            ).variable.galaxies.lens
+            ).model.galaxies.lens
 
             ### Source Inversion, Inv -> Inv ###
 
             self.galaxies.source = results.from_phase(
                 "phase_4__initialize_inversion"
-            ).hyper_combined.variable.galaxies.source
+            ).hyper_combined.model.galaxies.source
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
             self.galaxies.source.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
+                results.last.hyper_combined.instance.galaxies.source.hyper_galaxy
             )
 
-            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
 
             self.hyper_background_noise = (
-                results.last.hyper_combined.constant.hyper_background_noise
+                results.last.hyper_combined.instance.hyper_background_noise
             )
 
     phase5 = InversionPhase(

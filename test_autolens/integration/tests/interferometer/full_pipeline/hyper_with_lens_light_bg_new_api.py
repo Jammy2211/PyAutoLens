@@ -40,7 +40,7 @@ def make_pipeline(
 
             self.galaxies.lens.mass.centre = (
                 results.from_phase("phase_1__lens_sersic")
-                .variable_absolute(a=0.1)
+                .model_absolute(a=0.1)
                 .galaxies.lens.light.centre
             )
 
@@ -50,15 +50,15 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase1.result.constant.galaxies.lens.light,
+                light=phase1.result.instance.galaxies.lens.light,
                 mass=al.mp.EllipticalIsothermal,
                 shear=al.mp.ExternalShear,
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        hyper_image_sky=phase1.result.hyper_combined.constant.hyper_image_sky,
-        hyper_background_noise=phase1.result.hyper_combined.constant.hyper_background_noise,
+        hyper_image_sky=phase1.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase1.result.hyper_combined.instance.hyper_background_noise,
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
         optimizer_class=optimizer_class,
@@ -78,17 +78,17 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase1.result.variable.galaxies.lens.light,
-                mass=phase2.result.variable.galaxies.lens.mass,
-                shear=phase2.result.variable.galaxies.lens.shear,
-                hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                light=phase1.result.model.galaxies.lens.light,
+                mass=phase2.result.model.galaxies.lens.mass,
+                shear=phase2.result.model.galaxies.lens.shear,
+                hyper_galaxy=phase2.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
-                redshift=1.0, light=phase2.result.variable.galaxies.source.light
+                redshift=1.0, light=phase2.result.model.galaxies.source.light
             ),
         ),
-        hyper_image_sky=phase2.result.hyper_combined.constant.hyper_image_sky,
-        hyper_background_noise=phase2.result.hyper_combined.constant.hyper_background_noise,
+        hyper_image_sky=phase2.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase2.result.hyper_combined.instance.hyper_background_noise,
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
         optimizer_class=optimizer_class,
@@ -108,19 +108,19 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase3.result.constant.galaxies.lens.light,
-                mass=phase3.result.constant.galaxies.lens.mass,
-                shear=phase3.result.constant.galaxies.lens.shear,
-                hyper_galaxy=phase3.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                light=phase3.result.instance.galaxies.lens.light,
+                mass=phase3.result.instance.galaxies.lens.mass,
+                shear=phase3.result.instance.galaxies.lens.shear,
+                hyper_galaxy=phase3.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.Constant,
+                regularization=al.reg.instance,
             ),
         ),
-        hyper_image_sky=phase3.result.hyper_combined.constant.hyper_image_sky,
-        hyper_background_noise=phase3.result.hyper_combined.constant.hyper_background_noise,
+        hyper_image_sky=phase3.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase3.result.hyper_combined.instance.hyper_background_noise,
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
         optimizer_class=optimizer_class,
@@ -143,19 +143,19 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase3.result.variable.galaxies.lens.light,
-                mass=phase3.result.variable.galaxies.lens.mass,
-                shear=phase3.result.variable.galaxies.lens.shear,
-                hyper_galaxy=phase4.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                light=phase3.result.model.galaxies.lens.light,
+                mass=phase3.result.model.galaxies.lens.mass,
+                shear=phase3.result.model.galaxies.lens.shear,
+                hyper_galaxy=phase4.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase4.result.constant.galaxies.source.pixelization,
-                regularization=phase4.result.constant.galaxies.source.regularization,
+                pixelization=phase4.result.instance.galaxies.source.pixelization,
+                regularization=phase4.result.instance.galaxies.source.regularization,
             ),
         ),
-        hyper_image_sky=phase4.result.hyper_combined.constant.hyper_image_sky,
-        hyper_background_noise=phase4.result.hyper_combined.constant.hyper_background_noise,
+        hyper_image_sky=phase4.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase4.result.hyper_combined.instance.hyper_background_noise,
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
         optimizer_class=optimizer_class,
@@ -178,10 +178,10 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase5.result.constant.galaxies.lens.light,
-                mass=phase5.result.constant.galaxies.lens.mass,
-                shear=phase5.result.constant.galaxies.lens.shear,
-                hyper_galaxy=phase5.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                light=phase5.result.instance.galaxies.lens.light,
+                mass=phase5.result.instance.galaxies.lens.mass,
+                shear=phase5.result.instance.galaxies.lens.shear,
+                hyper_galaxy=phase5.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
@@ -189,8 +189,8 @@ def make_pipeline(
                 regularization=pipeline_regularization,
             ),
         ),
-        hyper_image_sky=phase5.result.hyper_combined.constant.hyper_image_sky,
-        hyper_background_noise=phase5.result.hyper_combined.constant.hyper_background_noise,
+        hyper_image_sky=phase5.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase5.result.hyper_combined.instance.hyper_background_noise,
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
         optimizer_class=optimizer_class,
@@ -213,20 +213,20 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase5.result.variable.galaxies.lens.light,
-                mass=phase5.result.variable.galaxies.lens.mass,
-                shear=phase5.result.variable.galaxies.lens.shear,
-                hyper_galaxy=phase6.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                light=phase5.result.model.galaxies.lens.light,
+                mass=phase5.result.model.galaxies.lens.mass,
+                shear=phase5.result.model.galaxies.lens.shear,
+                hyper_galaxy=phase6.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase6.result.constant.galaxies.source.pixelization,
-                regularization=phase6.result.constant.galaxies.source.regularization,
-                hyper_galaxy=phase6.result.hyper_combined.constant.galaxies.source.hyper_galaxy,
+                pixelization=phase6.result.instance.galaxies.source.pixelization,
+                regularization=phase6.result.instance.galaxies.source.regularization,
+                hyper_galaxy=phase6.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
             ),
         ),
-        hyper_image_sky=phase6.result.hyper_combined.constant.hyper_image_sky,
-        hyper_background_noise=phase6.result.hyper_combined.constant.hyper_background_noise,
+        hyper_image_sky=phase6.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase6.result.hyper_combined.instance.hyper_background_noise,
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
         optimizer_class=optimizer_class,

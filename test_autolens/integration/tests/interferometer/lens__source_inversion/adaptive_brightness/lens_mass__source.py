@@ -34,8 +34,8 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                mass=phase1.result.constant.galaxies.lens.mass,
-                shear=phase1.result.constant.galaxies.lens.shear,
+                mass=phase1.result.instance.galaxies.lens.mass,
+                shear=phase1.result.instance.galaxies.lens.shear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
@@ -58,13 +58,13 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                mass=phase1.variable.galaxies.lens.mass,
-                shear=phase1.variable.galaxies.lens.shear,
+                mass=phase1.model.galaxies.lens.mass,
+                shear=phase1.model.galaxies.lens.shear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase2.result.constant.galaxies.source.pixelization,
-                regularization=phase2.result.constant.galaxies.source.regularization,
+                pixelization=phase2.result.instance.galaxies.source.pixelization,
+                regularization=phase2.result.instance.galaxies.source.regularization,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,
@@ -82,13 +82,13 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                mass=phase3.result.constant.galaxies.lens.mass,
-                shear=phase3.result.constant.galaxies.lens.shear,
+                mass=phase3.result.instance.galaxies.lens.mass,
+                shear=phase3.result.instance.galaxies.lens.shear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase2.variable.galaxies.source.pixelization,
-                regularization=phase2.variable.galaxies.source.pixelization,
+                pixelization=phase2.model.galaxies.source.pixelization,
+                regularization=phase2.model.galaxies.source.pixelization,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,

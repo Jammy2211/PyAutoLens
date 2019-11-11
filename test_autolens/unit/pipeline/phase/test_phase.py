@@ -36,26 +36,26 @@ def clean_images():
 
 
 class TestPhase(object):
-    def test__set_constants(self, phase_dataset_7x7):
+    def test__set_instances(self, phase_dataset_7x7):
         phase_dataset_7x7.galaxies = [al.galaxy(redshift=0.5)]
-        assert phase_dataset_7x7.variable.galaxies == [al.galaxy(redshift=0.5)]
+        assert phase_dataset_7x7.model.galaxies == [al.galaxy(redshift=0.5)]
 
-    def test__set_variables(self, phase_dataset_7x7):
+    def test__set_models(self, phase_dataset_7x7):
         phase_dataset_7x7.galaxies = [al.GalaxyModel(redshift=0.5)]
-        assert phase_dataset_7x7.variable.galaxies == [al.GalaxyModel(redshift=0.5)]
+        assert phase_dataset_7x7.model.galaxies == [al.GalaxyModel(redshift=0.5)]
 
     def test__customize(
         self, mask_function_7x7, results_7x7, results_collection_7x7, imaging_7x7
     ):
         class MyPlanePhaseAnd(al.PhaseImaging):
             def customize_priors(self, results):
-                self.galaxies = results.last.constant.galaxies
+                self.galaxies = results.last.instance.galaxies
 
         galaxy = al.galaxy(redshift=0.5)
         galaxy_model = al.GalaxyModel(redshift=0.5)
 
-        setattr(results_7x7.constant, "galaxies", [galaxy])
-        setattr(results_7x7.variable, "galaxies", [galaxy_model])
+        setattr(results_7x7.instance, "galaxies", [galaxy])
+        setattr(results_7x7.model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(
             phase_name="test_phase",
@@ -72,13 +72,13 @@ class TestPhase(object):
 
         class MyPlanePhaseAnd(al.PhaseImaging):
             def customize_priors(self, results):
-                self.galaxies = results.last.variable.galaxies
+                self.galaxies = results.last.model.galaxies
 
         galaxy = al.galaxy(redshift=0.5)
         galaxy_model = al.GalaxyModel(redshift=0.5)
 
-        setattr(results_7x7.constant, "galaxies", [galaxy])
-        setattr(results_7x7.variable, "galaxies", [galaxy_model])
+        setattr(results_7x7.instance, "galaxies", [galaxy])
+        setattr(results_7x7.model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(
             phase_name="test_phase",
@@ -132,12 +132,12 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        for item in phase_dataset_7x7.variable.path_priors_tuples:
+        for item in phase_dataset_7x7.model.path_priors_tuples:
             print(item)
 
-        sersic = phase_dataset_7x7.variable.galaxies[0].sersic
-        sis = phase_dataset_7x7.variable.galaxies[0].sis
-        lens_1_sis = phase_dataset_7x7.variable.galaxies[1].sis
+        sersic = phase_dataset_7x7.model.galaxies[0].sersic
+        sis = phase_dataset_7x7.model.galaxies[0].sis
+        lens_1_sis = phase_dataset_7x7.model.galaxies[1].sis
 
         arguments = {
             sersic.centre[0]: 0.2,
@@ -150,14 +150,14 @@ class TestPhase(object):
             sis.centre[0]: 0.1,
             sis.centre[1]: 0.2,
             sis.einstein_radius.priors[0]: 0.3,
-            phase_dataset_7x7.variable.galaxies[0].redshift.priors[0]: 0.4,
+            phase_dataset_7x7.model.galaxies[0].redshift.priors[0]: 0.4,
             lens_1_sis.centre[0]: 0.6,
             lens_1_sis.centre[1]: 0.5,
             lens_1_sis.einstein_radius.priors[0]: 0.7,
-            phase_dataset_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
+            phase_dataset_7x7.model.galaxies[1].redshift.priors[0]: 0.8,
         }
 
-        instance = phase_dataset_7x7.variable.instance_for_arguments(
+        instance = phase_dataset_7x7.model.instance_for_arguments(
             arguments=arguments
         )
 
@@ -194,9 +194,9 @@ class TestPhase(object):
         # noinspection PyTypeChecker
         phase_dataset_7x7.pass_models(None)
 
-        sersic = phase_dataset_7x7.variable.galaxies[0].sersic
-        sis = phase_dataset_7x7.variable.galaxies[0].sis
-        lens_1_sis = phase_dataset_7x7.variable.galaxies[1].sis
+        sersic = phase_dataset_7x7.model.galaxies[0].sersic
+        sis = phase_dataset_7x7.model.galaxies[0].sis
+        lens_1_sis = phase_dataset_7x7.model.galaxies[1].sis
 
         arguments = {
             sersic.centre[0]: 0.01,
@@ -208,14 +208,14 @@ class TestPhase(object):
             sersic.intensity.priors[0]: 0.6,
             sis.centre[0]: 0.1,
             sis.centre[1]: 0.2,
-            phase_dataset_7x7.variable.galaxies[0].redshift.priors[0]: 0.4,
+            phase_dataset_7x7.model.galaxies[0].redshift.priors[0]: 0.4,
             lens_1_sis.centre[0]: 0.6,
             lens_1_sis.centre[1]: 0.5,
             lens_1_sis.einstein_radius.priors[0]: 0.7,
-            phase_dataset_7x7.variable.galaxies[1].redshift.priors[0]: 0.8,
+            phase_dataset_7x7.model.galaxies[1].redshift.priors[0]: 0.8,
         }
 
-        instance = phase_dataset_7x7.variable.instance_for_arguments(arguments)
+        instance = phase_dataset_7x7.model.instance_for_arguments(arguments)
 
         assert instance.galaxies[0].sersic.centre[0] == 0.01
         assert instance.galaxies[0].sis.centre[0] == 0.1
