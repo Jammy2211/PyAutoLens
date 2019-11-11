@@ -696,7 +696,7 @@ class PlanePositions(object):
 
             def calculate_deflections(pos):
                 return sum(
-                    map(lambda galaxy: galaxy.deflections_of_planes_summed_from_grid(pos), galaxies)
+                    map(lambda galaxy: galaxy.deflections_from_grid(pos), galaxies)
                 )
 
             self.deflections = list(

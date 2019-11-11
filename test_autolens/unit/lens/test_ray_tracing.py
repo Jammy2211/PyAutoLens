@@ -43,7 +43,7 @@ def caustics_via_magnification_from_tracer_and_grid(tracer, grid):
     for i in range(len(critical_curves)):
         critical_curve = critical_curves[i]
 
-        deflections_1d = tracer.deflections_of_planes_summed_from_grid(grid=critical_curve)
+        deflections_1d = tracer.deflections_from_grid(grid=critical_curve)
 
         caustic = critical_curve - deflections_1d
 

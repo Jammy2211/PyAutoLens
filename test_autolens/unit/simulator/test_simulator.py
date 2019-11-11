@@ -97,7 +97,7 @@ class TestSimulatorImaging:
         )
 
         imaging_simulated = simulator.from_deflections_and_galaxies(
-            deflections=tracer.deflections_of_planes_summed_from_grid(grid=grid),
+            deflections=tracer.deflections_from_grid(grid=grid),
             galaxies=[source_galaxy],
         )
 
@@ -273,7 +273,7 @@ class TestSimulatorInterferometer:
         )
 
         interferometer_simulated = simulator.from_deflections_and_galaxies(
-            deflections=tracer.deflections_of_planes_summed_from_grid(grid=grid),
+            deflections=tracer.deflections_from_grid(grid=grid),
             galaxies=[source_galaxy],
         )
 

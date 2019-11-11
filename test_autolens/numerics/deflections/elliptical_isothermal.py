@@ -13,7 +13,7 @@ for y in y_centres:
     power_law = al.EllipticalIsothermal(
         centre=(y, 0.0), axis_ratio=0.8, phi=0.0, einstein_radius=1.0
     )
-    power_law.deflections_of_planes_summed_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
+    power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
 
 for y in y_centres:
 
@@ -21,7 +21,7 @@ for y in y_centres:
     power_law = al.EllipticalIsothermal(
         centre=(y, 0.0), axis_ratio=0.99999999, phi=0.0, einstein_radius=1.0
     )
-    power_law.deflections_of_planes_summed_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
+    power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
 
 for y in y_centres:
 
@@ -29,7 +29,7 @@ for y in y_centres:
     power_law = al.EllipticalIsothermal(
         centre=(y, 0.0), axis_ratio=0.005, phi=0.0, einstein_radius=1.0
     )
-    power_law.deflections_of_planes_summed_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
+    power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
 
 for y in y_centres:
 
@@ -37,7 +37,7 @@ for y in y_centres:
     power_law = al.EllipticalIsothermal(
         centre=(y, 0.0), axis_ratio=0.8, phi=0.0, einstein_radius=1.0
     )
-    power_law.deflections_of_planes_summed_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
+    power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
 
 for y in y_centres:
 
@@ -45,4 +45,4 @@ for y in y_centres:
     power_law = al.EllipticalIsothermal(
         centre=(y, 0.0), axis_ratio=0.8, phi=0.0, einstein_radius=1.0
     )
-    power_law.deflections_of_planes_summed_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
+    power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
