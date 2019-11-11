@@ -54,7 +54,7 @@ class AbstractPhase(af.AbstractPhase):
         return self.Result(
             constant=result.constant,
             figure_of_merit=result.figure_of_merit,
-            previous_variable=result.previous_variable,
+            previous_model=result.previous_model,
             gaussian_tuples=result.gaussian_tuples,
             analysis=analysis,
             optimizer=self.optimizer,

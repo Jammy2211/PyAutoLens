@@ -11,7 +11,7 @@ from autolens.pipeline.phase.dataset.phase import (
 class MetaDatasetFit:
     def __init__(
         self,
-        variable,
+        model,
         sub_size=2,
         signal_to_noise_limit=None,
         positions_threshold=None,
@@ -23,7 +23,7 @@ class MetaDatasetFit:
         is_hyper_phase=False,
     ):
         self.is_hyper_phase = is_hyper_phase
-        self.variable = variable
+        self.model = model
         self.sub_size = sub_size
         self.signal_to_noise_limit = signal_to_noise_limit
         self.positions_threshold = positions_threshold
@@ -76,7 +76,7 @@ class MetaDatasetFit:
 
     @property
     def pixelization(self):
-        for galaxy in self.variable.galaxies:
+        for galaxy in self.model.galaxies:
             if galaxy.pixelization is not None:
                 if isinstance(galaxy.pixelization, af.PriorModel):
                     return galaxy.pixelization.cls
@@ -85,8 +85,8 @@ class MetaDatasetFit:
 
     @property
     def uses_cluster_inversion(self):
-        if self.variable.galaxies:
-            for galaxy in self.variable.galaxies:
+        if self.model.galaxies:
+            for galaxy in self.model.galaxies:
                 if isinstance_or_prior(galaxy.pixelization, pix.VoronoiBrightnessImage):
                     return True
         return False

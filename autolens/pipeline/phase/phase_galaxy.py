@@ -194,7 +194,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
             galaxy_data=galaxy_data, results=results, mask=mask
         )
 
-        self.variable = self.variable.populate(results)
+        self.model = self.model.populate(results)
         self.customize_priors(results)
         self.assert_and_save_pickle()
 

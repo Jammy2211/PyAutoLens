@@ -40,8 +40,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             self.galaxies.lens.sersic.intensity = results.from_phase(
                 "phase_1"
-            ).variable.lens.sersic.intensity
-            self.galaxies.lens = results.from_phase("phase_1").variable.lens
+            ).model.lens.sersic.intensity
+            self.galaxies.lens = results.from_phase("phase_1").model.lens
 
     phase2 = MMPhase(
         phase_name="phase_2",

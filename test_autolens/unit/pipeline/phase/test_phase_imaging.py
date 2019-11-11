@@ -223,7 +223,7 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        instance = phase_imaging_7x7.variable.instance_from_physical_vector(
+        instance = phase_imaging_7x7.model.instance_from_physical_vector(
             [0.1, 0.2, 0.3, 0.4]
         )
 
@@ -275,7 +275,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.meta_imaging_fit.setup_phase_mask(
@@ -311,7 +311,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.meta_imaging_fit.setup_phase_mask(

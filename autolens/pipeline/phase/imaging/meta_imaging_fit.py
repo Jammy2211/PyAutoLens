@@ -5,7 +5,7 @@ from autolens.pipeline.phase import dataset
 class MetaImagingFit(dataset.MetaDatasetFit):
     def __init__(
         self,
-        variable,
+        model,
         sub_size=2,
         is_hyper_phase=False,
         signal_to_noise_limit=None,
@@ -19,7 +19,7 @@ class MetaImagingFit(dataset.MetaDatasetFit):
         bin_up_factor=None,
     ):
         super().__init__(
-            variable=variable,
+            model=model,
             sub_size=sub_size,
             is_hyper_phase=is_hyper_phase,
             signal_to_noise_limit=signal_to_noise_limit,

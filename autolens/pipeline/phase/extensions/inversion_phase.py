@@ -8,12 +8,12 @@ from .hyper_phase import HyperPhase
 
 
 # noinspection PyAbstractClass
-class VariableFixingHyperPhase(HyperPhase):
+class modelFixingHyperPhase(HyperPhase):
     def __init__(
-        self, phase: abstract.AbstractPhase, hyper_name: str, variable_classes=tuple()
+        self, phase: abstract.AbstractPhase, hyper_name: str, model_classes=tuple()
     ):
         super().__init__(phase=phase, hyper_name=hyper_name)
-        self.variable_classes = variable_classes
+        self.model_classes = model_classes
 
     def make_hyper_phase(self):
         phase = super().make_hyper_phase()
@@ -33,16 +33,16 @@ class VariableFixingHyperPhase(HyperPhase):
 
         return phase
 
-    def make_variable(self, constant):
-        return constant.as_variable(self.variable_classes)
+    def make_model(self, constant):
+        return constant.as_model(self.model_classes)
 
     def run_hyper(self, dataset, results=None, **kwargs):
         """
-        Run the phase, overriding the optimizer's variable instance with one created to
+        Run the phase, overriding the optimizer's model instance with one created to
         only fit pixelization hyperparameters.
         """
         phase = self.make_hyper_phase()
-        phase.variable = self.make_variable(results.last.constant)
+        phase.model = self.make_model(results.last.constant)
 
         return phase.run(
             dataset,
@@ -52,48 +52,48 @@ class VariableFixingHyperPhase(HyperPhase):
         )
 
 
-class InversionPhase(VariableFixingHyperPhase):
+class InversionPhase(modelFixingHyperPhase):
     """
-    Phase that makes everything in the variable from the previous phase equal to the
-    corresponding value from the best fit except for variables associated with
+    Phase that makes everything in the model from the previous phase equal to the
+    corresponding value from the best fit except for models associated with
     pixelization
     """
 
     def __init__(
         self,
         phase: abstract.AbstractPhase,
-        variable_classes=(pix.Pixelization, reg.Regularization),
+        model_classes=(pix.Pixelization, reg.Regularization),
     ):
         super().__init__(
-            phase=phase, variable_classes=variable_classes, hyper_name="inversion"
+            phase=phase, model_classes=model_classes, hyper_name="inversion"
         )
 
 
 class InversionBackgroundSkyPhase(InversionPhase):
     """
-    Phase that makes everything in the variable from the previous phase equal to the
-    corresponding value from the best fit except for variables associated with
+    Phase that makes everything in the model from the previous phase equal to the
+    corresponding value from the best fit except for models associated with
     pixelization
     """
 
     def __init__(self, phase: PhaseImaging):
         super().__init__(
             phase=phase,
-            variable_classes=(pix.Pixelization, reg.Regularization, hd.HyperImageSky),
+            model_classes=(pix.Pixelization, reg.Regularization, hd.HyperImageSky),
         )
 
 
 class InversionBackgroundNoisePhase(InversionPhase):
     """
-    Phase that makes everything in the variable from the previous phase equal to the
-    corresponding value from the best fit except for variables associated with
+    Phase that makes everything in the model from the previous phase equal to the
+    corresponding value from the best fit except for models associated with
     pixelization
     """
 
     def __init__(self, phase: PhaseImaging):
         super().__init__(
             phase=phase,
-            variable_classes=(
+            model_classes=(
                 pix.Pixelization,
                 reg.Regularization,
                 hd.HyperBackgroundNoise,
@@ -103,15 +103,15 @@ class InversionBackgroundNoisePhase(InversionPhase):
 
 class InversionBackgroundBothPhase(InversionPhase):
     """
-    Phase that makes everything in the variable from the previous phase equal to the
-    corresponding value from the best fit except for variables associated with
+    Phase that makes everything in the model from the previous phase equal to the
+    corresponding value from the best fit except for models associated with
     pixelization
     """
 
     def __init__(self, phase: PhaseImaging):
         super().__init__(
             phase=phase,
-            variable_classes=(
+            model_classes=(
                 pix.Pixelization,
                 reg.Regularization,
                 hd.HyperImageSky,

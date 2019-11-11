@@ -73,7 +73,7 @@ class PhaseDataset(abstract.AbstractPhase):
         result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper_galaxies.
         """
-        self.variable = self.variable.populate(results)
+        self.model = self.model.populate(results)
 
         analysis = self.make_analysis(
             dataset=dataset, results=results, mask=mask, positions=positions

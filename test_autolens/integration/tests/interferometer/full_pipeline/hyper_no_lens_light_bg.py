@@ -45,7 +45,7 @@ def make_pipeline(
 
             self.galaxies.lens = results.from_phase(
                 "phase_1__lens_sie__source_sersic"
-            ).variable.galaxies.lens
+            ).model.galaxies.lens
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
@@ -91,13 +91,13 @@ def make_pipeline(
 
             self.galaxies.lens = results.from_phase(
                 "phase_1__lens_sie__source_sersic"
-            ).variable.galaxies.lens
+            ).model.galaxies.lens
 
             ### Source Inversion, Inv -> Inv ###
 
             self.galaxies.source = results.from_phase(
                 "phase_1_initialize_magnification_inversion"
-            ).variable.galaxies.source
+            ).model.galaxies.source
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
@@ -143,7 +143,7 @@ def make_pipeline(
 
             self.galaxies.lens = results.from_phase(
                 "phase_3__lens_sie__source_magnification_inversion"
-            ).variable.galaxies.lens
+            ).model.galaxies.lens
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
@@ -189,13 +189,13 @@ def make_pipeline(
 
             self.galaxies.lens = results.from_phase(
                 "phase_3__lens_sie__source_magnification_inversion"
-            ).variable.galaxies.lens
+            ).model.galaxies.lens
 
             ### Source Inversion, Inv -> Inv ###
 
             self.galaxies.source = results.from_phase(
                 "phase_4__initialize_inversion"
-            ).hyper_combined.variable.galaxies.source
+            ).hyper_combined.model.galaxies.source
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 

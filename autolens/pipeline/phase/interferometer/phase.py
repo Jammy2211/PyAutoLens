@@ -77,7 +77,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         self.is_hyper_phase = False
 
         self.meta_interferometer_fit = MetaInterferometerFit(
-            variable=self.variable,
+            model=self.model,
             sub_size=sub_size,
             real_space_shape_2d=real_space_shape_2d,
             real_space_pixel_scales=real_space_pixel_scales,
@@ -129,7 +129,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        self.meta_interferometer_fit.variable = self.variable
+        self.meta_interferometer_fit.model = self.model
         modified_visibilities = self.modify_visibilities(
             visibilities=dataset.visibilities, results=results
         )

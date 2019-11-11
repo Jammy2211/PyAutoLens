@@ -49,7 +49,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             lens=al.GalaxyModel(
                 redshift=0.5,
                 light=al.lp.EllipticalSersic,
-                light_1=phase1.result.variable.galaxies.lens.light_1,
+                light_1=phase1.result.model.galaxies.lens.light_1,
             )
         ),
         optimizer_class=optimizer_class,
@@ -62,7 +62,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase4 = al.PhaseImaging(
         phase_name="phase_4",
         phase_folders=phase_folders,
-        galaxies=phase1.result.variable.galaxies,
+        galaxies=phase1.result.model.galaxies,
         optimizer_class=optimizer_class,
     )
 

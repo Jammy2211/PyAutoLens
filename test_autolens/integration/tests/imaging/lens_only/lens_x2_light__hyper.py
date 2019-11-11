@@ -46,12 +46,12 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens_0=al.GalaxyModel(
                 redshift=0.5,
-                light=phase1.result.variable.galaxies.lens_0.light,
+                light=phase1.result.model.galaxies.lens_0.light,
                 hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens_0.hyper_galaxy,
             ),
             lens_1=al.GalaxyModel(
                 redshift=0.5,
-                light=phase1.result.variable.galaxies.lens_1.light,
+                light=phase1.result.model.galaxies.lens_1.light,
                 hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens_1.hyper_galaxy,
             ),
         ),

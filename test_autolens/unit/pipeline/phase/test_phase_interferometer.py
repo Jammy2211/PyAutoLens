@@ -128,7 +128,7 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        instance = phase_interferometer_7.variable.instance_from_physical_vector(
+        instance = phase_interferometer_7.model.instance_from_physical_vector(
             [0.1, 0.2, 0.3]
         )
 
@@ -181,7 +181,7 @@ class TestPhase(object):
         )
 
         analysis = phase_interferometer_7.make_analysis(dataset=interferometer_7)
-        instance = phase_interferometer_7.variable.instance_from_unit_vector([])
+        instance = phase_interferometer_7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_interferometer_7.meta_interferometer_fit.setup_phase_mask(
@@ -217,7 +217,7 @@ class TestPhase(object):
         )
 
         analysis = phase_interferometer_7.make_analysis(dataset=interferometer_7)
-        instance = phase_interferometer_7.variable.instance_from_unit_vector([])
+        instance = phase_interferometer_7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_interferometer_7.meta_interferometer_fit.setup_phase_mask(

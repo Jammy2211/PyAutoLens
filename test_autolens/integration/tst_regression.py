@@ -142,16 +142,16 @@ class TestPhaseModelMapper(object):
             phase_name="{}/phase1".format(test_name),
         )
 
-        initial_total_priors = phase.variable.prior_count
+        initial_total_priors = phase.model.prior_count
         phase.make_analysis(dataset=imaging)
 
         assert phase.galaxies[0].sersic.intensity == al.Galaxies[0].sersic.axis_ratio
-        assert initial_total_priors - 1 == phase.variable.prior_count
+        assert initial_total_priors - 1 == phase.model.prior_count
 
         lines = list(
             filter(
                 lambda line: "axis_ratio" in line or "intensity" in line,
-                str(phase.variable).split("\n"),
+                str(phase.model).split("\n"),
             )
         )
 
@@ -223,7 +223,7 @@ class TestPhaseModelMapper(object):
 
         phase.make_analysis(dataset=imaging)
 
-        sersic = phase.variable.galaxies[0].sersic
+        sersic = phase.model.galaxies[0].sersic
 
         assert isinstance(sersic, af.PriorModel)
 

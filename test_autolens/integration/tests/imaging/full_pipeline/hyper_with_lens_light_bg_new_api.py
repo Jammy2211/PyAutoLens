@@ -38,7 +38,7 @@ def make_pipeline(
 
             self.galaxies.lens.mass.centre = (
                 results.from_phase("phase_1__lens_sersic")
-                .variable_absolute(a=0.1)
+                .model_absolute(a=0.1)
                 .galaxies.lens.light.centre
             )
 
@@ -74,13 +74,13 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase1.result.variable.galaxies.lens.light,
-                mass=phase2.result.variable.galaxies.lens.mass,
-                shear=phase2.result.variable.galaxies.lens.shear,
+                light=phase1.result.model.galaxies.lens.light,
+                mass=phase2.result.model.galaxies.lens.mass,
+                shear=phase2.result.model.galaxies.lens.shear,
                 hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
-                redshift=1.0, light=phase2.result.variable.galaxies.source.light
+                redshift=1.0, light=phase2.result.model.galaxies.source.light
             ),
         ),
         hyper_image_sky=phase2.result.hyper_combined.constant.hyper_image_sky,
@@ -135,9 +135,9 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase3.result.variable.galaxies.lens.light,
-                mass=phase3.result.variable.galaxies.lens.mass,
-                shear=phase3.result.variable.galaxies.lens.shear,
+                light=phase3.result.model.galaxies.lens.light,
+                mass=phase3.result.model.galaxies.lens.mass,
+                shear=phase3.result.model.galaxies.lens.shear,
                 hyper_galaxy=phase4.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
@@ -201,9 +201,9 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase5.result.variable.galaxies.lens.light,
-                mass=phase5.result.variable.galaxies.lens.mass,
-                shear=phase5.result.variable.galaxies.lens.shear,
+                light=phase5.result.model.galaxies.lens.light,
+                mass=phase5.result.model.galaxies.lens.mass,
+                shear=phase5.result.model.galaxies.lens.shear,
                 hyper_galaxy=phase6.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(

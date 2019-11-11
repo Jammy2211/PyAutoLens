@@ -77,7 +77,7 @@ def make_pipeline(
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
-            self.galaxies.lens = results.from_phase("phase_1").variable.galaxies.lens
+            self.galaxies.lens = results.from_phase("phase_1").model.galaxies.lens
 
             self.galaxies.source.pixelization = (
                 results.last.inversion.constant.galaxies.source.pixelization
