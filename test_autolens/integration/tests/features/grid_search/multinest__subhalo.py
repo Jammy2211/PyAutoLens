@@ -68,8 +68,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         @property
         def grid_priors(self):
             return [
-                self.variable.galaxies.subhalo.mass.centre_0,
-                self.variable.galaxies.subhalo.mass.centre_1,
+                self.model.galaxies.subhalo.mass.centre_0,
+                self.model.galaxies.subhalo.mass.centre_1,
             ]
 
         def customize_priors(self, results):
@@ -96,37 +96,37 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             self.galaxies.source.light.centre = (
                 results.from_phase("phase_1")
-                .variable_absolute(a=0.05)
+                .model_absolute(a=0.05)
                 .galaxies.source.light.centre
             )
 
             self.galaxies.source.light.intensity = (
                 results.from_phase("phase_1")
-                .variable_relative(r=0.5)
+                .model_relative(r=0.5)
                 .galaxies.source.light.intensity
             )
 
             self.galaxies.source.light.effective_radius = (
                 results.from_phase("phase_1")
-                .variable_relative(r=0.5)
+                .model_relative(r=0.5)
                 .galaxies.source.light.effective_radius
             )
 
             self.galaxies.source.light.sersic_index = (
                 results.from_phase("phase_1")
-                .variable_relative(r=0.5)
+                .model_relative(r=0.5)
                 .galaxies.source.light.sersic_index
             )
 
             self.galaxies.source.light.axis_ratio = (
                 results.from_phase("phase_1")
-                .variable_absolute(a=0.1)
+                .model_absolute(a=0.1)
                 .galaxies.source.light.axis_ratio
             )
 
             self.galaxies.source.light.phi = (
                 results.from_phase("phase_1")
-                .variable_absolute(a=20.0)
+                .model_absolute(a=20.0)
                 .galaxies.source.light.phi
             )
 

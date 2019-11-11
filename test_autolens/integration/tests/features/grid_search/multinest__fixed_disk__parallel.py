@@ -73,7 +73,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class GridPhase(af.as_grid_search(phase_class=al.PhaseImaging, parallel=True)):
         @property
         def grid_priors(self):
-            return [self.variable.galaxies.lens.bulge.sersic_index]
+            return [self.model.galaxies.lens.bulge.sersic_index]
 
         def customize_priors(self, results):
 

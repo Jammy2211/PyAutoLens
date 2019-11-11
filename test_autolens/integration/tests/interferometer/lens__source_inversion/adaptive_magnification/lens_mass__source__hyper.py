@@ -52,13 +52,13 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                mass=phase1.result.variable.galaxies.lens.mass,
+                mass=phase1.result.model.galaxies.lens.mass,
                 hyper_galaxy=al.HyperGalaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase1.result.variable.galaxies.source.pixelization,
-                regularization=phase1.result.variable.galaxies.source.regularization,
+                pixelization=phase1.result.model.galaxies.source.pixelization,
+                regularization=phase1.result.model.galaxies.source.regularization,
                 hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.source.hyper_galaxy,
             ),
         ),

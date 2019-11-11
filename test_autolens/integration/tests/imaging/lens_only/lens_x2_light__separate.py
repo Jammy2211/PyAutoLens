@@ -67,8 +67,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_3",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=phase1.result.variable.galaxies.lens_0,
-            lens_1=phase2.result.variable.galaxies.lens_1,
+            lens_0=phase1.result.model.galaxies.lens_0,
+            lens_1=phase2.result.model.galaxies.lens_1,
         ),
         mask_function=modify_mask_function,
         optimizer_class=optimizer_class,

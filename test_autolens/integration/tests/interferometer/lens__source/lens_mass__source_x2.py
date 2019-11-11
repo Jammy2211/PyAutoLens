@@ -37,10 +37,10 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=phase1.result.variable.galaxies.lens.mass
+                redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
             ),
             source_0=al.GalaxyModel(
-                redshift=1.0, light=phase1.result.variable.galaxies.source_0.light
+                redshift=1.0, light=phase1.result.model.galaxies.source_0.light
             ),
             source_1=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),

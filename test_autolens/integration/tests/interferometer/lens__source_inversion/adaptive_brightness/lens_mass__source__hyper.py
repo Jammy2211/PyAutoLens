@@ -71,8 +71,8 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                mass=phase1.result.variable.galaxies.lens.mass,
-                shear=phase1.result.variable.galaxies.lens.shear,
+                mass=phase1.result.model.galaxies.lens.mass,
+                shear=phase1.result.model.galaxies.lens.shear,
                 hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(

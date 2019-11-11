@@ -41,7 +41,7 @@ def make_result(masked_imaging_7x7, instance):
     return al.PhaseImaging.Result(
         constant=instance,
         figure_of_merit=1.0,
-        previous_variable=af.ModelMapper(),
+        previous_model=af.ModelMapper(),
         gaussian_tuples=None,
         analysis=al.PhaseImaging.Analysis(
             masked_imaging=masked_imaging_7x7, cosmology=cosmo.Planck15, image_path=""
@@ -60,7 +60,7 @@ class MockResult(object):
         self.most_likely_fit = most_likely_fit
         self.analysis = MockAnalysis()
         self.path_galaxy_tuples = []
-        self.variable = af.ModelMapper()
+        self.model = af.ModelMapper()
         self.mask = None
         self.positions = None
 
@@ -94,14 +94,14 @@ class MockPhase(object):
             phase_tag="",
         )
         self.optimizer = MockOptimizer()
-        self.variable = af.ModelMapper()
+        self.model = af.ModelMapper()
 
     # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def run(self, *args, **kwargs):
         return MockResult()
 
 
-class TestVariableFixing(object):
+class TestmodelFixing(object):
     def test__defaults_both(self):
         # noinspection PyTypeChecker
         phase = al.InversionBackgroundBothPhase(MockPhase())
@@ -110,7 +110,7 @@ class TestVariableFixing(object):
         constant.hyper_image_sky = al.hyper_data.HyperImageSky()
         constant.hyper_background_noise = al.hyper_data.HyperBackgroundNoise()
 
-        mapper = phase.make_variable(constant)
+        mapper = phase.make_model(constant)
 
         assert isinstance(mapper.hyper_image_sky, af.PriorModel)
         assert isinstance(mapper.hyper_background_noise, af.PriorModel)
@@ -125,7 +125,7 @@ class TestVariableFixing(object):
         constant = af.ModelInstance()
         constant.hyper_image_sky = al.hyper_data.HyperImageSky()
 
-        mapper = phase.make_variable(constant)
+        mapper = phase.make_model(constant)
 
         assert isinstance(mapper.hyper_image_sky, af.PriorModel)
         assert mapper.hyper_image_sky.cls == al.hyper_data.HyperImageSky
@@ -137,12 +137,12 @@ class TestVariableFixing(object):
         constant = af.ModelInstance()
         constant.hyper_background_noise = al.hyper_data.HyperBackgroundNoise()
 
-        mapper = phase.make_variable(constant)
+        mapper = phase.make_model(constant)
 
         assert isinstance(mapper.hyper_background_noise, af.PriorModel)
         assert mapper.hyper_background_noise.cls == al.hyper_data.HyperBackgroundNoise
 
-    def test__make_pixelization_variable(self):
+    def test__make_pixelization_model(self):
         instance = af.ModelInstance()
         mapper = af.ModelMapper()
 
@@ -167,13 +167,13 @@ class TestVariableFixing(object):
         )
 
         # noinspection PyTypeChecker
-        phase = al.VariableFixingHyperPhase(
+        phase = al.modelFixingHyperPhase(
             MockPhase(),
             "mock_phase",
-            variable_classes=(al.pix.Pixelization, al.reg.Regularization),
+            model_classes=(al.pix.Pixelization, al.reg.Regularization),
         )
 
-        mapper = mapper.copy_with_fixed_priors(instance, phase.variable_classes)
+        mapper = mapper.copy_with_fixed_priors(instance, phase.model_classes)
 
         assert mapper.prior_count == 3
         assert mapper.lens_galaxy.redshift == 1.0
@@ -339,29 +339,29 @@ class TestHyperAPI(object):
         assert hasattr(result, "hyper_combined")
         assert isinstance(result.hyper_combined, MockResult)
 
-    def test_combine_variables(self, hyper_combined):
+    def test_combine_models(self, hyper_combined):
         result = MockResult()
         hyper_galaxy_result = MockResult()
         inversion_result = MockResult()
 
-        hyper_galaxy_result.variable = af.ModelMapper()
-        inversion_result.variable = af.ModelMapper()
+        hyper_galaxy_result.model = af.ModelMapper()
+        inversion_result.model = af.ModelMapper()
 
-        hyper_galaxy_result.variable.hyper_galaxy = al.HyperGalaxy
-        hyper_galaxy_result.variable.pixelization = al.pix.Pixelization()
-        inversion_result.variable.pixelization = al.pix.Pixelization
-        inversion_result.variable.hyper_galaxy = al.HyperGalaxy()
+        hyper_galaxy_result.model.hyper_galaxy = al.HyperGalaxy
+        hyper_galaxy_result.model.pixelization = al.pix.Pixelization()
+        inversion_result.model.pixelization = al.pix.Pixelization
+        inversion_result.model.hyper_galaxy = al.HyperGalaxy()
 
         result.hyper_galaxy = hyper_galaxy_result
         result.inversion = inversion_result
 
-        variable = hyper_combined.combine_variables(result)
+        model = hyper_combined.combine_models(result)
 
-        assert isinstance(variable.hyper_galaxy, af.PriorModel)
-        assert isinstance(variable.pixelization, af.PriorModel)
+        assert isinstance(model.hyper_galaxy, af.PriorModel)
+        assert isinstance(model.pixelization, af.PriorModel)
 
-        assert variable.hyper_galaxy.cls == al.HyperGalaxy
-        assert variable.pixelization.cls == al.pix.Pixelization
+        assert model.hyper_galaxy.cls == al.HyperGalaxy
+        assert model.pixelization.cls == al.pix.Pixelization
 
     def test_instantiation(self, hyper_combined):
         assert len(hyper_combined.hyper_phases) == 2
@@ -416,7 +416,7 @@ class TestHyperGalaxyPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
-        instance = phase_imaging_7x7.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7.model.instance_from_unit_vector([])
 
         mask = phase_imaging_7x7.meta_imaging_fit.setup_phase_mask(
             shape_2d=imaging_7x7.shape_2d,
@@ -438,7 +438,7 @@ class TestHyperGalaxyPhase(object):
             hyper_galaxy=True
         )
 
-        instance = phase_imaging_7x7_hyper.variable.instance_from_unit_vector([])
+        instance = phase_imaging_7x7_hyper.model.instance_from_unit_vector([])
 
         instance.hyper_galaxy = al.HyperGalaxy(noise_factor=0.0)
 

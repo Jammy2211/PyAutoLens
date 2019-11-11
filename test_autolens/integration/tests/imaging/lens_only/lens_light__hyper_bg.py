@@ -31,7 +31,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase1.result.variable.galaxies.lens.light,
+                light=phase1.result.model.galaxies.lens.light,
                 hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
             )
         ),

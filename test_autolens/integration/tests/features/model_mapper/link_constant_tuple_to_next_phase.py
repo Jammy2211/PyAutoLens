@@ -31,11 +31,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             self.galaxies.lens.light.centre_0 = results.from_phase(
                 "phase_1"
-            ).variable.galaxies.lens.light.centre_0
+            ).model.galaxies.lens.light.centre_0
 
             self.galaxies.lens.light.centre_1 = results.from_phase(
                 "phase_1"
-            ).variable.galaxies.lens.light.centre_1
+            ).model.galaxies.lens.light.centre_1
 
     phase2 = MMPhase2(
         phase_name="phase_2",

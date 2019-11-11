@@ -191,7 +191,7 @@ class HyperGalaxyPhase(HyperPhase):
         )
 
         hyper_result = copy.deepcopy(results.last)
-        hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(
+        hyper_result.model = hyper_result.model.copy_with_fixed_priors(
             hyper_result.constant
         )
 
@@ -219,7 +219,7 @@ class HyperGalaxyPhase(HyperPhase):
                 "MultiNest", "extension_hyper_galaxy_multimodal", bool
             )
 
-            model = copy.deepcopy(phase.variable)
+            model = copy.deepcopy(phase.model)
 
             # TODO : This is a HACK :O
 
@@ -258,9 +258,9 @@ class HyperGalaxyPhase(HyperPhase):
                             getattr(result.constant, name),
                         )
                         setattr(
-                            hyper_result.variable.object_for_path(path),
+                            hyper_result.model.object_for_path(path),
                             name,
-                            getattr(result.variable, name),
+                            getattr(result.model, name),
                         )
 
                 transfer_field("hyper_galaxy")
@@ -268,15 +268,15 @@ class HyperGalaxyPhase(HyperPhase):
                 hyper_result.constant.hyper_image_sky = getattr(
                     result.constant, "hyper_image_sky"
                 )
-                hyper_result.variable.hyper_image_sky = getattr(
-                    result.variable, "hyper_image_sky"
+                hyper_result.model.hyper_image_sky = getattr(
+                    result.model, "hyper_image_sky"
                 )
 
                 hyper_result.constant.hyper_background_noise = getattr(
                     result.constant, "hyper_background_noise"
                 )
-                hyper_result.variable.hyper_background_noise = getattr(
-                    result.variable, "hyper_background_noise"
+                hyper_result.model.hyper_background_noise = getattr(
+                    result.model, "hyper_background_noise"
                 )
 
         return hyper_result

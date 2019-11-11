@@ -7,7 +7,7 @@ class Result(af.Result):
         self,
         constant,
         figure_of_merit,
-        previous_variable,
+        previous_model,
         gaussian_tuples,
         analysis,
         optimizer,
@@ -18,7 +18,7 @@ class Result(af.Result):
         super().__init__(
             constant=constant,
             figure_of_merit=figure_of_merit,
-            previous_variable=previous_variable,
+            previous_model=previous_model,
             gaussian_tuples=gaussian_tuples,
         )
 

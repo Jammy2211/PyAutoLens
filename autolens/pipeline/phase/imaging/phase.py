@@ -76,7 +76,7 @@ class PhaseImaging(dataset.PhaseDataset):
         self.is_hyper_phase = False
 
         self.meta_imaging_fit = MetaImagingFit(
-            variable=self.variable,
+            model=self.model,
             bin_up_factor=bin_up_factor,
             psf_shape_2d=psf_shape_2d,
             sub_size=sub_size,
@@ -128,7 +128,7 @@ class PhaseImaging(dataset.PhaseDataset):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        self.meta_imaging_fit.variable = self.variable
+        self.meta_imaging_fit.model = self.model
         modified_image = self.modify_image(image=dataset.image, results=results)
 
         masked_imaging = self.meta_imaging_fit.masked_dataset_from(

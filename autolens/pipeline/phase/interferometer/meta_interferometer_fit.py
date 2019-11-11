@@ -5,7 +5,7 @@ from autolens.pipeline.phase import dataset
 class MetaInterferometerFit(dataset.MetaDatasetFit):
     def __init__(
         self,
-        variable,
+        model,
         real_space_shape_2d,
         real_space_pixel_scales,
         sub_size=2,
@@ -20,7 +20,7 @@ class MetaInterferometerFit(dataset.MetaDatasetFit):
         bin_up_factor=None,
     ):
         super().__init__(
-            variable=variable,
+            model=model,
             sub_size=sub_size,
             is_hyper_phase=is_hyper_phase,
             positions_threshold=positions_threshold,

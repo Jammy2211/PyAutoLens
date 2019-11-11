@@ -37,10 +37,10 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=phase1.result.variable.galaxies.lens.mass
+                redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
             ),
             source_0=al.GalaxyModel(
-                redshift=1.0, light=phase1.result.variable.galaxies.source_0.light
+                redshift=1.0, light=phase1.result.model.galaxies.source_0.light
             ),
             source_1=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
@@ -71,16 +71,16 @@ def make_pipeline(
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=phase2.result.variable.galaxies.lens.mass
+                redshift=0.5, mass=phase2.result.model.galaxies.lens.mass
             ),
             source_0=al.GalaxyModel(
                 redshift=1.0,
-                light=phase2.result.variable.galaxies.source_0.light,
+                light=phase2.result.model.galaxies.source_0.light,
                 hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.source_0.hyper_galaxy,
             ),
             source_1=al.GalaxyModel(
                 redshift=1.0,
-                light=phase2.result.variable.galaxies.source_1.light,
+                light=phase2.result.model.galaxies.source_1.light,
                 hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.source_1.hyper_galaxy,
             ),
         ),

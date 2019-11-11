@@ -33,7 +33,7 @@ class MockResults(object):
         self.mask_2d = mask
         self.galaxy_images = galaxy_images
         self.constant = constant or af.ModelInstance()
-        self.variable = af.ModelMapper()
+        self.model = af.ModelMapper()
         self.analysis = analysis
         self.optimizer = optimizer
         self.pixelization = pixelization
@@ -101,11 +101,11 @@ class MockResults(object):
 
 
 class MockResult:
-    def __init__(self, constant, figure_of_merit, variable=None):
+    def __init__(self, constant, figure_of_merit, model=None):
         self.constant = constant
         self.figure_of_merit = figure_of_merit
-        self.variable = variable
-        self.previous_variable = variable
+        self.model = model
+        self.previous_model = model
         self.gaussian_tuples = None
         self.mask_2d = None
         self.positions = None

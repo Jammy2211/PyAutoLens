@@ -13,8 +13,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         @property
         def grid_priors(self):
             return [
-                self.variable.galaxies.subhalo.mass.centre_0,
-                self.variable.galaxies.subhalo.mass.centre_1,
+                self.model.galaxies.subhalo.mass.centre_0,
+                self.model.galaxies.subhalo.mass.centre_1,
             ]
 
         def customize_priors(self, results):
