@@ -71,13 +71,12 @@ class MockAnalysis(object):
 
 # noinspection PyAbstractClass
 class MockOptimizer(af.NonLinearOptimizer):
+    @af.convert_paths
     def __init__(
-        self, phase_name="mock_optimizer", phase_tag="tag", phase_folders=tuple()
+        self, paths
     ):
         super().__init__(
-            paths=autofit.optimize.non_linear.paths.Paths(
-                phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders
-            )
+            paths=paths
         )
 
     def fit(self, analysis, model):
@@ -93,7 +92,7 @@ class MockPhase(object):
             phase_folders=("",),
             phase_tag="",
         )
-        self.optimizer = MockOptimizer()
+        self.optimizer = MockOptimizer(paths=self.paths)
         self.model = af.ModelMapper()
 
     # noinspection PyUnusedLocal,PyMethodMayBeStatic
@@ -101,7 +100,7 @@ class MockPhase(object):
         return MockResult()
 
 
-class TestmodelFixing(object):
+class TestModelFixing(object):
     def test__defaults_both(self):
         # noinspection PyTypeChecker
         phase = al.InversionBackgroundBothPhase(MockPhase())
@@ -167,7 +166,7 @@ class TestmodelFixing(object):
         )
 
         # noinspection PyTypeChecker
-        phase = al.modelFixingHyperPhase(
+        phase = al.ModelFixingHyperPhase(
             MockPhase(),
             "mock_phase",
             model_classes=(al.pix.Pixelization, al.reg.Regularization),

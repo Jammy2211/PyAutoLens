@@ -51,7 +51,7 @@ from autolens.pipeline.phase.extensions.inversion_phase import (
     InversionBackgroundNoisePhase,
     InversionBackgroundSkyPhase,
     InversionPhase,
-    modelFixingHyperPhase,
+    ModelFixingHyperPhase,
 )
 from autolens.pipeline.phase.abstract.phase import AbstractPhase
 from autolens.pipeline.phase.dataset.phase import PhaseDataset
