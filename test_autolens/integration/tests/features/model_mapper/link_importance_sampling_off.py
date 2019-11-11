@@ -25,7 +25,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     class MMPhase2(al.PhaseImaging):
         def customize_priors(self, results):
-            self.galaxies = results.from_phase("phase_1").variable.galaxies
+            self.galaxies = results.from_phase("phase_1").model.galaxies
 
     phase2 = MMPhase2(
         phase_name="phase_2",

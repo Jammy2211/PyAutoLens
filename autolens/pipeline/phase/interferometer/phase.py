@@ -18,24 +18,25 @@ class PhaseInterferometer(dataset.PhaseDataset):
     Analysis = Analysis
     Result = Result
 
+    @af.convert_paths
     def __init__(
-        self,
-        phase_name,
-        real_space_shape_2d,
-        real_space_pixel_scales,
-        phase_folders=tuple(),
-        galaxies=None,
-        hyper_background_noise=None,
-        optimizer_class=af.MultiNest,
-        cosmology=cosmo.Planck15,
-        sub_size=2,
-        primary_beam_shape_2d=None,
-        positions_threshold=None,
-        mask_function=None,
-        inner_mask_radii=None,
-        pixel_scale_interpolation_grid=None,
-        inversion_uses_border=True,
-        inversion_pixel_limit=None,
+            self,
+            paths,
+            *,
+            real_space_shape_2d,
+            real_space_pixel_scales,
+            galaxies=None,
+            hyper_background_noise=None,
+            optimizer_class=af.MultiNest,
+            cosmology=cosmo.Planck15,
+            sub_size=2,
+            primary_beam_shape_2d=None,
+            positions_threshold=None,
+            mask_function=None,
+            inner_mask_radii=None,
+            pixel_scale_interpolation_grid=None,
+            inversion_uses_border=True,
+            inversion_pixel_limit=None,
     ):
 
         """
@@ -54,7 +55,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         if type(real_space_pixel_scales) is float:
             real_space_pixel_scales = (real_space_pixel_scales, real_space_pixel_scales)
 
-        phase_tag = phase_tagging.phase_tag_from_phase_settings(
+        paths.phase_tag = phase_tagging.phase_tag_from_phase_settings(
             sub_size=sub_size,
             real_space_shape_2d=real_space_shape_2d,
             real_space_pixel_scales=real_space_pixel_scales,
@@ -65,9 +66,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         )
 
         super().__init__(
-            phase_name=phase_name,
-            phase_tag=phase_tag,
-            phase_folders=phase_folders,
+            paths,
             galaxies=galaxies,
             optimizer_class=optimizer_class,
             cosmology=cosmology,
@@ -78,7 +77,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         self.is_hyper_phase = False
 
         self.meta_interferometer_fit = MetaInterferometerFit(
-            variable=self.variable,
+            model=self.model,
             sub_size=sub_size,
             real_space_shape_2d=real_space_shape_2d,
             real_space_pixel_scales=real_space_pixel_scales,
@@ -130,7 +129,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        self.meta_interferometer_fit.variable = self.variable
+        self.meta_interferometer_fit.model = self.model
         modified_visibilities = self.modify_visibilities(
             visibilities=dataset.visibilities, results=results
         )
@@ -180,11 +179,11 @@ class PhaseInterferometer(dataset.PhaseDataset):
             phase_info.close()
 
     def extend_with_multiple_hyper_phases(
-        self,
-        hyper_galaxy=False,
-        inversion=False,
-        include_background_sky=False,
-        include_background_noise=False,
+            self,
+            hyper_galaxy=False,
+            inversion=False,
+            include_background_sky=False,
+            include_background_noise=False,
     ):
         hyper_phase_classes = []
 

@@ -39,12 +39,12 @@ def make_pipeline(
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase1.result.variable.galaxies.lens.light,
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                light=phase1.result.model.galaxies.lens.light,
+                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             )
         ),
-        hyper_image_sky=phase1.result.hyper_combined.constant.hyper_image_sky,
-        hyper_background_noise=phase1.result.hyper_combined.constant.hyper_background_noise,
+        hyper_image_sky=phase1.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase1.result.hyper_combined.instance.hyper_background_noise,
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
         optimizer_class=optimizer_class,

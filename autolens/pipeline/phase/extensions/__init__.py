@@ -6,7 +6,7 @@ from .inversion_phase import InversionBackgroundBothPhase
 from .inversion_phase import InversionBackgroundNoisePhase
 from .inversion_phase import InversionBackgroundSkyPhase
 from .inversion_phase import InversionPhase
-from .inversion_phase import VariableFixingHyperPhase
+from .inversion_phase import modelFixingHyperPhase
 
 
 class CombinedHyperPhase(HyperPhase):
@@ -46,7 +46,7 @@ class CombinedHyperPhase(HyperPhase):
         Run the phase followed by the hyper_galaxies phases. Each result of a hyper_galaxies phase is attached to the
         overall result object by the hyper_name of that phase.
 
-        Finally, a phase in run with all of the variable results from all the individual hyper_galaxies phases.
+        Finally, a phase in run with all of the model results from all the individual hyper_galaxies phases.
 
         Parameters
         ----------
@@ -78,12 +78,12 @@ class CombinedHyperPhase(HyperPhase):
         )
         return result
 
-    def combine_variables(self, result) -> af.ModelMapper:
+    def combine_models(self, result) -> af.ModelMapper:
         """
-        Combine the variable objects from all previous results in this hyper_combined hyper_galaxies phase.
+        Combine the model objects from all previous results in this hyper_combined hyper_galaxies phase.
 
         Iterates through the hyper_galaxies names of the included hyper_galaxies phases, extracting a result
-        for each name and adding the variable of that result to a new variable.
+        for each name and adding the model of that result to a new model.
 
         Parameters
         ----------
@@ -92,18 +92,18 @@ class CombinedHyperPhase(HyperPhase):
 
         Returns
         -------
-        combined_variable
-            A variable object including all variables from results in this phase.
+        combined_model
+            A model object including all models from results in this phase.
         """
-        variable = af.ModelMapper()
+        model = af.ModelMapper()
         for name in self.phase_names:
-            variable += getattr(result, name).variable
-        return variable
+            model += getattr(result, name).model
+        return model
 
     def run_hyper(self, dataset, results, **kwargs) -> af.Result:
 
         phase = self.make_hyper_phase()
-        phase.variable = self.combine_variables(results.last)
+        phase.model = self.combine_models(results.last)
 
         return phase.run(
             dataset,

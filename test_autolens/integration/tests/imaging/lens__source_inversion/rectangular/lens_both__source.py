@@ -30,7 +30,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.Rectangular,
-                regularization=al.reg.Constant,
+                regularization=al.reg.instance,
             ),
         ),
         optimizer_class=optimizer_class,

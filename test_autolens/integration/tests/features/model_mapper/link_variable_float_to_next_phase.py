@@ -3,7 +3,7 @@ import autolens as al
 from test_autolens.integration.tests.imaging import runner
 
 test_type = "model_mapper"
-test_name = "link_variable_float_to_next_phase"
+test_name = "link_model_float_to_next_phase"
 data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "lsst"
 
@@ -26,11 +26,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             self.galaxies.lens.light.centre = results.from_phase(
                 "phase_1"
-            ).variable.galaxies.lens.light.centre
+            ).model.galaxies.lens.light.centre
 
             self.galaxies.lens.light.axis_ratio = results.from_phase(
                 "phase_1"
-            ).variable.galaxies.lens.light.axis_ratio
+            ).model.galaxies.lens.light.axis_ratio
 
     phase2 = MMPhase2(
         phase_name="phase_2",

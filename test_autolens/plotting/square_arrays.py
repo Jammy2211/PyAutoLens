@@ -33,7 +33,7 @@ lens_galaxy = al.galaxy(
 )
 source_galaxy = al.galaxy(
     pixelization=al.pix.VoronoiMagnification(shape=(20, 20)),
-    regularization=al.reg.Constant(coefficient=1.0),
+    regularization=al.reg.instance(coefficient=1.0),
 )
 
 masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)

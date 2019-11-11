@@ -28,7 +28,7 @@ def fit_with_offset_centre(centre):
     source_galaxy = al.galaxy(
         redshift=1.0,
         pixelization=al.pix.VoronoiMagnification(shape=(20, 20)),
-        regularization=al.reg.Constant(coefficient=1.0),
+        regularization=al.reg.instance(coefficient=1.0),
     )
 
     masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)

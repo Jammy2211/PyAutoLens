@@ -73,11 +73,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class GridPhase(af.as_grid_search(al.PhaseImaging)):
         @property
         def grid_priors(self):
-            return [self.variable.lens.bulge.sersic_index]
+            return [self.model.lens.bulge.sersic_index]
 
         def customize_priors(self, results):
 
-            self.galaxies.lens.disk = results.from_phase("phase_1").constant.lens.disk
+            self.galaxies.lens.disk = results.from_phase("phase_1").instance.lens.disk
 
             self.galaxies.lens.bulge.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
@@ -117,10 +117,10 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     class BestResultPhase(al.PhaseImaging):
         def customize_priors(self, results):
 
-            self.galaxies.lens.disk = results.from_phase("phase_1").variable.lens.disk
+            self.galaxies.lens.disk = results.from_phase("phase_1").model.lens.disk
             self.galaxies.lens.bulge = results.from_phase(
                 "phase_2"
-            ).best_result.variable.lens.bulge
+            ).best_result.model.lens.bulge
 
     phase3 = BestResultPhase(
         phase_name="phase_3",

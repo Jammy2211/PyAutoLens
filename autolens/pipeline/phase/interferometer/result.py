@@ -11,7 +11,7 @@ class Result(dataset.Result):
     def most_likely_fit(self):
 
         hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
-            instance=self.constant
+            instance=self.instance
         )
 
         return self.analysis.masked_interferometer_fit_for_tracer(
