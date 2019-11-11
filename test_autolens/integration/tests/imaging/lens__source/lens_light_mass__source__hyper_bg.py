@@ -40,16 +40,16 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 redshift=0.5,
                 light=phase1.result.model.galaxies.lens.light,
                 mass=phase1.result.model.galaxies.lens.mass,
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
                 light=phase1.result.model.galaxies.source.light,
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.source.hyper_galaxy,
+                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
             ),
         ),
-        hyper_image_sky=phase1.result.hyper_combined.constant.hyper_image_sky,
-        hyper_background_noise=phase1.result.hyper_combined.constant.hyper_background_noise,
+        hyper_image_sky=phase1.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase1.result.hyper_combined.instance.hyper_background_noise,
         optimizer_class=optimizer_class,
     )
 

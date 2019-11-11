@@ -59,11 +59,11 @@ def make_pipeline(
         def customize_priors(self, results):
 
             self.galaxies.source_0.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.source_0.hyper_galaxy
+                results.last.hyper_combined.instance.galaxies.source_0.hyper_galaxy
             )
 
             self.galaxies.source_1.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.source_1.hyper_galaxy
+                results.last.hyper_combined.instance.galaxies.source_1.hyper_galaxy
             )
 
     phase3 = HyperLensSourcePlanePhase(
@@ -76,12 +76,12 @@ def make_pipeline(
             source_0=al.GalaxyModel(
                 redshift=1.0,
                 light=phase2.result.model.galaxies.source_0.light,
-                hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.source_0.hyper_galaxy,
+                hyper_galaxy=phase2.result.hyper_combined.instance.galaxies.source_0.hyper_galaxy,
             ),
             source_1=al.GalaxyModel(
                 redshift=1.0,
                 light=phase2.result.model.galaxies.source_1.light,
-                hyper_galaxy=phase2.result.hyper_combined.constant.galaxies.source_1.hyper_galaxy,
+                hyper_galaxy=phase2.result.hyper_combined.instance.galaxies.source_1.hyper_galaxy,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,

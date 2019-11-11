@@ -284,7 +284,7 @@ class TestPhase(object):
                 source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(3, 3)),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -307,7 +307,7 @@ class TestPhase(object):
                 source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(4, 4)),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -331,7 +331,7 @@ class TestPhase(object):
                 source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(3, 3)),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -353,7 +353,7 @@ class TestPhase(object):
                 source=al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular(shape=(4, 4)),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 )
             ),
             mask_function=mask_function_7x7,
@@ -401,7 +401,7 @@ class TestPhase(object):
         source_galaxy = al.galaxy(
             redshift=0.5,
             pixelization=al.pix.Rectangular(),
-            regularization=al.reg.Constant(),
+            regularization=al.reg.instance(),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -418,7 +418,7 @@ class TestPhase(object):
         source_galaxy = al.GalaxyModel(
             redshift=0.5,
             pixelization=al.pix.Rectangular,
-            regularization=al.reg.Constant,
+            regularization=al.reg.instance,
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -460,7 +460,7 @@ class TestPhase(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
+                    regularization=al.reg.instance,
                 ),
                 source=al.GalaxyModel(redshift=1.0),
             ),
@@ -470,7 +470,7 @@ class TestPhase(object):
         source = al.GalaxyModel(
             redshift=1.0,
             pixelization=al.pix.VoronoiBrightnessImage,
-            regularization=al.reg.Constant,
+            regularization=al.reg.instance,
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -498,7 +498,7 @@ class TestPhase(object):
                 lens=al.GalaxyModel(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
+                    regularization=al.reg.instance,
                 ),
                 source=al.GalaxyModel(redshift=1.0),
             ),
@@ -514,7 +514,7 @@ class TestPhase(object):
                 source=al.GalaxyModel(
                     redshift=1.0,
                     pixelization=al.pix.VoronoiBrightnessImage,
-                    regularization=al.reg.Constant,
+                    regularization=al.reg.instance,
                 ),
             ),
         )
@@ -532,7 +532,7 @@ class TestPhase(object):
         source_galaxy = al.galaxy(
             redshift=1.0,
             pixelization=al.pix.Rectangular(shape=(3, 3)),
-            regularization=al.reg.Constant(coefficient=1.0),
+            regularization=al.reg.instance(coefficient=1.0),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -638,7 +638,7 @@ class TestPhase(object):
                 al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
+                    regularization=al.reg.instance,
                 )
             ],
         )
@@ -658,7 +658,7 @@ class TestPhase(object):
                 al.galaxy(
                     redshift=0.5,
                     pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
+                    regularization=al.reg.instance,
                 )
             ],
         )
@@ -764,7 +764,7 @@ class TestResult(object):
                 source=al.galaxy(
                     redshift=1.0,
                     pixelization=al.pix.VoronoiMagnification(shape=(2, 3)),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 ),
             ),
             inversion_pixel_limit=6,
@@ -786,7 +786,7 @@ class TestResult(object):
                 source=al.galaxy(
                     redshift=1.0,
                     pixelization=al.pix.VoronoiBrightnessImage(pixels=6),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 ),
             ),
             inversion_pixel_limit=6,
@@ -828,7 +828,7 @@ class TestResult(object):
                 source=al.galaxy(
                     redshift=1.0,
                     pixelization=al.pix.VoronoiBrightnessImage(pixels=6),
-                    regularization=al.reg.Constant(),
+                    regularization=al.reg.instance(),
                 ),
             ),
             inversion_pixel_limit=6,

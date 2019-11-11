@@ -39,7 +39,7 @@ def make_instance(all_galaxies):
 @pytest.fixture(name="result")
 def make_result(masked_imaging_7x7, instance):
     return al.PhaseImaging.Result(
-        constant=instance,
+        instance=instance,
         figure_of_merit=1.0,
         previous_model=af.ModelMapper(),
         gaussian_tuples=None,
@@ -106,11 +106,11 @@ class TestmodelFixing(object):
         # noinspection PyTypeChecker
         phase = al.InversionBackgroundBothPhase(MockPhase())
 
-        constant = af.ModelInstance()
-        constant.hyper_image_sky = al.hyper_data.HyperImageSky()
-        constant.hyper_background_noise = al.hyper_data.HyperBackgroundNoise()
+        instance = af.ModelInstance()
+        instance.hyper_image_sky = al.hyper_data.HyperImageSky()
+        instance.hyper_background_noise = al.hyper_data.HyperBackgroundNoise()
 
-        mapper = phase.make_model(constant)
+        mapper = phase.make_model(instance)
 
         assert isinstance(mapper.hyper_image_sky, af.PriorModel)
         assert isinstance(mapper.hyper_background_noise, af.PriorModel)
@@ -122,10 +122,10 @@ class TestmodelFixing(object):
         # noinspection PyTypeChecker
         phase = al.InversionBackgroundSkyPhase(MockPhase())
 
-        constant = af.ModelInstance()
-        constant.hyper_image_sky = al.hyper_data.HyperImageSky()
+        instance = af.ModelInstance()
+        instance.hyper_image_sky = al.hyper_data.HyperImageSky()
 
-        mapper = phase.make_model(constant)
+        mapper = phase.make_model(instance)
 
         assert isinstance(mapper.hyper_image_sky, af.PriorModel)
         assert mapper.hyper_image_sky.cls == al.hyper_data.HyperImageSky
@@ -134,10 +134,10 @@ class TestmodelFixing(object):
         # noinspection PyTypeChecker
         phase = al.InversionBackgroundNoisePhase(MockPhase())
 
-        constant = af.ModelInstance()
-        constant.hyper_background_noise = al.hyper_data.HyperBackgroundNoise()
+        instance = af.ModelInstance()
+        instance.hyper_background_noise = al.hyper_data.HyperBackgroundNoise()
 
-        mapper = phase.make_model(constant)
+        mapper = phase.make_model(instance)
 
         assert isinstance(mapper.hyper_background_noise, af.PriorModel)
         assert mapper.hyper_background_noise.cls == al.hyper_data.HyperBackgroundNoise
@@ -149,7 +149,7 @@ class TestmodelFixing(object):
         mapper.lens_galaxy = al.GalaxyModel(
             redshift=al.Redshift,
             pixelization=al.pix.Rectangular,
-            regularization=al.reg.Constant,
+            regularization=al.reg.instance,
         )
         mapper.source_galaxy = al.GalaxyModel(
             redshift=al.Redshift, light=al.lp.EllipticalLightProfile
@@ -159,7 +159,7 @@ class TestmodelFixing(object):
 
         instance.lens_galaxy = al.galaxy(
             pixelization=al.pix.Rectangular(),
-            regularization=al.reg.Constant(),
+            regularization=al.reg.instance(),
             redshift=1.0,
         )
         instance.source_galaxy = al.galaxy(
@@ -186,7 +186,7 @@ class TestImagePassing(object):
         assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
-        result.constant.galaxies.lens = al.galaxy(redshift=0.5)
+        result.instance.galaxies.lens = al.galaxy(redshift=0.5)
 
         image_dict = result.image_galaxy_dict
         assert (image_dict[("galaxies", "lens")].in_2d == np.zeros((7, 7))).all()

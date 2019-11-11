@@ -40,7 +40,7 @@ def make_pipeline(
 
             self.galaxies.lens.light = results.from_phase(
                 "phase_1__lens_sersic"
-            ).constant.galaxies.lens.light
+            ).instance.galaxies.lens.light
 
             ## Lens Mass, Move centre priors to centre of lens light ###
 
@@ -53,13 +53,13 @@ def make_pipeline(
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
+                results.last.hyper_combined.instance.galaxies.lens.hyper_galaxy
             )
 
-            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
 
             self.hyper_background_noise = (
-                results.last.hyper_combined.constant.hyper_background_noise
+                results.last.hyper_combined.instance.hyper_background_noise
             )
 
     phase2 = LensSubtractedPhase(
@@ -115,13 +115,13 @@ def make_pipeline(
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
+                results.last.hyper_combined.instance.galaxies.lens.hyper_galaxy
             )
 
-            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
 
             self.hyper_background_noise = (
-                results.last.hyper_combined.constant.hyper_background_noise
+                results.last.hyper_combined.instance.hyper_background_noise
             )
 
     phase3 = LensSourcePhase(
@@ -156,26 +156,26 @@ def make_pipeline(
 
             self.galaxies.lens.light = results.from_phase(
                 "phase_3__lens_sersic_sie__source_sersic"
-            ).constant.galaxies.lens.light
+            ).instance.galaxies.lens.light
 
             self.galaxies.lens.mass = results.from_phase(
                 "phase_3__lens_sersic_sie__source_sersic"
-            ).constant.galaxies.lens.mass
+            ).instance.galaxies.lens.mass
 
             self.galaxies.lens.shear = results.from_phase(
                 "phase_3__lens_sersic_sie__source_sersic"
-            ).constant.galaxies.lens.shear
+            ).instance.galaxies.lens.shear
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
+                results.last.hyper_combined.instance.galaxies.lens.hyper_galaxy
             )
 
-            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
 
             self.hyper_background_noise = (
-                results.last.hyper_combined.constant.hyper_background_noise
+                results.last.hyper_combined.instance.hyper_background_noise
             )
 
     phase4 = InversionPhase(
@@ -191,7 +191,7 @@ def make_pipeline(
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.Constant,
+                regularization=al.reg.instance,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,
@@ -223,22 +223,22 @@ def make_pipeline(
 
             self.galaxies.source.pixelization = results.from_phase(
                 "phase_4__initialize_magnification_inversion"
-            ).constant.galaxies.source.pixelization
+            ).instance.galaxies.source.pixelization
 
             self.galaxies.source.regularization = results.from_phase(
                 "phase_4__initialize_magnification_inversion"
-            ).constant.galaxies.source.regularization
+            ).instance.galaxies.source.regularization
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
+                results.last.hyper_combined.instance.galaxies.lens.hyper_galaxy
             )
 
-            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
 
             self.hyper_background_noise = (
-                results.last.hyper_combined.constant.hyper_background_noise
+                results.last.hyper_combined.instance.hyper_background_noise
             )
 
     phase5 = InversionPhase(
@@ -254,7 +254,7 @@ def make_pipeline(
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.Constant,
+                regularization=al.reg.instance,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,
@@ -280,26 +280,26 @@ def make_pipeline(
 
             self.galaxies.lens.light = results.from_phase(
                 "phase_5__lens_sersic_sie__source_magnification_inversion"
-            ).constant.galaxies.lens.light
+            ).instance.galaxies.lens.light
 
             self.galaxies.lens.mass = results.from_phase(
                 "phase_5__lens_sersic_sie__source_magnification_inversion"
-            ).constant.galaxies.lens.mass
+            ).instance.galaxies.lens.mass
 
             self.galaxies.lens.shear = results.from_phase(
                 "phase_5__lens_sersic_sie__source_magnification_inversion"
-            ).constant.galaxies.lens.shear
+            ).instance.galaxies.lens.shear
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
+                results.last.hyper_combined.instance.galaxies.lens.hyper_galaxy
             )
 
-            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
 
             self.hyper_background_noise = (
-                results.last.hyper_combined.constant.hyper_background_noise
+                results.last.hyper_combined.instance.hyper_background_noise
             )
 
     phase6 = InversionPhase(
@@ -347,26 +347,26 @@ def make_pipeline(
 
             self.galaxies.source.pixelization = results.from_phase(
                 "phase_6_initialize_inversion"
-            ).hyper_combined.constant.galaxies.source.pixelization
+            ).hyper_combined.instance.galaxies.source.pixelization
 
             self.galaxies.source.regularization = results.from_phase(
                 "phase_6_initialize_inversion"
-            ).hyper_combined.constant.galaxies.source.regularization
+            ).hyper_combined.instance.galaxies.source.regularization
 
             ## Set all hyper_galaxies-galaxies if feature is turned on ##
 
             self.galaxies.lens.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.lens.hyper_galaxy
+                results.last.hyper_combined.instance.galaxies.lens.hyper_galaxy
             )
 
             self.galaxies.source.hyper_galaxy = (
-                results.last.hyper_combined.constant.galaxies.source.hyper_galaxy
+                results.last.hyper_combined.instance.galaxies.source.hyper_galaxy
             )
 
-            self.hyper_image_sky = results.last.hyper_combined.constant.hyper_image_sky
+            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
 
             self.hyper_background_noise = (
-                results.last.hyper_combined.constant.hyper_background_noise
+                results.last.hyper_combined.instance.hyper_background_noise
             )
 
     phase7 = InversionPhase(

@@ -93,8 +93,8 @@ class TestPhase(object):
         )
 
         result = phase_imaging_7x7.run(dataset=imaging_7x7)
-        assert isinstance(result.constant.galaxies[0], al.galaxy)
-        assert isinstance(result.constant.galaxies[0], al.galaxy)
+        assert isinstance(result.instance.galaxies[0], al.galaxy)
+        assert isinstance(result.instance.galaxies[0], al.galaxy)
 
     def test_modify_image(self, mask_function_7x7, imaging_7x7, mask_7x7):
         class MyPhase(al.PhaseImaging):

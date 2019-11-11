@@ -192,7 +192,7 @@ class HyperGalaxyPhase(HyperPhase):
 
         hyper_result = copy.deepcopy(results.last)
         hyper_result.model = hyper_result.model.copy_with_fixed_priors(
-            hyper_result.constant
+            hyper_result.instance
         )
 
         hyper_result.analysis.hyper_model_image = results.last.hyper_model_image
@@ -251,11 +251,11 @@ class HyperGalaxyPhase(HyperPhase):
                 result = optimizer.fit(analysis=analysis, model=model)
 
                 def transfer_field(name):
-                    if hasattr(result.constant, name):
+                    if hasattr(result.instance, name):
                         setattr(
-                            hyper_result.constant.object_for_path(path),
+                            hyper_result.instance.object_for_path(path),
                             name,
-                            getattr(result.constant, name),
+                            getattr(result.instance, name),
                         )
                         setattr(
                             hyper_result.model.object_for_path(path),
@@ -265,15 +265,15 @@ class HyperGalaxyPhase(HyperPhase):
 
                 transfer_field("hyper_galaxy")
 
-                hyper_result.constant.hyper_image_sky = getattr(
-                    result.constant, "hyper_image_sky"
+                hyper_result.instance.hyper_image_sky = getattr(
+                    result.instance, "hyper_image_sky"
                 )
                 hyper_result.model.hyper_image_sky = getattr(
                     result.model, "hyper_image_sky"
                 )
 
-                hyper_result.constant.hyper_background_noise = getattr(
-                    result.constant, "hyper_background_noise"
+                hyper_result.instance.hyper_background_noise = getattr(
+                    result.instance, "hyper_background_noise"
                 )
                 hyper_result.model.hyper_background_noise = getattr(
                     result.model, "hyper_background_noise"

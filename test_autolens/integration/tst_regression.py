@@ -168,7 +168,7 @@ class TestPhaseModelMapper(object):
     if os.path.exists(output_path):
         shutil.rmtree(output_path)
 
-    def test_constants_work(self):
+    def test_instances_work(self):
         name = "const_float"
         test_name = "/const_float"
 

@@ -52,13 +52,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             self.galaxies.lens.light.centre_1 = 0.0
             self.galaxies.lens.light.axis_ratio = results.from_phase(
                 "phase_1"
-            ).constant.lens.light.axis_ratio
+            ).instance.lens.light.axis_ratio
             self.galaxies.lens.light.phi = results.from_phase(
                 "phase_1"
-            ).constant.lens.light.phi
+            ).instance.lens.light.phi
             self.galaxies.lens.light.intensity = results.from_phase(
                 "phase_1"
-            ).constant.lens.light.intensity
+            ).instance.lens.light.intensity
 
             self.galaxies.lens.light.effective_radius = af.UniformPrior(
                 lower_limit=0.0, upper_limit=4.0

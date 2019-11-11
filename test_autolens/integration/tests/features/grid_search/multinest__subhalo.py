@@ -77,7 +77,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             ### Lens Mass, PL -> PL, Shear -> Shear ###
 
             # self.galaxies.lens = results.from_phase('phase_1').\
-            #     constant.galaxies.lens
+            #     instance.galaxies.lens
 
             ### Lens Subhalo, Adjust priors to physical masses (10^6 - 10^10) and concentrations (6-24)
 

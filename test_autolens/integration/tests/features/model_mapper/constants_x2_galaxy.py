@@ -3,7 +3,7 @@ import autolens as al
 from test_autolens.integration.tests.imaging import runner
 
 test_type = "model_mapper"
-test_name = "constants_x2_galaxy"
+test_name = "instances_x2_galaxy"
 data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "lsst"
 

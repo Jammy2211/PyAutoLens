@@ -33,8 +33,8 @@ class modelFixingHyperPhase(HyperPhase):
 
         return phase
 
-    def make_model(self, constant):
-        return constant.as_model(self.model_classes)
+    def make_model(self, instance):
+        return instance.as_model(self.model_classes)
 
     def run_hyper(self, dataset, results=None, **kwargs):
         """
@@ -42,7 +42,7 @@ class modelFixingHyperPhase(HyperPhase):
         only fit pixelization hyperparameters.
         """
         phase = self.make_hyper_phase()
-        phase.model = self.make_model(results.last.constant)
+        phase.model = self.make_model(results.last.instance)
 
         return phase.run(
             dataset,

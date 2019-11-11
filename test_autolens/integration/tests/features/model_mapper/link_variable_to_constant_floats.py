@@ -3,7 +3,7 @@ import autolens as al
 from test_autolens.integration.tests.imaging import runner
 
 test_type = "model_mapper"
-test_name = "link_model_to_constant_floats"
+test_name = "link_model_to_instance_floats"
 data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "lsst"
 
@@ -31,7 +31,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             self.galaxies.lens.light.intensity = results.from_phase(
                 "phase_1"
-            ).constant.galaxies.lens.light.intensity
+            ).instance.galaxies.lens.light.intensity
 
     phase2 = MMPhase2(
         phase_name="phase_2",

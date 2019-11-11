@@ -32,7 +32,7 @@ def make_pipeline(
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.Constant,
+                regularization=al.reg.instance,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,
@@ -59,7 +59,7 @@ def make_pipeline(
                 redshift=1.0,
                 pixelization=phase1.result.model.galaxies.source.pixelization,
                 regularization=phase1.result.model.galaxies.source.regularization,
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.source.hyper_galaxy,
+                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,
