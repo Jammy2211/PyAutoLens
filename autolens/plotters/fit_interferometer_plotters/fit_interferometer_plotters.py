@@ -607,14 +607,12 @@ def get_critical_curves_and_caustics(fit, include_critical_curves, include_caust
 
         critical_curves = plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
-            grid=fit.masked_interferometer.grid,
             include_critical_curves=include_critical_curves,
             include_caustics=False,
         )
 
         caustics = plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
-            grid=fit.masked_interferometer.grid,
             include_critical_curves=False,
             include_caustics=include_caustics,
         )

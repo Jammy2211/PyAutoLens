@@ -154,7 +154,7 @@ class TestVariableFixing(object):
             redshift=al.Redshift, light=al.lp.EllipticalLightProfile
         )
 
-        assert mapper.prior_count == 9
+        assert mapper.prior_count == 10
 
         instance.lens_galaxy = al.galaxy(
             pixelization=al.pix.Rectangular(),

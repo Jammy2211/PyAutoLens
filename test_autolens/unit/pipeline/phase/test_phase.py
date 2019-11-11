@@ -2,7 +2,6 @@ import os
 from os import path
 
 import pytest
-from astropy import cosmology as cosmo
 
 import autofit as af
 import autolens as al
@@ -19,8 +18,10 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
+    print("{}/../test_files/config/".format(directory))
+
     af.conf.instance = af.conf.Config(
-        "{}/../test_files/config/phase_dataset_7x7".format(directory)
+        "{}/../../test_files/config/".format(directory)
     )
 
 

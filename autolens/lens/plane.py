@@ -12,11 +12,6 @@ from autoastro import dimensions as dim
 from autolens.util import lens_util
 
 
-def is_galaxies(obj):
-    if isinstance(obj, list):
-        return isinstance(obj[0], g.Galaxy)
-
-
 class AbstractPlane(lensing.LensingObject):
     def __init__(self, redshift, galaxies, cosmology):
         """A plane of galaxies where all galaxies are at the same redshift.
@@ -58,11 +53,13 @@ class AbstractPlane(lensing.LensingObject):
 
     @property
     def has_light_profile(self):
-        return any(list(map(lambda galaxy: galaxy.has_light_profile, self.galaxies)))
+        if self.galaxies is not None:
+            return any(list(map(lambda galaxy: galaxy.has_light_profile, self.galaxies)))
 
     @property
     def has_mass_profile(self):
-        return any(list(map(lambda galaxy: galaxy.has_mass_profile, self.galaxies)))
+        if self.galaxies is not None:
+            return any(list(map(lambda galaxy: galaxy.has_mass_profile, self.galaxies)))
 
     @property
     def has_pixelization(self):
@@ -176,8 +173,7 @@ class AbstractPlane(lensing.LensingObject):
         critical_surface_density=None,
     ):
 
-        new_dict = {
-            key: list(
+        new_galaxies = list(
                 map(
                     lambda galaxy: galaxy.new_object_with_units_converted(
                         unit_length=unit_length,
@@ -187,15 +183,10 @@ class AbstractPlane(lensing.LensingObject):
                         exposure_time=exposure_time,
                         critical_surface_density=critical_surface_density,
                     ),
-                    value,
-                )
-            )
-            if is_galaxies(value)
-            else value
-            for key, value in self.__dict__.items()
-        }
+                    self.galaxies,
+                ))
 
-        return self.__class__(**new_dict)
+        return self.__class__(galaxies=new_galaxies, redshift=self.redshift, cosmology=self.cosmology)
 
     @property
     def unit_length(self):
@@ -705,7 +696,7 @@ class PlanePositions(object):
 
             def calculate_deflections(pos):
                 return sum(
-                    map(lambda galaxy: galaxy.deflections_from_grid(pos), galaxies)
+                    map(lambda galaxy: galaxy.deflections_of_planes_summed_from_grid(pos), galaxies)
                 )
 
             self.deflections = list(
