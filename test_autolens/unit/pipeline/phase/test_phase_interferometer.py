@@ -93,8 +93,8 @@ class TestPhase(object):
         )
 
         result = phase_interferometer_7.run(dataset=interferometer_7)
-        assert isinstance(result.constant.galaxies[0], al.galaxy)
-        assert isinstance(result.constant.galaxies[0], al.galaxy)
+        assert isinstance(result.instance.galaxies[0], al.galaxy)
+        assert isinstance(result.instance.galaxies[0], al.galaxy)
 
     def test_modify_visibilities(self, mask_function_7x7, interferometer_7, mask_7x7):
         class MyPhase(al.PhaseInterferometer):

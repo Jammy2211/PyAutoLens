@@ -6,11 +6,11 @@ class Result(abstract.result.Result):
     def most_likely_fit(self):
 
         hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
-            instance=self.constant
+            instance=self.instance
         )
 
         hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
-            instance=self.constant
+            instance=self.instance
         )
 
         return self.analysis.masked_imaging_fit_for_tracer(

@@ -35,7 +35,7 @@ def clean_images():
 
 
 class TestPhase(object):
-    def test__set_constants(self, phase_dataset_7x7):
+    def test__set_instances(self, phase_dataset_7x7):
         phase_dataset_7x7.galaxies = [al.galaxy(redshift=0.5)]
         assert phase_dataset_7x7.model.galaxies == [al.galaxy(redshift=0.5)]
 
@@ -48,12 +48,12 @@ class TestPhase(object):
     ):
         class MyPlanePhaseAnd(al.PhaseImaging):
             def customize_priors(self, results):
-                self.galaxies = results.last.constant.galaxies
+                self.galaxies = results.last.instance.galaxies
 
         galaxy = al.galaxy(redshift=0.5)
         galaxy_model = al.GalaxyModel(redshift=0.5)
 
-        setattr(results_7x7.constant, "galaxies", [galaxy])
+        setattr(results_7x7.instance, "galaxies", [galaxy])
         setattr(results_7x7.model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(
@@ -76,7 +76,7 @@ class TestPhase(object):
         galaxy = al.galaxy(redshift=0.5)
         galaxy_model = al.GalaxyModel(redshift=0.5)
 
-        setattr(results_7x7.constant, "galaxies", [galaxy])
+        setattr(results_7x7.instance, "galaxies", [galaxy])
         setattr(results_7x7.model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(

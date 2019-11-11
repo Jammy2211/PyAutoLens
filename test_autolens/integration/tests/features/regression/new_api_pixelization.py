@@ -40,7 +40,7 @@ def make_pipeline(
             lens=al.GalaxyModel(
                 redshift=0.5,
                 mass=al.mp.SphericalIsothermal(),
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
@@ -48,8 +48,8 @@ def make_pipeline(
                 regularization=pipeline_regularization,
             ),
         ),
-        hyper_image_sky=phase1.result.hyper_combined.constant.hyper_image_sky,
-        hyper_background_noise=phase1.result.hyper_combined.constant.hyper_background_noise,
+        hyper_image_sky=phase1.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase1.result.hyper_combined.instance.hyper_background_noise,
         optimizer_class=optimizer_class,
     )
 
@@ -71,17 +71,17 @@ def make_pipeline(
             lens=al.GalaxyModel(
                 redshift=0.5,
                 mass=al.mp.SphericalExponential(),
-                hyper_galaxy=phase6.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                hyper_galaxy=phase6.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase6.result.constant.galaxies.source.pixelization,
-                regularization=phase6.result.constant.galaxies.source.regularization,
-                hyper_galaxy=phase6.result.hyper_combined.constant.galaxies.source.hyper_galaxy,
+                pixelization=phase6.result.instance.galaxies.source.pixelization,
+                regularization=phase6.result.instance.galaxies.source.regularization,
+                hyper_galaxy=phase6.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
             ),
         ),
-        hyper_image_sky=phase1.result.hyper_combined.constant.hyper_image_sky,
-        hyper_background_noise=phase1.result.hyper_combined.constant.hyper_background_noise,
+        hyper_image_sky=phase1.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase1.result.hyper_combined.instance.hyper_background_noise,
         optimizer_class=optimizer_class,
     )
 

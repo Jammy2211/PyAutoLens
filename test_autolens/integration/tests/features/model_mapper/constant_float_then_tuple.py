@@ -3,7 +3,7 @@ import autolens as al
 from test_autolens.integration.tests.imaging import runner
 
 test_type = "model_mapper"
-test_name = "constant_float_then_tuple"
+test_name = "instance_float_then_tuple"
 data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "lsst"
 

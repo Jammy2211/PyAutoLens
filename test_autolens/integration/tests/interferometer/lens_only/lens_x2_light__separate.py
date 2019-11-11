@@ -52,7 +52,7 @@ def make_pipeline(
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens_0=phase1.result.constant.galaxies.lens_0,
+            lens_0=phase1.result.instance.galaxies.lens_0,
             lens_1=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
         ),
         mask_function=modify_mask_function,

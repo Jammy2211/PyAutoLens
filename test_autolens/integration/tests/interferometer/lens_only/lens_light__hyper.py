@@ -37,7 +37,7 @@ def make_pipeline(
             lens=al.GalaxyModel(
                 redshift=0.5,
                 light=phase1.result.model.galaxies.lens.light,
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.lens.hyper_galaxy,
+                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             )
         ),
         real_space_shape_2d=real_space_shape_2d,

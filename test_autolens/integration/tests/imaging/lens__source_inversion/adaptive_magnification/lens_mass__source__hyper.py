@@ -26,7 +26,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.Constant,
+                regularization=al.reg.instance,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -51,7 +51,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 redshift=1.0,
                 pixelization=phase1.result.model.galaxies.source.pixelization,
                 regularization=phase1.result.model.galaxies.source.regularization,
-                hyper_galaxy=phase1.result.hyper_combined.constant.galaxies.source.hyper_galaxy,
+                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
             ),
         ),
         optimizer_class=optimizer_class,

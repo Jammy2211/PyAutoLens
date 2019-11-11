@@ -79,7 +79,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             self.galaxies.lens.disk = results.from_phase(
                 "phase_1"
-            ).constant.galaxies.lens.disk
+            ).instance.galaxies.lens.disk
 
             self.galaxies.lens.bulge.centre_0 = af.UniformPrior(
                 lower_limit=-0.01, upper_limit=0.01
