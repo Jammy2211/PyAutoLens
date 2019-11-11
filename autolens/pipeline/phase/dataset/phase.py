@@ -26,11 +26,10 @@ class PhaseDataset(abstract.AbstractPhase):
 
     Result = Result
 
+    @af.convert_paths
     def __init__(
         self,
-        phase_name,
-        phase_tag,
-        phase_folders=tuple(),
+        paths,
         galaxies=None,
         optimizer_class=af.MultiNest,
         cosmology=cosmo.Planck15,
@@ -47,9 +46,7 @@ class PhaseDataset(abstract.AbstractPhase):
         """
 
         super(PhaseDataset, self).__init__(
-            phase_name=phase_name,
-            phase_tag=phase_tag,
-            phase_folders=phase_folders,
+            paths,
             optimizer_class=optimizer_class,
         )
         self.galaxies = galaxies or []
