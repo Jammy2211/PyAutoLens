@@ -8,7 +8,7 @@ from astropy import cosmology as cosmo
 import autofit as af
 import autolens as al
 import autoarray as aa
-from autofit.optimize.non_linear.non_linear import Paths
+from autofit import Paths
 from autolens import exc
 from test_autolens.mock import mock_pipeline
 
