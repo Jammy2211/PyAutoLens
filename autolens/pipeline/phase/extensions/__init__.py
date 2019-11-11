@@ -6,7 +6,7 @@ from .inversion_phase import InversionBackgroundBothPhase
 from .inversion_phase import InversionBackgroundNoisePhase
 from .inversion_phase import InversionBackgroundSkyPhase
 from .inversion_phase import InversionPhase
-from .inversion_phase import modelFixingHyperPhase
+from .inversion_phase import ModelFixingHyperPhase
 
 
 class CombinedHyperPhase(HyperPhase):
