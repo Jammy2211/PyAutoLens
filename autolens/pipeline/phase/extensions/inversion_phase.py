@@ -8,7 +8,7 @@ from .hyper_phase import HyperPhase
 
 
 # noinspection PyAbstractClass
-class modelFixingHyperPhase(HyperPhase):
+class ModelFixingHyperPhase(HyperPhase):
     def __init__(
         self, phase: abstract.AbstractPhase, hyper_name: str, model_classes=tuple()
     ):
@@ -52,7 +52,7 @@ class modelFixingHyperPhase(HyperPhase):
         )
 
 
-class InversionPhase(modelFixingHyperPhase):
+class InversionPhase(ModelFixingHyperPhase):
     """
     Phase that makes everything in the model from the previous phase equal to the
     corresponding value from the best fit except for models associated with
