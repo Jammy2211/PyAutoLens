@@ -95,6 +95,14 @@ class AbstractTracer(lensing.LensingObject):
         return list(filter(lambda plane: plane.has_mass_profile, self.planes))
 
     @property
+    def mass_profile_centres(self):
+        return [item for mass_profile_centres in self.mass_profile_centres_of_planes for item in mass_profile_centres]
+
+    @property
+    def mass_profile_centres_of_planes(self):
+        return [plane.mass_profile_centres for plane in self.planes if plane.has_mass_profile]
+
+    @property
     def plane_indexes_with_pixelizations(self):
         plane_indexes_with_inversions = [
             plane_index if plane.has_pixelization else None
@@ -171,6 +179,7 @@ class AbstractTracer(lensing.LensingObject):
             return self.planes_with_mass_profile[0].unit_mass
         else:
             return None
+
 
 class AbstractTracerCosmology(AbstractTracer):
     def __init__(self, planes, cosmology):

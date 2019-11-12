@@ -120,48 +120,20 @@ class AbstractPlane(lensing.LensingObject):
         return any(list(map(lambda galaxy: galaxy.has_hyper_galaxy, self.galaxies)))
 
     @property
-    def centres_of_galaxy_mass_profiles(self):
-
-        galaxies_with_mass_profiles = [
-            galaxy for galaxy in self.galaxies if galaxy.has_mass_profile
-        ]
-
-        mass_profile_centres = [[] for _ in range(len(galaxies_with_mass_profiles))]
-
-        for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
-            mass_profile_centres[galaxy_index] = [
-                profile.centre for profile in galaxy.mass_profiles
-            ]
-        return mass_profile_centres
+    def mass_profile_centres(self):
+        return [item for mass_profile_centres in self.mass_profile_centres_of_galaxies for item in mass_profile_centres]
 
     @property
-    def axis_ratios_of_galaxy_mass_profiles(self):
-        galaxies_with_mass_profiles = [
-            galaxy for galaxy in self.galaxies if galaxy.has_mass_profile
-        ]
-
-        mass_profile_axis_ratios = [[] for _ in range(len(galaxies_with_mass_profiles))]
-
-        for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
-            mass_profile_axis_ratios[galaxy_index] = [
-                profile.axis_ratio for profile in galaxy.mass_profiles
-            ]
-        return mass_profile_axis_ratios
+    def mass_profile_centres_of_galaxies(self):
+        return [galaxy.mass_profile_centres for galaxy in self.galaxies if galaxy.has_mass_profile]
 
     @property
-    def phis_of_galaxy_mass_profiles(self):
+    def mass_profile_axis_ratios_of_galaxies(self):
+        return [galaxy.mass_profile_axis_ratios for galaxy in self.galaxies if galaxy.has_mass_profile]
 
-        galaxies_with_mass_profiles = [
-            galaxy for galaxy in self.galaxies if galaxy.has_mass_profile
-        ]
-
-        mass_profile_phis = [[] for _ in range(len(galaxies_with_mass_profiles))]
-
-        for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
-            mass_profile_phis[galaxy_index] = [
-                profile.phi for profile in galaxy.mass_profiles
-            ]
-        return mass_profile_phis
+    @property
+    def mass_profile_phis_of_galaxies(self):
+        return [galaxy.mass_profile_phis for galaxy in self.galaxies if galaxy.has_mass_profile]
 
     def new_object_with_units_converted(
         self,
