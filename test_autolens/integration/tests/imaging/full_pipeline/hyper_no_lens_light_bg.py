@@ -63,7 +63,7 @@ def make_pipeline(
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.instance,
+                regularization=al.reg.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -113,7 +113,7 @@ def make_pipeline(
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.instance,
+                regularization=al.reg.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
