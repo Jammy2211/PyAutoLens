@@ -10,7 +10,7 @@ class PipelineSettings(object):
         include_shear=False,
         fix_lens_light=False,
         pixelization=pix.VoronoiMagnification,
-        regularization=reg.instance,
+        regularization=reg.Constant,
         align_bulge_disk_centre=False,
         align_bulge_disk_phi=False,
         align_bulge_disk_axis_ratio=False,

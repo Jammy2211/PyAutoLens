@@ -36,7 +36,7 @@ def make_pipeline(
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.instance,
+                regularization=al.reg.Constant,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,

@@ -18,7 +18,7 @@ class TestPipelineNameTag:
         pipeline_tag = al.pipeline_tagging.pipeline_tag_from_pipeline_settings(
             fix_lens_light=True,
             pixelization=al.pix.Rectangular,
-            regularization=al.reg.instance,
+            regularization=al.reg.Constant,
         )
 
         assert pipeline_tag == "pipeline_tag__fix_lens_light__pix_rect__reg_const"
@@ -131,7 +131,7 @@ class TestPipelineTaggers:
         )
         assert tag == ""
         tag = al.pipeline_tagging.regularization_tag_from_regularization(
-            regularization=al.reg.instance
+            regularization=al.reg.Constant
         )
         assert tag == "__reg_const"
         tag = al.pipeline_tagging.regularization_tag_from_regularization(

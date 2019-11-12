@@ -148,7 +148,7 @@ class TestModelFixing(object):
         mapper.lens_galaxy = al.GalaxyModel(
             redshift=al.Redshift,
             pixelization=al.pix.Rectangular,
-            regularization=al.reg.instance,
+            regularization=al.reg.Constant,
         )
         mapper.source_galaxy = al.GalaxyModel(
             redshift=al.Redshift, light=al.lp.EllipticalLightProfile
@@ -158,7 +158,7 @@ class TestModelFixing(object):
 
         instance.lens_galaxy = al.galaxy(
             pixelization=al.pix.Rectangular(),
-            regularization=al.reg.instance(),
+            regularization=al.reg.Constant(),
             redshift=1.0,
         )
         instance.source_galaxy = al.galaxy(
