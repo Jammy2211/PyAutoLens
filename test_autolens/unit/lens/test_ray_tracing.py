@@ -517,6 +517,46 @@ class TestAbstractTracer(object):
         #
         #     assert tracer.galaxies_in_planes == [[g0, g1], [g4], [g2, g3], [g5]]
 
+    class TestMassProfileCentres:
+
+        def test__extract_centres_of_all_mass_profiles_of_all_planes_and_galaxies(self):
+            g0 = al.galaxy(
+                redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
+            )
+            g1 = al.galaxy(
+                redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(2.0, 2.0))
+            )
+            g2 = al.galaxy(
+                redshift=1.0,
+                mass0=al.mp.SphericalIsothermal(centre=(3.0, 3.0)),
+                mass1=al.mp.SphericalIsothermal(centre=(4.0, 4.0)),
+            )
+
+            plane_0 = al.plane(galaxies=[al.galaxy(redshift=0.5)], redshift=None)
+            plane_1 = al.plane(galaxies=[al.galaxy(redshift=1.0)], redshift=None)
+
+            tracer = al.tracer(planes=[plane_0, plane_1], cosmology=None)
+
+            assert tracer.mass_profile_centres_of_planes == []
+            assert tracer.mass_profile_centres == []
+
+            plane_0 = al.plane(galaxies=[g0], redshift=None)
+            plane_1 = al.plane(galaxies=[g1], redshift=None)
+
+            tracer = al.tracer(planes=[plane_0, plane_1], cosmology=None)
+
+            assert tracer.mass_profile_centres_of_planes == [[(1.0, 1.0)], [(2.0, 2.0)]]
+            assert tracer.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
+
+            plane_0 = al.plane(galaxies=[g0, g1], redshift=None)
+            plane_1 = al.plane(galaxies=[g2], redshift=None)
+
+            tracer = al.tracer(planes=[plane_0, plane_1], cosmology=None)
+
+            assert tracer.mass_profile_centres_of_planes == [[(1.0, 1.0),(2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]]
+            assert tracer.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0), (3.0, 3.0), (4.0, 4.0)]
+
+
     class TestUnits:
         def test__light_profiles_conversions(self):
     
@@ -674,6 +714,7 @@ class TestAbstractTracer(object):
             )
 
             assert tracer.cosmology == 1
+
 
 class TestAbstractTracerCosmology(object):
     def test__2_planes__z01_and_z1(self):
