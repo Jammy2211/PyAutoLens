@@ -2159,7 +2159,7 @@ class TestAbstractTracerLensing(object):
 
             tracer = al.tracer(planes=[plane, al.plane(redshift=1.0)], cosmology=cosmo.Planck15)
 
-            assert tracer.einstein_mass_in_units(unit_mass="angular") == pytest.approx(np.pi * 2.0 ** 2.0, 1.0e-4)
+            assert tracer.einstein_mass_in_units(unit_mass="angular") == pytest.approx(np.pi * 2.0 ** 2.0, 1.0e-1)
 
 
 class TestAbstractTracerData(object):
