@@ -8,6 +8,7 @@ from autoastro.util import cosmology_util
 from autolens.lens import plane as pl
 from autolens.util import lens_util
 
+
 class AbstractTracer(lensing.LensingObject):
     def __init__(self, planes, cosmology):
         """Ray-tracer for a lens system with any number of planes.
@@ -96,11 +97,19 @@ class AbstractTracer(lensing.LensingObject):
 
     @property
     def mass_profile_centres(self):
-        return [item for mass_profile_centres in self.mass_profile_centres_of_planes for item in mass_profile_centres]
+        return [
+            item
+            for mass_profile_centres in self.mass_profile_centres_of_planes
+            for item in mass_profile_centres
+        ]
 
     @property
     def mass_profile_centres_of_planes(self):
-        return [plane.mass_profile_centres for plane in self.planes if plane.has_mass_profile]
+        return [
+            plane.mass_profile_centres
+            for plane in self.planes
+            if plane.has_mass_profile
+        ]
 
     @property
     def plane_indexes_with_pixelizations(self):
@@ -143,15 +152,18 @@ class AbstractTracer(lensing.LensingObject):
     ):
 
         new_planes = list(
-                map(
-                    lambda plane: plane.new_object_with_units_converted(
-                        unit_length=unit_length,
-                        unit_luminosity=unit_luminosity,
-                        unit_mass=unit_mass,
-                        kpc_per_arcsec=kpc_per_arcsec,
-                        exposure_time=exposure_time,
-                        critical_surface_density=critical_surface_density,
-                    ), self.planes))
+            map(
+                lambda plane: plane.new_object_with_units_converted(
+                    unit_length=unit_length,
+                    unit_luminosity=unit_luminosity,
+                    unit_mass=unit_mass,
+                    kpc_per_arcsec=kpc_per_arcsec,
+                    exposure_time=exposure_time,
+                    critical_surface_density=critical_surface_density,
+                ),
+                self.planes,
+            )
+        )
 
         return self.__class__(planes=new_planes, cosmology=self.cosmology)
 

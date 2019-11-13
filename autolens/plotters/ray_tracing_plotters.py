@@ -169,9 +169,7 @@ def subplot(
     if tracer.has_mass_profile:
 
         caustics = plotter_util.get_critical_curve_and_caustic(
-            obj=tracer,
-            include_critical_curves=False,
-            include_caustics=include_caustics,
+            obj=tracer, include_critical_curves=False, include_caustics=include_caustics
         )
 
     else:
@@ -434,7 +432,7 @@ def profile_image(
     if tracer.has_mass_profile:
 
         lines = plotter_util.get_critical_curve_and_caustic(
-        obj=tracer,
+            obj=tracer,
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
         )

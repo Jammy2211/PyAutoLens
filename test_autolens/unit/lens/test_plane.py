@@ -160,6 +160,7 @@ class TestUnits:
         assert plane.cosmology == 1
         assert plane.redshift == 1.0
 
+
 def critical_curve_via_magnification_from_plane_and_grid(plane, grid):
     magnification = plane.magnification_from_grid(grid=grid)
 
@@ -417,7 +418,6 @@ class TestAbstractPlane(object):
                 print(plane.regularization)
 
     class TestMassProfileGeometry:
-
         def test__extract_centres_of_all_mass_profiles_of_all_galaxies(self):
             g0 = al.galaxy(
                 redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
@@ -444,18 +444,27 @@ class TestAbstractPlane(object):
             assert plane.mass_profile_centres == [(2.0, 2.0)]
 
             plane = al.plane(galaxies=[g0, g1], redshift=None)
-            assert plane.mass_profile_centres_of_galaxies == [[(1.0, 1.0)], [(2.0, 2.0)]]
+            assert plane.mass_profile_centres_of_galaxies == [
+                [(1.0, 1.0)],
+                [(2.0, 2.0)],
+            ]
             assert plane.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
 
             plane = al.plane(galaxies=[g1, g0], redshift=None)
-            assert plane.mass_profile_centres_of_galaxies == [[(2.0, 2.0)], [(1.0, 1.0)]]
+            assert plane.mass_profile_centres_of_galaxies == [
+                [(2.0, 2.0)],
+                [(1.0, 1.0)],
+            ]
             assert plane.mass_profile_centres == [(2.0, 2.0), (1.0, 1.0)]
 
             plane = al.plane(
                 galaxies=[g0, al.galaxy(redshift=0.5), g1, al.galaxy(redshift=0.5)],
                 redshift=None,
             )
-            assert plane.mass_profile_centres_of_galaxies == [[(1.0, 1.0)], [(2.0, 2.0)]]
+            assert plane.mass_profile_centres_of_galaxies == [
+                [(1.0, 1.0)],
+                [(2.0, 2.0)],
+            ]
             assert plane.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
 
             plane = al.plane(
@@ -470,7 +479,8 @@ class TestAbstractPlane(object):
             assert plane.mass_profile_centres == [
                 (1.0, 1.0),
                 (2.0, 2.0),
-                (3.0, 3.0), (4.0, 4.0),
+                (3.0, 3.0),
+                (4.0, 4.0),
             ]
 
         def test__extracts_axis_ratio_of_all_mass_profiles_of_all_galaxies(self):
@@ -1210,14 +1220,10 @@ class TestAbstractPlaneLensing(object):
 
             plane = al.plane(galaxies=[g0, g1], redshift=0.5)
             g0_mass = g0.mass_within_circle_in_units(
-                radius=radius,
-                redshift_source=1.0,
-                unit_mass="solMass",
+                radius=radius, redshift_source=1.0, unit_mass="solMass"
             )
             g1_mass = g1.mass_within_circle_in_units(
-                radius=radius,
-                redshift_source=1.0,
-                unit_mass="solMass",
+                radius=radius, redshift_source=1.0, unit_mass="solMass"
             )
 
             plane_masses = plane.masses_of_galaxies_within_circles_in_units(
@@ -1228,30 +1234,29 @@ class TestAbstractPlaneLensing(object):
             assert plane_masses[1] == g1_mass
 
     class TestLensingObject(object):
+        def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(
+            self
+        ):
+            sis_0 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.2)
 
-        def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(self):
-            sis_0 = al.mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=0.2
+            sis_1 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.4)
+
+            sis_2 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.6)
+
+            sis_3 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.8)
+
+            galaxy_0 = al.galaxy(
+                mass_profile_0=sis_0, mass_profile_1=sis_1, redshift=0.5
             )
-
-            sis_1 = al.mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=0.4
+            galaxy_1 = al.galaxy(
+                mass_profile_0=sis_2, mass_profile_1=sis_3, redshift=0.5
             )
-
-            sis_2 = al.mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=0.6
-            )
-
-            sis_3 = al.mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=0.8
-            )
-
-            galaxy_0 = al.galaxy(mass_profile_0=sis_0, mass_profile_1=sis_1, redshift=0.5)
-            galaxy_1 = al.galaxy(mass_profile_0=sis_2, mass_profile_1=sis_3, redshift=0.5)
 
             plane = al.plane(galaxies=[galaxy_0, galaxy_1])
 
-            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(np.pi * 2.0 ** 2.0, 1.0e-1)
+            assert plane.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
+                np.pi * 2.0 ** 2.0, 1.0e-1
+            )
 
 
 class TestAbstractPlaneData(object):

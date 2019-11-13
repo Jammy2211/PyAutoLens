@@ -20,9 +20,7 @@ directory = path.dirname(path.realpath(__file__))
 def do_something():
     print("{}/../test_files/config/".format(directory))
 
-    af.conf.instance = af.conf.Config(
-        "{}/../../test_files/config/".format(directory)
-    )
+    af.conf.instance = af.conf.Config("{}/../../test_files/config/".format(directory))
 
 
 def clean_images():
@@ -157,9 +155,7 @@ class TestPhase(object):
             phase_dataset_7x7.model.galaxies[1].redshift.priors[0]: 0.8,
         }
 
-        instance = phase_dataset_7x7.model.instance_for_arguments(
-            arguments=arguments
-        )
+        instance = phase_dataset_7x7.model.instance_for_arguments(arguments=arguments)
 
         assert instance.galaxies[0].sersic.centre[0] == 0.2
         assert instance.galaxies[0].sis.centre[0] == 0.1

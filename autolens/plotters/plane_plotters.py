@@ -49,7 +49,7 @@ def profile_image(
 
     if plane.has_mass_profile:
         lines = plotter_util.get_critical_curve_and_caustic(
-        obj=plane,
+            obj=plane,
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
         )
