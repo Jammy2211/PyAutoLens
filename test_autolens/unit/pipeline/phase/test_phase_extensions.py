@@ -72,12 +72,8 @@ class MockAnalysis(object):
 # noinspection PyAbstractClass
 class MockOptimizer(af.NonLinearOptimizer):
     @af.convert_paths
-    def __init__(
-        self, paths
-    ):
-        super().__init__(
-            paths=paths
-        )
+    def __init__(self, paths):
+        super().__init__(paths=paths)
 
     def fit(self, analysis, model):
         # noinspection PyTypeChecker

@@ -19,24 +19,24 @@ class PhaseImaging(dataset.PhaseDataset):
 
     @af.convert_paths
     def __init__(
-            self,
-            paths,
-            *,
-            galaxies=None,
-            hyper_image_sky=None,
-            hyper_background_noise=None,
-            optimizer_class=af.MultiNest,
-            cosmology=cosmo.Planck15,
-            sub_size=2,
-            signal_to_noise_limit=None,
-            bin_up_factor=None,
-            psf_shape_2d=None,
-            positions_threshold=None,
-            mask_function=None,
-            inner_mask_radii=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_uses_border=True,
-            inversion_pixel_limit=None,
+        self,
+        paths,
+        *,
+        galaxies=None,
+        hyper_image_sky=None,
+        hyper_background_noise=None,
+        optimizer_class=af.MultiNest,
+        cosmology=cosmo.Planck15,
+        sub_size=2,
+        signal_to_noise_limit=None,
+        bin_up_factor=None,
+        psf_shape_2d=None,
+        positions_threshold=None,
+        mask_function=None,
+        inner_mask_radii=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_uses_border=True,
+        inversion_pixel_limit=None,
     ):
 
         """
@@ -174,13 +174,23 @@ class PhaseImaging(dataset.PhaseDataset):
             phase_info.close()
 
     def extend_with_multiple_hyper_phases(
-            self,
-            hyper_galaxy=False,
-            inversion=False,
-            include_background_sky=False,
-            include_background_noise=False,
+        self,
+        hyper_galaxy=False,
+        inversion=False,
+        include_background_sky=False,
+        include_background_noise=False,
     ):
         hyper_phase_classes = []
+
+        if inversion:
+            if not include_background_sky and not include_background_noise:
+                hyper_phase_classes.append(extensions.InversionPhase)
+            elif include_background_sky and not include_background_noise:
+                hyper_phase_classes.append(extensions.InversionBackgroundSkyPhase)
+            elif not include_background_sky and include_background_noise:
+                hyper_phase_classes.append(extensions.InversionBackgroundNoisePhase)
+            else:
+                hyper_phase_classes.append(extensions.InversionBackgroundBothPhase)
 
         if hyper_galaxy:
             if not include_background_sky and not include_background_noise:
@@ -199,16 +209,6 @@ class PhaseImaging(dataset.PhaseDataset):
                 hyper_phase_classes.append(
                     extensions.hyper_galaxy_phase.HyperGalaxyBackgroundBothPhase
                 )
-
-        if inversion:
-            if not include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(extensions.InversionPhase)
-            elif include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(extensions.InversionBackgroundSkyPhase)
-            elif not include_background_sky and include_background_noise:
-                hyper_phase_classes.append(extensions.InversionBackgroundNoisePhase)
-            else:
-                hyper_phase_classes.append(extensions.InversionBackgroundBothPhase)
 
         if len(hyper_phase_classes) == 0:
             return self

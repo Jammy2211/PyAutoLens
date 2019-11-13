@@ -518,7 +518,6 @@ class TestAbstractTracer(object):
         #     assert tracer.galaxies_in_planes == [[g0, g1], [g4], [g2, g3], [g5]]
 
     class TestMassProfileCentres:
-
         def test__extract_centres_of_all_mass_profiles_of_all_planes_and_galaxies(self):
             g0 = al.galaxy(
                 redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
@@ -553,13 +552,20 @@ class TestAbstractTracer(object):
 
             tracer = al.tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.mass_profile_centres_of_planes == [[(1.0, 1.0),(2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]]
-            assert tracer.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0), (3.0, 3.0), (4.0, 4.0)]
-
+            assert tracer.mass_profile_centres_of_planes == [
+                [(1.0, 1.0), (2.0, 2.0)],
+                [(3.0, 3.0), (4.0, 4.0)],
+            ]
+            assert tracer.mass_profile_centres == [
+                (1.0, 1.0),
+                (2.0, 2.0),
+                (3.0, 3.0),
+                (4.0, 4.0),
+            ]
 
     class TestUnits:
         def test__light_profiles_conversions(self):
-    
+
             profile_0 = al.lp.EllipticalGaussian(
                 centre=(
                     al.dim.Length(value=3.0, unit_length="arcsec"),
@@ -567,9 +573,9 @@ class TestAbstractTracer(object):
                 ),
                 intensity=al.dim.Luminosity(value=2.0, unit_luminosity="eps"),
             )
-    
+
             galaxy_0 = al.galaxy(light=profile_0, redshift=1.0)
-    
+
             profile_1 = al.lp.EllipticalGaussian(
                 centre=(
                     al.dim.Length(value=4.0, unit_length="arcsec"),
@@ -577,14 +583,14 @@ class TestAbstractTracer(object):
                 ),
                 intensity=al.dim.Luminosity(value=5.0, unit_luminosity="eps"),
             )
-    
+
             galaxy_1 = al.galaxy(light=profile_1, redshift=1.0)
-    
+
             plane_0 = al.plane(galaxies=[galaxy_0])
             plane_1 = al.plane(galaxies=[galaxy_1])
-            
+
             tracer = al.tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
-    
+
             assert tracer.planes[0].galaxies[0].light.centre == (3.0, 3.0)
             assert tracer.planes[0].galaxies[0].light.unit_length == "arcsec"
             assert tracer.planes[0].galaxies[0].light.intensity == 2.0
@@ -593,25 +599,29 @@ class TestAbstractTracer(object):
             assert tracer.planes[1].galaxies[0].light.unit_length == "arcsec"
             assert tracer.planes[1].galaxies[0].light.intensity == 5.0
             assert tracer.planes[1].galaxies[0].light.intensity.unit_luminosity == "eps"
-    
+
             tracer = tracer.new_object_with_units_converted(
                 unit_length="kpc",
                 kpc_per_arcsec=2.0,
                 unit_luminosity="counts",
                 exposure_time=0.5,
             )
-    
+
             assert tracer.planes[0].galaxies[0].light.centre == (6.0, 6.0)
             assert tracer.planes[0].galaxies[0].light.unit_length == "kpc"
             assert tracer.planes[0].galaxies[0].light.intensity == 1.0
-            assert tracer.planes[0].galaxies[0].light.intensity.unit_luminosity == "counts"
+            assert (
+                tracer.planes[0].galaxies[0].light.intensity.unit_luminosity == "counts"
+            )
             assert tracer.planes[1].galaxies[0].light.centre == (8.0, 8.0)
             assert tracer.planes[1].galaxies[0].light.unit_length == "kpc"
             assert tracer.planes[1].galaxies[0].light.intensity == 2.5
-            assert tracer.planes[1].galaxies[0].light.intensity.unit_luminosity == "counts"
-    
+            assert (
+                tracer.planes[1].galaxies[0].light.intensity.unit_luminosity == "counts"
+            )
+
         def test__mass_profiles_conversions(self):
-    
+
             profile_0 = al.mp.EllipticalSersic(
                 centre=(
                     al.dim.Length(value=3.0, unit_length="arcsec"),
@@ -622,9 +632,9 @@ class TestAbstractTracer(object):
                     value=5.0, unit_mass="angular", unit_luminosity="eps"
                 ),
             )
-    
+
             galaxy_0 = al.galaxy(mass=profile_0, redshift=1.0)
-    
+
             profile_1 = al.mp.EllipticalSersic(
                 centre=(
                     al.dim.Length(value=4.0, unit_length="arcsec"),
@@ -635,27 +645,33 @@ class TestAbstractTracer(object):
                     value=10.0, unit_mass="angular", unit_luminosity="eps"
                 ),
             )
-    
+
             galaxy_1 = al.galaxy(mass=profile_1, redshift=1.0)
 
             plane_0 = al.plane(galaxies=[galaxy_0])
             plane_1 = al.plane(galaxies=[galaxy_1])
 
             tracer = al.tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
-    
+
             assert tracer.planes[0].galaxies[0].mass.centre == (3.0, 3.0)
             assert tracer.planes[0].galaxies[0].mass.unit_length == "arcsec"
             assert tracer.planes[0].galaxies[0].mass.intensity == 2.0
             assert tracer.planes[0].galaxies[0].mass.intensity.unit_luminosity == "eps"
             assert tracer.planes[0].galaxies[0].mass.mass_to_light_ratio == 5.0
-            assert tracer.planes[0].galaxies[0].mass.mass_to_light_ratio.unit_mass == "angular"
+            assert (
+                tracer.planes[0].galaxies[0].mass.mass_to_light_ratio.unit_mass
+                == "angular"
+            )
             assert tracer.planes[1].galaxies[0].mass.centre == (4.0, 4.0)
             assert tracer.planes[1].galaxies[0].mass.unit_length == "arcsec"
             assert tracer.planes[1].galaxies[0].mass.intensity == 5.0
             assert tracer.planes[1].galaxies[0].mass.intensity.unit_luminosity == "eps"
             assert tracer.planes[1].galaxies[0].mass.mass_to_light_ratio == 10.0
-            assert tracer.planes[1].galaxies[0].mass.mass_to_light_ratio.unit_mass == "angular"
-    
+            assert (
+                tracer.planes[1].galaxies[0].mass.mass_to_light_ratio.unit_mass
+                == "angular"
+            )
+
             tracer = tracer.new_object_with_units_converted(
                 unit_length="kpc",
                 kpc_per_arcsec=2.0,
@@ -664,19 +680,29 @@ class TestAbstractTracer(object):
                 unit_mass="solMass",
                 critical_surface_density=3.0,
             )
-    
+
             assert tracer.planes[0].galaxies[0].mass.centre == (6.0, 6.0)
             assert tracer.planes[0].galaxies[0].mass.unit_length == "kpc"
             assert tracer.planes[0].galaxies[0].mass.intensity == 1.0
-            assert tracer.planes[0].galaxies[0].mass.intensity.unit_luminosity == "counts"
+            assert (
+                tracer.planes[0].galaxies[0].mass.intensity.unit_luminosity == "counts"
+            )
             assert tracer.planes[0].galaxies[0].mass.mass_to_light_ratio == 30.0
-            assert tracer.planes[0].galaxies[0].mass.mass_to_light_ratio.unit_mass == "solMass"
+            assert (
+                tracer.planes[0].galaxies[0].mass.mass_to_light_ratio.unit_mass
+                == "solMass"
+            )
             assert tracer.planes[1].galaxies[0].mass.centre == (8.0, 8.0)
             assert tracer.planes[1].galaxies[0].mass.unit_length == "kpc"
             assert tracer.planes[1].galaxies[0].mass.intensity == 2.5
-            assert tracer.planes[1].galaxies[0].mass.intensity.unit_luminosity == "counts"
+            assert (
+                tracer.planes[1].galaxies[0].mass.intensity.unit_luminosity == "counts"
+            )
             assert tracer.planes[1].galaxies[0].mass.mass_to_light_ratio == 60.0
-            assert tracer.planes[1].galaxies[0].mass.mass_to_light_ratio.unit_mass == "solMass"
+            assert (
+                tracer.planes[1].galaxies[0].mass.mass_to_light_ratio.unit_mass
+                == "solMass"
+            )
 
         def test__tracer_keeps_attributes(self):
             profile_0 = al.lp.EllipticalGaussian(
@@ -1919,7 +1945,9 @@ class TestAbstractTracerLensing(object):
                 grid=sub_grid_7x7
             )
 
-            tracer_deflections = tracer.deflections_of_planes_summed_from_grid(grid=sub_grid_7x7)
+            tracer_deflections = tracer.deflections_of_planes_summed_from_grid(
+                grid=sub_grid_7x7
+            )
 
             assert tracer_deflections.shape_2d == (7, 7)
             assert (image_plane_deflections == tracer_deflections).all()
@@ -1957,7 +1985,9 @@ class TestAbstractTracerLensing(object):
                 grid=sub_grid_7x7
             )
 
-            tracer_deflections = tracer.deflections_of_planes_summed_from_grid(grid=sub_grid_7x7)
+            tracer_deflections = tracer.deflections_of_planes_summed_from_grid(
+                grid=sub_grid_7x7
+            )
 
             assert image_plane_deflections == pytest.approx(
                 g0_deflections + g1_deflections, 1.0e-4
@@ -1975,7 +2005,9 @@ class TestAbstractTracerLensing(object):
                 galaxies=[al.galaxy(redshift=0.5), al.galaxy(redshift=0.5)]
             )
 
-            tracer_deflections = tracer.deflections_of_planes_summed_from_grid(grid=sub_grid_7x7)
+            tracer_deflections = tracer.deflections_of_planes_summed_from_grid(
+                grid=sub_grid_7x7
+            )
 
             assert (
                 tracer_deflections.in_2d_binned[:, :, 0] == np.zeros(shape=(7, 7))
@@ -2134,32 +2166,33 @@ class TestAbstractTracerLensing(object):
             assert (grid_at_redshift == sub_grid_7x7.geometry.unmasked_grid).all()
 
     class TestLensingObject(object):
+        def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(
+            self
+        ):
+            sis_0 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.2)
 
-        def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(self):
-            sis_0 = al.mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=0.2
+            sis_1 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.4)
+
+            sis_2 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.6)
+
+            sis_3 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.8)
+
+            galaxy_0 = al.galaxy(
+                mass_profile_0=sis_0, mass_profile_1=sis_1, redshift=0.5
             )
-
-            sis_1 = al.mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=0.4
+            galaxy_1 = al.galaxy(
+                mass_profile_0=sis_2, mass_profile_1=sis_3, redshift=0.5
             )
-
-            sis_2 = al.mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=0.6
-            )
-
-            sis_3 = al.mp.SphericalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=0.8
-            )
-
-            galaxy_0 = al.galaxy(mass_profile_0=sis_0, mass_profile_1=sis_1, redshift=0.5)
-            galaxy_1 = al.galaxy(mass_profile_0=sis_2, mass_profile_1=sis_3, redshift=0.5)
 
             plane = al.plane(galaxies=[galaxy_0, galaxy_1])
 
-            tracer = al.tracer(planes=[plane, al.plane(redshift=1.0)], cosmology=cosmo.Planck15)
+            tracer = al.tracer(
+                planes=[plane, al.plane(redshift=1.0)], cosmology=cosmo.Planck15
+            )
 
-            assert tracer.einstein_mass_in_units(unit_mass="angular") == pytest.approx(np.pi * 2.0 ** 2.0, 1.0e-1)
+            assert tracer.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
+                np.pi * 2.0 ** 2.0, 1.0e-1
+            )
 
 
 class TestAbstractTracerData(object):
@@ -2838,7 +2871,7 @@ class TestAbstractTracerData(object):
 
             galaxy_pix = al.galaxy(
                 redshift=1.0,
-                pixelization=al.pix.VoronoiMagnification(shape=(3, 3)),
+                pixelization=al.pix.VoronoiMagnification(shp=(3, 3)),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
             galaxy_no_pix = al.galaxy(redshift=0.5)
@@ -2921,7 +2954,7 @@ class TestAbstractTracerData(object):
             self, sub_grid_7x7, masked_imaging_7x7
         ):
 
-            pix = al.pix.Rectangular(shape=(3, 3))
+            pix = al.pix.Rectangular(shp=(3, 3))
             reg = al.reg.Constant(coefficient=0.0)
 
             g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
@@ -2944,7 +2977,7 @@ class TestAbstractTracerData(object):
             self, sub_grid_7x7, masked_interferometer_7
         ):
 
-            pix = al.pix.Rectangular(shape=(7, 7))
+            pix = al.pix.Rectangular(shp=(7, 7))
             reg = al.reg.Constant(coefficient=0.0)
 
             g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)

@@ -54,7 +54,9 @@ class AbstractPlane(lensing.LensingObject):
     @property
     def has_light_profile(self):
         if self.galaxies is not None:
-            return any(list(map(lambda galaxy: galaxy.has_light_profile, self.galaxies)))
+            return any(
+                list(map(lambda galaxy: galaxy.has_light_profile, self.galaxies))
+            )
 
     @property
     def has_mass_profile(self):
@@ -121,19 +123,35 @@ class AbstractPlane(lensing.LensingObject):
 
     @property
     def mass_profile_centres(self):
-        return [item for mass_profile_centres in self.mass_profile_centres_of_galaxies for item in mass_profile_centres]
+        return [
+            item
+            for mass_profile_centres in self.mass_profile_centres_of_galaxies
+            for item in mass_profile_centres
+        ]
 
     @property
     def mass_profile_centres_of_galaxies(self):
-        return [galaxy.mass_profile_centres for galaxy in self.galaxies if galaxy.has_mass_profile]
+        return [
+            galaxy.mass_profile_centres
+            for galaxy in self.galaxies
+            if galaxy.has_mass_profile
+        ]
 
     @property
     def mass_profile_axis_ratios_of_galaxies(self):
-        return [galaxy.mass_profile_axis_ratios for galaxy in self.galaxies if galaxy.has_mass_profile]
+        return [
+            galaxy.mass_profile_axis_ratios
+            for galaxy in self.galaxies
+            if galaxy.has_mass_profile
+        ]
 
     @property
     def mass_profile_phis_of_galaxies(self):
-        return [galaxy.mass_profile_phis for galaxy in self.galaxies if galaxy.has_mass_profile]
+        return [
+            galaxy.mass_profile_phis
+            for galaxy in self.galaxies
+            if galaxy.has_mass_profile
+        ]
 
     def new_object_with_units_converted(
         self,
@@ -146,19 +164,22 @@ class AbstractPlane(lensing.LensingObject):
     ):
 
         new_galaxies = list(
-                map(
-                    lambda galaxy: galaxy.new_object_with_units_converted(
-                        unit_length=unit_length,
-                        unit_luminosity=unit_luminosity,
-                        unit_mass=unit_mass,
-                        kpc_per_arcsec=kpc_per_arcsec,
-                        exposure_time=exposure_time,
-                        critical_surface_density=critical_surface_density,
-                    ),
-                    self.galaxies,
-                ))
+            map(
+                lambda galaxy: galaxy.new_object_with_units_converted(
+                    unit_length=unit_length,
+                    unit_luminosity=unit_luminosity,
+                    unit_mass=unit_mass,
+                    kpc_per_arcsec=kpc_per_arcsec,
+                    exposure_time=exposure_time,
+                    critical_surface_density=critical_surface_density,
+                ),
+                self.galaxies,
+            )
+        )
 
-        return self.__class__(galaxies=new_galaxies, redshift=self.redshift, cosmology=self.cosmology)
+        return self.__class__(
+            galaxies=new_galaxies, redshift=self.redshift, cosmology=self.cosmology
+        )
 
     @property
     def unit_length(self):
