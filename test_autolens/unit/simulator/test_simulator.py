@@ -36,7 +36,7 @@ class TestSimulatorImaging:
             sub_size=1,
             psf=psf,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             add_noise=True,
             noise_seed=1,
         )
@@ -49,7 +49,7 @@ class TestSimulatorImaging:
             ),
             exposure_time=10000.0,
             psf=psf,
-            background_sky_level=100.0,
+            background_level=100.0,
             add_noise=True,
             noise_seed=1,
         )
@@ -91,7 +91,7 @@ class TestSimulatorImaging:
             sub_size=1,
             psf=psf,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             add_noise=True,
             noise_seed=1,
         )
@@ -107,7 +107,7 @@ class TestSimulatorImaging:
             ),
             exposure_time=10000.0,
             psf=psf,
-            background_sky_level=100.0,
+            background_level=100.0,
             add_noise=True,
             noise_seed=1,
         )
@@ -155,7 +155,7 @@ class TestSimulatorImaging:
             sub_size=1,
             psf=psf,
             exposure_time=100.0,
-            background_sky_level=1.0,
+            background_level=1.0,
             add_noise=False,
             noise_if_add_noise_false=0.2,
         )
@@ -172,7 +172,7 @@ class TestSimulatorImaging:
             ),
             exposure_time=100.0,
             psf=psf,
-            background_sky_level=1.0,
+            background_level=1.0,
             add_noise=False,
             noise_if_add_noise_false=0.2,
         )
@@ -217,7 +217,7 @@ class TestSimulatorInterferometer:
             uv_wavelengths=np.ones(shape=(7, 2)),
             sub_size=1,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -229,7 +229,7 @@ class TestSimulatorInterferometer:
             transformer=simulator.transformer,
             real_space_pixel_scales=0.05,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -267,7 +267,7 @@ class TestSimulatorInterferometer:
             uv_wavelengths=np.ones(shape=(7, 2)),
             sub_size=1,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -282,7 +282,7 @@ class TestSimulatorInterferometer:
             real_space_pixel_scales=0.05,
             transformer=simulator.transformer,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -329,7 +329,7 @@ class TestSimulatorInterferometer:
             uv_wavelengths=np.ones(shape=(7, 2)),
             sub_size=1,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -345,7 +345,7 @@ class TestSimulatorInterferometer:
             real_space_pixel_scales=0.05,
             transformer=simulator.transformer,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )

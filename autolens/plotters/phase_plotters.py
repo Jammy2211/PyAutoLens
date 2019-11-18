@@ -251,7 +251,7 @@ def imaging_fit_of_phase(
             output_format="png",
         )
 
-    if plot_inversion_as_subplot and fit.tracer.has_pixelization:
+    if plot_inversion_as_subplot and fit.inversion is not None:
 
         aa.plot.inversion.subplot(
             inversion=fit.inversion,
@@ -399,7 +399,7 @@ def interferometer_fit_of_phase(
             output_format="png",
         )
 
-    # if plot_inversion_as_subplot and fit.tracer.has_pixelization:
+    # if plot_inversion_as_subplot and fit.inversion is not None:
     #
     #     aa.plot.inversion.subplot(
     #         inversion=fit.inversion,

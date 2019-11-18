@@ -249,7 +249,7 @@ def subplot_real_space(
 
     plt.subplot(rows, columns, 1)
 
-    if not fit.tracer.has_pixelization:
+    if not fit.inversion is not None:
 
         ray_tracing_plotters.profile_image(
             tracer=fit.tracer,
@@ -315,7 +315,7 @@ def subplot_real_space(
             output_format=output_format,
         )
 
-    elif fit.tracer.has_pixelization:
+    elif fit.inversion is not None:
 
         aa.plot.inversion.reconstructed_image(
             inversion=fit.inversion,
@@ -350,12 +350,12 @@ def subplot_real_space(
 
         ratio = float(
             (
-                fit.inversion.mapper.grid.arc_second_maxima[1]
-                - fit.inversion.mapper.grid.arc_second_minima[1]
+                fit.inversion.mapper.grid.scaled_maxima[1]
+                - fit.inversion.mapper.grid.scaled_minima[1]
             )
             / (
-                fit.inversion.mapper.grid.arc_second_maxima[0]
-                - fit.inversion.mapper.grid.arc_second_minima[0]
+                fit.inversion.mapper.grid.scaled_maxima[0]
+                - fit.inversion.mapper.grid.scaled_minima[0]
             )
         )
 

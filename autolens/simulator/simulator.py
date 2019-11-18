@@ -1,7 +1,5 @@
-import autofit as af
 from autoarray.structures import grids
 from autoarray.simulator import simulator
-from autoarray.plotters import imaging_plotters
 from autolens.lens import ray_tracing
 
 
@@ -13,7 +11,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
         sub_size,
         psf,
         exposure_time,
-        background_sky_level,
+        background_level,
         add_noise=True,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -33,7 +31,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
             An arrays describing the PSF kernel of the image.
         exposure_time : float
             The exposure time of an observation using this data_type.
-        background_sky_level : float
+        background_level : float
             The level of the background sky of an observationg using this data_type.
         """
 
@@ -43,7 +41,7 @@ class ImagingSimulator(simulator.ImagingSimulator):
             sub_size=sub_size,
             psf=psf,
             exposure_time=exposure_time,
-            background_sky_level=background_sky_level,
+            background_level=background_level,
             add_noise=add_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,
@@ -81,14 +79,14 @@ class ImagingSimulator(simulator.ImagingSimulator):
         return self.from_image(image=image.in_1d_binned, name=name)
 
     def from_galaxies(self, galaxies):
-        """Simulate Imaging data_type for this data_type, as follows:
+        """Simulate imaging data for this data_type, as follows:
 
         1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
 
         2) Use this grid and the lens and source galaxies to setup a tracer, which generates the image of \
-           the simulated Imaging data_type.
+           the simulated imaging data.
 
-        3) Simulate the Imaging data_type, using a special image which ensures edge-effects don't
+        3) Simulate the imaging data, using a special image which ensures edge-effects don't
            degrade simulator of the telescope optics (e.g. the PSF convolution).
 
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
@@ -125,7 +123,7 @@ class InterferometerSimulator(simulator.InterferometerSimulator):
         uv_wavelengths,
         sub_size,
         exposure_time,
-        background_sky_level,
+        background_level,
         primary_beam=None,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
@@ -146,7 +144,7 @@ class InterferometerSimulator(simulator.InterferometerSimulator):
             An arrays describing the PSF kernel of the image.
         exposure_time : float
             The exposure time of an observation using this data_type.
-        background_sky_level : float
+        background_level : float
             The level of the background sky of an observationg using this data_type.
         """
 
@@ -156,7 +154,7 @@ class InterferometerSimulator(simulator.InterferometerSimulator):
             uv_wavelengths=uv_wavelengths,
             sub_size=sub_size,
             exposure_time=exposure_time,
-            background_sky_level=background_sky_level,
+            background_level=background_level,
             primary_beam=primary_beam,
             noise_sigma=noise_sigma,
             noise_if_add_noise_false=noise_if_add_noise_false,
@@ -193,14 +191,14 @@ class InterferometerSimulator(simulator.InterferometerSimulator):
         return self.from_real_space_image(real_space_image=image.in_1d_binned)
 
     def from_galaxies(self, galaxies):
-        """Simulate Imaging data_type for this data_type, as follows:
+        """Simulate imaging data for this data_type, as follows:
 
         1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
 
         2) Use this grid and the lens and source galaxies to setup a tracer, which generates the image of \
-           the simulated Imaging data_type.
+           the simulated imaging data.
 
-        3) Simulate the Imaging data_type, using a special image which ensures edge-effects don't
+        3) Simulate the imaging data, using a special image which ensures edge-effects don't
            degrade simulator of the telescope optics (e.g. the PSF convolution).
 
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
