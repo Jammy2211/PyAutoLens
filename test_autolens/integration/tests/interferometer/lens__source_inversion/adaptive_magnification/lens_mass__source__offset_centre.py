@@ -28,7 +28,7 @@ def make_pipeline(
             pixel_scales=pixel_scales,
             centre=(2.0, 2.0),
             sub_size=2,
-            radius_arcsec=2.4,
+            radius_scaled=2.4,
         )
 
     phase1 = SourcePix(

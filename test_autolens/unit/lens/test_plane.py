@@ -177,7 +177,7 @@ def critical_curve_via_magnification_from_plane_and_grid(plane, grid):
         contour_x, contour_y = contours[jj].T
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-        critical_curve = grid.geometry.grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+        critical_curve = grid.geometry.grid_scaled_from_grid_pixels_1d_for_marching_squares(
             grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
         )
 

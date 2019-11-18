@@ -44,7 +44,7 @@ def simulate_integration_image(test_name, pixel_scales, galaxies):
         tracer=tracer,
         pixel_scales=pixel_scales,
         exposure_time=100.0,
-        background_sky_level=10.0,
+        background_level=10.0,
         psf=psf,
         noise_seed=1,
     )

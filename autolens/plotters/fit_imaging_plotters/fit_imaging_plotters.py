@@ -70,7 +70,7 @@ def subplot(
         fit=fit,
         grid=image_plane_pix_grid,
         mask=mask,
-        positions=positions,
+        points=positions,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -412,7 +412,7 @@ def subplot_for_plane(
         fit=fit,
         mask=mask,
         grid=image_plane_pix_grid,
-        positions=positions,
+        points=positions,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -563,12 +563,12 @@ def subplot_for_plane(
 
         ratio = float(
             (
-                fit.inversion.mapper.grid.arc_second_maxima[1]
-                - fit.inversion.mapper.grid.arc_second_minima[1]
+                fit.inversion.mapper.grid.scaled_maxima[1]
+                - fit.inversion.mapper.grid.scaled_minima[1]
             )
             / (
-                fit.inversion.mapper.grid.arc_second_maxima[0]
-                - fit.inversion.mapper.grid.arc_second_minima[0]
+                fit.inversion.mapper.grid.scaled_maxima[0]
+                - fit.inversion.mapper.grid.scaled_minima[0]
             )
         )
 
@@ -678,7 +678,7 @@ def individuals(
         aa.plot.fit_imaging.image(
             fit=fit,
             mask=mask,
-            positions=positions,
+            points=positions,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
             output_path=output_path,
@@ -958,11 +958,11 @@ def subtracted_image_of_plane(
         array=subtracted_image,
         mask=mask,
         grid=image_plane_pix_grid,
-        positions=positions,
+        points=positions,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        units_label=units,
+        unit_conversion_factor=kpc_per_arcsec,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -982,7 +982,7 @@ def subtracted_image_of_plane(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         mask_pointsize=mask_pointsize,
-        position_pointsize=position_pointsize,
+        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -1058,11 +1058,11 @@ def model_image_of_plane(
         array=fit.model_images_of_planes[plane_index],
         mask=mask,
         lines=lines,
-        positions=positions,
+        points=positions,
         centres=centres,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        units_label=units,
+        unit_conversion_factor=kpc_per_arcsec,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -1082,7 +1082,7 @@ def model_image_of_plane(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         mask_pointsize=mask_pointsize,
-        position_pointsize=position_pointsize,
+        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -1140,10 +1140,10 @@ def contribution_maps(
     aa.plot.array(
         array=contribution_map,
         mask=mask,
-        positions=positions,
+        points=positions,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        units_label=units,
+        unit_conversion_factor=kpc_per_arcsec,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -1163,7 +1163,7 @@ def contribution_maps(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         mask_pointsize=mask_pointsize,
-        position_pointsize=position_pointsize,
+        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,

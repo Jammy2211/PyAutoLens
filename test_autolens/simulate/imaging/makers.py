@@ -35,19 +35,19 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
     data_type, data_resolution, galaxies, sub_size=4
 ):
 
-    # Simulate the Imaging data_type, remembering that we use a special image which ensures edge-effects don't
+    # Simulate the imaging data, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.al. the PSF convolution).
 
     simulator = simulator_from_data_resolution(
         data_resolution=data_resolution, sub_size=sub_size
     )
 
-    # Use the input galaxies to setup a tracer, which will generate the image for the simulated Imaging data_type.
+    # Use the input galaxies to setup a tracer, which will generate the image for the simulated imaging data.
     tracer = al.tracer.from_galaxies(galaxies=galaxies)
 
     imaging = simulator.from_tracer(tracer=tracer)
 
-    # Now, lets output this simulated imaging-simulator to the test_autoarray/simulator folder.
+    # Now, lets output this simulated imaging-data to the test_autoarray/simulator folder.
     test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
 
     dataset_path = af.path_util.make_and_return_path_from_path_and_folder_names(
