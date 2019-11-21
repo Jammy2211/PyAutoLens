@@ -16,7 +16,7 @@ def subplot(
     include_image_plane_pix=False,
     plot_mass_profile_centres=True,
     use_scaled_units=True,
-    unit_label="arcsec",
+    plot_in_kpc=False,
     figsize=None,
     cmap="jet",
     cb_ticksize=10,
@@ -205,7 +205,7 @@ def subplot_real_space(
     positions=None,
     include_image_plane_pix=False,
     plot_mass_profile_centres=True,
-    unit_label="arcsec",
+    plot_in_kpc=False,
     figsize=None,
     aspect="square",
     cmap="jet",
@@ -425,7 +425,7 @@ def individuals(
     plot_inversion_normalized_residual_map=False,
     plot_inversion_chi_squared_map=False,
     plot_inversion_regularization_weight_map=False,
-    unit_label="arcsec",
+    plot_in_kpc=False,
     output_path=None,
     output_format="show",
 ):
@@ -610,13 +610,13 @@ def get_mass_profile_centes(plot_mass_profile_centres, fit):
 def get_critical_curves_and_caustics(fit, include_critical_curves, include_caustics):
     if fit.tracer.has_mass_profile:
 
-        critical_curves = plotter_util.get_critical_curve_and_caustic(
+        critical_curves = lens_plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
             include_critical_curves=include_critical_curves,
             include_caustics=False,
         )
 
-        caustics = plotter_util.get_critical_curve_and_caustic(
+        caustics = lens_plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
             include_critical_curves=False,
             include_caustics=include_caustics,

@@ -18,7 +18,7 @@ def subplot(
     positions=None,
     include_image_plane_pix=False,
     plot_mass_profile_centres=True,
-    unit_label="arcsec",
+    plot_in_kpc=False,
     figsize=None,
     aspect="square",
     cmap="jet",
@@ -269,7 +269,7 @@ def subplot_of_planes(
     positions=None,
     include_image_plane_pix=False,
     plot_mass_profile_centres=True,
-    unit_label="arcsec",
+    plot_in_kpc=False,
     figsize=None,
     aspect="square",
     cmap="jet",
@@ -347,7 +347,7 @@ def subplot_for_plane(
     positions=None,
     include_image_plane_pix=False,
     plot_mass_profile_centres=True,
-    unit_label="arcsec",
+    plot_in_kpc=False,
     figsize=None,
     aspect="square",
     cmap="jet",
@@ -512,7 +512,7 @@ def subplot_for_plane(
 
     if fit.tracer.has_mass_profile:
 
-        lines = plotter_util.get_critical_curve_and_caustic(
+        lines = lens_plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
             include_critical_curves=False,
             include_caustics=include_caustics,
@@ -641,7 +641,7 @@ def individuals(
     plot_subtracted_images_of_planes=False,
     plot_model_images_of_planes=False,
     plot_plane_images_of_planes=False,
-    unit_label="arcsec",
+    plot_in_kpc=False,
     output_path=None,
     output_format="show",
 ):
@@ -838,7 +838,7 @@ def individuals(
 
         if fit.tracer.has_mass_profile:
 
-            lines = plotter_util.get_critical_curve_and_caustic(
+            lines = lens_plotter_util.get_critical_curve_and_caustic(
                 obj=fit.tracer,
                 include_critical_curves=False,
                 include_caustics=include_caustics,
@@ -886,7 +886,7 @@ def subtracted_image_of_plane(
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
-    unit_label="arcsec",
+    plot_in_kpc=False,
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -944,7 +944,7 @@ def subtracted_image_of_plane(
 
     if fit.tracer.has_mass_profile:
 
-        lines = plotter_util.get_critical_curve_and_caustic(
+        lines = lens_plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
@@ -961,7 +961,7 @@ def subtracted_image_of_plane(
         points=positions,
         lines=lines,
         as_subplot=as_subplot,
-        units_label=unit_label,
+        unit_label=unit_label,
         unit_conversion_factor=kpc_per_arcsec,
         figsize=figsize,
         aspect=aspect,
@@ -998,7 +998,7 @@ def model_image_of_plane(
     positions=None,
     plot_mass_profile_centres=True,
     as_subplot=False,
-    unit_label="arcsec",
+    plot_in_kpc=False,
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -1044,7 +1044,7 @@ def model_image_of_plane(
 
     if fit.tracer.has_mass_profile:
 
-        lines = plotter_util.get_critical_curve_and_caustic(
+        lines = lens_plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
@@ -1061,7 +1061,7 @@ def model_image_of_plane(
         points=positions,
         centres=centres,
         as_subplot=as_subplot,
-        units_label=unit_label,
+        unit_label=unit_label,
         unit_conversion_factor=kpc_per_arcsec,
         figsize=figsize,
         aspect=aspect,
@@ -1094,7 +1094,7 @@ def contribution_maps(
     mask=None,
     positions=None,
     as_subplot=False,
-    unit_label="arcsec",
+    plot_in_kpc=False,
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -1142,7 +1142,7 @@ def contribution_maps(
         mask=mask,
         points=positions,
         as_subplot=as_subplot,
-        units_label=unit_label,
+        unit_label=unit_label,
         unit_conversion_factor=kpc_per_arcsec,
         figsize=figsize,
         aspect=aspect,
@@ -1211,13 +1211,13 @@ def get_mass_profile_centes(plot_mass_profile_centres, fit):
 def get_critical_curves_and_caustics(fit, include_critical_curves, include_caustics):
     if fit.tracer.has_mass_profile:
 
-        critical_curves = plotter_util.get_critical_curve_and_caustic(
+        critical_curves = lens_plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
             include_critical_curves=include_critical_curves,
             include_caustics=False,
         )
 
-        caustics = plotter_util.get_critical_curve_and_caustic(
+        caustics = lens_plotter_util.get_critical_curve_and_caustic(
             obj=fit.tracer,
             include_critical_curves=False,
             include_caustics=include_caustics,
