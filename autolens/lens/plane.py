@@ -364,9 +364,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         radius : float
             The radius of the circle to compute the dimensionless mass within.
         unit_luminosity : str
-            The units the luminosity is returned in (eps | counts).
+            The unit_label the luminosity is returned in (eps | counts).
         exposure_time : float
-            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
+            The exposure time of the observation, which converts luminosity from electrons per second unit_label to counts.
         """
         return list(
             map(
@@ -394,7 +394,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         radius : float
             The radius of the circle to compute the dimensionless mass within.
         unit_mass : str
-            The units the mass is returned in (angular | angular).
+            The unit_label the mass is returned in (angular | angular).
 
         """
         return list(
@@ -536,7 +536,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
         Parameters
         -----------
         noise_map : imaging.NoiseMap or ndarray
-            An arrays describing the RMS standard deviation error in each pixel, preferably in units of electrons per
+            An arrays describing the RMS standard deviation error in each pixel, preferably in unit_label of electrons per
             second.
         """
         hyper_noise_maps = []

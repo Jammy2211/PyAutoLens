@@ -15,7 +15,8 @@ def subplot(
     include_mask=True,
     include_image_plane_pix=False,
     plot_mass_profile_centres=True,
-    units="arcsec",
+    use_scaled_units=True,
+    unit_label="arcsec",
     figsize=None,
     cmap="jet",
     cb_ticksize=10,
@@ -49,8 +50,9 @@ def subplot(
     aa.plot.fit_interferometer.visibilities(
         fit=fit,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=kpc_per_arcsec,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -73,8 +75,8 @@ def subplot(
     aa.plot.fit_interferometer.signal_to_noise_map(
         fit=fit,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=kpc_per_arcsec,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -96,8 +98,9 @@ def subplot(
     aa.plot.fit_interferometer.model_visibilities(
         fit=fit,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=kpc_per_arcsec,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -119,8 +122,9 @@ def subplot(
     aa.plot.fit_interferometer.residual_map(
         fit=fit,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=kpc_per_arcsec,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -142,8 +146,8 @@ def subplot(
     aa.plot.fit_interferometer.normalized_residual_map(
         fit=fit,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=kpc_per_arcsec,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -165,8 +169,9 @@ def subplot(
     aa.plot.fit_interferometer.chi_squared_map(
         fit=fit,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=kpc_per_arcsec,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -200,7 +205,7 @@ def subplot_real_space(
     positions=None,
     include_image_plane_pix=False,
     plot_mass_profile_centres=True,
-    units="arcsec",
+    unit_label="arcsec",
     figsize=None,
     aspect="square",
     cmap="jet",
@@ -258,7 +263,7 @@ def subplot_real_space(
             include_critical_curves=include_critical_curves,
             positions=positions,
             as_subplot=True,
-            units=units,
+            unit_label=unit_label,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -290,7 +295,7 @@ def subplot_real_space(
             grid=fit.masked_interferometer.grid,
             as_subplot=True,
             lines=caustics,
-            units=units,
+            unit_label=unit_label,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -324,8 +329,8 @@ def subplot_real_space(
             positions=positions,
             grid=image_plane_pix_grid,
             as_subplot=True,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=kpc_per_arcsec,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -374,8 +379,8 @@ def subplot_real_space(
             include_grid=False,
             include_centres=False,
             as_subplot=True,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=kpc_per_arcsec,
             figsize=figsize,
             aspect=None,
             cmap=cmap,
@@ -420,7 +425,7 @@ def individuals(
     plot_inversion_normalized_residual_map=False,
     plot_inversion_chi_squared_map=False,
     plot_inversion_regularization_weight_map=False,
-    units="arcsec",
+    unit_label="arcsec",
     output_path=None,
     output_format="show",
 ):
@@ -445,8 +450,8 @@ def individuals(
 
         aa.plot.fit_interferometer.visibilities(
             fit=fit,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=kpc_per_arcsec,
             output_path=output_path,
             output_format=output_format,
         )
@@ -455,8 +460,8 @@ def individuals(
 
         aa.plot.fit_interferometer.noise_map(
             fit=fit,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=kpc_per_arcsec,
             output_path=output_path,
             output_format=output_format,
         )
@@ -465,8 +470,8 @@ def individuals(
 
         aa.plot.fit_interferometer.signal_to_noise_map(
             fit=fit,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=kpc_per_arcsec,
             output_path=output_path,
             output_format=output_format,
         )
@@ -475,8 +480,8 @@ def individuals(
 
         aa.plot.fit_interferometer.model_visibilities(
             fit=fit,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=kpc_per_arcsec,
             output_path=output_path,
             output_format=output_format,
         )
@@ -485,8 +490,8 @@ def individuals(
 
         aa.plot.fit_interferometer.residual_map(
             fit=fit,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=kpc_per_arcsec,
             output_path=output_path,
             output_format=output_format,
         )
@@ -495,8 +500,8 @@ def individuals(
 
         aa.plot.fit_interferometer.normalized_residual_map(
             fit=fit,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=kpc_per_arcsec,
             output_path=output_path,
             output_format=output_format,
         )
@@ -505,8 +510,8 @@ def individuals(
 
         aa.plot.fit_interferometer.chi_squared_map(
             fit=fit,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=kpc_per_arcsec,
             output_path=output_path,
             output_format=output_format,
         )
@@ -518,7 +523,7 @@ def individuals(
             aa.plot.inversion.residual_map(
                 inversion=fit.inversion,
                 include_grid=True,
-                units=units,
+                unit_label=unit_label,
                 figsize=(20, 20),
                 output_path=output_path,
                 output_format=output_format,
@@ -531,7 +536,7 @@ def individuals(
             aa.plot.inversion.normalized_residual_map(
                 inversion=fit.inversion,
                 include_grid=True,
-                units=units,
+                unit_label=unit_label,
                 figsize=(20, 20),
                 output_path=output_path,
                 output_format=output_format,
@@ -544,7 +549,7 @@ def individuals(
             aa.plot.inversion.chi_squared_map(
                 inversion=fit.inversion,
                 include_grid=True,
-                units=units,
+                unit_label=unit_label,
                 figsize=(20, 20),
                 output_path=output_path,
                 output_format=output_format,
@@ -557,7 +562,7 @@ def individuals(
             aa.plot.inversion.regularization_weights(
                 inversion=fit.inversion,
                 include_grid=True,
-                units=units,
+                unit_label=unit_label,
                 figsize=(20, 20),
                 output_path=output_path,
                 output_format=output_format,
