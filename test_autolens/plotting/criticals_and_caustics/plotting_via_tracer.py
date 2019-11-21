@@ -39,7 +39,7 @@ al.plot.tracer.subplot(
 #     include_critical_curves,
 #     include_caustics,
 #     positions,
-#     units,
+#     unit_label,
 #     plot_as_subplot,
 #     plot_all_at_end_png,
 #     plot_all_at_end_fits,

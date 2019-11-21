@@ -9,7 +9,7 @@ def imaging_of_phase(
     imaging,
     mask,
     positions,
-    units,
+    unit_label,
     plot_as_subplot,
     plot_image,
     plot_noise_map,
@@ -31,7 +31,7 @@ def imaging_of_phase(
             imaging=imaging,
             mask=mask,
             positions=positions,
-            units=units,
+            unit_label=unit_label,
             output_path=subplot_path,
             output_format="png",
         )
@@ -46,7 +46,7 @@ def imaging_of_phase(
         plot_signal_to_noise_map=plot_signal_to_noise_map,
         plot_absolute_signal_to_noise_map=plot_absolute_signal_to_noise_map,
         plot_potential_chi_squared_map=plot_potential_chi_squared_map,
-        units=units,
+        unit_label=unit_label,
         output_path=output_path,
         output_format="png",
     )
@@ -54,7 +54,7 @@ def imaging_of_phase(
 
 def interferometer_of_phase(
     interferometer,
-    units,
+    unit_label,
     plot_as_subplot,
     plot_visibilities,
     plot_uv_wavelengths,
@@ -71,7 +71,7 @@ def interferometer_of_phase(
 
         aa.plot.interferometer.subplot(
             interferometer=interferometer,
-            units=units,
+            unit_label=unit_label,
             output_path=subplot_path,
             output_format="png",
         )
@@ -82,7 +82,7 @@ def interferometer_of_phase(
         plot_u_wavelengths=plot_uv_wavelengths,
         plot_v_wavelengths=plot_uv_wavelengths,
         plot_primary_beam=plot_primary_beam,
-        units=units,
+        unit_label=unit_label,
         output_path=output_path,
         output_format="png",
     )
@@ -96,7 +96,7 @@ def ray_tracing_of_phase(
     include_critical_curves,
     include_caustics,
     positions,
-    units,
+    unit_label,
     plot_as_subplot,
     plot_all_at_end_png,
     plot_all_at_end_fits,
@@ -121,7 +121,7 @@ def ray_tracing_of_phase(
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
             positions=positions,
-            units=units,
+            unit_label=unit_label,
             output_path=subplot_path,
             output_format="png",
         )
@@ -138,7 +138,7 @@ def ray_tracing_of_phase(
         plot_convergence=plot_convergence,
         plot_potential=plot_potential,
         plot_deflections=plot_deflections,
-        units=units,
+        unit_label=unit_label,
         output_path=output_path,
         output_format="png",
     )
@@ -159,7 +159,7 @@ def ray_tracing_of_phase(
                 plot_convergence=True,
                 plot_potential=True,
                 plot_deflections=True,
-                units=units,
+                unit_label=unit_label,
                 output_path=output_path,
                 output_format="png",
             )
@@ -191,7 +191,7 @@ def imaging_fit_of_phase(
     fit,
     during_analysis,
     positions,
-    units,
+    unit_label,
     include_mask,
     include_critical_curves,
     include_caustics,
@@ -232,7 +232,7 @@ def imaging_fit_of_phase(
             include_caustics=include_caustics,
             positions=positions,
             include_image_plane_pix=include_image_plane_pix,
-            units=units,
+            unit_label=unit_label,
             output_path=subplot_path,
             output_format="png",
         )
@@ -246,7 +246,7 @@ def imaging_fit_of_phase(
             include_caustics=include_caustics,
             positions=positions,
             include_image_plane_pix=include_image_plane_pix,
-            units=units,
+            unit_label=unit_label,
             output_path=subplot_path,
             output_format="png",
         )
@@ -282,7 +282,7 @@ def imaging_fit_of_phase(
         plot_subtracted_images_of_planes=plot_subtracted_images_of_planes,
         plot_model_images_of_planes=plot_model_images_of_planes,
         plot_plane_images_of_planes=plot_plane_images_of_planes,
-        units=units,
+        unit_label=unit_label,
         output_path=output_path,
         output_format="png",
     )
@@ -312,7 +312,7 @@ def imaging_fit_of_phase(
                 plot_subtracted_images_of_planes=True,
                 plot_model_images_of_planes=True,
                 plot_plane_images_of_planes=True,
-                units=units,
+                unit_label=unit_label,
                 output_path=output_path,
                 output_format="png",
             )
@@ -353,7 +353,7 @@ def interferometer_fit_of_phase(
     fit,
     during_analysis,
     positions,
-    units,
+    unit_label,
     include_mask,
     include_critical_curves,
     include_caustics,
@@ -384,7 +384,7 @@ def interferometer_fit_of_phase(
     if plot_fit_as_subplot:
 
         fit_interferometer_plotters.subplot(
-            fit=fit, units=units, output_path=subplot_path, output_format="png"
+            fit=fit, unit_label=unit_label, output_path=subplot_path, output_format="png"
         )
 
         fit_interferometer_plotters.subplot_real_space(
@@ -394,7 +394,7 @@ def interferometer_fit_of_phase(
             include_caustics=include_caustics,
             positions=positions,
             include_image_plane_pix=include_image_plane_pix,
-            units=units,
+            unit_label=unit_label,
             output_path=subplot_path,
             output_format="png",
         )
@@ -422,7 +422,7 @@ def interferometer_fit_of_phase(
         # plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
         # plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
         plot_inversion_regularization_weight_map=plot_inversion_regularization_weights,
-        units=units,
+        unit_label=unit_label,
         output_path=output_path,
         output_format="png",
     )
@@ -444,7 +444,7 @@ def interferometer_fit_of_phase(
                 # plot_inversion_normalized_residual_map=True,
                 # plot_inversion_chi_squared_map=True,
                 plot_inversion_regularization_weight_map=True,
-                units=units,
+                unit_label=unit_label,
                 output_path=output_path,
                 output_format="png",
             )
@@ -477,7 +477,7 @@ def plot_hyper_images_for_phase(
     hyper_model_image,
     hyper_galaxy_image_path_dict,
     mask,
-    units,
+    unit_label,
     plot_hyper_model_image,
     plot_hyper_galaxy_images,
     visualize_path,
@@ -492,7 +492,7 @@ def plot_hyper_images_for_phase(
         hyper_plotters.hyper_model_image(
             hyper_model_image=hyper_model_image,
             mask=mask,
-            units=units,
+            unit_label=unit_label,
             output_path=output_path,
             output_format="png",
         )
@@ -502,7 +502,7 @@ def plot_hyper_images_for_phase(
         hyper_plotters.subplot_of_hyper_galaxy_images(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             mask=mask,
-            units=units,
+            unit_label=unit_label,
             output_path=output_path,
             output_format="png",
         )
