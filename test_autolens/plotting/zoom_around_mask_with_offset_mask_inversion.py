@@ -19,13 +19,13 @@ def fit_with_offset_centre(centre):
 
     # The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it
     # via a tracer, setup the rectangular mapper, etc.
-    lens_galaxy = al.galaxy(
+    lens_galaxy = al.Galaxy(
         redshift=0.5,
         mass=al.mp.EllipticalIsothermal(
             centre=(2.0, 2.0), einstein_radius=1.2, axis_ratio=0.7, phi=45.0
         ),
     )
-    source_galaxy = al.galaxy(
+    source_galaxy = al.Galaxy(
         redshift=1.0,
         pixelization=al.pix.VoronoiMagnification(shape=(20, 20)),
         regularization=al.reg.Constant(coefficient=1.0),
@@ -33,7 +33,7 @@ def fit_with_offset_centre(centre):
 
     masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 
-    tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
     fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
 
     return fit

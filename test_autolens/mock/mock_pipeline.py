@@ -40,24 +40,24 @@ class MockResults(object):
         self.hyper_combined = MockHyperCombinedPhase()
 
     @property
-    def path_galaxy_tuples(self) -> [(str, al.galaxy)]:
+    def path_galaxy_tuples(self) -> [(str, al.Galaxy)]:
         """
         Tuples associating the names of galaxies with instances from the best fit
         """
-        return [(("g0",), al.galaxy(redshift=0.5)), (("g1",), al.galaxy(redshift=1.0))]
+        return [(("g0",), al.Galaxy(redshift=0.5)), (("g1",), al.Galaxy(redshift=1.0))]
 
     @property
-    def path_galaxy_tuples_with_index(self) -> [(str, al.galaxy)]:
+    def path_galaxy_tuples_with_index(self) -> [(str, al.Galaxy)]:
         """
         Tuples associating the names of galaxies with instances from the best fit
         """
         return [
-            (0, ("g0",), al.galaxy(redshift=0.5)),
-            (1, ("g1",), al.galaxy(redshift=1.0)),
+            (0, ("g0",), al.Galaxy(redshift=0.5)),
+            (1, ("g1",), al.Galaxy(redshift=1.0)),
         ]
 
     @property
-    def image_galaxy_dict(self) -> {str: al.galaxy}:
+    def image_galaxy_dict(self) -> {str: al.Galaxy}:
         """
         A dictionary associating galaxy names with model images of those galaxies
         """

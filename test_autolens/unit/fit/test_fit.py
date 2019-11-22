@@ -12,49 +12,49 @@ class TestImagingFit:
     class TestFitProperties:
         def test__total_inversions(self, masked_imaging_7x7):
 
-            g0 = al.galaxy(redshift=0.5)
+            g0 = al.Galaxy(redshift=0.5)
 
-            g1 = al.galaxy(redshift=1.0)
+            g1 = al.Galaxy(redshift=1.0)
 
-            g2 = al.galaxy(redshift=2.0)
+            g2 = al.Galaxy(redshift=2.0)
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             assert fit.total_inversions == 0
 
-            g2 = al.galaxy(
+            g2 = al.Galaxy(
                 redshift=2.0,
                 pixelization=al.pix.Rectangular(),
                 regularization=al.reg.Constant(),
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             assert fit.total_inversions == 1
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 pixelization=al.pix.Rectangular(),
                 regularization=al.reg.Constant(),
             )
 
-            g1 = al.galaxy(
+            g1 = al.Galaxy(
                 redshift=1.0,
                 pixelization=al.pix.Rectangular(),
                 regularization=al.reg.Constant(),
             )
 
-            g2 = al.galaxy(
+            g2 = al.Galaxy(
                 redshift=2.0,
                 pixelization=al.pix.Rectangular(),
                 regularization=al.reg.Constant(),
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -95,10 +95,10 @@ class TestImagingFit:
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = al.tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -198,10 +198,10 @@ class TestImagingFit:
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = al.tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -305,7 +305,7 @@ class TestImagingFit:
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=MockLightProfile(value=1.0, size=2),
                 hyper_galaxy=al.HyperGalaxy(
@@ -316,7 +316,7 @@ class TestImagingFit:
                 hyper_minimum_value=0.0,
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -409,10 +409,10 @@ class TestImagingFit:
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = al.tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
             hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
 
@@ -515,10 +515,10 @@ class TestImagingFit:
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = al.tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
             hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
@@ -591,17 +591,17 @@ class TestImagingFit:
     class TestCompareToManualProfilesOnly:
         def test___all_lens_fit_quantities__no_hyper_methods(self, masked_imaging_7x7):
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.lp.EllipticalSersic(intensity=1.0),
                 mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
 
-            g1 = al.galaxy(
+            g1 = al.Galaxy(
                 redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -655,17 +655,17 @@ class TestImagingFit:
         def test___lens_fit_galaxy_model_image_dict__corresponds_to_blurred_galaxy_images(
             self, masked_imaging_7x7
         ):
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.lp.EllipticalSersic(intensity=1.0),
                 mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
-            g1 = al.galaxy(
+            g1 = al.Galaxy(
                 redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
-            g2 = al.galaxy(redshift=1.0)
+            g2 = al.Galaxy(redshift=1.0)
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -720,7 +720,7 @@ class TestImagingFit:
                 image=masked_imaging_7x7.image
             )
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.lp.EllipticalSersic(intensity=1.0),
                 mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
@@ -731,11 +731,11 @@ class TestImagingFit:
                 hyper_galaxy_image=np.ones(9),
                 hyper_minimum_value=0.0,
             )
-            g1 = al.galaxy(
+            g1 = al.Galaxy(
                 redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             fit = ImagingFit(
                 masked_imaging=masked_imaging_7x7,
@@ -803,17 +803,17 @@ class TestImagingFit:
             self, masked_imaging_7x7
         ):
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.lp.EllipticalSersic(intensity=1.0),
                 mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
 
-            g1 = al.galaxy(
+            g1 = al.Galaxy(
                 redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -871,9 +871,9 @@ class TestImagingFit:
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
 
-            g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+            g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -956,10 +956,10 @@ class TestImagingFit:
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
 
-            g0 = al.galaxy(redshift=0.5)
-            g1 = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            g0 = al.Galaxy(redshift=0.5)
+            g1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -1004,7 +1004,7 @@ class TestImagingFit:
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 pixelization=pix,
                 regularization=reg,
@@ -1016,7 +1016,7 @@ class TestImagingFit:
                 hyper_minimum_value=0.0,
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
             fit = ImagingFit(
                 masked_imaging=masked_imaging_7x7,
@@ -1109,9 +1109,9 @@ class TestImagingFit:
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
 
-            g0 = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            g0 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -1134,15 +1134,15 @@ class TestImagingFit:
 
     class TestCompareToManualProfilesAndInversion:
         def test___all_lens_fit_quantities__no_hyper_methods(self, masked_imaging_7x7):
-            galaxy_light = al.galaxy(
+            galaxy_light = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
-            galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -1237,19 +1237,19 @@ class TestImagingFit:
             self, masked_imaging_7x7
         ):
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
-            g1 = al.galaxy(
+            g1 = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=2.0)
             )
-            g2 = al.galaxy(redshift=0.5)
+            g2 = al.Galaxy(redshift=0.5)
 
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
-            galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -1328,7 +1328,7 @@ class TestImagingFit:
                 noise_map=masked_imaging_7x7.noise_map
             )
 
-            galaxy_light = al.galaxy(
+            galaxy_light = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.lp.EllipticalSersic(intensity=1.0),
                 hyper_galaxy=al.HyperGalaxy(
@@ -1341,9 +1341,9 @@ class TestImagingFit:
 
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
-            galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
             fit = ImagingFit(
                 masked_imaging=masked_imaging_7x7,
@@ -1451,15 +1451,15 @@ class TestImagingFit:
         def test___blurred_and_model_images_of_planes_and_unmasked_blurred_profile_image_properties(
             self, masked_imaging_7x7
         ):
-            galaxy_light = al.galaxy(
+            galaxy_light = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
-            galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
             fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
@@ -1494,13 +1494,13 @@ class TestImagingFit:
 class TestInterferometerFit:
     class TestFitProperties:
         def test__total_inversions(self, masked_interferometer_7):
-            g0 = al.galaxy(redshift=0.5)
+            g0 = al.Galaxy(redshift=0.5)
 
-            g1 = al.galaxy(redshift=1.0)
+            g1 = al.Galaxy(redshift=1.0)
 
-            g2 = al.galaxy(redshift=2.0)
+            g2 = al.Galaxy(redshift=2.0)
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7, tracer=tracer
@@ -1508,13 +1508,13 @@ class TestInterferometerFit:
 
             assert fit.total_inversions == 0
 
-            g2 = al.galaxy(
+            g2 = al.Galaxy(
                 redshift=2.0,
                 pixelization=al.pix.Rectangular(),
                 regularization=al.reg.Constant(),
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7, tracer=tracer
@@ -1522,25 +1522,25 @@ class TestInterferometerFit:
 
             assert fit.total_inversions == 1
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 pixelization=al.pix.Rectangular(),
                 regularization=al.reg.Constant(),
             )
 
-            g1 = al.galaxy(
+            g1 = al.Galaxy(
                 redshift=1.0,
                 pixelization=al.pix.Rectangular(),
                 regularization=al.reg.Constant(),
             )
 
-            g2 = al.galaxy(
+            g2 = al.Galaxy(
                 redshift=2.0,
                 pixelization=al.pix.Rectangular(),
                 regularization=al.reg.Constant(),
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7, tracer=tracer
@@ -1583,10 +1583,10 @@ class TestInterferometerFit:
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = al.tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer, tracer=tracer
@@ -1642,7 +1642,7 @@ class TestInterferometerFit:
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=0.001)
             )
 
@@ -1651,7 +1651,7 @@ class TestInterferometerFit:
                 image=profile_image
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer, tracer=tracer
@@ -1739,10 +1739,10 @@ class TestInterferometerFit:
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2)
             )
-            tracer = al.tracer.from_galaxies(galaxies=[g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
             hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
@@ -1762,17 +1762,17 @@ class TestInterferometerFit:
         def test___all_lens_fit_quantities__no_hyper_methods(
             self, masked_interferometer_7
         ):
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.lp.EllipticalSersic(intensity=1.0),
                 mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
 
-            g1 = al.galaxy(
+            g1 = al.Galaxy(
                 redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7, tracer=tracer
@@ -1825,17 +1825,17 @@ class TestInterferometerFit:
         def test___lens_fit_galaxy_visibilities_dict__corresponds_to_galaxy_visibilities(
             self, masked_interferometer_7
         ):
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.lp.EllipticalSersic(intensity=1.0),
                 mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
-            g1 = al.galaxy(
+            g1 = al.Galaxy(
                 redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
-            g2 = al.galaxy(redshift=1.0)
+            g2 = al.Galaxy(redshift=1.0)
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7, tracer=tracer
@@ -1881,17 +1881,17 @@ class TestInterferometerFit:
                 noise_map=masked_interferometer_7.noise_map
             )
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.lp.EllipticalSersic(intensity=1.0),
                 mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
             )
 
-            g1 = al.galaxy(
+            g1 = al.Galaxy(
                 redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7,
@@ -1909,9 +1909,9 @@ class TestInterferometerFit:
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=0.01)
 
-            g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+            g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7, tracer=tracer
@@ -2007,10 +2007,10 @@ class TestInterferometerFit:
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
 
-            g0 = al.galaxy(redshift=0.5)
-            g1 = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            g0 = al.Galaxy(redshift=0.5)
+            g1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7, tracer=tracer
@@ -2051,9 +2051,9 @@ class TestInterferometerFit:
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=0.01)
 
-            g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+            g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[al.galaxy(redshift=0.5), g0])
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7,
@@ -2071,15 +2071,15 @@ class TestInterferometerFit:
         def test___all_lens_fit_quantities__no_hyper_methods(
             self, masked_interferometer_7
         ):
-            galaxy_light = al.galaxy(
+            galaxy_light = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
-            galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7, tracer=tracer
@@ -2191,19 +2191,19 @@ class TestInterferometerFit:
             self, masked_interferometer_7
         ):
 
-            g0 = al.galaxy(
+            g0 = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
-            g1 = al.galaxy(
+            g1 = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=2.0)
             )
-            g2 = al.galaxy(redshift=0.5)
+            g2 = al.Galaxy(redshift=0.5)
 
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
-            galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7, tracer=tracer
@@ -2269,15 +2269,15 @@ class TestInterferometerFit:
                 noise_map=masked_interferometer_7.noise_map
             )
 
-            galaxy_light = al.galaxy(
+            galaxy_light = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
             pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
-            galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+            galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-            tracer = al.tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
             fit = InterferometerFit(
                 masked_interferometer=masked_interferometer_7,
