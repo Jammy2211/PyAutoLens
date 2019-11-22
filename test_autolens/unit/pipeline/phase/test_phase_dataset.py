@@ -283,7 +283,7 @@ class TestPhase(object):
             galaxies=dict(
                 source=al.galaxy(
                     redshift=0.5,
-                    pixelization=al.pix.Rectangular(shp=(3, 3)),
+                    pixelization=al.pix.Rectangular(shape=(3, 3)),
                     regularization=al.reg.Constant(),
                 )
             ),
@@ -306,7 +306,7 @@ class TestPhase(object):
             galaxies=dict(
                 source=al.galaxy(
                     redshift=0.5,
-                    pixelization=al.pix.Rectangular(shp=(4, 4)),
+                    pixelization=al.pix.Rectangular(shape=(4, 4)),
                     regularization=al.reg.Constant(),
                 )
             ),
@@ -330,7 +330,7 @@ class TestPhase(object):
             galaxies=dict(
                 source=al.galaxy(
                     redshift=0.5,
-                    pixelization=al.pix.Rectangular(shp=(3, 3)),
+                    pixelization=al.pix.Rectangular(shape=(3, 3)),
                     regularization=al.reg.Constant(),
                 )
             ),
@@ -352,7 +352,7 @@ class TestPhase(object):
             galaxies=dict(
                 source=al.galaxy(
                     redshift=0.5,
-                    pixelization=al.pix.Rectangular(shp=(4, 4)),
+                    pixelization=al.pix.Rectangular(shape=(4, 4)),
                     regularization=al.reg.Constant(),
                 )
             ),
@@ -531,7 +531,7 @@ class TestPhase(object):
         )
         source_galaxy = al.galaxy(
             redshift=1.0,
-            pixelization=al.pix.Rectangular(shp=(3, 3)),
+            pixelization=al.pix.Rectangular(shape=(3, 3)),
             regularization=al.reg.Constant(coefficient=1.0),
         )
 
@@ -763,7 +763,7 @@ class TestResult(object):
                 ),
                 source=al.galaxy(
                     redshift=1.0,
-                    pixelization=al.pix.VoronoiMagnification(shp=(2, 3)),
+                    pixelization=al.pix.VoronoiMagnification(shape=(2, 3)),
                     regularization=al.reg.Constant(),
                 ),
             ),

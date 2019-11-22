@@ -2871,7 +2871,7 @@ class TestAbstractTracerData(object):
 
             galaxy_pix = al.galaxy(
                 redshift=1.0,
-                pixelization=al.pix.VoronoiMagnification(shp=(3, 3)),
+                pixelization=al.pix.VoronoiMagnification(shape=(3, 3)),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
             galaxy_no_pix = al.galaxy(redshift=0.5)
@@ -2954,7 +2954,7 @@ class TestAbstractTracerData(object):
             self, sub_grid_7x7, masked_imaging_7x7
         ):
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=0.0)
 
             g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
@@ -2977,7 +2977,7 @@ class TestAbstractTracerData(object):
             self, sub_grid_7x7, masked_interferometer_7
         ):
 
-            pix = al.pix.Rectangular(shp=(7, 7))
+            pix = al.pix.Rectangular(shape=(7, 7))
             reg = al.reg.Constant(coefficient=0.0)
 
             g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)

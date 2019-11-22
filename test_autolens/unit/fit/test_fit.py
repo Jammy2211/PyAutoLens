@@ -868,7 +868,7 @@ class TestImagingFit:
     class TestCompareToManualInversionOnly:
         def test___all_lens_fit_quantities__no_hyper_methods(self, masked_imaging_7x7):
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
 
             g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
@@ -953,7 +953,7 @@ class TestImagingFit:
         def test___lens_fit_galaxy_model_image_dict__has_inversion_mapped_reconstructed_image(
             self, masked_imaging_7x7
         ):
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
 
             g0 = al.galaxy(redshift=0.5)
@@ -1001,7 +1001,7 @@ class TestImagingFit:
                 noise_map=masked_imaging_7x7.noise_map
             )
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
 
             g0 = al.galaxy(
@@ -1106,7 +1106,7 @@ class TestImagingFit:
             self, masked_imaging_7x7
         ):
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
 
             g0 = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
@@ -1138,7 +1138,7 @@ class TestImagingFit:
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
             galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
@@ -1245,7 +1245,7 @@ class TestImagingFit:
             )
             g2 = al.galaxy(redshift=0.5)
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
             galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
@@ -1339,7 +1339,7 @@ class TestImagingFit:
                 hyper_minimum_value=0.0,
             )
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
             galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
@@ -1455,7 +1455,7 @@ class TestImagingFit:
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
             galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
@@ -1906,7 +1906,7 @@ class TestInterferometerFit:
             self, masked_interferometer_7
         ):
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=0.01)
 
             g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
@@ -2004,7 +2004,7 @@ class TestInterferometerFit:
         def test___lens_fit_galaxy_model_visibilities_dict__has_inversion_mapped_reconstructed_visibilities(
             self, masked_interferometer_7
         ):
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
 
             g0 = al.galaxy(redshift=0.5)
@@ -2048,7 +2048,7 @@ class TestInterferometerFit:
                 noise_map=masked_interferometer_7.noise_map
             )
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=0.01)
 
             g0 = al.galaxy(redshift=0.5, pixelization=pix, regularization=reg)
@@ -2075,7 +2075,7 @@ class TestInterferometerFit:
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
             galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
@@ -2199,7 +2199,7 @@ class TestInterferometerFit:
             )
             g2 = al.galaxy(redshift=0.5)
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
             galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
@@ -2273,7 +2273,7 @@ class TestInterferometerFit:
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
             )
 
-            pix = al.pix.Rectangular(shp=(3, 3))
+            pix = al.pix.Rectangular(shape=(3, 3))
             reg = al.reg.Constant(coefficient=1.0)
             galaxy_pix = al.galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 

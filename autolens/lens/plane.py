@@ -3,7 +3,6 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autoastro import lensing
-from autoastro.galaxy import galaxy as g
 from autoarray.structures import visibilities as vis
 from autoarray.masked import masked_structures
 from autoastro.util import cosmology_util
