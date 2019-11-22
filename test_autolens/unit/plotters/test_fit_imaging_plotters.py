@@ -121,6 +121,7 @@ def test__fit_sub_plot(
     al.plot.fit_imaging.subplot(
         fit=masked_imaging_fit_x2_plane_7x7,
         include_mask=True,
+        plot_in_kpc=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
