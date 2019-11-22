@@ -14,7 +14,7 @@ class Analysis(analysis_dataset.Analysis):
 
         self.visualizer = visualizer.PhaseImagingVisualizer(masked_imaging, image_path)
 
-        self.masked_imaging = masked_imaging
+        self.masked_dataset = masked_imaging
 
         if results is not None and results.last is not None:
             last_results = results.last
@@ -28,6 +28,10 @@ class Analysis(analysis_dataset.Analysis):
             self.hyper_model_image = last_results.hyper_model_image
 
             self.visualizer.plot_hyper_images(last_results=last_results)
+
+    @property
+    def masked_imaging(self):
+        return self.masked_dataset
 
     def fit(self, instance):
         """
@@ -47,10 +51,10 @@ class Analysis(analysis_dataset.Analysis):
         self.associate_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
-        self.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+        self.masked_dataset.check_positions_trace_within_threshold_via_tracer(
             tracer=tracer
         )
-        self.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
+        self.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
             tracer=tracer
         )
 
@@ -112,7 +116,7 @@ class Analysis(analysis_dataset.Analysis):
     ):
 
         return fit.ImagingFit(
-            masked_imaging=self.masked_imaging,
+            masked_imaging=self.masked_dataset,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,

@@ -57,7 +57,7 @@ def test__plot_interferometer_for_phase(
         kpc_per_arcsec=2.0,
         unit_label="kpc",
         plot_as_subplot=True,
-        plot_visibilities=True,
+        plot_visibilities=False,
         plot_uv_wavelengths=False,
         plot_primary_beam=True,
         visualize_path=phase_plotter_path,
@@ -65,7 +65,7 @@ def test__plot_interferometer_for_phase(
     )
 
     assert phase_plotter_path + "interferometer.png" in plot_patch.paths
-    assert phase_plotter_path + "interferometer/interferometer_visibilities.png" in plot_patch.paths
+    assert phase_plotter_path + "interferometer/interferometer_visibilities.png" not in plot_patch.paths
     assert (
         phase_plotter_path + "interferometer/interferometer_primary_beam.png"
         in plot_patch.paths
@@ -126,7 +126,7 @@ def test__imaging_fit_for_phase__source_and_lens__depedent_on_input(
         fit=masked_imaging_fit_x2_plane_7x7,
         during_analysis=False,
         include_mask=True,
-        positions=None,
+        include_positions=True,
         plot_in_kpc=True,
         include_critical_curves=True,
         include_caustics=True,
@@ -193,7 +193,7 @@ def test__interferometer_fit_for_phase__source_and_lens__depedent_on_input(
         fit=masked_interferometer_fit_x2_plane_7x7,
         during_analysis=False,
         include_mask=True,
-        positions=None,
+        include_positions=True,
         plot_in_kpc=True,
         include_critical_curves=True,
         include_caustics=True,
@@ -237,7 +237,8 @@ def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
     al.plot.phase.plot_hyper_images_for_phase(
         hyper_model_image=hyper_model_image_7x7,
         hyper_galaxy_image_path_dict=None,
-        unit_conversion_factor=2.0,
+        kpc_per_arcsec=2.0,
+        unit_label='arcsec',
         mask=mask_7x7,
         plot_hyper_model_image=True,
         plot_hyper_galaxy_images=False,

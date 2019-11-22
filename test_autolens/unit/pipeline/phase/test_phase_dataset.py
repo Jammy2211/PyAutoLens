@@ -165,8 +165,8 @@ class TestPhase(object):
             dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
         )
 
-        assert (analysis.masked_imaging.positions[0][0] == np.array([1.0, 1.0])).all()
-        assert (analysis.masked_imaging.positions[0][1] == np.array([2.0, 2.0])).all()
+        assert (analysis.masked_dataset.positions[0][0] == np.array([1.0, 1.0])).all()
+        assert (analysis.masked_dataset.positions[0][1] == np.array([2.0, 2.0])).all()
         assert analysis.masked_imaging.positions_threshold == 0.2
 
         # If position threshold is input (not None) and but no positions are supplied, raise an error
@@ -192,7 +192,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+        analysis.masked_dataset.check_positions_trace_within_threshold_via_tracer(
             tracer=tracer
         )
 
@@ -211,7 +211,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.RayTracingException):
-            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+            analysis.masked_dataset.check_positions_trace_within_threshold_via_tracer(
                 tracer=tracer
             )
 
@@ -235,7 +235,7 @@ class TestPhase(object):
             ]
         )
 
-        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+        analysis.masked_dataset.check_positions_trace_within_threshold_via_tracer(
             tracer=tracer
         )
 
@@ -249,7 +249,7 @@ class TestPhase(object):
         )
 
         with pytest.raises(exc.RayTracingException):
-            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+            analysis.masked_dataset.check_positions_trace_within_threshold_via_tracer(
                 tracer=tracer
             )
 
@@ -260,7 +260,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+        analysis.masked_dataset.check_positions_trace_within_threshold_via_tracer(
             tracer=tracer
         )
 
@@ -272,7 +272,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.RayTracingException):
-            analysis.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+            analysis.masked_dataset.check_positions_trace_within_threshold_via_tracer(
                 tracer=tracer
             )
 
@@ -298,7 +298,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
+        analysis.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
             tracer=tracer
         )
 
@@ -321,7 +321,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
-            analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
+            analysis.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
                 tracer=tracer
             )
             analysis.fit(instance=instance)
@@ -344,7 +344,7 @@ class TestPhase(object):
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
+        analysis.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
             tracer=tracer
         )
 
@@ -367,7 +367,7 @@ class TestPhase(object):
         tracer = analysis.tracer_for_instance(instance=instance)
 
         with pytest.raises(exc.PixelizationException):
-            analysis.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
+            analysis.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
                 tracer=tracer
             )
             analysis.fit(instance=instance)
@@ -544,7 +544,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
-        analysis.masked_imaging.grid[4] = np.array([[500.0, 0.0]])
+        analysis.masked_dataset.grid[4] = np.array([[500.0, 0.0]])
 
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -565,7 +565,7 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
 
-        analysis.masked_imaging.grid[4] = np.array([300.0, 0.0])
+        analysis.masked_dataset.grid[4] = np.array([300.0, 0.0])
 
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -617,7 +617,7 @@ class TestPhase(object):
             dataset=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.masked_imaging.preload_sparse_grids_of_planes is None
+        assert analysis.masked_dataset.preload_sparse_grids_of_planes is None
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase", mask_function=mask_function_7x7
@@ -629,7 +629,7 @@ class TestPhase(object):
             dataset=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.masked_imaging.preload_sparse_grids_of_planes is None
+        assert analysis.masked_dataset.preload_sparse_grids_of_planes is None
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase",
@@ -649,7 +649,7 @@ class TestPhase(object):
             dataset=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.masked_imaging.preload_sparse_grids_of_planes is None
+        assert analysis.masked_dataset.preload_sparse_grids_of_planes is None
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase",
@@ -669,7 +669,7 @@ class TestPhase(object):
             dataset=imaging_7x7, results=results_collection_7x7
         )
 
-        assert analysis.masked_imaging.preload_sparse_grids_of_planes == 1
+        assert analysis.masked_dataset.preload_sparse_grids_of_planes == 1
 
 
 class TestResult(object):

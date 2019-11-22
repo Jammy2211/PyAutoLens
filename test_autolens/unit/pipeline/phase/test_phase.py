@@ -112,7 +112,7 @@ class TestPhase(object):
 
         analysis = phase_dataset_7x7.make_analysis(dataset=imaging_7x7)
 
-        assert analysis.masked_imaging.preload_sparse_grids_of_planes is None
+        assert analysis.masked_dataset.preload_sparse_grids_of_planes is None
 
     def test__phase_can_receive_list_of_galaxy_models(self):
         phase_dataset_7x7 = al.PhaseImaging(

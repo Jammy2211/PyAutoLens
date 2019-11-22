@@ -16,7 +16,7 @@ class Analysis(analysis_data.Analysis):
             masked_interferometer, image_path
         )
 
-        self.masked_interferometer = masked_interferometer
+        self.masked_dataset = masked_interferometer
 
         if results is not None and results.last is not None:
             last_results = results.last
@@ -30,6 +30,10 @@ class Analysis(analysis_data.Analysis):
             self.hyper_model_visibilities = last_results.hyper_model_visibilities
 
             # self.visualizer.plot_hyper_visibilities(last_results=last_results)
+
+    @property
+    def masked_interferometer(self):
+        return self.masked_dataset
 
     def fit(self, instance):
         """
@@ -49,10 +53,10 @@ class Analysis(analysis_data.Analysis):
         self.associate_visibilities(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
-        self.masked_interferometer.check_positions_trace_within_threshold_via_tracer(
+        self.masked_dataset.check_positions_trace_within_threshold_via_tracer(
             tracer=tracer
         )
-        self.masked_interferometer.check_inversion_pixels_are_below_limit_via_tracer(
+        self.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
             tracer=tracer
         )
 
@@ -108,7 +112,7 @@ class Analysis(analysis_data.Analysis):
     def masked_interferometer_fit_for_tracer(self, tracer, hyper_background_noise):
 
         return fit.InterferometerFit(
-            masked_interferometer=self.masked_interferometer,
+            masked_interferometer=self.masked_dataset,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
