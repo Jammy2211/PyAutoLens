@@ -21,7 +21,7 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        mask=masked_imaging_fit_x2_plane_7x7.mask,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -36,7 +36,7 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        mask=masked_imaging_fit_x2_plane_7x7.mask,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -51,7 +51,7 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        mask=masked_imaging_fit_x2_plane_7x7.mask,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -74,7 +74,7 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        mask=masked_imaging_fit_x2_plane_7x7.mask,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -88,7 +88,7 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        mask=masked_imaging_fit_x2_plane_7x7.mask,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -102,7 +102,7 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        mask=masked_imaging_fit_x2_plane_7x7.mask,
+        include_mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
