@@ -7,18 +7,14 @@ from matplotlib import pyplot as plt
 
 import autoarray as aa
 from autoarray.plotters import plotter_util
+from autoastro.plotters import lens_plotter_util
 from autolens.plotters import plane_plotters, ray_tracing_plotters
 
 
 def subplot(
     fit,
-    include_mask=True,
-    include_image_plane_pix=False,
-    plot_mass_profile_centres=True,
-    use_scaled_units=True,
     plot_in_kpc=False,
     figsize=None,
-    cmap="jet",
     cb_ticksize=10,
     cb_fraction=0.047,
     cb_pad=0.01,
@@ -41,20 +37,18 @@ def subplot(
     if figsize is None:
         figsize = figsize_tool
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc)
 
     plt.figure(figsize=figsize)
 
     plt.subplot(rows, columns, 1)
 
-    aa.plot.fit_interferometer.visibilities(
+    aa.plot.fit_interferometer.subplot(
         fit=fit,
-        as_subplot=True,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=kpc_per_arcsec,
         unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
-        cmap=cmap,
         cb_ticksize=cb_ticksize,
         cb_fraction=cb_fraction,
         cb_pad=cb_pad,
@@ -64,137 +58,11 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        pointsize=grid_pointsize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 2)
-
-    aa.plot.fit_interferometer.signal_to_noise_map(
-        fit=fit,
-        as_subplot=True,
-        unit_label=unit_label,
-        unit_conversion_factor=kpc_per_arcsec,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 3)
-
-    aa.plot.fit_interferometer.model_visibilities(
-        fit=fit,
-        as_subplot=True,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=kpc_per_arcsec,
-        unit_label=unit_label,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 4)
-
-    aa.plot.fit_interferometer.residual_map(
-        fit=fit,
-        as_subplot=True,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=kpc_per_arcsec,
-        unit_label=unit_label,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 5)
-
-    aa.plot.fit_interferometer.normalized_residual_map(
-        fit=fit,
-        as_subplot=True,
-        unit_label=unit_label,
-        unit_conversion_factor=kpc_per_arcsec,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 6)
-
-    aa.plot.fit_interferometer.chi_squared_map(
-        fit=fit,
-        as_subplot=True,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=kpc_per_arcsec,
-        unit_label=unit_label,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plotter_util.output_subplot_array(
+        grid_pointsize=grid_pointsize,
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
     )
-
-    plt.close()
 
 
 def subplot_real_space(
@@ -238,7 +106,8 @@ def subplot_real_space(
     if figsize is None:
         figsize = figsize_tool
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc)
 
     image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix, fit)
 
@@ -246,12 +115,12 @@ def subplot_real_space(
 
     plt.figure(figsize=figsize)
 
-    critical_curves, caustics = get_critical_curves_and_caustics(
-        fit=fit,
+    lines = lens_plotter_util.get_critical_curves_and_caustics(
+        obj=fit.tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
     )
-
+    
     plt.subplot(rows, columns, 1)
 
     if not fit.inversion is not None:
@@ -263,7 +132,7 @@ def subplot_real_space(
             include_critical_curves=include_critical_curves,
             positions=positions,
             as_subplot=True,
-            unit_label=unit_label,
+            plot_in_kpc=plot_in_kpc,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -294,8 +163,8 @@ def subplot_real_space(
             plane=fit.tracer.source_plane,
             grid=fit.masked_interferometer.grid,
             as_subplot=True,
-            lines=caustics,
-            unit_label=unit_label,
+            lines=[lines[1]],
+            plot_in_kpc=plot_in_kpc,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -325,12 +194,12 @@ def subplot_real_space(
         aa.plot.inversion.reconstructed_image(
             inversion=fit.inversion,
             mask=mask,
-            lines=critical_curves,
+            lines=lines[0],
             positions=positions,
             grid=image_plane_pix_grid,
             as_subplot=True,
             unit_label=unit_label,
-            unit_conversion_factor=kpc_per_arcsec,
+            unit_conversion_factor=unit_conversion_factor,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -375,12 +244,12 @@ def subplot_real_space(
 
         aa.plot.inversion.reconstruction(
             inversion=fit.inversion,
-            lines=caustics,
+            lines=lines[0],
             include_grid=False,
             include_centres=False,
             as_subplot=True,
             unit_label=unit_label,
-            unit_conversion_factor=kpc_per_arcsec,
+            unit_conversion_factor=unit_conversion_factor,
             figsize=figsize,
             aspect=None,
             cmap=cmap,
@@ -414,6 +283,7 @@ def subplot_real_space(
 
 def individuals(
     fit,
+    plot_in_kpc=False,
     plot_visibilities=False,
     plot_noise_map=False,
     plot_signal_to_noise_map=False,
@@ -425,7 +295,6 @@ def individuals(
     plot_inversion_normalized_residual_map=False,
     plot_inversion_chi_squared_map=False,
     plot_inversion_regularization_weight_map=False,
-    plot_in_kpc=False,
     output_path=None,
     output_format="show",
 ):
@@ -444,129 +313,27 @@ def individuals(
         in the python interpreter window.
     """
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc)
 
-    if plot_visibilities:
-
-        aa.plot.fit_interferometer.visibilities(
-            fit=fit,
-            unit_label=unit_label,
-            unit_conversion_factor=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
+    aa.plot.fit_interferometer.individuals(
+        fit=fit, 
+        plot_visibilities=plot_visibilities,
+        plot_noise_map=plot_noise_map,
+        plot_signal_to_noise_map=plot_signal_to_noise_map,
+        plot_model_visibilities=plot_model_visibilities,
+        plot_residual_map=plot_residual_map,
+        plot_normalized_residual_map=plot_normalized_residual_map,
+        plot_chi_squared_map=plot_chi_squared_map,
+        plot_inversion_residual_map=plot_inversion_residual_map,
+        plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
+        plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
+        plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
+        output_path=output_path,
+        output_format=output_format,
         )
-
-    if plot_noise_map:
-
-        aa.plot.fit_interferometer.noise_map(
-            fit=fit,
-            unit_label=unit_label,
-            unit_conversion_factor=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_signal_to_noise_map:
-
-        aa.plot.fit_interferometer.signal_to_noise_map(
-            fit=fit,
-            unit_label=unit_label,
-            unit_conversion_factor=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_model_visibilities:
-
-        aa.plot.fit_interferometer.model_visibilities(
-            fit=fit,
-            unit_label=unit_label,
-            unit_conversion_factor=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_residual_map:
-
-        aa.plot.fit_interferometer.residual_map(
-            fit=fit,
-            unit_label=unit_label,
-            unit_conversion_factor=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_normalized_residual_map:
-
-        aa.plot.fit_interferometer.normalized_residual_map(
-            fit=fit,
-            unit_label=unit_label,
-            unit_conversion_factor=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_chi_squared_map:
-
-        aa.plot.fit_interferometer.chi_squared_map(
-            fit=fit,
-            unit_label=unit_label,
-            unit_conversion_factor=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_inversion_residual_map:
-
-        if fit.total_inversions == 1:
-
-            aa.plot.inversion.residual_map(
-                inversion=fit.inversion,
-                include_grid=True,
-                unit_label=unit_label,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
-
-    if plot_inversion_normalized_residual_map:
-
-        if fit.total_inversions == 1:
-
-            aa.plot.inversion.normalized_residual_map(
-                inversion=fit.inversion,
-                include_grid=True,
-                unit_label=unit_label,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
-
-    if plot_inversion_chi_squared_map:
-
-        if fit.total_inversions == 1:
-
-            aa.plot.inversion.chi_squared_map(
-                inversion=fit.inversion,
-                include_grid=True,
-                unit_label=unit_label,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
-
-    if plot_inversion_regularization_weight_map:
-
-        if fit.total_inversions == 1:
-
-            aa.plot.inversion.regularization_weights(
-                inversion=fit.inversion,
-                include_grid=True,
-                unit_label=unit_label,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
 
 
 def get_mask(fit, include_mask):
@@ -605,26 +372,3 @@ def get_mass_profile_centes(plot_mass_profile_centres, fit):
         return fit.tracer.image_plane.mass_profile_centres_of_galaxies
     else:
         return None
-
-
-def get_critical_curves_and_caustics(fit, include_critical_curves, include_caustics):
-    if fit.tracer.has_mass_profile:
-
-        critical_curves = lens_plotter_util.get_critical_curve_and_caustic(
-            obj=fit.tracer,
-            include_critical_curves=include_critical_curves,
-            include_caustics=False,
-        )
-
-        caustics = lens_plotter_util.get_critical_curve_and_caustic(
-            obj=fit.tracer,
-            include_critical_curves=False,
-            include_caustics=include_caustics,
-        )
-
-    else:
-
-        critical_curves = None
-        caustics = None
-
-    return critical_curves, caustics

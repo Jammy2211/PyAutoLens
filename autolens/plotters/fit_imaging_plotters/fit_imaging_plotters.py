@@ -274,7 +274,7 @@ def subplot_for_plane(
     subtracted_image_of_plane(
         fit=fit,
         plane_index=plane_index,
-        mask=mask,
+        include_mask=include_mask,
         image_plane_pix_grid=image_plane_pix_grid,
         positions=positions,
         as_subplot=True,
@@ -308,7 +308,7 @@ def subplot_for_plane(
     model_image_of_plane(
         fit=fit,
         plane_index=plane_index,
-        mask=mask,
+        include_mask=include_mask,
         plot_mass_profile_centres=plot_mass_profile_centres,
         include_critical_curves=include_critical_curves,
         as_subplot=True,
@@ -445,7 +445,6 @@ def individuals(
     include_mask=True,
     include_critical_curves=False,
     include_caustics=False,
-    positions=None,
     include_image_plane_pix=False,
     plot_in_kpc=False,
     plot_image=False,
@@ -480,7 +479,6 @@ def individuals(
         in the python interpreter window.
     """
 
-    mask = get_mask(fit=fit, include_mask=include_mask)
     image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix, fit)
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
@@ -522,7 +520,7 @@ def individuals(
             subtracted_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
-                mask=mask,
+                include_mask=include_mask,
                 include_critical_curves=include_critical_curves,
                 plot_in_kpc=plot_in_kpc,
                 output_path=output_path,
@@ -536,7 +534,7 @@ def individuals(
             model_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
-                mask=mask,
+                include_mask=include_mask,
                 include_critical_curves=include_critical_curves,
                 plot_in_kpc=plot_in_kpc,
                 output_path=output_path,
@@ -583,7 +581,7 @@ def individuals(
 def subtracted_image_of_plane(
     fit,
     plane_index,
-    mask=None,
+    include_mask=True,
     include_critical_curves=False,
     include_caustics=False,
     positions=None,
@@ -627,6 +625,8 @@ def subtracted_image_of_plane(
     plane_indexes : int
         The plane from which the model image is generated.
     """
+
+    mask = get_mask(fit=fit, include_mask=include_mask)
 
     output_filename += "_" + str(plane_index)
 
@@ -691,7 +691,7 @@ def subtracted_image_of_plane(
 def model_image_of_plane(
     fit,
     plane_index,
-    mask=None,
+    include_mask=True,
     include_critical_curves=False,
     include_caustics=False,
     positions=None,
@@ -735,6 +735,8 @@ def model_image_of_plane(
     """
 
     output_filename += "_" + str(plane_index)
+
+    mask = get_mask(fit=fit, include_mask=include_mask)
 
     centres = get_mass_profile_centes(
         plot_mass_profile_centres=plot_mass_profile_centres, fit=fit
@@ -786,7 +788,7 @@ def model_image_of_plane(
 
 def contribution_maps(
     fit,
-    mask=None,
+    include_mask=True,
     positions=None,
     as_subplot=False,
     plot_in_kpc=False,
@@ -825,6 +827,8 @@ def contribution_maps(
     image_index : int
         The index of the datas in the datas-set of which the contribution_maps are plotted.
     """
+
+    mask = get_mask(fit=fit, include_mask=include_mask)
 
     if len(fit.contribution_maps) > 1:
         contribution_map = sum(fit.contribution_maps)
