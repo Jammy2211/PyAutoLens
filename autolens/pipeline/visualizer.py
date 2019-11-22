@@ -24,8 +24,8 @@ class AbstractVisualizer:
             os.makedirs(self.image_path)
         except (FileExistsError, FileNotFoundError):
             pass
-        self.plot_units = af.conf.instance.visualize.get(
-            "figures", "plot_units", str
+        self.plot_in_kpc = af.conf.instance.visualize.get(
+            "figures", "plot_in_kpc", bool
         ).strip()
         self.include_mask = figure_setting("include_mask")
         self.include_critical_curves = figure_setting("include_critical_curves")
@@ -84,7 +84,6 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
             fit_galaxy_plotters.subplot(
                 fit=fit,
                 include_mask=self.include_mask,
-                unit_label=self.plot_units,
                 output_path=f"{self.image_path}/{path_suffix}",
                 output_format="png",
             )
@@ -112,7 +111,6 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
             plot_model_image=plot_model_image,
             plot_residual_map=plot_residual_map,
             plot_chi_squared_map=plot_chi_squared_map,
-            unit_label=self.plot_units,
             output_path=f"{self.image_path}/{path_suffix}",
             output_format=image_format,
         )
@@ -196,7 +194,7 @@ class PhaseDatasetVisualize(SubPlotVisualizer):
             include_critical_curves=self.include_critical_curves,
             include_caustics=self.include_caustics,
             positions=positions,
-            unit_label=self.plot_units,
+            plot_in_kpc=self.plot_in_kpc,
             plot_as_subplot=self.plot_ray_tracing_as_subplot,
             plot_all_at_end_png=self.plot_ray_tracing_all_at_end_png,
             plot_all_at_end_fits=self.plot_ray_tracing_all_at_end_fits,
@@ -235,7 +233,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
             imaging=self.masked_dataset.imaging,
             mask=mask,
             positions=positions,
-            unit_label=self.plot_units,
+            unit_label='arcsec',
             plot_as_subplot=self.plot_dataset_as_subplot,
             plot_image=self.plot_dataset_data,
             plot_noise_map=self.plot_dataset_noise_map,
@@ -255,7 +253,8 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
             include_mask=self.include_mask,
             include_critical_curves=self.include_critical_curves,
             include_caustics=self.include_caustics,
-            positions=positions,
+            include_positions=self.include_positions,
+            plot_in_kpc=self.plot_in_kpc,
             include_image_plane_pix=self.include_image_plane_pix,
             plot_all_at_end_png=self.plot_fit_all_at_end_png,
             plot_all_at_end_fits=self.plot_fit_all_at_end_fits,
@@ -278,7 +277,6 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
             plot_subtracted_images_of_planes=self.plot_fit_subtracted_images_of_planes,
             plot_model_images_of_planes=self.plot_fit_model_images_of_planes,
             plot_plane_images_of_planes=self.plot_fit_plane_images_of_planes,
-            unit_label=self.plot_units,
             visualize_path=self.image_path,
             subplot_path=self.subplot_path,
         )
@@ -290,7 +288,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
                 mask=self.masked_dataset.mask,
-                unit_label=self.plot_units,
+                unit_label='arcsec',
                 plot_hyper_model_image=self.plot_hyper_model_image,
                 plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
                 visualize_path=self.image_path,
@@ -319,7 +317,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
 
         phase_plotters.interferometer_of_phase(
             interferometer=self.masked_interferometer.interferometer,
-            unit_label=self.plot_units,
+            unit_label='arcsec',
             plot_as_subplot=self.plot_dataset_as_subplot,
             plot_visibilities=self.plot_dataset_data,
             plot_uv_wavelengths=self.plot_dataset_uv_wavelengths,
@@ -335,8 +333,8 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
         phase_plotters.interferometer_fit_of_phase(
             fit=fit,
             during_analysis=during_analysis,
-            positions=positions,
-            unit_label=self.plot_units,
+            include_positions=self.include_positions,
+            plot_in_kpc=self.plot_in_kpc,
             include_mask=self.include_mask,
             include_critical_curves=self.include_critical_curves,
             include_caustics=self.include_caustics,
@@ -369,7 +367,6 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
                 mask=self.masked_interferometer.mask,
-                unit_label=self.plot_units,
                 plot_hyper_model_image=self.plot_hyper_model_image,
                 plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
                 visualize_path=self.image_path,
