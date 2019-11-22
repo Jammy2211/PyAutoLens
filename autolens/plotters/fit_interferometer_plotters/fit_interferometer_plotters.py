@@ -70,7 +70,7 @@ def subplot_real_space(
     include_mask=True,
     include_critical_curves=False,
     include_caustics=False,
-    positions=None,
+    include_positions=True,
     include_image_plane_pix=False,
     plot_mass_profile_centres=True,
     plot_in_kpc=False,
@@ -112,6 +112,7 @@ def subplot_real_space(
     image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix, fit)
 
     mask = get_mask(fit=fit, include_mask=include_mask)
+    positions = get_positions(fit=fit, include_positions=include_positions)
 
     plt.figure(figsize=figsize)
 
@@ -351,6 +352,20 @@ def get_mask(fit, include_mask):
     else:
         return None
 
+def get_positions(fit, include_positions):
+    """Get the masks of the fit if the masks should be plotted on the fit.
+
+    Parameters
+    -----------
+    fit : datas.fitting.fitting.AbstractLensHyperFit
+        The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
+    include_mask : bool
+        If *True*, the masks is plotted on the fit's datas.
+    """
+    if include_positions:
+        return fit.masked_imaging.positions
+    else:
+        return None
 
 def get_image_plane_pix_grid(include_image_plane_pix, fit):
 
