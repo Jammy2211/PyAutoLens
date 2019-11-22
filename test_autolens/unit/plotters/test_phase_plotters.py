@@ -18,7 +18,8 @@ def test__plot_imaging_for_phase(
         imaging=imaging_7x7,
         mask=mask_7x7,
         positions=None,
-        plot_in_kpc=False,
+        kpc_per_arcsec=2.0,
+        unit_label="kpc",
         plot_as_subplot=True,
         plot_image=True,
         plot_noise_map=False,
@@ -48,6 +49,30 @@ def test__plot_imaging_for_phase(
     )
 
 
+def test__plot_interferometer_for_phase(
+    interferometer_7, mask_7x7, general_config, phase_plotter_path, plot_patch
+):
+    al.plot.phase.interferometer_of_phase(
+        interferometer=interferometer_7,
+        kpc_per_arcsec=2.0,
+        unit_label="kpc",
+        plot_as_subplot=True,
+        plot_visibilities=True,
+        plot_uv_wavelengths=False,
+        plot_primary_beam=True,
+        visualize_path=phase_plotter_path,
+        subplot_path=phase_plotter_path,
+    )
+
+    assert phase_plotter_path + "interferometer.png" in plot_patch.paths
+    assert phase_plotter_path + "interferometer/interferometer_visibilities.png" in plot_patch.paths
+    assert (
+        phase_plotter_path + "interferometer/interferometer_primary_beam.png"
+        in plot_patch.paths
+    )
+
+
+
 def test__plot_ray_tracing_for_phase__dependent_on_input(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, phase_plotter_path, plot_patch
 ):
@@ -55,11 +80,11 @@ def test__plot_ray_tracing_for_phase__dependent_on_input(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         during_analysis=False,
+        plot_in_kpc=True,
         mask=mask_7x7,
         include_caustics=True,
         include_critical_curves=True,
         positions=None,
-        plot_in_kpc=False,
         plot_as_subplot=True,
         plot_all_at_end_png=False,
         plot_all_at_end_fits=False,
@@ -102,7 +127,7 @@ def test__imaging_fit_for_phase__source_and_lens__depedent_on_input(
         during_analysis=False,
         include_mask=True,
         positions=None,
-        plot_in_kpc=False,
+        plot_in_kpc=True,
         include_critical_curves=True,
         include_caustics=True,
         include_image_plane_pix=True,
@@ -169,7 +194,7 @@ def test__interferometer_fit_for_phase__source_and_lens__depedent_on_input(
         during_analysis=False,
         include_mask=True,
         positions=None,
-        plot_in_kpc=False,
+        plot_in_kpc=True,
         include_critical_curves=True,
         include_caustics=True,
         include_image_plane_pix=True,
@@ -212,8 +237,8 @@ def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
     al.plot.phase.plot_hyper_images_for_phase(
         hyper_model_image=hyper_model_image_7x7,
         hyper_galaxy_image_path_dict=None,
+        unit_conversion_factor=2.0,
         mask=mask_7x7,
-        plot_in_kpc=False,
         plot_hyper_model_image=True,
         plot_hyper_galaxy_images=False,
         visualize_path=phase_plotter_path,
