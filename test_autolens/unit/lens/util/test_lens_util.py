@@ -9,7 +9,7 @@ class TestPlaneImageFromGrid:
     def test__3x3_grid__extracts_max_min_coordinates__creates_grid_including_half_pixel_offset_from_edge(
         self
     ):
-        galaxy = al.galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
@@ -47,7 +47,7 @@ class TestPlaneImageFromGrid:
     def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(
         self
     ):
-        galaxy = al.galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array(
             [
@@ -92,7 +92,7 @@ class TestPlaneImageFromGrid:
         assert (plane_image.array == plane_image_galaxy).all()
 
     def test__2x3_grid__shape_change_correct_and_coordinates_shift(self):
-        galaxy = al.galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
@@ -125,7 +125,7 @@ class TestPlaneImageFromGrid:
         assert (plane_image.array == plane_image_galaxy).all()
 
     def test__3x2_grid__shape_change_correct_and_coordinates_shift(self):
-        galaxy = al.galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
@@ -158,7 +158,7 @@ class TestPlaneImageFromGrid:
         assert (plane_image.array == plane_image_galaxy).all()
 
     def test__3x3_grid__buffer_aligns_two_grids(self):
-        galaxy = al.galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
         grid_without_buffer = np.array([[-1.48, -1.48], [1.48, 1.48]])
 
@@ -197,9 +197,9 @@ class TestPlaneImageFromGrid:
 class TestPlaneRedshifts:
     def test__from_galaxies__3_galaxies_reordered_in_ascending_redshift(self):
         galaxies = [
-            al.galaxy(redshift=2.0),
-            al.galaxy(redshift=1.0),
-            al.galaxy(redshift=0.1),
+            al.Galaxy(redshift=2.0),
+            al.Galaxy(redshift=1.0),
+            al.Galaxy(redshift=0.1),
         ]
 
         ordered_plane_redshifts = al.util.lens.ordered_plane_redshifts_from_galaxies(
@@ -212,9 +212,9 @@ class TestPlaneRedshifts:
         self
     ):
         galaxies = [
-            al.galaxy(redshift=1.0),
-            al.galaxy(redshift=1.0),
-            al.galaxy(redshift=0.1),
+            al.Galaxy(redshift=1.0),
+            al.Galaxy(redshift=1.0),
+            al.Galaxy(redshift=0.1),
         ]
 
         ordered_plane_redshifts = al.util.lens.ordered_plane_redshifts_from_galaxies(
@@ -224,12 +224,12 @@ class TestPlaneRedshifts:
         assert ordered_plane_redshifts == [0.1, 1.0]
 
     def test__from_galaxies__6_galaxies_producing_4_planes(self):
-        g0 = al.galaxy(redshift=1.0)
-        g1 = al.galaxy(redshift=1.0)
-        g2 = al.galaxy(redshift=0.1)
-        g3 = al.galaxy(redshift=1.05)
-        g4 = al.galaxy(redshift=0.95)
-        g5 = al.galaxy(redshift=1.05)
+        g0 = al.Galaxy(redshift=1.0)
+        g1 = al.Galaxy(redshift=1.0)
+        g2 = al.Galaxy(redshift=0.1)
+        g3 = al.Galaxy(redshift=1.05)
+        g4 = al.Galaxy(redshift=0.95)
+        g5 = al.Galaxy(redshift=1.05)
 
         galaxies = [g0, g1, g2, g3, g4, g5]
 
@@ -294,9 +294,9 @@ class TestGalaxyOrdering:
         self
     ):
         galaxies = [
-            al.galaxy(redshift=2.0),
-            al.galaxy(redshift=1.0),
-            al.galaxy(redshift=0.1),
+            al.Galaxy(redshift=2.0),
+            al.Galaxy(redshift=1.0),
+            al.Galaxy(redshift=0.1),
         ]
 
         ordered_plane_redshifts = [0.1, 1.0, 2.0]
@@ -313,9 +313,9 @@ class TestGalaxyOrdering:
         self
     ):
         galaxies = [
-            al.galaxy(redshift=1.0),
-            al.galaxy(redshift=1.0),
-            al.galaxy(redshift=0.1),
+            al.Galaxy(redshift=1.0),
+            al.Galaxy(redshift=1.0),
+            al.Galaxy(redshift=0.1),
         ]
 
         ordered_plane_redshifts = [0.1, 1.0]
@@ -329,12 +329,12 @@ class TestGalaxyOrdering:
         assert galaxies_in_redshift_ordered_planes[1][1].redshift == 1.0
 
     def test__6_galaxies_producing_4_planes__galaxy_redshift_match_planes(self):
-        g0 = al.galaxy(redshift=1.0)
-        g1 = al.galaxy(redshift=1.0)
-        g2 = al.galaxy(redshift=0.1)
-        g3 = al.galaxy(redshift=1.05)
-        g4 = al.galaxy(redshift=0.95)
-        g5 = al.galaxy(redshift=1.05)
+        g0 = al.Galaxy(redshift=1.0)
+        g1 = al.Galaxy(redshift=1.0)
+        g2 = al.Galaxy(redshift=0.1)
+        g3 = al.Galaxy(redshift=1.05)
+        g4 = al.Galaxy(redshift=0.95)
+        g5 = al.Galaxy(redshift=1.05)
 
         galaxies = [g0, g1, g2, g3, g4, g5]
 
@@ -360,11 +360,11 @@ class TestGalaxyOrdering:
         ordered_plane_redshifts = [0.5, 1.0, 2.0, 3.0]
 
         galaxies = [
-            al.galaxy(redshift=0.2),
-            al.galaxy(redshift=0.4),
-            al.galaxy(redshift=0.8),
-            al.galaxy(redshift=1.2),
-            al.galaxy(redshift=2.9),
+            al.Galaxy(redshift=0.2),
+            al.Galaxy(redshift=0.4),
+            al.Galaxy(redshift=0.8),
+            al.Galaxy(redshift=1.2),
+            al.Galaxy(redshift=2.9),
         ]
 
         galaxies_in_redshift_ordered_planes = al.util.lens.galaxies_in_redshift_ordered_planes_from_galaxies(
@@ -382,13 +382,13 @@ class TestGalaxyOrdering:
         ordered_plane_redshifts = [(1.0 / 3.0), (2.0 / 3.0), 1.0, 1.25, 1.5, 1.75, 2.0]
 
         galaxies = [
-            al.galaxy(redshift=0.1),
-            al.galaxy(redshift=0.2),
-            al.galaxy(redshift=1.25),
-            al.galaxy(redshift=1.35),
-            al.galaxy(redshift=1.45),
-            al.galaxy(redshift=1.55),
-            al.galaxy(redshift=1.9),
+            al.Galaxy(redshift=0.1),
+            al.Galaxy(redshift=0.2),
+            al.Galaxy(redshift=1.25),
+            al.Galaxy(redshift=1.35),
+            al.Galaxy(redshift=1.45),
+            al.Galaxy(redshift=1.55),
+            al.Galaxy(redshift=1.9),
         ]
 
         galaxies_in_redshift_ordered_planes = al.util.lens.galaxies_in_redshift_ordered_planes_from_galaxies(

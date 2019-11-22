@@ -93,8 +93,8 @@ class TestPhase(object):
         )
 
         result = phase_interferometer_7.run(dataset=interferometer_7)
-        assert isinstance(result.instance.galaxies[0], al.galaxy)
-        assert isinstance(result.instance.galaxies[0], al.galaxy)
+        assert isinstance(result.instance.galaxies[0], al.Galaxy)
+        assert isinstance(result.instance.galaxies[0], al.Galaxy)
 
     def test_modify_visibilities(self, mask_function_7x7, interferometer_7, mask_7x7):
         class MyPhase(al.PhaseInterferometer):
@@ -166,7 +166,7 @@ class TestPhase(object):
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, interferometer_7, mask_function_7x7
     ):
-        lens_galaxy = al.galaxy(
+        lens_galaxy = al.Galaxy(
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
@@ -201,7 +201,7 @@ class TestPhase(object):
     ):
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        lens_galaxy = al.galaxy(
+        lens_galaxy = al.Galaxy(
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
