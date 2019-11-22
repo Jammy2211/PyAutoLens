@@ -112,7 +112,7 @@ class TestPhase(object):
 
         analysis = phase_interferometer_7.make_analysis(dataset=interferometer_7)
         assert (
-            analysis.masked_interferometer.visibilities == 20.0 * np.ones(shape=(7, 2))
+                analysis.masked_dataset.visibilities == 20.0 * np.ones(shape=(7, 2))
         ).all()
 
     def test__phase_can_receive_hyper_image_and_noise_maps(self):

@@ -909,7 +909,7 @@ def get_positions(fit, include_positions):
         If *True*, the masks is plotted on the fit's datas.
     """
     if include_positions:
-        return fit.masked_imaging.positions
+        return fit.masked_dataset.positions
     else:
         return None
 

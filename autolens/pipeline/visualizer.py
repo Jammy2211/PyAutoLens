@@ -26,7 +26,7 @@ class AbstractVisualizer:
             pass
         self.plot_in_kpc = af.conf.instance.visualize.get(
             "figures", "plot_in_kpc", bool
-        ).strip()
+        )
         self.include_mask = figure_setting("include_mask")
         self.include_critical_curves = figure_setting("include_critical_curves")
         self.include_caustics = figure_setting("include_caustics")
@@ -234,6 +234,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
             mask=mask,
             positions=positions,
             unit_label='arcsec',
+            kpc_per_arcsec=None,
             plot_as_subplot=self.plot_dataset_as_subplot,
             plot_image=self.plot_dataset_data,
             plot_noise_map=self.plot_dataset_noise_map,
@@ -246,7 +247,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
         )
 
     def plot_fit(self, fit, during_analysis):
-        positions = self.masked_imaging.positions if self.include_positions else None
+
         phase_plotters.imaging_fit_of_phase(
             fit=fit,
             during_analysis=during_analysis,
@@ -289,6 +290,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
                 mask=self.masked_dataset.mask,
                 unit_label='arcsec',
+                kpc_per_arcsec=None,
                 plot_hyper_model_image=self.plot_hyper_model_image,
                 plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
                 visualize_path=self.image_path,
@@ -318,6 +320,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
         phase_plotters.interferometer_of_phase(
             interferometer=self.masked_interferometer.interferometer,
             unit_label='arcsec',
+            kpc_per_arcsec=None,
             plot_as_subplot=self.plot_dataset_as_subplot,
             plot_visibilities=self.plot_dataset_data,
             plot_uv_wavelengths=self.plot_dataset_uv_wavelengths,
@@ -327,9 +330,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
         )
 
     def plot_fit(self, fit, during_analysis):
-        positions = (
-            self.masked_interferometer.positions if self.include_positions else None
-        )
+
         phase_plotters.interferometer_fit_of_phase(
             fit=fit,
             during_analysis=during_analysis,

@@ -196,7 +196,6 @@ def ray_tracing_of_phase(
 def imaging_fit_of_phase(
     fit,
     during_analysis,
-    positions,
     plot_in_kpc,
     include_mask,
     include_positions,
