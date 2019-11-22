@@ -233,7 +233,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
 
     assert fit.chi_squared == 0.0
 
-    pix = al.pix.Rectangular(shp=(7, 7))
+    pix = al.pix.Rectangular(shape=(7, 7))
 
     reg = al.reg.Constant(coefficient=0.0001)
 
