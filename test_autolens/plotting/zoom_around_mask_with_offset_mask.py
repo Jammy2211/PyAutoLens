@@ -12,7 +12,7 @@ imaging = simulate_util.load_test_imaging(
 mask = al.mask.circular(
     shape_2d=imaging.shape,
     pixel_scales=imaging.pixel_scales,
-    radius_scaled=3.0,
+    radius=3.0,
     centre=(4.0, 4.0),
 )
 

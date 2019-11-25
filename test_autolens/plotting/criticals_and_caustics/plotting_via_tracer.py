@@ -5,7 +5,7 @@ mask = al.mask.circular(
     shape_2d=(200, 200),
     pixel_scales=0.05,
     sub_size=1,
-    radius_scaled=2.4,
+    radius=2.4,
     centre=(2.0, 2.0),
 )
 

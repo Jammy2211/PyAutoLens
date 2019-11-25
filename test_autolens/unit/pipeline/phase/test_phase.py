@@ -34,6 +34,9 @@ def clean_images():
 
 
 class TestPhase(object):
+
+    # TODO : These tests have both turned to models?
+
     def test__set_instances(self, phase_dataset_7x7):
         phase_dataset_7x7.galaxies = [al.Galaxy(redshift=0.5)]
         assert phase_dataset_7x7.model.galaxies == [al.Galaxy(redshift=0.5)]

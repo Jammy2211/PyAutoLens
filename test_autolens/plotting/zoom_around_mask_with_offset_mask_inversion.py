@@ -11,7 +11,7 @@ def fit_with_offset_centre(centre):
     mask = al.mask.elliptical(
         shape_2d=imaging.shape_2d,
         pixel_scales=imaging.pixel_scales,
-        major_axis_radius_scaled=3.0,
+        major_axis_radius=3.0,
         axis_ratio=1.0,
         phi=0.0,
         centre=centre,

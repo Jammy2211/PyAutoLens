@@ -10,7 +10,7 @@ imaging = simulate_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="lsst"
 )
 mask = al.mask.circular(
-    shape=imaging.shape, pixel_scales=imaging.pixel_scales, radius_scaled=3.0
+    shape=imaging.shape, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
 # The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it

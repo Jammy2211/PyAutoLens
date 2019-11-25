@@ -14,7 +14,7 @@ array = imaging.image
 mask = al.mask.circular(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
-    radius_scaled=5.0,
+    radius=5.0,
     centre=(0.0, 0.0),
 )
 al.plot.array(array=array, mask=mask, positions=[[[1.0, 1.0]]], centres=[[(0.0, 0.0)]])
@@ -27,7 +27,7 @@ array = imaging.image
 mask = al.mask.circular(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
-    radius_scaled=5.0,
+    radius=5.0,
     centre=(1.0, 1.0),
 )
 al.plot.array(array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]])

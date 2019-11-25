@@ -69,7 +69,7 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
     )
 
     mask = al.mask.circular(
-        shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=2, radius_scaled=0.8
+        shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=2, radius=0.8
     )
 
     masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
@@ -150,7 +150,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
     )
 
     mask = al.mask.circular(
-        shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=1, radius_scaled=0.8
+        shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=1, radius=0.8
     )
 
     masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)

@@ -13,7 +13,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         return al.mask.circular(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            radius_scaled=3.0,
+            radius=3.0,
             centre=(4.0, 4.0),
         )
 
