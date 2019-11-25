@@ -22,7 +22,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             pixel_scales=pixel_scales,
             centre=(2.0, 2.0),
             sub_size=2,
-            radius_scaled=2.4,
+            radius=2.4,
         )
 
     phase1 = SourcePix(

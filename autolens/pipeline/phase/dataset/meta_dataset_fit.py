@@ -50,7 +50,7 @@ class MetaDatasetFit:
             inner_mask = aa.mask.circular(
                 shape_2d=mask.shape_2d,
                 pixel_scales=mask.pixel_scales,
-                radius_scaled=self.inner_mask_radii,
+                radius=self.inner_mask_radii,
                 sub_size=self.sub_size,
                 invert=True,
             )

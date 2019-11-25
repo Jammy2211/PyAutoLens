@@ -19,7 +19,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     def mask_function(shape_2d, pixel_scales):
         return al.mask.circular(
-            shape_2d=shape_2d, pixel_scales=pixel_scales, radius_scaled=5.0
+            shape_2d=shape_2d, pixel_scales=pixel_scales, radius=5.0
         )
 
     phase1 = LensPlanex2GalPhase(
