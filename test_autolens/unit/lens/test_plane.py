@@ -6,6 +6,7 @@ from skimage import measure
 import autoastro as am
 import autolens as al
 from autolens import exc
+import autoarray as aa
 
 from test_autoarray.mock import mock_inversion
 from test_autoastro.mock.mock_cosmology import MockCosmology
@@ -1456,6 +1457,86 @@ class TestAbstractPlaneLensing(object):
             assert sum(caustic_radial_from_lambda_t) == pytest.approx(
                 sum(caustic_radial_from_magnification), 1e-2
             )
+
+    class TestRadiusandMassfromTangentialCriticalCurve(object):
+
+        def test__tangential_critical_curve_area_from_critical_curve_and_calc__two_sis_galaxies(self):
+            g_1 = al.Galaxy(
+                redshift=1, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g_2 = al.Galaxy(
+                redshift=1, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+
+            plane = al.Plane(galaxies=[g_1, g_2], redshift=2, cosmology=planck)
+
+            grid = aa.grid.uniform(
+                shape_2d=(20, 20), pixel_scales=0.25, sub_size=2
+            )
+
+            area_crit = plane.area_within_tangential_critical_curve(grid=grid)
+
+            area_calc = np.pi * 2**2
+
+            assert area_crit == pytest.approx(area_calc, 1e-3)
+
+            grid = aa.grid.uniform(
+                shape_2d=(20, 20), pixel_scales=0.25, sub_size=4
+            )
+
+            area_crit = plane.area_within_tangential_critical_curve(grid=grid)
+
+            assert area_crit == pytest.approx(area_calc, 1e-3)
+
+        def test__einstein_radius_from_tangential_critical_curve__two_sis_galaxies(self):
+            g_1 = al.Galaxy(
+                redshift=1, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g_2 = al.Galaxy(
+                redshift=1, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+
+            plane = al.Plane(galaxies=[g_1, g_2], redshift=2, cosmology=planck)
+
+            grid = aa.grid.uniform(
+                shape_2d=(20, 20), pixel_scales=0.25, sub_size=2
+            )
+
+            radius_crit = plane.einstein_radius_from_tangential_critical_curve(grid=grid)
+
+            assert radius_crit == pytest.approx(2, 1e-3)
+
+            grid = aa.grid.uniform(
+                shape_2d=(20, 20), pixel_scales=0.25, sub_size=4
+            )
+
+            radius_crit = plane.einstein_radius_from_tangential_critical_curve(grid=grid)
+
+            assert radius_crit == pytest.approx(2, 1e-3)
+
+        def test__einstein_mass_from_tangential_critical_curve_and_kappa__two_sis_galaxies(self):
+            g_1 = al.Galaxy(
+                redshift=1, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+            g_2 = al.Galaxy(
+                redshift=1, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
+            )
+
+            plane = al.Plane(galaxies=[g_1, g_2], redshift=2, cosmology=planck)
+
+            grid = aa.grid.uniform(
+                shape_2d=(50, 50), pixel_scales=0.25, sub_size=2
+            )
+
+            mass_kappa = plane.einstein_mass_in_units(
+                unit_mass='angular', redshift_source=2
+            )
+
+            mass_crit = plane.einstein_mass_from_tangential_critical_curve(
+                grid=grid, unit_mass='angular', redshift_source=2
+            )
+
+            assert mass_crit == pytest.approx(mass_kappa, 1e-3)
 
     class TestLuminosities:
         def test__within_circle_different_luminosity_units__same_as_galaxy_luminosities(
