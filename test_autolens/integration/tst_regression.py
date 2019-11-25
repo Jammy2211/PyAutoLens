@@ -21,15 +21,15 @@ test_name = "tests"
 
 def simulate_integration_image(test_name, pixel_scales, galaxies):
     output_path = (
-        "{}/test_files/simulate/".format(os.path.dirname(os.path.realpath(__file__)))
+        "{}/test_files/simulator/".format(os.path.dirname(os.path.realpath(__file__)))
         + test_name
         + "/"
     )
-    psf_shape = (11, 11)
+    psf_shape_2d = (11, 11)
     image_shape = (150, 150)
 
     psf = al.kernel.from_gaussian(
-        shape_2d=psf_shape, pixel_scales=pixel_scales, sigma=pixel_scales
+        shape_2d=psf_shape_2d, pixel_scales=pixel_scales, sigma=pixel_scales
     )
 
     grid = al.Grid.from_shape_2d_pixel_scale_and_sub_size(
@@ -40,11 +40,11 @@ def simulate_integration_image(test_name, pixel_scales, galaxies):
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    imaging_simulated = al.SimulatedImagingData.from_tracer_and_grid(
+    imaging_simulated = al.SimulatedImagingData.from_tracer(
         tracer=tracer,
         pixel_scales=pixel_scales,
         exposure_time=100.0,
-        background_sky_level=10.0,
+        background_level=10.0,
         psf=psf,
         noise_seed=1,
     )
@@ -108,7 +108,7 @@ class TestPhaseModelMapper(object):
             sersic_index=3.0,
         )
 
-        lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
+        lens_galaxy = al.Galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(
             test_name=test_name, pixel_scales=0.5, galaxies=[lens_galaxy]
@@ -119,10 +119,10 @@ class TestPhaseModelMapper(object):
         )  # Setup path so we can output the simulated image.
 
         imaging = al.imaging.from_fits(
-            image_path=path + "/test_files/simulate/" + test_name + "/image.fits",
-            psf_path=path + "/test_files/simulate/" + test_name + "/psf.fits",
+            image_path=path + "/test_files/simulator/" + test_name + "/image.fits",
+            psf_path=path + "/test_files/simulator/" + test_name + "/psf.fits",
             noise_map_path=path
-            + "/test_files/simulate/"
+            + "/test_files/simulator/"
             + test_name
             + "/noise_map.fits",
             real_space_pixel_scales=0.1,
@@ -142,16 +142,16 @@ class TestPhaseModelMapper(object):
             phase_name="{}/phase1".format(test_name),
         )
 
-        initial_total_priors = phase.variable.prior_count
-        phase.make_analysis(data=imaging)
+        initial_total_priors = phase.model.prior_count
+        phase.make_analysis(dataset=imaging)
 
         assert phase.galaxies[0].sersic.intensity == al.Galaxies[0].sersic.axis_ratio
-        assert initial_total_priors - 1 == phase.variable.prior_count
+        assert initial_total_priors - 1 == phase.model.prior_count
 
         lines = list(
             filter(
                 lambda line: "axis_ratio" in line or "intensity" in line,
-                str(phase.variable).split("\n"),
+                str(phase.model).split("\n"),
             )
         )
 
@@ -168,7 +168,7 @@ class TestPhaseModelMapper(object):
     if os.path.exists(output_path):
         shutil.rmtree(output_path)
 
-    def test_constants_work(self):
+    def test_instances_work(self):
         name = "const_float"
         test_name = "/const_float"
 
@@ -183,7 +183,7 @@ class TestPhaseModelMapper(object):
             sersic_index=3.0,
         )
 
-        lens_galaxy = galaxy.Galaxy(redshift=0.5, light_profile=sersic)
+        lens_galaxy = al.Galaxy(redshift=0.5, light_profile=sersic)
 
         simulate_integration_image(
             test_name=test_name, pixel_scales=0.5, galaxies=[lens_galaxy]
@@ -193,10 +193,10 @@ class TestPhaseModelMapper(object):
         )  # Setup path so we can output the simulated image.
 
         imaging = al.imaging.from_fits(
-            image_path=path + "/test_files/simulate/" + test_name + "/image.fits",
-            psf_path=path + "/test_files/simulate/" + test_name + "/psf.fits",
+            image_path=path + "/test_files/simulator/" + test_name + "/image.fits",
+            psf_path=path + "/test_files/simulator/" + test_name + "/psf.fits",
             noise_map_path=path
-            + "/test_files/simulate/"
+            + "/test_files/simulator/"
             + test_name
             + "/noise_map.fits",
             real_space_pixel_scales=0.1,
@@ -221,9 +221,9 @@ class TestPhaseModelMapper(object):
         phase.optimizer.n_live_points = 20
         phase.optimizer.sampling_efficiency = 0.8
 
-        phase.make_analysis(data=imaging)
+        phase.make_analysis(dataset=imaging)
 
-        sersic = phase.variable.galaxies[0].sersic
+        sersic = phase.model.galaxies[0].sersic
 
         assert isinstance(sersic, af.PriorModel)
 

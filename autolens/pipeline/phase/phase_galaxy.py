@@ -1,8 +1,12 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autoastro.galaxy import galaxy_fit, galaxy_data as gd
+from autoarray.mask import mask as msk
+from autoastro.galaxy import fit_galaxy
+from autoastro.galaxy import masked
+from autolens.pipeline.phase import abstract
 from autolens.pipeline import visualizer
+from autolens.pipeline.phase.dataset.phase import default_mask_function
 
 
 class Analysis(af.Analysis):
@@ -60,7 +64,7 @@ class AnalysisSingle(Analysis):
             A fractional value indicating how well this model fit and the model
             masked_imaging itself
         """
-        return galaxy_fit.GalaxyFit(
+        return fit_galaxy.GalaxyFit(
             galaxy_data=self.galaxy_data, model_galaxies=instance.galaxies
         )
 
@@ -111,17 +115,17 @@ class AnalysisDeflections(Analysis):
 
     def fit_for_instance(self, instance):
 
-        fit_y = galaxy_fit.GalaxyFit(
+        fit_y = fit_galaxy.GalaxyFit(
             galaxy_data=self.galaxy_data_y, model_galaxies=instance.galaxies
         )
-        fit_x = galaxy_fit.GalaxyFit(
+        fit_x = fit_galaxy.GalaxyFit(
             galaxy_data=self.galaxy_data_x, model_galaxies=instance.galaxies
         )
 
         return fit_y, fit_x
 
 
-class PhaseGalaxy(af.AbstractPhase):
+class PhaseGalaxy(abstract.AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
     Analysis = Analysis
@@ -190,13 +194,31 @@ class PhaseGalaxy(af.AbstractPhase):
             galaxy_data=galaxy_data, results=results, mask=mask
         )
 
-        self.variable = self.variable.populate(results)
+        self.model = self.model.populate(results)
         self.customize_priors(results)
         self.assert_and_save_pickle()
 
         result = self.run_analysis(analysis)
 
         return self.make_result(result, analysis)
+
+    def setup_phase_mask(self, data, mask):
+
+        if self.mask_function is not None:
+            mask = self.mask_function(shape_2d, pixel_scales=data.image)
+
+        elif mask is None and self.mask_function is None:
+            mask = default_mask_function(shape_2d, pixel_scales=data.image)
+
+        if mask.sub_size != self.sub_size:
+            mask = msk.Mask.manual(
+                mask_2d=mask,
+                pixel_scales=mask.pixel_scales,
+                sub_size=self.sub_size,
+                origin=mask.origin,
+            )
+
+        return mask
 
     def make_analysis(self, galaxy_data, results=None, mask=None):
         """
@@ -218,16 +240,11 @@ class PhaseGalaxy(af.AbstractPhase):
              set of values
         """
 
-        mask = setup_phase_mask(
-            data=galaxy_data[0],
-            mask=mask,
-            mask_function=self.mask_function,
-            inner_mask_radii=None,
-        )
+        mask = self.setup_phase_mask(data=galaxy_data[0], mask=mask)
 
         if self.use_image or self.use_convergence or self.use_potential:
 
-            galaxy_data = gd.GalaxyFitData(
+            galaxy_data = masked.galaxy_data(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
@@ -247,7 +264,7 @@ class PhaseGalaxy(af.AbstractPhase):
 
         elif self.use_deflections:
 
-            galaxy_data_y = gd.GalaxyFitData(
+            galaxy_data_y = masked.galaxy_data(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
@@ -258,7 +275,7 @@ class PhaseGalaxy(af.AbstractPhase):
                 use_deflections_x=False,
             )
 
-            galaxy_data_x = gd.GalaxyFitData(
+            galaxy_data_x = masked.galaxy_data(
                 galaxy_data=galaxy_data[1],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,

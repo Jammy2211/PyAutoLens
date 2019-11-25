@@ -14,10 +14,10 @@ def make_ray_tracing_plotter_setup():
 def test__all_individual_plotters(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch
 ):
-    al.plot.ray_tracing.profile_image(
+    al.plot.tracer.profile_image(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=ray_tracing_plotter_path,
@@ -26,10 +26,10 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "tracer_profile_image.png" in plot_patch.paths
 
-    al.plot.ray_tracing.convergence(
+    al.plot.tracer.convergence(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=ray_tracing_plotter_path,
@@ -38,10 +38,10 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "tracer_convergence.png" in plot_patch.paths
 
-    al.plot.ray_tracing.potential(
+    al.plot.tracer.potential(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=ray_tracing_plotter_path,
@@ -50,10 +50,10 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "tracer_potential.png" in plot_patch.paths
 
-    al.plot.ray_tracing.deflections_y(
+    al.plot.tracer.deflections_y(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=ray_tracing_plotter_path,
@@ -62,10 +62,10 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "tracer_deflections_y.png" in plot_patch.paths
 
-    al.plot.ray_tracing.deflections_x(
+    al.plot.tracer.deflections_x(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=ray_tracing_plotter_path,
@@ -78,10 +78,10 @@ def test__all_individual_plotters(
 def test__tracer_sub_plot_output(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch
 ):
-    al.plot.ray_tracing.subplot(
+    al.plot.tracer.subplot(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         output_path=ray_tracing_plotter_path,
         output_format="png",
     )
@@ -92,13 +92,13 @@ def test__tracer_sub_plot_output(
 def test__tracer_individuals__dependent_on_input(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch
 ):
-    al.plot.ray_tracing.individual(
+    al.plot.tracer.individual(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask_overlay=mask_7x7,
-        should_plot_profile_image=True,
-        should_plot_source_plane=True,
-        should_plot_potential=True,
+        mask=mask_7x7,
+        plot_profile_image=True,
+        plot_source_plane=True,
+        plot_potential=True,
         output_path=ray_tracing_plotter_path,
         output_format="png",
     )

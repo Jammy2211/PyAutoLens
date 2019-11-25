@@ -1,11 +1,14 @@
 def phase_tag_from_phase_settings(
     sub_size,
-    signal_to_noise_limit,
-    bin_up_factor,
-    psf_shape,
-    positions_threshold,
-    inner_mask_radii,
-    pixel_scale_interpolation_grid,
+    signal_to_noise_limit=None,
+    bin_up_factor=None,
+    psf_shape_2d=None,
+    primary_beam_shape_2d=None,
+    positions_threshold=None,
+    inner_mask_radii=None,
+    pixel_scale_interpolation_grid=None,
+    real_space_shape_2d=None,
+    real_space_pixel_scales=None,
 ):
 
     sub_size_tag = sub_size_tag_from_sub_size(sub_size=sub_size)
@@ -15,7 +18,8 @@ def phase_tag_from_phase_settings(
     bin_up_factor_tag = bin_up_factor_tag_from_bin_up_factor(
         bin_up_factor=bin_up_factor
     )
-    psf_shape_tag = psf_shape_tag_from_image_psf_shape(psf_shape=psf_shape)
+    psf_shape_tag = psf_shape_tag_from_psf_shape_2d(psf_shape_2d=psf_shape_2d)
+
     positions_threshold_tag = positions_threshold_tag_from_positions_threshold(
         positions_threshold=positions_threshold
     )
@@ -26,12 +30,25 @@ def phase_tag_from_phase_settings(
         pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
     )
 
+    primary_beam_shape_tag = primary_beam_shape_tag_from_primary_beam_shape_2d(
+        primary_beam_shape_2d=primary_beam_shape_2d
+    )
+    real_space_shape_2d_tag = real_space_shape_2d_tag_from_real_space_shape_2d(
+        real_space_shape_2d=real_space_shape_2d
+    )
+    real_space_pixel_scales_tag = real_space_pixel_scales_tag_from_real_space_pixel_scales(
+        real_space_pixel_scales=real_space_pixel_scales
+    )
+
     return (
         "phase_tag"
+        + real_space_shape_2d_tag
+        + real_space_pixel_scales_tag
         + sub_size_tag
         + signal_to_noise_limit_tag
         + bin_up_factor_tag
         + psf_shape_tag
+        + primary_beam_shape_tag
         + positions_threshold_tag
         + inner_mask_radii_tag
         + pixel_scale_interpolation_grid_tag
@@ -68,7 +85,7 @@ def sub_size_tag_from_sub_size(sub_size):
 
 def signal_to_noise_limit_tag_from_signal_to_noise_limit(signal_to_noise_limit):
     """Generate a signal to noise limit tag, to customize phase names based on limiting the signal to noise ratio of
-    the simulate being fitted.
+    the dataset being fitted.
 
     This changes the phase name 'phase_name' as follows:
 
@@ -114,7 +131,7 @@ def inner_mask_radii_tag_from_inner_circular_mask_radii(inner_mask_radii):
         return "__inner_mask_{0:.2f}".format(inner_mask_radii)
 
 
-def psf_shape_tag_from_image_psf_shape(psf_shape):
+def psf_shape_tag_from_psf_shape_2d(psf_shape_2d):
     """Generate an image psf shape tag, to customize phase names based on size of the image PSF that the original PSF \
     is trimmed to for faster run times.
 
@@ -124,11 +141,11 @@ def psf_shape_tag_from_image_psf_shape(psf_shape):
     image_psf_shape = 2 -> phase_name_image_psf_shape_2
     image_psf_shape = 2 -> phase_name_image_psf_shape_2
     """
-    if psf_shape is None:
+    if psf_shape_2d is None:
         return ""
     else:
-        y = str(psf_shape[0])
-        x = str(psf_shape[1])
+        y = str(psf_shape_2d[0])
+        x = str(psf_shape_2d[1])
         return "__psf_" + y + "x" + x
 
 
@@ -148,3 +165,53 @@ def pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
         return ""
     else:
         return "__interp_{0:.3f}".format(pixel_scale_interpolation_grid)
+
+
+def primary_beam_shape_tag_from_primary_beam_shape_2d(primary_beam_shape_2d):
+    """Generate an image psf shape tag, to customize phase names based on size of the image PSF that the original PSF \
+    is trimmed to for faster run times.
+
+    This changes the phase name 'phase_name' as follows:
+
+    image_psf_shape = 1 -> phase_name
+    image_psf_shape = 2 -> phase_name_image_psf_shape_2
+    image_psf_shape = 2 -> phase_name_image_psf_shape_2
+    """
+    if primary_beam_shape_2d is None:
+        return ""
+    else:
+        y = str(primary_beam_shape_2d[0])
+        x = str(primary_beam_shape_2d[1])
+        return "__pb_" + y + "x" + x
+
+
+def real_space_shape_2d_tag_from_real_space_shape_2d(real_space_shape_2d):
+    """Generate a sub-grid tag, to customize phase names based on the sub-grid size used.
+
+    This changes the phase name 'phase_name' as follows:
+
+    real_space_shape_2d = None -> phase_name
+    real_space_shape_2d = 1 -> phase_name_real_space_shape_2d_2
+    real_space_shape_2d = 4 -> phase_name_real_space_shape_2d_4
+    """
+    if real_space_shape_2d is None:
+        return ""
+    y = str(real_space_shape_2d[0])
+    x = str(real_space_shape_2d[1])
+    return "__rs_shape_" + y + "x" + x
+
+
+def real_space_pixel_scales_tag_from_real_space_pixel_scales(real_space_pixel_scales):
+    """Generate a sub-grid tag, to customize phase names based on the sub-grid size used.
+
+    This changes the phase name 'phase_name' as follows:
+
+    real_space_pixel_scales = None -> phase_name
+    real_space_pixel_scales = 1 -> phase_name_real_space_pixel_scales_2
+    real_space_pixel_scales = 4 -> phase_name_real_space_pixel_scales_4
+    """
+    if real_space_pixel_scales is None:
+        return ""
+    y = "{0:.2f}".format(real_space_pixel_scales[0])
+    x = "{0:.2f}".format(real_space_pixel_scales[1])
+    return "__rs_pix_" + y + "x" + x

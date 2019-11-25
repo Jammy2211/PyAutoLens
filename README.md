@@ -21,15 +21,15 @@ import autolens as al
 import os
 
 # In this example, we'll fit a simple lens galaxy + source galaxy system.
-data_path = '{}/../data/'.format(os.path.dirname(os.path.realpath(__file__)))
+dataset_path = '{}/../data/'.format(os.path.dirname(os.path.realpath(__file__)))
 
 lens_name = 'example_lens'
 
 # Get the relative path to the data in our workspace & load the imaging data.
 imaging = aa.imaging.from_fits(
-    image_path=data_path + lens_name + '/image.fits',
-    psf_path=data_path+lens_name+'/psf.fits',
-    noise_map_path=data_path+lens_name+'/noise_map.fits', 
+    image_path=dataset_path + lens_name + '/image.fits',
+    psf_path=dataset_path+lens_name+'/psf.fits',
+    noise_map_path=dataset_path+lens_name+'/noise_map.fits',
     pixel_scales=0.1)
 
 # Create a mask for the data, which we setup as a 3.0" circle.
@@ -41,7 +41,7 @@ lens_mass_profile = al.mp.EllipticalIsothermal
 source_light_profile = al.lp.EllipticalSersic
 
 # To setup our model galaxies, we use the GalaxyModel class, which represents a galaxy whose parameters 
-# are variable & fitted for by PyAutoLens. The galaxies are also assigned redshifts.
+# are model & fitted for by PyAutoLens. The galaxies are also assigned redshifts.
 lens_galaxy_model = al.GalaxyModel(redshift=0.5, mass=lens_mass_profile)
 source_galaxy_model = al.GalaxyModel(redshift=1.0, light=source_light_profile)
 
@@ -53,7 +53,7 @@ phase = al.PhaseImaging(
 
 # We pass the imaging data and mask to the phase, thereby fitting it with the lens model above & plot the resulting fit.
 result = phase.run(data=imaging, mask=mask)
-al.lens_fit_plotters.plot_fit_subplot(fit=result.most_likely_fit)
+al.plot.fit_imaging.subplot(fit=result.most_likely_fit)
 ```
 
 ## Slack
@@ -131,7 +131,7 @@ Install autolens:
 pip install autolens
 ```
 
-Clone autolens workspace & set WORKSPACE enviroment variable:
+Clone autolens workspace & set WORKSPACE enviroment model:
 ```
 cd /path/where/you/want/autolens_workspace
 git clone https://github.com/Jammy2211/autolens_workspace
@@ -156,7 +156,7 @@ Installation is also available via pip, however there are reported issues with i
 $ pip install autolens
 ```
 
-Clone autolens workspace & set WORKSPACE enviroment variable:
+Clone autolens workspace & set WORKSPACE enviroment model:
 ```
 cd /path/where/you/want/autolens_workspace
 git clone https://github.com/Jammy2211/autolens_workspace

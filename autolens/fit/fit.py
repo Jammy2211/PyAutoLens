@@ -1,26 +1,43 @@
 import numpy as np
 
-from autoarray.fit import fit
+from autoarray.fit import fit as aa_fit
 from autoastro.galaxy import galaxy as g
+from autolens.masked import masked_dataset as md
 
 
-class ImagingFit(fit.ImagingFit):
+def fit(masked_dataset, tracer, hyper_image_sky=None, hyper_background_noise=None):
+
+    if isinstance(masked_dataset, md.MaskedImaging):
+        return ImagingFit(
+            masked_imaging=masked_dataset,
+            tracer=tracer,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+        )
+    elif isinstance(masked_dataset, md.MaskedInterferometer):
+        return InterferometerFit(
+            masked_interferometer=masked_dataset,
+            tracer=tracer,
+            hyper_background_noise=hyper_background_noise,
+        )
+
+
+class ImagingFit(aa_fit.ImagingFit):
     def __init__(
         self, masked_imaging, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens simulate's hyper_galaxies.
+        the lens dataset's hyper_galaxies.
 
         Parameters
         -----------
         tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         scaled_array_2d_from_array_1d : func
-            A function which maps the 1D lens hyper_galaxies to its unmasked 2D array.
+            A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
 
-        self.masked_data = masked_imaging
-        self.masked_imaging = masked_imaging
+        self.masked_dataset = masked_imaging
         self.tracer = tracer
 
         image = hyper_image_from_image_and_hyper_image_sky(
@@ -138,79 +155,69 @@ class ImagingFit(fit.ImagingFit):
         return len(list(filter(None, self.tracer.regularizations_of_planes)))
 
 
-def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
-
-    if hyper_image_sky is not None:
-        return hyper_image_sky.hyper_image_from_image(image=image)
-    else:
-        return image
-
-
-def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
-    noise_map, tracer, hyper_background_noise
-):
-
-    hyper_noise_map = tracer.hyper_noise_map_from_noise_map(noise_map=noise_map)
-
-    if hyper_background_noise is not None:
-        noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
-            noise_map=noise_map
-        )
-
-    if hyper_noise_map is not None:
-        noise_map = noise_map + hyper_noise_map
-
-    return noise_map
-
-
-class InterferometerFit(fit.InterferometerFit):
-    def __init__(self, masked_interferometer, tracer):
+class InterferometerFit(aa_fit.InterferometerFit):
+    def __init__(self, masked_interferometer, tracer, hyper_background_noise=None):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens simulate's hyper_galaxies.
+        the lens dataset's hyper_galaxies.
 
         Parameters
         -----------
         tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         scaled_array_2d_from_array_1d : func
-            A function which maps the 1D lens hyper_galaxies to its unmasked 2D array.
+            A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
-        self.masked_data = masked_interferometer
-        self.masked_interferometer = masked_interferometer
+
+        if hyper_background_noise is not None:
+            noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
+                noise_map=masked_interferometer.noise_map
+            )
+        else:
+            noise_map = masked_interferometer.noise_map
+
+        self.masked_dataset = masked_interferometer
         self.tracer = tracer
 
-        profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
+        self.profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
             grid=masked_interferometer.grid,
             transformer=masked_interferometer.transformer,
         )
 
-        # profile_subtracted_visibilities_1d = visibilities_1d - blurred_profile_visibilities_1d
-        #
-        # if not tracer.has_pixelization:
+        self.profile_subtracted_visibilities = (
+            masked_interferometer.visibilities - self.profile_visibilities
+        )
 
-        inversion = None
-        model_visibilities = profile_visibilities
+        if not tracer.has_pixelization:
 
-        # else:
-        #
-        #     inversion = tracer.inversion_from_grid_visibilities_1d_noise_map_1d_and_convolver(
-        #         grid=lens_interferometer.grid,
-        #         visibilities_1d=profile_subtracted_visibilities_1d,
-        #         noise_map_1d=noise_map_1d,
-        #         convolver=lens_interferometer.convolver,
-        #         inversion_uses_border=lens_interferometer.inversion_uses_border,
-        #         preload_sparse_grids_of_planes=lens_interferometer.preload_sparse_grids_of_planes,
-        #     )
-        #
-        #     model_visibilities_1d = blurred_profile_visibilities_1d + inversion.reconstructed_data_1d
+            inversion = None
+            model_visibilities = self.profile_visibilities
+
+        else:
+
+            inversion = tracer.inversion_interferometer_from_grid_and_data(
+                grid=masked_interferometer.grid,
+                visibilities=self.profile_subtracted_visibilities,
+                noise_map=noise_map,
+                transformer=masked_interferometer.transformer,
+                inversion_uses_border=masked_interferometer.inversion_uses_border,
+                preload_sparse_grids_of_planes=masked_interferometer.preload_sparse_grids_of_planes,
+            )
+
+            model_visibilities = (
+                self.profile_visibilities + inversion.mapped_reconstructed_visibilities
+            )
 
         super().__init__(
             visibilities_mask=masked_interferometer.visibilities_mask,
             visibilities=masked_interferometer.visibilities,
-            noise_map=masked_interferometer.noise_map,
+            noise_map=noise_map,
             model_visibilities=model_visibilities,
             inversion=inversion,
         )
+
+    @property
+    def grid(self):
+        return self.masked_interferometer.grid
 
     @property
     def galaxy_model_visibilities_dict(self) -> {g.Galaxy: np.ndarray}:
@@ -299,3 +306,28 @@ class PositionsFit(object):
             ydists = np.square(np.subtract(grid[i, 1], grid[:, 1]))
             rdist_max[i] = np.max(np.add(xdists, ydists))
         return np.max(np.sqrt(rdist_max))
+
+
+def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
+
+    if hyper_image_sky is not None:
+        return hyper_image_sky.hyper_image_from_image(image=image)
+    else:
+        return image
+
+
+def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
+    noise_map, tracer, hyper_background_noise
+):
+
+    hyper_noise_map = tracer.hyper_noise_map_from_noise_map(noise_map=noise_map)
+
+    if hyper_background_noise is not None:
+        noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
+            noise_map=noise_map
+        )
+
+    if hyper_noise_map is not None:
+        noise_map = noise_map + hyper_noise_map
+
+    return noise_map
