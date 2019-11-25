@@ -8,14 +8,8 @@ from autolens.pipeline.phase.abstract.result import Result
 class AbstractPhase(af.AbstractPhase):
     Result = Result
 
-    def __init__(
-        self,
-        phase_name,
-        phase_tag=None,
-        phase_folders=tuple(),
-        optimizer_class=af.MultiNest,
-        auto_link_priors=False,
-    ):
+    @af.convert_paths
+    def __init__(self, paths, *, optimizer_class=af.MultiNest):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
         models and hyper_galaxies passed to it.
@@ -24,17 +18,9 @@ class AbstractPhase(af.AbstractPhase):
         ----------
         optimizer_class: class
             The class of a non_linear optimizer
-        phase_name: str
-            The name of this phase
         """
 
-        super().__init__(
-            paths=af.Paths(
-                phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders
-            ),
-            optimizer_class=optimizer_class,
-            auto_link_priors=auto_link_priors,
-        )
+        super().__init__(paths=paths, optimizer_class=optimizer_class)
 
     @property
     def phase_folders(self):
@@ -58,13 +44,13 @@ class AbstractPhase(af.AbstractPhase):
 
     def make_result(self, result, analysis):
         return self.Result(
-            constant=result.constant,
+            instance=result.instance,
             figure_of_merit=result.figure_of_merit,
-            previous_variable=result.previous_variable,
+            previous_model=result.previous_model,
             gaussian_tuples=result.gaussian_tuples,
             analysis=analysis,
             optimizer=self.optimizer,
         )
 
-    def run(self, image, results=None, mask=None, positions=None):
+    def run(self, dataset, results=None, mask=None, positions=None):
         raise NotImplementedError()

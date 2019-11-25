@@ -44,7 +44,7 @@ are precisely estimated.
 const_efficiency_mode
 
 The sampling efficiency determines the acceptance rate that MultiNest targets. However, if MultiNest is struggling to
-map out parameter-space accurately, it will it fall to a lower acceptance rate. Constant efficiency mode forces
+map out parameter-space accurately, it will it fall to a lower acceptance rate. instance efficiency mode forces
 MultiNest to maintain the acceptance rate, but aggresively converging on the regions of parameter space that have known
 high likelihoods.
 
@@ -70,5 +70,5 @@ Importance nested sampling mode uses information from the rejected points to imp
 
 In my experience, this can slow down the analysis, therefore I would recommend keeping it turned off.
 
-It is useful if  want to use constant_efficiency_mode and retain a robust estimate of the Bayesian evidence. I've 
+It is useful if  want to use instance_efficiency_mode and retain a robust estimate of the Bayesian evidence. I've
 not found that it leads to any change in parameter estimates.

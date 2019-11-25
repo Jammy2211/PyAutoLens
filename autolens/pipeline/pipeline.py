@@ -67,14 +67,14 @@ class PipelineSettingsHyper(PipelineSettings):
         self.hyper_background_noise = hyper_background_noise
 
 
-class PipelineImaging(af.Pipeline):
+class PipelineDataset(af.Pipeline):
     def __init__(self, pipeline_name, pipeline_tag, *phases, hyper_mode=False):
 
-        super(PipelineImaging, self).__init__(pipeline_name, pipeline_tag, *phases)
+        super(PipelineDataset, self).__init__(pipeline_name, pipeline_tag, *phases)
 
         self.hyper_mode = hyper_mode
 
-    def run(self, data, mask=None, positions=None, data_name=None):
+    def run(self, dataset, mask=None, positions=None, data_name=None):
 
         if self.hyper_mode and mask is None:
             raise exc.PhaseException(
@@ -83,7 +83,9 @@ class PipelineImaging(af.Pipeline):
             )
 
         def runner(phase, results):
-            return phase.run(data=data, results=results, mask=mask, positions=positions)
+            return phase.run(
+                dataset=dataset, results=results, mask=mask, positions=positions
+            )
 
         return self.run_function(runner, data_name)
 

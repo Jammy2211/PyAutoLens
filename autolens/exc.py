@@ -1,12 +1,7 @@
 import autofit as af
-from autoarray.exc import *
 
 
 class RayTracingException(af.exc.FitException):
-    pass
-
-
-class FitException(Exception):
     pass
 
 
@@ -19,8 +14,4 @@ class PhaseException(Exception):
 
 
 class PixelizationException(af.exc.FitException):
-    pass
-
-
-class InversionException(af.exc.FitException):
     pass

@@ -1,16 +1,20 @@
 import autofit as af
-from autolens.fit import fit
-from autolens.lens import ray_tracing
+from autoarray.exc import InversionException
 from autoastro.galaxy import galaxy as g
+from autofit.exc import FitException
+from autolens.fit import fit
 from autolens.pipeline import visualizer
+from autolens.pipeline.phase.dataset import analysis as analysis_dataset
 
 
-class Analysis(af.Analysis):
+class Analysis(analysis_dataset.Analysis):
     def __init__(self, masked_imaging, cosmology, image_path=None, results=None):
-        self.cosmology = cosmology
+
+        super(Analysis, self).__init__(cosmology=cosmology)
+
         self.visualizer = visualizer.PhaseImagingVisualizer(masked_imaging, image_path)
 
-        self.masked_imaging = masked_imaging
+        self.masked_dataset = masked_imaging
 
         if results is not None and results.last is not None:
             last_results = results.last
@@ -24,6 +28,10 @@ class Analysis(af.Analysis):
             self.hyper_model_image = last_results.hyper_model_image
 
             self.visualizer.plot_hyper_images(last_results=last_results)
+
+    @property
+    def masked_imaging(self):
+        return self.masked_dataset
 
     def fit(self, instance):
         """
@@ -43,10 +51,10 @@ class Analysis(af.Analysis):
         self.associate_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
-        self.masked_imaging.check_positions_trace_within_threshold_via_tracer(
+        self.masked_dataset.check_positions_trace_within_threshold_via_tracer(
             tracer=tracer
         )
-        self.masked_imaging.check_inversion_pixels_are_below_limit_via_tracer(
+        self.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
             tracer=tracer
         )
 
@@ -56,13 +64,16 @@ class Analysis(af.Analysis):
             instance=instance
         )
 
-        fit = self.masked_imaging_fit_for_tracer(
-            tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-        )
+        try:
+            fit = self.masked_imaging_fit_for_tracer(
+                tracer=tracer,
+                hyper_image_sky=hyper_image_sky,
+                hyper_background_noise=hyper_background_noise,
+            )
 
-        return fit.figure_of_merit
+            return fit.figure_of_merit
+        except InversionException as e:
+            raise FitException from e
 
     def associate_images(self, instance: af.ModelInstance) -> af.ModelInstance:
         """
@@ -100,26 +111,12 @@ class Analysis(af.Analysis):
 
         return instance
 
-    def hyper_image_sky_for_instance(self, instance):
-
-        if hasattr(instance, "hyper_image_sky"):
-            return instance.hyper_image_sky
-        else:
-            return None
-
-    def hyper_background_noise_for_instance(self, instance):
-
-        if hasattr(instance, "hyper_background_noise"):
-            return instance.hyper_background_noise
-        else:
-            return None
-
     def masked_imaging_fit_for_tracer(
         self, tracer, hyper_image_sky, hyper_background_noise
     ):
 
         return fit.ImagingFit(
-            masked_imaging=self.masked_imaging,
+            masked_imaging=self.masked_dataset,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -139,9 +136,4 @@ class Analysis(af.Analysis):
             hyper_background_noise=hyper_background_noise,
         )
         self.visualizer.plot_ray_tracing(fit.tracer, during_analysis)
-        self.visualizer.plot_masked_imaging(fit, during_analysis)
-
-    def tracer_for_instance(self, instance):
-        return ray_tracing.Tracer.from_galaxies(
-            galaxies=instance.galaxies, cosmology=self.cosmology
-        )
+        self.visualizer.plot_fit(fit, during_analysis)

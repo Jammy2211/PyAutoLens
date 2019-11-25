@@ -3,10 +3,10 @@ import copy
 import numpy as np
 from typing import cast
 
-import autoarray as aa
 import autofit as af
+from autoarray.fit import fit as aa_fit
 from autolens.fit import fit
-from autolens.fit import masked_data
+from autolens.masked import masked_dataset
 from autoastro.galaxy import galaxy as g
 from autoastro.hyper import hyper_data as hd
 from autolens.pipeline.phase import imaging
@@ -23,7 +23,7 @@ class Analysis(af.Analysis):
         Parameters
         ----------
         masked_imaging: LensData
-            lens simulate, including an image and noise
+            lens dataset, including an image and noise
         hyper_model_image: ndarray
             An image produce of the overall system by a model
         hyper_galaxy_image: ndarray
@@ -51,7 +51,7 @@ class Analysis(af.Analysis):
                 hyper_galaxy_image=self.hyper_galaxy_image,
             )
 
-            fit_normal = aa.fit_imaging(
+            fit_normal = aa_fit.ImagingFit(
                 image=self.masked_imaging.image,
                 noise_map=self.masked_imaging.noise_map,
                 mask=self.masked_imaging.mask,
@@ -132,7 +132,7 @@ class Analysis(af.Analysis):
 
         noise_map = noise_map + hyper_noise_map
 
-        return aa.fit_imaging(
+        return aa_fit.ImagingFit(
             image=image,
             noise_map=noise_map,
             mask=self.masked_imaging.mask,
@@ -155,12 +155,12 @@ class HyperGalaxyPhase(HyperPhase):
         self.include_sky_background = False
         self.include_noise_background = False
 
-    def run_hyper(self, data, results=None):
+    def run_hyper(self, dataset, results=None):
         """
         Run a fit for each galaxy from the previous phase.
         Parameters
         ----------
-        data: LensData
+        dataset: LensData
         results: ResultsCollection
             Results from all previous phases
         Returns
@@ -170,29 +170,29 @@ class HyperGalaxyPhase(HyperPhase):
         """
         phase = self.make_hyper_phase()
 
-        masked_imaging = masked_data.MaskedImaging(
-            imaging=data,
+        masked_imaging = masked_dataset.MaskedImaging(
+            imaging=dataset,
             mask=results.last.mask,
-            trimmed_psf_shape_2d=data.psf.shape_2d,
+            psf_shape_2d=dataset.psf.shape_2d,
             positions=results.last.positions,
             positions_threshold=cast(
                 imaging.PhaseImaging, phase
-            ).meta_data_fit.positions_threshold,
+            ).meta_imaging_fit.positions_threshold,
             pixel_scale_interpolation_grid=cast(
                 imaging.PhaseImaging, phase
-            ).meta_data_fit.pixel_scale_interpolation_grid,
+            ).meta_imaging_fit.pixel_scale_interpolation_grid,
             inversion_pixel_limit=cast(
                 imaging.PhaseImaging, phase
-            ).meta_data_fit.inversion_pixel_limit,
+            ).meta_imaging_fit.inversion_pixel_limit,
             inversion_uses_border=cast(
                 imaging.PhaseImaging, phase
-            ).meta_data_fit.inversion_uses_border,
+            ).meta_imaging_fit.inversion_uses_border,
             preload_sparse_grids_of_planes=None,
         )
 
         hyper_result = copy.deepcopy(results.last)
-        hyper_result.variable = hyper_result.variable.copy_with_fixed_priors(
-            hyper_result.constant
+        hyper_result.model = hyper_result.model.copy_with_fixed_priors(
+            hyper_result.instance
         )
 
         hyper_result.analysis.hyper_model_image = results.last.hyper_model_image
@@ -219,7 +219,7 @@ class HyperGalaxyPhase(HyperPhase):
                 "MultiNest", "extension_hyper_galaxy_multimodal", bool
             )
 
-            model = copy.deepcopy(phase.variable)
+            model = copy.deepcopy(phase.model)
 
             # TODO : This is a HACK :O
 
@@ -233,7 +233,7 @@ class HyperGalaxyPhase(HyperPhase):
             if self.include_noise_background:
                 model.hyper_background_noise = hd.HyperBackgroundNoise
 
-            # If array is all zeros, galaxy did not have image in previous phase and
+            # If arrays is all zeros, galaxy did not have image in previous phase and
             # shoumasked_imaging be ignored
             if not np.all(
                 hyper_result.analysis.hyper_galaxy_image_path_dict[path] == 0
@@ -251,32 +251,32 @@ class HyperGalaxyPhase(HyperPhase):
                 result = optimizer.fit(analysis=analysis, model=model)
 
                 def transfer_field(name):
-                    if hasattr(result.constant, name):
+                    if hasattr(result.instance, name):
                         setattr(
-                            hyper_result.constant.object_for_path(path),
+                            hyper_result.instance.object_for_path(path),
                             name,
-                            getattr(result.constant, name),
+                            getattr(result.instance, name),
                         )
                         setattr(
-                            hyper_result.variable.object_for_path(path),
+                            hyper_result.model.object_for_path(path),
                             name,
-                            getattr(result.variable, name),
+                            getattr(result.model, name),
                         )
 
                 transfer_field("hyper_galaxy")
 
-                hyper_result.constant.hyper_image_sky = getattr(
-                    result.constant, "hyper_image_sky"
+                hyper_result.instance.hyper_image_sky = getattr(
+                    result.instance, "hyper_image_sky"
                 )
-                hyper_result.variable.hyper_image_sky = getattr(
-                    result.variable, "hyper_image_sky"
+                hyper_result.model.hyper_image_sky = getattr(
+                    result.model, "hyper_image_sky"
                 )
 
-                hyper_result.constant.hyper_background_noise = getattr(
-                    result.constant, "hyper_background_noise"
+                hyper_result.instance.hyper_background_noise = getattr(
+                    result.instance, "hyper_background_noise"
                 )
-                hyper_result.variable.hyper_background_noise = getattr(
-                    result.variable, "hyper_background_noise"
+                hyper_result.model.hyper_background_noise = getattr(
+                    result.model, "hyper_background_noise"
                 )
 
         return hyper_result

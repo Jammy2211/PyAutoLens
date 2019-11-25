@@ -13,7 +13,7 @@ class TestPlaneImageFromGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        plane_image = al.lens_util.plane_image_of_galaxies_from_grid(
+        plane_image = al.util.lens.plane_image_of_galaxies_from_grid(
             shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
@@ -23,7 +23,7 @@ class TestPlaneImageFromGrid:
             sub_size=1,
         )
 
-        grid = al.masked_grid.manual_1d(
+        grid = al.masked.grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -1.0],
@@ -60,7 +60,7 @@ class TestPlaneImageFromGrid:
             ]
         )
 
-        plane_image = al.lens_util.plane_image_of_galaxies_from_grid(
+        plane_image = al.util.lens.plane_image_of_galaxies_from_grid(
             shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
@@ -70,7 +70,7 @@ class TestPlaneImageFromGrid:
             sub_size=1,
         )
 
-        grid = al.masked_grid.manual_1d(
+        grid = al.masked.grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -1.0],
@@ -96,7 +96,7 @@ class TestPlaneImageFromGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        plane_image = al.lens_util.plane_image_of_galaxies_from_grid(
+        plane_image = al.util.lens.plane_image_of_galaxies_from_grid(
             shape=(2, 3), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
@@ -106,7 +106,7 @@ class TestPlaneImageFromGrid:
             sub_size=1,
         )
 
-        grid = al.masked_grid.manual_1d(
+        grid = al.masked.grid.manual_1d(
             grid=np.array(
                 [
                     [-0.75, -1.0],
@@ -129,7 +129,7 @@ class TestPlaneImageFromGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        plane_image = al.lens_util.plane_image_of_galaxies_from_grid(
+        plane_image = al.util.lens.plane_image_of_galaxies_from_grid(
             shape=(3, 2), grid=grid, galaxies=[galaxy], buffer=0.0
         )
 
@@ -139,7 +139,7 @@ class TestPlaneImageFromGrid:
             sub_size=1,
         )
 
-        grid = al.masked_grid.manual_1d(
+        grid = al.masked.grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -0.75],
@@ -162,7 +162,7 @@ class TestPlaneImageFromGrid:
 
         grid_without_buffer = np.array([[-1.48, -1.48], [1.48, 1.48]])
 
-        plane_image = al.lens_util.plane_image_of_galaxies_from_grid(
+        plane_image = al.util.lens.plane_image_of_galaxies_from_grid(
             shape=(3, 3), grid=grid_without_buffer, galaxies=[galaxy], buffer=0.02
         )
 
@@ -172,7 +172,7 @@ class TestPlaneImageFromGrid:
             sub_size=1,
         )
 
-        grid = al.masked_grid.manual_1d(
+        grid = al.masked.grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -1.0],
@@ -202,7 +202,7 @@ class TestPlaneRedshifts:
             al.Galaxy(redshift=0.1),
         ]
 
-        ordered_plane_redshifts = al.lens_util.ordered_plane_redshifts_from_galaxies(
+        ordered_plane_redshifts = al.util.lens.ordered_plane_redshifts_from_galaxies(
             galaxies=galaxies
         )
 
@@ -217,7 +217,7 @@ class TestPlaneRedshifts:
             al.Galaxy(redshift=0.1),
         ]
 
-        ordered_plane_redshifts = al.lens_util.ordered_plane_redshifts_from_galaxies(
+        ordered_plane_redshifts = al.util.lens.ordered_plane_redshifts_from_galaxies(
             galaxies=galaxies
         )
 
@@ -233,14 +233,14 @@ class TestPlaneRedshifts:
 
         galaxies = [g0, g1, g2, g3, g4, g5]
 
-        ordered_plane_redshifts = al.lens_util.ordered_plane_redshifts_from_galaxies(
+        ordered_plane_redshifts = al.util.lens.ordered_plane_redshifts_from_galaxies(
             galaxies=galaxies
         )
 
         assert ordered_plane_redshifts == [0.1, 0.95, 1.0, 1.05]
 
     def test__from_main_plane_redshifts_and_slices(self):
-        ordered_plane_redshifts = al.lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
+        ordered_plane_redshifts = al.util.lens.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
             lens_redshifts=[1.0],
             source_plane_redshift=3.0,
             planes_between_lenses=[1, 1],
@@ -249,7 +249,7 @@ class TestPlaneRedshifts:
         assert ordered_plane_redshifts == [0.5, 1.0, 2.0]
 
     def test__different_number_of_slices_between_planes(self):
-        ordered_plane_redshifts = al.lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
+        ordered_plane_redshifts = al.util.lens.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
             lens_redshifts=[1.0],
             source_plane_redshift=2.0,
             planes_between_lenses=[2, 3],
@@ -268,21 +268,21 @@ class TestPlaneRedshifts:
         self
     ):
         with pytest.raises(exc.RayTracingException):
-            al.lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
+            al.util.lens.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
                 lens_redshifts=[1.0],
                 source_plane_redshift=2.0,
                 planes_between_lenses=[2, 3, 1],
             )
 
         with pytest.raises(exc.RayTracingException):
-            al.lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
+            al.util.lens.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
                 lens_redshifts=[1.0],
                 source_plane_redshift=2.0,
                 planes_between_lenses=[2],
             )
 
         with pytest.raises(exc.RayTracingException):
-            al.lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
+            al.util.lens.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
                 lens_redshifts=[1.0, 3.0],
                 source_plane_redshift=2.0,
                 planes_between_lenses=[2],
@@ -301,7 +301,7 @@ class TestGalaxyOrdering:
 
         ordered_plane_redshifts = [0.1, 1.0, 2.0]
 
-        galaxies_in_redshift_ordered_planes = al.lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+        galaxies_in_redshift_ordered_planes = al.util.lens.galaxies_in_redshift_ordered_planes_from_galaxies(
             galaxies=galaxies, plane_redshifts=ordered_plane_redshifts
         )
 
@@ -320,7 +320,7 @@ class TestGalaxyOrdering:
 
         ordered_plane_redshifts = [0.1, 1.0]
 
-        galaxies_in_redshift_ordered_planes = al.lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+        galaxies_in_redshift_ordered_planes = al.util.lens.galaxies_in_redshift_ordered_planes_from_galaxies(
             galaxies=galaxies, plane_redshifts=ordered_plane_redshifts
         )
 
@@ -340,7 +340,7 @@ class TestGalaxyOrdering:
 
         ordered_plane_redshifts = [0.1, 0.95, 1.0, 1.05]
 
-        galaxies_in_redshift_ordered_planes = al.lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+        galaxies_in_redshift_ordered_planes = al.util.lens.galaxies_in_redshift_ordered_planes_from_galaxies(
             galaxies=galaxies, plane_redshifts=ordered_plane_redshifts
         )
 
@@ -367,7 +367,7 @@ class TestGalaxyOrdering:
             al.Galaxy(redshift=2.9),
         ]
 
-        galaxies_in_redshift_ordered_planes = al.lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+        galaxies_in_redshift_ordered_planes = al.util.lens.galaxies_in_redshift_ordered_planes_from_galaxies(
             galaxies=galaxies, plane_redshifts=ordered_plane_redshifts
         )
 
@@ -391,7 +391,7 @@ class TestGalaxyOrdering:
             al.Galaxy(redshift=1.9),
         ]
 
-        galaxies_in_redshift_ordered_planes = al.lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+        galaxies_in_redshift_ordered_planes = al.util.lens.galaxies_in_redshift_ordered_planes_from_galaxies(
             galaxies=galaxies, plane_redshifts=ordered_plane_redshifts
         )
 
