@@ -1,6 +1,5 @@
 import autofit as af
-import autoarray as aa
-from autoarray.plotters import plotter_util
+from autoarray.util import plotter_util
 from autoastro.plotters import lens_plotter_util
 import matplotlib
 
