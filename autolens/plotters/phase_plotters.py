@@ -262,7 +262,6 @@ def imaging_fit_of_phase(
         aa.plot.inversion.subplot(
             inversion=fit.inversion,
             mask=fit.mask,
-            positions=positions,
             output_path=subplot_path,
             output_format="png",
         )
@@ -303,7 +302,6 @@ def imaging_fit_of_phase(
                 include_positions=include_positions,
                 include_critical_curves=include_critical_curves,
                 include_caustics=include_caustics,
-                positions=positions,
                 include_image_plane_pix=include_image_plane_pix,
                 plot_image=True,
                 plot_noise_map=True,
@@ -336,7 +334,6 @@ def imaging_fit_of_phase(
                 include_positions=include_positions,
                 include_critical_curves=include_critical_curves,
                 include_caustics=include_caustics,
-                positions=positions,
                 include_image_plane_pix=include_image_plane_pix,
                 plot_image=True,
                 plot_noise_map=True,
