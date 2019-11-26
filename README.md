@@ -125,10 +125,10 @@ Install multinest:
 conda install -c conda-forge multinest
 ```
 
-Install autolens:
+Install autolens (build v0.30.0 recommended, there have also been astropy compatibility issues the command below fixes):
 
 ```
-pip install autolens
+pip install autolens==0.30.0 --ignore-installed astropy
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment model:
@@ -150,10 +150,10 @@ python3 /path/to/autolens_workspace/runners/simple/runner__lens_sie__source_inve
 
 ## Installation with pip
 
-Installation is also available via pip, however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
+Installation is also available via pip (build v0.30.0 recommended), however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
 
 ```
-$ pip install autolens
+$ pip install autolens==0.30.0
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment model:
