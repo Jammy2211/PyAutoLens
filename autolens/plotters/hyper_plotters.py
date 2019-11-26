@@ -7,7 +7,7 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autoarray.plotters import plotter_util
+from autoarray.util import plotter_util
 
 
 def subplot_of_hyper_galaxy(
