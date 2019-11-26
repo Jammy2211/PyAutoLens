@@ -2,11 +2,7 @@ import autolens as al
 from autolens.plotters import phase_plotters
 
 mask = al.mask.circular(
-    shape_2d=(200, 200),
-    pixel_scales=0.05,
-    sub_size=1,
-    radius=2.4,
-    centre=(2.0, 2.0),
+    shape_2d=(200, 200), pixel_scales=0.05, sub_size=1, radius=2.4, centre=(2.0, 2.0)
 )
 
 grid = al.grid.from_mask(mask=mask)

@@ -33,7 +33,7 @@ imaging = aa.imaging.from_fits(
     pixel_scales=0.1)
 
 # Create a mask for the data, which we setup as a 3.0" circle.
-mask = aa.mask.circular(shape=imaging.shape, pixel_scales=imaging.pixel_scales, radius_arcsec=3.0)
+mask = aa.mask.circular(shape=imaging.shape, pixel_scales=imaging.pixel_scales, radius=3.0)
 
 # We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) & our source galaxy 
 # a light profile (an elliptical Sersic).

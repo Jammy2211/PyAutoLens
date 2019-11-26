@@ -1,7 +1,7 @@
 import autofit as af
 import matplotlib
 
-backend = af.conf.instance.visualize.get("figures", "backend", str)
+backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
@@ -38,7 +38,8 @@ def subplot(
         figsize = figsize_tool
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc)
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
     plt.figure(figsize=figsize)
 
@@ -107,7 +108,8 @@ def subplot_real_space(
         figsize = figsize_tool
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc)
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
     image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix, fit)
 
@@ -121,7 +123,7 @@ def subplot_real_space(
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
     )
-    
+
     plt.subplot(rows, columns, 1)
 
     if not fit.inversion is not None:
@@ -315,10 +317,11 @@ def individuals(
     """
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc)
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.fit_interferometer.individuals(
-        fit=fit, 
+        fit=fit,
         plot_visibilities=plot_visibilities,
         plot_noise_map=plot_noise_map,
         plot_signal_to_noise_map=plot_signal_to_noise_map,
@@ -334,7 +337,7 @@ def individuals(
         unit_label=unit_label,
         output_path=output_path,
         output_format=output_format,
-        )
+    )
 
 
 def get_mask(fit, include_mask):
@@ -352,6 +355,7 @@ def get_mask(fit, include_mask):
     else:
         return None
 
+
 def get_positions(fit, include_positions):
     """Get the masks of the fit if the masks should be plotted on the fit.
 
@@ -366,6 +370,7 @@ def get_positions(fit, include_positions):
         return fit.masked_dataset.positions
     else:
         return None
+
 
 def get_image_plane_pix_grid(include_image_plane_pix, fit):
 

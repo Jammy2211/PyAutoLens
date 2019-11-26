@@ -47,10 +47,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_imaging_fit.mask_function = None
 
         mask_input = al.mask.circular(
-            shape_2d=imaging_7x7.shape_2d,
-            pixel_scales=1.0,
-            sub_size=1,
-            radius=1.5,
+            shape_2d=imaging_7x7.shape_2d, pixel_scales=1.0, sub_size=1, radius=1.5
         )
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
@@ -60,9 +57,7 @@ class TestPhase(object):
         # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
 
         def mask_function(shape_2d, pixel_scales):
-            return al.mask.circular(
-                shape_2d=shape_2d, pixel_scales=1.0, radius=0.3
-            )
+            return al.mask.circular(shape_2d=shape_2d, pixel_scales=1.0, radius=0.3)
 
         mask_from_function = mask_function(
             shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales
@@ -105,9 +100,7 @@ class TestPhase(object):
         # If a mask function is supplied, we should use this mask, regardless of whether an input mask is supplied.
 
         def mask_function(shape_2d, pixel_scales):
-            return al.mask.circular(
-                shape_2d=shape_2d, pixel_scales=1, radius=1.4
-            )
+            return al.mask.circular(shape_2d=shape_2d, pixel_scales=1, radius=1.4)
 
         mask_from_function = mask_function(
             shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales

@@ -2766,7 +2766,8 @@ class TestAbstractTracerData(object):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=al.grid.manual_2d([[[1.0, 0.0]]], pixel_scales=(1.0, 1.0))
+                    value=1,
+                    grid=al.grid.manual_2d([[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -2795,7 +2796,8 @@ class TestAbstractTracerData(object):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=al.grid.manual_2d([[[1.0, 0.0]]], pixel_scales=(1.0, 1.0))
+                    value=1,
+                    grid=al.grid.manual_2d([[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -2816,7 +2818,8 @@ class TestAbstractTracerData(object):
             galaxy_pix0 = al.Galaxy(
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=al.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=(1.0, 1.0))
+                    value=1,
+                    grid=al.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -2824,7 +2827,8 @@ class TestAbstractTracerData(object):
             galaxy_pix1 = al.Galaxy(
                 redshift=2.0,
                 pixelization=mock_inv.MockPixelization(
-                    value=1, grid=al.grid.manual_2d([[[2.0, 2.0]]], pixel_scales=(1.0, 1.0))
+                    value=1,
+                    grid=al.grid.manual_2d([[[2.0, 2.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -3723,7 +3727,9 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=al.grid_irregular.manual_1d([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
+            grid=al.grid_irregular.manual_1d(
+                [[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]
+            )
         )
 
         assert traced_positions_of_planes[2][0] == pytest.approx(
@@ -3794,7 +3800,9 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=al.grid_irregular.manual_1d([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
+            grid=al.grid_irregular.manual_1d(
+                [[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]
+            )
         )
 
         assert traced_positions_of_planes[2][0] == pytest.approx(
@@ -3822,7 +3830,9 @@ class TestTracerPositions(object):
         )
 
         defl11 = g0.deflections_from_grid(
-            grid=al.grid_irregular.manual_1d([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
+            grid=al.grid_irregular.manual_1d(
+                [[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]
+            )
         )
 
         assert traced_positions_of_planes[2][1] == pytest.approx(

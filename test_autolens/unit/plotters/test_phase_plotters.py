@@ -65,12 +65,14 @@ def test__plot_interferometer_for_phase(
     )
 
     assert phase_plotter_path + "interferometer.png" in plot_patch.paths
-    assert phase_plotter_path + "interferometer/interferometer_visibilities.png" not in plot_patch.paths
+    assert (
+        phase_plotter_path + "interferometer/interferometer_visibilities.png"
+        not in plot_patch.paths
+    )
     assert (
         phase_plotter_path + "interferometer/interferometer_primary_beam.png"
         in plot_patch.paths
     )
-
 
 
 def test__plot_ray_tracing_for_phase__dependent_on_input(
@@ -238,7 +240,7 @@ def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
         hyper_model_image=hyper_model_image_7x7,
         hyper_galaxy_image_path_dict=None,
         kpc_per_arcsec=2.0,
-        unit_label='arcsec',
+        unit_label="arcsec",
         mask=mask_7x7,
         plot_hyper_model_image=True,
         plot_hyper_galaxy_images=False,

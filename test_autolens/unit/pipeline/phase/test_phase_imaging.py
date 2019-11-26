@@ -204,7 +204,7 @@ class TestPhase(object):
         assert (analysis.masked_dataset.mask == binned_up_masked_imaging.mask).all()
 
         assert (
-                analysis.masked_dataset.image.in_1d == binned_up_masked_imaging.image.in_1d
+            analysis.masked_dataset.image.in_1d == binned_up_masked_imaging.image.in_1d
         ).all()
         assert (
             analysis.masked_dataset.noise_map.in_1d
