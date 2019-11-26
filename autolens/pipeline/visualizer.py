@@ -233,7 +233,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
             imaging=self.masked_dataset.imaging,
             mask=mask,
             positions=positions,
-            unit_label='arcsec',
+            unit_label="arcsec",
             kpc_per_arcsec=None,
             plot_as_subplot=self.plot_dataset_as_subplot,
             plot_image=self.plot_dataset_data,
@@ -289,7 +289,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
                 mask=self.masked_dataset.mask,
-                unit_label='arcsec',
+                unit_label="arcsec",
                 kpc_per_arcsec=None,
                 plot_hyper_model_image=self.plot_hyper_model_image,
                 plot_hyper_galaxy_images=self.plot_hyper_galaxy_images,
@@ -319,7 +319,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
 
         phase_plotters.interferometer_of_phase(
             interferometer=self.masked_interferometer.interferometer,
-            unit_label='arcsec',
+            unit_label="arcsec",
             kpc_per_arcsec=None,
             plot_as_subplot=self.plot_dataset_as_subplot,
             plot_visibilities=self.plot_dataset_data,

@@ -1,9 +1,10 @@
+import autofit as af
 import autoarray as aa
 from autoarray.plotters import plotter_util
 from autoastro.plotters import lens_plotter_util
 import matplotlib
 
-backend = aa.conf.instance.visualize.get("figures", "backend", str)
+backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
@@ -49,15 +50,17 @@ def profile_image(
     profile_image = plane.profile_image_from_grid(grid=grid)
 
     lines = lens_plotter_util.get_critical_curves_and_caustics(
-            obj=plane,
-            include_critical_curves=include_critical_curves,
-            include_caustics=include_caustics,
-        )
+        obj=plane,
+        include_critical_curves=include_critical_curves,
+        include_caustics=include_caustics,
+    )
 
     if not include_grid:
         grid = None
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=plane, plot_in_kpc=plot_in_kpc)
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=profile_image,
@@ -141,7 +144,9 @@ def plane_image(
     else:
         origin = None
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=plane, plot_in_kpc=plot_in_kpc)
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=plane_image.array,
@@ -216,8 +221,10 @@ def convergence(
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
     )
-    
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=plane, plot_in_kpc=plot_in_kpc)
+
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=convergence,
@@ -289,7 +296,9 @@ def potential(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=plane, plot_in_kpc=plot_in_kpc)
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=potential,
@@ -362,7 +371,9 @@ def deflections_y(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=plane, plot_in_kpc=plot_in_kpc)
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=deflections_y,
@@ -435,7 +446,9 @@ def deflections_x(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=plane, plot_in_kpc=plot_in_kpc)
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=deflections_x,
@@ -507,7 +520,9 @@ def magnification(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=plane, plot_in_kpc=plot_in_kpc)
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=magnification,
@@ -571,7 +586,7 @@ def image_and_source_plane_subplot(
         caustics = [lines[1]]
     else:
         caustics = None
-        
+
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
@@ -645,7 +660,9 @@ def plane_grid(
     output_filename="plane_grid",
 ):
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=plane, plot_in_kpc=plot_in_kpc)
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.grid(
         grid=grid,

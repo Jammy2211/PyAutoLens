@@ -1621,7 +1621,9 @@ class TestInterferometerFit:
 
             transformer = trans.Transformer(
                 uv_wavelengths=uv_wavelengths,
-                grid_radians=al.grid.manual_2d([[[0.0, -1.0], [0.0, 1.0], [1.0, 1.0]]], pixel_scales=(1.0, 1.0))
+                grid_radians=al.grid.manual_2d(
+                    [[[0.0, -1.0], [0.0, 1.0], [1.0, 1.0]]], pixel_scales=(1.0, 1.0)
+                ),
             )
 
             real_space_mask = al.mask.manual(
