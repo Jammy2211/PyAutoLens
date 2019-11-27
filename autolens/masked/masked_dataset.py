@@ -62,7 +62,7 @@ class MaskedImaging(masked_dataset.MaskedImaging, AbstractLensMasked):
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
         Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
-        for lensing calculations.
+        for lens calculations.
 
         Parameters
         ----------
@@ -161,7 +161,7 @@ class MaskedInterferometer(masked_dataset.MaskedInterferometer, AbstractLensMask
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
         Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
-        for lensing calculations.
+        for lens calculations.
 
         Parameters
         ----------
