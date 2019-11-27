@@ -167,7 +167,7 @@ def subplot(
 
     source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-    caustics = lens_plotter_util.get_critical_curves_and_caustics(
+    caustics = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer, include_critical_curves=False, include_caustics=include_caustics
     )
 
@@ -341,7 +341,7 @@ def individual(
 
         source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-        caustics = lens_plotter_util.get_critical_curves_and_caustics(
+        caustics = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
             obj=tracer, include_critical_curves=False, include_caustics=include_caustics
         )
 
@@ -416,7 +416,7 @@ def profile_image(
 
     profile_image = tracer.profile_image_from_grid(grid=grid)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -493,7 +493,7 @@ def convergence(
 
     convergence = tracer.convergence_from_grid(grid=grid)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -567,7 +567,7 @@ def potential(
 
     potential = tracer.potential_from_grid(grid=grid)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -642,7 +642,7 @@ def deflections_y(
     deflections = tracer.deflections_from_grid(grid=grid)
     deflections_y = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 0])
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -717,7 +717,7 @@ def deflections_x(
     deflections = tracer.deflections_from_grid(grid=grid)
     deflections_x = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 1])
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
