@@ -1,12 +1,12 @@
 import autofit as af
 import matplotlib
 
-backend = af.conf.instance.visualize.get("figures", "backend", str)
+backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autoarray.plotters import plotter_util
+from autoarray.util import plotter_util
 from autoastro.plotters import lens_plotter_util
 from autolens.plotters import plane_plotters
 
@@ -44,12 +44,15 @@ def subplot(
     output_format="show",
 ):
 
-    image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix=include_image_plane_pix, fit=fit)
+    image_plane_pix_grid = get_image_plane_pix_grid(
+        include_image_plane_pix=include_image_plane_pix, fit=fit
+    )
 
     positions = get_positions(fit=fit, include_positions=include_positions)
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc)
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
     lines = lens_plotter_util.get_critical_curves_and_caustics(
         obj=fit.tracer,
@@ -90,6 +93,7 @@ def subplot(
         output_format=output_format,
     )
 
+
 def subplot_of_planes(
     fit,
     include_mask=True,
@@ -125,7 +129,7 @@ def subplot_of_planes(
 ):
 
     for plane_index in range(fit.tracer.total_planes):
-        
+
         if (
             fit.tracer.planes[plane_index].has_light_profile
             or fit.tracer.planes[plane_index].has_pixelization
@@ -230,11 +234,14 @@ def subplot_for_plane(
         figsize = figsize_tool
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.planes[plane_index], plot_in_kpc=plot_in_kpc)
+        obj=fit.tracer.planes[plane_index], plot_in_kpc=plot_in_kpc
+    )
 
     plt.figure(figsize=figsize)
 
-    image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix=include_image_plane_pix, fit=fit)
+    image_plane_pix_grid = get_image_plane_pix_grid(
+        include_image_plane_pix=include_image_plane_pix, fit=fit
+    )
 
     positions = get_positions(fit=fit, include_positions=include_positions)
 
@@ -342,9 +349,7 @@ def subplot_for_plane(
     )
 
     lines = lens_plotter_util.get_critical_curves_and_caustics(
-        obj=fit.tracer,
-        include_critical_curves=False,
-        include_caustics=include_caustics,
+        obj=fit.tracer, include_critical_curves=False, include_caustics=include_caustics
     )
 
     if not fit.tracer.planes[plane_index].has_pixelization:
@@ -488,7 +493,8 @@ def individuals(
     image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix, fit)
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc)
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
     positions = get_positions(fit=fit, include_positions=include_positions)
 
@@ -498,26 +504,28 @@ def individuals(
         include_caustics=include_caustics,
     )
 
-    aa.plot.fit_imaging.individuals(fit=fit, include_mask=include_mask,
-                                    lines=lines,
-                                    grid=image_plane_pix_grid,
-                                    points=positions,
-                                    plot_image=plot_image,
-                                    plot_noise_map=plot_noise_map,
-                                    plot_signal_to_noise_map=plot_signal_to_noise_map,
-                                    plot_model_image=plot_model_image,
-                                    plot_residual_map=plot_residual_map,
-                                    plot_normalized_residual_map=plot_normalized_residual_map,
-                                    plot_chi_squared_map=plot_chi_squared_map,
-                                    plot_inversion_residual_map=plot_inversion_residual_map,
-                                    plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
-                                    plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
-                                    plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
-                                    unit_conversion_factor=unit_conversion_factor,
-                                    unit_label=unit_label,
-                                    output_path=output_path,
-                                    output_format=output_format,
-                                    )
+    aa.plot.fit_imaging.individuals(
+        fit=fit,
+        include_mask=include_mask,
+        lines=lines,
+        grid=image_plane_pix_grid,
+        points=positions,
+        plot_image=plot_image,
+        plot_noise_map=plot_noise_map,
+        plot_signal_to_noise_map=plot_signal_to_noise_map,
+        plot_model_image=plot_model_image,
+        plot_residual_map=plot_residual_map,
+        plot_normalized_residual_map=plot_normalized_residual_map,
+        plot_chi_squared_map=plot_chi_squared_map,
+        plot_inversion_residual_map=plot_inversion_residual_map,
+        plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
+        plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
+        plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
+        output_path=output_path,
+        output_format=output_format,
+    )
 
     traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
@@ -653,9 +661,12 @@ def subtracted_image_of_plane(
         subtracted_image = fit.image
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc)
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
-    image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix=include_image_plane_pix, fit=fit)
+    image_plane_pix_grid = get_image_plane_pix_grid(
+        include_image_plane_pix=include_image_plane_pix, fit=fit
+    )
 
     positions = get_positions(fit=fit, include_positions=include_positions)
 
@@ -755,7 +766,8 @@ def model_image_of_plane(
     )
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc)
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
     positions = get_positions(fit=fit, include_positions=include_positions)
 
@@ -852,7 +864,8 @@ def contribution_maps(
     positions = get_positions(fit=fit, include_positions=include_positions)
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc)
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=contribution_map,
@@ -939,4 +952,3 @@ def get_mass_profile_centes(plot_mass_profile_centres, fit):
         return fit.tracer.image_plane.mass_profile_centres_of_galaxies
     else:
         return None
-

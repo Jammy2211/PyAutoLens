@@ -1,13 +1,13 @@
 import autofit as af
 import matplotlib
 
-backend = af.conf.instance.visualize.get("figures", "backend", str)
+backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 
 from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autoarray.plotters import plotter_util
+from autoarray.util import plotter_util
 
 
 def subplot_of_hyper_galaxy(
@@ -18,7 +18,7 @@ def subplot_of_hyper_galaxy(
     chi_squared_map_sub,
     hyper_chi_squared_map_sub,
     mask=None,
-    unit_label='arcsec',
+    unit_label="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
     aspect="square",
@@ -255,7 +255,7 @@ def subplot_of_hyper_galaxy_images(
     hyper_galaxy_image_path_dict,
     mask,
     include_mask=True,
-    unit_label='arcsec',
+    unit_label="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
     aspect="square",
@@ -347,7 +347,7 @@ def hyper_model_image(
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
-    unit_label='arcsec',
+    unit_label="arcsec",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -427,7 +427,7 @@ def hyper_galaxy_image(
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
-    unit_label='arcsec',
+    unit_label="arcsec",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -507,7 +507,7 @@ def contribution_map(
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
-    unit_label='arcsec',
+    unit_label="arcsec",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -587,7 +587,7 @@ def hyper_noise_map(
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
-    unit_label='arcsec',
+    unit_label="arcsec",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -667,7 +667,7 @@ def chi_squared_map(
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
-    unit_label='arcsec',
+    unit_label="arcsec",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -747,7 +747,7 @@ def hyper_chi_squared_map(
     positions=None,
     image_plane_pix_grid=None,
     as_subplot=False,
-    unit_label='arcsec',
+    unit_label="arcsec",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
