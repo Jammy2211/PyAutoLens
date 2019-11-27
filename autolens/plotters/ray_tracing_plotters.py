@@ -1,12 +1,12 @@
 import autofit as af
 import matplotlib
 
-backend = af.conf.instance.visualize.get("figures", "backend", str)
+backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autoarray.plotters import plotter_util
+from autoarray.util import plotter_util
 from autoastro.plotters import lens_plotter_util
 from autolens.plotters import plane_plotters
 
@@ -168,9 +168,7 @@ def subplot(
     source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
     caustics = lens_plotter_util.get_critical_curves_and_caustics(
-        obj=tracer,
-        include_critical_curves=False,
-        include_caustics=include_caustics,
+        obj=tracer, include_critical_curves=False, include_caustics=include_caustics
     )
 
     plane_plotters.plane_image(
@@ -344,9 +342,7 @@ def individual(
         source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
         caustics = lens_plotter_util.get_critical_curves_and_caustics(
-            obj=tracer,
-            include_critical_curves=False,
-            include_caustics=include_caustics,
+            obj=tracer, include_critical_curves=False, include_caustics=include_caustics
         )
 
         plane_plotters.plane_image(
@@ -426,7 +422,9 @@ def profile_image(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=tracer.image_plane, plot_in_kpc=plot_in_kpc)
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=profile_image,
@@ -501,8 +499,10 @@ def convergence(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=tracer.image_plane, plot_in_kpc=plot_in_kpc)
-    
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
+
     aa.plot.array(
         array=convergence,
         mask=mask,
@@ -573,7 +573,9 @@ def potential(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=tracer.image_plane, plot_in_kpc=plot_in_kpc)
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=potential,
@@ -646,7 +648,9 @@ def deflections_y(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=tracer.image_plane, plot_in_kpc=plot_in_kpc)
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=deflections_y,
@@ -719,8 +723,10 @@ def deflections_x(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(obj=tracer.image_plane, plot_in_kpc=plot_in_kpc)
-    
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
+
     aa.plot.array(
         array=deflections_x,
         lines=lines,
