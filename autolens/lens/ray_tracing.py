@@ -382,7 +382,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         This is performed using multi-plane ray-tracing and the existing redshifts and planes of the tracer. However, \
         any redshift can be input even if a plane does not exist there, including redshifts before the first plane \
-        of the lensing system.
+        of the lens system.
 
         Parameters
         ----------

@@ -73,7 +73,7 @@ def subplot_real_space(
     include_caustics=False,
     include_positions=True,
     include_image_plane_pix=False,
-    plot_mass_profile_centres=True,
+    include_mass_profile_centres=True,
     plot_in_kpc=False,
     figsize=None,
     aspect="square",
@@ -111,14 +111,17 @@ def subplot_real_space(
         obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
-    image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix, fit)
+    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
+        include_image_plane_pix=include_image_plane_pix, fit=fit
+    )
 
-    mask = get_mask(fit=fit, include_mask=include_mask)
-    positions = get_positions(fit=fit, include_positions=include_positions)
+    real_space_mask = plotter_util.get_real_space_mask_from_fit(fit=fit, include_mask=include_mask)
+
+    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
 
     plt.figure(figsize=figsize)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=fit.tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -131,7 +134,7 @@ def subplot_real_space(
         ray_tracing_plotters.profile_image(
             tracer=fit.tracer,
             grid=fit.masked_interferometer.grid,
-            mask=mask,
+            mask=real_space_mask,
             include_critical_curves=include_critical_curves,
             positions=positions,
             as_subplot=True,
@@ -196,7 +199,7 @@ def subplot_real_space(
 
         aa.plot.inversion.reconstructed_image(
             inversion=fit.inversion,
-            mask=mask,
+            mask=real_space_mask,
             lines=lines[0],
             positions=positions,
             grid=image_plane_pix_grid,
@@ -338,57 +341,3 @@ def individuals(
         output_path=output_path,
         output_format=output_format,
     )
-
-
-def get_mask(fit, include_mask):
-    """Get the masks of the fit if the masks should be plotted on the fit.
-
-    Parameters
-    -----------
-    fit : datas.fitting.fitting.AbstractLensHyperFit
-        The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-    include_mask : bool
-        If *True*, the masks is plotted on the fit's datas.
-    """
-    if include_mask:
-        return fit.masked_interferometer.mask
-    else:
-        return None
-
-
-def get_positions(fit, include_positions):
-    """Get the masks of the fit if the masks should be plotted on the fit.
-
-    Parameters
-    -----------
-    fit : datas.fitting.fitting.AbstractLensHyperFit
-        The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-    include_mask : bool
-        If *True*, the masks is plotted on the fit's datas.
-    """
-    if include_positions:
-        return fit.masked_dataset.positions
-    else:
-        return None
-
-
-def get_image_plane_pix_grid(include_image_plane_pix, fit):
-
-    if fit.inversion is not None:
-        if include_image_plane_pix and fit.inversion.mapper.is_image_plane_pixelization:
-            return fit.tracer.sparse_image_plane_grids_of_planes_from_grid(
-                grid=fit.grid
-            )[-1]
-    else:
-        return None
-
-
-def get_mass_profile_centes(plot_mass_profile_centres, fit):
-
-    if not hasattr(fit, "tracer"):
-        return None
-
-    if plot_mass_profile_centres:
-        return fit.tracer.image_plane.mass_profile_centres_of_galaxies
-    else:
-        return None
