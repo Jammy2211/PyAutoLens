@@ -1,0 +1,4 @@
+# MANIFEST.in
+include requirements.txt
+
+recursive-include data *
