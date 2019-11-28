@@ -15,8 +15,6 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             self.galaxies.lens.mass.centre.centre_0 = 0.0
             self.galaxies.lens.mass.centre.centre_1 = 0.0
             self.galaxies.lens.mass.einstein_radius = 1.6
-            self.galaxies.source.pixelization.shape.shape_0 = 20.0
-            self.galaxies.source.pixelization.shape.shape_1 = 20.0
 
     phase1 = SourcePix(
         phase_name="phase_1",
@@ -26,7 +24,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.instance,
+                regularization=al.reg.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -36,7 +34,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
+    phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2",

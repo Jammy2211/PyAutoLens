@@ -1,6 +1,6 @@
 from test_autolens.simulate.interferometer import makers
 
-# Welcome to the PyAutoLens test_autoarray suite data_type maker. Here, we'll make the suite of data_type that we use to test and profile
+# Welcome to the PyAutoLens test_autoarray suite data maker. Here, we'll make the suite of data_type that we use to test and profile
 # PyAutoLens. This consists of the following sets of images:
 
 # A lens only image, where the lens is an elliptical Dev Vaucouleurs profile.

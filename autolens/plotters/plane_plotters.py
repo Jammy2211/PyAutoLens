@@ -1,8 +1,9 @@
-import autoarray as aa
-from autoarray.plotters import plotter_util
+import autofit as af
+from autoarray.util import plotter_util
+from autoastro.plotters import lens_plotter_util
 import matplotlib
 
-backend = aa.conf.instance.visualize.get("figures", "backend", str)
+backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
@@ -18,7 +19,7 @@ def profile_image(
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -38,7 +39,7 @@ def profile_image(
     ylabelsize=16,
     xyticksize=16,
     mask_pointsize=10,
-    position_pointsize=10.0,
+    position_pointsize=10,
     grid_pointsize=1,
     output_path=None,
     output_format="show",
@@ -47,28 +48,28 @@ def profile_image(
 
     profile_image = plane.profile_image_from_grid(grid=grid)
 
-    if plane.has_mass_profile:
-        lines = plotter_util.get_critical_curve_and_caustic(
-            obj=plane,
-            grid=grid,
-            include_critical_curves=include_critical_curves,
-            include_caustics=include_caustics,
-        )
-    else:
-        lines = None
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+        obj=plane,
+        include_critical_curves=include_critical_curves,
+        include_caustics=include_caustics,
+    )
 
     if not include_grid:
         grid = None
 
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
+    )
+
     aa.plot.array(
         array=profile_image,
         mask=mask,
-        positions=positions,
+        points=positions,
         grid=grid,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -88,7 +89,7 @@ def profile_image(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         mask_pointsize=mask_pointsize,
-        position_pointsize=position_pointsize,
+        point_pointsize=position_pointsize,
         grid_pointsize=grid_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -104,7 +105,7 @@ def plane_image(
     include_grid=False,
     lines=None,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -142,15 +143,19 @@ def plane_image(
     else:
         origin = None
 
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
+    )
+
     aa.plot.array(
         array=plane_image.array,
         include_origin=origin,
-        positions=positions,
+        points=positions,
         grid=grid,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -169,7 +174,7 @@ def plane_image(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        position_pointsize=position_pointsize,
+        point_pointsize=position_pointsize,
         grid_pointsize=grid_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -184,7 +189,7 @@ def convergence(
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -210,11 +215,14 @@ def convergence(
 
     convergence = plane.convergence_from_grid(grid=grid)
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=plane,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
+    )
+
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
     )
 
     aa.plot.array(
@@ -222,8 +230,8 @@ def convergence(
         mask=mask,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -255,7 +263,7 @@ def potential(
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -281,11 +289,14 @@ def potential(
 
     potential = plane.potential_from_grid(grid=grid)
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=plane,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
+    )
+
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
     )
 
     aa.plot.array(
@@ -293,8 +304,8 @@ def potential(
         mask=mask,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -326,7 +337,7 @@ def deflections_y(
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -353,11 +364,14 @@ def deflections_y(
     deflections = plane.deflections_from_grid(grid=grid)
     deflections_y = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 0])
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=plane,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
+    )
+
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
     )
 
     aa.plot.array(
@@ -365,8 +379,8 @@ def deflections_y(
         mask=mask,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -398,7 +412,7 @@ def deflections_x(
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -425,11 +439,14 @@ def deflections_x(
     deflections = plane.deflections_from_grid(grid=grid)
     deflections_x = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 1])
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=plane,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
+    )
+
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
     )
 
     aa.plot.array(
@@ -437,8 +454,8 @@ def deflections_x(
         mask=mask,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -470,7 +487,7 @@ def magnification(
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -496,11 +513,14 @@ def magnification(
 
     magnification = plane.magnification_from_grid(grid=grid)
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=plane,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
+    )
+
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
     )
 
     aa.plot.array(
@@ -508,8 +528,8 @@ def magnification(
         mask=mask,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -542,7 +562,7 @@ def image_and_source_plane_subplot(
     include_critical_curves=False,
     include_caustics=False,
     axis_limits=None,
-    units="arcsec",
+    plot_in_kpc=False,
     output_path=None,
     output_format="show",
     output_filename="image_and_source_plane_grids",
@@ -552,8 +572,8 @@ def image_and_source_plane_subplot(
         number_subplots=2
     )
 
-    lines = plotter_util.get_critical_curve_and_caustic(
-        obj=image_plane, grid=grid, include_critical_curves=True, include_caustics=True
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+        obj=image_plane, include_critical_curves=True, include_caustics=True
     )
 
     if include_critical_curves:
@@ -575,8 +595,8 @@ def image_and_source_plane_subplot(
         axis_limits=axis_limits,
         points=points,
         lines=critical_curves,
+        plot_in_kpc=plot_in_kpc,
         as_subplot=True,
-        units=units,
         pointsize=3,
         xyticksize=16,
         titlesize=10,
@@ -598,8 +618,8 @@ def image_and_source_plane_subplot(
         axis_limits=axis_limits,
         points=points,
         lines=caustics,
+        plot_in_kpc=plot_in_kpc,
         as_subplot=True,
-        units=units,
         pointsize=3,
         xyticksize=16,
         titlesize=10,
@@ -626,7 +646,7 @@ def plane_grid(
     points=None,
     lines=None,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(12, 8),
     pointsize=3,
     title="Plane Grid",
@@ -639,14 +659,18 @@ def plane_grid(
     output_filename="plane_grid",
 ):
 
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=plane, plot_in_kpc=plot_in_kpc
+    )
+
     aa.plot.grid(
         grid=grid,
         points=points,
         axis_limits=axis_limits,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         pointsize=pointsize,
         xyticksize=xyticksize,

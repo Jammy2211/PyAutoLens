@@ -17,6 +17,21 @@ def test__fit_sub_plot(
 
     al.plot.fit_interferometer.subplot(
         fit=masked_interferometer_fit_x2_plane_7x7,
+        cb_tick_values=[1.0],
+        cb_tick_labels=["1.0"],
+        output_path=interferometer_fit_plotter_path,
+        output_format="png",
+    )
+
+    assert interferometer_fit_plotter_path + "fit.png" in plot_patch.paths
+
+
+def test__fit_sub_plot_real_space(
+    masked_interferometer_fit_x2_plane_7x7, interferometer_fit_plotter_path, plot_patch
+):
+
+    al.plot.fit_interferometer.subplot_real_space(
+        fit=masked_interferometer_fit_x2_plane_7x7,
         include_mask=True,
         include_critical_curves=True,
         include_caustics=True,
@@ -27,7 +42,7 @@ def test__fit_sub_plot(
         output_format="png",
     )
 
-    assert interferometer_fit_plotter_path + "fit.png" in plot_patch.paths
+    assert interferometer_fit_plotter_path + "fit_real_space.png" in plot_patch.paths
 
 
 def test__fit_individuals__source_and_lens__depedent_on_input(

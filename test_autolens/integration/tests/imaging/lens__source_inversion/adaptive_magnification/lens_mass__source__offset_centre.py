@@ -22,7 +22,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             pixel_scales=pixel_scales,
             centre=(2.0, 2.0),
             sub_size=2,
-            radius_arcsec=2.4,
+            radius=2.4,
         )
 
     phase1 = SourcePix(
@@ -33,7 +33,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.instance,
+                regularization=al.reg.Constant,
             ),
         ),
         mask_function=mask_function,

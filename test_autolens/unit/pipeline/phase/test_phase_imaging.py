@@ -93,8 +93,8 @@ class TestPhase(object):
         )
 
         result = phase_imaging_7x7.run(dataset=imaging_7x7)
-        assert isinstance(result.instance.galaxies[0], al.galaxy)
-        assert isinstance(result.instance.galaxies[0], al.galaxy)
+        assert isinstance(result.instance.galaxies[0], al.Galaxy)
+        assert isinstance(result.instance.galaxies[0], al.Galaxy)
 
     def test_modify_image(self, mask_function_7x7, imaging_7x7, mask_7x7):
         class MyPhase(al.PhaseImaging):
@@ -109,10 +109,10 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         assert (
-            analysis.masked_imaging.image.in_2d
+            analysis.masked_dataset.image.in_2d
             == 20.0 * np.ones(shape=(7, 7)) * np.invert(mask_7x7)
         ).all()
-        assert (analysis.masked_imaging.image.in_1d == 20.0 * np.ones(shape=9)).all()
+        assert (analysis.masked_dataset.image.in_1d == 20.0 * np.ones(shape=9)).all()
 
     def test__masked_imaging_signal_to_noise_limit(
         self, imaging_7x7, mask_7x7_1_pix, mask_function_7x7_1_pix
@@ -129,11 +129,11 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         assert (
-            analysis.masked_imaging.image.in_2d
+            analysis.masked_dataset.image.in_2d
             == imaging_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
         ).all()
         assert (
-            analysis.masked_imaging.noise_map.in_2d
+            analysis.masked_dataset.noise_map.in_2d
             == imaging_snr_limit.noise_map.in_2d * np.invert(mask_7x7_1_pix)
         ).all()
 
@@ -149,11 +149,11 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         assert (
-            analysis.masked_imaging.image.in_2d
+            analysis.masked_dataset.image.in_2d
             == imaging_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
         ).all()
         assert (
-            analysis.masked_imaging.noise_map.in_2d
+            analysis.masked_dataset.noise_map.in_2d
             == imaging_snr_limit.noise_map.in_2d * np.invert(mask_7x7_1_pix)
         ).all()
 
@@ -174,16 +174,16 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
         assert (
-            analysis.masked_imaging.image.in_2d
+            analysis.masked_dataset.image.in_2d
             == binned_up_imaging.image.in_2d * np.invert(binned_up_mask)
         ).all()
-        assert (analysis.masked_imaging.psf == binned_up_imaging.psf).all()
+        assert (analysis.masked_dataset.psf == binned_up_imaging.psf).all()
         assert (
-            analysis.masked_imaging.noise_map.in_2d
+            analysis.masked_dataset.noise_map.in_2d
             == binned_up_imaging.noise_map.in_2d * np.invert(binned_up_mask)
         ).all()
 
-        assert (analysis.masked_imaging.mask == binned_up_mask).all()
+        assert (analysis.masked_dataset.mask == binned_up_mask).all()
 
         masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
 
@@ -192,22 +192,22 @@ class TestPhase(object):
         )
 
         assert (
-            analysis.masked_imaging.image.in_2d
+            analysis.masked_dataset.image.in_2d
             == binned_up_masked_imaging.image.in_2d * np.invert(binned_up_mask)
         ).all()
-        assert (analysis.masked_imaging.psf == binned_up_masked_imaging.psf).all()
+        assert (analysis.masked_dataset.psf == binned_up_masked_imaging.psf).all()
         assert (
-            analysis.masked_imaging.noise_map.in_2d
+            analysis.masked_dataset.noise_map.in_2d
             == binned_up_masked_imaging.noise_map.in_2d * np.invert(binned_up_mask)
         ).all()
 
-        assert (analysis.masked_imaging.mask == binned_up_masked_imaging.mask).all()
+        assert (analysis.masked_dataset.mask == binned_up_masked_imaging.mask).all()
 
         assert (
-            analysis.masked_imaging.image.in_1d == binned_up_masked_imaging.image.in_1d
+            analysis.masked_dataset.image.in_1d == binned_up_masked_imaging.image.in_1d
         ).all()
         assert (
-            analysis.masked_imaging.noise_map.in_1d
+            analysis.masked_dataset.noise_map.in_1d
             == binned_up_masked_imaging.noise_map.in_1d
         ).all()
 
@@ -259,10 +259,16 @@ class TestPhase(object):
         assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
         assert type(phase_extended.hyper_phases[1]) == al.InversionPhase
 
+        phase_extended = phase_imaging_7x7.extend_with_multiple_hyper_phases(
+            hyper_galaxy=True, inversion=True, inversion_phase_first=True
+        )
+        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
+        assert type(phase_extended.hyper_phases[1]) == al.HyperGalaxyPhase
+
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, imaging_7x7, mask_function_7x7
     ):
-        lens_galaxy = al.galaxy(
+        lens_galaxy = al.Galaxy(
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
@@ -296,7 +302,7 @@ class TestPhase(object):
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        lens_galaxy = al.galaxy(
+        lens_galaxy = al.Galaxy(
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 

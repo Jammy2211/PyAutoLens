@@ -17,7 +17,7 @@ def make_pipeline(
 ):
     def modify_mask_function(shape_2d, pixel_scales):
         return al.mask.circular(
-            shape_2d=shape_2d, pixel_scales=pixel_scales, radius_arcsec=5.0
+            shape_2d=shape_2d, pixel_scales=pixel_scales, radius=5.0
         )
 
     class LensPlaneGalaxy0Phase(al.PhaseInterferometer):

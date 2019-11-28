@@ -9,7 +9,7 @@ from autolens.pipeline.phase.dataset.result import Result
 
 def default_mask_function(shape_2d, pixel_scales):
     return aa.mask.circular(
-        shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, radius_arcsec=3.0
+        shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, radius=3.0
     )
 
 
@@ -45,10 +45,7 @@ class PhaseDataset(abstract.AbstractPhase):
             The class of a non_linear optimizer
         """
 
-        super(PhaseDataset, self).__init__(
-            paths,
-            optimizer_class=optimizer_class,
-        )
+        super(PhaseDataset, self).__init__(paths, optimizer_class=optimizer_class)
         self.galaxies = galaxies or []
         self.cosmology = cosmology
 
