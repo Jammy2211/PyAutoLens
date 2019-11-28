@@ -20,7 +20,7 @@ def make_pipeline(
 
             self.galaxies.lens.mass.centre.centre_0 = 0.0
             self.galaxies.lens.mass.centre.centre_1 = 0.0
-            self.galaxies.lens.mass.einstein_radius_in_units = 1.6
+            self.galaxies.lens.mass.einstein_radius = 1.6
             self.galaxies.source.pixelization.shape_0 = 20.0
             self.galaxies.source.pixelization.shape_1 = 20.0
 
@@ -32,7 +32,7 @@ def make_pipeline(
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.Rectangular,
-                regularization=al.reg.instance,
+                regularization=al.reg.Constant,
             ),
         ),
         real_space_shape_2d=real_space_shape_2d,

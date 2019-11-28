@@ -14,7 +14,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
             self.galaxies.lens.mass.centre.centre_0 = 0.0
             self.galaxies.lens.mass.centre.centre_1 = 0.0
-            self.galaxies.lens.mass.einstein_radius_in_units = 1.6
+            self.galaxies.lens.mass.einstein_radius = 1.6
             self.galaxies.source.pixelization.shape_0 = 20.0
             self.galaxies.source.pixelization.shape_1 = 20.0
 
@@ -30,7 +30,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.Rectangular,
-                regularization=al.reg.instance,
+                regularization=al.reg.Constant,
             ),
         ),
         optimizer_class=optimizer_class,

@@ -53,7 +53,7 @@ def make_masked_interferometer_7(
 
 @pytest.fixture(name="plane_7x7")
 def make_plane_7x7(gal_x1_lp_x1_mp):
-    return al.plane(galaxies=[gal_x1_lp_x1_mp])
+    return al.Plane(galaxies=[gal_x1_lp_x1_mp])
 
 
 # Ray Tracing #
@@ -61,14 +61,14 @@ def make_plane_7x7(gal_x1_lp_x1_mp):
 
 @pytest.fixture(name="tracer_x1_plane_7x7")
 def make_tracer_x1_plane_7x7(gal_x1_lp):
-    return al.tracer.from_galaxies(galaxies=[gal_x1_lp])
+    return al.Tracer.from_galaxies(galaxies=[gal_x1_lp])
 
 
 @pytest.fixture(name="tracer_x2_plane_7x7")
 def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp):
-    source_gal_x1_lp = al.galaxy(redshift=1.0, light_profile_0=lp_0)
+    source_gal_x1_lp = al.Galaxy(redshift=1.0, light_profile_0=lp_0)
 
-    return al.tracer.from_galaxies(galaxies=[gal_x1_mp, gal_x1_lp, source_gal_x1_lp])
+    return al.Tracer.from_galaxies(galaxies=[gal_x1_mp, gal_x1_lp, source_gal_x1_lp])
 
 
 # Lens Fit #

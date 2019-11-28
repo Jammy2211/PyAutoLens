@@ -1,12 +1,13 @@
 import autofit as af
 import matplotlib
 
-backend = af.conf.instance.visualize.get("figures", "backend", str)
+backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autoarray.plotters import plotter_util
+from autoarray.util import plotter_util
+from autoastro.plotters import lens_plotter_util
 from autolens.plotters import plane_plotters
 
 
@@ -17,7 +18,7 @@ def subplot(
     include_critical_curves=False,
     include_caustics=False,
     positions=None,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=None,
     aspect="square",
     cmap="jet",
@@ -36,7 +37,7 @@ def subplot(
     ylabelsize=10,
     xyticksize=10,
     mask_pointsize=10,
-    position_pointsize=10.0,
+    position_pointsize=10,
     grid_pointsize=1.0,
     output_path=None,
     output_filename="tracer",
@@ -75,7 +76,7 @@ def subplot(
         include_critical_curves=include_critical_curves,
         positions=positions,
         as_subplot=True,
-        units=units,
+        plot_in_kpc=plot_in_kpc,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -109,7 +110,7 @@ def subplot(
             grid=grid,
             mask=mask,
             as_subplot=True,
-            units=units,
+            plot_in_kpc=plot_in_kpc,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -139,7 +140,7 @@ def subplot(
             grid=grid,
             mask=mask,
             as_subplot=True,
-            units=units,
+            plot_in_kpc=plot_in_kpc,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -166,18 +167,9 @@ def subplot(
 
     source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-    if tracer.has_mass_profile:
-
-        caustics = plotter_util.get_critical_curve_and_caustic(
-            obj=tracer,
-            grid=grid,
-            include_critical_curves=False,
-            include_caustics=include_caustics,
-        )
-
-    else:
-
-        caustics = None
+    caustics = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+        obj=tracer, include_critical_curves=False, include_caustics=include_caustics
+    )
 
     plane_plotters.plane_image(
         plane=tracer.source_plane,
@@ -216,7 +208,7 @@ def subplot(
             grid=grid,
             mask=mask,
             as_subplot=True,
-            units=units,
+            plot_in_kpc=plot_in_kpc,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -246,7 +238,7 @@ def subplot(
             grid=grid,
             mask=mask,
             as_subplot=True,
-            units=units,
+            plot_in_kpc=plot_in_kpc,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -290,7 +282,7 @@ def individual(
     plot_convergence=False,
     plot_potential=False,
     plot_deflections=False,
-    units="arcsec",
+    plot_in_kpc=False,
     output_path=None,
     output_format="show",
 ):
@@ -318,7 +310,7 @@ def individual(
             mask=mask,
             include_critical_curves=include_critical_curves,
             positions=positions,
-            units=units,
+            plot_in_kpc=plot_in_kpc,
             output_path=output_path,
             output_format=output_format,
         )
@@ -329,7 +321,7 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            units=units,
+            plot_in_kpc=plot_in_kpc,
             output_path=output_path,
             output_format=output_format,
         )
@@ -340,7 +332,7 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            units=units,
+            plot_in_kpc=plot_in_kpc,
             output_path=output_path,
             output_format=output_format,
         )
@@ -349,18 +341,9 @@ def individual(
 
         source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-        if tracer.has_mass_profile:
-
-            caustics = plotter_util.get_critical_curve_and_caustic(
-                obj=tracer,
-                grid=grid,
-                include_critical_curves=False,
-                include_caustics=include_caustics,
-            )
-
-        else:
-
-            caustics = None
+        caustics = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+            obj=tracer, include_critical_curves=False, include_caustics=include_caustics
+        )
 
         plane_plotters.plane_image(
             plane=tracer.source_plane,
@@ -368,7 +351,7 @@ def individual(
             lines=caustics,
             positions=None,
             include_grid=False,
-            units=units,
+            plot_in_kpc=plot_in_kpc,
             output_path=output_path,
             output_filename="tracer_source_plane",
             output_format=output_format,
@@ -380,7 +363,7 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            units=units,
+            plot_in_kpc=plot_in_kpc,
             output_path=output_path,
             output_format=output_format,
         )
@@ -391,7 +374,7 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            units=units,
+            plot_in_kpc=plot_in_kpc,
             output_path=output_path,
             output_format=output_format,
         )
@@ -405,7 +388,7 @@ def profile_image(
     include_caustics=False,
     positions=None,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -425,7 +408,7 @@ def profile_image(
     ylabelsize=16,
     xyticksize=16,
     mask_pointsize=10,
-    position_pointsize=10.0,
+    position_pointsize=10,
     output_path=None,
     output_format="show",
     output_filename="tracer_profile_image",
@@ -433,27 +416,24 @@ def profile_image(
 
     profile_image = tracer.profile_image_from_grid(grid=grid)
 
-    if tracer.has_mass_profile:
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+        obj=tracer,
+        include_critical_curves=include_critical_curves,
+        include_caustics=include_caustics,
+    )
 
-        lines = plotter_util.get_critical_curve_and_caustic(
-            obj=tracer,
-            grid=grid,
-            include_critical_curves=include_critical_curves,
-            include_caustics=include_caustics,
-        )
-
-    else:
-
-        lines = None
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
     aa.plot.array(
         array=profile_image,
         mask=mask,
         lines=lines,
-        positions=positions,
+        points=positions,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -473,7 +453,7 @@ def profile_image(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         mask_pointsize=mask_pointsize,
-        position_pointsize=position_pointsize,
+        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -487,7 +467,7 @@ def convergence(
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -513,11 +493,14 @@ def convergence(
 
     convergence = tracer.convergence_from_grid(grid=grid)
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
+    )
+
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
     aa.plot.array(
@@ -525,8 +508,8 @@ def convergence(
         mask=mask,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -558,7 +541,7 @@ def potential(
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -584,11 +567,14 @@ def potential(
 
     potential = tracer.potential_from_grid(grid=grid)
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
+    )
+
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
     aa.plot.array(
@@ -596,8 +582,8 @@ def potential(
         mask=mask,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -629,7 +615,7 @@ def deflections_y(
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -656,11 +642,14 @@ def deflections_y(
     deflections = tracer.deflections_from_grid(grid=grid)
     deflections_y = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 0])
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
+    )
+
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
     aa.plot.array(
@@ -668,8 +657,8 @@ def deflections_y(
         mask=mask,
         lines=lines,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -701,7 +690,7 @@ def deflections_x(
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -728,11 +717,14 @@ def deflections_x(
     deflections = tracer.deflections_from_grid(grid=grid)
     deflections_x = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 1])
 
-    lines = plotter_util.get_critical_curve_and_caustic(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
-        grid=grid,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
+    )
+
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
     aa.plot.array(
@@ -740,8 +732,8 @@ def deflections_x(
         lines=lines,
         mask=mask,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,

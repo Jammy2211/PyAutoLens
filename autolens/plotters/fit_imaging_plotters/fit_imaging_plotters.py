@@ -1,12 +1,13 @@
 import autofit as af
 import matplotlib
 
-backend = af.conf.instance.visualize.get("figures", "backend", str)
+backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autoarray.plotters import plotter_util
+from autoarray.util import plotter_util
+from autoastro.plotters import lens_plotter_util
 from autolens.plotters import plane_plotters
 
 
@@ -15,10 +16,9 @@ def subplot(
     include_mask=True,
     include_critical_curves=False,
     include_caustics=False,
-    positions=None,
+    include_positions=False,
     include_image_plane_pix=False,
-    plot_mass_profile_centres=True,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=None,
     aspect="square",
     cmap="jet",
@@ -44,36 +44,30 @@ def subplot(
     output_format="show",
 ):
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
-        number_subplots=6
+    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
+        include_image_plane_pix=include_image_plane_pix, fit=fit
     )
 
-    mask = get_mask(fit=fit, include_mask=include_mask)
+    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
 
-    if figsize is None:
-        figsize = figsize_tool
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
-    plt.figure(figsize=figsize)
-    plt.subplot(rows, columns, 1)
-
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
-
-    image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix, fit)
-
-    critical_curves, caustics = get_critical_curves_and_caustics(
-        fit=fit,
+    critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+        obj=fit.tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
-    )
+    )[0]
 
-    aa.plot.fit_imaging.image(
+    aa.plot.fit_imaging.subplot(
         fit=fit,
+        include_mask=include_mask,
         grid=image_plane_pix_grid,
-        mask=mask,
-        positions=positions,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        lines=[critical_curves],
+        points=positions,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -95,170 +89,9 @@ def subplot(
         position_pointsize=position_pointsize,
         mask_pointsize=mask_pointsize,
         output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 2)
-
-    aa.plot.fit_imaging.signal_to_noise_map(
-        fit=fit,
-        mask=mask,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        position_pointsize=position_pointsize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 3)
-
-    aa.plot.fit_imaging.model_image(
-        fit=fit,
-        mask=mask,
-        lines=critical_curves,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 4)
-
-    aa.plot.fit_imaging.residual_map(
-        fit=fit,
-        mask=mask,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 5)
-
-    aa.plot.fit_imaging.normalized_residual_map(
-        fit=fit,
-        mask=mask,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plt.subplot(rows, columns, 6)
-
-    aa.plot.fit_imaging.chi_squared_map(
-        fit=fit,
-        mask=mask,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
-
-    plotter_util.output_subplot_array(
-        output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
     )
-
-    plt.close()
 
 
 def subplot_of_planes(
@@ -266,10 +99,9 @@ def subplot_of_planes(
     include_mask=True,
     include_critical_curves=False,
     include_caustics=False,
-    positions=None,
+    include_positions=False,
     include_image_plane_pix=False,
-    plot_mass_profile_centres=True,
-    units="arcsec",
+    plot_in_kpc=False,
     figsize=None,
     aspect="square",
     cmap="jet",
@@ -309,8 +141,8 @@ def subplot_of_planes(
                 include_image_plane_pix=include_image_plane_pix,
                 include_critical_curves=include_critical_curves,
                 include_caustics=include_caustics,
-                positions=positions,
-                units=units,
+                include_positions=include_positions,
+                plot_in_kpc=plot_in_kpc,
                 figsize=figsize,
                 aspect=aspect,
                 cmap=cmap,
@@ -344,10 +176,10 @@ def subplot_for_plane(
     plot_source_grid=False,
     include_critical_curves=False,
     include_caustics=False,
-    positions=None,
+    include_positions=False,
     include_image_plane_pix=False,
-    plot_mass_profile_centres=True,
-    units="arcsec",
+    include_mass_profile_centres=True,
+    plot_in_kpc=False,
     figsize=None,
     aspect="square",
     cmap="jet",
@@ -395,16 +227,22 @@ def subplot_for_plane(
         number_subplots=4
     )
 
-    mask = get_mask(fit=fit, include_mask=include_mask)
+    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask)
 
     if figsize is None:
         figsize = figsize_tool
 
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=fit.tracer.planes[plane_index], plot_in_kpc=plot_in_kpc
+    )
+
     plt.figure(figsize=figsize)
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
+    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
+        include_image_plane_pix=include_image_plane_pix, fit=fit
+    )
 
-    image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix, fit)
+    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
 
     plt.subplot(rows, columns, 1)
 
@@ -412,10 +250,10 @@ def subplot_for_plane(
         fit=fit,
         mask=mask,
         grid=image_plane_pix_grid,
-        positions=positions,
+        points=positions,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -446,12 +284,11 @@ def subplot_for_plane(
     subtracted_image_of_plane(
         fit=fit,
         plane_index=plane_index,
-        mask=mask,
-        image_plane_pix_grid=image_plane_pix_grid,
-        positions=positions,
+        include_mask=include_mask,
+        include_image_plane_pix=include_image_plane_pix,
+        include_positions=include_positions,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        plot_in_kpc=plot_in_kpc,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -481,12 +318,12 @@ def subplot_for_plane(
     model_image_of_plane(
         fit=fit,
         plane_index=plane_index,
-        mask=mask,
-        plot_mass_profile_centres=plot_mass_profile_centres,
+        include_mask=include_mask,
+        include_positions=include_positions,
+        include_mass_profile_centres=include_mass_profile_centres,
         include_critical_curves=include_critical_curves,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        plot_in_kpc=plot_in_kpc,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -510,18 +347,9 @@ def subplot_for_plane(
         output_format=output_format,
     )
 
-    if fit.tracer.has_mass_profile:
-
-        lines = plotter_util.get_critical_curve_and_caustic(
-            obj=fit.tracer,
-            grid=fit.masked_imaging.grid,
-            include_critical_curves=False,
-            include_caustics=include_caustics,
-        )
-
-    else:
-
-        lines = None
+    caustics = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+        obj=fit.tracer, include_critical_curves=False, include_caustics=include_caustics
+    )
 
     if not fit.tracer.planes[plane_index].has_pixelization:
 
@@ -532,10 +360,10 @@ def subplot_for_plane(
         plane_plotters.plane_image(
             plane=fit.tracer.planes[plane_index],
             grid=traced_grids[plane_index],
-            lines=lines,
+            lines=caustics,
             include_grid=plot_source_grid,
             as_subplot=True,
-            units=units,
+            plot_in_kpc=plot_in_kpc,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -564,12 +392,12 @@ def subplot_for_plane(
 
         ratio = float(
             (
-                fit.inversion.mapper.grid.arc_second_maxima[1]
-                - fit.inversion.mapper.grid.arc_second_minima[1]
+                fit.inversion.mapper.grid.scaled_maxima[1]
+                - fit.inversion.mapper.grid.scaled_minima[1]
             )
             / (
-                fit.inversion.mapper.grid.arc_second_maxima[0]
-                - fit.inversion.mapper.grid.arc_second_minima[0]
+                fit.inversion.mapper.grid.scaled_maxima[0]
+                - fit.inversion.mapper.grid.scaled_minima[0]
             )
         )
 
@@ -584,12 +412,12 @@ def subplot_for_plane(
 
         aa.plot.inversion.reconstruction(
             inversion=fit.inversion,
-            lines=lines,
+            lines=caustics,
             include_grid=False,
             include_centres=False,
             as_subplot=True,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             figsize=figsize,
             aspect=None,
             cmap=cmap,
@@ -624,10 +452,11 @@ def subplot_for_plane(
 def individuals(
     fit,
     include_mask=True,
+    include_positions=False,
     include_critical_curves=False,
     include_caustics=False,
-    positions=None,
     include_image_plane_pix=False,
+    plot_in_kpc=False,
     plot_image=False,
     plot_noise_map=False,
     plot_signal_to_noise_map=False,
@@ -642,7 +471,6 @@ def individuals(
     plot_subtracted_images_of_planes=False,
     plot_model_images_of_planes=False,
     plot_plane_images_of_planes=False,
-    units="arcsec",
     output_path=None,
     output_format="show",
 ):
@@ -661,149 +489,46 @@ def individuals(
         in the python interpreter window.
     """
 
-    mask = get_mask(fit=fit, include_mask=include_mask)
-    image_plane_pix_grid = get_image_plane_pix_grid(include_image_plane_pix, fit)
+    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
+        include_image_plane_pix=include_image_plane_pix, fit=fit
+    )
 
-    critical_curves, caustics = get_critical_curves_and_caustics(
-        fit=fit,
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
+
+    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
+
+    critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+        obj=fit.tracer,
         include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
+        include_caustics=False,
+    )
+
+    aa.plot.fit_imaging.individuals(
+        fit=fit,
+        include_mask=include_mask,
+        lines=critical_curves,
+        grid=image_plane_pix_grid,
+        points=positions,
+        plot_image=plot_image,
+        plot_noise_map=plot_noise_map,
+        plot_signal_to_noise_map=plot_signal_to_noise_map,
+        plot_model_image=plot_model_image,
+        plot_residual_map=plot_residual_map,
+        plot_normalized_residual_map=plot_normalized_residual_map,
+        plot_chi_squared_map=plot_chi_squared_map,
+        plot_inversion_residual_map=plot_inversion_residual_map,
+        plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
+        plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
+        plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
+        output_path=output_path,
+        output_format=output_format,
     )
 
     traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
-
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
-
-    if plot_image:
-
-        aa.plot.fit_imaging.image(
-            fit=fit,
-            mask=mask,
-            positions=positions,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_noise_map:
-
-        aa.plot.fit_imaging.noise_map(
-            fit=fit,
-            mask=mask,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_signal_to_noise_map:
-
-        aa.plot.fit_imaging.signal_to_noise_map(
-            fit=fit,
-            mask=mask,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_model_image:
-
-        aa.plot.fit_imaging.model_image(
-            fit=fit,
-            mask=mask,
-            lines=critical_curves,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_residual_map:
-
-        aa.plot.fit_imaging.residual_map(
-            fit=fit,
-            mask=mask,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_normalized_residual_map:
-
-        aa.plot.fit_imaging.normalized_residual_map(
-            fit=fit,
-            mask=mask,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_chi_squared_map:
-
-        aa.plot.fit_imaging.chi_squared_map(
-            fit=fit,
-            mask=mask,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_inversion_residual_map:
-
-        if fit.total_inversions == 1:
-
-            aa.plot.inversion.residual_map(
-                inversion=fit.inversion,
-                include_grid=True,
-                units=units,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
-
-    if plot_inversion_normalized_residual_map:
-
-        if fit.total_inversions == 1:
-
-            aa.plot.inversion.normalized_residual_map(
-                inversion=fit.inversion,
-                include_grid=True,
-                units=units,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
-
-    if plot_inversion_chi_squared_map:
-
-        if fit.total_inversions == 1:
-
-            aa.plot.inversion.chi_squared_map(
-                inversion=fit.inversion,
-                include_grid=True,
-                units=units,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
-
-    if plot_inversion_regularization_weight_map:
-
-        if fit.total_inversions == 1:
-
-            aa.plot.inversion.regularization_weights(
-                inversion=fit.inversion,
-                include_grid=True,
-                units=units,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
 
     if plot_subtracted_images_of_planes:
 
@@ -812,10 +537,9 @@ def individuals(
             subtracted_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
-                mask=mask,
+                include_mask=include_mask,
                 include_critical_curves=include_critical_curves,
-                units=units,
-                kpc_per_arcsec=kpc_per_arcsec,
+                plot_in_kpc=plot_in_kpc,
                 output_path=output_path,
                 output_format=output_format,
             )
@@ -827,28 +551,20 @@ def individuals(
             model_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
-                mask=mask,
+                include_mask=include_mask,
                 include_critical_curves=include_critical_curves,
-                units=units,
-                kpc_per_arcsec=kpc_per_arcsec,
+                plot_in_kpc=plot_in_kpc,
                 output_path=output_path,
                 output_format=output_format,
             )
 
     if plot_plane_images_of_planes:
 
-        if fit.tracer.has_mass_profile:
-
-            lines = plotter_util.get_critical_curve_and_caustic(
-                obj=fit.tracer,
-                grid=fit.grid,
-                include_critical_curves=False,
-                include_caustics=include_caustics,
-            )
-
-        else:
-
-            lines = None
+        caustics = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+            obj=fit.tracer,
+            include_critical_curves=False,
+            include_caustics=include_caustics,
+        )
 
         for plane_index in range(fit.tracer.total_planes):
 
@@ -859,8 +575,8 @@ def individuals(
                 plane_plotters.plane_image(
                     plane=fit.tracer.planes[plane_index],
                     grid=traced_grids[plane_index],
-                    lines=lines,
-                    units=units,
+                    lines=caustics,
+                    plot_in_kpc=plot_in_kpc,
                     output_path=output_path,
                     output_filename=output_filename,
                     output_format=output_format,
@@ -870,9 +586,9 @@ def individuals(
 
                 aa.plot.inversion.reconstruction(
                     inversion=fit.inversion,
-                    lines=lines,
-                    units=units,
-                    kpc_per_arcsec=kpc_per_arcsec,
+                    lines=caustics,
+                    unit_label=unit_label,
+                    unit_conversion_factor=unit_conversion_factor,
                     output_path=output_path,
                     output_filename=output_filename,
                     output_format=output_format,
@@ -882,14 +598,12 @@ def individuals(
 def subtracted_image_of_plane(
     fit,
     plane_index,
-    mask=None,
+    include_mask=True,
     include_critical_curves=False,
-    include_caustics=False,
-    positions=None,
-    image_plane_pix_grid=None,
+    include_positions=False,
+    include_image_plane_pix=False,
     as_subplot=False,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -928,6 +642,8 @@ def subtracted_image_of_plane(
         The plane from which the model image is generated.
     """
 
+    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask)
+
     output_filename += "_" + str(plane_index)
 
     if fit.tracer.total_planes > 1:
@@ -944,28 +660,31 @@ def subtracted_image_of_plane(
 
         subtracted_image = fit.image
 
-    if fit.tracer.has_mass_profile:
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
-        lines = plotter_util.get_critical_curve_and_caustic(
-            obj=fit.tracer,
-            grid=fit.masked_imaging.grid,
-            include_critical_curves=include_critical_curves,
-            include_caustics=include_caustics,
-        )
+    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
+        include_image_plane_pix=include_image_plane_pix, fit=fit
+    )
 
-    else:
+    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
 
-        lines = None
+    critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+        obj=fit.tracer,
+        include_critical_curves=include_critical_curves,
+        include_caustics=False,
+    )
 
     aa.plot.array(
         array=subtracted_image,
         mask=mask,
         grid=image_plane_pix_grid,
-        positions=positions,
-        lines=lines,
+        points=positions,
+        lines=critical_curves,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -985,7 +704,7 @@ def subtracted_image_of_plane(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         mask_pointsize=mask_pointsize,
-        position_pointsize=position_pointsize,
+        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -995,14 +714,12 @@ def subtracted_image_of_plane(
 def model_image_of_plane(
     fit,
     plane_index,
-    mask=None,
+    include_mask=True,
     include_critical_curves=False,
-    include_caustics=False,
-    positions=None,
-    plot_mass_profile_centres=True,
+    include_positions=False,
+    include_mass_profile_centres=True,
     as_subplot=False,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -1041,32 +758,33 @@ def model_image_of_plane(
 
     output_filename += "_" + str(plane_index)
 
-    centres = get_mass_profile_centes(
-        plot_mass_profile_centres=plot_mass_profile_centres, fit=fit
+    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask)
+
+    centres = lens_plotter_util.get_mass_profile_centres_from_fit(
+        include_mass_profile_centres=include_mass_profile_centres, fit=fit
     )
 
-    if fit.tracer.has_mass_profile:
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
 
-        lines = plotter_util.get_critical_curve_and_caustic(
-            obj=fit.tracer,
-            grid=fit.masked_imaging.grid,
-            include_critical_curves=include_critical_curves,
-            include_caustics=include_caustics,
-        )
+    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
 
-    else:
-
-        lines = None
+    critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+        obj=fit.tracer,
+        include_critical_curves=include_critical_curves,
+        include_caustics=False,
+    )
 
     aa.plot.array(
         array=fit.model_images_of_planes[plane_index],
         mask=mask,
-        lines=lines,
-        positions=positions,
+        lines=critical_curves,
+        points=positions,
         centres=centres,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -1086,7 +804,7 @@ def model_image_of_plane(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         mask_pointsize=mask_pointsize,
-        position_pointsize=position_pointsize,
+        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -1095,11 +813,10 @@ def model_image_of_plane(
 
 def contribution_maps(
     fit,
-    mask=None,
-    positions=None,
+    include_mask=True,
+    include_positions=False,
     as_subplot=False,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    plot_in_kpc=False,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -1136,18 +853,26 @@ def contribution_maps(
         The index of the datas in the datas-set of which the contribution_maps are plotted.
     """
 
+    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask)
+
     if len(fit.contribution_maps) > 1:
         contribution_map = sum(fit.contribution_maps)
     else:
         contribution_map = fit.contribution_maps[0]
 
+    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
+
+    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
+        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
+    )
+
     aa.plot.array(
         array=contribution_map,
         mask=mask,
-        positions=positions,
+        points=positions,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -1167,71 +892,8 @@ def contribution_maps(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         mask_pointsize=mask_pointsize,
-        position_pointsize=position_pointsize,
+        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
     )
-
-
-def get_image_plane_pix_grid(include_image_plane_pix, fit):
-
-    if fit.inversion is not None:
-        if include_image_plane_pix and fit.inversion.mapper.is_image_plane_pixelization:
-            return fit.tracer.sparse_image_plane_grids_of_planes_from_grid(
-                grid=fit.grid
-            )[-1]
-    else:
-        return None
-
-
-def get_mask(fit, include_mask):
-    """Get the masks of the fit if the masks should be plotted on the fit.
-
-    Parameters
-    -----------
-    fit : datas.fitting.fitting.AbstractLensHyperFit
-        The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-    include_mask : bool
-        If *True*, the masks is plotted on the fit's datas.
-    """
-    if include_mask:
-        return fit.mask
-    else:
-        return None
-
-
-def get_mass_profile_centes(plot_mass_profile_centres, fit):
-
-    if not hasattr(fit, "tracer"):
-        return None
-
-    if plot_mass_profile_centres:
-        return fit.tracer.image_plane.centres_of_galaxy_mass_profiles
-    else:
-        return None
-
-
-def get_critical_curves_and_caustics(fit, include_critical_curves, include_caustics):
-    if fit.tracer.has_mass_profile:
-
-        critical_curves = plotter_util.get_critical_curve_and_caustic(
-            obj=fit.tracer,
-            grid=fit.masked_imaging.grid,
-            include_critical_curves=include_critical_curves,
-            include_caustics=False,
-        )
-
-        caustics = plotter_util.get_critical_curve_and_caustic(
-            obj=fit.tracer,
-            grid=fit.masked_imaging.grid,
-            include_critical_curves=False,
-            include_caustics=include_caustics,
-        )
-
-    else:
-
-        critical_curves = None
-        caustics = None
-
-    return critical_curves, caustics

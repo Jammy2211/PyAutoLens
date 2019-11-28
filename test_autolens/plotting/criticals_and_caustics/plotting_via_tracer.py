@@ -2,26 +2,22 @@ import autolens as al
 from autolens.plotters import phase_plotters
 
 mask = al.mask.circular(
-    shape_2d=(200, 200),
-    pixel_scales=0.05,
-    sub_size=1,
-    radius_arcsec=2.4,
-    centre=(2.0, 2.0),
+    shape_2d=(200, 200), pixel_scales=0.05, sub_size=1, radius=2.4, centre=(2.0, 2.0)
 )
 
 grid = al.grid.from_mask(mask=mask)
 
-lens_galaxy = al.galaxy(
+lens_galaxy = al.Galaxy(
     redshift=0.5,
     light=al.lp.EllipticalDevVaucouleurs(intensity=1.0),
     mass=al.mp.SphericalIsothermal(centre=(2.0, 2.0), einstein_radius=1.0),
 )
 
-source_galaxy = al.galaxy(
+source_galaxy = al.Galaxy(
     redshift=1.0, light=al.lp.EllipticalExponential(centre=(2.0, 2.0), intensity=1.0)
 )
 
-tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 # al.plot.plane.profile_image(plane=tracer.source_plane, grid=grid, include_critical_curves=True)
 
@@ -39,7 +35,7 @@ al.plot.tracer.subplot(
 #     include_critical_curves,
 #     include_caustics,
 #     positions,
-#     units,
+#     unit_label,
 #     plot_as_subplot,
 #     plot_all_at_end_png,
 #     plot_all_at_end_fits,
@@ -51,7 +47,7 @@ al.plot.tracer.subplot(
 #     visualize_path,
 #     subplot_path,)
 
-# galaxy = al.galaxy(mass=sis_mass_profile, redshift=1)
+# galaxy = al.Galaxy(mass=sis_mass_profile, redshift=1)
 #
 # al.plot.galaxy.convergence(
 #     galaxy=galaxy,

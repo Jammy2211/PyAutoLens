@@ -14,9 +14,25 @@ array = imaging.image
 mask = al.mask.elliptical(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
-    major_axis_radius_arcsec=3.0,
-    axis_ratio=1.0,
+    major_axis_radius=6.0,
+    axis_ratio=0.5,
     phi=0.0,
     centre=(0.0, 0.0),
 )
-al.plot.array(array=array)
+al.plot.array(array=array, mask=mask, positions=[[[1.0, 1.0]]], centres=[[(0.0, 0.0)]])
+
+imaging = simulate_util.load_test_imaging(
+    data_type="lens_sis__source_smooth__offset_centre", data_resolution="lsst"
+)
+array = imaging.image
+
+mask = al.mask.elliptical(
+    shape=imaging.shape,
+    pixel_scales=imaging.pixel_scales,
+    major_axis_radius=6.0,
+    axis_ratio=0.5,
+    phi=0.0,
+    centre=(1.0, 1.0),
+)
+al.plot.array(array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]])
+al.plot.array(array=array, mask=mask, positions=[[[2.0, 2.0]]], centres=[[(1.0, 1.0)]])

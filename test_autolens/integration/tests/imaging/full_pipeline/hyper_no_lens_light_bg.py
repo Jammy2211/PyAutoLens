@@ -36,36 +36,23 @@ def make_pipeline(
         hyper_galaxy=True, include_background_sky=True, include_background_noise=True
     )
 
-    class InversionPhase(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            ## Lens Mass, SIE -> SIE, Shear -> Shear ###
-
-            self.galaxies.lens = results.from_phase(
-                "phase_1__lens_sie__source_sersic"
-            ).model.galaxies.lens
-
-            ## Set all hyper_galaxies-galaxies if feature is turned on ##
-
-            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
-
-            self.hyper_background_noise = (
-                results.last.hyper_combined.instance.hyper_background_noise
-            )
-
-    phase2 = InversionPhase(
-        phase_name="phase_1_initialize_magnification_inversion",
+    phase2 = al.PhaseImaging(
+        phase_name="phase_2_initialize_magnification_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+                redshift=0.5,
+                mass=phase1.result.instance.galaxies.lens.mass,
+                shear=phase1.result.instance.galaxies.lens.shear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.instance,
+                pixelization=al.pix.Rectangular,
+                regularization=al.reg.Constant,
             ),
         ),
+        hyper_image_sky=phase1.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase1.result.hyper_combined.instance.hyper_background_noise,
         optimizer_class=optimizer_class,
     )
 
@@ -77,45 +64,26 @@ def make_pipeline(
         hyper_galaxy=True,
         include_background_sky=True,
         include_background_noise=True,
-        inversion=False,
+        inversion=True,
     )
 
-    class InversionPhase(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            ### Lens Mass, SIE -> SIE, Shear -> Shear ###
-
-            self.galaxies.lens = results.from_phase(
-                "phase_1__lens_sie__source_sersic"
-            ).model.galaxies.lens
-
-            ### Source Inversion, Inv -> Inv ###
-
-            self.galaxies.source = results.from_phase(
-                "phase_1_initialize_magnification_inversion"
-            ).model.galaxies.source
-
-            ## Set all hyper_galaxies-galaxies if feature is turned on ##
-
-            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
-
-            self.hyper_background_noise = (
-                results.last.hyper_combined.instance.hyper_background_noise
-            )
-
-    phase3 = InversionPhase(
+    phase3 = al.PhaseImaging(
         phase_name="phase_3__lens_sie__source_magnification_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+                redshift=0.5,
+                mass=phase1.result.model.galaxies.lens.mass,
+                shear=phase1.result.model.galaxies.lens.shear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.instance,
+                pixelization=phase2.result.model.galaxies.source.pixelization,
+                regularization=phase2.result.model.galaxies.source.regularization,
             ),
         ),
+        hyper_image_sky=phase2.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase2.result.hyper_combined.instance.hyper_background_noise,
         optimizer_class=optimizer_class,
     )
 
@@ -127,32 +95,17 @@ def make_pipeline(
         hyper_galaxy=True,
         include_background_sky=True,
         include_background_noise=True,
-        inversion=False,
+        inversion=True,
     )
 
-    class InversionPhase(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            ## Lens Mass, SIE -> SIE, Shear -> Shear ###
-
-            self.galaxies.lens = results.from_phase(
-                "phase_3__lens_sie__source_magnification_inversion"
-            ).model.galaxies.lens
-
-            ## Set all hyper_galaxies-galaxies if feature is turned on ##
-
-            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
-
-            self.hyper_background_noise = (
-                results.last.hyper_combined.instance.hyper_background_noise
-            )
-
-    phase4 = InversionPhase(
+    phase4 = al.PhaseImaging(
         phase_name="phase_4__initialize_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+                redshift=0.5,
+                mass=phase3.result.instance.galaxies.lens.mass,
+                shear=phase3.result.instance.galaxies.lens.shear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
@@ -160,6 +113,8 @@ def make_pipeline(
                 regularization=pipeline_regularization,
             ),
         ),
+        hyper_image_sky=phase3.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase3.result.hyper_combined.instance.hyper_background_noise,
         optimizer_class=optimizer_class,
     )
 
@@ -174,46 +129,24 @@ def make_pipeline(
         inversion=True,
     )
 
-    class InversionPhase(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            ### Lens Mass, SIE -> SIE, Shear -> Shear ###
-
-            self.galaxies.lens = results.from_phase(
-                "phase_3__lens_sie__source_magnification_inversion"
-            ).model.galaxies.lens
-
-            ### Source Inversion, Inv -> Inv ###
-
-            self.galaxies.source = results.from_phase(
-                "phase_4__initialize_inversion"
-            ).hyper_combined.model.galaxies.source
-
-            ## Set all hyper_galaxies-galaxies if feature is turned on ##
-
-            self.galaxies.source.hyper_galaxy = (
-                results.last.hyper_combined.instance.galaxies.source.hyper_galaxy
-            )
-
-            self.hyper_image_sky = results.last.hyper_combined.instance.hyper_image_sky
-
-            self.hyper_background_noise = (
-                results.last.hyper_combined.instance.hyper_background_noise
-            )
-
-    phase5 = InversionPhase(
+    phase5 = al.PhaseImaging(
         phase_name="phase_5__lens_sie__source_inversion",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+                redshift=0.5,
+                mass=phase3.result.model.galaxies.lens.mass,
+                shear=phase3.result.model.galaxies.lens.shear,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=pipeline_pixelization,
-                regularization=pipeline_regularization,
+                pixelization=phase4.result.hyper_combined.instance.galaxies.source.pixelization,
+                regularization=phase4.result.hyper_combined.instance.galaxies.source.regularization,
+                hyper_galaxy=phase4.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
             ),
         ),
+        hyper_image_sky=phase4.result.hyper_combined.instance.hyper_image_sky,
+        hyper_background_noise=phase4.result.hyper_combined.instance.hyper_background_noise,
         optimizer_class=optimizer_class,
     )
 

@@ -18,17 +18,17 @@ class TestSimulatorImaging:
 
         grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
-        lens_galaxy = al.galaxy(
+        lens_galaxy = al.Galaxy(
             redshift=0.5,
             light=al.lp.EllipticalSersic(intensity=1.0),
             mass=al.mp.EllipticalIsothermal(einstein_radius=1.6),
         )
 
-        source_galaxy = al.galaxy(
+        source_galaxy = al.Galaxy(
             redshift=1.0, light=al.lp.EllipticalSersic(intensity=0.3)
         )
 
-        tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         simulator = al.simulator.imaging(
             shape_2d=(20, 20),
@@ -36,7 +36,7 @@ class TestSimulatorImaging:
             sub_size=1,
             psf=psf,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             add_noise=True,
             noise_seed=1,
         )
@@ -49,7 +49,7 @@ class TestSimulatorImaging:
             ),
             exposure_time=10000.0,
             psf=psf,
-            background_sky_level=100.0,
+            background_level=100.0,
             add_noise=True,
             noise_seed=1,
         )
@@ -75,15 +75,15 @@ class TestSimulatorImaging:
 
         grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
-        lens_galaxy = al.galaxy(
+        lens_galaxy = al.Galaxy(
             redshift=0.5, mass=al.mp.EllipticalIsothermal(einstein_radius=1.6)
         )
 
-        source_galaxy = al.galaxy(
+        source_galaxy = al.Galaxy(
             redshift=1.0, light=al.lp.EllipticalSersic(intensity=0.3)
         )
 
-        tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         simulator = al.simulator.imaging(
             shape_2d=(20, 20),
@@ -91,7 +91,7 @@ class TestSimulatorImaging:
             sub_size=1,
             psf=psf,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             add_noise=True,
             noise_seed=1,
         )
@@ -107,7 +107,7 @@ class TestSimulatorImaging:
             ),
             exposure_time=10000.0,
             psf=psf,
-            background_sky_level=100.0,
+            background_level=100.0,
             add_noise=True,
             noise_seed=1,
         )
@@ -126,14 +126,14 @@ class TestSimulatorImaging:
         self
     ):
 
-        lens_galaxy = al.galaxy(
+        lens_galaxy = al.Galaxy(
             redshift=0.5,
             mass=al.mp.EllipticalIsothermal(
                 centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
             ),
         )
 
-        source_galaxy = al.galaxy(
+        source_galaxy = al.Galaxy(
             redshift=0.5,
             light=al.lp.EllipticalSersic(
                 centre=(0.1, 0.1),
@@ -155,7 +155,7 @@ class TestSimulatorImaging:
             sub_size=1,
             psf=psf,
             exposure_time=100.0,
-            background_sky_level=1.0,
+            background_level=1.0,
             add_noise=False,
             noise_if_add_noise_false=0.2,
         )
@@ -164,7 +164,7 @@ class TestSimulatorImaging:
             galaxies=[lens_galaxy, source_galaxy]
         )
 
-        tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         imaging_manual = al.imaging.simulate(
             image=tracer.padded_profile_image_from_grid_and_psf_shape(
@@ -172,7 +172,7 @@ class TestSimulatorImaging:
             ),
             exposure_time=100.0,
             psf=psf,
-            background_sky_level=1.0,
+            background_level=1.0,
             add_noise=False,
             noise_if_add_noise_false=0.2,
         )
@@ -199,17 +199,17 @@ class TestSimulatorInterferometer:
 
         grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
-        lens_galaxy = al.galaxy(
+        lens_galaxy = al.Galaxy(
             redshift=0.5,
             light=al.lp.EllipticalSersic(intensity=1.0),
             mass=al.mp.EllipticalIsothermal(einstein_radius=1.6),
         )
 
-        source_galaxy = al.galaxy(
+        source_galaxy = al.Galaxy(
             redshift=1.0, light=al.lp.EllipticalSersic(intensity=0.3)
         )
 
-        tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         simulator = al.simulator.interferometer(
             real_space_shape_2d=(20, 20),
@@ -217,7 +217,7 @@ class TestSimulatorInterferometer:
             uv_wavelengths=np.ones(shape=(7, 2)),
             sub_size=1,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -229,7 +229,7 @@ class TestSimulatorInterferometer:
             transformer=simulator.transformer,
             real_space_pixel_scales=0.05,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -251,15 +251,15 @@ class TestSimulatorInterferometer:
 
         grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
-        lens_galaxy = al.galaxy(
+        lens_galaxy = al.Galaxy(
             redshift=0.5, mass=al.mp.EllipticalIsothermal(einstein_radius=1.6)
         )
 
-        source_galaxy = al.galaxy(
+        source_galaxy = al.Galaxy(
             redshift=1.0, light=al.lp.EllipticalSersic(intensity=0.3)
         )
 
-        tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         simulator = al.simulator.interferometer(
             real_space_shape_2d=(20, 20),
@@ -267,7 +267,7 @@ class TestSimulatorInterferometer:
             uv_wavelengths=np.ones(shape=(7, 2)),
             sub_size=1,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -282,7 +282,7 @@ class TestSimulatorInterferometer:
             real_space_pixel_scales=0.05,
             transformer=simulator.transformer,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -302,14 +302,14 @@ class TestSimulatorInterferometer:
         self
     ):
 
-        lens_galaxy = al.galaxy(
+        lens_galaxy = al.Galaxy(
             redshift=0.5,
             mass=al.mp.EllipticalIsothermal(
                 centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
             ),
         )
 
-        source_galaxy = al.galaxy(
+        source_galaxy = al.Galaxy(
             redshift=0.5,
             light=al.lp.EllipticalSersic(
                 centre=(0.1, 0.1),
@@ -329,7 +329,7 @@ class TestSimulatorInterferometer:
             uv_wavelengths=np.ones(shape=(7, 2)),
             sub_size=1,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -338,14 +338,14 @@ class TestSimulatorInterferometer:
             galaxies=[lens_galaxy, source_galaxy]
         )
 
-        tracer = al.tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         interferometer_manual = al.interferometer.simulate(
             real_space_image=tracer.profile_image_from_grid(grid=grid),
             real_space_pixel_scales=0.05,
             transformer=simulator.transformer,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )

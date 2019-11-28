@@ -9,14 +9,8 @@ data_resolution = "euclid"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    class SourcePix(al.PhaseImaging):
-        def customize_priors(self, results):
 
-            self.galaxies.lens.mass.centre.centre_0 = 0.0
-            self.galaxies.lens.mass.centre.centre_1 = 0.0
-            self.galaxies.lens.mass.einstein_radius = 1.6
-
-    phase1 = SourcePix(
+    phase1 = al.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
@@ -24,7 +18,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.instance,
+                regularization=al.reg.Constant,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -45,8 +39,8 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase1.result.inversion.instance.galaxies.source.pixelization,
-                regularization=phase1.result.inversion.instance.galaxies.source.regularization,
+                pixelization=phase1.result.instance.galaxies.source.pixelization,
+                regularization=phase1.result.instance.galaxies.source.regularization,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -58,7 +52,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     phase2 = phase2.extend_with_inversion_phase()
 
-    return al.PipelineDataset(name, phase1, phase2)
+    return al.PipelineDataset(name, phase1)  # , phase2)
 
 
 if __name__ == "__main__":

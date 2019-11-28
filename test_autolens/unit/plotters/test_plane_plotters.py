@@ -19,6 +19,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         grid=sub_grid_7x7,
         mask=mask_7x7,
         positions=positions_7x7,
+        plot_in_kpc=True,
         include_critical_curves=True,
         include_caustics=True,
         cb_tick_values=[1.0],
