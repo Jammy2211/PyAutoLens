@@ -1,4 +1,4 @@
-autoarray==1.3.4.1
+autoarray==0.3.4.1
 autofit==0.45.1
 autoastro==0.1.4.1
 argh>=0.26.2
