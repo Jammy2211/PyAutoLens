@@ -4,7 +4,14 @@ from subprocess import call
 
 from setuptools import find_packages, setup, Command
 
-from autolens import __version__
+
+def version():
+    with open("autolens/__init__.py") as f:
+        lines = f.read().split('\n')
+    for line in lines:
+        if "__version__" in line:
+            return line.split("=")[1].strip(" '\”")
+
 
 class RunTests(Command):
     """Run all tests."""
@@ -33,7 +40,7 @@ with open(join(this_dir, "requirements.txt")) as f:
 
 setup(
     name="autolens",
-    version=__version__,
+    version=version(),
     description="Automated Strong Gravitational Lens Modeling",
     long_description=long_description,
     long_description_content_type="text/markdown",
