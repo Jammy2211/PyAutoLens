@@ -57,14 +57,14 @@ def subplot(
     critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=fit.tracer,
         include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
-    )[0]
+        include_caustics=False,
+    )
 
     aa.plot.fit_imaging.subplot(
         fit=fit,
         include_mask=include_mask,
         grid=image_plane_pix_grid,
-        lines=[critical_curves],
+        lines=critical_curves,
         points=positions,
         unit_label=unit_label,
         unit_conversion_factor=unit_conversion_factor,
