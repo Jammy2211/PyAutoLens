@@ -37,11 +37,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 mean=centre_value[1], sigma=0.5
             )
 
-            intensity_value = results.from_phase(
+            intensity = results.from_phase(
                 "phase_1"
             ).instance.galaxies.lens.light.intensity
             self.galaxies.lens.light.intensity = af.GaussianPrior(
-                mean=intensity_value, sigma=1.0
+                mean=intensity, sigma=1.0
             )
 
             effective_radius_value = results.from_phase(
