@@ -2,16 +2,15 @@ from codecs import open
 from os.path import abspath, dirname, join
 from subprocess import call
 
-from setuptools import Command, find_packages, setup
+from setuptools import find_packages, setup, Command
 
-from autolens import __version__
 
-this_dir = abspath(dirname(__file__))
-with open(join(this_dir, "README.md"), encoding="utf-8") as file:
-    long_description = file.read()
-
-with open(join(this_dir, "requirements.txt")) as f:
-    requirements = f.read().split("\n")
+def version():
+    with open("autolens/__init__.py") as f:
+        lines = f.read().split('\n')
+    for line in lines:
+        if "__version__" in line:
+            return line.split("=")[1].strip(" '\”")
 
 
 class RunTests(Command):
@@ -28,19 +27,24 @@ class RunTests(Command):
 
     def run(self):
         """Run all tests!"""
-        errno = call(
-            ["py.test_autoarray", "--cov=autolens", "--cov-report=term-missing"]
-        )
+        errno = call(["py.test", "--cov=autolens", "--cov-report=term-missing"])
         raise SystemExit(errno)
 
 
+this_dir = abspath(dirname(__file__))
+with open(join(this_dir, "README.md"), encoding="utf-8") as file:
+    long_description = file.read()
+
+with open(join(this_dir, "requirements.txt")) as f:
+    requirements = f.read().split("\n")
+
 setup(
     name="autolens",
-    version=__version__,
+    version=version(),
     description="Automated Strong Gravitational Lens Modeling",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Jammy2211/PyAutoLens",
+    url="https://github.com/jammy2211/PyAutoLens",
     author="James Nightingale and Richard Hayes",
     author_email="james.w.nightingale@durham.ac.uk",
     include_package_data=True,
@@ -60,11 +64,8 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     keywords="cli",
-    packages=find_packages(
-        exclude=["docs", "tests*", "autolens_workspace", "autolens_workspace_jam"]
-    ),
+    packages=find_packages(exclude=["docs"]),
     install_requires=requirements,
-    extras_require={"test_autoarray": ["coverage", "pytest", "pytest-cov"]},
-    entry_points={"console_scripts": ["autolens=autolens.cli:main"]},
-    cmdclass={"test_autoarray": RunTests},
+    extras_require={"test": ["coverage", "pytest", "pytest-cov"]},
+    cmd_class={"test": RunTests},
 )
