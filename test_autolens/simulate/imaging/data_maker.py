@@ -18,7 +18,7 @@ from test_autolens.simulate.imaging import makers
 # Each image is generated at 5 resolutions, 0.2" (LSST), 0.1" (Euclid), 0.05" (HST), 0.03" (HST), 0.01" (Keck AO).
 
 sub_size = 1
-data_resolutions = ["lsst", "euclid"]  # , "hst", "hst_up", "ao"]
+data_resolutions = ["lsst", "euclid", "hst", "hst_up", "ao"]
 
 # To simulator each lens, we pass it a name and call its maker. In the makers.py file, you'll see the
 makers.make_lens_light_dev_vaucouleurs(

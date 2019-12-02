@@ -38,7 +38,7 @@ def simulate_integration_image(test_name, pixel_scales, galaxies):
 
     tracer = al.Tracer.from_galaxies(galaxies=galaxies)
 
-    ### Setup as a simulated image_coords and output as a fits for an lensing ###
+    ### Setup as a simulated image_coords and output as a fits for an lens ###
 
     imaging_simulated = al.SimulatedImagingData.from_tracer(
         tracer=tracer,

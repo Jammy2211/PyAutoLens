@@ -48,7 +48,7 @@ def profile_image(
 
     profile_image = plane.profile_image_from_grid(grid=grid)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=plane,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -215,7 +215,7 @@ def convergence(
 
     convergence = plane.convergence_from_grid(grid=grid)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=plane,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -289,7 +289,7 @@ def potential(
 
     potential = plane.potential_from_grid(grid=grid)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=plane,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -364,7 +364,7 @@ def deflections_y(
     deflections = plane.deflections_from_grid(grid=grid)
     deflections_y = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 0])
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=plane,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -439,7 +439,7 @@ def deflections_x(
     deflections = plane.deflections_from_grid(grid=grid)
     deflections_x = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 1])
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=plane,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -513,7 +513,7 @@ def magnification(
 
     magnification = plane.magnification_from_grid(grid=grid)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=plane,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -572,7 +572,7 @@ def image_and_source_plane_subplot(
         number_subplots=2
     )
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics(
+    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=image_plane, include_critical_curves=True, include_caustics=True
     )
 
