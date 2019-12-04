@@ -7,7 +7,7 @@ from test_autolens.integration.tests.imaging.runner import run_a_mock
 
 
 class TestCase:
-    def test_hyper_no_lens_light_bg_extension_false(self):
+    def _test_hyper_no_lens_light_bg_extension_false(self):
         run_a_mock(hyper_no_lens_light_bg_extension_false)
 
     def _test_hyper_no_lens_light_bg(self):
