@@ -325,7 +325,9 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     def profile_image_from_grid(self, grid):
         profile_image = sum(self.profile_images_of_planes_from_grid(grid=grid))
-        return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=profile_image)
+        return grid.mapping.array_stored_1d_from_sub_array_1d(
+            sub_array_1d=profile_image
+        )
 
     def profile_images_of_planes_from_grid(self, grid):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(

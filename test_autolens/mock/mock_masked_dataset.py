@@ -14,7 +14,9 @@ class MockMaskedImaging(object):
         self.blurring_grid = blurring_grid
         self.convolver = convolver
 
-        self.image = mask.mapping.array_stored_1d_from_array_2d(array_2d=imaging.image.in_2d)
+        self.image = mask.mapping.array_stored_1d_from_array_2d(
+            array_2d=imaging.image.in_2d
+        )
         self.noise_map = mask.mapping.array_stored_1d_from_array_2d(
             array_2d=imaging.noise_map.in_2d
         )
