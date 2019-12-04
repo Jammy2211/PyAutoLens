@@ -18,8 +18,7 @@ mask = al.mask.circular(
 )
 
 lens_galaxy = al.Galaxy(
-    redshift=0.5,
-    mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6),
+    redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6)
 )
 
 source_galaxy = al.Galaxy(
@@ -34,7 +33,20 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
 
 al.plot.fit_imaging.subplot_for_plane(
-    fit=fit, plane_index=1, include_mask=True, include_image_plane_pix=True, include_caustics=True, plot_in_kpc=True
+    fit=fit,
+    plane_index=1,
+    plot_in_kpc=True,
+    include_image_plane_pix=True,
+    include_caustics=True,
 )
+
+al.plot.fit_imaging.subplot_for_plane(
+    fit=fit,
+    plane_index=1,
+    plot_in_kpc=False,
+    include_image_plane_pix=True,
+    include_caustics=True,
+)
+
 
 al.plot.inversion.subplot(inversion=fit.inversion)
