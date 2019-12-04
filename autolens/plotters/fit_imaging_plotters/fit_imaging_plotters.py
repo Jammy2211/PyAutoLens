@@ -6,6 +6,7 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
+from autoarray.plotters.fit_imaging_plotters import *
 from autoarray.util import plotter_util
 from autoastro.plotters import lens_plotter_util
 from autolens.plotters import plane_plotters
