@@ -640,7 +640,7 @@ def deflections_y(
 ):
 
     deflections = tracer.deflections_from_grid(grid=grid)
-    deflections_y = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 0])
+    deflections_y = grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=deflections[:, 0])
 
     lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
@@ -715,7 +715,7 @@ def deflections_x(
 ):
 
     deflections = tracer.deflections_from_grid(grid=grid)
-    deflections_x = grid.mapping.array_from_sub_array_1d(sub_array_1d=deflections[:, 1])
+    deflections_x = grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=deflections[:, 1])
 
     lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=tracer,

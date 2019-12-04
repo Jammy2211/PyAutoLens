@@ -266,9 +266,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                     self.galaxies,
                 )
             )
-            return grid.mapping.array_from_sub_array_1d(sub_array_1d=profile_image)
+            return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=profile_image)
         else:
-            return grid.mapping.array_from_sub_array_1d(
+            return grid.mapping.array_stored_1d_from_sub_array_1d(
                 sub_array_1d=np.zeros((grid.sub_shape_1d,))
             )
 
@@ -299,9 +299,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             convergence = sum(
                 map(lambda g: g.convergence_from_grid(grid=grid), self.galaxies)
             )
-            return grid.mapping.array_from_sub_array_1d(sub_array_1d=convergence)
+            return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=convergence)
         else:
-            return grid.mapping.array_from_sub_array_1d(
+            return grid.mapping.array_stored_1d_from_sub_array_1d(
                 sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
             )
 
@@ -327,9 +327,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             potential = sum(
                 map(lambda g: g.potential_from_grid(grid=grid), self.galaxies)
             )
-            return grid.mapping.array_from_sub_array_1d(sub_array_1d=potential)
+            return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=potential)
         else:
-            return grid.mapping.array_from_sub_array_1d(
+            return grid.mapping.array_stored_1d_from_sub_array_1d(
                 sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
             )
 
@@ -338,9 +338,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             deflections = sum(
                 map(lambda g: g.deflections_from_grid(grid=grid), self.galaxies)
             )
-            return grid.mapping.grid_from_sub_grid_1d(sub_grid_1d=deflections)
+            return grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=deflections)
         else:
-            return grid.mapping.grid_from_sub_grid_1d(
+            return grid.mapping.grid_stored_1d_from_sub_grid_1d(
                 sub_grid_1d=np.full((grid.sub_shape_1d, 2), 0.0)
             )
 
@@ -348,7 +348,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
         """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
 
         traced_grid = grid - self.deflections_from_grid(grid=grid)
-        return grid.mapping.grid_from_sub_grid_1d(sub_grid_1d=traced_grid)
+        return grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=traced_grid)
 
     def luminosities_of_galaxies_within_circles_in_units(
         self, radius: dim.Length, unit_luminosity="eps", exposure_time=None

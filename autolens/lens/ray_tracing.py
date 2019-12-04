@@ -325,7 +325,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
     def profile_image_from_grid(self, grid):
         profile_image = sum(self.profile_images_of_planes_from_grid(grid=grid))
-        return grid.mapping.array_from_sub_array_1d(sub_array_1d=profile_image)
+        return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=profile_image)
 
     def profile_images_of_planes_from_grid(self, grid):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
@@ -344,7 +344,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
                 self.upper_plane_index_with_light_profile, self.total_planes - 1
             ):
                 profile_images_of_planes.append(
-                    grid.mapping.array_from_sub_array_1d(
+                    grid.mapping.array_stored_1d_from_sub_array_1d(
                         sub_array_1d=np.zeros(shape=profile_images_of_planes[0].shape)
                     )
                 )
@@ -361,11 +361,11 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         convergence = sum(
             [plane.convergence_from_grid(grid=grid) for plane in self.planes]
         )
-        return grid.mapping.array_from_sub_array_1d(sub_array_1d=convergence)
+        return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=convergence)
 
     def potential_from_grid(self, grid):
         potential = sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
-        return grid.mapping.array_from_sub_array_1d(sub_array_1d=potential)
+        return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=potential)
 
     def deflections_from_grid(self, grid):
         return self.deflections_between_planes_from_grid(grid=grid)
@@ -374,7 +374,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         deflections = sum(
             [plane.deflections_from_grid(grid=grid) for plane in self.planes]
         )
-        return grid.mapping.grid_from_sub_grid_1d(sub_grid_1d=deflections)
+        return grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=deflections)
 
     def grid_at_redshift_from_grid_and_redshift(self, grid, redshift):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
