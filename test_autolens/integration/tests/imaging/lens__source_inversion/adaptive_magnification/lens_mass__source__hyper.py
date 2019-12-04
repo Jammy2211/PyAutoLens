@@ -41,15 +41,13 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5,
-                mass=phase1.result.model.galaxies.lens.mass,
-                hyper_galaxy=al.HyperGalaxy,
+                redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=phase1.result.model.galaxies.source.pixelization,
                 regularization=phase1.result.model.galaxies.source.regularization,
-                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
+                hyper_galaxy=phase1.result.instance.galaxies.source.hyper_galaxy,
             ),
         ),
         optimizer_class=optimizer_class,
@@ -59,7 +57,32 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
-    return al.PipelineDataset(name, phase1, phase2)
+    phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+
+    phase3 = al.PhaseImaging(
+        phase_name="phase_3",
+        phase_folders=phase_folders,
+        galaxies=dict(
+            lens=al.GalaxyModel(
+                redshift=0.5, mass=af.last[-1].model.galaxies.lens.mass
+            ),
+            source=al.GalaxyModel(
+                redshift=1.0,
+                pixelization=phase1.result.model.galaxies.source.pixelization,
+                regularization=phase1.result.model.galaxies.source.regularization,
+                hyper_galaxy=phase2.result.instance.galaxies.source.hyper_galaxy,
+            ),
+        ),
+        optimizer_class=optimizer_class,
+    )
+
+    phase3.optimizer.const_efficiency_mode = True
+    phase3.optimizer.n_live_points = 40
+    phase3.optimizer.sampling_efficiency = 0.8
+
+    phase3.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+
+    return al.PipelineDataset(name, phase1, phase2, phase3)
 
 
 if __name__ == "__main__":

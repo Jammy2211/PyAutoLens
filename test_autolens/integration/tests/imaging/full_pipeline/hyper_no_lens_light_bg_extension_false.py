@@ -9,13 +9,12 @@ data_resolution = "lsst"
 
 
 def make_pipeline(
-    name,
-    phase_folders,
-    pipeline_pixelization=al.pix.VoronoiBrightnessImage,
-    pipeline_regularization=al.reg.AdaptiveBrightness,
-    optimizer_class=af.MultiNest,
+        name,
+        phase_folders,
+        pipeline_pixelization=al.pix.VoronoiBrightnessImage,
+        pipeline_regularization=al.reg.AdaptiveBrightness,
+        optimizer_class=af.MultiNest,
 ):
-
     phase1 = al.PhaseImaging(
         phase_name="phase_1__lens_sie__source_sersic",
         phase_folders=phase_folders,
@@ -33,7 +32,9 @@ def make_pipeline(
     phase1.optimizer.sampling_efficiency = 0.2
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
-        hyper_galaxy=True, include_background_sky=True, include_background_noise=True
+        hyper_galaxy=False,
+        include_background_sky=False,
+        include_background_noise=False
     )
 
     phase2 = al.PhaseImaging(
@@ -51,8 +52,8 @@ def make_pipeline(
                 regularization=al.reg.Constant,
             ),
         ),
-        hyper_image_sky=phase1.result.hyper_combined.instance.hyper_image_sky,
-        hyper_background_noise=phase1.result.hyper_combined.instance.hyper_background_noise,
+        hyper_image_sky=phase1.result.hyper_combined.instance.optional.hyper_image_sky,
+        hyper_background_noise=phase1.result.hyper_combined.instance.optional.hyper_background_noise,
         optimizer_class=optimizer_class,
     )
 

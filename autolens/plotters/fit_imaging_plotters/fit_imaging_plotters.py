@@ -6,6 +6,7 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
+from autoarray.plotters.fit_imaging_plotters import *
 from autoarray.util import plotter_util
 from autoastro.plotters import lens_plotter_util
 from autolens.plotters import plane_plotters
@@ -48,7 +49,9 @@ def subplot(
         include_image_plane_pix=include_image_plane_pix, fit=fit
     )
 
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
+    positions = lens_plotter_util.get_positions_from_fit(
+        fit=fit, include_positions=include_positions
+    )
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
         obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
@@ -57,14 +60,14 @@ def subplot(
     critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=fit.tracer,
         include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
-    )[0]
+        include_caustics=False,
+    )
 
     aa.plot.fit_imaging.subplot(
         fit=fit,
         include_mask=include_mask,
         grid=image_plane_pix_grid,
-        lines=[critical_curves],
+        lines=critical_curves,
         points=positions,
         unit_label=unit_label,
         unit_conversion_factor=unit_conversion_factor,
@@ -242,7 +245,9 @@ def subplot_for_plane(
         include_image_plane_pix=include_image_plane_pix, fit=fit
     )
 
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
+    positions = lens_plotter_util.get_positions_from_fit(
+        fit=fit, include_positions=include_positions
+    )
 
     plt.subplot(rows, columns, 1)
 
@@ -497,7 +502,9 @@ def individuals(
         obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
+    positions = lens_plotter_util.get_positions_from_fit(
+        fit=fit, include_positions=include_positions
+    )
 
     critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=fit.tracer,
@@ -668,7 +675,9 @@ def subtracted_image_of_plane(
         include_image_plane_pix=include_image_plane_pix, fit=fit
     )
 
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
+    positions = lens_plotter_util.get_positions_from_fit(
+        fit=fit, include_positions=include_positions
+    )
 
     critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=fit.tracer,
@@ -768,7 +777,9 @@ def model_image_of_plane(
         obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
+    positions = lens_plotter_util.get_positions_from_fit(
+        fit=fit, include_positions=include_positions
+    )
 
     critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
         obj=fit.tracer,
@@ -860,7 +871,9 @@ def contribution_maps(
     else:
         contribution_map = fit.contribution_maps[0]
 
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
+    positions = lens_plotter_util.get_positions_from_fit(
+        fit=fit, include_positions=include_positions
+    )
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
         obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
