@@ -266,7 +266,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                     self.galaxies,
                 )
             )
-            return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=profile_image)
+            return grid.mapping.array_stored_1d_from_sub_array_1d(
+                sub_array_1d=profile_image
+            )
         else:
             return grid.mapping.array_stored_1d_from_sub_array_1d(
                 sub_array_1d=np.zeros((grid.sub_shape_1d,))
@@ -299,7 +301,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             convergence = sum(
                 map(lambda g: g.convergence_from_grid(grid=grid), self.galaxies)
             )
-            return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=convergence)
+            return grid.mapping.array_stored_1d_from_sub_array_1d(
+                sub_array_1d=convergence
+            )
         else:
             return grid.mapping.array_stored_1d_from_sub_array_1d(
                 sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
@@ -327,7 +331,9 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             potential = sum(
                 map(lambda g: g.potential_from_grid(grid=grid), self.galaxies)
             )
-            return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=potential)
+            return grid.mapping.array_stored_1d_from_sub_array_1d(
+                sub_array_1d=potential
+            )
         else:
             return grid.mapping.array_stored_1d_from_sub_array_1d(
                 sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
