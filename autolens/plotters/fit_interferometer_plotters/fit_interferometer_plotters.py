@@ -6,6 +6,7 @@ matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 import autoarray as aa
+from autoarray.plotters.fit_interferometer_plotters import *
 from autoarray.util import plotter_util
 from autoastro.plotters import lens_plotter_util
 from autolens.plotters import plane_plotters, ray_tracing_plotters
@@ -115,9 +116,13 @@ def subplot_real_space(
         include_image_plane_pix=include_image_plane_pix, fit=fit
     )
 
-    real_space_mask = plotter_util.get_real_space_mask_from_fit(fit=fit, include_mask=include_mask)
+    real_space_mask = plotter_util.get_real_space_mask_from_fit(
+        fit=fit, include_mask=include_mask
+    )
 
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, include_positions=include_positions)
+    positions = lens_plotter_util.get_positions_from_fit(
+        fit=fit, include_positions=include_positions
+    )
 
     plt.figure(figsize=figsize)
 

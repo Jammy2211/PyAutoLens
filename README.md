@@ -26,14 +26,14 @@ dataset_path = '{}/../data/'.format(os.path.dirname(os.path.realpath(__file__)))
 lens_name = 'example_lens'
 
 # Get the relative path to the data in our workspace & load the imaging data.
-imaging = aa.imaging.from_fits(
+imaging = al.imaging.from_fits(
     image_path=dataset_path + lens_name + '/image.fits',
     psf_path=dataset_path+lens_name+'/psf.fits',
     noise_map_path=dataset_path+lens_name+'/noise_map.fits',
     pixel_scales=0.1)
 
 # Create a mask for the data, which we setup as a 3.0" circle.
-mask = aa.mask.circular(shape=imaging.shape, pixel_scales=imaging.pixel_scales, radius=3.0)
+mask = al.mask.circular(shape=imaging.shape, pixel_scales=imaging.pixel_scales, radius=3.0)
 
 # We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) & our source galaxy 
 # a light profile (an elliptical Sersic).
@@ -128,7 +128,7 @@ conda install -c conda-forge multinest
 Install autolens (build v0.30.0 recommended, there have also been astropy compatibility issues the command below fixes):
 
 ```
-pip install autolens==0.30.0 --ignore-installed astropy
+pip install autolens
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment model:
