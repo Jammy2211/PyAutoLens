@@ -62,30 +62,18 @@ class Result(dataset.Result):
         A dictionary associating 1D hyper_galaxies galaxy visibilities with their names.
         """
 
-        hyper_minimum_percent = af.conf.instance.general.get(
-            "hyper", "hyper_minimum_percent", float
-        )
-
         hyper_galaxy_visibilities_path_dict = {}
 
         for path, galaxy in self.path_galaxy_tuples:
 
-            galaxy_visibilities = self.visibilities_galaxy_dict[path]
-
-            if not np.all(galaxy_visibilities == 0):
-                minimum_galaxy_value = hyper_minimum_percent * max(galaxy_visibilities)
-                galaxy_visibilities[
-                    galaxy_visibilities < minimum_galaxy_value
-                ] = minimum_galaxy_value
-
-            hyper_galaxy_visibilities_path_dict[path] = galaxy_visibilities
+            hyper_galaxy_visibilities_path_dict[path] = self.visibilities_galaxy_dict[path]
 
         return hyper_galaxy_visibilities_path_dict
 
     @property
     def hyper_model_visibilities(self):
 
-        hyper_model_visibilities = aa.masked.array.zeros(mask=self.mask.mask_sub_1)
+        hyper_model_visibilities = aa.visibilities.zeros(shape_1d=(self.most_likely_fit.visibilities.shape_1d,))
 
         for path, galaxy in self.path_galaxy_tuples:
             hyper_model_visibilities += self.hyper_galaxy_visibilities_path_dict[path]
