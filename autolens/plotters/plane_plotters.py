@@ -673,7 +673,7 @@ def plane_grid(
         axis_limits=axis_limits,
         lines=lines,
         as_subplot=as_subplot,
-        unit_label=unit_label,
+        unit_label_y=unit_label,
         unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         pointsize=pointsize,

@@ -66,14 +66,18 @@ class Result(dataset.Result):
 
         for path, galaxy in self.path_galaxy_tuples:
 
-            hyper_galaxy_visibilities_path_dict[path] = self.visibilities_galaxy_dict[path]
+            hyper_galaxy_visibilities_path_dict[path] = self.visibilities_galaxy_dict[
+                path
+            ]
 
         return hyper_galaxy_visibilities_path_dict
 
     @property
     def hyper_model_visibilities(self):
 
-        hyper_model_visibilities = aa.visibilities.zeros(shape_1d=(self.most_likely_fit.visibilities.shape_1d,))
+        hyper_model_visibilities = aa.visibilities.zeros(
+            shape_1d=(self.most_likely_fit.visibilities.shape_1d,)
+        )
 
         for path, galaxy in self.path_galaxy_tuples:
             hyper_model_visibilities += self.hyper_galaxy_visibilities_path_dict[path]
