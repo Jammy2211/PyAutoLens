@@ -75,7 +75,6 @@ def interferometer_of_phase(
 
         aa.plot.interferometer.subplot(
             interferometer=interferometer,
-            unit_label=unit_label,
             unit_conversion_factor=kpc_per_arcsec,
             output_path=subplot_path,
             output_format="png",

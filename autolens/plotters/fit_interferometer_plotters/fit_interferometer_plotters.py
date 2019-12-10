@@ -48,7 +48,6 @@ def subplot(
 
     aa.plot.fit_interferometer.subplot(
         fit=fit,
-        unit_label=unit_label,
         unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         cb_ticksize=cb_ticksize,
@@ -60,7 +59,6 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        grid_pointsize=grid_pointsize,
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -342,7 +340,6 @@ def individuals(
         plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
         plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
         output_path=output_path,
         output_format=output_format,
     )

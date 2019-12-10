@@ -78,14 +78,17 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
     )
 
     assert (
-        interferometer_fit_plotter_path + "fit_residual_map.png" not in plot_patch.paths
-    )
-
-    assert (
-        interferometer_fit_plotter_path + "fit_normalized_residual_map.png"
+        interferometer_fit_plotter_path + "fit_residual_map_vs_uv_distances_real.png"
         not in plot_patch.paths
     )
 
     assert (
-        interferometer_fit_plotter_path + "fit_chi_squared_map.png" in plot_patch.paths
+        interferometer_fit_plotter_path
+        + "fit_normalized_residual_map_vs_uv_distances_real.png"
+        not in plot_patch.paths
+    )
+
+    assert (
+        interferometer_fit_plotter_path + "fit_chi_squared_map_vs_uv_distances_real.png"
+        in plot_patch.paths
     )

@@ -226,11 +226,18 @@ def test__interferometer_fit_for_phase__source_and_lens__depedent_on_input(
         phase_plotter_path + "fit/fit_signal_to_noise_map.png" not in plot_patch.paths
     )
     assert phase_plotter_path + "fit/fit_model_visibilities.png" in plot_patch.paths
-    assert phase_plotter_path + "fit/fit_residual_map.png" not in plot_patch.paths
     assert (
-        phase_plotter_path + "fit/fit_normalized_residual_map.png" in plot_patch.paths
+        phase_plotter_path + "fit/fit_residual_map_vs_uv_distances_real.png"
+        not in plot_patch.paths
     )
-    assert phase_plotter_path + "fit/fit_chi_squared_map.png" in plot_patch.paths
+    assert (
+        phase_plotter_path + "fit/fit_normalized_residual_map_vs_uv_distances_real.png"
+        in plot_patch.paths
+    )
+    assert (
+        phase_plotter_path + "fit/fit_chi_squared_map_vs_uv_distances_real.png"
+        in plot_patch.paths
+    )
 
 
 def test__hyper_images_for_phase__source_and_lens__depedent_on_input(
