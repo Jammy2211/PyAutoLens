@@ -168,6 +168,7 @@ class HyperGalaxyPhase(HyperPhase):
         results: HyperGalaxyResults
             A collection of results, with one item per a galaxy
         """
+
         phase = self.make_hyper_phase()
 
         masked_imaging = masked_dataset.MaskedImaging(

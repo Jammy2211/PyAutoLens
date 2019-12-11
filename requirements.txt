@@ -1,5 +1,5 @@
-autofit==0.46.0
-autoarray==0.4.2
+autofit==0.46.1
+autoarray==0.4.3
 autoastro==0.2.1
 astropy>=3.0.0
 matplotlib>=3.0.3

@@ -4,7 +4,6 @@ from autolens.fit.fit import ImagingFit, InterferometerFit
 
 from test_autolens.mock import mock_masked_dataset, mock_pipeline
 from test_autoastro.unit.conftest import *
-from test_autoarray.mock import mock_mask
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -118,7 +117,7 @@ def make_mask_function_7x7_1_pix():
             ]
         )
 
-        return mock_mask.MockMask(mask_2d=array)
+        return aa.mask.manual(mask_2d=array)
 
     return mask_function_7x7_1_pix
 
