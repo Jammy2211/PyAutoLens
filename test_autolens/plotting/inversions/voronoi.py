@@ -32,6 +32,10 @@ masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
 
+print(fit.inversion.reconstruction)
+print(fit.inversion.mapper)
+print(fit.inversion.mapper.pixelization_grid)
+
 al.plot.fit_imaging.subplot_for_plane(
     fit=fit,
     plane_index=1,
