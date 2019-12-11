@@ -42,10 +42,11 @@ class HyperPhase(object):
             A copy of the original phase with a modified name and path
         """
         phase = copy.deepcopy(self.phase)
+        phase.paths.zip()
 
         phase.optimizer = phase.optimizer.copy_with_name_extension(
             extension=self.hyper_name + "_" + phase.paths.phase_tag,
-            remove_phase_tag=True,
+            remove_phase_tag=False,
         )
 
         phase.optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
