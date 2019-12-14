@@ -417,8 +417,75 @@ class TestAbstractPlane(object):
             with pytest.raises(exc.PixelizationException):
                 print(plane.regularization)
 
-    class TestMassProfileGeometry:
+    class TestProfileGeometry:
+
+        def test__extract_centres_of_all_light_profiles_of_all_galaxies(self):
+            g0 = al.Galaxy(
+                redshift=0.5, light=al.lp.SphericalGaussian(centre=(1.0, 1.0))
+            )
+            g1 = al.Galaxy(
+                redshift=0.5, light=al.lp.SphericalGaussian(centre=(2.0, 2.0))
+            )
+            g2 = al.Galaxy(
+                redshift=0.5,
+                light0=al.lp.SphericalGaussian(centre=(3.0, 3.0)),
+                light1=al.lp.SphericalGaussian(centre=(4.0, 4.0)),
+            )
+
+            plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+            assert plane.light_profile_centres_of_galaxies == []
+            assert plane.light_profile_centres_list == []
+
+            plane = al.Plane(galaxies=[g0], redshift=None)
+            assert plane.light_profile_centres_of_galaxies == [[(1.0, 1.0)]]
+            assert plane.light_profile_centres_list == [(1.0, 1.0)]
+
+            plane = al.Plane(galaxies=[g1], redshift=None)
+            assert plane.light_profile_centres_of_galaxies == [[(2.0, 2.0)]]
+            assert plane.light_profile_centres_list == [(2.0, 2.0)]
+
+            plane = al.Plane(galaxies=[g0, g1], redshift=None)
+            assert plane.light_profile_centres_of_galaxies == [
+                [(1.0, 1.0)],
+                [(2.0, 2.0)],
+            ]
+            assert plane.light_profile_centres_list == [(1.0, 1.0), (2.0, 2.0)]
+
+            plane = al.Plane(galaxies=[g1, g0], redshift=None)
+            assert plane.light_profile_centres_of_galaxies == [
+                [(2.0, 2.0)],
+                [(1.0, 1.0)],
+            ]
+            assert plane.light_profile_centres_list == [(2.0, 2.0), (1.0, 1.0)]
+
+            plane = al.Plane(
+                galaxies=[g0, al.Galaxy(redshift=0.5), g1, al.Galaxy(redshift=0.5)],
+                redshift=None,
+            )
+            assert plane.light_profile_centres_of_galaxies == [
+                [(1.0, 1.0)],
+                [(2.0, 2.0)],
+            ]
+            assert plane.light_profile_centres_list == [(1.0, 1.0), (2.0, 2.0)]
+
+            plane = al.Plane(
+                galaxies=[g0, al.Galaxy(redshift=0.5), g1, al.Galaxy(redshift=0.5), g2],
+                redshift=None,
+            )
+            assert plane.light_profile_centres_of_galaxies == [
+                [(1.0, 1.0)],
+                [(2.0, 2.0)],
+                [(3.0, 3.0), (4.0, 4.0)],
+            ]
+            assert plane.light_profile_centres_list == [
+                (1.0, 1.0),
+                (2.0, 2.0),
+                (3.0, 3.0),
+                (4.0, 4.0),
+            ]
+        
         def test__extract_centres_of_all_mass_profiles_of_all_galaxies(self):
+            
             g0 = al.Galaxy(
                 redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
             )
@@ -433,29 +500,29 @@ class TestAbstractPlane(object):
 
             plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
             assert plane.mass_profile_centres_of_galaxies == []
-            assert plane.mass_profile_centres == []
+            assert plane.mass_profile_centres_list == []
 
             plane = al.Plane(galaxies=[g0], redshift=None)
             assert plane.mass_profile_centres_of_galaxies == [[(1.0, 1.0)]]
-            assert plane.mass_profile_centres == [(1.0, 1.0)]
+            assert plane.mass_profile_centres_list == [(1.0, 1.0)]
 
             plane = al.Plane(galaxies=[g1], redshift=None)
             assert plane.mass_profile_centres_of_galaxies == [[(2.0, 2.0)]]
-            assert plane.mass_profile_centres == [(2.0, 2.0)]
+            assert plane.mass_profile_centres_list == [(2.0, 2.0)]
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
             assert plane.mass_profile_centres_of_galaxies == [
                 [(1.0, 1.0)],
                 [(2.0, 2.0)],
             ]
-            assert plane.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
+            assert plane.mass_profile_centres_list == [(1.0, 1.0), (2.0, 2.0)]
 
             plane = al.Plane(galaxies=[g1, g0], redshift=None)
             assert plane.mass_profile_centres_of_galaxies == [
                 [(2.0, 2.0)],
                 [(1.0, 1.0)],
             ]
-            assert plane.mass_profile_centres == [(2.0, 2.0), (1.0, 1.0)]
+            assert plane.mass_profile_centres_list == [(2.0, 2.0), (1.0, 1.0)]
 
             plane = al.Plane(
                 galaxies=[g0, al.Galaxy(redshift=0.5), g1, al.Galaxy(redshift=0.5)],
@@ -465,7 +532,7 @@ class TestAbstractPlane(object):
                 [(1.0, 1.0)],
                 [(2.0, 2.0)],
             ]
-            assert plane.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
+            assert plane.mass_profile_centres_list == [(1.0, 1.0), (2.0, 2.0)]
 
             plane = al.Plane(
                 galaxies=[g0, al.Galaxy(redshift=0.5), g1, al.Galaxy(redshift=0.5), g2],
@@ -476,7 +543,7 @@ class TestAbstractPlane(object):
                 [(2.0, 2.0)],
                 [(3.0, 3.0), (4.0, 4.0)],
             ]
-            assert plane.mass_profile_centres == [
+            assert plane.mass_profile_centres_list == [
                 (1.0, 1.0),
                 (2.0, 2.0),
                 (3.0, 3.0),
