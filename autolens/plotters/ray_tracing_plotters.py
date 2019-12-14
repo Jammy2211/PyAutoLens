@@ -384,6 +384,7 @@ def profile_image(
     tracer,
     grid,
     mask=None,
+    include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
     positions=None,
@@ -426,11 +427,19 @@ def profile_image(
         obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
+    if include_mass_profile_centres:
+        mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
+    else:
+        mass_profile_centres = None
+
+    print(mass_profile_centres)
+
     aa.plot.array(
         array=profile_image,
         mask=mask,
         lines=lines,
         points=positions,
+        centres=mass_profile_centres,
         as_subplot=as_subplot,
         unit_label=unit_label,
         unit_conversion_factor=unit_conversion_factor,

@@ -2,6 +2,8 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 from autoastro import lensing
+from autoarray.util import array_util
+from autoarray.structures import arrays
 from autoarray.operators.inversion import inversions as inv
 from autoastro.galaxy import galaxy as g
 from autoastro.util import cosmology_util
@@ -423,6 +425,16 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return tracer.traced_grids_of_planes_from_grid(grid=grid)[plane_index_insert]
 
+    def image_plane_multiple_image_coordinates(self, grid, source_plane_coordinates):
+
+        source_plane_grid = self.traced_grids_of_planes_from_grid(grid=grid)[-1]
+        print(np.min(np.abs(source_plane_grid.in_2d)))
+        source_plane_squared_distances = np.square(source_plane_grid[:,0] - source_plane_coordinates[0]) + np.square(source_plane_grid[:,1] - source_plane_coordinates[1])
+        source_plane_squared_distances = arrays.Array.manual_1d(array=source_plane_squared_distances, shape_2d=grid.shape_2d)
+        return array_util.trough_pixels_from_array_2d(array_2d=source_plane_squared_distances.in_2d)
+
+
+        # TODO : This should not input as a grid but use a iterative adaptive grid.
 
 class AbstractTracerData(AbstractTracerLensing):
     def __init__(self, planes, cosmology):
