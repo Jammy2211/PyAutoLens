@@ -121,7 +121,23 @@ class AbstractPlane(lensing.LensingObject):
         return any(list(map(lambda galaxy: galaxy.has_hyper_galaxy, self.galaxies)))
 
     @property
-    def mass_profile_centres(self):
+    def light_profile_centres_list(self):
+        return [
+            item
+            for light_profile_centres in self.light_profile_centres_of_galaxies
+            for item in light_profile_centres
+        ]
+
+    @property
+    def light_profile_centres_of_galaxies(self):
+        return [
+            galaxy.light_profile_centres_list
+            for galaxy in self.galaxies
+            if galaxy.has_light_profile
+        ]
+
+    @property
+    def mass_profile_centres_list(self):
         return [
             item
             for mass_profile_centres in self.mass_profile_centres_of_galaxies
@@ -131,7 +147,7 @@ class AbstractPlane(lensing.LensingObject):
     @property
     def mass_profile_centres_of_galaxies(self):
         return [
-            galaxy.mass_profile_centres
+            galaxy.mass_profile_centres_list
             for galaxy in self.galaxies
             if galaxy.has_mass_profile
         ]
@@ -139,7 +155,7 @@ class AbstractPlane(lensing.LensingObject):
     @property
     def mass_profile_axis_ratios_of_galaxies(self):
         return [
-            galaxy.mass_profile_axis_ratios
+            galaxy.mass_profile_axis_ratio_list
             for galaxy in self.galaxies
             if galaxy.has_mass_profile
         ]
@@ -147,7 +163,7 @@ class AbstractPlane(lensing.LensingObject):
     @property
     def mass_profile_phis_of_galaxies(self):
         return [
-            galaxy.mass_profile_phis
+            galaxy.mass_profile_phi_list
             for galaxy in self.galaxies
             if galaxy.has_mass_profile
         ]
