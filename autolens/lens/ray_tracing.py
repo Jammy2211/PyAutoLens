@@ -98,6 +98,22 @@ class AbstractTracer(lensing.LensingObject):
         return list(filter(lambda plane: plane.has_mass_profile, self.planes))
 
     @property
+    def light_profile_centres_list(self):
+        return [
+            item
+            for light_profile_centres in self.light_profile_centres_of_planes
+            for item in light_profile_centres
+        ]
+
+    @property
+    def light_profile_centres_of_planes(self):
+        return [
+            plane.light_profile_centres_list
+            for plane in self.planes
+            if plane.has_light_profile
+        ]
+
+    @property
     def mass_profile_centres_list(self):
         return [
             item
@@ -425,7 +441,8 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return tracer.traced_grids_of_planes_from_grid(grid=grid)[plane_index_insert]
 
- #   def image_plane_multiple_image_coordinates_of_galaxies(self, grid, source_plane_coordinates):
+    def image_plane_multiple_image_coordinates_of_galaxies(self, grid):
+        return [self.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=light_profile_centre) for light_profile_centre in self.light_profile_centres_of_planes[-1]]
 
     def image_plane_multiple_image_coordinates(self, grid, source_plane_coordinates):
 

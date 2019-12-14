@@ -517,6 +517,52 @@ class TestAbstractTracer(object):
         #
         #     assert tracer.galaxies_in_planes == [[g0, g1], [g4], [g2, g3], [g5]]
 
+    class TestLightProfileCentres:
+        def test__extract_centres_of_all_light_profiles_of_all_planes_and_galaxies(self):
+            g0 = al.Galaxy(
+                redshift=0.5, light=al.lp.SphericalGaussian(centre=(1.0, 1.0))
+            )
+            g1 = al.Galaxy(
+                redshift=0.5, light=al.lp.SphericalGaussian(centre=(2.0, 2.0))
+            )
+            g2 = al.Galaxy(
+                redshift=1.0,
+                light0=al.lp.SphericalGaussian(centre=(3.0, 3.0)),
+                light1=al.lp.SphericalGaussian(centre=(4.0, 4.0)),
+            )
+
+            plane_0 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+            plane_1 = al.Plane(galaxies=[al.Galaxy(redshift=1.0)], redshift=None)
+
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
+
+            assert tracer.light_profile_centres_of_planes == []
+            assert tracer.light_profile_centres_list == []
+
+            plane_0 = al.Plane(galaxies=[g0], redshift=None)
+            plane_1 = al.Plane(galaxies=[g1], redshift=None)
+
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
+
+            assert tracer.light_profile_centres_of_planes == [[(1.0, 1.0)], [(2.0, 2.0)]]
+            assert tracer.light_profile_centres_list == [(1.0, 1.0), (2.0, 2.0)]
+
+            plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
+            plane_1 = al.Plane(galaxies=[g2], redshift=None)
+
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
+
+            assert tracer.light_profile_centres_of_planes == [
+                [(1.0, 1.0), (2.0, 2.0)],
+                [(3.0, 3.0), (4.0, 4.0)],
+            ]
+            assert tracer.light_profile_centres_list == [
+                (1.0, 1.0),
+                (2.0, 2.0),
+                (3.0, 3.0),
+                (4.0, 4.0),
+            ]
+
     class TestMassProfileCentres:
         def test__extract_centres_of_all_mass_profiles_of_all_planes_and_galaxies(self):
             g0 = al.Galaxy(
@@ -2179,7 +2225,23 @@ class TestAbstractTracerLensing(object):
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            print(tracer.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=(0.0, 0.0)))
+        def test__of_light_profile_centres_of_source_plane(self):
+
+            grid = al.grid.uniform(shape_2d=(30, 30), pixel_scales=0.1, sub_size=4)
+
+            g0 = al.Galaxy(
+                redshift=0.5, mass=al.mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0, axis_ratio=0.9)
+            )
+
+            g1 = al.Galaxy(redshift=1.0, light=al.lp.SphericalGaussian(centre=(0.0, 0.0)))
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            print(tracer.image_plane_multiple_image_coordinates_of_galaxies(grid=grid))
+
+            coordinates_manual = tracer.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=(0.0, 0.0))
+
+            assert coordinates_manual == tracer.image_plane_multiple_image_coordinates_of_galaxies(grid=grid)[0]
 
     class TestLensingObject(object):
         def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(
