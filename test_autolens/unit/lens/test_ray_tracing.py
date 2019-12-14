@@ -2165,6 +2165,22 @@ class TestAbstractTracerLensing(object):
 
             assert (grid_at_redshift == sub_grid_7x7.geometry.unmasked_grid).all()
 
+    class TestMultipleImages:
+
+        def test__simple_isothermal_case_positions_are_correct(self):
+
+            grid = al.grid.uniform(shape_2d=(30, 30), pixel_scales=0.1, sub_size=4)
+
+            g0 = al.Galaxy(
+                redshift=0.5, mass=al.mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0, axis_ratio=0.9)
+            )
+
+            g1 = al.Galaxy(redshift=1.0)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+            print(tracer.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=(0.0, 0.0)))
+
     class TestLensingObject(object):
         def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(
             self
