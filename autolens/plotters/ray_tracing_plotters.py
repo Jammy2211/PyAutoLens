@@ -1,5 +1,6 @@
 import autofit as af
 import matplotlib
+import numpy as np
 
 backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
@@ -384,6 +385,7 @@ def profile_image(
     tracer,
     grid,
     mask=None,
+    include_multiple_images=False,
     include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
@@ -427,12 +429,18 @@ def profile_image(
         obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
+    if include_multiple_images:
+        multiple_images = tracer.image_plane_multiple_image_coordinates_of_galaxies(grid=grid)
+        print(np.asarray(multiple_images[0]))
+        positions = [grid.geometry.grid_scaled_from_grid_pixels_1d(grid_pixels_1d=np.asarray(multiple_images[0]))]
+        print(positions)
+    else:
+        multiple_images = None
+
     if include_mass_profile_centres:
         mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
     else:
         mass_profile_centres = None
-
-    print(mass_profile_centres)
 
     aa.plot.array(
         array=profile_image,

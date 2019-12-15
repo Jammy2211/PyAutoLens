@@ -2,32 +2,33 @@ import autolens as al
 from autolens.plotters import phase_plotters
 
 mask = al.mask.circular(
-    shape_2d=(200, 200), pixel_scales=0.05, sub_size=1, radius=2.4, centre=(2.0, 2.0)
+    shape_2d=(200, 200), pixel_scales=0.03, sub_size=1, radius=2.4, centre=(0.0, 0.0)
 )
 
 grid = al.grid.from_mask(mask=mask)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    light=al.lp.EllipticalDevVaucouleurs(intensity=1.0),
-    mass=al.mp.SphericalIsothermal(centre=(2.0, 2.0), einstein_radius=1.0),
+    mass=al.mp.EllipticalIsothermal(centre=(0.01, 0.0), einstein_radius=1.0, axis_ratio=0.8),
 )
 
 source_galaxy = al.Galaxy(
-    redshift=1.0, light=al.lp.EllipticalExponential(centre=(2.0, 2.0), intensity=1.0)
+    redshift=1.0, light=al.lp.EllipticalExponential(centre=(0.02, 0.01), intensity=1.0, effective_radius=0.01)
 )
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
+print(tracer.image_plane_multiple_image_coordinates_of_galaxies(grid=grid))
+
 # al.plot.plane.profile_image(plane=tracer.source_plane, grid=grid, include_critical_curves=True)
 
-al.plot.tracer.subplot(
+al.plot.tracer.profile_image(
     tracer=tracer,
     grid=grid,
     mask=mask,
+    include_multiple_images=True,
     include_critical_curves=False,
     include_caustics=True,
-    positions=[[[3.0, 2.0], [2.0, 3.0]]],
 )
 
 # phase_plotters.ray_tracing_of_phase(tracer=tracer, grid=grid,     during_analysis=True,

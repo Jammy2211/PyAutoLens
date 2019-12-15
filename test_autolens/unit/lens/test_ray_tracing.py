@@ -2215,19 +2215,23 @@ class TestAbstractTracerLensing(object):
 
         def test__simple_isothermal_case_positions_are_correct(self):
 
-            grid = al.grid.uniform(shape_2d=(30, 30), pixel_scales=0.1, sub_size=4)
+            grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
 
             g0 = al.Galaxy(
-                redshift=0.5, mass=al.mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0, axis_ratio=0.9)
+                redshift=0.5, mass=al.mp.EllipticalIsothermal(centre=(0.001, 0.001), einstein_radius=1.0, axis_ratio=0.8)
             )
 
             g1 = al.Galaxy(redshift=1.0)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
+            coordinates = tracer.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=(0.0, 0.0))
+
+            assert coordinates == [[29, 49], [49, 30], [49, 69], [70, 49]]
+
         def test__of_light_profile_centres_of_source_plane(self):
 
-            grid = al.grid.uniform(shape_2d=(30, 30), pixel_scales=0.1, sub_size=4)
+            grid = al.grid.uniform(shape_2d=(50, 50), pixel_scales=0.05, sub_size=4)
 
             g0 = al.Galaxy(
                 redshift=0.5, mass=al.mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0, axis_ratio=0.9)
@@ -2237,10 +2241,9 @@ class TestAbstractTracerLensing(object):
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            print(tracer.image_plane_multiple_image_coordinates_of_galaxies(grid=grid))
-
             coordinates_manual = tracer.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=(0.0, 0.0))
 
+            assert coordinates_manual == [[4, 24], [45, 24]]
             assert coordinates_manual == tracer.image_plane_multiple_image_coordinates_of_galaxies(grid=grid)[0]
 
     class TestLensingObject(object):
