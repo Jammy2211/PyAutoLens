@@ -695,7 +695,7 @@ class PlanePositions(object):
         -----------
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
-        positions : [[[]]]
+        positions : [[()]]
             The (y,x) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same
             location(s) in the final source-plane.
         compute_deflections : bool

@@ -2225,11 +2225,17 @@ class TestAbstractTracerLensing(object):
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            coordinates = tracer.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=(0.0, 0.0))
+            coordinates = tracer.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=(0.0, 0.0), return_in_pixels=True)
 
             assert coordinates == [[29, 49], [49, 30], [49, 69], [70, 49]]
 
-        def test__of_light_profile_centres_of_source_plane(self):
+            coordinates = tracer.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=(0.0, 0.0), return_in_pixels=False)
+
+            print(coordinates)
+
+            assert coordinates == [[29, 49], [49, 30], [49, 69], [70, 49]]
+
+        def test__multiple_image_coordinate_of_light_profile_centres_of_source_plane(self):
 
             grid = al.grid.uniform(shape_2d=(50, 50), pixel_scales=0.05, sub_size=4)
 
@@ -2241,7 +2247,7 @@ class TestAbstractTracerLensing(object):
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            coordinates_manual = tracer.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=(0.0, 0.0))
+            coordinates_manual = tracer.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=(0.0, 0.0), return_in_pixels=True)
 
             assert coordinates_manual == [[4, 24], [45, 24]]
             assert coordinates_manual == tracer.image_plane_multiple_image_coordinates_of_galaxies(grid=grid)[0]
@@ -3686,17 +3692,16 @@ class TestTracerPositions(object):
             galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
         )
 
+        positions = al.positions(positions=[[(1.0, 1.0), (-1.0, -1.0)]])
+
         traced_positions_of_planes = tracer.traced_positions_of_planes_from_positions(
-            positions=[al.grid_irregular.manual_1d(grid=[[1.0, 1.0], [-1.0, -1.0]])]
+            positions=positions
         )
 
-        assert traced_positions_of_planes[0][0] == pytest.approx(
-            np.array([[1.0, 1.0], [-1.0, -1.0]]), 1e-3
-        )
+        print(traced_positions_of_planes[0][0])
 
-        assert traced_positions_of_planes[1][0] == pytest.approx(
-            np.array([[1.0, 1.0], [-1.0, -1.0]]), 1e-3
-        )
+        assert traced_positions_of_planes[0][0] == [(1.0, 1.0), (-1.0, -1.0)]
+        assert traced_positions_of_planes[1][0] == [(1.0, 1.0), (-1.0, -1.0)]
 
     def test__x2_positions__sis_lens__positions_with_source_plane_deflected(
         self, gal_x1_mp

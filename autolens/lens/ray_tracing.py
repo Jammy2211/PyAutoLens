@@ -324,15 +324,18 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         traced_positions_of_planes = [[] for i in range(self.total_planes)]
 
-        for position_grid in positions:
+        for position_grid in positions.as_grids:
             traced_position_grids_of_planes = self.traced_grids_of_planes_from_grid(
                 grid=position_grid
             )
             for (plane_index, tracer_position_grid_of_plane) in enumerate(
                 traced_position_grids_of_planes
             ):
+
+                print(tracer_position_grid_of_plane)
+
                 traced_positions_of_planes[plane_index].append(
-                    traced_position_grids_of_planes[plane_index]
+                    [tuple(pos) for pos in traced_position_grids_of_planes[plane_index]]
                 )
 
         return traced_positions_of_planes
@@ -443,10 +446,11 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return tracer.traced_grids_of_planes_from_grid(grid=grid)[plane_index_insert]
 
-    def image_plane_multiple_image_coordinates_of_galaxies(self, grid):
-        return [self.image_plane_multiple_image_coordinates(grid=grid, source_plane_coordinates=light_profile_centre) for light_profile_centre in self.light_profile_centres_of_planes[-1]]
+    def image_plane_multiple_image_coordinates_of_galaxies(self, grid, return_in_pixels=False):
+        return [self.image_plane_multiple_image_coordinates(
+            grid=grid, source_plane_coordinates=light_profile_centre, return_in_pixels=return_in_pixels) for light_profile_centre in self.light_profile_centres_of_planes[-1]]
 
-    def image_plane_multiple_image_coordinates(self, grid, source_plane_coordinates):
+    def image_plane_multiple_image_coordinates(self, grid, source_plane_coordinates, return_in_pixels=False):
 
         if grid.sub_size > 1:
             grid = grid.in_1d_binned
@@ -461,10 +465,16 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             shape_2d=grid.shape_2d, pixel_coordinates=trough_pixels,
             pixel_scales=grid.pixel_scales, sub_size=grid.sub_size, origin=grid.origin, buffer=1)
 
-        return grid_util.pixels_at_coordinate_from_grid_2d(
-            grid_2d=source_plane_grid.in_2d,
-            coordinate=source_plane_coordinates,
-            mask_2d=trough_mask)
+        multiple_image_pixels = grid_util.pixels_at_coordinate_from_grid_2d(
+                grid_2d=source_plane_grid.in_2d,
+                coordinate=source_plane_coordinates,
+                mask_2d=trough_mask)
+
+        if return_in_pixels:
+            return grids.Positions(positions=multiple_image_pixels)
+        else:
+            positions_scaled = [grid.geometry.scaled_coordinates_from_pixel_coordinates(pixel_coordinates=pixel_coordinates) for pixel_coordinates in multiple_image_pixels]
+            return grids.Positions(positions=positions_scaled)
 
 
         # TODO : This should not input as a grid but use a iterative adaptive grid.

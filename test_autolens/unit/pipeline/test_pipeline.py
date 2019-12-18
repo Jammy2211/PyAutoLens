@@ -114,7 +114,7 @@ class TestPassMask(object):
 
 class TestPassPositions(object):
     def test_pass_positions(self):
-        positions = [[[1.0, 1.0], [2.0, 2.0]]]
+        positions = [[(1.0, 1.0), (2.0, 2.0)]]
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = al.PipelineDataset("", phase_1, phase_2)
