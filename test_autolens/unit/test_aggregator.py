@@ -97,7 +97,7 @@ class TestCase:
         assert three.header == "pipeline_1/phase_2/lens_2"
 
     def test_aggregator_model_results(self, aggregator):
-        assert sorted(aggregator.model_results()) == sorted(
+        assert sorted(aggregator.model_results) == sorted(
             "pipeline_2/phase_1/lens_1\n\n"
             "results_two\n\n"
             "pipeline_1/phase_2/lens_2\n\n"
@@ -106,7 +106,7 @@ class TestCase:
             "results_one"
         )
 
-        assert sorted(aggregator.model_results(phase="phase_1")) == sorted(
+        assert sorted(aggregator.filter(phase="phase_1").model_results) == sorted(
             "pipeline_2/phase_1/lens_1\n\n"
             "results_two\n\n"
             "pipeline_1/phase_1/lens_1\n\n"
@@ -121,14 +121,14 @@ class TestCase:
         assert one.model.priors == two.model.priors
 
     def test_filter_optimizers(self, aggregator, one, two, three):
-        result = aggregator.optimizers_with()
+        result = aggregator.optimizer
 
         assert len(result) == 3
         assert one.optimizer in result
         assert two.optimizer in result
         assert three.optimizer in result
 
-        result = aggregator.optimizers_with(pipeline="pipeline_1")
+        result = aggregator.filter(pipeline="pipeline_1").optimizer
         assert len(result) == 2
         assert one.optimizer in result
         assert three.optimizer in result
