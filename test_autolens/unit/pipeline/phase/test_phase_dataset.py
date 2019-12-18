@@ -155,7 +155,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_imaging_fit.positions_threshold = 0.2
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
+            dataset=imaging_7x7, positions=[[(1.0, 1.0), (2.0, 2.0)]]
         )
 
         assert (analysis.masked_dataset.positions[0][0] == np.array([1.0, 1.0])).all()
@@ -180,7 +180,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
+            dataset=imaging_7x7, positions=[[(1.0, 1.0), (2.0, 2.0)]]
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -198,7 +198,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
+            dataset=imaging_7x7, positions=[[(1.0, 1.0), (2.0, 2.0)]]
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -217,7 +217,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, positions=[[[1.0, 0.0], [-1.0, 0.0]]]
+            dataset=imaging_7x7, positions=[[(1.0, 0.0), (-1.0, 0.0)]]
         )
         tracer = al.Tracer.from_galaxies(
             galaxies=[
@@ -248,7 +248,7 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7,
-            positions=[[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]],
+            positions=[[(0.0, 0.0), (0.0, 0.0)], [(0.0, 0.0), (0.0, 0.0)]],
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -259,7 +259,7 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7,
-            positions=[[[0.0, 0.0], [0.0, 0.0]], [[100.0, 0.0], [0.0, 0.0]]],
+            positions=[[(0.0, 0.0), (0.0, 0.0)], [(100.0, 0.0), (0.0, 0.0)]],
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -738,7 +738,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(dataset=imaging_7x7, positions=[[[1.0, 1.0]]])
+        result = phase_imaging_7x7.run(dataset=imaging_7x7, positions=[[(1.0, 1.0)]])
 
         assert (result.positions[0] == np.array([1.0, 1.0])).all()
 

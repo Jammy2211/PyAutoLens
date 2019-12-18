@@ -203,7 +203,7 @@ def subplot_real_space(
         aa.plot.inversion.reconstructed_image(
             inversion=fit.inversion,
             mask=real_space_mask,
-            lines=lines[0],
+            lines=[lines[0]],
             positions=positions,
             grid=image_plane_pix_grid,
             as_subplot=True,
@@ -253,7 +253,7 @@ def subplot_real_space(
 
         aa.plot.inversion.reconstruction(
             inversion=fit.inversion,
-            lines=lines[0],
+            lines=[lines[0]],
             include_grid=False,
             include_centres=False,
             as_subplot=True,

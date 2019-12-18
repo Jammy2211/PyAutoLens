@@ -16,6 +16,8 @@ def subplot(
     tracer,
     grid,
     mask=None,
+    include_multiple_images=False,
+    include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
     positions=None,
@@ -74,6 +76,8 @@ def subplot(
         tracer=tracer,
         grid=grid,
         mask=mask,
+        include_multiple_images=include_multiple_images,
+        include_mass_profile_centres=include_mass_profile_centres,
         include_critical_curves=include_critical_curves,
         positions=positions,
         as_subplot=True,
@@ -110,6 +114,8 @@ def subplot(
             tracer=tracer,
             grid=grid,
             mask=mask,
+            include_multiple_images=include_multiple_images,
+            include_mass_profile_centres=include_mass_profile_centres,
             as_subplot=True,
             plot_in_kpc=plot_in_kpc,
             figsize=figsize,
@@ -140,6 +146,8 @@ def subplot(
             tracer=tracer,
             grid=grid,
             mask=mask,
+            include_multiple_images=include_multiple_images,
+            include_mass_profile_centres=include_mass_profile_centres,
             as_subplot=True,
             plot_in_kpc=plot_in_kpc,
             figsize=figsize,
@@ -208,6 +216,8 @@ def subplot(
             tracer=tracer,
             grid=grid,
             mask=mask,
+            include_multiple_images=include_multiple_images,
+            include_mass_profile_centres=include_mass_profile_centres,
             as_subplot=True,
             plot_in_kpc=plot_in_kpc,
             figsize=figsize,
@@ -238,6 +248,8 @@ def subplot(
             tracer=tracer,
             grid=grid,
             mask=mask,
+            include_multiple_images=include_multiple_images,
+            include_mass_profile_centres=include_mass_profile_centres,
             as_subplot=True,
             plot_in_kpc=plot_in_kpc,
             figsize=figsize,
@@ -275,6 +287,8 @@ def individual(
     tracer,
     grid,
     mask=None,
+    include_multiple_images=False,
+    include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
     positions=None,
@@ -309,6 +323,8 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
+            include_multiple_images=include_multiple_images,
+            include_mass_profile_centres=include_mass_profile_centres,
             include_critical_curves=include_critical_curves,
             positions=positions,
             plot_in_kpc=plot_in_kpc,
@@ -322,6 +338,8 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
+            include_multiple_images=include_multiple_images,
+            include_mass_profile_centres=include_mass_profile_centres,
             plot_in_kpc=plot_in_kpc,
             output_path=output_path,
             output_format=output_format,
@@ -333,6 +351,8 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
+            include_multiple_images=include_multiple_images,
+            include_mass_profile_centres=include_mass_profile_centres,
             plot_in_kpc=plot_in_kpc,
             output_path=output_path,
             output_format=output_format,
@@ -364,17 +384,19 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
+            include_multiple_images=include_multiple_images,
+            include_mass_profile_centres=include_mass_profile_centres,
             plot_in_kpc=plot_in_kpc,
             output_path=output_path,
             output_format=output_format,
         )
 
-    if plot_deflections:
-
         deflections_x(
             tracer=tracer,
             grid=grid,
             mask=mask,
+            include_multiple_images=include_multiple_images,
+            include_mass_profile_centres=include_mass_profile_centres,
             plot_in_kpc=plot_in_kpc,
             output_path=output_path,
             output_format=output_format,
@@ -431,9 +453,7 @@ def profile_image(
 
     if include_multiple_images:
         multiple_images = tracer.image_plane_multiple_image_coordinates_of_galaxies(grid=grid)
-        print(np.asarray(multiple_images[0]))
         positions = [grid.geometry.grid_scaled_from_grid_pixels_1d(grid_pixels_1d=np.asarray(multiple_images[0]))]
-        print(positions)
     else:
         multiple_images = None
 
@@ -481,6 +501,8 @@ def convergence(
     tracer,
     grid,
     mask=None,
+    include_multiple_images=False,
+    include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
@@ -520,10 +542,16 @@ def convergence(
         obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
+    if include_mass_profile_centres:
+        mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
+    else:
+        mass_profile_centres = None
+
     aa.plot.array(
         array=convergence,
         mask=mask,
         lines=lines,
+        centres=mass_profile_centres,
         as_subplot=as_subplot,
         unit_label=unit_label,
         unit_conversion_factor=unit_conversion_factor,
@@ -555,6 +583,8 @@ def potential(
     tracer,
     grid,
     mask=None,
+    include_multiple_images=False,
+    include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
@@ -594,10 +624,16 @@ def potential(
         obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
+    if include_mass_profile_centres:
+        mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
+    else:
+        mass_profile_centres = None
+
     aa.plot.array(
         array=potential,
         mask=mask,
         lines=lines,
+        centres=mass_profile_centres,
         as_subplot=as_subplot,
         unit_label=unit_label,
         unit_conversion_factor=unit_conversion_factor,
@@ -629,6 +665,8 @@ def deflections_y(
     tracer,
     grid,
     mask=None,
+    include_multiple_images=False,
+    include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
@@ -671,10 +709,16 @@ def deflections_y(
         obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
+    if include_mass_profile_centres:
+        mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
+    else:
+        mass_profile_centres = None
+
     aa.plot.array(
         array=deflections_y,
         mask=mask,
         lines=lines,
+        centres=mass_profile_centres,
         as_subplot=as_subplot,
         unit_label=unit_label,
         unit_conversion_factor=unit_conversion_factor,
@@ -706,6 +750,8 @@ def deflections_x(
     tracer,
     grid,
     mask=None,
+    include_multiple_images=False,
+    include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
     as_subplot=False,
@@ -748,10 +794,16 @@ def deflections_x(
         obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
+    if include_mass_profile_centres:
+        mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
+    else:
+        mass_profile_centres = None
+
     aa.plot.array(
         array=deflections_x,
         lines=lines,
         mask=mask,
+        centres=mass_profile_centres,
         as_subplot=as_subplot,
         unit_label=unit_label,
         unit_conversion_factor=unit_conversion_factor,
