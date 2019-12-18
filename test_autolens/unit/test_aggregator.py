@@ -4,6 +4,7 @@ from shutil import rmtree
 import pytest
 
 import autofit as af
+from autofit.optimize.non_linear.output import Output
 
 directory = path.dirname(path.realpath(__file__))
 aggregator_directory = "{}/test_files/aggregator".format(directory)
@@ -44,6 +45,11 @@ class TestCase:
     def test_total_phases(self, aggregator):
         assert len(aggregator.phases) == 3
 
+    def test_optimizer_output(self, one, two, three):
+        assert isinstance(one.output, Output)
+        assert isinstance(two.output, Output)
+        assert isinstance(three.output, Output)
+
     def test_file_paths(self, one, two, three):
         assert three.file_path == "{}/three/metadata".format(aggregator_directory)
         assert one.file_path == "{}/one/metadata".format(aggregator_directory)
@@ -52,15 +58,15 @@ class TestCase:
     def test_attributes(self, one, two, three):
         assert one.pipeline == "pipeline_1"
         assert one.phase == "phase_1"
-        assert one.data == "lens_1"
+        assert one.dataset == "lens_1"
 
         assert two.pipeline == "pipeline_2"
         assert two.phase == "phase_1"
-        assert two.data == "lens_1"
+        assert two.dataset == "lens_1"
 
         assert three.pipeline == "pipeline_1"
         assert three.phase == "phase_2"
-        assert three.data == "lens_2"
+        assert three.dataset == "lens_2"
 
     def test_filter_phases(self, aggregator, one, two, three):
         result = aggregator.phases_with()
@@ -74,7 +80,7 @@ class TestCase:
         assert one in result
         assert three in result
 
-        result = aggregator.phases_with(data="lens_2")
+        result = aggregator.phases_with(dataset="lens_2")
         assert [three] == result
 
         result = aggregator.phases_with(pipeline="pipeline_2", phase="phase_1")
