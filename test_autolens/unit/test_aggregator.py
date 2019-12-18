@@ -36,7 +36,7 @@ def make_three(aggregator):
     return filter_phases(aggregator, "three")
 
 
-class TestCase(object):
+class TestCase:
     def test_total_phases(self, aggregator):
         assert len(aggregator.phases) == 3
 
@@ -60,7 +60,6 @@ class TestCase(object):
 
     def test_filter_phases(self, aggregator, one, two, three):
         result = aggregator.phases_with()
-
         assert len(result) == 3
         assert one in result
         assert two in result
