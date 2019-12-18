@@ -746,6 +746,17 @@ class TestAbstractPlaneLensing(object):
 
             assert profile_image == pytest.approx(galaxy_image, 1.0e-4)
 
+        def test__profile_image_from_positions__same_as_galaxy_image_with_conversions(
+            self, positions_7x7, gal_x1_lp
+        ):
+            galaxy_image = gal_x1_lp.profile_image_from_grid(grid=positions_7x7)
+
+            plane = al.Plane(galaxies=[gal_x1_lp], redshift=None)
+
+            profile_image = plane.profile_image_from_grid(grid=positions_7x7)
+
+            assert profile_image[0][0] == pytest.approx(galaxy_image[0][0], 1.0e-4)
+
         def test__profile_images_of_galaxies(self, sub_grid_7x7):
             # Overwrite one value so intensity in each pixel is different
             sub_grid_7x7[5] = np.array([2.0, 2.0])
@@ -907,6 +918,22 @@ class TestAbstractPlaneLensing(object):
 
             assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
 
+        def test__convergence_from_grid_as_positions(
+            self, positions_7x7
+        ):
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            )
+
+            g0_convergence = g0.convergence_from_grid(grid=positions_7x7)
+
+            plane = al.Plane(galaxies=[g0], redshift=None)
+
+            convergence = plane.convergence_from_grid(grid=positions_7x7)
+
+            assert convergence[0][0] == pytest.approx(g0_convergence[0][0], 1.0e-8)
+
         def test__plane_has_no_galaxies__convergence_is_zeros_size_of_reshaped_sub_array(
             self, sub_grid_7x7
         ):
@@ -1001,6 +1028,24 @@ class TestAbstractPlaneLensing(object):
             potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
             assert potential == pytest.approx(g0_potential + g1_potential, 1.0e-8)
+
+        def test__potential_from_grid_as_positions(
+            self, positions_7x7
+        ):
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            )
+
+            print(positions_7x7)
+
+            g0_potential = g0.potential_from_grid(grid=positions_7x7)
+
+            plane = al.Plane(galaxies=[g0], redshift=None)
+
+            potential = plane.potential_from_grid(grid=positions_7x7)
+
+            assert potential[0][0] == pytest.approx(g0_potential[0][0], 1.0e-8)
 
         def test__plane_has_no_galaxies__potential_is_zeros_size_of_reshaped_sub_array(
             self, sub_grid_7x7
@@ -1109,6 +1154,23 @@ class TestAbstractPlaneLensing(object):
             deflections = plane.deflections_from_grid(grid=sub_grid_7x7)
 
             assert deflections == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
+
+        def test__deflections_from_grid_as_positions(
+            self, positions_7x7
+        ):
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            )
+
+            g0_deflections = g0.deflections_from_grid(grid=positions_7x7)
+
+            plane = al.Plane(galaxies=[g0], redshift=None)
+
+            deflections = plane.deflections_from_grid(grid=positions_7x7)
+
+            assert deflections[0][0][0] == pytest.approx(g0_deflections[0][0][0], 1.0e-8)
+            assert deflections[0][0][1] == pytest.approx(g0_deflections[0][0][1], 1.0e-8)
 
         def test__deflections_numerics__x2_galaxy_in_plane__or_galaxy_x2_sis__deflections_double(
             self, grid_7x7, gal_x1_mp, gal_x2_mp
@@ -2224,6 +2286,21 @@ class TestPlane(object):
                 np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3
             )
             assert traced_grid[3] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
+
+        def test__traced_grid__grid_is_positions__uses_deflections__x2_sis_galaxies(
+            self, gal_x1_mp
+        ):
+
+            positions = al.positions(positions=[[(1.0, 1.0), (1.0, 0.0)]])
+
+            plane = al.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
+
+            traced_grid = plane.traced_grid_from_grid(grid=positions)
+
+            assert traced_grid[0][0] == pytest.approx(
+                (1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707), 1e-3
+            )
+            assert traced_grid[0][1] == pytest.approx((-1.0, 0.0), 1e-3)
 
         def test__plane_has_no_galaxies__traced_grid_is_input_grid_of_sub_grid_7x7(
             self, sub_grid_7x7
