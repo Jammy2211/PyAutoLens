@@ -3,7 +3,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autoastro import lensing
-from autoarray.structures import visibilities as vis
+from autoarray.structures import grids, visibilities as vis
 from autoarray.masked import masked_structures
 from autoastro.util import cosmology_util
 from autolens import exc
@@ -261,6 +261,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             redshift=redshift, galaxies=galaxies, cosmology=cosmology
         )
 
+    @grids.convert_positions_to_grid
     def profile_image_from_grid(self, grid):
         """Compute the profile-image plane image of the list of galaxies of the plane's sub-grid, by summing the
         individual images of each galaxy's light profile.
@@ -295,6 +296,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             map(lambda galaxy: galaxy.profile_image_from_grid(grid=grid), self.galaxies)
         )
 
+    @grids.convert_positions_to_grid
     def convergence_from_grid(self, grid):
         """Compute the convergence of the list of galaxies of the plane's sub-grid, by summing the individual convergences \
         of each galaxy's mass profile.
@@ -325,6 +327,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                 sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
             )
 
+    @grids.convert_positions_to_grid
     def potential_from_grid(self, grid):
         """Compute the potential of the list of galaxies of the plane's sub-grid, by summing the individual potentials \
         of each galaxy's mass profile.
@@ -355,6 +358,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                 sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
             )
 
+    @grids.convert_positions_to_grid
     def deflections_from_grid(self, grid):
         if self.galaxies:
             deflections = sum(
@@ -366,6 +370,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                 sub_grid_1d=np.full((grid.sub_shape_1d, 2), 0.0)
             )
 
+    @grids.convert_positions_to_grid
     def traced_grid_from_grid(self, grid):
         """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
 
@@ -682,52 +687,6 @@ class Plane(AbstractPlaneData):
             )
 
         return summary
-
-
-class PlanePositions(object):
-    def __init__(
-        self, redshift, galaxies, positions, compute_deflections=True, cosmology=None
-    ):
-        """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and the positions of image-plane \
-        coordinates which mappers close to one another in the source-plane.
-
-        Parameters
-        -----------
-        galaxies : [Galaxy]
-            The list of lens galaxies in this plane.
-        positions : [[()]]
-            The (y,x) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same
-            location(s) in the final source-plane.
-        compute_deflections : bool
-            If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
-        """
-
-        self.redshift = redshift
-        self.galaxies = galaxies
-        self.positions = positions
-
-        if compute_deflections:
-
-            def calculate_deflections(pos):
-                return sum(
-                    map(lambda galaxy: galaxy.deflections_from_grid(pos), galaxies)
-                )
-
-            self.deflections = list(
-                map(lambda pos: calculate_deflections(pos), self.positions)
-            )
-
-        self.cosmology = cosmology
-
-    def trace_to_next_plane(self):
-        """Trace the positions to the next plane."""
-        return list(
-            map(
-                lambda positions, deflections: np.subtract(positions, deflections),
-                self.positions,
-                self.deflections,
-            )
-        )
 
 
 class PlaneImage(object):
