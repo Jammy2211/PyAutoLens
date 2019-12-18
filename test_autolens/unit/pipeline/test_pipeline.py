@@ -94,7 +94,7 @@ class TestMetaData(object):
 
         assert (
             mock_files[1].text
-            == "pipeline=pipeline_name\nphase=phase_name\ndataset=data_name"
+            == "pipeline=pipeline_name\nphase=phase_name\ndataset=data_name\nphase_tag="
         )
 
         assert "phase_name///optimizer.pickle" in mock_files[2].filename
