@@ -1,4 +1,5 @@
 from os import path
+from shutil import rmtree
 
 import pytest
 
@@ -10,7 +11,10 @@ aggregator_directory = "{}/test_files/aggregator".format(directory)
 
 @pytest.fixture(name="aggregator")
 def make_aggregator():
-    return af.Aggregator(aggregator_directory)
+    yield af.Aggregator(aggregator_directory)
+    rmtree(f"{aggregator_directory}/one")
+    rmtree(f"{aggregator_directory}/two")
+    rmtree(f"{aggregator_directory}/three")
 
 
 def filter_phases(aggregator, folder):
