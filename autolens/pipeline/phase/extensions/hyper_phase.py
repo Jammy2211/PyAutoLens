@@ -1,6 +1,7 @@
 import copy
 
 import autofit as af
+from autofit.tools.phase import Dataset
 from autolens.pipeline.phase import abstract
 
 
@@ -70,7 +71,7 @@ class HyperPhase(object):
     def customize_priors(self, results):
         pass
 
-    def run(self, dataset, results: af.ResultsCollection = None, **kwargs) -> af.Result:
+    def run(self, dataset: Dataset, results: af.ResultsCollection = None, **kwargs) -> af.Result:
         """
         Run the hyper phase and then the hyper_galaxies phase.
 
@@ -88,6 +89,7 @@ class HyperPhase(object):
             The result of the phase, with a hyper_galaxies result attached as an attribute with the hyper_name of this
             phase.
         """
+        dataset.save(self.paths.phase_output_path)
 
         results = (
             copy.deepcopy(results) if results is not None else af.ResultsCollection()
