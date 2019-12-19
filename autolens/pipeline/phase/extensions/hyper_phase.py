@@ -71,7 +71,9 @@ class HyperPhase(object):
     def customize_priors(self, results):
         pass
 
-    def run(self, dataset: Dataset, results: af.ResultsCollection = None, **kwargs) -> af.Result:
+    def run(
+        self, dataset: Dataset, results: af.ResultsCollection = None, **kwargs
+    ) -> af.Result:
         """
         Run the hyper phase and then the hyper_galaxies phase.
 
