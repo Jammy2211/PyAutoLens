@@ -20,12 +20,9 @@ class AbstractLensMasked(object):
 
         if self.positions is not None and self.positions_threshold is not None:
 
-            traced_positions_of_planes = tracer.traced_grids_of_planes_from_grid(
-                positions=self.positions
-            )
-
             positions_fit = fit.PositionsFit(
-                positions=traced_positions_of_planes[-1],
+                positions=self.positions,
+                tracer=tracer,
                 noise_map=self.imaging.pixel_scales,
             )
 
