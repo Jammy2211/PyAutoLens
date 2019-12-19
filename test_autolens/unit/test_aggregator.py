@@ -75,7 +75,7 @@ class TestCase:
     #     assert one in result
     #     assert two in result
     #     assert three in result
-    # 
+    #
     #     result = aggregator.phases_with(pipeline="pipeline_1")
     #     assert len(result) == 2
     #     assert one in result
