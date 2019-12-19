@@ -9,16 +9,21 @@ grid = al.grid.from_mask(mask=mask)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.EllipticalIsothermal(centre=(0.01, 0.0), einstein_radius=1.0, axis_ratio=0.8),
+    mass=al.mp.EllipticalIsothermal(
+        centre=(0.01, 0.0), einstein_radius=1.0, axis_ratio=0.8
+    ),
 )
 
 source_galaxy = al.Galaxy(
-    redshift=1.0, light=al.lp.EllipticalExponential(centre=(0.02, 0.01), intensity=1.0, effective_radius=0.01)
+    redshift=1.0,
+    light=al.lp.EllipticalExponential(
+        centre=(0.02, 0.01), intensity=1.0, effective_radius=0.01
+    ),
 )
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-print(tracer.image_plane_multiple_image_coordinates_of_galaxies(grid=grid))
+print(tracer.image_plane_multiple_image_positions_of_galaxies(grid=grid))
 
 # al.plot.plane.profile_image(plane=tracer.source_plane, grid=grid, include_critical_curves=True)
 

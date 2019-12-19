@@ -264,7 +264,7 @@ class InterferometerFit(aa_fit.InterferometerFit):
 
 
 class PositionsFit(object):
-    def __init__(self, positions, noise_map):
+    def __init__(self, positions, tracer, noise_map):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher likelihood.
 
@@ -276,6 +276,9 @@ class PositionsFit(object):
             The noise-value assumed when computing the likelihood.
         """
         self.positions = positions
+        self.source_plane_positions = tracer.traced_grids_of_planes_from_grid(
+            grid=positions
+        )[-1]
         self.noise_map = noise_map
 
     @property
@@ -291,12 +294,10 @@ class PositionsFit(object):
 
     @property
     def maximum_separations(self):
-        return list(
-            map(
-                lambda positions: self.max_separation_of_grid(grid=positions),
-                self.positions,
-            )
-        )
+        return [
+            self.max_separation_of_grid(grid=position_list)
+            for position_list in self.positions.list_in_1d
+        ]
 
     @staticmethod
     def max_separation_of_grid(grid):

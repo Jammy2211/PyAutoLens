@@ -434,38 +434,53 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return tracer.traced_grids_of_planes_from_grid(grid=grid)[plane_index_insert]
 
-    def image_plane_multiple_image_coordinates_of_galaxies(self, grid, return_in_pixels=False):
-        return [self.image_plane_multiple_image_coordinates(
-            grid=grid, source_plane_coordinates=light_profile_centre, return_in_pixels=return_in_pixels) for light_profile_centre in self.light_profile_centres_of_planes[-1]]
+    def image_plane_multiple_image_positions_of_galaxies(self, grid):
+        return [
+            self.image_plane_multiple_image_positions(
+                grid=grid, source_plane_coordinates=light_profile_centre
+            )
+            for light_profile_centre in self.light_profile_centres_of_planes[-1]
+        ]
 
-    def image_plane_multiple_image_coordinates(self, grid, source_plane_coordinates, return_in_pixels=False):
+    def image_plane_multiple_image_positions(self, grid, source_plane_coordinates):
+
+        # TODO : This should not input as a grid but use a iterative adaptive grid.
 
         if grid.sub_size > 1:
             grid = grid.in_1d_binned
 
         source_plane_grid = self.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-        source_plane_squared_distances = np.square(source_plane_grid[:,0] - source_plane_coordinates[0]) + np.square(source_plane_grid[:,1] - source_plane_coordinates[1])
-        source_plane_squared_distances = MaskedArray.manual_1d(array=source_plane_squared_distances, mask=grid.mask)
-        trough_pixels = array_util.trough_pixels_from_array_2d(array_2d=source_plane_squared_distances.in_2d, mask_2d=grid.mask)
+        source_plane_squared_distances = np.square(
+            source_plane_grid[:, 0] - source_plane_coordinates[0]
+        ) + np.square(source_plane_grid[:, 1] - source_plane_coordinates[1])
+        source_plane_squared_distances = MaskedArray.manual_1d(
+            array=source_plane_squared_distances, mask=grid.mask
+        )
+        trough_pixels = array_util.trough_pixels_from_array_2d(
+            array_2d=source_plane_squared_distances.in_2d, mask_2d=grid.mask
+        )
 
         trough_mask = msk.Mask.from_pixel_coordinates(
-            shape_2d=grid.shape_2d, pixel_coordinates=trough_pixels,
-            pixel_scales=grid.pixel_scales, sub_size=grid.sub_size, origin=grid.origin, buffer=1)
+            shape_2d=grid.shape_2d,
+            pixel_coordinates=trough_pixels,
+            pixel_scales=grid.pixel_scales,
+            sub_size=grid.sub_size,
+            origin=grid.origin,
+            buffer=1,
+        )
 
-        multiple_image_pixels = grid_util.pixels_at_coordinate_from_grid_2d(
-                grid_2d=source_plane_grid.in_2d,
-                coordinate=source_plane_coordinates,
-                mask_2d=trough_mask)
+        multiple_image_pixels = grid_util.positions_at_coordinate_from_grid_2d(
+            grid_2d=source_plane_grid.in_2d,
+            coordinate=source_plane_coordinates,
+            mask_2d=trough_mask,
+        )
 
-        if return_in_pixels:
-            return grids.Positions(positions=multiple_image_pixels)
-        else:
-            positions_scaled = [grid.geometry.scaled_coordinates_from_pixel_coordinates(pixel_coordinates=pixel_coordinates) for pixel_coordinates in multiple_image_pixels]
-            return grids.Positions(positions=positions_scaled)
+        print(multiple_image_pixels)
 
-
-        # TODO : This should not input as a grid but use a iterative adaptive grid.
+        return grids.Positions.from_pixels_and_mask(
+            pixels=[multiple_image_pixels], mask=trough_mask
+        )
 
 
 class AbstractTracerData(AbstractTracerLensing):

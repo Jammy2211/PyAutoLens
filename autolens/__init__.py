@@ -66,4 +66,4 @@ from autolens.pipeline.pipeline import (
 )
 from autolens import plotters as plot
 
-__version__ = '0.32.3'
+__version__ = "0.32.3"
