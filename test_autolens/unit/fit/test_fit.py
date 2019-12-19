@@ -2300,7 +2300,7 @@ class MockTracerPositions:
         self.noise = noise
 
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
-        return self.positions
+        return [self.positions]
 
 
 class TestPositionsFit:
@@ -2429,3 +2429,23 @@ class TestPositionsFit:
 
         assert fit.maximum_separation_within_threshold(threshold=100.0)
         assert not fit.maximum_separation_within_threshold(threshold=0.1)
+
+    def test__above_with_real_tracer(self):
+
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[
+                al.Galaxy(
+                    redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
+                ),
+                al.Galaxy(redshift=1.0),
+            ]
+        )
+
+        positions = al.positions([[(1.0, 0.0), (-1.0, 0.0)]])
+        fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
+        assert fit.maximum_separation_within_threshold(threshold=0.01)
+
+        positions = al.positions([[(1.2, 0.0), (-1.0, 0.0)]])
+        fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
+        assert fit.maximum_separation_within_threshold(threshold=0.3)
+        assert not fit.maximum_separation_within_threshold(threshold=0.15)

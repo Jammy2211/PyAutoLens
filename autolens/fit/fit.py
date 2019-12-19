@@ -281,14 +281,6 @@ class PositionsFit(object):
         )[-1]
         self.noise_map = noise_map
 
-    @property
-    def chi_squared_map(self):
-        return np.square(np.divide(self.maximum_separations, self.noise_map))
-
-    @property
-    def figure_of_merit(self):
-        return -0.5 * sum(self.chi_squared_map)
-
     def maximum_separation_within_threshold(self, threshold):
         return max(self.maximum_separations) <= threshold
 
@@ -296,7 +288,7 @@ class PositionsFit(object):
     def maximum_separations(self):
         return [
             self.max_separation_of_grid(grid=position_list)
-            for position_list in self.positions.list_in_1d
+            for position_list in self.source_plane_positions.list_in_1d
         ]
 
     @staticmethod
@@ -307,6 +299,14 @@ class PositionsFit(object):
             ydists = np.square(np.subtract(grid[i, 1], grid[:, 1]))
             rdist_max[i] = np.max(np.add(xdists, ydists))
         return np.max(np.sqrt(rdist_max))
+
+    @property
+    def chi_squared_map(self):
+        return np.square(np.divide(self.maximum_separations, self.noise_map))
+
+    @property
+    def figure_of_merit(self):
+        return -0.5 * sum(self.chi_squared_map)
 
 
 def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
