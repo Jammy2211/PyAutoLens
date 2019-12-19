@@ -829,6 +829,28 @@ class TestAbstractPlaneLensing(object):
 
             assert profile_image == pytest.approx(g0_image + g1_image, 1.0e-4)
 
+        def test__same_as_above__grid_is_positions(self):
+            # Overwrite one value so intensity in each pixel is different
+            positions = [[(2.0, 2.0)], [(3.0, 3.0)]]
+
+            g0 = al.Galaxy(
+                redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
+            )
+            g1 = al.Galaxy(
+                redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=2.0)
+            )
+
+            g0_image = g0.profile_image_from_grid(grid=positions)
+
+            g1_image = g1.profile_image_from_grid(grid=positions)
+
+            plane = al.Plane(galaxies=[g0, g1], redshift=None)
+
+            profile_image = plane.profile_image_from_grid(grid=positions)
+
+            assert profile_image[0][0] == pytest.approx(g0_image[0][0] + g1_image[0][0], 1.0e-4)
+            assert profile_image[1][0] == pytest.approx(g0_image[1][0] + g1_image[1][0], 1.0e-4)
+
         def test__plane_has_no_galaxies__image_is_zeros_size_of_unlensed_grid(
             self, sub_grid_7x7
         ):
