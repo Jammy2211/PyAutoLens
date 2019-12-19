@@ -1,8 +1,10 @@
 from os import path
+from shutil import rmtree
 
 import pytest
 
 import autofit as af
+from autofit.optimize.non_linear.output import Output
 
 directory = path.dirname(path.realpath(__file__))
 aggregator_directory = "{}/test_files/aggregator".format(directory)
@@ -10,7 +12,10 @@ aggregator_directory = "{}/test_files/aggregator".format(directory)
 
 @pytest.fixture(name="aggregator")
 def make_aggregator():
-    return af.Aggregator(aggregator_directory)
+    yield af.Aggregator(aggregator_directory)
+    rmtree(f"{aggregator_directory}/one")
+    rmtree(f"{aggregator_directory}/two")
+    rmtree(f"{aggregator_directory}/three")
 
 
 def filter_phases(aggregator, folder):
@@ -36,9 +41,14 @@ def make_three(aggregator):
     return filter_phases(aggregator, "three")
 
 
-class TestCase(object):
+class TestCase:
     def test_total_phases(self, aggregator):
         assert len(aggregator.phases) == 3
+
+    def test_optimizer_output(self, one, two, three):
+        assert isinstance(one.output, Output)
+        assert isinstance(two.output, Output)
+        assert isinstance(three.output, Output)
 
     def test_file_paths(self, one, two, three):
         assert three.file_path == "{}/three/metadata".format(aggregator_directory)
@@ -48,19 +58,18 @@ class TestCase(object):
     def test_attributes(self, one, two, three):
         assert one.pipeline == "pipeline_1"
         assert one.phase == "phase_1"
-        assert one.data == "lens_1"
+        assert one.dataset == "lens_1"
 
         assert two.pipeline == "pipeline_2"
         assert two.phase == "phase_1"
-        assert two.data == "lens_1"
+        assert two.dataset == "lens_1"
 
         assert three.pipeline == "pipeline_1"
         assert three.phase == "phase_2"
-        assert three.data == "lens_2"
+        assert three.dataset == "lens_2"
 
     def test_filter_phases(self, aggregator, one, two, three):
         result = aggregator.phases_with()
-
         assert len(result) == 3
         assert one in result
         assert two in result
@@ -71,7 +80,7 @@ class TestCase(object):
         assert one in result
         assert three in result
 
-        result = aggregator.phases_with(data="lens_2")
+        result = aggregator.phases_with(dataset="lens_2")
         assert [three] == result
 
         result = aggregator.phases_with(pipeline="pipeline_2", phase="phase_1")
@@ -88,7 +97,7 @@ class TestCase(object):
         assert three.header == "pipeline_1/phase_2/lens_2"
 
     def test_aggregator_model_results(self, aggregator):
-        assert sorted(aggregator.model_results()) == sorted(
+        assert sorted(aggregator.model_results) == sorted(
             "pipeline_2/phase_1/lens_1\n\n"
             "results_two\n\n"
             "pipeline_1/phase_2/lens_2\n\n"
@@ -97,7 +106,7 @@ class TestCase(object):
             "results_one"
         )
 
-        assert sorted(aggregator.model_results(phase="phase_1")) == sorted(
+        assert sorted(aggregator.filter(phase="phase_1").model_results) == sorted(
             "pipeline_2/phase_1/lens_1\n\n"
             "results_two\n\n"
             "pipeline_1/phase_1/lens_1\n\n"
@@ -112,14 +121,14 @@ class TestCase(object):
         assert one.model.priors == two.model.priors
 
     def test_filter_optimizers(self, aggregator, one, two, three):
-        result = aggregator.optimizers_with()
+        result = aggregator.optimizer
 
         assert len(result) == 3
         assert one.optimizer in result
         assert two.optimizer in result
         assert three.optimizer in result
 
-        result = aggregator.optimizers_with(pipeline="pipeline_1")
+        result = aggregator.filter(pipeline="pipeline_1").optimizer
         assert len(result) == 2
         assert one.optimizer in result
         assert three.optimizer in result
