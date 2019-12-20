@@ -100,7 +100,7 @@ class AbstractTracer(lensing.LensingObject):
         return list(filter(lambda plane: plane.has_mass_profile, self.planes))
 
     @property
-    def light_profile_centres_list(self):
+    def light_profile_centres(self):
         return [
             item
             for light_profile_centres in self.light_profile_centres_of_planes
@@ -110,13 +110,29 @@ class AbstractTracer(lensing.LensingObject):
     @property
     def light_profile_centres_of_planes(self):
         return [
-            plane.light_profile_centres_list
+            plane.light_profile_centres
             for plane in self.planes
             if plane.has_light_profile
         ]
 
     @property
-    def mass_profile_centres_list(self):
+    def mass_profiles(self):
+        return [
+            item
+            for mass_profile in self.mass_profiles_of_planes
+            for item in mass_profile
+        ]
+
+    @property
+    def mass_profiles_of_planes(self):
+        return [
+            plane.mass_profiles
+            for plane in self.planes
+            if plane.has_mass_profile
+        ]
+
+    @property
+    def mass_profile_centres(self):
         return [
             item
             for mass_profile_centres in self.mass_profile_centres_of_planes
@@ -126,7 +142,7 @@ class AbstractTracer(lensing.LensingObject):
     @property
     def mass_profile_centres_of_planes(self):
         return [
-            plane.mass_profile_centres_list
+            plane.mass_profile_centres
             for plane in self.planes
             if plane.has_mass_profile
         ]
