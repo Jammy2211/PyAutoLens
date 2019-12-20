@@ -2527,7 +2527,7 @@ class TestAbstractTracerLensing(object):
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             coordinates = tracer.image_plane_multiple_image_positions(
-                grid=grid, source_plane_coordinates=(0.0, 0.0)
+                grid=grid, source_plane_coordinate=(0.0, 0.0)
             )
 
             assert coordinates[0][0] == pytest.approx((1.025, -0.025), 1.0e-4)
@@ -2560,7 +2560,7 @@ class TestAbstractTracerLensing(object):
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             coordinates_manual = tracer.image_plane_multiple_image_positions(
-                grid=grid, source_plane_coordinates=(0.0, 0.0)
+                grid=grid, source_plane_coordinate=(0.0, 0.0)
             )
 
             assert coordinates_manual.pixels == [[(4, 24), (45, 24)]]
