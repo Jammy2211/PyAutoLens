@@ -517,7 +517,7 @@ class TestAbstractTracer(object):
         #
         #     assert tracer.galaxies_in_planes == [[g0, g1], [g4], [g2, g3], [g5]]
 
-    class TestLightProfileCentres:
+    class TestLightProfileQuantities:
         def test__extract_centres_of_all_light_profiles_of_all_planes_and_galaxies(
             self
         ):
@@ -539,7 +539,7 @@ class TestAbstractTracer(object):
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
             assert tracer.light_profile_centres_of_planes == []
-            assert tracer.light_profile_centres_list == []
+            assert tracer.light_profile_centres == []
 
             plane_0 = al.Plane(galaxies=[g0], redshift=None)
             plane_1 = al.Plane(galaxies=[g1], redshift=None)
@@ -550,7 +550,7 @@ class TestAbstractTracer(object):
                 [(1.0, 1.0)],
                 [(2.0, 2.0)],
             ]
-            assert tracer.light_profile_centres_list == [(1.0, 1.0), (2.0, 2.0)]
+            assert tracer.light_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
 
             plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
             plane_1 = al.Plane(galaxies=[g2], redshift=None)
@@ -561,14 +561,60 @@ class TestAbstractTracer(object):
                 [(1.0, 1.0), (2.0, 2.0)],
                 [(3.0, 3.0), (4.0, 4.0)],
             ]
-            assert tracer.light_profile_centres_list == [
+            assert tracer.light_profile_centres == [
                 (1.0, 1.0),
                 (2.0, 2.0),
                 (3.0, 3.0),
                 (4.0, 4.0),
             ]
 
-    class TestMassProfileCentres:
+    class TestMassProfileQuantities:
+
+        def test__extract_mass_profiles_of_all_planes_and_galaxies(self):
+            g0 = al.Galaxy(
+                redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
+            )
+            g1 = al.Galaxy(
+                redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(2.0, 2.0))
+            )
+            g2 = al.Galaxy(
+                redshift=1.0,
+                mass0=al.mp.SphericalIsothermal(centre=(3.0, 3.0)),
+                mass1=al.mp.SphericalIsothermal(centre=(4.0, 4.0)),
+            )
+
+            plane_0 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+            plane_1 = al.Plane(galaxies=[al.Galaxy(redshift=1.0)], redshift=None)
+
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
+
+            assert tracer.mass_profiles == []
+            assert tracer.mass_profiles == []
+
+            plane_0 = al.Plane(galaxies=[g0], redshift=None)
+            plane_1 = al.Plane(galaxies=[g1], redshift=None)
+
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
+
+            assert tracer.mass_profiles_of_planes == [[g0.mass], [g1.mass]]
+            assert tracer.mass_profiles == [g0.mass, g1.mass]
+
+            plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
+            plane_1 = al.Plane(galaxies=[g2], redshift=None)
+
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
+
+            assert tracer.mass_profiles_of_planes == [
+                [g0.mass, g1.mass],
+                [g2.mass0, g2.mass1],
+            ]
+            assert tracer.mass_profiles == [
+                g0.mass,
+                g1.mass,
+                g2.mass0,
+                g2.mass1,
+            ]
+
         def test__extract_centres_of_all_mass_profiles_of_all_planes_and_galaxies(self):
             g0 = al.Galaxy(
                 redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
@@ -588,7 +634,7 @@ class TestAbstractTracer(object):
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
             assert tracer.mass_profile_centres_of_planes == []
-            assert tracer.mass_profile_centres_list == []
+            assert tracer.mass_profile_centres == []
 
             plane_0 = al.Plane(galaxies=[g0], redshift=None)
             plane_1 = al.Plane(galaxies=[g1], redshift=None)
@@ -596,7 +642,7 @@ class TestAbstractTracer(object):
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
             assert tracer.mass_profile_centres_of_planes == [[(1.0, 1.0)], [(2.0, 2.0)]]
-            assert tracer.mass_profile_centres_list == [(1.0, 1.0), (2.0, 2.0)]
+            assert tracer.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
 
             plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
             plane_1 = al.Plane(galaxies=[g2], redshift=None)
@@ -607,7 +653,7 @@ class TestAbstractTracer(object):
                 [(1.0, 1.0), (2.0, 2.0)],
                 [(3.0, 3.0), (4.0, 4.0)],
             ]
-            assert tracer.mass_profile_centres_list == [
+            assert tracer.mass_profile_centres == [
                 (1.0, 1.0),
                 (2.0, 2.0),
                 (3.0, 3.0),
