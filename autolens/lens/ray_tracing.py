@@ -437,12 +437,12 @@ class AbstractTracerLensing(AbstractTracerCosmology):
     def image_plane_multiple_image_positions_of_galaxies(self, grid):
         return [
             self.image_plane_multiple_image_positions(
-                grid=grid, source_plane_coordinates=light_profile_centre
+                grid=grid, source_plane_coordinate=light_profile_centre
             )
             for light_profile_centre in self.light_profile_centres_of_planes[-1]
         ]
 
-    def image_plane_multiple_image_positions(self, grid, source_plane_coordinates):
+    def image_plane_multiple_image_positions(self, grid, source_plane_coordinate):
 
         # TODO : This should not input as a grid but use a iterative adaptive grid.
 
@@ -451,12 +451,8 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         source_plane_grid = self.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-        source_plane_squared_distances = np.square(
-            source_plane_grid[:, 0] - source_plane_coordinates[0]
-        ) + np.square(source_plane_grid[:, 1] - source_plane_coordinates[1])
-        source_plane_squared_distances = MaskedArray.manual_1d(
-            array=source_plane_squared_distances, mask=grid.mask
-        )
+        source_plane_squared_distances = source_plane_grid.squared_distances_from_coordinate(coordinate=source_plane_coordinate)
+
         trough_pixels = array_util.trough_pixels_from_array_2d(
             array_2d=source_plane_squared_distances.in_2d, mask_2d=grid.mask
         )
@@ -472,11 +468,9 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         multiple_image_pixels = grid_util.positions_at_coordinate_from_grid_2d(
             grid_2d=source_plane_grid.in_2d,
-            coordinate=source_plane_coordinates,
+            coordinate=source_plane_coordinate,
             mask_2d=trough_mask,
         )
-
-        print(multiple_image_pixels)
 
         return grids.Positions.from_pixels_and_mask(
             pixels=[multiple_image_pixels], mask=trough_mask
