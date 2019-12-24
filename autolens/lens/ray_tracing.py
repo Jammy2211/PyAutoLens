@@ -125,11 +125,7 @@ class AbstractTracer(lensing.LensingObject):
 
     @property
     def mass_profiles_of_planes(self):
-        return [
-            plane.mass_profiles
-            for plane in self.planes
-            if plane.has_mass_profile
-        ]
+        return [plane.mass_profiles for plane in self.planes if plane.has_mass_profile]
 
     @property
     def mass_profile_centres(self):
@@ -467,7 +463,9 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         source_plane_grid = self.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-        source_plane_squared_distances = source_plane_grid.squared_distances_from_coordinate(coordinate=source_plane_coordinate)
+        source_plane_squared_distances = source_plane_grid.squared_distances_from_coordinate(
+            coordinate=source_plane_coordinate
+        )
 
         trough_pixels = array_util.trough_pixels_from_array_2d(
             array_2d=source_plane_squared_distances.in_2d, mask_2d=grid.mask

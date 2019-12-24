@@ -1,5 +1,6 @@
 import autolens as al
 
+from test_autolens.simulate.imaging import simulate_util
 
 imaging = simulate_util.load_test_imaging(
     data_type="lens_mass__source_smooth__offset_centre", data_resolution="lsst"
@@ -41,7 +42,9 @@ def fit_with_offset_centre(centre):
 
 fit = fit_with_offset_centre(centre=(2.0, 2.0))
 
-al.plot.fit_imaging.subplot_for_plane(fit=fit, plane_index=1, plot_source_grid=True)
+# al.plot.fit_imaging.subplot_for_plane(fit=fit, plane_index=1, plot_source_grid=True)
+
+al.plot.inversion.reconstruction(inversion=fit.inversion, include_grid=True)
 
 stop
 
