@@ -4,7 +4,7 @@ from shutil import rmtree
 import pytest
 
 import autofit as af
-from autofit.optimize.non_linear.output import Output
+from autofit.optimize.non_linear.output import AbstractOutput
 
 directory = path.dirname(path.realpath(__file__))
 aggregator_directory = "{}/test_files/aggregator".format(directory)
@@ -46,9 +46,9 @@ class TestCase:
         assert len(aggregator.phases) == 3
 
     def test_optimizer_output(self, one, two, three):
-        assert isinstance(one.output, Output)
-        assert isinstance(two.output, Output)
-        assert isinstance(three.output, Output)
+        assert isinstance(one.output, AbstractOutput)
+        assert isinstance(two.output, AbstractOutput)
+        assert isinstance(three.output, AbstractOutput)
 
     def test_file_paths(self, one, two, three):
         assert three.file_path == "{}/three/metadata".format(aggregator_directory)
