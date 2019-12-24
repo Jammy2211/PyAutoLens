@@ -295,6 +295,30 @@ class TestAbstractPlane(object):
             plane = al.Plane(galaxies=[galaxy, al.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_hyper_galaxy is True
 
+        def test__mass_profiles(self):
+
+            plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+
+            assert plane.mass_profiles == []
+
+            sis_0 = al.mp.SphericalIsothermal(einstein_radius=1.0)
+            sis_1 = al.mp.SphericalIsothermal(einstein_radius=2.0)
+            sis_2 = al.mp.SphericalIsothermal(einstein_radius=3.0)
+
+            plane = al.Plane(
+                galaxies=[al.Galaxy(redshift=0.5, mass_profile=sis_0)], redshift=None
+            )
+            assert plane.mass_profiles == [sis_0]
+
+            plane = al.Plane(
+                galaxies=[
+                    al.Galaxy(redshift=0.5, mass_profile_0=sis_0, mass_profile_1=sis_1),
+                    al.Galaxy(redshift=0.5, mass_profile_0=sis_2, mass_profile_1=sis_1),
+                ],
+                redshift=None,
+            )
+            assert plane.mass_profiles == [sis_0, sis_1, sis_2, sis_1]
+
         def test__hyper_image_of_galaxy_with_pixelization(self):
             galaxy_pix = al.Galaxy(
                 redshift=0.5,
@@ -433,29 +457,29 @@ class TestAbstractPlane(object):
 
             plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
             assert plane.light_profile_centres_of_galaxies == []
-            assert plane.light_profile_centres_list == []
+            assert plane.light_profile_centres == []
 
             plane = al.Plane(galaxies=[g0], redshift=None)
             assert plane.light_profile_centres_of_galaxies == [[(1.0, 1.0)]]
-            assert plane.light_profile_centres_list == [(1.0, 1.0)]
+            assert plane.light_profile_centres == [(1.0, 1.0)]
 
             plane = al.Plane(galaxies=[g1], redshift=None)
             assert plane.light_profile_centres_of_galaxies == [[(2.0, 2.0)]]
-            assert plane.light_profile_centres_list == [(2.0, 2.0)]
+            assert plane.light_profile_centres == [(2.0, 2.0)]
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
             assert plane.light_profile_centres_of_galaxies == [
                 [(1.0, 1.0)],
                 [(2.0, 2.0)],
             ]
-            assert plane.light_profile_centres_list == [(1.0, 1.0), (2.0, 2.0)]
+            assert plane.light_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
 
             plane = al.Plane(galaxies=[g1, g0], redshift=None)
             assert plane.light_profile_centres_of_galaxies == [
                 [(2.0, 2.0)],
                 [(1.0, 1.0)],
             ]
-            assert plane.light_profile_centres_list == [(2.0, 2.0), (1.0, 1.0)]
+            assert plane.light_profile_centres == [(2.0, 2.0), (1.0, 1.0)]
 
             plane = al.Plane(
                 galaxies=[g0, al.Galaxy(redshift=0.5), g1, al.Galaxy(redshift=0.5)],
@@ -465,7 +489,7 @@ class TestAbstractPlane(object):
                 [(1.0, 1.0)],
                 [(2.0, 2.0)],
             ]
-            assert plane.light_profile_centres_list == [(1.0, 1.0), (2.0, 2.0)]
+            assert plane.light_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
 
             plane = al.Plane(
                 galaxies=[g0, al.Galaxy(redshift=0.5), g1, al.Galaxy(redshift=0.5), g2],
@@ -476,7 +500,7 @@ class TestAbstractPlane(object):
                 [(2.0, 2.0)],
                 [(3.0, 3.0), (4.0, 4.0)],
             ]
-            assert plane.light_profile_centres_list == [
+            assert plane.light_profile_centres == [
                 (1.0, 1.0),
                 (2.0, 2.0),
                 (3.0, 3.0),
@@ -499,29 +523,29 @@ class TestAbstractPlane(object):
 
             plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
             assert plane.mass_profile_centres_of_galaxies == []
-            assert plane.mass_profile_centres_list == []
+            assert plane.mass_profile_centres == []
 
             plane = al.Plane(galaxies=[g0], redshift=None)
             assert plane.mass_profile_centres_of_galaxies == [[(1.0, 1.0)]]
-            assert plane.mass_profile_centres_list == [(1.0, 1.0)]
+            assert plane.mass_profile_centres == [(1.0, 1.0)]
 
             plane = al.Plane(galaxies=[g1], redshift=None)
             assert plane.mass_profile_centres_of_galaxies == [[(2.0, 2.0)]]
-            assert plane.mass_profile_centres_list == [(2.0, 2.0)]
+            assert plane.mass_profile_centres == [(2.0, 2.0)]
 
             plane = al.Plane(galaxies=[g0, g1], redshift=None)
             assert plane.mass_profile_centres_of_galaxies == [
                 [(1.0, 1.0)],
                 [(2.0, 2.0)],
             ]
-            assert plane.mass_profile_centres_list == [(1.0, 1.0), (2.0, 2.0)]
+            assert plane.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
 
             plane = al.Plane(galaxies=[g1, g0], redshift=None)
             assert plane.mass_profile_centres_of_galaxies == [
                 [(2.0, 2.0)],
                 [(1.0, 1.0)],
             ]
-            assert plane.mass_profile_centres_list == [(2.0, 2.0), (1.0, 1.0)]
+            assert plane.mass_profile_centres == [(2.0, 2.0), (1.0, 1.0)]
 
             plane = al.Plane(
                 galaxies=[g0, al.Galaxy(redshift=0.5), g1, al.Galaxy(redshift=0.5)],
@@ -531,7 +555,7 @@ class TestAbstractPlane(object):
                 [(1.0, 1.0)],
                 [(2.0, 2.0)],
             ]
-            assert plane.mass_profile_centres_list == [(1.0, 1.0), (2.0, 2.0)]
+            assert plane.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
 
             plane = al.Plane(
                 galaxies=[g0, al.Galaxy(redshift=0.5), g1, al.Galaxy(redshift=0.5), g2],
@@ -542,7 +566,7 @@ class TestAbstractPlane(object):
                 [(2.0, 2.0)],
                 [(3.0, 3.0), (4.0, 4.0)],
             ]
-            assert plane.mass_profile_centres_list == [
+            assert plane.mass_profile_centres == [
                 (1.0, 1.0),
                 (2.0, 2.0),
                 (3.0, 3.0),

@@ -36,12 +36,12 @@ print(fit.inversion.reconstruction)
 print(fit.inversion.mapper)
 print(fit.inversion.mapper.pixelization_grid)
 
+print(fit.inversion.interpolated_reconstruction_from_shape_2d())
+
+al.plot.inversion.interpolated_reconstruction(inversion=fit.inversion)
+
 al.plot.fit_imaging.subplot_for_plane(
-    fit=fit,
-    plane_index=1,
-    plot_in_kpc=True,
-    include_image_plane_pix=True,
-    include_caustics=True,
+    fit=fit, plane_index=1, include_image_plane_pix=True, include_caustics=True
 )
 
 al.plot.fit_imaging.subplot_for_plane(

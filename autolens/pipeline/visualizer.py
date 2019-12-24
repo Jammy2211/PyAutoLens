@@ -159,6 +159,13 @@ class PhaseDatasetVisualize(SubPlotVisualizer):
         )
         self.plot_fit_chi_squared_map = plot_setting("plot_fit_chi_squared_map")
         self.plot_fit_contribution_maps = plot_setting("plot_fit_contribution_maps")
+
+        self.plot_fit_inversion_reconstruction = plot_setting(
+            "plot_fit_inversion_reconstruction"
+        )
+
+        self.plot_fit_inversion_errors = plot_setting("plot_fit_inversion_errors")
+
         self.plot_fit_inversion_residual_map = plot_setting(
             "plot_fit_inversion_residual_map"
         )
@@ -170,6 +177,12 @@ class PhaseDatasetVisualize(SubPlotVisualizer):
         )
         self.plot_fit_inversion_regularization_weights = plot_setting(
             "plot_fit_inversion_regularization_weight_map"
+        )
+        self.plot_fit_inversion_interpolated_reconstruction = plot_setting(
+            "plot_fit_inversion_interpolated_reconstruction"
+        )
+        self.plot_fit_inversion_interpolated_errors = plot_setting(
+            "plot_fit_inversion_interpolated_errors"
         )
         self.plot_fit_subtracted_images_of_planes = plot_setting(
             "plot_fit_subtracted_images_of_planes"
@@ -270,11 +283,15 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
             plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
             plot_chi_squared_map=self.plot_fit_chi_squared_map,
             plot_inversion_residual_map=self.plot_fit_inversion_residual_map,
+            plot_inversion_reconstruction=self.plot_fit_inversion_reconstruction,
+            plot_inversion_errors=self.plot_fit_inversion_errors,
             plot_inversion_normalized_residual_map=self.plot_fit_normalized_residual_map,
             plot_inversion_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
             plot_inversion_regularization_weights=(
                 self.plot_fit_inversion_regularization_weights
             ),
+            plot_inversion_interpolated_reconstruction=self.plot_fit_inversion_interpolated_reconstruction,
+            plot_inversion_interpolated_errors=self.plot_fit_inversion_interpolated_errors,
             plot_subtracted_images_of_planes=self.plot_fit_subtracted_images_of_planes,
             plot_model_images_of_planes=self.plot_fit_model_images_of_planes,
             plot_plane_images_of_planes=self.plot_fit_plane_images_of_planes,
@@ -351,12 +368,16 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
             plot_residual_map=self.plot_fit_residual_map,
             plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
             plot_chi_squared_map=self.plot_fit_chi_squared_map,
+            plot_inversion_reconstruction=self.plot_fit_inversion_reconstruction,
+            plot_inversion_errors=self.plot_fit_inversion_errors,
             plot_inversion_residual_map=self.plot_fit_inversion_residual_map,
             plot_inversion_normalized_residual_map=self.plot_fit_normalized_residual_map,
             plot_inversion_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
             plot_inversion_regularization_weights=(
                 self.plot_fit_inversion_regularization_weights
             ),
+            plot_inversion_interpolated_reconstruction=self.plot_fit_inversion_interpolated_reconstruction,
+            plot_inversion_interpolated_errors=self.plot_fit_inversion_interpolated_errors,
             visualize_path=self.image_path,
             subplot_path=self.subplot_path,
         )
