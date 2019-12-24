@@ -54,6 +54,7 @@ class Analysis(analysis_dataset.Analysis):
         self.masked_dataset.check_positions_trace_within_threshold_via_tracer(
             tracer=tracer
         )
+
         self.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
             tracer=tracer
         )
