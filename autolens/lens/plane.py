@@ -147,11 +147,8 @@ class AbstractPlane(lensing.LensingObject):
     @property
     def mass_profiles_of_galaxies(self):
         return [
-            galaxy.mass_profiles
-            for galaxy in self.galaxies
-            if galaxy.has_mass_profile
+            galaxy.mass_profiles for galaxy in self.galaxies if galaxy.has_mass_profile
         ]
-
 
     @property
     def mass_profile_centres(self):

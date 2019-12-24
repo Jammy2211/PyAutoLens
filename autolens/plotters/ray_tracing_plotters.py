@@ -452,13 +452,8 @@ def profile_image(
     )
 
     if include_multiple_images:
-        multiple_images = tracer.image_plane_multiple_image_positions_of_galaxies(
-            grid=grid
-        )
-        positions = [
-            grid.geometry.grid_scaled_from_grid_pixels_1d(
-                grid_pixels_1d=np.asarray(multiple_images[0])
-            )
+        positions = tracer.image_plane_multiple_image_positions_of_galaxies(grid=grid)[
+            0
         ]
     else:
         multiple_images = None

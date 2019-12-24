@@ -306,14 +306,15 @@ class TestAbstractPlane(object):
             sis_2 = al.mp.SphericalIsothermal(einstein_radius=3.0)
 
             plane = al.Plane(
-                galaxies=[al.Galaxy(redshift=0.5, mass_profile=sis_0)],
-                redshift=None,
+                galaxies=[al.Galaxy(redshift=0.5, mass_profile=sis_0)], redshift=None
             )
             assert plane.mass_profiles == [sis_0]
 
             plane = al.Plane(
-                galaxies=[al.Galaxy(redshift=0.5, mass_profile_0=sis_0, mass_profile_1=sis_1),
-                          al.Galaxy(redshift=0.5, mass_profile_0=sis_2, mass_profile_1=sis_1)],
+                galaxies=[
+                    al.Galaxy(redshift=0.5, mass_profile_0=sis_0, mass_profile_1=sis_1),
+                    al.Galaxy(redshift=0.5, mass_profile_0=sis_2, mass_profile_1=sis_1),
+                ],
                 redshift=None,
             )
             assert plane.mass_profiles == [sis_0, sis_1, sis_2, sis_1]
