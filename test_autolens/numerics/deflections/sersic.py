@@ -15,16 +15,18 @@ print(grid)
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     bulge=al.mp.EllipticalSersic(
+        mass_to_light_ratio=10.1,
         centre=(-0.001, 0.005),
         axis_ratio=0.772905559673341,
         phi=58.07795357623584,
         intensity=2.699624610354442,
         effective_radius=0.1441552587870802,
-        sersic_index=0.8030328467225003
+        sersic_index=20.8030328467225003,
     ),
     disk=al.mp.EllipticalExponential(
+        mass_to_light_ratio=10.1,
         centre=(0.077, 0.047),
-        axis_ratio=0.8520075967089024,
+        axis_ratio=0.3,
         phi=69.43012371637823,
         intensity=0.29617161783298507,
         effective_radius=2.3339416498752623,
