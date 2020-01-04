@@ -254,7 +254,7 @@ def subplot_of_hyper_galaxy(
 def subplot_of_hyper_galaxy_images(
     hyper_galaxy_image_path_dict,
     mask,
-    include_mask=True,
+    mask=True,
     unit_label="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
@@ -285,7 +285,7 @@ def subplot_of_hyper_galaxy_images(
         number_subplots=len(hyper_galaxy_image_path_dict)
     )
 
-    if not include_mask:
+    if not mask:
         mask = False
 
     if figsize is None:
@@ -382,7 +382,7 @@ def hyper_model_image(
     -----------
     hyper_model_image : datas.imaging.datas.Imaging
         The hyper_galaxies model image.
-    include_origin : True
+    origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
@@ -462,7 +462,7 @@ def hyper_galaxy_image(
     -----------
     hyper_galaxy_image : datas.imaging.datas.Imaging
         The hyper_galaxies galaxy image.
-    include_origin : True
+    origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
@@ -542,7 +542,7 @@ def contribution_map(
     -----------
     contribution_map : datas.imaging.datas.Imaging
         The hyper_galaxies galaxy image.
-    include_origin : True
+    origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
@@ -622,7 +622,7 @@ def hyper_noise_map(
     -----------
     hyper_noise_map : datas.imaging.datas.Imaging
         The hyper_galaxies galaxy image.
-    include_origin : True
+    origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
@@ -702,7 +702,7 @@ def chi_squared_map(
     -----------
     chi_squared_map : datas.imaging.datas.Imaging
         The hyper_galaxies galaxy image.
-    include_origin : True
+    origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
@@ -782,7 +782,7 @@ def hyper_chi_squared_map(
     -----------
     hyper_chi_squared_map : datas.imaging.datas.Imaging
         The hyper_galaxies galaxy image.
-    include_origin : True
+    origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 

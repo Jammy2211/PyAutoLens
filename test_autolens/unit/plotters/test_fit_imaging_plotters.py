@@ -21,8 +21,8 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        include_mask=True,
-        include_positions=True,
+        mask=True,
+        positions=True,
         include_image_plane_pix=True,
         include_critical_curves=True,
         cb_tick_values=[1.0],
@@ -39,7 +39,7 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        include_mask=True,
+        mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -54,7 +54,7 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        include_mask=True,
+        mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -77,8 +77,8 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        include_mask=True,
-        include_positions=True,
+        mask=True,
+        positions=True,
         include_critical_curves=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
@@ -93,7 +93,7 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        include_mask=True,
+        mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -107,7 +107,7 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        include_mask=True,
+        mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -125,8 +125,8 @@ def test__fit_sub_plot(
 
     al.plot.fit_imaging.subplot(
         fit=masked_imaging_fit_x2_plane_7x7,
-        include_mask=True,
-        include_positions=True,
+        mask=True,
+        positions=True,
         include_image_plane_pix=True,
         include_critical_curves=True,
         include_caustics=True,
@@ -150,8 +150,8 @@ def test__fit_for_plane_subplot(
     al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        include_mask=True,
-        include_positions=True,
+        mask=True,
+        positions=True,
         include_image_plane_pix=True,
         include_critical_curves=True,
         include_caustics=True,
@@ -166,7 +166,7 @@ def test__fit_for_plane_subplot(
     al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        include_mask=True,
+        mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -178,7 +178,7 @@ def test__fit_for_plane_subplot(
     al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        include_mask=True,
+        mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -197,8 +197,8 @@ def test__fit_for_planes_subplot(
 
     al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x1_plane_7x7,
-        include_mask=True,
-        include_positions=True,
+        mask=True,
+        positions=True,
         include_image_plane_pix=True,
         include_critical_curves=True,
         include_caustics=True,
@@ -212,7 +212,7 @@ def test__fit_for_planes_subplot(
 
     al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x2_plane_7x7,
-        include_mask=True,
+        mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_fit_plotter_path,
@@ -232,8 +232,8 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     al.plot.fit_imaging.individuals(
         fit=masked_imaging_fit_x1_plane_7x7,
-        include_mask=True,
-        include_positions=True,
+        mask=True,
+        positions=True,
         include_image_plane_pix=True,
         include_critical_curves=True,
         include_caustics=True,

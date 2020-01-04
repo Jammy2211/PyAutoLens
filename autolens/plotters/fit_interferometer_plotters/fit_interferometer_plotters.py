@@ -3,10 +3,9 @@ import matplotlib
 
 backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
-from matplotlib import pyplot as plt
 
 import autoarray as aa
-from autoarray.plotters.fit_interferometer_plotters import *
+from autoarray.plots.fit_interferometer_plotters import *
 from autoarray.util import plotter_util
 from autoastro.plotters import lens_plotter_util
 from autolens.plotters import plane_plotters, ray_tracing_plotters
@@ -67,10 +66,10 @@ def subplot(
 
 def subplot_real_space(
     fit,
-    include_mask=True,
+    mask=True,
     include_critical_curves=False,
     include_caustics=False,
-    include_positions=True,
+    positions=True,
     include_image_plane_pix=False,
     include_mass_profile_centres=True,
     plot_in_kpc=False,
@@ -115,11 +114,11 @@ def subplot_real_space(
     )
 
     real_space_mask = plotter_util.get_real_space_mask_from_fit(
-        fit=fit, include_mask=include_mask
+        fit=fit, mask=mask
     )
 
     positions = lens_plotter_util.get_positions_from_fit(
-        fit=fit, include_positions=include_positions
+        fit=fit, positions=positions
     )
 
     plt.figure(figsize=figsize)

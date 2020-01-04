@@ -5,6 +5,8 @@ def pipeline_tag_from_pipeline_settings(
     hyper_galaxies=False,
     hyper_image_sky=False,
     hyper_background_noise=False,
+    initialize_align_light_mass_centre=True,
+    initialize_fix_lens_light=True,
     include_shear=False,
     fix_lens_light=False,
     pixelization=None,
@@ -21,6 +23,14 @@ def pipeline_tag_from_pipeline_settings(
         hyper_galaxies=hyper_galaxies,
         hyper_image_sky=hyper_image_sky,
         hyper_background_noise=hyper_background_noise,
+    )
+
+    initialize_align_light_mass_centre_tag = initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_centre(
+        initialize_align_light_mass_centre=initialize_align_light_mass_centre
+    )
+
+    initialize_fix_lens_light_tag = fix_initialize_lens_light_tag_from_initialize_fix_lens_light(
+        initalize_fix_lens_light=initialize_fix_lens_light
     )
 
     include_shear_tag = include_shear_tag_from_include_shear(
@@ -58,6 +68,8 @@ def pipeline_tag_from_pipeline_settings(
     return (
         "pipeline_tag"
         + hyper_tag
+        + initialize_align_light_mass_centre_tag
+        + initialize_fix_lens_light_tag
         + include_shear_tag
         + fix_lens_light_tag
         + pixelization_tag
@@ -139,6 +151,33 @@ def hyper_tag_from_hyper_settings(
         + hyper_background_noise_tag
     )
 
+def initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_centre(initialize_align_light_mass_centre):
+    """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
+     during he analysis, to customize phase names.
+
+    This changes the phase name 'pipeline_name__' as follows:
+
+    fix_lens_light = False -> pipeline_name__
+    fix_lens_light = True -> pipeline_name___fix_lens_light
+    """
+    if not initialize_align_light_mass_centre:
+        return ""
+    elif initialize_align_light_mass_centre:
+        return "__init_align_light_mass_centre"
+
+def initialize_fix_lens_light_tag_from_initialize_fix_lens_light(initialize_fix_lens_light):
+    """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
+     during he analysis, to customize phase names.
+
+    This changes the phase name 'pipeline_name__' as follows:
+
+    fix_lens_light = False -> pipeline_name__
+    fix_lens_light = True -> pipeline_name___fix_lens_light
+    """
+    if not initialize_fix_lens_light:
+        return ""
+    elif initialize_fix_lens_light:
+        return "__init_fix_lens_light"
 
 def include_shear_tag_from_include_shear(include_shear):
     """Generate a tag for if an external shear is included in the mass model of the pipeline and / or phase are fixed
@@ -200,7 +239,7 @@ def align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_ce
     if not align_bulge_disk_centre:
         return ""
     elif align_bulge_disk_centre:
-        return "__bd_align_centre"
+        return "__bulge_disk_align_centre"
 
 
 def align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(
@@ -215,7 +254,7 @@ def align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(
     if not align_bulge_disk_axis_ratio:
         return ""
     elif align_bulge_disk_axis_ratio:
-        return "__bd_align_axis_ratio"
+        return "__bulge_disk_align_axis_ratio"
 
 
 def align_bulge_disk_phi_tag_from_align_bulge_disk_phi(align_bulge_disk_phi):
@@ -228,7 +267,7 @@ def align_bulge_disk_phi_tag_from_align_bulge_disk_phi(align_bulge_disk_phi):
     if not align_bulge_disk_phi:
         return ""
     elif align_bulge_disk_phi:
-        return "__bd_align_phi"
+        return "__bulge_disk_align_phi"
 
 
 def bulge_disk_tag_from_align_bulge_disks(

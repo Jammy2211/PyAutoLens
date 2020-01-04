@@ -25,4 +25,4 @@ masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
 fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
-al.plot.fit_imaging.subplot(fit=fit, include_mask=True)
+al.plot.fit_imaging.subplot(fit=fit, mask=True)

@@ -100,7 +100,7 @@ def profile_image(
 def plane_image(
     plane,
     grid,
-    include_origin=True,
+    origin=True,
     positions=None,
     include_grid=False,
     lines=None,
@@ -138,7 +138,7 @@ def plane_image(
     else:
         grid = None
 
-    if include_origin:
+    if origin:
         origin = plane_image.grid.origin
     else:
         origin = None
@@ -149,7 +149,7 @@ def plane_image(
 
     aa.plot.array(
         array=plane_image.array,
-        include_origin=origin,
+        origin=origin,
         points=positions,
         grid=grid,
         lines=lines,

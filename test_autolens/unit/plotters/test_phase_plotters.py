@@ -127,8 +127,8 @@ def test__imaging_fit_for_phase__source_and_lens__depedent_on_input(
     al.plot.phase.imaging_fit_of_phase(
         fit=masked_imaging_fit_x2_plane_7x7,
         during_analysis=False,
-        include_mask=True,
-        include_positions=True,
+        mask=True,
+        positions=True,
         plot_in_kpc=True,
         include_critical_curves=True,
         include_caustics=True,
@@ -198,8 +198,8 @@ def test__interferometer_fit_for_phase__source_and_lens__depedent_on_input(
     al.plot.phase.interferometer_fit_of_phase(
         fit=masked_interferometer_fit_x2_plane_7x7,
         during_analysis=False,
-        include_mask=True,
-        include_positions=True,
+        mask=True,
+        positions=True,
         plot_in_kpc=True,
         include_critical_curves=True,
         include_caustics=True,

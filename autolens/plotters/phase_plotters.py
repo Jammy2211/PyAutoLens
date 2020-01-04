@@ -196,8 +196,8 @@ def imaging_fit_of_phase(
     fit,
     during_analysis,
     plot_in_kpc,
-    include_mask,
-    include_positions,
+    mask,
+    positions,
     include_critical_curves,
     include_caustics,
     include_image_plane_pix,
@@ -236,8 +236,8 @@ def imaging_fit_of_phase(
 
         fit_imaging_plotters.subplot(
             fit=fit,
-            include_mask=include_mask,
-            include_positions=include_positions,
+            mask=mask,
+            positions=positions,
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
             include_image_plane_pix=include_image_plane_pix,
@@ -250,8 +250,8 @@ def imaging_fit_of_phase(
 
         fit_imaging_plotters.subplot_of_planes(
             fit=fit,
-            include_mask=include_mask,
-            include_positions=include_positions,
+            mask=mask,
+            positions=positions,
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
             include_image_plane_pix=include_image_plane_pix,
@@ -271,8 +271,8 @@ def imaging_fit_of_phase(
 
     fit_imaging_plotters.individuals(
         fit=fit,
-        include_mask=include_mask,
-        include_positions=include_positions,
+        mask=mask,
+        positions=positions,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
         include_image_plane_pix=include_image_plane_pix,
@@ -305,8 +305,8 @@ def imaging_fit_of_phase(
 
             fit_imaging_plotters.individuals(
                 fit=fit,
-                include_mask=include_mask,
-                include_positions=include_positions,
+                mask=mask,
+                positions=positions,
                 include_critical_curves=include_critical_curves,
                 include_caustics=include_caustics,
                 include_image_plane_pix=include_image_plane_pix,
@@ -341,8 +341,8 @@ def imaging_fit_of_phase(
 
             fit_imaging_plotters.individuals(
                 fit=fit,
-                include_mask=include_mask,
-                include_positions=include_positions,
+                mask=mask,
+                positions=positions,
                 include_critical_curves=include_critical_curves,
                 include_caustics=include_caustics,
                 include_image_plane_pix=include_image_plane_pix,
@@ -372,8 +372,8 @@ def imaging_fit_of_phase(
 def interferometer_fit_of_phase(
     fit,
     during_analysis,
-    include_positions,
-    include_mask,
+    positions,
+    mask,
     include_critical_curves,
     include_caustics,
     include_image_plane_pix,
@@ -416,10 +416,10 @@ def interferometer_fit_of_phase(
 
         fit_interferometer_plotters.subplot_real_space(
             fit=fit,
-            include_mask=include_mask,
+            mask=mask,
             include_critical_curves=include_critical_curves,
             include_caustics=include_caustics,
-            include_positions=include_positions,
+            positions=positions,
             include_image_plane_pix=include_image_plane_pix,
             plot_in_kpc=plot_in_kpc,
             output_path=subplot_path,

@@ -62,6 +62,9 @@ class HyperPhase(object):
         phase.optimizer.multimodal = af.conf.instance.non_linear.get(
             "MultiNest", "extension_combined_multimodal", bool
         )
+        phase.optimizer.evidence_tolerance = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_combined_evidence_tolerance", float
+        )
 
         phase.is_hyper_phase = True
         phase.customize_priors = self.customize_priors

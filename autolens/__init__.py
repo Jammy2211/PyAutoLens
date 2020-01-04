@@ -60,7 +60,7 @@ from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
 from autolens.pipeline.pipeline import (
     PipelineSettings,
-    PipelineSettingsHyper,
+    PipelineSettings,
     PipelineDataset,
     PipelinePositions,
 )
