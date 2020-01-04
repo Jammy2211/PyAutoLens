@@ -219,6 +219,9 @@ class HyperGalaxyPhase(HyperPhase):
             optimizer.multimodal = af.conf.instance.non_linear.get(
                 "MultiNest", "extension_hyper_galaxy_multimodal", bool
             )
+            optimizer.evidence_tolerance = af.conf.instance.non_linear.get(
+                "MultiNest", "extension_hyper_galaxy_evidence_tolerance", float
+            )
 
             model = copy.deepcopy(phase.model)
 

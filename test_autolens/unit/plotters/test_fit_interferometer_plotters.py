@@ -32,7 +32,7 @@ def test__fit_sub_plot_real_space(
 
     al.plot.fit_interferometer.subplot_real_space(
         fit=masked_interferometer_fit_x2_plane_7x7,
-        include_mask=True,
+        mask=True,
         include_critical_curves=True,
         include_caustics=True,
         include_image_plane_pix=True,

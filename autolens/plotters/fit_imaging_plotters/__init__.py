@@ -1,4 +1,3 @@
-from autoarray.plotters.fit_imaging_plotters import *
 from autolens.plotters.fit_imaging_plotters.fit_imaging_plotters import (
     subplot,
     subplot_for_plane,
