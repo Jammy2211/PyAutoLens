@@ -227,7 +227,7 @@ def subplot_for_plane(
         number_subplots=4
     )
 
-    mask = plotter_util.get_mask_from_fit(fit=fit, mask=mask)
+    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=mask)
 
     if figsize is None:
         figsize = figsize_tool
@@ -650,7 +650,7 @@ def subtracted_image_of_plane(
         The plane from which the model image is generated.
     """
 
-    mask = plotter_util.get_mask_from_fit(fit=fit, mask=mask)
+    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=mask)
 
     output_filename += "_" + str(plane_index)
 
@@ -766,7 +766,7 @@ def model_image_of_plane(
 
     output_filename += "_" + str(plane_index)
 
-    mask = plotter_util.get_mask_from_fit(fit=fit, mask=mask)
+    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=mask)
 
     centres = lens_plotter_util.get_mass_profile_centres_from_fit(
         include_mass_profile_centres=include_mass_profile_centres, fit=fit
@@ -861,7 +861,7 @@ def contribution_maps(
         The index of the datas in the datas-set of which the contribution_maps are plotted.
     """
 
-    mask = plotter_util.get_mask_from_fit(fit=fit, mask=mask)
+    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=mask)
 
     if len(fit.contribution_maps) > 1:
         contribution_map = sum(fit.contribution_maps)
