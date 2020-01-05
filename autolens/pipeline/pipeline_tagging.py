@@ -151,7 +151,10 @@ def hyper_tag_from_hyper_settings(
         + hyper_background_noise_tag
     )
 
-def initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_centre(initialize_align_light_mass_centre):
+
+def initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_centre(
+    initialize_align_light_mass_centre
+):
     """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
      during he analysis, to customize phase names.
 
@@ -165,7 +168,10 @@ def initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_cent
     elif initialize_align_light_mass_centre:
         return "__init_align_light_mass_centre"
 
-def initialize_fix_lens_light_tag_from_initialize_fix_lens_light(initialize_fix_lens_light):
+
+def initialize_fix_lens_light_tag_from_initialize_fix_lens_light(
+    initialize_fix_lens_light
+):
     """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
      during he analysis, to customize phase names.
 
@@ -178,6 +184,7 @@ def initialize_fix_lens_light_tag_from_initialize_fix_lens_light(initialize_fix_
         return ""
     elif initialize_fix_lens_light:
         return "__init_fix_lens_light"
+
 
 def include_shear_tag_from_include_shear(include_shear):
     """Generate a tag for if an external shear is included in the mass model of the pipeline and / or phase are fixed

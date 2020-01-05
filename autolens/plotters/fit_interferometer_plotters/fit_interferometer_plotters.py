@@ -113,13 +113,9 @@ def subplot_real_space(
         include_image_plane_pix=include_image_plane_pix, fit=fit
     )
 
-    real_space_mask = plotter_util.get_real_space_mask_from_fit(
-        fit=fit, mask=mask
-    )
+    real_space_mask = plotter_util.get_real_space_mask_from_fit(fit=fit, mask=mask)
 
-    positions = lens_plotter_util.get_positions_from_fit(
-        fit=fit, positions=positions
-    )
+    positions = lens_plotter_util.get_positions_from_fit(fit=fit, positions=positions)
 
     plt.figure(figsize=figsize)
 
