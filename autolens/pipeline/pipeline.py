@@ -3,6 +3,7 @@ from autolens import exc
 from autoarray.operators.inversion import pixelizations as pix
 from autoarray.operators.inversion import regularization as reg
 
+
 class PipelineSettings(object):
     def __init__(
         self,

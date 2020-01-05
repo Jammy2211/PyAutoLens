@@ -93,7 +93,6 @@ class TestHyperPipelineTaggers:
 
 
 class TestPipelineTaggers:
-
     def test__initialize_align_light_mass_centre_tagger(self):
         tag = al.pipeline_tagging.initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_centre(
             initialize_align_light_mass_centre=False
