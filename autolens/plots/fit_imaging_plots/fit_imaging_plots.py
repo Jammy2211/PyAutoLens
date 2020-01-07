@@ -5,10 +5,11 @@ backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 
 import autoarray as aa
-from autoarray.plots.fit_imaging_plotters import *
+from autoarray.plotters import plotters, array_plotters, mapper_plotters
+from autoarray.plots.fit_imaging_plots import *
 from autoarray.util import plotter_util
-from autoastro.plotters import lens_plotter_util
-from autolens.plotters import plane_plotters
+from autoastro.plots import lens_plotter_util
+from autolens.plots import plane_plots
 
 
 def subplot(
@@ -18,30 +19,7 @@ def subplot(
     include_caustics=False,
     positions=False,
     include_image_plane_pix=False,
-    plot_in_kpc=False,
-    figsize=None,
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=10,
-    xlabelsize=10,
-    ylabelsize=10,
-    xyticksize=10,
-    mask_pointsize=10,
-    position_pointsize=10,
-    grid_pointsize=1,
-    output_path=None,
-    output_filename="fit",
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
 
     image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
@@ -66,31 +44,7 @@ def subplot(
         grid=image_plane_pix_grid,
         lines=critical_curves,
         points=positions,
-        unit_label=unit_label,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        grid_pointsize=grid_pointsize,
-        position_pointsize=position_pointsize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_filename=output_filename,
-        output_format=output_format,
+        array_plotter=array_plotter
     )
 
 
@@ -101,30 +55,8 @@ def subplot_of_planes(
     include_caustics=False,
     positions=False,
     include_image_plane_pix=False,
-    plot_in_kpc=False,
-    figsize=None,
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=10,
-    xlabelsize=10,
-    ylabelsize=10,
-    xyticksize=10,
-    mask_pointsize=10,
-    position_pointsize=10,
-    grid_pointsize=1,
-    output_path=None,
-    output_filename="lens_fit_plane",
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
+    mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
 
     for plane_index in range(fit.tracer.total_planes):
@@ -142,30 +74,8 @@ def subplot_of_planes(
                 include_critical_curves=include_critical_curves,
                 include_caustics=include_caustics,
                 positions=positions,
-                plot_in_kpc=plot_in_kpc,
-                figsize=figsize,
-                aspect=aspect,
-                cmap=cmap,
-                norm=norm,
-                norm_min=norm_min,
-                norm_max=norm_max,
-                linthresh=linthresh,
-                linscale=linscale,
-                cb_ticksize=cb_ticksize,
-                cb_fraction=cb_fraction,
-                cb_pad=cb_pad,
-                cb_tick_values=cb_tick_values,
-                cb_tick_labels=cb_tick_labels,
-                titlesize=titlesize,
-                xlabelsize=xlabelsize,
-                ylabelsize=ylabelsize,
-                xyticksize=xyticksize,
-                grid_pointsize=grid_pointsize,
-                position_pointsize=position_pointsize,
-                mask_pointsize=mask_pointsize,
-                output_path=output_path,
-                output_filename=output_filename,
-                output_format=output_format,
+                array_plotter=array_plotter,
+                mapper_plotter=mapper_plotter
             )
 
 
@@ -179,30 +89,8 @@ def subplot_for_plane(
     positions=False,
     include_image_plane_pix=False,
     include_mass_profile_centres=True,
-    plot_in_kpc=False,
-    figsize=None,
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=10,
-    xlabelsize=10,
-    ylabelsize=10,
-    xyticksize=10,
-    mask_pointsize=10,
-    position_pointsize=10,
-    grid_pointsize=1,
-    output_path=None,
-    output_filename="lens_fit_plane",
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
+    mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -236,7 +124,7 @@ def subplot_for_plane(
         obj=fit.tracer.planes[plane_index], plot_in_kpc=plot_in_kpc
     )
 
-    plt.figure(figsize=figsize)
+    plt.figure(figsize=array_plotter.figsize)
 
     image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
         include_image_plane_pix=include_image_plane_pix, fit=fit
@@ -251,33 +139,7 @@ def subplot_for_plane(
         mask=mask,
         grid=image_plane_pix_grid,
         points=positions,
-        as_subplot=True,
-        unit_label=unit_label,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        grid_pointsize=grid_pointsize,
-        position_pointsize=position_pointsize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
-    )
+        array_plotter=array_plotter)
 
     plt.subplot(rows, columns, 2)
 
@@ -287,30 +149,7 @@ def subplot_for_plane(
         mask=mask,
         include_image_plane_pix=include_image_plane_pix,
         positions=positions,
-        as_subplot=True,
-        plot_in_kpc=plot_in_kpc,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        mask_pointsize=mask_pointsize,
-        position_pointsize=position_pointsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        array_plotter=array_plotter
     )
 
     plt.subplot(rows, columns, 3)
@@ -322,29 +161,7 @@ def subplot_for_plane(
         positions=positions,
         include_mass_profile_centres=include_mass_profile_centres,
         include_critical_curves=include_critical_curves,
-        as_subplot=True,
-        plot_in_kpc=plot_in_kpc,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        array_plotter=array_plotter
     )
 
     caustics = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
@@ -357,35 +174,12 @@ def subplot_for_plane(
 
         traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
-        plane_plotters.plane_image(
+        plane_plots.plane_image(
             plane=fit.tracer.planes[plane_index],
             grid=traced_grids[plane_index],
             lines=caustics,
             include_grid=plot_source_grid,
-            as_subplot=True,
-            plot_in_kpc=plot_in_kpc,
-            figsize=figsize,
-            aspect=aspect,
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
-            xyticksize=xyticksize,
-            grid_pointsize=grid_pointsize,
-            position_pointsize=position_pointsize,
-            output_path=output_path,
-            output_filename="",
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
     elif fit.tracer.planes[plane_index].has_pixelization:
@@ -401,11 +195,11 @@ def subplot_for_plane(
             )
         )
 
-        if aspect is "square":
+        if mapper_plotter.aspect is "square":
             aspect_inv = ratio
-        elif aspect is "auto":
+        elif mapper_plotter.aspect is "auto":
             aspect_inv = 1.0 / ratio
-        elif aspect is "equal":
+        elif mapper_plotter.aspect is "equal":
             aspect_inv = 1.0
 
         plt.subplot(rows, columns, 4, aspect=float(aspect_inv))
@@ -415,35 +209,10 @@ def subplot_for_plane(
             lines=caustics,
             include_grid=False,
             include_centres=False,
-            as_subplot=True,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            figsize=figsize,
-            aspect=None,
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
-            xyticksize=xyticksize,
-            output_path=output_path,
-            output_filename=None,
-            output_format=output_format,
+            mapper_plotter=mapper_plotter
         )
 
-    plotter_util.output_subplot_array(
-        output_path=output_path,
-        output_filename=output_filename,
-        output_format=output_format,
+    array_plotter.output_subplot_array(
     )
 
     plt.close()
@@ -475,8 +244,8 @@ def individuals(
     plot_subtracted_images_of_planes=False,
     plot_model_images_of_planes=False,
     plot_plane_images_of_planes=False,
-    output_path=None,
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
+    mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -530,10 +299,7 @@ def individuals(
         plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
         plot_inversion_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
         plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        output_path=output_path,
-        output_format=output_format,
+        array_plotter=array_plotter,
     )
 
     traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
@@ -547,9 +313,7 @@ def individuals(
                 plane_index=plane_index,
                 mask=mask,
                 include_critical_curves=include_critical_curves,
-                plot_in_kpc=plot_in_kpc,
-                output_path=output_path,
-                output_format=output_format,
+                array_plotter=array_plotter
             )
 
     if plot_model_images_of_planes:
@@ -561,9 +325,7 @@ def individuals(
                 plane_index=plane_index,
                 mask=mask,
                 include_critical_curves=include_critical_curves,
-                plot_in_kpc=plot_in_kpc,
-                output_path=output_path,
-                output_format=output_format,
+                array_plotter=array_plotter
             )
 
     if plot_plane_images_of_planes:
@@ -580,14 +342,11 @@ def individuals(
 
             if fit.tracer.planes[plane_index].has_light_profile:
 
-                plane_plotters.plane_image(
+                plane_plots.plane_image(
                     plane=fit.tracer.planes[plane_index],
                     grid=traced_grids[plane_index],
                     lines=caustics,
-                    plot_in_kpc=plot_in_kpc,
-                    output_path=output_path,
-                    output_filename=output_filename,
-                    output_format=output_format,
+                    array_plotter=array_plotter
                 )
 
             elif fit.tracer.planes[plane_index].has_pixelization:
@@ -595,11 +354,7 @@ def individuals(
                 aa.plot.inversion.reconstruction(
                     inversion=fit.inversion,
                     lines=caustics,
-                    unit_label=unit_label,
-                    unit_conversion_factor=unit_conversion_factor,
-                    output_path=output_path,
-                    output_filename=output_filename,
-                    output_format=output_format,
+                    mapper_plotter=mapper_plotter,
                 )
 
 
@@ -610,31 +365,7 @@ def subtracted_image_of_plane(
     include_critical_curves=False,
     positions=False,
     include_image_plane_pix=False,
-    as_subplot=False,
-    plot_in_kpc=False,
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Fit Subtracted Image Of Plane",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    mask_pointsize=10,
-    position_pointsize=10,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_subtracted_image_of_plane",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the model image of a specific plane of a lens fit.
 
@@ -684,38 +415,12 @@ def subtracted_image_of_plane(
         include_caustics=False,
     )
 
-    aa.plot.array(
+    array_plotter.plot_array(
         array=subtracted_image,
         mask=mask,
         grid=image_plane_pix_grid,
         points=positions,
         lines=critical_curves,
-        as_subplot=as_subplot,
-        unit_label=unit_label,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        point_pointsize=position_pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
 
@@ -726,31 +431,7 @@ def model_image_of_plane(
     include_critical_curves=False,
     positions=False,
     include_mass_profile_centres=True,
-    as_subplot=False,
-    plot_in_kpc=False,
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Model Image Of Plane",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    mask_pointsize=10,
-    position_pointsize=10,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_model_image_of_plane",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the model image of a specific plane of a lens fit.
 
@@ -784,38 +465,12 @@ def model_image_of_plane(
         include_caustics=False,
     )
 
-    aa.plot.array(
+    array_plotter.plot_array(
         array=fit.model_images_of_planes[plane_index],
         mask=mask,
         lines=critical_curves,
         points=positions,
         centres=centres,
-        as_subplot=as_subplot,
-        unit_label=unit_label,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        point_pointsize=position_pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
 
@@ -823,31 +478,7 @@ def contribution_maps(
     fit,
     mask=True,
     positions=False,
-    as_subplot=False,
-    plot_in_kpc=False,
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Contribution Map",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    mask_pointsize=10,
-    position_pointsize=10,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_contribution_maps",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the summed contribution maps of a hyper_galaxies-fit.
 
@@ -874,34 +505,8 @@ def contribution_maps(
         obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
-    aa.plot.array(
+    array_plotter.plot_array(
         array=contribution_map,
         mask=mask,
         points=positions,
-        as_subplot=as_subplot,
-        unit_label=unit_label,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        point_pointsize=position_pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )

@@ -1,8 +1,8 @@
 import autofit as af
 import autoarray as aa
-from autolens.plotters import ray_tracing_plotters, hyper_plotters
-from autolens.plotters.fit_imaging_plotters import fit_imaging_plotters
-from autolens.plotters.fit_interferometer_plotters import fit_interferometer_plotters
+from autolens.plots import ray_tracing_plots, hyper_plots
+from autolens.plots.fit_imaging_plots import fit_imaging_plots
+from autolens.plots.fit_interferometer_plots import fit_interferometer_plots
 
 
 def imaging_of_phase(
@@ -119,7 +119,7 @@ def ray_tracing_of_phase(
 
     if plot_as_subplot:
 
-        ray_tracing_plotters.subplot(
+        ray_tracing_plots.subplot(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -131,7 +131,7 @@ def ray_tracing_of_phase(
             output_format="png",
         )
 
-    ray_tracing_plotters.individual(
+    ray_tracing_plots.individual(
         tracer=tracer,
         grid=grid,
         mask=mask,
@@ -152,7 +152,7 @@ def ray_tracing_of_phase(
 
         if plot_all_at_end_png:
 
-            ray_tracing_plotters.individual(
+            ray_tracing_plots.individual(
                 tracer=tracer,
                 grid=grid,
                 mask=mask,
@@ -175,7 +175,7 @@ def ray_tracing_of_phase(
                 path=output_path, folder_names=["fits"]
             )
 
-            ray_tracing_plotters.individual(
+            ray_tracing_plots.individual(
                 tracer=tracer,
                 grid=grid,
                 mask=mask,
@@ -234,7 +234,7 @@ def imaging_fit_of_phase(
 
     if plot_fit_as_subplot:
 
-        fit_imaging_plotters.subplot(
+        fit_imaging_plots.subplot(
             fit=fit,
             mask=mask,
             positions=positions,
@@ -248,7 +248,7 @@ def imaging_fit_of_phase(
 
     if plot_fit_of_planes_as_subplot:
 
-        fit_imaging_plotters.subplot_of_planes(
+        fit_imaging_plots.subplot_of_planes(
             fit=fit,
             mask=mask,
             positions=positions,
@@ -269,7 +269,7 @@ def imaging_fit_of_phase(
             output_format="png",
         )
 
-    fit_imaging_plotters.individuals(
+    fit_imaging_plots.individuals(
         fit=fit,
         mask=mask,
         positions=positions,
@@ -303,7 +303,7 @@ def imaging_fit_of_phase(
 
         if plot_all_at_end_png:
 
-            fit_imaging_plotters.individuals(
+            fit_imaging_plots.individuals(
                 fit=fit,
                 mask=mask,
                 positions=positions,
@@ -339,7 +339,7 @@ def imaging_fit_of_phase(
                 path=output_path, folder_names=["fits"]
             )
 
-            fit_imaging_plotters.individuals(
+            fit_imaging_plots.individuals(
                 fit=fit,
                 mask=mask,
                 positions=positions,
@@ -407,14 +407,14 @@ def interferometer_fit_of_phase(
 
     if plot_fit_as_subplot:
 
-        fit_interferometer_plotters.subplot(
+        fit_interferometer_plots.subplot(
             fit=fit,
             plot_in_kpc=plot_in_kpc,
             output_path=subplot_path,
             output_format="png",
         )
 
-        fit_interferometer_plotters.subplot_real_space(
+        fit_interferometer_plots.subplot_real_space(
             fit=fit,
             mask=mask,
             include_critical_curves=include_critical_curves,
@@ -436,7 +436,7 @@ def interferometer_fit_of_phase(
     #         output_format="png",
     #     )
 
-    fit_interferometer_plotters.individuals(
+    fit_interferometer_plots.individuals(
         fit=fit,
         plot_visibilities=plot_visibilities,
         plot_noise_map=plot_noise_map,
@@ -462,7 +462,7 @@ def interferometer_fit_of_phase(
 
         if plot_all_at_end_png:
 
-            fit_interferometer_plotters.individuals(
+            fit_interferometer_plots.individuals(
                 fit=fit,
                 plot_visibilities=True,
                 plot_noise_map=True,
@@ -490,7 +490,7 @@ def interferometer_fit_of_phase(
                 path=output_path, folder_names=["fits"]
             )
 
-            fit_interferometer_plotters.individuals(
+            fit_interferometer_plots.individuals(
                 fit=fit,
                 plot_visibilities=True,
                 plot_noise_map=True,
@@ -529,7 +529,7 @@ def plot_hyper_images_for_phase(
 
     if plot_hyper_model_image:
 
-        hyper_plotters.hyper_model_image(
+        hyper_plots.hyper_model_image(
             hyper_model_image=hyper_model_image,
             mask=mask,
             kpc_per_arcsec=kpc_per_arcsec,
@@ -540,7 +540,7 @@ def plot_hyper_images_for_phase(
 
     if plot_hyper_galaxy_images:
 
-        hyper_plotters.subplot_of_hyper_galaxy_images(
+        hyper_plots.subplot_of_hyper_galaxy_images(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             mask=mask,
             kpc_per_arcsec=kpc_per_arcsec,
