@@ -2,7 +2,7 @@ import os
 
 import autofit as af
 from autoastro.plotters import fit_galaxy_plotters
-from autolens.plotters import phase_plotters, hyper_plotters
+from autolens.plots import phase_plots, hyper_plots
 
 
 def setting(section, name):
@@ -199,7 +199,7 @@ class PhaseDatasetVisualize(SubPlotVisualizer):
     def plot_ray_tracing(self, tracer, during_analysis):
         positions = self.masked_dataset.positions if self.positions else None
         mask = self.masked_dataset.mask if self.mask else None
-        phase_plotters.ray_tracing_of_phase(
+        phase_plots.ray_tracing_of_phase(
             tracer=tracer,
             grid=self.masked_dataset.grid,
             during_analysis=during_analysis,
@@ -242,7 +242,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
         mask = self.masked_dataset.mask if self.mask else None
         positions = self.masked_dataset.positions if self.positions else None
 
-        phase_plotters.imaging_of_phase(
+        phase_plots.imaging_of_phase(
             imaging=self.masked_dataset.imaging,
             mask=mask,
             positions=positions,
@@ -261,7 +261,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
 
     def plot_fit(self, fit, during_analysis):
 
-        phase_plotters.imaging_fit_of_phase(
+        phase_plots.imaging_fit_of_phase(
             fit=fit,
             during_analysis=during_analysis,
             mask=self.mask,
@@ -302,7 +302,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualize):
     def plot_hyper_images(self, last_results):
         mask = self.masked_dataset.mask
         if self.mask and mask is not None and last_results is not None:
-            phase_plotters.plot_hyper_images_for_phase(
+            phase_plots.plot_hyper_images_for_phase(
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
                 mask=self.masked_dataset.mask,
@@ -334,7 +334,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
 
     def plot_interferometer(self):
 
-        phase_plotters.interferometer_of_phase(
+        phase_plots.interferometer_of_phase(
             interferometer=self.masked_interferometer.interferometer,
             unit_label="arcsec",
             kpc_per_arcsec=None,
@@ -348,7 +348,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
 
     def plot_fit(self, fit, during_analysis):
 
-        phase_plotters.interferometer_fit_of_phase(
+        phase_plots.interferometer_fit_of_phase(
             fit=fit,
             during_analysis=during_analysis,
             positions=self.positions,
@@ -385,7 +385,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualize):
     def plot_hyper_images(self, last_results):
         mask = self.masked_dataset.mask
         if self.mask and mask is not None and last_results is not None:
-            phase_plotters.plot_hyper_images_for_phase(
+            phase_plots.plot_hyper_images_for_phase(
                 hyper_model_image=last_results.hyper_model_image,
                 hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
                 mask=self.masked_interferometer.mask,
@@ -409,7 +409,7 @@ class HyperGalaxyVisualizer(SubPlotVisualizer):
         chi_squared_map,
         hyper_chi_squared_map,
     ):
-        hyper_plotters.subplot_of_hyper_galaxy(
+        hyper_plots.subplot_of_hyper_galaxy(
             hyper_galaxy_image_sub=hyper_galaxy_image,
             contribution_map_sub=contribution_map,
             noise_map_sub=noise_map,

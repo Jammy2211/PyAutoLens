@@ -1,5 +1,5 @@
 import autolens as al
-from autolens.plotters import phase_plotters
+from autolens.plots import phase_plots
 
 mask = al.mask.circular(
     shape_2d=(200, 200), pixel_scales=0.03, sub_size=1, radius=2.4, centre=(0.0, 0.0)
@@ -36,7 +36,7 @@ al.plot.tracer.profile_image(
     include_caustics=True,
 )
 
-# phase_plotters.ray_tracing_of_phase(tracer=tracer, grid=grid,     during_analysis=True,
+# phase_plots.ray_tracing_of_phase(tracer=tracer, grid=grid,     during_analysis=True,
 #     mask=None,
 #     include_critical_curves,
 #     include_caustics,

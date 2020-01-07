@@ -6,10 +6,10 @@ backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-import autoarray as aa
+from autoarray.plotters import plotters, array_plotters, grid_plotters
 from autoarray.util import plotter_util
-from autoastro.plotters import lens_plotter_util
-from autolens.plotters import plane_plotters
+from autoastro.plots import lens_plotter_util
+from autolens.plots import plane_plots
 
 
 def subplot(
@@ -21,30 +21,7 @@ def subplot(
     include_critical_curves=False,
     include_caustics=False,
     positions=None,
-    plot_in_kpc=False,
-    figsize=None,
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=10,
-    xlabelsize=10,
-    ylabelsize=10,
-    xyticksize=10,
-    mask_pointsize=10,
-    position_pointsize=10,
-    grid_pointsize=1.0,
-    output_path=None,
-    output_filename="tracer",
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the observed _tracer of an analysis, using the *Imaging* class object.
 
@@ -80,30 +57,6 @@ def subplot(
         include_mass_profile_centres=include_mass_profile_centres,
         include_critical_curves=include_critical_curves,
         positions=positions,
-        as_subplot=True,
-        plot_in_kpc=plot_in_kpc,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        position_pointsize=position_pointsize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
     )
 
     if tracer.has_mass_profile:
@@ -116,28 +69,6 @@ def subplot(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            as_subplot=True,
-            plot_in_kpc=plot_in_kpc,
-            figsize=figsize,
-            aspect=aspect,
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
-            xyticksize=xyticksize,
-            output_path=output_path,
-            output_filename="",
-            output_format=output_format,
         )
 
         plt.subplot(rows, columns, 3)
@@ -148,28 +79,6 @@ def subplot(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            as_subplot=True,
-            plot_in_kpc=plot_in_kpc,
-            figsize=figsize,
-            aspect=aspect,
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
-            xyticksize=xyticksize,
-            output_path=output_path,
-            output_filename="",
-            output_format=output_format,
         )
 
     plt.subplot(rows, columns, 4)
@@ -180,7 +89,7 @@ def subplot(
         obj=tracer, include_critical_curves=False, include_caustics=include_caustics
     )
 
-    plane_plotters.plane_image(
+    plane_plots.plane_image(
         plane=tracer.source_plane,
         grid=source_plane_grid,
         lines=caustics,
@@ -297,9 +206,7 @@ def individual(
     plot_convergence=False,
     plot_potential=False,
     plot_deflections=False,
-    plot_in_kpc=False,
-    output_path=None,
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the observed _tracer of an analysis, using the *Imaging* class object.
 
@@ -327,9 +234,7 @@ def individual(
             include_mass_profile_centres=include_mass_profile_centres,
             include_critical_curves=include_critical_curves,
             positions=positions,
-            plot_in_kpc=plot_in_kpc,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
     if plot_convergence:
@@ -340,9 +245,7 @@ def individual(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            plot_in_kpc=plot_in_kpc,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
     if plot_potential:
@@ -353,9 +256,7 @@ def individual(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            plot_in_kpc=plot_in_kpc,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
     if plot_source_plane:
@@ -366,16 +267,13 @@ def individual(
             obj=tracer, include_critical_curves=False, include_caustics=include_caustics
         )
 
-        plane_plotters.plane_image(
+        plane_plots.plane_image(
             plane=tracer.source_plane,
             grid=source_plane_grid,
             lines=caustics,
             positions=None,
             include_grid=False,
-            plot_in_kpc=plot_in_kpc,
-            output_path=output_path,
-            output_filename="tracer_source_plane",
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
     if plot_deflections:
@@ -386,9 +284,7 @@ def individual(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            plot_in_kpc=plot_in_kpc,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
         deflections_x(
@@ -397,9 +293,7 @@ def individual(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            plot_in_kpc=plot_in_kpc,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
 
@@ -412,31 +306,7 @@ def profile_image(
     include_critical_curves=False,
     include_caustics=False,
     positions=None,
-    as_subplot=False,
-    plot_in_kpc=False,
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Tracer Profile Image",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    mask_pointsize=10,
-    position_pointsize=10,
-    output_path=None,
-    output_format="show",
-    output_filename="tracer_profile_image",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
 
     profile_image = tracer.profile_image_from_grid(grid=grid)
@@ -463,38 +333,12 @@ def profile_image(
     else:
         mass_profile_centres = None
 
-    aa.plot.array(
+    array_plotter.plot_array(
         array=profile_image,
         mask=mask,
         lines=lines,
         points=positions,
         centres=mass_profile_centres,
-        as_subplot=as_subplot,
-        unit_label=unit_label,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        point_pointsize=position_pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
 
@@ -506,29 +350,7 @@ def convergence(
     include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
-    as_subplot=False,
-    plot_in_kpc=False,
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Tracer Convergence",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="tracer_convergence",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
 
     convergence = tracer.convergence_from_grid(grid=grid)
@@ -548,35 +370,11 @@ def convergence(
     else:
         mass_profile_centres = None
 
-    aa.plot.array(
+    array_plotter.plot_array(
         array=convergence,
         mask=mask,
         lines=lines,
         centres=mass_profile_centres,
-        as_subplot=as_subplot,
-        unit_label=unit_label,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
 
@@ -588,29 +386,7 @@ def potential(
     include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
-    as_subplot=False,
-    plot_in_kpc=False,
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Tracer Potential",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="tracer_potential",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
 
     potential = tracer.potential_from_grid(grid=grid)
@@ -630,35 +406,11 @@ def potential(
     else:
         mass_profile_centres = None
 
-    aa.plot.array(
+    array_plotter.plot_array(
         array=potential,
         mask=mask,
         lines=lines,
         centres=mass_profile_centres,
-        as_subplot=as_subplot,
-        unit_label=unit_label,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
 
@@ -670,29 +422,7 @@ def deflections_y(
     include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
-    as_subplot=False,
-    plot_in_kpc=False,
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Tracer Deflections (y)",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="tracer_deflections_y",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
 
     deflections = tracer.deflections_from_grid(grid=grid)
@@ -715,35 +445,11 @@ def deflections_y(
     else:
         mass_profile_centres = None
 
-    aa.plot.array(
+    array_plotter.plot_array(
         array=deflections_y,
         mask=mask,
         lines=lines,
         centres=mass_profile_centres,
-        as_subplot=as_subplot,
-        unit_label=unit_label,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
 
@@ -755,29 +461,7 @@ def deflections_x(
     include_mass_profile_centres=False,
     include_critical_curves=False,
     include_caustics=False,
-    as_subplot=False,
-    plot_in_kpc=False,
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Tracer Deflections (x)",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="tracer_deflections_x",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
 
     deflections = tracer.deflections_from_grid(grid=grid)
@@ -800,33 +484,9 @@ def deflections_x(
     else:
         mass_profile_centres = None
 
-    aa.plot.array(
+    array_plotter.plot_array(
         array=deflections_x,
         lines=lines,
         mask=mask,
         centres=mass_profile_centres,
-        as_subplot=as_subplot,
-        unit_label=unit_label,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )

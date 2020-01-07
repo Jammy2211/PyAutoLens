@@ -5,29 +5,18 @@ backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 
 import autoarray as aa
-from autoarray.plots.fit_interferometer_plotters import *
+from autoarray.plots.fit_interferometer_plots import *
+from autoarray.plotters import plotters, array_plotters, grid_plotters, line_plotters, mapper_plotters
 from autoarray.util import plotter_util
-from autoastro.plotters import lens_plotter_util
-from autolens.plotters import plane_plotters, ray_tracing_plotters
+from autoastro.plots import lens_plotter_util
+from autolens.plots import plane_plots, ray_tracing_plots
 
 
 def subplot(
     fit,
-    plot_in_kpc=False,
-    figsize=None,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=10,
-    xlabelsize=10,
-    ylabelsize=10,
-    xyticksize=10,
-    grid_pointsize=1,
-    output_path=None,
-    output_filename="fit",
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
+    grid_plotter=grid_plotters.GridPlotter(),
+    line_plotter=line_plotters.LinePlotter(),
 ):
 
     rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
@@ -49,18 +38,9 @@ def subplot(
         fit=fit,
         unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename=output_filename,
-        output_format=output_format,
+        array_plotter=array_plotter,
+        grid_plotter=grid_plotter,
+        line_plotter=line_plotter,
     )
 
 
@@ -72,30 +52,8 @@ def subplot_real_space(
     positions=True,
     include_image_plane_pix=False,
     include_mass_profile_centres=True,
-    plot_in_kpc=False,
-    figsize=None,
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=10,
-    xlabelsize=10,
-    ylabelsize=10,
-    xyticksize=10,
-    mask_pointsize=10,
-    position_pointsize=10,
-    grid_pointsize=1,
-    output_path=None,
-    output_filename="fit_real_space",
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
+    mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
 
     rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
@@ -129,68 +87,21 @@ def subplot_real_space(
 
     if not fit.inversion is not None:
 
-        ray_tracing_plotters.profile_image(
+        ray_tracing_plots.profile_image(
             tracer=fit.tracer,
             grid=fit.masked_interferometer.grid,
             mask=real_space_mask,
             include_critical_curves=include_critical_curves,
             positions=positions,
-            as_subplot=True,
-            plot_in_kpc=plot_in_kpc,
-            figsize=figsize,
-            aspect=aspect,
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
-            xyticksize=xyticksize,
-            position_pointsize=position_pointsize,
-            mask_pointsize=mask_pointsize,
-            output_path=output_path,
-            output_filename="",
-            output_format=output_format,
         )
 
         plt.subplot(rows, columns, 2)
 
-        plane_plotters.plane_image(
+        plane_plots.plane_image(
             plane=fit.tracer.source_plane,
             grid=fit.masked_interferometer.grid,
             as_subplot=True,
             lines=[lines[1]],
-            plot_in_kpc=plot_in_kpc,
-            figsize=figsize,
-            aspect=aspect,
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
-            xyticksize=xyticksize,
-            grid_pointsize=grid_pointsize,
-            position_pointsize=position_pointsize,
-            output_path=output_path,
-            output_filename="",
-            output_format=output_format,
         )
 
     elif fit.inversion is not None:
@@ -201,29 +112,6 @@ def subplot_real_space(
             lines=[lines[0]],
             positions=positions,
             grid=image_plane_pix_grid,
-            as_subplot=True,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            figsize=figsize,
-            aspect=aspect,
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
-            xyticksize=xyticksize,
-            output_path=output_path,
-            output_format=output_format,
-            output_filename=output_filename,
         )
 
         ratio = float(
@@ -237,11 +125,11 @@ def subplot_real_space(
             )
         )
 
-        if aspect is "square":
+        if mapper_plotter.aspect is "square":
             aspect_inv = ratio
-        elif aspect is "auto":
+        elif mapper_plotter.aspect is "auto":
             aspect_inv = 1.0 / ratio
-        elif aspect is "equal":
+        elif mapper_plotter.aspect is "equal":
             aspect_inv = 1.0
 
         plt.subplot(rows, columns, 2, aspect=float(aspect_inv))
@@ -251,35 +139,10 @@ def subplot_real_space(
             lines=[lines[0]],
             include_grid=False,
             include_centres=False,
-            as_subplot=True,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            figsize=figsize,
-            aspect=None,
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
-            xyticksize=xyticksize,
-            output_path=output_path,
-            output_filename=None,
-            output_format=output_format,
+            mapper_plotter=mapper_plotter
         )
 
-    plotter_util.output_subplot_array(
-        output_path=output_path,
-        output_filename=output_filename,
-        output_format=output_format,
+    array_plotter.output_subplot_array(
     )
 
     plt.close()
@@ -303,8 +166,9 @@ def individuals(
     plot_inversion_regularization_weight_map=False,
     plot_inversion_interpolated_reconstruction=False,
     plot_inversion_interpolated_errors=False,
-    output_path=None,
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
+    grid_plotter=grid_plotters.GridPlotter(),
+    line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -343,6 +207,7 @@ def individuals(
         plot_inversion_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
         plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
         unit_conversion_factor=unit_conversion_factor,
-        output_path=output_path,
-        output_format=output_format,
+        array_plotter=array_plotter,
+        grid_plotter=grid_plotter,
+        line_plotter=line_plotter,
     )

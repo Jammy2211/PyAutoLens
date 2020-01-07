@@ -1,4 +1,4 @@
-from autolens.plotters.fit_imaging_plotters.fit_imaging_plotters import (
+from autolens.plots.fit_imaging_plots.fit_imaging_plots import (
     subplot,
     subplot_for_plane,
     subplot_of_planes,
