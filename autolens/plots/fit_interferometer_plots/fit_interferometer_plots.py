@@ -11,7 +11,7 @@ from autoarray.util import plotter_util
 from autoastro.plots import lens_plotter_util
 from autolens.plots import plane_plots, ray_tracing_plots
 
-
+@plotters.set_includes
 def subplot(
     fit,
     array_plotter=array_plotters.ArrayPlotter(),
@@ -147,7 +147,7 @@ def subplot_real_space(
 
     plt.close()
 
-
+@plotters.set_includes
 def individuals(
     fit,
     plot_in_kpc=False,

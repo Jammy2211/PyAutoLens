@@ -8,9 +8,8 @@ backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-import autoarray as aa
-
-
+@plotters.set_includes
+@plotters.set_labels
 def profile_image(
     plane,
     grid,
@@ -45,7 +44,8 @@ def profile_image(
         lines=lines,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def plane_image(
     plane,
     grid,
@@ -80,7 +80,8 @@ def plane_image(
         lines=lines,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def convergence(
     plane,
     grid,
@@ -108,7 +109,8 @@ def convergence(
         lines=lines,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def potential(
     plane,
     grid,
@@ -136,7 +138,8 @@ def potential(
         lines=lines,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def deflections_y(
     plane,
     grid,
@@ -167,7 +170,8 @@ def deflections_y(
         lines=lines,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def deflections_x(
     plane,
     grid,
@@ -198,7 +202,8 @@ def deflections_x(
         lines=lines,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def magnification(
     plane,
     grid,
@@ -226,7 +231,7 @@ def magnification(
         lines=lines,
     )
 
-
+@plotters.set_includes
 def image_and_source_plane_subplot(
     image_plane,
     source_plane,
@@ -285,7 +290,8 @@ def image_and_source_plane_subplot(
     )
     plt.close()
 
-
+@plotters.set_includes
+@plotters.set_labels
 def plane_grid(
     plane,
     grid,

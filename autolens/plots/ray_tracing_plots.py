@@ -11,7 +11,7 @@ from autoarray.util import plotter_util
 from autoastro.plots import lens_plotter_util
 from autolens.plots import plane_plots
 
-
+@plotters.set_includes
 def subplot(
     tracer,
     grid,
@@ -57,6 +57,7 @@ def subplot(
         include_mass_profile_centres=include_mass_profile_centres,
         include_critical_curves=include_critical_curves,
         positions=positions,
+        array_plotter=array_plotter,
     )
 
     if tracer.has_mass_profile:
@@ -69,6 +70,7 @@ def subplot(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
+            array_plotter=array_plotter,
         )
 
         plt.subplot(rows, columns, 3)
@@ -79,6 +81,7 @@ def subplot(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
+            array_plotter=array_plotter,
         )
 
     plt.subplot(rows, columns, 4)
@@ -93,28 +96,7 @@ def subplot(
         plane=tracer.source_plane,
         grid=source_plane_grid,
         lines=caustics,
-        as_subplot=True,
-        positions=None,
-        include_grid=False,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        grid_pointsize=grid_pointsize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        array_plotter=array_plotter,
     )
 
     if tracer.has_mass_profile:
@@ -127,28 +109,7 @@ def subplot(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            as_subplot=True,
-            plot_in_kpc=plot_in_kpc,
-            figsize=figsize,
-            aspect=aspect,
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
-            xyticksize=xyticksize,
-            output_path=output_path,
-            output_filename="",
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
         plt.subplot(rows, columns, 6)
@@ -159,39 +120,15 @@ def subplot(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            as_subplot=True,
-            plot_in_kpc=plot_in_kpc,
-            figsize=figsize,
-            aspect=aspect,
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
-            xyticksize=xyticksize,
-            output_path=output_path,
-            output_filename="",
-            output_format=output_format,
+            array_plotter=array_plotter,
         )
 
-    plotter_util.output_subplot_array(
-        output_path=output_path,
-        output_filename=output_filename,
-        output_format=output_format,
+    array_plotter.output_subplot_array(
     )
 
     plt.close()
 
-
+@plotters.set_includes
 def individual(
     tracer,
     grid,
@@ -296,7 +233,8 @@ def individual(
             array_plotter=array_plotter
         )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def profile_image(
     tracer,
     grid,
@@ -341,7 +279,8 @@ def profile_image(
         centres=mass_profile_centres,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def convergence(
     tracer,
     grid,
@@ -377,7 +316,8 @@ def convergence(
         centres=mass_profile_centres,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def potential(
     tracer,
     grid,
@@ -413,7 +353,8 @@ def potential(
         centres=mass_profile_centres,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def deflections_y(
     tracer,
     grid,
@@ -452,7 +393,8 @@ def deflections_y(
         centres=mass_profile_centres,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def deflections_x(
     tracer,
     grid,

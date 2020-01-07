@@ -11,7 +11,7 @@ from autoarray.util import plotter_util
 from autoastro.plots import lens_plotter_util
 from autolens.plots import plane_plots
 
-
+@plotters.set_includes
 def subplot(
     fit,
     mask=True,
@@ -47,7 +47,7 @@ def subplot(
         array_plotter=array_plotter
     )
 
-
+@plotters.set_includes
 def subplot_of_planes(
     fit,
     mask=True,
@@ -78,7 +78,7 @@ def subplot_of_planes(
                 mapper_plotter=mapper_plotter
             )
 
-
+@plotters.set_includes
 def subplot_for_plane(
     fit,
     plane_index,
@@ -217,7 +217,7 @@ def subplot_for_plane(
 
     plt.close()
 
-
+@plotters.set_includes
 def individuals(
     fit,
     mask=True,
@@ -357,7 +357,8 @@ def individuals(
                     mapper_plotter=mapper_plotter,
                 )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def subtracted_image_of_plane(
     fit,
     plane_index,
@@ -423,7 +424,8 @@ def subtracted_image_of_plane(
         lines=critical_curves,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def model_image_of_plane(
     fit,
     plane_index,
@@ -473,7 +475,8 @@ def model_image_of_plane(
         centres=centres,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def contribution_maps(
     fit,
     mask=True,
