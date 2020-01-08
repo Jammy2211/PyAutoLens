@@ -19,12 +19,17 @@ def subplot(
     line_plotter=line_plotters.LinePlotter(),
 ):
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    array_plotter = array_plotter.plotter_as_sub_plotter()
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(output_filename="imaging")
+
+    rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=6
     )
 
-    if figsize is None:
+    if array_plotter.figsize is None:
         figsize = figsize_tool
+    else:
+        figsize = array_plotter.figsize
 
     unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
         obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
