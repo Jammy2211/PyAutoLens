@@ -3,11 +3,24 @@ import os
 
 import autolens as al
 
+from os import path
+
+from autofit import conf
+
+directory = path.dirname(path.realpath(__file__))
+
 
 @pytest.fixture(name="imaging_fit_plotter_path")
 def make_imaging_fit_plotter_setup():
     return "{}/../../test_files/plotting/fit/".format(
         os.path.dirname(os.path.realpath(__file__))
+    )
+
+
+@pytest.fixture(autouse=True)
+def set_config_path():
+    conf.instance = conf.Config(
+        path.join(directory, "../test_files/plotters"), path.join(directory, "output")
     )
 
 
@@ -21,49 +34,43 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        mask=True,
-        positions=True,
+        include_mask=True,
+        include_positions=True,
         include_image_plane_pix=True,
         include_critical_curves=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        imaging_fit_plotter_path + "fit_subtracted_image_of_plane_0.png"
-        in plot_patch.paths
+        imaging_fit_plotter_path + "subtracted_image_of_plane_0.png" in plot_patch.paths
     )
 
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        mask=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        include_mask=True,
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        imaging_fit_plotter_path + "fit_subtracted_image_of_plane_0.png"
-        in plot_patch.paths
+        imaging_fit_plotter_path + "subtracted_image_of_plane_0.png" in plot_patch.paths
     )
 
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        mask=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        include_mask=True,
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        imaging_fit_plotter_path + "fit_subtracted_image_of_plane_1.png"
-        in plot_patch.paths
+        imaging_fit_plotter_path + "subtracted_image_of_plane_1.png" in plot_patch.paths
     )
 
 
@@ -77,46 +84,37 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        mask=True,
-        positions=True,
+        include_mask=True,
+        include_positions=True,
         include_critical_curves=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
-    assert (
-        imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
-    )
+    assert imaging_fit_plotter_path + "model_image_of_plane_0.png" in plot_patch.paths
 
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        mask=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        include_mask=True,
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
-    assert (
-        imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
-    )
+    assert imaging_fit_plotter_path + "model_image_of_plane_0.png" in plot_patch.paths
 
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        mask=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        include_mask=True,
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
-    assert (
-        imaging_fit_plotter_path + "fit_model_image_of_plane_1.png" in plot_patch.paths
-    )
+    assert imaging_fit_plotter_path + "model_image_of_plane_1.png" in plot_patch.paths
 
 
 def test__fit_sub_plot(
@@ -125,19 +123,17 @@ def test__fit_sub_plot(
 
     al.plot.fit_imaging.subplot(
         fit=masked_imaging_fit_x2_plane_7x7,
-        mask=True,
-        positions=True,
+        include_mask=True,
+        include_positions=True,
         include_image_plane_pix=True,
         include_critical_curves=True,
-        include_caustics=True,
         plot_in_kpc=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
-    assert imaging_fit_plotter_path + "fit.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "fit_imaging.png" in plot_patch.paths
 
 
 def test__fit_for_plane_subplot(
@@ -150,42 +146,39 @@ def test__fit_for_plane_subplot(
     al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        mask=True,
-        positions=True,
+        include_mask=True,
+        include_positions=True,
         include_image_plane_pix=True,
         include_critical_curves=True,
         include_caustics=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
-    assert imaging_fit_plotter_path + "lens_fit_plane_0.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "plane_0.png" in plot_patch.paths
 
     al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        mask=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        include_mask=True,
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
-    assert imaging_fit_plotter_path + "lens_fit_plane_0.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "plane_0.png" in plot_patch.paths
 
     al.plot.fit_imaging.subplot_for_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        mask=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        include_mask=True,
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
-    assert imaging_fit_plotter_path + "lens_fit_plane_1.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "plane_1.png" in plot_patch.paths
 
 
 def test__fit_for_planes_subplot(
@@ -197,33 +190,31 @@ def test__fit_for_planes_subplot(
 
     al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x1_plane_7x7,
-        mask=True,
-        positions=True,
+        include_mask=True,
+        include_positions=True,
         include_image_plane_pix=True,
         include_critical_curves=True,
         include_caustics=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
-    assert imaging_fit_plotter_path + "lens_fit_plane_0.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "plane_0.png" in plot_patch.paths
 
     al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x2_plane_7x7,
-        mask=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        include_mask=True,
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
-    assert imaging_fit_plotter_path + "lens_fit_plane_0.png" in plot_patch.paths
-    assert imaging_fit_plotter_path + "lens_fit_plane_1.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "plane_0.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "plane_1.png" in plot_patch.paths
 
 
-def test__fit_individuals__source_and_lens__depedent_on_input(
+def test__fit_individuals__source_and_lens__dependent_on_input(
     masked_imaging_fit_x1_plane_7x7,
     masked_imaging_fit_x2_plane_7x7,
     imaging_fit_plotter_path,
@@ -232,8 +223,8 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     al.plot.fit_imaging.individuals(
         fit=masked_imaging_fit_x1_plane_7x7,
-        mask=True,
-        positions=True,
+        include_mask=True,
+        include_positions=True,
         include_image_plane_pix=True,
         include_critical_curves=True,
         include_caustics=True,
@@ -245,41 +236,37 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         plot_subtracted_images_of_planes=True,
         plot_model_images_of_planes=True,
         plot_plane_images_of_planes=True,
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
+        mapper_plotter=al.plotter.mapper(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
-    assert imaging_fit_plotter_path + "fit_image.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "image.png" in plot_patch.paths
 
-    assert imaging_fit_plotter_path + "fit_noise_map.png" not in plot_patch.paths
+    assert imaging_fit_plotter_path + "noise_map.png" not in plot_patch.paths
+
+    assert imaging_fit_plotter_path + "signal_to_noise_map.png" not in plot_patch.paths
+
+    assert imaging_fit_plotter_path + "model_image.png" in plot_patch.paths
+
+    assert imaging_fit_plotter_path + "residual_map.png" not in plot_patch.paths
 
     assert (
-        imaging_fit_plotter_path + "fit_signal_to_noise_map.png" not in plot_patch.paths
+        imaging_fit_plotter_path + "normalized_residual_map.png" not in plot_patch.paths
     )
 
-    assert imaging_fit_plotter_path + "fit_model_image.png" in plot_patch.paths
-
-    assert imaging_fit_plotter_path + "fit_residual_map.png" not in plot_patch.paths
+    assert imaging_fit_plotter_path + "chi_squared_map.png" in plot_patch.paths
 
     assert (
-        imaging_fit_plotter_path + "fit_normalized_residual_map.png"
-        not in plot_patch.paths
+        imaging_fit_plotter_path + "subtracted_image_of_plane_0.png" in plot_patch.paths
     )
 
-    assert imaging_fit_plotter_path + "fit_chi_squared_map.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "model_image_of_plane_0.png" in plot_patch.paths
 
-    assert (
-        imaging_fit_plotter_path + "fit_subtracted_image_of_plane_0.png"
-        in plot_patch.paths
-    )
-
-    assert (
-        imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
-    )
-
-    assert (
-        imaging_fit_plotter_path + "fit_plane_image_of_plane_0.png" in plot_patch.paths
-    )
+    assert imaging_fit_plotter_path + "plane_image_of_plane_0.png" in plot_patch.paths
 
     al.plot.fit_imaging.individuals(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -291,48 +278,39 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         plot_subtracted_images_of_planes=True,
         plot_model_images_of_planes=True,
         plot_plane_images_of_planes=True,
-        output_path=imaging_fit_plotter_path,
-        output_format="png",
+        array_plotter=al.plotter.array(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
+        mapper_plotter=al.plotter.mapper(
+            output_path=imaging_fit_plotter_path, output_format="png"
+        ),
     )
 
-    assert imaging_fit_plotter_path + "fit_image.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "image.png" in plot_patch.paths
 
-    assert imaging_fit_plotter_path + "fit_noise_map.png" not in plot_patch.paths
+    assert imaging_fit_plotter_path + "noise_map.png" not in plot_patch.paths
+
+    assert imaging_fit_plotter_path + "signal_to_noise_map.png" not in plot_patch.paths
+
+    assert imaging_fit_plotter_path + "model_image.png" in plot_patch.paths
+
+    assert imaging_fit_plotter_path + "residual_map.png" not in plot_patch.paths
 
     assert (
-        imaging_fit_plotter_path + "fit_signal_to_noise_map.png" not in plot_patch.paths
+        imaging_fit_plotter_path + "normalized_residual_map.png" not in plot_patch.paths
     )
 
-    assert imaging_fit_plotter_path + "fit_model_image.png" in plot_patch.paths
-
-    assert imaging_fit_plotter_path + "fit_residual_map.png" not in plot_patch.paths
+    assert imaging_fit_plotter_path + "chi_squared_map.png" in plot_patch.paths
 
     assert (
-        imaging_fit_plotter_path + "fit_normalized_residual_map.png"
-        not in plot_patch.paths
+        imaging_fit_plotter_path + "subtracted_image_of_plane_0.png" in plot_patch.paths
+    )
+    assert (
+        imaging_fit_plotter_path + "subtracted_image_of_plane_1.png" in plot_patch.paths
     )
 
-    assert imaging_fit_plotter_path + "fit_chi_squared_map.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "model_image_of_plane_0.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "model_image_of_plane_1.png" in plot_patch.paths
 
-    assert (
-        imaging_fit_plotter_path + "fit_subtracted_image_of_plane_0.png"
-        in plot_patch.paths
-    )
-    assert (
-        imaging_fit_plotter_path + "fit_subtracted_image_of_plane_1.png"
-        in plot_patch.paths
-    )
-
-    assert (
-        imaging_fit_plotter_path + "fit_model_image_of_plane_0.png" in plot_patch.paths
-    )
-    assert (
-        imaging_fit_plotter_path + "fit_model_image_of_plane_1.png" in plot_patch.paths
-    )
-
-    assert (
-        imaging_fit_plotter_path + "fit_plane_image_of_plane_0.png" in plot_patch.paths
-    )
-    assert (
-        imaging_fit_plotter_path + "fit_plane_image_of_plane_1.png" in plot_patch.paths
-    )
+    assert imaging_fit_plotter_path + "plane_image_of_plane_0.png" in plot_patch.paths
+    assert imaging_fit_plotter_path + "plane_image_of_plane_1.png" in plot_patch.paths

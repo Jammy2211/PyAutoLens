@@ -5,34 +5,34 @@ backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 
 import autoarray as aa
-from autoarray.plotters import plotters, array_plotters, mapper_plotters
+from autoarray.plotters import array_plotters, mapper_plotters
 from autoarray.plots.fit_imaging_plots import *
 from autoarray.util import plotter_util
 from autoastro.plots import lens_plotter_util
 from autolens.plots import plane_plots
 
-@plotters.set_includes
+from autoarray.util.plotter_util import mask_from_fit
+from autoastro.plots.lens_plotter_util import (
+    mass_profile_centres_from_fit,
+    positions_from_fit,
+    image_plane_pix_grid_from_fit,
+    critical_curves_and_caustics_from_lensing_object,
+)
+
+
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def subplot(
     fit,
-    mask=True,
-    include_critical_curves=False,
-    include_caustics=False,
-    positions=False,
-    include_image_plane_pix=False,
+    include_mask=None,
+    include_critical_curves=None,
+    include_positions=None,
+    include_image_plane_pix=None,
+    plot_in_kpc=None,
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
-    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
-        include_image_plane_pix=include_image_plane_pix, fit=fit
-    )
-
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, positions=positions)
-
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
-    )
-
-    critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+    critical_curves = critical_curves_and_caustics_from_lensing_object(
         obj=fit.tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=False,
@@ -40,21 +40,24 @@ def subplot(
 
     aa.plot.fit_imaging.subplot(
         fit=fit,
-        mask=mask,
-        grid=image_plane_pix_grid,
+        include_mask=include_mask,
+        grid=image_plane_pix_grid_from_fit(
+            fit=fit, include_image_plane_pix=include_image_plane_pix
+        ),
         lines=critical_curves,
-        points=positions,
-        array_plotter=array_plotter
+        points=positions_from_fit(fit=fit, include_positions=include_positions),
+        array_plotter=array_plotter,
     )
+
 
 @plotters.set_includes
 def subplot_of_planes(
     fit,
-    mask=True,
-    include_critical_curves=False,
-    include_caustics=False,
-    positions=False,
-    include_image_plane_pix=False,
+    include_mask=None,
+    include_critical_curves=None,
+    include_caustics=None,
+    include_positions=None,
+    include_image_plane_pix=None,
     array_plotter=array_plotters.ArrayPlotter(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
@@ -69,26 +72,28 @@ def subplot_of_planes(
             subplot_for_plane(
                 fit=fit,
                 plane_index=plane_index,
-                mask=mask,
+                include_mask=include_mask,
                 include_image_plane_pix=include_image_plane_pix,
                 include_critical_curves=include_critical_curves,
                 include_caustics=include_caustics,
-                positions=positions,
+                include_positions=include_positions,
                 array_plotter=array_plotter,
-                mapper_plotter=mapper_plotter
+                mapper_plotter=mapper_plotter,
             )
 
-@plotters.set_includes
+
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def subplot_for_plane(
     fit,
     plane_index,
-    mask=True,
-    plot_source_grid=False,
-    include_critical_curves=False,
-    include_caustics=False,
-    positions=False,
-    include_image_plane_pix=False,
-    include_mass_profile_centres=True,
+    include_mask=None,
+    plot_source_grid=None,
+    include_critical_curves=None,
+    include_caustics=None,
+    include_positions=None,
+    include_image_plane_pix=None,
+    include_mass_profile_centres=None,
     array_plotter=array_plotters.ArrayPlotter(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
@@ -109,47 +114,43 @@ def subplot_for_plane(
         in the python interpreter window.
     """
 
-    output_filename += "_" + str(plane_index)
+    array_plotter = array_plotter.plotter_as_sub_plotter()
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+        output_filename="plane_" + str(plane_index)
+    )
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=4
     )
 
-    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=mask)
-
-    if figsize is None:
+    if array_plotter.figsize is None:
         figsize = figsize_tool
+    else:
+        figsize = array_plotter.figsize
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.planes[plane_index], plot_in_kpc=plot_in_kpc
-    )
-
-    plt.figure(figsize=array_plotter.figsize)
-
-    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
-        include_image_plane_pix=include_image_plane_pix, fit=fit
-    )
-
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, positions=positions)
+    plt.figure(figsize=figsize)
 
     plt.subplot(rows, columns, 1)
 
     aa.plot.fit_imaging.image(
         fit=fit,
-        mask=mask,
-        grid=image_plane_pix_grid,
-        points=positions,
-        array_plotter=array_plotter)
+        include_mask=include_mask,
+        grid=image_plane_pix_grid_from_fit(
+            fit=fit, include_image_plane_pix=include_image_plane_pix
+        ),
+        points=positions_from_fit(fit=fit, include_positions=include_positions),
+        array_plotter=array_plotter,
+    )
 
     plt.subplot(rows, columns, 2)
 
     subtracted_image_of_plane(
         fit=fit,
         plane_index=plane_index,
-        mask=mask,
+        include_mask=include_mask,
         include_image_plane_pix=include_image_plane_pix,
-        positions=positions,
-        array_plotter=array_plotter
+        include_positions=include_positions,
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 3)
@@ -157,15 +158,15 @@ def subplot_for_plane(
     model_image_of_plane(
         fit=fit,
         plane_index=plane_index,
-        mask=mask,
-        positions=positions,
+        include_mask=include_mask,
+        include_positions=include_positions,
         include_mass_profile_centres=include_mass_profile_centres,
         include_critical_curves=include_critical_curves,
-        array_plotter=array_plotter
+        array_plotter=array_plotter,
     )
 
-    caustics = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
-        obj=fit.tracer, include_critical_curves=False, include_caustics=include_caustics
+    caustics = critical_curves_and_caustics_from_lensing_object(
+        obj=fit.tracer, include_critical_curves=None, include_caustics=include_caustics
     )
 
     if not fit.tracer.planes[plane_index].has_pixelization:
@@ -179,7 +180,7 @@ def subplot_for_plane(
             grid=traced_grids[plane_index],
             lines=caustics,
             include_grid=plot_source_grid,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
 
     elif fit.tracer.planes[plane_index].has_pixelization:
@@ -209,22 +210,23 @@ def subplot_for_plane(
             lines=caustics,
             include_grid=False,
             include_centres=False,
-            mapper_plotter=mapper_plotter
+            mapper_plotter=mapper_plotter,
         )
 
-    array_plotter.output_subplot_array(
-    )
+    array_plotter.output_subplot_array()
 
     plt.close()
 
-@plotters.set_includes
+
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def individuals(
     fit,
-    mask=True,
-    positions=False,
-    include_critical_curves=False,
-    include_caustics=False,
-    include_image_plane_pix=False,
+    include_mask=None,
+    include_positions=None,
+    include_critical_curves=None,
+    include_caustics=None,
+    include_image_plane_pix=None,
     plot_in_kpc=False,
     plot_image=False,
     plot_noise_map=False,
@@ -262,17 +264,7 @@ def individuals(
         in the python interpreter window.
     """
 
-    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
-        include_image_plane_pix=include_image_plane_pix, fit=fit
-    )
-
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
-    )
-
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, positions=positions)
-
-    critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+    critical_curves = critical_curves_and_caustics_from_lensing_object(
         obj=fit.tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=False,
@@ -280,10 +272,12 @@ def individuals(
 
     aa.plot.fit_imaging.individuals(
         fit=fit,
-        mask=mask,
+        include_mask=include_mask,
         lines=critical_curves,
-        grid=image_plane_pix_grid,
-        points=positions,
+        grid=image_plane_pix_grid_from_fit(
+            fit=fit, include_image_plane_pix=include_image_plane_pix
+        ),
+        points=positions_from_fit(fit=fit, include_positions=include_positions),
         plot_image=plot_image,
         plot_noise_map=plot_noise_map,
         plot_signal_to_noise_map=plot_signal_to_noise_map,
@@ -311,9 +305,9 @@ def individuals(
             subtracted_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
-                mask=mask,
+                include_mask=include_mask,
                 include_critical_curves=include_critical_curves,
-                array_plotter=array_plotter
+                array_plotter=array_plotter,
             )
 
     if plot_model_images_of_planes:
@@ -323,22 +317,24 @@ def individuals(
             model_image_of_plane(
                 fit=fit,
                 plane_index=plane_index,
-                mask=mask,
+                include_mask=include_mask,
                 include_critical_curves=include_critical_curves,
-                array_plotter=array_plotter
+                array_plotter=array_plotter,
             )
 
     if plot_plane_images_of_planes:
 
-        caustics = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+        caustics = critical_curves_and_caustics_from_lensing_object(
             obj=fit.tracer,
-            include_critical_curves=False,
+            include_critical_curves=None,
             include_caustics=include_caustics,
         )
 
         for plane_index in range(fit.tracer.total_planes):
 
-            output_filename = "fit_plane_image_of_plane_" + str(plane_index)
+            array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+                output_filename="plane_image_of_plane_" + str(plane_index)
+            )
 
             if fit.tracer.planes[plane_index].has_light_profile:
 
@@ -346,7 +342,7 @@ def individuals(
                     plane=fit.tracer.planes[plane_index],
                     grid=traced_grids[plane_index],
                     lines=caustics,
-                    array_plotter=array_plotter
+                    array_plotter=array_plotter,
                 )
 
             elif fit.tracer.planes[plane_index].has_pixelization:
@@ -357,15 +353,16 @@ def individuals(
                     mapper_plotter=mapper_plotter,
                 )
 
+
 @lens_plotter_util.set_includes
 @lens_plotter_util.set_labels_and_unit_conversion
 def subtracted_image_of_plane(
     fit,
     plane_index,
-    mask=True,
-    include_critical_curves=False,
-    positions=False,
-    include_image_plane_pix=False,
+    include_mask=None,
+    include_critical_curves=None,
+    include_positions=None,
+    include_image_plane_pix=None,
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the model image of a specific plane of a lens fit.
@@ -382,9 +379,9 @@ def subtracted_image_of_plane(
         The plane from which the model image is generated.
     """
 
-    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=mask)
-
-    output_filename += "_" + str(plane_index)
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+        output_filename="subtracted_image_of_plane_" + str(plane_index)
+    )
 
     if fit.tracer.total_planes > 1:
 
@@ -400,17 +397,7 @@ def subtracted_image_of_plane(
 
         subtracted_image = fit.image
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
-    )
-
-    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
-        include_image_plane_pix=include_image_plane_pix, fit=fit
-    )
-
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, positions=positions)
-
-    critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+    critical_curves = critical_curves_and_caustics_from_lensing_object(
         obj=fit.tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=False,
@@ -418,21 +405,24 @@ def subtracted_image_of_plane(
 
     array_plotter.plot_array(
         array=subtracted_image,
-        mask=mask,
-        grid=image_plane_pix_grid,
-        points=positions,
+        mask=mask_from_fit(fit=fit, include_mask=include_mask),
+        grid=image_plane_pix_grid_from_fit(
+            fit=fit, include_image_plane_pix=include_image_plane_pix
+        ),
+        points=positions_from_fit(fit=fit, include_positions=include_positions),
         lines=critical_curves,
     )
+
 
 @lens_plotter_util.set_includes
 @lens_plotter_util.set_labels_and_unit_conversion
 def model_image_of_plane(
     fit,
     plane_index,
-    mask=True,
-    include_critical_curves=False,
-    positions=False,
-    include_mass_profile_centres=True,
+    include_mask=None,
+    include_critical_curves=None,
+    include_positions=None,
+    include_mass_profile_centres=None,
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the model image of a specific plane of a lens fit.
@@ -447,21 +437,11 @@ def model_image_of_plane(
         The plane from which the model image is generated.
     """
 
-    output_filename += "_" + str(plane_index)
-
-    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=mask)
-
-    centres = lens_plotter_util.get_mass_profile_centres_from_fit(
-        include_mass_profile_centres=include_mass_profile_centres, fit=fit
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+        output_filename="model_image_of_plane_" + str(plane_index)
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
-    )
-
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, positions=positions)
-
-    critical_curves = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+    critical_curves = critical_curves_and_caustics_from_lensing_object(
         obj=fit.tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=False,
@@ -469,18 +449,21 @@ def model_image_of_plane(
 
     array_plotter.plot_array(
         array=fit.model_images_of_planes[plane_index],
-        mask=mask,
+        mask=mask_from_fit(fit=fit, include_mask=include_mask),
         lines=critical_curves,
-        points=positions,
-        centres=centres,
+        points=positions_from_fit(fit=fit, include_positions=include_positions),
+        centres=mass_profile_centres_from_fit(
+            include_mass_profile_centres=include_mass_profile_centres, fit=fit
+        ),
     )
+
 
 @lens_plotter_util.set_includes
 @lens_plotter_util.set_labels_and_unit_conversion
 def contribution_maps(
     fit,
-    mask=True,
-    positions=False,
+    include_mask=None,
+    include_positions=None,
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the summed contribution maps of a hyper_galaxies-fit.
@@ -495,21 +478,13 @@ def contribution_maps(
         The index of the datas in the datas-set of which the contribution_maps are plotted.
     """
 
-    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=mask)
-
     if len(fit.contribution_maps) > 1:
         contribution_map = sum(fit.contribution_maps)
     else:
         contribution_map = fit.contribution_maps[0]
 
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, positions=positions)
-
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
-    )
-
     array_plotter.plot_array(
         array=contribution_map,
-        mask=mask,
-        points=positions,
+        mask=mask_from_fit(fit=fit, include_mask=include_mask),
+        points=positions_from_fit(fit=fit, include_positions=include_positions),
     )

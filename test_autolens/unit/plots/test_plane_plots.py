@@ -8,17 +8,20 @@ from autofit import conf
 
 directory = path.dirname(path.realpath(__file__))
 
+
 @pytest.fixture(name="plane_plotter_path")
 def make_plane_plotter_setup():
     return "{}/../../test_files/plotting/plane/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 
+
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
         path.join(directory, "../test_files/plotters"), path.join(directory, "output")
     )
+
 
 def test__all_individual_plotters__output_file_with_default_name(
     plane_7x7, sub_grid_7x7, mask_7x7, positions_7x7, plane_plotter_path, plot_patch

@@ -33,56 +33,35 @@ def subplot_of_hyper_galaxy(
 
     plt.subplot(rows, columns, 1)
 
-    hyper_galaxy_image(
-        hyper_galaxy_image=hyper_galaxy_image_sub,
-        mask=mask,
-    )
+    hyper_galaxy_image(hyper_galaxy_image=hyper_galaxy_image_sub, mask=mask)
 
     plt.subplot(rows, columns, 2)
 
-    array_plotter.plot_array(
-        array=noise_map_sub,
-        mask=mask,
-    )
+    array_plotter.plot_array(array=noise_map_sub, mask=mask)
 
     plt.subplot(rows, columns, 3)
 
-    hyper_noise_map(
-        hyper_noise_map=hyper_noise_map_sub,
-        mask=mask,
-    )
+    hyper_noise_map(hyper_noise_map=hyper_noise_map_sub, mask=mask)
 
     plt.subplot(rows, columns, 4)
 
-    contribution_map(
-        contribution_map=contribution_map_sub,
-        mask=mask,
-    )
+    contribution_map(contribution_map=contribution_map_sub, mask=mask)
 
     plt.subplot(rows, columns, 5)
 
-    chi_squared_map(
-        chi_squared_map=chi_squared_map_sub,
-        mask=mask,
-    )
+    chi_squared_map(chi_squared_map=chi_squared_map_sub, mask=mask)
 
     plt.subplot(rows, columns, 6)
 
-    hyper_chi_squared_map(
-        hyper_chi_squared_map=hyper_chi_squared_map_sub,
-        mask=mask,
-    )
+    hyper_chi_squared_map(hyper_chi_squared_map=hyper_chi_squared_map_sub, mask=mask)
 
-    array_plotter.output_subplot_array(
-    )
+    array_plotter.output_subplot_array()
 
     plt.close()
 
 
 def subplot_of_hyper_galaxy_images(
-    hyper_galaxy_image_path_dict,
-    mask=True,
-    array_plotter=array_plotters.ArrayPlotter(),
+    hyper_galaxy_image_path_dict, mask=True, array_plotter=array_plotters.ArrayPlotter()
 ):
 
     rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
@@ -111,8 +90,7 @@ def subplot_of_hyper_galaxy_images(
             array_plotter=array_plotter,
         )
 
-    array_plotter.output_subplot_array(
-    )
+    array_plotter.output_subplot_array()
 
     plt.close()
 
@@ -137,10 +115,7 @@ def hyper_model_image(
     """
 
     array_plotter.plot_array(
-        array=hyper_model_image,
-        mask=mask,
-        grid=image_plane_pix_grid,
-        points=positions,
+        array=hyper_model_image, mask=mask, grid=image_plane_pix_grid, points=positions
     )
 
 
@@ -164,10 +139,7 @@ def hyper_galaxy_image(
     """
 
     array_plotter.plot_array(
-        array=hyper_galaxy_image,
-        mask=mask,
-        grid=image_plane_pix_grid,
-        points=positions,
+        array=hyper_galaxy_image, mask=mask, grid=image_plane_pix_grid, points=positions
     )
 
 
@@ -191,10 +163,7 @@ def contribution_map(
     """
 
     array_plotter.plot_array(
-        array=contribution_map,
-        mask=mask,
-        grid=image_plane_pix_grid,
-        points=positions,
+        array=contribution_map, mask=mask, grid=image_plane_pix_grid, points=positions
     )
 
 
@@ -218,10 +187,7 @@ def hyper_noise_map(
     """
 
     array_plotter.plot_array(
-        array=hyper_noise_map,
-        mask=mask,
-        grid=image_plane_pix_grid,
-        points=positions,
+        array=hyper_noise_map, mask=mask, grid=image_plane_pix_grid, points=positions
     )
 
 
@@ -245,10 +211,7 @@ def chi_squared_map(
     """
 
     array_plotter.plot_array(
-        array=chi_squared_map,
-        mask=mask,
-        grid=image_plane_pix_grid,
-        points=positions,
+        array=chi_squared_map, mask=mask, grid=image_plane_pix_grid, points=positions
     )
 
 
