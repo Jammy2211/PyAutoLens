@@ -6,10 +6,17 @@ matplotlib.use(backend)
 
 import autoarray as aa
 from autoarray.plots.fit_interferometer_plots import *
-from autoarray.plotters import plotters, array_plotters, grid_plotters, line_plotters, mapper_plotters
+from autoarray.plotters import (
+    plotters,
+    array_plotters,
+    grid_plotters,
+    line_plotters,
+    mapper_plotters,
+)
 from autoarray.util import plotter_util
 from autoastro.plots import lens_plotter_util
 from autolens.plots import plane_plots, ray_tracing_plots
+
 
 @plotters.set_includes
 def subplot(
@@ -20,7 +27,9 @@ def subplot(
 ):
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
-    array_plotter = array_plotter.plotter_with_new_labels_and_filename(output_filename="imaging")
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+        output_filename="imaging"
+    )
 
     rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=6
@@ -72,17 +81,17 @@ def subplot_real_space(
         obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
-    image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid_from_fit(
+    image_plane_pix_grid = lens_plotter_util.image_plane_pix_grid_from_fit(
         include_image_plane_pix=include_image_plane_pix, fit=fit
     )
 
     real_space_mask = plotter_util.get_real_space_mask_from_fit(fit=fit, mask=mask)
 
-    positions = lens_plotter_util.get_positions_from_fit(fit=fit, positions=positions)
+    positions = lens_plotter_util.positions_from_fit(fit=fit, include_positions=positions)
 
     plt.figure(figsize=figsize)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
         obj=fit.tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -144,13 +153,13 @@ def subplot_real_space(
             lines=[lines[0]],
             include_grid=False,
             include_centres=False,
-            mapper_plotter=mapper_plotter
+            mapper_plotter=mapper_plotter,
         )
 
-    array_plotter.output_subplot_array(
-    )
+    array_plotter.output_subplot_array()
 
     plt.close()
+
 
 @plotters.set_includes
 def individuals(

@@ -6,11 +6,13 @@ backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import plotters, array_plotters
+from autoarray.plotters import array_plotters
 from autoastro.plots import lens_plotter_util
 from autolens.plots import plane_plots
 
-@plotters.set_includes
+
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def subplot(
     tracer,
     grid,
@@ -39,7 +41,9 @@ def subplot(
     """
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
-    array_plotter = array_plotter.plotter_with_new_labels_and_filename(output_filename="imaging")
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+        output_filename="tracer"
+    )
 
     rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=6
@@ -92,7 +96,7 @@ def subplot(
 
     source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-    caustics = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+    caustics = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
         obj=tracer, include_critical_curves=False, include_caustics=include_caustics
     )
 
@@ -113,7 +117,7 @@ def subplot(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
 
         plt.subplot(rows, columns, 6)
@@ -127,12 +131,13 @@ def subplot(
             array_plotter=array_plotter,
         )
 
-    array_plotter.output_subplot_array(
-    )
+    array_plotter.output_subplot_array()
 
     plt.close()
 
-@plotters.set_includes
+
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def individual(
     tracer,
     grid,
@@ -175,7 +180,7 @@ def individual(
             include_mass_profile_centres=include_mass_profile_centres,
             include_critical_curves=include_critical_curves,
             positions=positions,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
 
     if plot_convergence:
@@ -186,7 +191,7 @@ def individual(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
 
     if plot_potential:
@@ -197,14 +202,14 @@ def individual(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
 
     if plot_source_plane:
 
         source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-        caustics = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+        caustics = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
             obj=tracer, include_critical_curves=False, include_caustics=include_caustics
         )
 
@@ -214,7 +219,9 @@ def individual(
             lines=caustics,
             positions=None,
             include_grid=False,
-            array_plotter=array_plotter.plotter_with_new_labels_and_filename(output_filename="source_plane")
+            array_plotter=array_plotter.plotter_with_new_labels_and_filename(
+                output_filename="source_plane"
+            ),
         )
 
     if plot_deflections:
@@ -225,7 +232,7 @@ def individual(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
 
         deflections_x(
@@ -234,8 +241,9 @@ def individual(
             mask=mask,
             include_multiple_images=include_multiple_images,
             include_mass_profile_centres=include_mass_profile_centres,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
+
 
 @lens_plotter_util.set_includes
 @lens_plotter_util.set_labels_and_unit_conversion
@@ -253,7 +261,7 @@ def profile_image(
 
     profile_image = tracer.profile_image_from_grid(grid=grid)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -279,6 +287,7 @@ def profile_image(
         centres=mass_profile_centres,
     )
 
+
 @lens_plotter_util.set_includes
 @lens_plotter_util.set_labels_and_unit_conversion
 def convergence(
@@ -294,7 +303,7 @@ def convergence(
 
     convergence = tracer.convergence_from_grid(grid=grid)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -306,11 +315,9 @@ def convergence(
         mass_profile_centres = None
 
     array_plotter.plot_array(
-        array=convergence,
-        mask=mask,
-        lines=lines,
-        centres=mass_profile_centres,
+        array=convergence, mask=mask, lines=lines, centres=mass_profile_centres
     )
+
 
 @lens_plotter_util.set_includes
 @lens_plotter_util.set_labels_and_unit_conversion
@@ -327,7 +334,7 @@ def potential(
 
     potential = tracer.potential_from_grid(grid=grid)
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -339,11 +346,9 @@ def potential(
         mass_profile_centres = None
 
     array_plotter.plot_array(
-        array=potential,
-        mask=mask,
-        lines=lines,
-        centres=mass_profile_centres,
+        array=potential, mask=mask, lines=lines, centres=mass_profile_centres
     )
+
 
 @lens_plotter_util.set_includes
 @lens_plotter_util.set_labels_and_unit_conversion
@@ -363,7 +368,7 @@ def deflections_y(
         sub_array_1d=deflections[:, 0]
     )
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -375,11 +380,9 @@ def deflections_y(
         mass_profile_centres = None
 
     array_plotter.plot_array(
-        array=deflections_y,
-        mask=mask,
-        lines=lines,
-        centres=mass_profile_centres,
+        array=deflections_y, mask=mask, lines=lines, centres=mass_profile_centres
     )
+
 
 @lens_plotter_util.set_includes
 @lens_plotter_util.set_labels_and_unit_conversion
@@ -399,7 +402,7 @@ def deflections_x(
         sub_array_1d=deflections[:, 1]
     )
 
-    lines = lens_plotter_util.get_critical_curves_and_caustics_from_lensing_object(
+    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -411,8 +414,5 @@ def deflections_x(
         mass_profile_centres = None
 
     array_plotter.plot_array(
-        array=deflections_x,
-        lines=lines,
-        mask=mask,
-        centres=mass_profile_centres,
+        array=deflections_x, lines=lines, mask=mask, centres=mass_profile_centres
     )
