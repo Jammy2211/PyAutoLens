@@ -357,8 +357,8 @@ def individuals(
                     mapper_plotter=mapper_plotter,
                 )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def subtracted_image_of_plane(
     fit,
     plane_index,
@@ -424,8 +424,8 @@ def subtracted_image_of_plane(
         lines=critical_curves,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def model_image_of_plane(
     fit,
     plane_index,
@@ -475,8 +475,8 @@ def model_image_of_plane(
         centres=centres,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def contribution_maps(
     fit,
     mask=True,

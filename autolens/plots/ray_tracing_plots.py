@@ -237,8 +237,8 @@ def individual(
             array_plotter=array_plotter
         )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def profile_image(
     tracer,
     grid,
@@ -283,8 +283,8 @@ def profile_image(
         centres=mass_profile_centres,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def convergence(
     tracer,
     grid,
@@ -320,8 +320,8 @@ def convergence(
         centres=mass_profile_centres,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def potential(
     tracer,
     grid,
@@ -357,8 +357,8 @@ def potential(
         centres=mass_profile_centres,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def deflections_y(
     tracer,
     grid,
@@ -397,8 +397,8 @@ def deflections_y(
         centres=mass_profile_centres,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def deflections_x(
     tracer,
     grid,
