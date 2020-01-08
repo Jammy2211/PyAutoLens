@@ -8,8 +8,10 @@ backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-@plotters.set_includes
-@plotters.set_labels
+from autoastro.plots import lens_plotter_util
+
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def profile_image(
     plane,
     grid,
@@ -32,10 +34,6 @@ def profile_image(
     if not include_grid:
         grid = None
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=plane, plot_in_kpc=plot_in_kpc
-    )
-
     array_plotter.plot_array(
         array=profile_image,
         mask=mask,
@@ -44,12 +42,12 @@ def profile_image(
         lines=lines,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def plane_image(
     plane,
     grid,
-    origin=True,
+    include_origin=None,
     positions=None,
     include_grid=False,
     lines=None,
@@ -63,25 +61,16 @@ def plane_image(
     else:
         grid = None
 
-    if origin:
-        origin = plane_image.grid.origin
-    else:
-        origin = None
-
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=plane, plot_in_kpc=plot_in_kpc
-    )
-
     array_plotter.plot_array(
         array=plane_image.array,
-        origin=origin,
+        include_origin=include_origin,
         points=positions,
         grid=grid,
         lines=lines,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def convergence(
     plane,
     grid,
@@ -99,18 +88,14 @@ def convergence(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=plane, plot_in_kpc=plot_in_kpc
-    )
-
     array_plotter.plot_array(
         array=convergence,
         mask=mask,
         lines=lines,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def potential(
     plane,
     grid,
@@ -128,18 +113,14 @@ def potential(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=plane, plot_in_kpc=plot_in_kpc
-    )
-
     array_plotter.plot_array(
         array=potential,
         mask=mask,
         lines=lines,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def deflections_y(
     plane,
     grid,
@@ -160,18 +141,14 @@ def deflections_y(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=plane, plot_in_kpc=plot_in_kpc
-    )
-
     array_plotter.plot_array(
         array=deflections_y,
         mask=mask,
         lines=lines,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def deflections_x(
     plane,
     grid,
@@ -192,18 +169,14 @@ def deflections_x(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=plane, plot_in_kpc=plot_in_kpc
-    )
-
     array_plotter.plot_array(
         array=deflections_x,
         mask=mask,
         lines=lines,
     )
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def magnification(
     plane,
     grid,
@@ -219,10 +192,6 @@ def magnification(
         obj=plane,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
-    )
-
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=plane, plot_in_kpc=plot_in_kpc
     )
 
     array_plotter.plot_array(
@@ -290,8 +259,8 @@ def image_and_source_plane_subplot(
     )
     plt.close()
 
-@plotters.set_includes
-@plotters.set_labels
+@lens_plotter_util.set_includes
+@lens_plotter_util.set_labels_and_unit_conversion
 def plane_grid(
     plane,
     grid,
@@ -301,11 +270,7 @@ def plane_grid(
     grid_plotter=grid_plotters.GridPlotter(),
 ):
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=plane, plot_in_kpc=plot_in_kpc
-    )
-
-    grid_plotter.plot.grid(
+    grid_plotter.plot_grid(
         grid=grid,
         points=points,
         axis_limits=axis_limits,
