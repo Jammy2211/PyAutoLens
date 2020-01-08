@@ -214,7 +214,7 @@ def individual(
             lines=caustics,
             positions=None,
             include_grid=False,
-            array_plotter=array_plotter
+            array_plotter=array_plotter.plotter_with_new_labels_and_filename(output_filename="source_plane")
         )
 
     if plot_deflections:
@@ -259,10 +259,6 @@ def profile_image(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
-    )
-
     if include_multiple_images:
         positions = tracer.image_plane_multiple_image_positions_of_galaxies(grid=grid)[
             0
@@ -304,10 +300,6 @@ def convergence(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
-    )
-
     if include_mass_profile_centres:
         mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
     else:
@@ -339,10 +331,6 @@ def potential(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
-    )
-
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
     if include_mass_profile_centres:
@@ -381,10 +369,6 @@ def deflections_y(
         include_caustics=include_caustics,
     )
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
-    )
-
     if include_mass_profile_centres:
         mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
     else:
@@ -419,10 +403,6 @@ def deflections_x(
         obj=tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
-    )
-
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=tracer.image_plane, plot_in_kpc=plot_in_kpc
     )
 
     if include_mass_profile_centres:
