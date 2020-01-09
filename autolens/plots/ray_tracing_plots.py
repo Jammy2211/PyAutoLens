@@ -131,7 +131,7 @@ def subplot(
             array_plotter=array_plotter,
         )
 
-    array_plotter.output_subplot_array()
+    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
 
     plt.close()
 

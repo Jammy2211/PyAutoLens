@@ -239,7 +239,7 @@ def image_and_source_plane_subplot(
         grid_plotter=grid_plotter,
     )
 
-    grid_plotter.output_subplot_array()
+    grid_plotter.output.to_figure(structure=None, is_sub_plotter=False)
     plt.close()
 
 

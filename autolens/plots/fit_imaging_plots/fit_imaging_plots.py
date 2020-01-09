@@ -213,7 +213,7 @@ def subplot_for_plane(
             mapper_plotter=mapper_plotter,
         )
 
-    array_plotter.output_subplot_array()
+    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
 
     plt.close()
 
