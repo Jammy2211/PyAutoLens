@@ -85,7 +85,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
                 fit=fit,
                 mask=self.mask,
                 output_path=f"{self.image_path}/{path_suffix}",
-                output_format="png",
+                format="png",
             )
 
     def plot_fit_individuals(
@@ -417,5 +417,5 @@ class HyperGalaxyVisualizer(SubPlotVisualizer):
             chi_squared_map_sub=chi_squared_map,
             hyper_chi_squared_map_sub=hyper_chi_squared_map,
             output_path=self.subplot_path,
-            output_format="png",
+            format="png",
         )

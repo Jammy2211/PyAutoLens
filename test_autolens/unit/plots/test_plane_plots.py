@@ -36,7 +36,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         include_critical_curves=True,
         include_caustics=True,
         array_plotter=al.plotter.array(
-            output_path=plane_plotter_path, output_format="png"
+            output_path=plane_plotter_path, format="png"
         ),
     )
 
@@ -47,7 +47,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         grid=sub_grid_7x7,
         positions=positions_7x7,
         array_plotter=al.plotter.array(
-            output_path=plane_plotter_path, output_format="png"
+            output_path=plane_plotter_path, format="png"
         ),
     )
 
@@ -60,7 +60,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         include_critical_curves=True,
         include_caustics=True,
         array_plotter=al.plotter.array(
-            output_path=plane_plotter_path, output_format="png"
+            output_path=plane_plotter_path, format="png"
         ),
     )
 
@@ -73,7 +73,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         include_critical_curves=True,
         include_caustics=True,
         array_plotter=al.plotter.array(
-            output_path=plane_plotter_path, output_format="png"
+            output_path=plane_plotter_path, format="png"
         ),
     )
 
@@ -86,7 +86,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         include_critical_curves=True,
         include_caustics=True,
         array_plotter=al.plotter.array(
-            output_path=plane_plotter_path, output_format="png"
+            output_path=plane_plotter_path, format="png"
         ),
     )
 
@@ -99,7 +99,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         include_critical_curves=True,
         include_caustics=True,
         array_plotter=al.plotter.array(
-            output_path=plane_plotter_path, output_format="png"
+            output_path=plane_plotter_path, format="png"
         ),
     )
 
@@ -112,7 +112,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         include_critical_curves=True,
         include_caustics=True,
         array_plotter=al.plotter.array(
-            output_path=plane_plotter_path, output_format="png"
+            output_path=plane_plotter_path, format="png"
         ),
     )
 
@@ -122,7 +122,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         plane=plane_7x7,
         grid=sub_grid_7x7,
         grid_plotter=al.plotter.grid(
-            output_path=plane_plotter_path, output_format="png"
+            output_path=plane_plotter_path, format="png"
         ),
     )
 

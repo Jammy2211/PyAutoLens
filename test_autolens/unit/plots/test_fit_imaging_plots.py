@@ -39,7 +39,7 @@ def test__subtracted_image_of_plane_is_output(
         include_image_plane_pix=True,
         include_critical_curves=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -52,7 +52,7 @@ def test__subtracted_image_of_plane_is_output(
         plane_index=0,
         include_mask=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -65,7 +65,7 @@ def test__subtracted_image_of_plane_is_output(
         plane_index=1,
         include_mask=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -88,7 +88,7 @@ def test__model_image_of_plane_is_output(
         include_positions=True,
         include_critical_curves=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -99,7 +99,7 @@ def test__model_image_of_plane_is_output(
         plane_index=0,
         include_mask=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -110,7 +110,7 @@ def test__model_image_of_plane_is_output(
         plane_index=1,
         include_mask=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -129,7 +129,7 @@ def test__fit_sub_plot(
         include_critical_curves=True,
         plot_in_kpc=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -152,7 +152,7 @@ def test__fit_for_plane_subplot(
         include_critical_curves=True,
         include_caustics=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -163,7 +163,7 @@ def test__fit_for_plane_subplot(
         plane_index=0,
         include_mask=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -174,7 +174,7 @@ def test__fit_for_plane_subplot(
         plane_index=1,
         include_mask=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -196,7 +196,7 @@ def test__fit_for_planes_subplot(
         include_critical_curves=True,
         include_caustics=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -206,7 +206,7 @@ def test__fit_for_planes_subplot(
         fit=masked_imaging_fit_x2_plane_7x7,
         include_mask=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -237,10 +237,10 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plot_model_images_of_planes=True,
         plot_plane_images_of_planes=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
         mapper_plotter=al.plotter.mapper(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 
@@ -279,10 +279,10 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plot_model_images_of_planes=True,
         plot_plane_images_of_planes=True,
         array_plotter=al.plotter.array(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
         mapper_plotter=al.plotter.mapper(
-            output_path=imaging_fit_plotter_path, output_format="png"
+            output_path=imaging_fit_plotter_path, format="png"
         ),
     )
 

@@ -20,7 +20,7 @@ def test__fit_sub_plot(
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=interferometer_fit_plotter_path,
-        output_format="png",
+        format="png",
     )
 
     assert interferometer_fit_plotter_path + "fit.png" in plot_patch.paths
@@ -39,7 +39,7 @@ def test__fit_sub_plot_real_space(
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=interferometer_fit_plotter_path,
-        output_format="png",
+        format="png",
     )
 
     assert interferometer_fit_plotter_path + "fit_real_space.png" in plot_patch.paths
@@ -60,7 +60,7 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         plot_model_visibilities=True,
         plot_chi_squared_map=True,
         output_path=interferometer_fit_plotter_path,
-        output_format="png",
+        format="png",
     )
 
     assert interferometer_fit_plotter_path + "fit_visibilities.png" in plot_patch.paths

@@ -41,7 +41,7 @@ def subplot(
     """
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
-    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+    array_plotter = array_plotter.plotter_with_new_output_filename(
         output_filename="tracer"
     )
 
@@ -219,8 +219,8 @@ def individual(
             lines=caustics,
             positions=None,
             include_grid=False,
-            array_plotter=array_plotter.plotter_with_new_labels_and_filename(
-                output_filename="source_plane"
+            array_plotter=array_plotter.plotter_with_new_output_filename(
+        output_filename="source_plane"
             ),
         )
 

@@ -25,7 +25,7 @@ def test__plot_individual_images(
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
-        output_format="png",
+        format="png",
     )
 
     assert hyper_plotter_path + "hyper_model_image.png" in plot_patch.paths
@@ -35,7 +35,7 @@ def test__plot_individual_images(
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
-        output_format="png",
+        format="png",
     )
 
     assert hyper_plotter_path + "hyper_galaxy_image.png" in plot_patch.paths
@@ -45,7 +45,7 @@ def test__plot_individual_images(
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
-        output_format="png",
+        format="png",
     )
 
     assert hyper_plotter_path + "contribution_map.png" in plot_patch.paths
@@ -55,7 +55,7 @@ def test__plot_individual_images(
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
-        output_format="png",
+        format="png",
     )
 
     assert hyper_plotter_path + "hyper_noise_map.png" in plot_patch.paths
@@ -65,7 +65,7 @@ def test__plot_individual_images(
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
-        output_format="png",
+        format="png",
     )
 
     assert hyper_plotter_path + "chi_squared_map.png" in plot_patch.paths
@@ -75,7 +75,7 @@ def test__plot_individual_images(
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
-        output_format="png",
+        format="png",
     )
 
     assert hyper_plotter_path + "hyper_chi_squared_map.png" in plot_patch.paths
@@ -100,7 +100,7 @@ def test__plot_subplot_of_hyper_galaxy(
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
-        output_format="png",
+        format="png",
     )
 
     assert hyper_plotter_path + "hyper_galaxies.png" in plot_patch.paths
@@ -125,7 +125,7 @@ def test__plot_hyper_galaxy_images(
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=hyper_plotter_path,
-        output_format="png",
+        format="png",
     )
 
     assert hyper_plotter_path + "hyper_galaxy_images.png" in plot_patch.paths
