@@ -65,7 +65,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         imaging=imaging,
         output_filename="imaging",
         output_path=dataset_path,
-        output_format="png",
+        format="png",
     )
 
     al.plot.imaging.individual(
@@ -75,7 +75,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         plot_psf=True,
         plot_signal_to_noise_map=True,
         output_path=dataset_path,
-        output_format="png",
+        format="png",
     )
 
     al.plot.tracer.subplot(
@@ -83,7 +83,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         grid=simulator.grid,
         output_filename="tracer",
         output_path=dataset_path,
-        output_format="png",
+        format="png",
     )
 
     al.plot.tracer.individual(
@@ -95,7 +95,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         plot_potential=True,
         plot_deflections=True,
         output_path=dataset_path,
-        output_format="png",
+        format="png",
     )
 
 

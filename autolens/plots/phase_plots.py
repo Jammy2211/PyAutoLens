@@ -35,7 +35,7 @@ def imaging_of_phase(
             unit_label=unit_label,
             unit_conversion_factor=kpc_per_arcsec,
             output_path=subplot_path,
-            output_format="png",
+            format="png",
         )
 
     aa.plot.imaging.individual(
@@ -51,7 +51,7 @@ def imaging_of_phase(
         plot_absolute_signal_to_noise_map=plot_absolute_signal_to_noise_map,
         plot_potential_chi_squared_map=plot_potential_chi_squared_map,
         output_path=output_path,
-        output_format="png",
+        format="png",
     )
 
 
@@ -77,7 +77,7 @@ def interferometer_of_phase(
             interferometer=interferometer,
             unit_conversion_factor=kpc_per_arcsec,
             output_path=subplot_path,
-            output_format="png",
+            format="png",
         )
 
     aa.plot.interferometer.individual(
@@ -89,7 +89,7 @@ def interferometer_of_phase(
         unit_label=unit_label,
         unit_conversion_factor=kpc_per_arcsec,
         output_path=output_path,
-        output_format="png",
+        format="png",
     )
 
 
@@ -128,7 +128,7 @@ def ray_tracing_of_phase(
             positions=positions,
             plot_in_kpc=plot_in_kpc,
             output_path=subplot_path,
-            output_format="png",
+            format="png",
         )
 
     ray_tracing_plots.individual(
@@ -145,7 +145,7 @@ def ray_tracing_of_phase(
         plot_deflections=plot_deflections,
         plot_in_kpc=plot_in_kpc,
         output_path=output_path,
-        output_format="png",
+        format="png",
     )
 
     if not during_analysis:
@@ -166,7 +166,7 @@ def ray_tracing_of_phase(
                 plot_deflections=True,
                 plot_in_kpc=plot_in_kpc,
                 output_path=output_path,
-                output_format="png",
+                format="png",
             )
 
         if plot_all_at_end_fits:
@@ -243,7 +243,7 @@ def imaging_fit_of_phase(
             include_image_plane_pix=include_image_plane_pix,
             plot_in_kpc=plot_in_kpc,
             output_path=subplot_path,
-            output_format="png",
+            format="png",
         )
 
     if plot_fit_of_planes_as_subplot:
@@ -257,7 +257,7 @@ def imaging_fit_of_phase(
             include_image_plane_pix=include_image_plane_pix,
             plot_in_kpc=plot_in_kpc,
             output_path=subplot_path,
-            output_format="png",
+            format="png",
         )
 
     if plot_inversion_as_subplot and fit.inversion is not None:
@@ -266,7 +266,7 @@ def imaging_fit_of_phase(
             inversion=fit.inversion,
             mask=fit.mask,
             output_path=subplot_path,
-            output_format="png",
+            format="png",
         )
 
     fit_imaging_plots.individuals(
@@ -296,7 +296,7 @@ def imaging_fit_of_phase(
         plot_plane_images_of_planes=plot_plane_images_of_planes,
         plot_in_kpc=plot_in_kpc,
         output_path=output_path,
-        output_format="png",
+        format="png",
     )
 
     if not during_analysis:
@@ -330,7 +330,7 @@ def imaging_fit_of_phase(
                 plot_plane_images_of_planes=True,
                 plot_in_kpc=plot_in_kpc,
                 output_path=output_path,
-                output_format="png",
+                format="png",
             )
 
         if plot_all_at_end_fits:
@@ -411,7 +411,7 @@ def interferometer_fit_of_phase(
             fit=fit,
             plot_in_kpc=plot_in_kpc,
             output_path=subplot_path,
-            output_format="png",
+            format="png",
         )
 
         fit_interferometer_plots.subplot_real_space(
@@ -423,7 +423,7 @@ def interferometer_fit_of_phase(
             include_image_plane_pix=include_image_plane_pix,
             plot_in_kpc=plot_in_kpc,
             output_path=subplot_path,
-            output_format="png",
+            format="png",
         )
 
     # if plot_inversion_as_subplot and fit.inversion is not None:
@@ -433,7 +433,7 @@ def interferometer_fit_of_phase(
     #         mask=fit.masked_interferometer.real_space_mask,
     #         positions=positions,
     #         output_path=subplot_path,
-    #         output_format="png",
+    #         format="png",
     #     )
 
     fit_interferometer_plots.individuals(
@@ -455,7 +455,7 @@ def interferometer_fit_of_phase(
         plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
         plot_in_kpc=plot_in_kpc,
         output_path=output_path,
-        output_format="png",
+        format="png",
     )
 
     if not during_analysis:
@@ -481,7 +481,7 @@ def interferometer_fit_of_phase(
                 plot_inversion_interpolated_errors=True,
                 plot_in_kpc=plot_in_kpc,
                 output_path=output_path,
-                output_format="png",
+                format="png",
             )
 
         if plot_all_at_end_fits:
@@ -535,7 +535,7 @@ def plot_hyper_images_for_phase(
             kpc_per_arcsec=kpc_per_arcsec,
             unit_label=unit_label,
             output_path=output_path,
-            output_format="png",
+            format="png",
         )
 
     if plot_hyper_galaxy_images:
@@ -546,5 +546,5 @@ def plot_hyper_images_for_phase(
             kpc_per_arcsec=kpc_per_arcsec,
             unit_label=unit_label,
             output_path=output_path,
-            output_format="png",
+            format="png",
         )

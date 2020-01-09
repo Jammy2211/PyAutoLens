@@ -27,7 +27,7 @@ def subplot(
 ):
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
-    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+    array_plotter = array_plotter.plotter_with_new_output_filename(
         output_filename="imaging"
     )
 

@@ -32,7 +32,7 @@ def test__all_individual_plotters(
         grid=sub_grid_7x7,
         mask=mask_7x7,
         array_plotter=al.plotter.array(
-            output_path=ray_tracing_plotter_path, output_format="png"
+            output_path=ray_tracing_plotter_path, format="png"
         ),
     )
 
@@ -43,7 +43,7 @@ def test__all_individual_plotters(
         grid=sub_grid_7x7,
         mask=mask_7x7,
         array_plotter=al.plotter.array(
-            output_path=ray_tracing_plotter_path, output_format="png"
+            output_path=ray_tracing_plotter_path, format="png"
         ),
     )
 
@@ -54,7 +54,7 @@ def test__all_individual_plotters(
         grid=sub_grid_7x7,
         mask=mask_7x7,
         array_plotter=al.plotter.array(
-            output_path=ray_tracing_plotter_path, output_format="png"
+            output_path=ray_tracing_plotter_path, format="png"
         ),
     )
 
@@ -65,7 +65,7 @@ def test__all_individual_plotters(
         grid=sub_grid_7x7,
         mask=mask_7x7,
         array_plotter=al.plotter.array(
-            output_path=ray_tracing_plotter_path, output_format="png"
+            output_path=ray_tracing_plotter_path, format="png"
         ),
     )
 
@@ -76,7 +76,7 @@ def test__all_individual_plotters(
         grid=sub_grid_7x7,
         mask=mask_7x7,
         array_plotter=al.plotter.array(
-            output_path=ray_tracing_plotter_path, output_format="png"
+            output_path=ray_tracing_plotter_path, format="png"
         ),
     )
 
@@ -91,7 +91,7 @@ def test__tracer_sub_plot_output(
         grid=sub_grid_7x7,
         mask=mask_7x7,
         array_plotter=al.plotter.array(
-            output_path=ray_tracing_plotter_path, output_format="png"
+            output_path=ray_tracing_plotter_path, format="png"
         ),
     )
 
@@ -109,7 +109,7 @@ def test__tracer_individuals__dependent_on_input(
         plot_source_plane=True,
         plot_potential=True,
         array_plotter=al.plotter.array(
-            output_path=ray_tracing_plotter_path, output_format="png"
+            output_path=ray_tracing_plotter_path, format="png"
         ),
     )
 

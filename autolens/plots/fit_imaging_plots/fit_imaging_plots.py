@@ -115,7 +115,7 @@ def subplot_for_plane(
     """
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
-    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+    array_plotter = array_plotter.plotter_with_new_output_filename(
         output_filename="plane_" + str(plane_index)
     )
 
@@ -379,7 +379,7 @@ def subtracted_image_of_plane(
         The plane from which the model image is generated.
     """
 
-    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+    array_plotter = array_plotter.plotter_with_new_output_filename(
         output_filename="subtracted_image_of_plane_" + str(plane_index)
     )
 
@@ -437,7 +437,7 @@ def model_image_of_plane(
         The plane from which the model image is generated.
     """
 
-    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+    array_plotter = array_plotter.plotter_with_new_output_filename(
         output_filename="model_image_of_plane_" + str(plane_index)
     )
 
