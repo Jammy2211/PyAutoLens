@@ -55,7 +55,7 @@ def subplot_of_hyper_galaxy(
 
     hyper_chi_squared_map(hyper_chi_squared_map=hyper_chi_squared_map_sub, mask=mask)
 
-    array_plotter.output_subplot_array()
+    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
 
     plt.close()
 
@@ -90,7 +90,7 @@ def subplot_of_hyper_galaxy_images(
             array_plotter=array_plotter,
         )
 
-    array_plotter.output_subplot_array()
+    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
 
     plt.close()
 
