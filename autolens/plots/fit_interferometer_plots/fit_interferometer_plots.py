@@ -13,14 +13,13 @@ from autoarray.plotters import (
     line_plotters,
     mapper_plotters,
 )
-from autoarray.util import plotter_util
 from autoastro.plots import lensing_plotters
 from autolens.plots import plane_plots, ray_tracing_plots
 
 
-@plotters.set_labels
 def subplot(
     fit,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
     grid_plotter=grid_plotters.GridPlotter(),
     line_plotter=line_plotters.LinePlotter(),
@@ -28,7 +27,7 @@ def subplot(
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
     array_plotter = array_plotter.plotter_with_new_output_filename(
-        output_filename="imaging"
+        output_filename="fit_interferometer"
     )
 
     rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
@@ -46,7 +45,7 @@ def subplot(
 
     aa.plot.fit_interferometer.subplot(
         fit=fit,
-        figsize=figsize,
+        include=include,
         array_plotter=array_plotter,
         grid_plotter=grid_plotter,
         line_plotter=line_plotter,
@@ -55,43 +54,38 @@ def subplot(
 
 def subplot_real_space(
     fit,
-    mask=True,
-    include_critical_curves=False,
-    include_caustics=False,
-    positions=True,
-    include_image_plane_pix=False,
-    include_mass_profile_centres=True,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    array_plotter = array_plotter.plotter_as_sub_plotter()
+    array_plotter = array_plotter.plotter_with_new_output_filename(
+        output_filename="fit_real_space"
+    )
+
+    rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=2
     )
 
-    if figsize is None:
+    if array_plotter.figsize is None:
         figsize = figsize_tool
-
-    real_space_mask = plotter_util.get_real_space_mask_from_fit(fit=fit, mask=mask)
+    else:
+        figsize = array_plotter.figsize
 
     plt.figure(figsize=figsize)
 
-    lines = lens_plotter_util.critical_curves_and_caustics_from_obj(
-        obj=fit.tracer,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
-    )
-
     plt.subplot(rows, columns, 1)
 
-    if not fit.inversion is not None:
+    if fit.inversion is None:
 
         ray_tracing_plots.profile_image(
             tracer=fit.tracer,
             grid=fit.masked_interferometer.grid,
-            mask=real_space_mask,
-            include_critical_curves=include_critical_curves,
-            positions=positions,
+            mask=include.real_space_mask_from_fit(fit=fit),
+            positions=include.positions_from_fit(fit=fit),
+            include=include,
+            array_plotter=array_plotter
         )
 
         plt.subplot(rows, columns, 2)
@@ -99,18 +93,19 @@ def subplot_real_space(
         plane_plots.plane_image(
             plane=fit.tracer.source_plane,
             grid=fit.masked_interferometer.grid,
-            as_subplot=True,
-            lines=[lines[1]],
+            lines=include.caustics_from_obj(obj=fit.tracer),
+            array_plotter=array_plotter
         )
 
     elif fit.inversion is not None:
 
         aa.plot.inversion.reconstructed_image(
             inversion=fit.inversion,
-            mask=real_space_mask,
-            lines=[lines[0]],
-            positions=positions,
-            grid=image_plane_pix_grid,
+            mask=include.real_space_mask_from_fit(fit=fit),
+            lines=include.critical_curves_from_obj(obj=fit.tracer),
+            positions=include.positions_from_fit(fit=fit),
+            grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
+            array_plotter=array_plotter,
         )
 
         ratio = float(
@@ -135,9 +130,8 @@ def subplot_real_space(
 
         aa.plot.inversion.reconstruction(
             inversion=fit.inversion,
-            lines=[lines[0]],
-            include_grid=False,
-            include_centres=False,
+            lines=include.caustics_from_obj(obj=fit.tracer),
+            include=include,
             mapper_plotter=mapper_plotter,
         )
 
@@ -145,11 +139,8 @@ def subplot_real_space(
 
     plt.close()
 
-
-@plotters.set_labels
 def individuals(
     fit,
-    plot_in_kpc=False,
     plot_visibilities=False,
     plot_noise_map=False,
     plot_signal_to_noise_map=False,
@@ -165,6 +156,7 @@ def individuals(
     plot_inversion_regularization_weight_map=False,
     plot_inversion_interpolated_reconstruction=False,
     plot_inversion_interpolated_errors=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
     grid_plotter=grid_plotters.GridPlotter(),
     line_plotter=line_plotters.LinePlotter(),
@@ -201,7 +193,7 @@ def individuals(
         plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
         plot_inversion_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
         plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
-        unit_conversion_factor=unit_conversion_factor,
+        include=include,
         array_plotter=array_plotter,
         grid_plotter=grid_plotter,
         line_plotter=line_plotter,

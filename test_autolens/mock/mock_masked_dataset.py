@@ -65,3 +65,7 @@ class MockMaskedInterferometer(object):
 
     def signal_to_noise_map(self):
         return self.visibilities / self.noise_map
+
+    @property
+    def real_space_mask(self):
+        return self.mask
