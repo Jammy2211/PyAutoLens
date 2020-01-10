@@ -113,6 +113,8 @@ def test__tracer_individuals__dependent_on_input(
         ),
     )
 
+    print(plot_patch.paths)
+
     assert ray_tracing_plotter_path + "profile_image.png" in plot_patch.paths
 
     assert ray_tracing_plotter_path + "source_plane.png" in plot_patch.paths

@@ -14,7 +14,7 @@ from autoarray.plotters import (
     mapper_plotters,
 )
 from autoarray.util import plotter_util
-from autoastro.plots import lens_plotter_util
+from autoastro.plots import lensing_plotters
 from autolens.plots import plane_plots, ray_tracing_plots
 
 
@@ -40,17 +40,12 @@ def subplot(
     else:
         figsize = array_plotter.figsize
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
-    )
-
     plt.figure(figsize=figsize)
 
     plt.subplot(rows, columns, 1)
 
     aa.plot.fit_interferometer.subplot(
         fit=fit,
-        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         array_plotter=array_plotter,
         grid_plotter=grid_plotter,
@@ -77,19 +72,7 @@ def subplot_real_space(
     if figsize is None:
         figsize = figsize_tool
 
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
-    )
-
-    image_plane_pix_grid = lens_plotter_util.image_plane_pix_grid_from_fit(
-        include_image_plane_pix=include_image_plane_pix, fit=fit
-    )
-
     real_space_mask = plotter_util.get_real_space_mask_from_fit(fit=fit, mask=mask)
-
-    positions = lens_plotter_util.positions_from_fit(
-        fit=fit, include_positions=positions
-    )
 
     plt.figure(figsize=figsize)
 
@@ -200,10 +183,6 @@ def individuals(
         How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
         in the python interpreter window.
     """
-
-    unit_label, unit_conversion_factor = lens_plotter_util.get_unit_label_and_unit_conversion_factor(
-        obj=fit.tracer.image_plane, plot_in_kpc=plot_in_kpc
-    )
 
     aa.plot.fit_interferometer.individuals(
         fit=fit,

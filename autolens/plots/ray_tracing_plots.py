@@ -11,7 +11,6 @@ from autoastro.plots import lensing_plotters
 from autolens.plots import plane_plots
 
 
-@plotters.set_labels
 def subplot(
     tracer,
     grid,
@@ -123,7 +122,6 @@ def subplot(
     plt.close()
 
 
-@plotters.set_labels
 def individual(
     tracer,
     grid,
@@ -233,7 +231,7 @@ def profile_image(
         mask=mask,
         points=positions,
         lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
     )
 
 
@@ -250,7 +248,7 @@ def convergence(
         array=tracer.convergence_from_grid(grid=grid),
         mask=mask,
         lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
     )
 
 
@@ -267,7 +265,7 @@ def potential(
         array=tracer.potential_from_grid(grid=grid),
         mask=mask,
         lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
     )
 
 
@@ -289,7 +287,7 @@ def deflections_y(
         array=deflections_y,
         mask=mask,
         lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
     )
 
 
@@ -311,5 +309,5 @@ def deflections_x(
         array=deflections_x,
         mask=mask,
         lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
     )
