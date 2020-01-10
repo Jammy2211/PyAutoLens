@@ -1,125 +1,95 @@
 import autofit as af
 from autoarray.plotters import plotters, array_plotters, grid_plotters
-from autoarray.util import plotter_util
-from autoastro.plots import lens_plotter_util
 import matplotlib
 
 backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoastro.plots import lens_plotter_util
+from autoastro.plots import lensing_plotters
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def profile_image(
     plane,
     grid,
     mask=None,
     positions=None,
-    include_grid=False,
-    include_critical_curves=False,
-    include_caustics=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
-    profile_image = plane.profile_image_from_grid(grid=grid)
-
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=plane,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
-    )
-
-    if not include_grid:
-        grid = None
-
     array_plotter.plot_array(
-        array=profile_image, mask=mask, points=positions, grid=grid, lines=lines
+        array=plane.profile_image_from_grid(grid=grid),
+        mask=mask,
+        points=positions,
+        grid=grid,
+        lines=include.critical_curves_from_obj(obj=plane),
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
     )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def plane_image(
     plane,
     grid,
-    include_origin=None,
     positions=None,
-    include_grid=False,
     lines=None,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
-    plane_image = plane.plane_image_from_grid(grid=grid)
-
-    if include_grid:
-        grid = plane_image.grid
-    else:
-        grid = None
-
     array_plotter.plot_array(
-        array=plane_image.array,
-        include_origin=include_origin,
+        array=plane.plane_image_from_grid(grid=grid).array,
         points=positions,
-        grid=grid,
-        lines=lines,
+        grid=include.grid_from_grid(grid=grid),
+        lines=include.critical_curves_from_obj(obj=plane),
+        include_origin=include.origin,
     )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def convergence(
     plane,
     grid,
     mask=None,
-    include_critical_curves=False,
-    include_caustics=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
-    convergence = plane.convergence_from_grid(grid=grid)
-
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=plane,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
+    array_plotter.plot_array(
+        array=plane.convergence_from_grid(grid=grid),
+        mask=mask,
+        lines=include.critical_curves_from_obj(obj=plane),
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        include_origin=include.origin,
     )
 
-    array_plotter.plot_array(array=convergence, mask=mask, lines=lines)
 
-
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def potential(
     plane,
     grid,
     mask=None,
-    include_critical_curves=False,
-    include_caustics=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
-    potential = plane.potential_from_grid(grid=grid)
-
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=plane,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
+    array_plotter.plot_array(
+        array=plane.potential_from_grid(grid=grid),
+        mask=mask,
+        lines=include.critical_curves_from_obj(obj=plane),
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        include_origin=include.origin,
     )
 
-    array_plotter.plot_array(array=potential, mask=mask, lines=lines)
 
-
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def deflections_y(
     plane,
     grid,
     mask=None,
-    include_critical_curves=False,
-    include_caustics=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
@@ -128,23 +98,21 @@ def deflections_y(
         sub_array_1d=deflections[:, 0]
     )
 
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=plane,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
+    array_plotter.plot_array(
+        array=deflections_y,
+        mask=mask,
+        lines=include.critical_curves_from_obj(obj=plane),
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        include_origin=include.origin,
     )
 
-    array_plotter.plot_array(array=deflections_y, mask=mask, lines=lines)
 
-
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def deflections_x(
     plane,
     grid,
     mask=None,
-    include_critical_curves=False,
-    include_caustics=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
@@ -153,66 +121,52 @@ def deflections_x(
         sub_array_1d=deflections[:, 1]
     )
 
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=plane,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
+    array_plotter.plot_array(
+        array=deflections_x,
+        mask=mask,
+        lines=include.critical_curves_from_obj(obj=plane),
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        include_origin=include.origin,
     )
 
-    array_plotter.plot_array(array=deflections_x, mask=mask, lines=lines)
 
-
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def magnification(
     plane,
     grid,
     mask=None,
-    include_critical_curves=False,
-    include_caustics=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
-    magnification = plane.magnification_from_grid(grid=grid)
-
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=plane,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
+    array_plotter.plot_array(
+        array=plane.magnification_from_grid(grid=grid),
+        mask=mask,
+        lines=include.critical_curves_from_obj(obj=plane),
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        include_origin=include.origin,
     )
 
-    array_plotter.plot_array(array=magnification, mask=mask, lines=lines)
 
-
-@plotters.set_includes
+@plotters.set_labels
 def image_and_source_plane_subplot(
     image_plane,
     source_plane,
     grid,
     points=None,
-    include_critical_curves=False,
-    include_caustics=False,
     axis_limits=None,
+    include=lensing_plotters.Include(),
     grid_plotter=grid_plotters.GridPlotter(),
 ):
 
-    rows, columns, figsize = plotter_util.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = grid_plotter.get_subplot_rows_columns_figsize(
         number_subplots=2
     )
 
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=image_plane, include_critical_curves=True, include_caustics=True
-    )
-
-    if include_critical_curves:
-        critical_curves = [lines[0]]
+    if grid_plotter.figsize is None:
+        figsize = figsize_tool
     else:
-        critical_curves = None
-
-    if include_caustics:
-        caustics = [lines[1]]
-    else:
-        caustics = None
+        figsize = grid_plotter.figsize
 
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
@@ -222,7 +176,8 @@ def image_and_source_plane_subplot(
         grid=grid,
         axis_limits=axis_limits,
         points=points,
-        lines=critical_curves,
+        lines=include.critical_curves_from_obj(obj=image_plane),
+        include=include,
         grid_plotter=grid_plotter,
     )
 
@@ -235,7 +190,8 @@ def image_and_source_plane_subplot(
         grid=source_plane_grid,
         axis_limits=axis_limits,
         points=points,
-        lines=caustics,
+        lines=include.caustics_from_obj(obj=image_plane),
+        include=include,
         grid_plotter=grid_plotter,
     )
 
@@ -243,17 +199,21 @@ def image_and_source_plane_subplot(
     plt.close()
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def plane_grid(
     plane,
     grid,
     axis_limits=None,
     points=None,
     lines=None,
+    include=lensing_plotters.Include(),
     grid_plotter=grid_plotters.GridPlotter(),
 ):
 
     grid_plotter.plot_grid(
-        grid=grid, points=points, axis_limits=axis_limits, lines=lines
+        grid=grid,
+        points=points,
+        axis_limits=axis_limits,
+        lines=lines,
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
     )

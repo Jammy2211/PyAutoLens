@@ -20,8 +20,7 @@ from autoastro.plots.lens_plotter_util import (
 )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def subplot(
     fit,
     include_mask=None,
@@ -50,7 +49,7 @@ def subplot(
     )
 
 
-@plotters.set_includes
+@plotters.set_labels
 def subplot_of_planes(
     fit,
     include_mask=None,
@@ -82,8 +81,7 @@ def subplot_of_planes(
             )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def subplot_for_plane(
     fit,
     plane_index,
@@ -218,8 +216,7 @@ def subplot_for_plane(
     plt.close()
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def individuals(
     fit,
     include_mask=None,
@@ -354,8 +351,7 @@ def individuals(
                 )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def subtracted_image_of_plane(
     fit,
     plane_index,
@@ -414,8 +410,7 @@ def subtracted_image_of_plane(
     )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def model_image_of_plane(
     fit,
     plane_index,
@@ -458,8 +453,7 @@ def model_image_of_plane(
     )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def contribution_maps(
     fit,
     include_mask=None,

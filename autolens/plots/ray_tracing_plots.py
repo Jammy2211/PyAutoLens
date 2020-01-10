@@ -6,22 +6,18 @@ backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import array_plotters
-from autoastro.plots import lens_plotter_util
+from autoarray.plotters import plotters, array_plotters
+from autoastro.plots import lensing_plotters
 from autolens.plots import plane_plots
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def subplot(
     tracer,
     grid,
     mask=None,
-    include_multiple_images=False,
-    include_mass_profile_centres=False,
-    include_critical_curves=False,
-    include_caustics=False,
     positions=None,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the observed _tracer of an analysis, using the *Imaging* class object.
@@ -61,10 +57,8 @@ def subplot(
         tracer=tracer,
         grid=grid,
         mask=mask,
-        include_multiple_images=include_multiple_images,
-        include_mass_profile_centres=include_mass_profile_centres,
-        include_critical_curves=include_critical_curves,
         positions=positions,
+        include=include,
         array_plotter=array_plotter,
     )
 
@@ -76,8 +70,7 @@ def subplot(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            include_multiple_images=include_multiple_images,
-            include_mass_profile_centres=include_mass_profile_centres,
+            include=include,
             array_plotter=array_plotter,
         )
 
@@ -87,8 +80,7 @@ def subplot(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            include_multiple_images=include_multiple_images,
-            include_mass_profile_centres=include_mass_profile_centres,
+            include=include,
             array_plotter=array_plotter,
         )
 
@@ -96,14 +88,11 @@ def subplot(
 
     source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-    caustics = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=tracer, include_critical_curves=False, include_caustics=include_caustics
-    )
-
     plane_plots.plane_image(
         plane=tracer.source_plane,
         grid=source_plane_grid,
-        lines=caustics,
+        lines=include.caustics_from_obj(obj=tracer),
+        include=include,
         array_plotter=array_plotter,
     )
 
@@ -115,8 +104,7 @@ def subplot(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            include_multiple_images=include_multiple_images,
-            include_mass_profile_centres=include_mass_profile_centres,
+            include=include,
             array_plotter=array_plotter,
         )
 
@@ -126,8 +114,7 @@ def subplot(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            include_multiple_images=include_multiple_images,
-            include_mass_profile_centres=include_mass_profile_centres,
+            include=include,
             array_plotter=array_plotter,
         )
 
@@ -136,22 +123,18 @@ def subplot(
     plt.close()
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def individual(
     tracer,
     grid,
     mask=None,
-    include_multiple_images=False,
-    include_mass_profile_centres=False,
-    include_critical_curves=False,
-    include_caustics=False,
     positions=None,
     plot_profile_image=False,
     plot_source_plane=False,
     plot_convergence=False,
     plot_potential=False,
     plot_deflections=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the observed _tracer of an analysis, using the *Imaging* class object.
@@ -176,10 +159,8 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            include_multiple_images=include_multiple_images,
-            include_mass_profile_centres=include_mass_profile_centres,
-            include_critical_curves=include_critical_curves,
             positions=positions,
+            include=include,
             array_plotter=array_plotter,
         )
 
@@ -189,8 +170,7 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            include_multiple_images=include_multiple_images,
-            include_mass_profile_centres=include_mass_profile_centres,
+            include=include,
             array_plotter=array_plotter,
         )
 
@@ -200,8 +180,7 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            include_multiple_images=include_multiple_images,
-            include_mass_profile_centres=include_mass_profile_centres,
+            include=include,
             array_plotter=array_plotter,
         )
 
@@ -209,18 +188,14 @@ def individual(
 
         source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-        caustics = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-            obj=tracer, include_critical_curves=False, include_caustics=include_caustics
-        )
-
         plane_plots.plane_image(
             plane=tracer.source_plane,
             grid=source_plane_grid,
-            lines=caustics,
+            lines=include.caustics_from_obj(obj=tracer),
             positions=None,
-            include_grid=False,
+            include=include,
             array_plotter=array_plotter.plotter_with_new_output_filename(
-        output_filename="source_plane"
+                output_filename="source_plane"
             ),
         )
 
@@ -230,8 +205,7 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            include_multiple_images=include_multiple_images,
-            include_mass_profile_centres=include_mass_profile_centres,
+            include=include,
             array_plotter=array_plotter,
         )
 
@@ -239,127 +213,70 @@ def individual(
             tracer=tracer,
             grid=grid,
             mask=mask,
-            include_multiple_images=include_multiple_images,
-            include_mass_profile_centres=include_mass_profile_centres,
+            include=include,
             array_plotter=array_plotter,
         )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def profile_image(
     tracer,
     grid,
     mask=None,
-    include_multiple_images=False,
-    include_mass_profile_centres=False,
-    include_critical_curves=False,
-    include_caustics=False,
     positions=None,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
-    profile_image = tracer.profile_image_from_grid(grid=grid)
-
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=tracer,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
-    )
-
-    if include_multiple_images:
-        positions = tracer.image_plane_multiple_image_positions_of_galaxies(grid=grid)[
-            0
-        ]
-    else:
-        multiple_images = None
-
-    if include_mass_profile_centres:
-        mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
-    else:
-        mass_profile_centres = None
-
     array_plotter.plot_array(
-        array=profile_image,
+        array=tracer.profile_image_from_grid(grid=grid),
         mask=mask,
-        lines=lines,
         points=positions,
-        centres=mass_profile_centres,
+        lines=include.critical_curves_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=tracer),
     )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def convergence(
     tracer,
     grid,
     mask=None,
-    include_multiple_images=False,
-    include_mass_profile_centres=False,
-    include_critical_curves=False,
-    include_caustics=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
-    convergence = tracer.convergence_from_grid(grid=grid)
-
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=tracer,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
-    )
-
-    if include_mass_profile_centres:
-        mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
-    else:
-        mass_profile_centres = None
-
     array_plotter.plot_array(
-        array=convergence, mask=mask, lines=lines, centres=mass_profile_centres
+        array=tracer.convergence_from_grid(grid=grid),
+        mask=mask,
+        lines=include.critical_curves_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=tracer),
     )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def potential(
     tracer,
     grid,
     mask=None,
-    include_multiple_images=False,
-    include_mass_profile_centres=False,
-    include_critical_curves=False,
-    include_caustics=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
-    potential = tracer.potential_from_grid(grid=grid)
-
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=tracer,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
-    )
-
-    if include_mass_profile_centres:
-        mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
-    else:
-        mass_profile_centres = None
-
     array_plotter.plot_array(
-        array=potential, mask=mask, lines=lines, centres=mass_profile_centres
+        array=tracer.potential_from_grid(grid=grid),
+        mask=mask,
+        lines=include.critical_curves_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=tracer),
     )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def deflections_y(
     tracer,
     grid,
     mask=None,
-    include_multiple_images=False,
-    include_mass_profile_centres=False,
-    include_critical_curves=False,
-    include_caustics=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
@@ -368,32 +285,20 @@ def deflections_y(
         sub_array_1d=deflections[:, 0]
     )
 
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=tracer,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
-    )
-
-    if include_mass_profile_centres:
-        mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
-    else:
-        mass_profile_centres = None
-
     array_plotter.plot_array(
-        array=deflections_y, mask=mask, lines=lines, centres=mass_profile_centres
+        array=deflections_y,
+        mask=mask,
+        lines=include.critical_curves_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=tracer),
     )
 
 
-@lens_plotter_util.set_includes
-@lens_plotter_util.set_labels_and_unit_conversion
+@plotters.set_labels
 def deflections_x(
     tracer,
     grid,
     mask=None,
-    include_multiple_images=False,
-    include_mass_profile_centres=False,
-    include_critical_curves=False,
-    include_caustics=False,
+    include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
@@ -402,17 +307,9 @@ def deflections_x(
         sub_array_1d=deflections[:, 1]
     )
 
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
-        obj=tracer,
-        include_critical_curves=include_critical_curves,
-        include_caustics=include_caustics,
-    )
-
-    if include_mass_profile_centres:
-        mass_profile_centres = tracer.image_plane.mass_profile_centres_of_galaxies
-    else:
-        mass_profile_centres = None
-
     array_plotter.plot_array(
-        array=deflections_x, lines=lines, mask=mask, centres=mass_profile_centres
+        array=deflections_x,
+        mask=mask,
+        lines=include.critical_curves_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_galaxies_from_obj(obj=tracer),
     )
