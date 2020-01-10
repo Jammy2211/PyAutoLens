@@ -408,10 +408,7 @@ def interferometer_fit_of_phase(
     if plot_fit_as_subplot:
 
         fit_interferometer_plots.subplot(
-            fit=fit,
-            plot_in_kpc=plot_in_kpc,
-            output_path=subplot_path,
-            format="png",
+            fit=fit, plot_in_kpc=plot_in_kpc, output_path=subplot_path, format="png"
         )
 
         fit_interferometer_plots.subplot_real_space(

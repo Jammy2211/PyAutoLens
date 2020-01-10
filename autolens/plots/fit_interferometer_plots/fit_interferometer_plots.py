@@ -18,7 +18,7 @@ from autoastro.plots import lens_plotter_util
 from autolens.plots import plane_plots, ray_tracing_plots
 
 
-@plotters.set_includes
+@plotters.set_labels
 def subplot(
     fit,
     array_plotter=array_plotters.ArrayPlotter(),
@@ -87,11 +87,13 @@ def subplot_real_space(
 
     real_space_mask = plotter_util.get_real_space_mask_from_fit(fit=fit, mask=mask)
 
-    positions = lens_plotter_util.positions_from_fit(fit=fit, include_positions=positions)
+    positions = lens_plotter_util.positions_from_fit(
+        fit=fit, include_positions=positions
+    )
 
     plt.figure(figsize=figsize)
 
-    lines = lens_plotter_util.critical_curves_and_caustics_from_lensing_object(
+    lines = lens_plotter_util.critical_curves_and_caustics_from_obj(
         obj=fit.tracer,
         include_critical_curves=include_critical_curves,
         include_caustics=include_caustics,
@@ -161,7 +163,7 @@ def subplot_real_space(
     plt.close()
 
 
-@plotters.set_includes
+@plotters.set_labels
 def individuals(
     fit,
     plot_in_kpc=False,
