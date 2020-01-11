@@ -12,11 +12,8 @@ def make_hyper_plotter_setup():
 
 
 def test__plot_individual_images(
-    hyper_model_image_7x7,
     hyper_galaxy_image_0_7x7,
     contribution_map_7x7,
-    hyper_noise_map_7x7,
-    masked_imaging_fit_x1_plane_7x7,
     hyper_plotter_path,
     plot_patch,
 ):
@@ -30,11 +27,18 @@ def test__plot_individual_images(
 
     assert hyper_plotter_path + "hyper_galaxy_image.png" in plot_patch.paths
 
+    al.plot.hyper.contribution_map(
+        contribution_map_in=contribution_map_7x7,
+        array_plotter=al.plotter.array(
+            output=al.plotter.Output(path=hyper_plotter_path, format="png")
+        ),
+    )
+
+    assert hyper_plotter_path + "contribution_map.png" in plot_patch.paths
+
 def test__plot_subplot_of_hyper_galaxy(
     hyper_galaxy_image_0_7x7,
     contribution_map_7x7,
-    noise_map_7x7,
-    hyper_noise_map_7x7,
     masked_imaging_fit_x2_plane_7x7,
     hyper_plotter_path,
     plot_patch,
@@ -43,12 +47,13 @@ def test__plot_subplot_of_hyper_galaxy(
         fit=masked_imaging_fit_x2_plane_7x7,
         hyper_fit=masked_imaging_fit_x2_plane_7x7,
         galaxy_image=hyper_galaxy_image_0_7x7,
+        contribution_map_in=contribution_map_7x7,
         array_plotter=al.plotter.array(
             output=al.plotter.Output(path=hyper_plotter_path, format="png")
         ),
     )
 
-    assert hyper_plotter_path + "hyper_galaxies.png" in plot_patch.paths
+    assert hyper_plotter_path + "hyper_galaxy_fit.png" in plot_patch.paths
 
 
 def test__plot_hyper_galaxy_images(
