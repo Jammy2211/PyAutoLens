@@ -135,7 +135,7 @@ def subplot_real_space(
             mapper_plotter=mapper_plotter,
         )
 
-    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
+    array_plotter.output.to_figure(structure=None, bypass=False)
 
     plt.close()
 

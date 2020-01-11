@@ -5,9 +5,8 @@ backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 
 import autoarray as aa
-from autoarray.plotters import plotters, array_plotters, mapper_plotters
+from autoarray.plotters import plotters, mapper_plotters
 from autoarray.plots.fit_imaging_plots import *
-from autoarray.util import plotter_util
 from autoastro.plots import lensing_plotters
 from autolens.plots import plane_plots
 
@@ -162,7 +161,7 @@ def subplot_for_plane(
             mapper_plotter=mapper_plotter,
         )
 
-    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
+    array_plotter.output.to_figure(structure=None, bypass=False)
 
     plt.close()
 
