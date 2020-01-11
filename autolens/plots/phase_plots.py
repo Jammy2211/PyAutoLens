@@ -1,5 +1,7 @@
 import autofit as af
 import autoarray as aa
+from autoarray.plotters import array_plotters
+from autoastro.plots import lensing_plotters
 from autolens.plots import ray_tracing_plots, hyper_plots
 from autolens.plots.fit_imaging_plots import fit_imaging_plots
 from autolens.plots.fit_interferometer_plots import fit_interferometer_plots
@@ -9,7 +11,6 @@ def imaging_of_phase(
     imaging,
     mask,
     positions,
-    kpc_per_arcsec,
     unit_label,
     plot_as_subplot,
     plot_image,
@@ -20,6 +21,8 @@ def imaging_of_phase(
     plot_potential_chi_squared_map,
     visualize_path,
     subplot_path,
+    include=lensing_plotters.Include(),
+    array_plotter=array_plotters.ArrayPlotter()
 ):
 
     output_path = af.path_util.make_and_return_path_from_path_and_folder_names(

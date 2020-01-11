@@ -6,7 +6,7 @@ matplotlib.use(backend)
 
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import plotters, array_plotters
+from autoarray.plotters import plotters
 from autoastro.plots import lensing_plotters
 from autolens.plots import ray_tracing_plots
 from autolens.plots.fit_imaging_plots import fit_imaging_plots
@@ -61,13 +61,13 @@ def subplot_of_hyper_galaxy(
 
     fit_imaging_plots.chi_squared_map(fit=hyper_fit, points=include.positions_from_fit(fit=fit), include=include, array_plotter=array_plotter)
 
-    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
+    array_plotter.output.to_figure(structure=None, bypass=False)
 
     plt.close()
 
 
 def subplot_of_hyper_galaxy_images(
-    hyper_galaxy_image_path_dict, mask=None, array_plotter=array_plotters.ArrayPlotter()
+    hyper_galaxy_image_path_dict, mask=None, include=lensing_plotters.Include(), array_plotter=array_plotters.ArrayPlotter()
 ):
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
@@ -100,7 +100,7 @@ def subplot_of_hyper_galaxy_images(
             array_plotter=array_plotter,
         )
 
-    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
+    array_plotter.output.to_figure(structure=None, bypass=False)
 
     plt.close()
 

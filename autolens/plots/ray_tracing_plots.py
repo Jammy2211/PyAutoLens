@@ -6,7 +6,7 @@ backend = af.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import plotters, array_plotters
+from autoarray.plotters import plotters
 from autoastro.plots import lensing_plotters
 from autolens.plots import plane_plots
 
@@ -117,7 +117,7 @@ def subplot(
             array_plotter=array_plotter,
         )
 
-    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
+    array_plotter.output.to_figure(structure=None, bypass=False)
 
     plt.close()
 

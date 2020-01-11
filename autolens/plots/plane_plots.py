@@ -1,5 +1,5 @@
 import autofit as af
-from autoarray.plotters import plotters, array_plotters, grid_plotters
+from autoarray.plotters import plotters, grid_plotters
 import matplotlib
 
 backend = af.conf.get_matplotlib_backend()
@@ -195,7 +195,7 @@ def image_and_source_plane_subplot(
         grid_plotter=grid_plotter,
     )
 
-    grid_plotter.output.to_figure(structure=None, is_sub_plotter=False)
+    grid_plotter.output.to_figure(structure=None, bypass=False)
     plt.close()
 
 
