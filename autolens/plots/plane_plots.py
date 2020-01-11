@@ -215,5 +215,22 @@ def plane_grid(
         points=points,
         axis_limits=axis_limits,
         lines=lines,
+    )
+
+@plotters.set_labels
+def contribution_map(
+    plane,
+    mask=None,
+    positions=None,
+    include=lensing_plotters.Include(),
+    array_plotter=array_plotters.ArrayPlotter(),
+):
+
+    array_plotter.plot_array(
+        array=plane.contribution_map,
+        mask=mask,
+        points=positions,
+        lines=include.critical_curves_from_obj(obj=plane),
         centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
     )
+

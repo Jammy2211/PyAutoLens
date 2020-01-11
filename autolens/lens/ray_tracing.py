@@ -490,6 +490,34 @@ class AbstractTracerLensing(AbstractTracerCosmology):
             pixels=[multiple_image_pixels], mask=trough_mask
         )
 
+    @property
+    def contribution_map(self):
+
+        contribution_maps = self.contribution_maps_of_planes
+        if None in contribution_maps:
+            contribution_maps = [i for i in contribution_maps if i is not None]
+
+        if contribution_maps:
+            return sum(contribution_maps)
+        else:
+            return None
+
+    @property
+    def contribution_maps_of_planes(self):
+
+        contribution_maps = []
+
+        for plane in self.planes:
+
+            if plane.contribution_map is not None:
+
+                contribution_maps.append(plane.contribution_map)
+
+            else:
+
+                contribution_maps.append(None)
+
+        return contribution_maps
 
 class AbstractTracerData(AbstractTracerLensing):
     def __init__(self, planes, cosmology):

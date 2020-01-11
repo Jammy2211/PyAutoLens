@@ -24,6 +24,30 @@ def set_config_path():
     )
 
 
+def test__contribution_maps_is_output(
+    masked_imaging_fit_x2_plane_7x7,
+    fit_imaging_plotter_path,
+    plot_patch,
+):
+
+    masked_imaging_fit_x2_plane_7x7.tracer.planes[0].galaxies[0].hyper_model_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
+    masked_imaging_fit_x2_plane_7x7.tracer.planes[1].galaxies[0].hyper_model_image = al.array.zeros(shape_2d=(7,7), pixel_scales=0.1)
+    masked_imaging_fit_x2_plane_7x7.tracer.planes[0].galaxies[0].hyper_galaxy_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
+    masked_imaging_fit_x2_plane_7x7.tracer.planes[1].galaxies[0].hyper_galaxy_image = al.array.zeros(shape_2d=(7,7), pixel_scales=0.1)
+
+    al.plot.fit_imaging.contribution_maps(
+        fit=masked_imaging_fit_x2_plane_7x7,
+        array_plotter=al.plotter.array(
+            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+        ),
+    )
+
+    assert (
+        fit_imaging_plotter_path + "contribution_maps.png" in plot_patch.paths
+    )
+
+
+
 def test__subtracted_image_of_plane_is_output(
     masked_imaging_fit_x1_plane_7x7,
     masked_imaging_fit_x2_plane_7x7,

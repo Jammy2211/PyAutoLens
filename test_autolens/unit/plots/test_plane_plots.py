@@ -114,3 +114,18 @@ def test__all_individual_plotters__output_file_with_default_name(
     )
 
     assert plane_plotter_path + "plane_grid.png" in plot_patch.paths
+
+    plane_7x7.galaxies[0].hyper_galaxy = al.HyperGalaxy()
+    plane_7x7.galaxies[0].hyper_model_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
+    plane_7x7.galaxies[0].hyper_galaxy_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
+
+    al.plot.plane.contribution_map(
+        plane=plane_7x7,
+        mask=mask_7x7,
+        positions=positions_7x7,
+        array_plotter=al.plotter.array(
+            output=al.plotter.Output(plane_plotter_path, format="png")
+        ),
+    )
+
+    assert plane_plotter_path + "contribution_map.png" in plot_patch.paths

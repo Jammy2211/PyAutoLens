@@ -378,10 +378,11 @@ def contribution_maps(
         The index of the datas in the datas-set of which the contribution_maps are plotted.
     """
 
-    if len(fit.contribution_maps) > 1:
-        contribution_map = sum(fit.contribution_maps)
-    else:
-        contribution_map = fit.contribution_maps[0]
+    print(fit.tracer.image_plane.contribution_maps_of_galaxies)
+
+    print(list(map(lambda plane : sum(filter(None, plane.contribution_maps_of_galaxies)), fit.tracer.planes)))
+
+    contribution_map = sum(list(map(lambda plane : sum(filter(None, plane.contribution_maps_of_galaxies)), fit.tracer.planes)))
 
     array_plotter.plot_array(
         array=contribution_map,

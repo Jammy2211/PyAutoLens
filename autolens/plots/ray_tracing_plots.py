@@ -311,3 +311,20 @@ def deflections_x(
         lines=include.critical_curves_from_obj(obj=tracer),
         centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
     )
+
+@plotters.set_labels
+def contribution_map(
+    tracer,
+    mask=None,
+    positions=None,
+    include=lensing_plotters.Include(),
+    array_plotter=array_plotters.ArrayPlotter(),
+):
+
+    array_plotter.plot_array(
+        array=tracer.contribution_map,
+        mask=mask,
+        points=positions,
+        lines=include.critical_curves_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+    )

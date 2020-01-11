@@ -82,6 +82,19 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "deflections_x.png" in plot_patch.paths
 
+    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy = al.HyperGalaxy()
+    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_model_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
+    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
+
+    al.plot.tracer.contribution_map(
+        tracer=tracer_x2_plane_7x7,
+        mask=mask_7x7,
+        array_plotter=al.plotter.array(
+            output=al.plotter.Output(ray_tracing_plotter_path, format="png")
+        ),
+    )
+
+    assert ray_tracing_plotter_path + "contribution_map.png" in plot_patch.paths
 
 def test__tracer_sub_plot_output(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch
