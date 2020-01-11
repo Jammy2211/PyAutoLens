@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 
 from autoarray.plotters import plotters, array_plotters
 from autoastro.plots import lensing_plotters
+from autolens.plots import ray_tracing_plots
 from autolens.plots.fit_imaging_plots import fit_imaging_plots
 
 
@@ -15,6 +16,7 @@ def subplot_of_hyper_galaxy(
     fit,
     hyper_fit,
     galaxy_image,
+    contribution_map_in,
     include=lensing_plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
@@ -49,7 +51,7 @@ def subplot_of_hyper_galaxy(
 
     plt.subplot(rows, columns, 4)
 
-    fit_imaging_plots.contribution_maps(fit=hyper_fit, include=include, array_plotter=array_plotter)
+    contribution_map(contribution_map_in=contribution_map_in, include=include, array_plotter=array_plotter)
 
     plt.subplot(rows, columns, 5)
 
@@ -70,7 +72,7 @@ def subplot_of_hyper_galaxy_images(
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
     array_plotter = array_plotter.plotter_with_new_output_filename(
-        output_filename="hyper_galaxy_fit"
+        output_filename="hyper_galaxy_images"
     )
 
     rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
@@ -86,14 +88,14 @@ def subplot_of_hyper_galaxy_images(
 
     hyper_index = 0
 
-    for path, hyper_galaxy_image in hyper_galaxy_image_path_dict.items():
+    for path, galaxy_image in hyper_galaxy_image_path_dict.items():
 
         hyper_index += 1
 
         plt.subplot(rows, columns, hyper_index)
 
         hyper_galaxy_image(
-            galaxy_image=hyper_galaxy_image,
+            galaxy_image=galaxy_image,
             mask=mask,
             array_plotter=array_plotter,
         )
@@ -126,3 +128,26 @@ def hyper_galaxy_image(
         array=galaxy_image, mask=mask, grid=image_plane_pix_grid, points=positions,
     )
 
+@plotters.set_labels
+def contribution_map(
+    contribution_map_in,
+    mask=None,
+    positions=None,
+    include=lensing_plotters.Include(),
+    array_plotter=array_plotters.ArrayPlotter(),
+):
+    """Plot the summed contribution maps of a hyper_galaxies-fit.
+
+    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
+
+    Parameters
+    -----------
+    fit : datas.fitting.fitting.AbstractLensHyperFit
+        The hyper_galaxies-fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
+    image_index : int
+        The index of the datas in the datas-set of which the contribution_maps are plotted.
+    """
+
+    array_plotter.plot_array(
+        array=contribution_map_in, mask=mask, points=positions,
+    )

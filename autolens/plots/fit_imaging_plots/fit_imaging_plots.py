@@ -358,34 +358,3 @@ def model_image_of_plane(
         points=include.positions_from_fit(fit=fit),
         centres=include.mass_profile_centres_of_planes_from_obj(obj=fit.tracer),
     )
-
-
-@plotters.set_labels
-def contribution_maps(
-    fit,
-    include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
-):
-    """Plot the summed contribution maps of a hyper_galaxies-fit.
-
-    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
-
-    Parameters
-    -----------
-    fit : datas.fitting.fitting.AbstractLensHyperFit
-        The hyper_galaxies-fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
-    image_index : int
-        The index of the datas in the datas-set of which the contribution_maps are plotted.
-    """
-
-    print(fit.tracer.image_plane.contribution_maps_of_galaxies)
-
-    print(list(map(lambda plane : sum(filter(None, plane.contribution_maps_of_galaxies)), fit.tracer.planes)))
-
-    contribution_map = sum(list(map(lambda plane : sum(filter(None, plane.contribution_maps_of_galaxies)), fit.tracer.planes)))
-
-    array_plotter.plot_array(
-        array=contribution_map,
-        mask=include.mask_from_fit(fit=fit),
-        points=include.positions_from_fit(fit=fit),
-    )
