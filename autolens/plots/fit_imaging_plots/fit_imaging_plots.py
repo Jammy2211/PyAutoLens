@@ -1,37 +1,29 @@
-import autofit as af
-import matplotlib
-
-backend = af.conf.get_matplotlib_backend()
-matplotlib.use(backend)
-
 import autoarray as aa
-from autoarray.plotters import plotters, mapper_plotters
-from autoarray.plots.fit_imaging_plots import *
+from autoarray.plotters import plotters, mat_objs
 from autoastro.plots import lensing_plotters
 from autolens.plots import plane_plots
 
-
-def subplot(
+@plotters.set_subplot_filename
+def subplot_fit_imaging(
     fit,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    sub_plotter=plotters.SubPlotter(),
 ):
 
-    aa.plot.fit_imaging.subplot(
+    aa.plot.fit_imaging.subplot_fit_imaging(
         fit=fit,
         grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
         points=include.positions_from_fit(fit=fit),
         lines=include.critical_curves_from_obj(obj=fit.tracer),
         include=include,
-        array_plotter=array_plotter,
+        sub_plotter=sub_plotter,
     )
 
 
 def subplot_of_planes(
     fit,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
-    mapper_plotter=mapper_plotters.MapperPlotter(),
+    sub_plotter=plotters.SubPlotter(),
 ):
 
     for plane_index in range(fit.tracer.total_planes):
@@ -41,21 +33,19 @@ def subplot_of_planes(
             or fit.tracer.planes[plane_index].has_pixelization
         ):
 
-            subplot_for_plane(
+            subplot_of_plane(
                 fit=fit,
                 plane_index=plane_index,
                 include=include,
-                array_plotter=array_plotter,
-                mapper_plotter=mapper_plotter,
+                sub_plotter=sub_plotter,
             )
 
-
-def subplot_for_plane(
+@plotters.set_subplot_filename
+def subplot_of_plane(
     fit,
     plane_index,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
-    mapper_plotter=mapper_plotters.MapperPlotter(),
+    sub_plotter=plotters.SubPlotter(),
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -74,53 +64,45 @@ def subplot_for_plane(
         in the python interpreter window.
     """
 
-    array_plotter = array_plotter.plotter_as_sub_plotter()
-    array_plotter = array_plotter.plotter_with_new_output_filename(
-        output_filename="plane_" + str(plane_index)
+    number_subplots = 4
+
+    sub_plotter = sub_plotter.plotter_with_new_output(
+        output=mat_objs.Output(filename=sub_plotter.output.filename + "_" + str(plane_index))
     )
 
-    rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
-        number_subplots=4
-    )
+    sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
 
-    if array_plotter.figsize is None:
-        figsize = figsize_tool
-    else:
-        figsize = array_plotter.figsize
-
-    plt.figure(figsize=figsize)
-
-    plt.subplot(rows, columns, 1)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     aa.plot.fit_imaging.image(
         fit=fit,
         grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
         points=include.positions_from_fit(fit=fit),
         include=include,
-        array_plotter=array_plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 2)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
 
     subtracted_image_of_plane(
         fit=fit,
         plane_index=plane_index,
         include=include,
-        array_plotter=array_plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 3)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 3)
 
     model_image_of_plane(
         fit=fit,
         plane_index=plane_index,
         include=include,
-        array_plotter=array_plotter,
+        plotter=sub_plotter,
     )
 
     if not fit.tracer.planes[plane_index].has_pixelization:
 
-        plt.subplot(rows, columns, 4)
+        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4)
 
         traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
@@ -129,7 +111,7 @@ def subplot_for_plane(
             grid=traced_grids[plane_index],
             lines=include.caustics_from_obj(obj=fit.tracer),
             include=include,
-            array_plotter=array_plotter,
+            plotter=sub_plotter,
         )
 
     elif fit.tracer.planes[plane_index].has_pixelization:
@@ -145,25 +127,25 @@ def subplot_for_plane(
             )
         )
 
-        if mapper_plotter.aspect is "square":
+        if sub_plotter.aspect is "square":
             aspect_inv = ratio
-        elif mapper_plotter.aspect is "auto":
+        elif sub_plotter.aspect is "auto":
             aspect_inv = 1.0 / ratio
-        elif mapper_plotter.aspect is "equal":
+        elif sub_plotter.aspect is "equal":
             aspect_inv = 1.0
 
-        plt.subplot(rows, columns, 4, aspect=float(aspect_inv))
+        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4, aspect=float(aspect_inv))
 
         aa.plot.inversion.reconstruction(
             inversion=fit.inversion,
             lines=include.caustics_from_obj(obj=fit.tracer),
             include=include,
-            mapper_plotter=mapper_plotter,
+            plotter=sub_plotter,
         )
 
-    array_plotter.output.to_figure(structure=None, bypass=False)
+    sub_plotter.output.subplot_to_figure()
 
-    plt.close()
+    sub_plotter.close_figure()
 
 
 def individuals(
@@ -187,8 +169,7 @@ def individuals(
     plot_model_images_of_planes=False,
     plot_plane_images_of_planes=False,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
-    mapper_plotter=mapper_plotters.MapperPlotter(),
+    plotter=plotters.Plotter(),
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -223,7 +204,7 @@ def individuals(
         plot_inversion_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
         plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
         include=include,
-        array_plotter=array_plotter,
+        plotter=plotter,
     )
 
     traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
@@ -236,7 +217,7 @@ def individuals(
                 fit=fit,
                 plane_index=plane_index,
                 include=include,
-                array_plotter=array_plotter,
+                plotter=plotter,
             )
 
     if plot_model_images_of_planes:
@@ -247,15 +228,15 @@ def individuals(
                 fit=fit,
                 plane_index=plane_index,
                 include=include,
-                array_plotter=array_plotter,
+                plotter=plotter,
             )
 
     if plot_plane_images_of_planes:
 
         for plane_index in range(fit.tracer.total_planes):
 
-            array_plotter = array_plotter.plotter_with_new_output_filename(
-                output_filename="plane_image_of_plane_" + str(plane_index)
+            plotter = plotter.plotter_with_new_output(
+                output=mat_objs.Output(filename="plane_image_of_plane_" + str(plane_index))
             )
 
             if fit.tracer.planes[plane_index].has_light_profile:
@@ -265,7 +246,7 @@ def individuals(
                     grid=traced_grids[plane_index],
                     lines=include.caustics_from_obj(obj=fit.tracer),
                     include=include,
-                    array_plotter=array_plotter,
+                    plotter=plotter,
                 )
 
             elif fit.tracer.planes[plane_index].has_pixelization:
@@ -274,7 +255,7 @@ def individuals(
                     inversion=fit.inversion,
                     lines=include.caustics_from_obj(obj=fit.tracer),
                     include=include,
-                    mapper_plotter=mapper_plotter,
+                    plotter=plotter,
                 )
 
 
@@ -283,11 +264,11 @@ def subtracted_image_of_plane(
     fit,
     plane_index,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
     """Plot the model image of a specific plane of a lens fit.
 
-    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotters.plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -299,8 +280,8 @@ def subtracted_image_of_plane(
         The plane from which the model image is generated.
     """
 
-    array_plotter = array_plotter.plotter_with_new_output_filename(
-        output_filename="subtracted_image_of_plane_" + str(plane_index)
+    plotter = plotter.plotter_with_new_output(
+        output=mat_objs.Output(filename=plotter.output.filename + "_" + str(plane_index))
     )
 
     if fit.tracer.total_planes > 1:
@@ -317,7 +298,7 @@ def subtracted_image_of_plane(
 
         subtracted_image = fit.image
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=subtracted_image,
         mask=include.mask_from_fit(fit=fit),
         grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
@@ -332,11 +313,11 @@ def model_image_of_plane(
     fit,
     plane_index,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
     """Plot the model image of a specific plane of a lens fit.
 
-    Set *autolens.datas.arrays.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotters.plotters* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -346,11 +327,11 @@ def model_image_of_plane(
         The plane from which the model image is generated.
     """
 
-    array_plotter = array_plotter.plotter_with_new_output_filename(
-        output_filename="model_image_of_plane_" + str(plane_index)
+    plotter = plotter.plotter_with_new_output(
+        output=mat_objs.Output(filename=plotter.output.filename + "_" + str(plane_index))
     )
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=fit.model_images_of_planes[plane_index],
         mask=include.mask_from_fit(fit=fit),
         lines=include.critical_curves_from_obj(obj=fit.tracer),

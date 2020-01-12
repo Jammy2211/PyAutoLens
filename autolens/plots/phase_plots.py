@@ -1,6 +1,6 @@
 import autofit as af
 import autoarray as aa
-from autoarray.plotters import array_plotters
+from autoarray.plotters import plotters
 from autoastro.plots import lensing_plotters
 from autolens.plots import ray_tracing_plots, hyper_plots
 from autolens.plots.fit_imaging_plots import fit_imaging_plots
@@ -19,10 +19,9 @@ def imaging_of_phase(
     plot_signal_to_noise_map,
     plot_absolute_signal_to_noise_map,
     plot_potential_chi_squared_map,
-    visualize_path,
-    subplot_path,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter()
+    plotter=plotters.Plotter(),
+    sub_plotter=plotters.SubPlotter(),
 ):
 
     output_path = af.path_util.make_and_return_path_from_path_and_folder_names(
@@ -31,7 +30,7 @@ def imaging_of_phase(
 
     if plot_as_subplot:
 
-        aa.plot.imaging.subplot(
+        aa.plot.imaging.subplot_imaging(
             imaging=imaging,
             mask=mask,
             positions=positions,
@@ -76,7 +75,7 @@ def interferometer_of_phase(
 
     if plot_as_subplot:
 
-        aa.plot.interferometer.subplot(
+        aa.plot.interferometer.subplot_interferometer(
             interferometer=interferometer,
             unit_conversion_factor=kpc_per_arcsec,
             output_path=subplot_path,
@@ -122,7 +121,7 @@ def ray_tracing_of_phase(
 
     if plot_as_subplot:
 
-        ray_tracing_plots.subplot(
+        ray_tracing_plots.subplot_tracer(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -237,7 +236,7 @@ def imaging_fit_of_phase(
 
     if plot_fit_as_subplot:
 
-        fit_imaging_plots.subplot(
+        fit_imaging_plots.subplot_fit_imaging(
             fit=fit,
             mask=mask,
             positions=positions,
@@ -265,7 +264,7 @@ def imaging_fit_of_phase(
 
     if plot_inversion_as_subplot and fit.inversion is not None:
 
-        aa.plot.inversion.subplot(
+        aa.plot.inversion.subplot_inversion(
             inversion=fit.inversion,
             mask=fit.mask,
             output_path=subplot_path,
@@ -410,11 +409,11 @@ def interferometer_fit_of_phase(
 
     if plot_fit_as_subplot:
 
-        fit_interferometer_plots.subplot(
+        fit_interferometer_plots.subplot_fit_interferometer(
             fit=fit, plot_in_kpc=plot_in_kpc, output_path=subplot_path, format="png"
         )
 
-        fit_interferometer_plots.subplot_real_space(
+        fit_interferometer_plots.subplot_fit_real_space(
             fit=fit,
             mask=mask,
             include_critical_curves=include_critical_curves,
@@ -540,7 +539,7 @@ def plot_hyper_images_for_phase(
 
     if plot_hyper_galaxy_images:
 
-        hyper_plots.subplot_of_hyper_galaxy_images(
+        hyper_plots.subplot_hyper_galaxy_images(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             mask=mask,
             kpc_per_arcsec=kpc_per_arcsec,

@@ -51,4 +51,4 @@ source_galaxy = al.Galaxy(
 # Use these galaxies to setup a tracer, which will generate the image for the simulated imaging dataset.
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-al.plot.tracer.subplot(tracer=tracer, grid=grid, include_critical_curves=True)
+al.plot.tracer.subplot_tracer(tracer=tracer, grid=grid, include_critical_curves=True)

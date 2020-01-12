@@ -1,11 +1,4 @@
-import autofit as af
-from autoarray.plotters import plotters, grid_plotters
-import matplotlib
-
-backend = af.conf.get_matplotlib_backend()
-matplotlib.use(backend)
-from matplotlib import pyplot as plt
-
+from autoarray.plotters import plotters
 from autoastro.plots import lensing_plotters
 
 
@@ -16,10 +9,10 @@ def profile_image(
     mask=None,
     positions=None,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=plane.profile_image_from_grid(grid=grid),
         mask=mask,
         points=positions,
@@ -36,14 +29,14 @@ def plane_image(
     positions=None,
     lines=None,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=plane.plane_image_from_grid(grid=grid).array,
         points=positions,
         grid=include.grid_from_grid(grid=grid),
-        lines=include.critical_curves_from_obj(obj=plane),
+        lines=lines,
         include_origin=include.origin,
     )
 
@@ -54,10 +47,10 @@ def convergence(
     grid,
     mask=None,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=plane.convergence_from_grid(grid=grid),
         mask=mask,
         lines=include.critical_curves_from_obj(obj=plane),
@@ -72,10 +65,10 @@ def potential(
     grid,
     mask=None,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=plane.potential_from_grid(grid=grid),
         mask=mask,
         lines=include.critical_curves_from_obj(obj=plane),
@@ -90,7 +83,7 @@ def deflections_y(
     grid,
     mask=None,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
 
     deflections = plane.deflections_from_grid(grid=grid)
@@ -98,7 +91,7 @@ def deflections_y(
         sub_array_1d=deflections[:, 0]
     )
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=deflections_y,
         mask=mask,
         lines=include.critical_curves_from_obj(obj=plane),
@@ -113,7 +106,7 @@ def deflections_x(
     grid,
     mask=None,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
 
     deflections = plane.deflections_from_grid(grid=grid)
@@ -121,7 +114,7 @@ def deflections_x(
         sub_array_1d=deflections[:, 1]
     )
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=deflections_x,
         mask=mask,
         lines=include.critical_curves_from_obj(obj=plane),
@@ -136,10 +129,10 @@ def magnification(
     grid,
     mask=None,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=plane.magnification_from_grid(grid=grid),
         mask=mask,
         lines=include.critical_curves_from_obj(obj=plane),
@@ -156,20 +149,14 @@ def image_and_source_plane_subplot(
     points=None,
     axis_limits=None,
     include=lensing_plotters.Include(),
-    grid_plotter=grid_plotters.GridPlotter(),
+    sub_plotter=plotters.SubPlotter(),
 ):
 
-    rows, columns, figsize_tool = grid_plotter.get_subplot_rows_columns_figsize(
-        number_subplots=2
-    )
+    number_subplots = 2
 
-    if grid_plotter.figsize is None:
-        figsize = figsize_tool
-    else:
-        figsize = grid_plotter.figsize
+    sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
 
-    plt.figure(figsize=figsize)
-    plt.subplot(rows, columns, 1)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     plane_grid(
         plane=image_plane,
@@ -178,12 +165,12 @@ def image_and_source_plane_subplot(
         points=points,
         lines=include.critical_curves_from_obj(obj=image_plane),
         include=include,
-        grid_plotter=grid_plotter,
+        plotter=sub_plotter,
     )
 
     source_plane_grid = image_plane.traced_grid_from_grid(grid=grid)
 
-    plt.subplot(rows, columns, 2)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
 
     plane_grid(
         plane=source_plane,
@@ -192,11 +179,11 @@ def image_and_source_plane_subplot(
         points=points,
         lines=include.caustics_from_obj(obj=image_plane),
         include=include,
-        grid_plotter=grid_plotter,
+        plotter=sub_plotter,
     )
 
-    grid_plotter.output.to_figure(structure=None, bypass=False)
-    plt.close()
+    sub_plotter.output.subplot_to_figure()
+    sub_plotter.close_figure()
 
 
 @plotters.set_labels
@@ -207,10 +194,10 @@ def plane_grid(
     points=None,
     lines=None,
     include=lensing_plotters.Include(),
-    grid_plotter=grid_plotters.GridPlotter(),
+    plotter=plotters.Plotter(),
 ):
 
-    grid_plotter.plot_grid(
+    plotter.array.plot(
         grid=grid,
         points=points,
         axis_limits=axis_limits,
@@ -223,10 +210,10 @@ def contribution_map(
     mask=None,
     positions=None,
     include=lensing_plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=plane.contribution_map,
         mask=mask,
         points=positions,

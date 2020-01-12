@@ -61,7 +61,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         overwrite=True,
     )
 
-    al.plot.imaging.subplot(
+    al.plot.imaging.subplot_imaging(
         imaging=imaging,
         output_filename="imaging",
         output_path=dataset_path,
@@ -78,7 +78,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         format="png",
     )
 
-    al.plot.tracer.subplot(
+    al.plot.tracer.subplot_tracer(
         tracer=tracer,
         grid=simulator.grid,
         output_filename="tracer",

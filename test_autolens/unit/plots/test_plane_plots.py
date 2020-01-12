@@ -32,7 +32,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         grid=sub_grid_7x7,
         mask=mask_7x7,
         positions=positions_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=plane_plotter_path, format="png")
         ),
     )
@@ -43,7 +43,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         plane=plane_7x7,
         grid=sub_grid_7x7,
         positions=positions_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=plane_plotter_path, format="png")
         ),
     )
@@ -54,7 +54,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         plane=plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=plane_plotter_path, format="png")
         ),
     )
@@ -65,7 +65,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         plane=plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=plane_plotter_path, format="png")
         ),
     )
@@ -76,7 +76,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         plane=plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=plane_plotter_path, format="png")
         ),
     )
@@ -87,7 +87,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         plane=plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=plane_plotter_path, format="png")
         ),
     )
@@ -98,7 +98,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         plane=plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=plane_plotter_path, format="png")
         ),
     )
@@ -108,7 +108,7 @@ def test__all_individual_plotters__output_file_with_default_name(
     al.plot.plane.plane_grid(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        grid_plotter=al.plotter.grid(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=plane_plotter_path, format="png")
         ),
     )
@@ -123,7 +123,7 @@ def test__all_individual_plotters__output_file_with_default_name(
         plane=plane_7x7,
         mask=mask_7x7,
         positions=positions_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(plane_plotter_path, format="png")
         ),
     )

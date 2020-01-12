@@ -1,4 +1,4 @@
 from autolens.plots.fit_interferometer_plots.fit_interferometer_plots import (
-    subplot,
+    subplot_fit_interferometer,
     individuals,
 )

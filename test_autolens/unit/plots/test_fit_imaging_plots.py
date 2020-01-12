@@ -24,30 +24,6 @@ def set_config_path():
     )
 
 
-def test__contribution_maps_is_output(
-    masked_imaging_fit_x2_plane_7x7,
-    fit_imaging_plotter_path,
-    plot_patch,
-):
-
-    masked_imaging_fit_x2_plane_7x7.tracer.planes[0].galaxies[0].hyper_model_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
-    masked_imaging_fit_x2_plane_7x7.tracer.planes[1].galaxies[0].hyper_model_image = al.array.zeros(shape_2d=(7,7), pixel_scales=0.1)
-    masked_imaging_fit_x2_plane_7x7.tracer.planes[0].galaxies[0].hyper_galaxy_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
-    masked_imaging_fit_x2_plane_7x7.tracer.planes[1].galaxies[0].hyper_galaxy_image = al.array.zeros(shape_2d=(7,7), pixel_scales=0.1)
-
-    al.plot.fit_imaging.contribution_maps(
-        fit=masked_imaging_fit_x2_plane_7x7,
-        array_plotter=al.plotter.array(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
-        ),
-    )
-
-    assert (
-        fit_imaging_plotter_path + "contribution_maps.png" in plot_patch.paths
-    )
-
-
-
 def test__subtracted_image_of_plane_is_output(
     masked_imaging_fit_x1_plane_7x7,
     masked_imaging_fit_x2_plane_7x7,
@@ -58,7 +34,7 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
@@ -70,7 +46,7 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
@@ -82,7 +58,7 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
@@ -102,7 +78,7 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
@@ -112,7 +88,7 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
@@ -122,7 +98,7 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
@@ -130,83 +106,76 @@ def test__model_image_of_plane_is_output(
     assert fit_imaging_plotter_path + "model_image_of_plane_1.png" in plot_patch.paths
 
 
-def test__fit_sub_plot(
+def test_subplot_fit_imaging_is_output(
     masked_imaging_fit_x2_plane_7x7, fit_imaging_plotter_path, plot_patch
 ):
 
-    al.plot.fit_imaging.subplot(
+    al.plot.fit_imaging.subplot_fit_imaging(
         fit=masked_imaging_fit_x2_plane_7x7,
-        array_plotter=al.plotter.array(
+        sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
 
-    assert fit_imaging_plotter_path + "fit_imaging.png" in plot_patch.paths
+    assert fit_imaging_plotter_path + "subplot_fit_imaging.png" in plot_patch.paths
 
 
-def test__fit_for_plane_subplot(
+def test__subplot_of_plane(
     masked_imaging_fit_x1_plane_7x7,
     masked_imaging_fit_x2_plane_7x7,
     fit_imaging_plotter_path,
     plot_patch,
 ):
 
-    al.plot.fit_imaging.subplot_for_plane(
+    al.plot.fit_imaging.subplot_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
-        array_plotter=al.plotter.array(
+        sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
 
-    assert fit_imaging_plotter_path + "plane_0.png" in plot_patch.paths
+    assert fit_imaging_plotter_path + "subplot_of_plane_0.png" in plot_patch.paths
 
-    al.plot.fit_imaging.subplot_for_plane(
+    al.plot.fit_imaging.subplot_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
-        array_plotter=al.plotter.array(
+        sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
 
-    assert fit_imaging_plotter_path + "plane_0.png" in plot_patch.paths
+    assert fit_imaging_plotter_path + "subplot_of_plane_0.png" in plot_patch.paths
 
-    al.plot.fit_imaging.subplot_for_plane(
+    al.plot.fit_imaging.subplot_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
-        array_plotter=al.plotter.array(
+        sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
 
-    assert fit_imaging_plotter_path + "plane_1.png" in plot_patch.paths
+    assert fit_imaging_plotter_path + "subplot_of_plane_1.png" in plot_patch.paths
 
-
-def test__fit_for_planes_subplot(
-    masked_imaging_fit_x1_plane_7x7,
-    masked_imaging_fit_x2_plane_7x7,
-    fit_imaging_plotter_path,
-    plot_patch,
-):
 
     al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x1_plane_7x7,
-        array_plotter=al.plotter.array(
+        sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
 
-    assert fit_imaging_plotter_path + "plane_0.png" in plot_patch.paths
+    assert fit_imaging_plotter_path + "subplot_of_plane_0.png" in plot_patch.paths
 
     al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x2_plane_7x7,
-        array_plotter=al.plotter.array(
+        sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
 
-    assert fit_imaging_plotter_path + "plane_0.png" in plot_patch.paths
-    assert fit_imaging_plotter_path + "plane_1.png" in plot_patch.paths
+    assert fit_imaging_plotter_path + "subplot_of_plane_0.png" in plot_patch.paths
+    assert fit_imaging_plotter_path + "subplot_of_plane_1.png" in plot_patch.paths
 
 
 def test__fit_individuals__source_and_lens__dependent_on_input(
@@ -226,10 +195,7 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plot_subtracted_images_of_planes=True,
         plot_model_images_of_planes=True,
         plot_plane_images_of_planes=True,
-        array_plotter=al.plotter.array(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
-        ),
-        mapper_plotter=al.plotter.mapper(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
@@ -268,10 +234,7 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plot_subtracted_images_of_planes=True,
         plot_model_images_of_planes=True,
         plot_plane_images_of_planes=True,
-        array_plotter=al.plotter.array(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
-        ),
-        mapper_plotter=al.plotter.mapper(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
         ),
     )
