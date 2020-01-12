@@ -81,7 +81,7 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
 
     def plot_galaxy_fit_subplot(self, fit, path_suffix=""):
         if self.plot_galaxy_fit_as_subplot:
-            fit_galaxy_plotters.subplot(
+            fit_galaxy_plotters.subplot_imaging(
                 fit=fit,
                 mask=self.mask,
                 output_path=f"{self.image_path}/{path_suffix}",
@@ -409,7 +409,7 @@ class HyperGalaxyVisualizer(SubPlotVisualizer):
         chi_squared_map,
         hyper_chi_squared_map,
     ):
-        hyper_plots.subplot_of_hyper_galaxy(
+        hyper_plots.subplot_fit_hyper_galaxy(
             galaxy_image=hyper_galaxy_image,
             contribution_map_sub=contribution_map,
             noise_map_sub=noise_map,

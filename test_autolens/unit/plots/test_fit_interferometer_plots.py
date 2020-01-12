@@ -15,28 +15,28 @@ def test__fit_sub_plot(
     masked_interferometer_fit_x2_plane_7x7, fit_interferometer_plotter_path, plot_patch
 ):
 
-    al.plot.fit_interferometer.subplot(
+    al.plot.fit_interferometer.subplot_fit_interferometer(
         fit=masked_interferometer_fit_x2_plane_7x7,
-        array_plotter=al.plotter.array(
+        sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=fit_interferometer_plotter_path, format="png")
         ),
     )
 
-    assert fit_interferometer_plotter_path + "fit_interferometer.png" in plot_patch.paths
+    assert fit_interferometer_plotter_path + "subplot_fit_interferometer.png" in plot_patch.paths
 
 
 def test__fit_sub_plot_real_space(
     masked_interferometer_fit_x2_plane_7x7, fit_interferometer_plotter_path, plot_patch
 ):
 
-    al.plot.fit_interferometer.subplot_real_space(
+    al.plot.fit_interferometer.subplot_fit_real_space(
         fit=masked_interferometer_fit_x2_plane_7x7,
-        array_plotter=al.plotter.array(
+        sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=fit_interferometer_plotter_path, format="png")
         ),
     )
 
-    assert fit_interferometer_plotter_path + "fit_real_space.png" in plot_patch.paths
+    assert fit_interferometer_plotter_path + "subplot_fit_real_space.png" in plot_patch.paths
 
 
 def test__fit_individuals__source_and_lens__depedent_on_input(
@@ -53,15 +53,9 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         plot_signal_to_noise_map=False,
         plot_model_visibilities=True,
         plot_chi_squared_map=True,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=fit_interferometer_plotter_path, format="png")
-        ),
-        grid_plotter=al.plotter.grid(
-            output=al.plotter.Output(path=fit_interferometer_plotter_path, format="png")
-        ),
-        line_plotter=al.plotter.line(
-            output=al.plotter.Output(path=fit_interferometer_plotter_path, format="png")
-        ),
+        )
     )
 
     assert fit_interferometer_plotter_path + "visibilities.png" in plot_patch.paths

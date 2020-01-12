@@ -31,7 +31,7 @@ def test__all_individual_plotters(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=ray_tracing_plotter_path, format="png")
         ),
     )
@@ -42,7 +42,7 @@ def test__all_individual_plotters(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=ray_tracing_plotter_path, format="png")
         ),
     )
@@ -53,7 +53,7 @@ def test__all_individual_plotters(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=ray_tracing_plotter_path, format="png")
         ),
     )
@@ -64,7 +64,7 @@ def test__all_individual_plotters(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=ray_tracing_plotter_path, format="png")
         ),
     )
@@ -75,7 +75,7 @@ def test__all_individual_plotters(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=ray_tracing_plotter_path, format="png")
         ),
     )
@@ -89,7 +89,7 @@ def test__all_individual_plotters(
     al.plot.tracer.contribution_map(
         tracer=tracer_x2_plane_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(ray_tracing_plotter_path, format="png")
         ),
     )
@@ -99,16 +99,16 @@ def test__all_individual_plotters(
 def test__tracer_sub_plot_output(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, ray_tracing_plotter_path, plot_patch
 ):
-    al.plot.tracer.subplot(
+    al.plot.tracer.subplot_tracer(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=ray_tracing_plotter_path, format="png")
         ),
     )
 
-    assert ray_tracing_plotter_path + "tracer.png" in plot_patch.paths
+    assert ray_tracing_plotter_path + "subplot_tracer.png" in plot_patch.paths
 
 
 def test__tracer_individuals__dependent_on_input(
@@ -121,7 +121,7 @@ def test__tracer_individuals__dependent_on_input(
         plot_profile_image=True,
         plot_source_plane=True,
         plot_potential=True,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=ray_tracing_plotter_path, format="png")
         ),
     )

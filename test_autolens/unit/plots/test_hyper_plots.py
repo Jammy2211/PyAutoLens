@@ -20,7 +20,7 @@ def test__plot_individual_images(
 
     al.plot.hyper.hyper_galaxy_image(
         galaxy_image=hyper_galaxy_image_0_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=hyper_plotter_path, format="png")
         ),
     )
@@ -29,7 +29,7 @@ def test__plot_individual_images(
 
     al.plot.hyper.contribution_map(
         contribution_map_in=contribution_map_7x7,
-        array_plotter=al.plotter.array(
+        plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=hyper_plotter_path, format="png")
         ),
     )
@@ -43,17 +43,17 @@ def test__plot_subplot_of_hyper_galaxy(
     hyper_plotter_path,
     plot_patch,
 ):
-    al.plot.hyper.subplot_of_hyper_galaxy(
+    al.plot.hyper.subplot_fit_hyper_galaxy(
         fit=masked_imaging_fit_x2_plane_7x7,
         hyper_fit=masked_imaging_fit_x2_plane_7x7,
         galaxy_image=hyper_galaxy_image_0_7x7,
         contribution_map_in=contribution_map_7x7,
-        array_plotter=al.plotter.array(
+        sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=hyper_plotter_path, format="png")
         ),
     )
 
-    assert hyper_plotter_path + "hyper_galaxy_fit.png" in plot_patch.paths
+    assert hyper_plotter_path + "subplot_fit_hyper_galaxy.png" in plot_patch.paths
 
 
 def test__plot_hyper_galaxy_images(
@@ -68,12 +68,12 @@ def test__plot_hyper_galaxy_images(
     hyper_galaxy_image_path_dict[("g0",)] = hyper_galaxy_image_0_7x7
     hyper_galaxy_image_path_dict[("g1",)] = hyper_galaxy_image_1_7x7
 
-    al.plot.hyper.subplot_of_hyper_galaxy_images(
+    al.plot.hyper.subplot_hyper_galaxy_images(
         hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
         mask=mask_7x7,
-        array_plotter=al.plotter.array(
+        sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=hyper_plotter_path, format="png")
         ),
     )
 
-    assert hyper_plotter_path + "hyper_galaxy_images.png" in plot_patch.paths
+    assert hyper_plotter_path + "subplot_hyper_galaxy_images.png" in plot_patch.paths
