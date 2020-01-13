@@ -21,8 +21,29 @@ def set_config_path():
     )
 
 
-class TestPhaseSetVisualizer:
+class TestAbstractPhaseVisualizer:
 
+    def test__visualizer_with_preloaded_critical_curves_and_caustics_is_setup(
+            self, masked_imaging_7x7, tracer_x2_plane_7x7, visualizer_plotter_path, plot_patch
+    ):
+        visualizer = vis.PhaseDatasetVisualizer(
+            masked_dataset=masked_imaging_7x7, image_path=visualizer_plotter_path)
+
+        assert visualizer.include.preloaded_critical_curves == None
+        assert visualizer.include.preloaded_caustics == None
+
+        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(preloaded_critical_curves=1, preloaded_caustics=2)
+
+        assert visualizer.include.preloaded_critical_curves == 1
+        assert visualizer.include.preloaded_caustics == 2
+
+        visualizer.include.critical_curves = False
+        visualizer.include.caustics = False
+        visualizer.visualize_ray_tracing(tracer=tracer_x2_plane_7x7, during_analysis=True)
+
+        assert visualizer_plotter_path + "subplots/subplot_tracer.png" in plot_patch.paths
+
+class TestPhaseDataSetVisualizer:
 
     def test__visualizes_ray_tracing_using_configs(
        self,  masked_imaging_7x7, tracer_x2_plane_7x7, visualizer_plotter_path, plot_patch

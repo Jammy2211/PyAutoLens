@@ -7,6 +7,7 @@ from autolens.plots import ray_tracing_plots, hyper_plots
 from autolens.plots.fit_imaging_plots import fit_imaging_plots
 from autolens.plots.fit_interferometer_plots import fit_interferometer_plots
 
+import copy
 
 def setting(section, name):
     return af.conf.instance.visualize_plots.get(section, name, bool)
@@ -43,6 +44,13 @@ class AbstractVisualizer:
             "plot_ray_tracing_magnification"
         )
 
+    def new_visualizer_with_preloaded_critical_curves_and_caustics(self, preloaded_critical_curves, preloaded_caustics):
+
+        visualizer = copy.deepcopy(self)
+
+        visualizer.include = visualizer.include.new_include_with_preloaded_critical_curves_and_caustics(preloaded_critical_curves=preloaded_critical_curves, preloaded_caustics=preloaded_caustics)
+
+        return visualizer
 
 class PhaseGalaxyVisualizer(AbstractVisualizer):
     def __init__(self, image_path):
