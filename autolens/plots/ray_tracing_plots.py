@@ -1,4 +1,4 @@
-from autoarray.plotters import plotters
+from autoarray.plotters import plotters, mat_objs
 from autoastro.plots import lensing_plotters
 from autolens.plots import plane_plots
 
@@ -113,6 +113,7 @@ def individual(
     plot_convergence=False,
     plot_potential=False,
     plot_deflections=False,
+    plot_magnification=False,
     include=lensing_plotters.Include(),
     plotter=plotters.Plotter(),
 ):
@@ -174,7 +175,7 @@ def individual(
             positions=None,
             include=include,
             plotter=plotter.plotter_with_new_output(
-                output_filename="source_plane"
+                output=mat_objs.Output(filename="source_plane")
             ),
         )
 
@@ -189,6 +190,16 @@ def individual(
         )
 
         deflections_x(
+            tracer=tracer,
+            grid=grid,
+            mask=mask,
+            include=include,
+            plotter=plotter,
+        )
+
+    if plot_magnification:
+
+        magnification(
             tracer=tracer,
             grid=grid,
             mask=mask,
@@ -288,6 +299,22 @@ def deflections_x(
 
     plotter.array.plot(
         array=deflections_x,
+        mask=mask,
+        lines=include.critical_curves_from_obj(obj=tracer),
+        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+    )
+
+@plotters.set_labels
+def magnification(
+    tracer,
+    grid,
+    mask=None,
+    include=lensing_plotters.Include(),
+    plotter=plotters.Plotter(),
+):
+
+    plotter.array.plot(
+        array=tracer.magnification_from_grid(grid=grid),
         mask=mask,
         lines=include.critical_curves_from_obj(obj=tracer),
         centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),

@@ -57,19 +57,14 @@ def test__plot_subplot_of_hyper_galaxy(
 
 
 def test__plot_hyper_galaxy_images(
-    hyper_galaxy_image_0_7x7,
-    hyper_galaxy_image_1_7x7,
+    hyper_galaxy_image_path_dict_7x7,
     mask_7x7,
     hyper_plotter_path,
     plot_patch,
 ):
-    hyper_galaxy_image_path_dict = {}
-
-    hyper_galaxy_image_path_dict[("g0",)] = hyper_galaxy_image_0_7x7
-    hyper_galaxy_image_path_dict[("g1",)] = hyper_galaxy_image_1_7x7
 
     al.plot.hyper.subplot_hyper_galaxy_images(
-        hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+        hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict_7x7,
         mask=mask_7x7,
         sub_plotter=al.plotter.SubPlotter(
             output=al.plotter.Output(path=hyper_plotter_path, format="png")

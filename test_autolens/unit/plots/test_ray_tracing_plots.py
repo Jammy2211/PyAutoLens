@@ -82,6 +82,17 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "deflections_x.png" in plot_patch.paths
 
+    al.plot.tracer.magnification(
+        tracer=tracer_x2_plane_7x7,
+        grid=sub_grid_7x7,
+        mask=mask_7x7,
+        plotter=al.plotter.Plotter(
+            output=al.plotter.Output(path=ray_tracing_plotter_path, format="png")
+        ),
+    )
+
+    assert ray_tracing_plotter_path + "magnification.png" in plot_patch.paths
+
     tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy = al.HyperGalaxy()
     tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_model_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
     tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
@@ -121,12 +132,11 @@ def test__tracer_individuals__dependent_on_input(
         plot_profile_image=True,
         plot_source_plane=True,
         plot_potential=True,
+        plot_magnification=True,
         plotter=al.plotter.Plotter(
             output=al.plotter.Output(path=ray_tracing_plotter_path, format="png")
         ),
     )
-
-    print(plot_patch.paths)
 
     assert ray_tracing_plotter_path + "profile_image.png" in plot_patch.paths
 
@@ -139,3 +149,5 @@ def test__tracer_individuals__dependent_on_input(
     assert ray_tracing_plotter_path + "deflections_y.png" not in plot_patch.paths
 
     assert ray_tracing_plotter_path + "deflections_x.png" not in plot_patch.paths
+
+    assert ray_tracing_plotter_path + "magnification.png" in plot_patch.paths

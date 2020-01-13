@@ -19,7 +19,7 @@ class Analysis(analysis_dataset.Analysis):
         if results is not None and results.last is not None:
             last_results = results.last
 
-            self.visualizer.plot_hyper_images(last_results)
+            self.visualizer.visualize_hyper_images(last_results)
 
             self.hyper_galaxy_image_path_dict = (
                 last_results.hyper_galaxy_image_path_dict
@@ -27,7 +27,7 @@ class Analysis(analysis_dataset.Analysis):
 
             self.hyper_model_image = last_results.hyper_model_image
 
-            self.visualizer.plot_hyper_images(last_results=last_results)
+            self.visualizer.visualize_hyper_images(last_results=last_results)
 
     @property
     def masked_imaging(self):
@@ -136,5 +136,5 @@ class Analysis(analysis_dataset.Analysis):
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
-        self.visualizer.plot_ray_tracing(fit.tracer, during_analysis)
-        self.visualizer.plot_fit(fit, during_analysis)
+        self.visualizer.visualize_ray_tracing(fit.tracer, during_analysis)
+        self.visualizer.visualize_fit(fit, during_analysis)

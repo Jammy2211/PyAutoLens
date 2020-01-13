@@ -127,5 +127,5 @@ class Analysis(analysis_data.Analysis):
         fit = self.masked_interferometer_fit_for_tracer(
             tracer=tracer, hyper_background_noise=hyper_background_noise
         )
-        self.visualizer.plot_ray_tracing(fit.tracer, during_analysis)
-        self.visualizer.plot_fit(fit, during_analysis)
+        self.visualizer.visualize_ray_tracing(fit.tracer, during_analysis)
+        self.visualizer.visualize_fit(fit, during_analysis)

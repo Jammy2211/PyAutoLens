@@ -77,11 +77,37 @@ def subplot_hyper_galaxy_images(
     sub_plotter.close_figure()
 
 @plotters.set_labels
+def hyper_model_image(
+    hyper_model_image,
+    mask=None,
+    positions=None,
+    image_plane_pix_grid=None,
+    include=lensing_plotters.Include(),
+    plotter=plotters.Plotter(),
+):
+    """Plot the image of a hyper_galaxies galaxy image.
+
+    Set *autolens.datas.arrays.plotters.plotters* for a description of all input parameters not described below.
+
+    Parameters
+    -----------
+    hyper_galaxy_image : datas.imaging.datas.Imaging
+        The hyper_galaxies galaxy image.
+    origin : True
+        If true, the origin of the datas's coordinate system is plotted as a 'x'.
+    """
+
+    plotter.array.plot(
+        array=hyper_model_image, mask=mask, grid=image_plane_pix_grid, points=positions,
+    )
+
+@plotters.set_labels
 def hyper_galaxy_image(
     galaxy_image,
     mask=None,
     positions=None,
     image_plane_pix_grid=None,
+    include=lensing_plotters.Include(),
     plotter=plotters.Plotter(),
 ):
     """Plot the image of a hyper_galaxies galaxy image.
