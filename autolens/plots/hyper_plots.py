@@ -1,7 +1,6 @@
 import autoarray as aa
 from autoarray.plotters import plotters
 from autoastro.plots import lensing_plotters
-from autolens.plots.fit_imaging_plots import fit_imaging_plots
 
 
 @plotters.set_subplot_filename

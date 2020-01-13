@@ -13,23 +13,18 @@ class Analysis(analysis_data.Analysis):
         super(Analysis, self).__init__(cosmology=cosmology)
 
         self.visualizer = visualizer.PhaseInterferometerVisualizer(
-            masked_interferometer, image_path
+            masked_dataset=masked_interferometer, image_path=image_path
         )
 
         self.masked_dataset = masked_interferometer
 
         if results is not None and results.last is not None:
-            last_results = results.last
-
-            # self.visualizer.plot_hyper_visibilities(last_results)
 
             self.hyper_galaxy_visibilities_path_dict = (
-                last_results.hyper_galaxy_visibilities_path_dict
+                results.last.hyper_galaxy_visibilities_path_dict
             )
 
-            self.hyper_model_visibilities = last_results.hyper_model_visibilities
-
-            # self.visualizer.plot_hyper_visibilities(last_results=last_results)
+            self.hyper_model_visibilities = results.last.hyper_model_visibilities
 
     @property
     def masked_interferometer(self):
@@ -127,5 +122,5 @@ class Analysis(analysis_data.Analysis):
         fit = self.masked_interferometer_fit_for_tracer(
             tracer=tracer, hyper_background_noise=hyper_background_noise
         )
-        self.visualizer.visualize_ray_tracing(fit.tracer, during_analysis)
-        self.visualizer.visualize_fit(fit, during_analysis)
+        self.visualizer.visualize_ray_tracing(tracer=fit.tracer, during_analysis=during_analysis)
+        self.visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)

@@ -441,7 +441,7 @@ class TestHyperGalaxyPhase(object):
             masked_imaging=masked_imaging,
             hyper_model_image=fit.model_image,
             hyper_galaxy_image=fit.model_image,
-            image_path=None,
+            image_path="",
         )
 
         fit_hyper = analysis.fit_for_hyper_galaxy(

@@ -197,7 +197,7 @@ def plane_grid(
     plotter=plotters.Plotter(),
 ):
 
-    plotter.array.plot(
+    plotter.grid.plot(
         grid=grid,
         points=points,
         axis_limits=axis_limits,

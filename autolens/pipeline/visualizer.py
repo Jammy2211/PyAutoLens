@@ -232,7 +232,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
 
 
 class PhaseImagingVisualizer(PhaseDatasetVisualizer):
-    def __init__(self, masked_dataset, image_path):
+    def __init__(self, masked_dataset, image_path, results=None):
         super(PhaseImagingVisualizer, self).__init__(
             masked_dataset=masked_dataset, image_path=image_path
         )
@@ -243,6 +243,10 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
         self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
 
         self.visualize_imaging()
+
+        if results is not None and results.last is not None:
+
+            self.visualize_hyper_images(last_results=results.last)
 
     @property
     def masked_imaging(self):

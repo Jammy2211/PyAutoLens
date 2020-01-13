@@ -11,7 +11,6 @@ class PipelineSettings(object):
         hyper_image_sky=False,
         hyper_background_noise=False,
         initialize_align_light_mass_centre=True,
-        initialize_fix_lens_light=True,
         include_shear=False,
         fix_lens_light=False,
         pixelization=pix.VoronoiBrightnessImage,
@@ -28,7 +27,6 @@ class PipelineSettings(object):
         self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
         self.initialize_align_light_mass_centre = initialize_align_light_mass_centre
-        self.initialize_fix_lens_light = initialize_fix_lens_light
         self.include_shear = include_shear
         self.fix_lens_light = fix_lens_light
         self.pixelization = pixelization
