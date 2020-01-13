@@ -5,8 +5,7 @@ def pipeline_tag_from_pipeline_settings(
     hyper_galaxies=False,
     hyper_image_sky=False,
     hyper_background_noise=False,
-    initialize_align_light_mass_centre=True,
-    initialize_fix_lens_light=True,
+    initialize_align_light_mass_centre=False,
     include_shear=False,
     fix_lens_light=False,
     pixelization=None,
@@ -27,10 +26,6 @@ def pipeline_tag_from_pipeline_settings(
 
     initialize_align_light_mass_centre_tag = initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_centre(
         initialize_align_light_mass_centre=initialize_align_light_mass_centre
-    )
-
-    initialize_fix_lens_light_tag = fix_initialize_lens_light_tag_from_initialize_fix_lens_light(
-        initalize_fix_lens_light=initialize_fix_lens_light
     )
 
     include_shear_tag = include_shear_tag_from_include_shear(
@@ -69,7 +64,6 @@ def pipeline_tag_from_pipeline_settings(
         "pipeline_tag"
         + hyper_tag
         + initialize_align_light_mass_centre_tag
-        + initialize_fix_lens_light_tag
         + include_shear_tag
         + fix_lens_light_tag
         + pixelization_tag
@@ -169,8 +163,8 @@ def initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_cent
         return "__init_align_light_mass_centre"
 
 
-def initialize_fix_lens_light_tag_from_initialize_fix_lens_light(
-    initialize_fix_lens_light
+def fix_lens_light_tag_from_fix_lens_light(
+    fix_lens_light
 ):
     """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
      during he analysis, to customize phase names.
@@ -180,9 +174,9 @@ def initialize_fix_lens_light_tag_from_initialize_fix_lens_light(
     fix_lens_light = False -> pipeline_name__
     fix_lens_light = True -> pipeline_name___fix_lens_light
     """
-    if not initialize_fix_lens_light:
+    if not fix_lens_light:
         return ""
-    elif initialize_fix_lens_light:
+    elif fix_lens_light:
         return "__init_fix_lens_light"
 
 

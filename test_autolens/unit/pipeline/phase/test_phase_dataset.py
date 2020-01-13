@@ -53,6 +53,7 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
 
         assert (analysis.masked_imaging.mask == mask_input).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
 
@@ -66,8 +67,11 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=None)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
+
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         # If no mask is suppled, nor a mask function, we should use the default mask. This extends behind the edge of
         # 5x5 image, so will raise a MaskException.
@@ -96,6 +100,7 @@ class TestPhase(object):
         mask_input[3, 3] = True
 
         assert (analysis.masked_imaging.mask == mask_input).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         # If a mask function is supplied, we should use this mask, regardless of whether an input mask is supplied.
 
@@ -113,9 +118,11 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=None)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         # If no mask is suppled, nor a mask function, we should use the default mask.
 
@@ -140,12 +147,14 @@ class TestPhase(object):
 
         assert (analysis.masked_imaging.mask == mask_input).all()
         assert analysis.masked_imaging.mask.sub_size == 1
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         phase_imaging_7x7.meta_imaging_fit.sub_size = 2
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
 
         assert (analysis.masked_imaging.mask == mask_input).all()
         assert analysis.masked_imaging.mask.sub_size == 2
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
     def test__make_analysis__positions_are_input__are_used_in_analysis(
         self, phase_imaging_7x7, imaging_7x7

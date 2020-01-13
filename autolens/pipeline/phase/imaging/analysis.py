@@ -12,22 +12,19 @@ class Analysis(analysis_dataset.Analysis):
 
         super(Analysis, self).__init__(cosmology=cosmology)
 
-        self.visualizer = visualizer.PhaseImagingVisualizer(masked_imaging, image_path)
+        self.visualizer = visualizer.PhaseImagingVisualizer(
+            masked_dataset=masked_imaging, image_path=image_path, results=results)
 
         self.masked_dataset = masked_imaging
 
         if results is not None and results.last is not None:
             last_results = results.last
 
-            self.visualizer.visualize_hyper_images(last_results)
-
             self.hyper_galaxy_image_path_dict = (
                 last_results.hyper_galaxy_image_path_dict
             )
 
             self.hyper_model_image = last_results.hyper_model_image
-
-            self.visualizer.visualize_hyper_images(last_results=last_results)
 
     @property
     def masked_imaging(self):
@@ -136,5 +133,5 @@ class Analysis(analysis_dataset.Analysis):
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
-        self.visualizer.visualize_ray_tracing(fit.tracer, during_analysis)
-        self.visualizer.visualize_fit(fit, during_analysis)
+        self.visualizer.visualize_ray_tracing(tracer=fit.tracer, during_analysis=during_analysis)
+        self.visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)
