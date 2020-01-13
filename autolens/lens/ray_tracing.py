@@ -519,6 +519,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return contribution_maps
 
+
 class AbstractTracerData(AbstractTracerLensing):
     def __init__(self, planes, cosmology):
         super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)

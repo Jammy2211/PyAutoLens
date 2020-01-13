@@ -64,7 +64,7 @@ class Analysis(af.Analysis):
                 hyper_background_noise=hyper_background_noise,
             )
 
-            self.visualizer.hyper_galaxy_subplot(
+            self.visualizer.visualize_hyper_galaxy(
                 hyper_galaxy_image=self.hyper_galaxy_image,
                 contribution_map=contribution_map,
                 noise_map=self.masked_imaging.noise_map,
