@@ -122,5 +122,9 @@ class Analysis(analysis_data.Analysis):
         fit = self.masked_interferometer_fit_for_tracer(
             tracer=tracer, hyper_background_noise=hyper_background_noise
         )
-        self.visualizer.visualize_ray_tracing(tracer=fit.tracer, during_analysis=during_analysis)
-        self.visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)
+
+        visualizer = self.visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+            preloaded_critical_curves=tracer.critical_curves, preloaded_caustics=tracer.caustics)
+
+        visualizer.visualize_ray_tracing(tracer=fit.tracer, during_analysis=during_analysis)
+        visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)
