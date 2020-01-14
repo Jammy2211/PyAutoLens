@@ -14,14 +14,16 @@ def make_hyper_plotter_setup():
 def test__plot_individual_images(
     hyper_galaxy_image_0_7x7,
     contribution_map_7x7,
+    include_all,
     hyper_plotter_path,
     plot_patch,
 ):
 
     al.plot.hyper.hyper_galaxy_image(
         galaxy_image=hyper_galaxy_image_0_7x7,
+        include=include_all,
         plotter=al.plotter.Plotter(
-            output=al.plotter.Output(path=hyper_plotter_path, format="png")
+            output=al.plotter.Output(hyper_plotter_path, format="png")
         ),
     )
 
@@ -29,8 +31,9 @@ def test__plot_individual_images(
 
     al.plot.hyper.contribution_map(
         contribution_map_in=contribution_map_7x7,
+        include=include_all,
         plotter=al.plotter.Plotter(
-            output=al.plotter.Output(path=hyper_plotter_path, format="png")
+            output=al.plotter.Output(hyper_plotter_path, format="png")
         ),
     )
 
@@ -40,6 +43,7 @@ def test__plot_subplot_of_hyper_galaxy(
     hyper_galaxy_image_0_7x7,
     contribution_map_7x7,
     masked_imaging_fit_x2_plane_7x7,
+        include_all,
     hyper_plotter_path,
     plot_patch,
 ):
@@ -48,8 +52,9 @@ def test__plot_subplot_of_hyper_galaxy(
         hyper_fit=masked_imaging_fit_x2_plane_7x7,
         galaxy_image=hyper_galaxy_image_0_7x7,
         contribution_map_in=contribution_map_7x7,
+        include=include_all,
         sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(path=hyper_plotter_path, format="png")
+            output=al.plotter.Output(hyper_plotter_path, format="png")
         ),
     )
 
@@ -59,6 +64,7 @@ def test__plot_subplot_of_hyper_galaxy(
 def test__plot_hyper_galaxy_images(
     hyper_galaxy_image_path_dict_7x7,
     mask_7x7,
+        include_all,
     hyper_plotter_path,
     plot_patch,
 ):
@@ -66,8 +72,9 @@ def test__plot_hyper_galaxy_images(
     al.plot.hyper.subplot_hyper_galaxy_images(
         hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict_7x7,
         mask=mask_7x7,
+        include=include_all,
         sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(path=hyper_plotter_path, format="png")
+            output=al.plotter.Output(hyper_plotter_path, format="png")
         ),
     )
 
