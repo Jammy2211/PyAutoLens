@@ -27,6 +27,7 @@ def set_config_path():
 def test__subtracted_image_of_plane_is_output(
     masked_imaging_fit_x1_plane_7x7,
     masked_imaging_fit_x2_plane_7x7,
+        include_all,
     fit_imaging_plotter_path,
     plot_patch,
 ):
@@ -34,8 +35,9 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
+        include=include_all,
         plotter=al.plotter.Plotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -46,8 +48,9 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
+        include=include_all,
         plotter=al.plotter.Plotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -58,8 +61,9 @@ def test__subtracted_image_of_plane_is_output(
     al.plot.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
+        include=include_all,
         plotter=al.plotter.Plotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -71,6 +75,7 @@ def test__subtracted_image_of_plane_is_output(
 def test__model_image_of_plane_is_output(
     masked_imaging_fit_x1_plane_7x7,
     masked_imaging_fit_x2_plane_7x7,
+        include_all,
     fit_imaging_plotter_path,
     plot_patch,
 ):
@@ -78,8 +83,9 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
+        include=include_all,
         plotter=al.plotter.Plotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -88,8 +94,9 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
+        include=include_all,
         plotter=al.plotter.Plotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -98,8 +105,9 @@ def test__model_image_of_plane_is_output(
     al.plot.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
+        include=include_all,
         plotter=al.plotter.Plotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -107,13 +115,14 @@ def test__model_image_of_plane_is_output(
 
 
 def test_subplot_fit_imaging_is_output(
-    masked_imaging_fit_x2_plane_7x7, fit_imaging_plotter_path, plot_patch
+    masked_imaging_fit_x2_plane_7x7, include_all, fit_imaging_plotter_path, plot_patch
 ):
 
     al.plot.fit_imaging.subplot_fit_imaging(
         fit=masked_imaging_fit_x2_plane_7x7,
+        include=include_all,
         sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -123,6 +132,7 @@ def test_subplot_fit_imaging_is_output(
 def test__subplot_of_plane(
     masked_imaging_fit_x1_plane_7x7,
     masked_imaging_fit_x2_plane_7x7,
+    include_all,
     fit_imaging_plotter_path,
     plot_patch,
 ):
@@ -130,8 +140,9 @@ def test__subplot_of_plane(
     al.plot.fit_imaging.subplot_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
+        include=include_all,
         sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -140,8 +151,9 @@ def test__subplot_of_plane(
     al.plot.fit_imaging.subplot_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
+        include=include_all,
         sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -150,8 +162,9 @@ def test__subplot_of_plane(
     al.plot.fit_imaging.subplot_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
+        include=include_all,
         sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -160,8 +173,9 @@ def test__subplot_of_plane(
 
     al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x1_plane_7x7,
+        include=include_all,
         sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -169,8 +183,9 @@ def test__subplot_of_plane(
 
     al.plot.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x2_plane_7x7,
+        include=include_all,
         sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -181,6 +196,7 @@ def test__subplot_of_plane(
 def test__fit_individuals__source_and_lens__dependent_on_input(
     masked_imaging_fit_x1_plane_7x7,
     masked_imaging_fit_x2_plane_7x7,
+        include_all,
     fit_imaging_plotter_path,
     plot_patch,
 ):
@@ -195,8 +211,9 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plot_subtracted_images_of_planes=True,
         plot_model_images_of_planes=True,
         plot_plane_images_of_planes=True,
+        include=include_all,
         plotter=al.plotter.Plotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -234,8 +251,9 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plot_subtracted_images_of_planes=True,
         plot_model_images_of_planes=True,
         plot_plane_images_of_planes=True,
+        include=include_all,
         plotter=al.plotter.Plotter(
-            output=al.plotter.Output(path=fit_imaging_plotter_path, format="png")
+            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 

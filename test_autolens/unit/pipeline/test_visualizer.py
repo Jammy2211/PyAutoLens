@@ -1,4 +1,3 @@
-import autolens as al
 from autolens.pipeline import visualizer as vis
 import os
 import pytest
@@ -24,7 +23,7 @@ def set_config_path():
 class TestAbstractPhaseVisualizer:
 
     def test__visualizer_with_preloaded_critical_curves_and_caustics_is_setup(
-            self, masked_imaging_7x7, tracer_x2_plane_7x7, visualizer_plotter_path, plot_patch
+            self, masked_imaging_7x7, tracer_x2_plane_7x7, include_all, visualizer_plotter_path, plot_patch
     ):
         visualizer = vis.PhaseDatasetVisualizer(
             masked_dataset=masked_imaging_7x7, image_path=visualizer_plotter_path)
@@ -46,10 +45,14 @@ class TestAbstractPhaseVisualizer:
 class TestPhaseDataSetVisualizer:
 
     def test__visualizes_ray_tracing_using_configs(
-       self,  masked_imaging_7x7, tracer_x2_plane_7x7, visualizer_plotter_path, plot_patch
+       self,  masked_imaging_7x7, tracer_x2_plane_7x7, include_all, visualizer_plotter_path, plot_patch
     ):
         visualizer = vis.PhaseDatasetVisualizer(
             masked_dataset=masked_imaging_7x7, image_path=visualizer_plotter_path)
+
+        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+            preloaded_critical_curves=include_all.preloaded_critical_curves,
+            preloaded_caustics=include_all.preloaded_caustics)
 
         visualizer.visualize_ray_tracing(tracer=tracer_x2_plane_7x7, during_analysis=True)
 
@@ -84,12 +87,16 @@ class TestPhaseDataSetVisualizer:
 class TestPhaseImagingVisualizer:
 
     def test__visualizes_imaging_using_configs(
-        self, masked_imaging_7x7, visualizer_plotter_path, plot_patch
+        self, masked_imaging_7x7, include_all, visualizer_plotter_path, plot_patch
     ):
 
         visualizer = vis.PhaseImagingVisualizer(
             masked_dataset=masked_imaging_7x7,
             image_path=visualizer_plotter_path)
+
+        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+            preloaded_critical_curves=include_all.preloaded_critical_curves,
+            preloaded_caustics=include_all.preloaded_caustics)
 
         visualizer.visualize_imaging()
 
@@ -112,11 +119,15 @@ class TestPhaseImagingVisualizer:
 
 
     def test__source_and_lens__visualizes_fit_using_configs(
-        self, masked_imaging_7x7, masked_imaging_fit_x2_plane_7x7, visualizer_plotter_path, plot_patch
+        self, masked_imaging_7x7, masked_imaging_fit_x2_plane_7x7, include_all, visualizer_plotter_path, plot_patch
     ):
 
         visualizer = vis.PhaseImagingVisualizer(
             masked_dataset=masked_imaging_7x7, image_path=visualizer_plotter_path)
+
+        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+            preloaded_critical_curves=include_all.preloaded_critical_curves,
+            preloaded_caustics=include_all.preloaded_caustics)
 
         visualizer.visualize_fit(fit=masked_imaging_fit_x2_plane_7x7, during_analysis=True)
 
@@ -152,11 +163,15 @@ class TestPhaseImagingVisualizer:
         assert visualizer_plotter_path + "fit_imaging/plane_image_of_plane_1.png" in plot_patch.paths
 
     def test__visualizes_hyper_images_using_config(
-        self, masked_imaging_7x7, hyper_model_image_7x7, hyper_galaxy_image_path_dict_7x7, visualizer_plotter_path, plot_patch,
+        self, masked_imaging_7x7, hyper_model_image_7x7, include_all, hyper_galaxy_image_path_dict_7x7, visualizer_plotter_path, plot_patch,
     ):
 
         visualizer = vis.PhaseImagingVisualizer(
             masked_dataset=masked_imaging_7x7, image_path=visualizer_plotter_path)
+
+        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+            preloaded_critical_curves=include_all.preloaded_critical_curves,
+            preloaded_caustics=include_all.preloaded_caustics)
 
         class MockLastResults(object):
 
@@ -175,12 +190,16 @@ class TestPhaseImagingVisualizer:
 class TestPhaseInterferometerVisualizer:
 
     def test__visualizes_interferometer_using_configs(
-        self, masked_interferometer_7, general_config, visualizer_plotter_path, plot_patch
+        self, masked_interferometer_7, general_config, include_all, visualizer_plotter_path, plot_patch
     ):
 
         visualizer = vis.PhaseInterferometerVisualizer(
             masked_dataset=masked_interferometer_7,
             image_path=visualizer_plotter_path)
+
+        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+            preloaded_critical_curves=include_all.preloaded_critical_curves,
+            preloaded_caustics=include_all.preloaded_caustics)
 
         visualizer.visualize_interferometer()
 
@@ -203,11 +222,15 @@ class TestPhaseInterferometerVisualizer:
         )
 
     def test__source_and_lens__visualizes_fit_using_configs(
-        self, masked_interferometer_7, masked_interferometer_fit_x2_plane_7x7, visualizer_plotter_path, plot_patch
+        self, masked_interferometer_7, masked_interferometer_fit_x2_plane_7x7, include_all, visualizer_plotter_path, plot_patch
     ):
 
         visualizer = vis.PhaseInterferometerVisualizer(
             masked_dataset=masked_interferometer_7, image_path=visualizer_plotter_path)
+
+        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+            preloaded_critical_curves=include_all.preloaded_critical_curves,
+            preloaded_caustics=include_all.preloaded_caustics)
 
         visualizer.visualize_fit(fit=masked_interferometer_fit_x2_plane_7x7, during_analysis=True)
 
@@ -235,11 +258,15 @@ class TestPhaseInterferometerVisualizer:
 class TestHyperGalaxyVisualizer:
 
     def test__hyper_fit__images_for_phase__source_and_lens__depedent_on_input(
-        self, masked_imaging_fit_x2_plane_7x7, hyper_galaxy_image_0_7x7, visualizer_plotter_path, plot_patch
+        self, masked_imaging_fit_x2_plane_7x7, hyper_galaxy_image_0_7x7, include_all, visualizer_plotter_path, plot_patch
     ):
 
         visualizer = vis.HyperGalaxyVisualizer(
             image_path=visualizer_plotter_path)
+
+        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+            preloaded_critical_curves=include_all.preloaded_critical_curves,
+            preloaded_caustics=include_all.preloaded_caustics)
 
         visualizer.visualize_hyper_galaxy(fit=masked_imaging_fit_x2_plane_7x7, hyper_fit=masked_imaging_fit_x2_plane_7x7, galaxy_image=hyper_galaxy_image_0_7x7,
                                           contribution_map_in=hyper_galaxy_image_0_7x7)
