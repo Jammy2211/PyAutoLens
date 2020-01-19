@@ -48,11 +48,10 @@ def subplot_fit_interferometer(
 
     sub_plotter.figure.close()
 
+
 @plotters.set_subplot_filename
 def subplot_fit_real_space(
-    fit,
-    include=lensing_plotters.Include(),
-    sub_plotter=lensing_plotters.SubPlotter(),
+    fit, include=lensing_plotters.Include(), sub_plotter=lensing_plotters.SubPlotter()
 ):
 
     number_subplots = 2
@@ -68,25 +67,31 @@ def subplot_fit_real_space(
             grid=fit.masked_interferometer.grid,
             positions=include.positions_from_fit(fit=fit),
             include=include,
-            plotter=sub_plotter
+            plotter=sub_plotter,
         )
 
-        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
+        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
         plane_plots.plane_image(
             plane=fit.tracer.source_plane,
             grid=fit.masked_interferometer.grid,
-            positions=include.positions_of_plane_from_fit_and_plane_index(fit=fit, plane_index=-1),
+            positions=include.positions_of_plane_from_fit_and_plane_index(
+                fit=fit, plane_index=-1
+            ),
             caustics=include.caustics_from_obj(obj=fit.tracer),
-            plotter=sub_plotter
+            plotter=sub_plotter,
         )
 
     elif fit.inversion is not None:
 
         inversion_plots.reconstructed_image(
             inversion=fit.inversion,
-            light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(fit.tracer.image_plane),
-            mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(fit.tracer.image_plane),
+            light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+                fit.tracer.image_plane
+            ),
+            mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+                fit.tracer.image_plane
+            ),
             critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
             image_positions=include.positions_from_fit(fit=fit),
             grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
@@ -111,11 +116,15 @@ def subplot_fit_real_space(
         elif sub_plotter.aspect is "equal":
             aspect_inv = 1.0
 
-        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2, aspect=float(aspect_inv))
+        sub_plotter.setup_subplot(
+            number_subplots=number_subplots, subplot_index=2, aspect=float(aspect_inv)
+        )
 
         inversion_plots.reconstruction(
             inversion=fit.inversion,
-            source_positions=include.positions_of_plane_from_fit_and_plane_index(fit=fit, plane_index=-1),
+            source_positions=include.positions_of_plane_from_fit_and_plane_index(
+                fit=fit, plane_index=-1
+            ),
             caustics=include.caustics_from_obj(obj=fit.tracer),
             include=include,
             plotter=sub_plotter,
@@ -124,6 +133,7 @@ def subplot_fit_real_space(
     sub_plotter.output.subplot_to_figure()
 
     sub_plotter.figure.close()
+
 
 def individuals(
     fit,
@@ -151,7 +161,6 @@ def individuals(
         How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
         in the python interpreter window.
     """
-
 
     if plot_visibilities:
 
@@ -198,10 +207,12 @@ def individuals(
         chi_squared_map_vs_uv_distances(
             fit=fit, plot_real=False, include=include, plotter=plotter
         )
-    
+
 
 @plotters.set_labels
-def visibilities(fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()):
+def visibilities(
+    fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
+):
     """Plot the visibilities of a lens fit.
 
     Set *autolens.datas.grid.lensing_plotters.Plotters* for a description of all input parameters not described below.
@@ -217,7 +228,9 @@ def visibilities(fit, include=lensing_plotters.Include(), plotter=lensing_plotte
 
 
 @plotters.set_labels
-def noise_map(fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()):
+def noise_map(
+    fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
+):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.lensing_plotters.Plotters* for a description of all input parameters not described below.
@@ -233,7 +246,9 @@ def noise_map(fit, include=lensing_plotters.Include(), plotter=lensing_plotters.
 
 
 @plotters.set_labels
-def signal_to_noise_map(fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()):
+def signal_to_noise_map(
+    fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
+):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.lensing_plotters.Plotters* for a description of all input parameters not described below.
@@ -249,7 +264,9 @@ def signal_to_noise_map(fit, include=lensing_plotters.Include(), plotter=lensing
 
 
 @plotters.set_labels
-def model_visibilities(fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()):
+def model_visibilities(
+    fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
+):
     """Plot the model visibilities of a fit.
 
     Set *autolens.datas.grid.lensing_plotters.Plotters* for a description of all input parameters not described below.
@@ -397,4 +414,3 @@ def chi_squared_map_vs_uv_distances(
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
-

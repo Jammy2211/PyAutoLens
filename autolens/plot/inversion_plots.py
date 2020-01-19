@@ -155,9 +155,16 @@ def individuals(
 
     if plot_reconstructed_image:
 
-        reconstructed_image(inversion=inversion, image_positions=image_positions,
-                            grid=grid, light_profile_centres=light_profile_centres, mass_profile_centres=mass_profile_centres,
-                            critical_curves=critical_curves, include=include, plotter=plotter)
+        reconstructed_image(
+            inversion=inversion,
+            image_positions=image_positions,
+            grid=grid,
+            light_profile_centres=light_profile_centres,
+            mass_profile_centres=mass_profile_centres,
+            critical_curves=critical_curves,
+            include=include,
+            plotter=plotter,
+        )
 
     if plot_reconstruction:
 
@@ -409,7 +416,7 @@ def interpolated_reconstruction(
     inversion,
     source_positions=None,
     grid=None,
-        caustics=None,
+    caustics=None,
     include=lensing_plotters.Include(),
     plotter=lensing_plotters.Plotter(),
 ):

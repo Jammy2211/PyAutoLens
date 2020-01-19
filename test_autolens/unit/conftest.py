@@ -21,6 +21,7 @@ def set_config_path():
 
 # Lens Data #
 
+
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
     return al.masked.imaging.manual(imaging=imaging_7x7, mask=sub_mask_7x7)
@@ -33,6 +34,7 @@ def make_masked_interferometer_7(
     return al.masked.interferometer.manual(
         interferometer=interferometer_7, real_space_mask=mask_7x7
     )
+
 
 # Plane #
 
@@ -173,7 +175,9 @@ def make_hyper_galaxy_image_1_7x7(mask_7x7):
 
 
 @pytest.fixture(name="hyper_galaxy_image_path_dict_7x7")
-def make_hyper_galaxy_image_path_dict_7x7(hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7):
+def make_hyper_galaxy_image_path_dict_7x7(
+    hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
+):
     hyper_galaxy_image_path_dict = {}
 
     hyper_galaxy_image_path_dict[("g0",)] = hyper_galaxy_image_0_7x7
@@ -219,4 +223,3 @@ def make_results_collection(results_7x7):
     results_collection = af.ResultsCollection()
     results_collection.add("phase", results_7x7)
     return results_collection
-
