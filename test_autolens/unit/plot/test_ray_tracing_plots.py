@@ -1,3 +1,4 @@
+import autolens as al
 import autolens.plot as aplt
 import os
 
@@ -30,7 +31,6 @@ def test__all_individual_plotters(
     aplt.tracer.profile_image(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
         plotter=aplt.Plotter(
             output=aplt.Output(ray_tracing_plotter_path, format="png")
@@ -42,7 +42,6 @@ def test__all_individual_plotters(
     aplt.tracer.convergence(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
         plotter=aplt.Plotter(
             output=aplt.Output(ray_tracing_plotter_path, format="png")
@@ -54,7 +53,6 @@ def test__all_individual_plotters(
     aplt.tracer.potential(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
         plotter=aplt.Plotter(
             output=aplt.Output(ray_tracing_plotter_path, format="png")
@@ -66,7 +64,6 @@ def test__all_individual_plotters(
     aplt.tracer.deflections_y(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
         plotter=aplt.Plotter(
             output=aplt.Output(ray_tracing_plotter_path, format="png")
@@ -78,7 +75,6 @@ def test__all_individual_plotters(
     aplt.tracer.deflections_x(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
         plotter=aplt.Plotter(
             output=aplt.Output(ray_tracing_plotter_path, format="png")
@@ -90,7 +86,6 @@ def test__all_individual_plotters(
     aplt.tracer.magnification(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
         plotter=aplt.Plotter(
             output=aplt.Output(ray_tracing_plotter_path, format="png")
@@ -115,12 +110,11 @@ def test__all_individual_plotters(
     assert ray_tracing_plotter_path + "contribution_map.png" in plot_patch.paths
 
 def test__tracer_sub_plot_output(
-    tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, include_all, ray_tracing_plotter_path, plot_patch
+    tracer_x2_plane_7x7, sub_grid_7x7, include_all, ray_tracing_plotter_path, plot_patch
 ):
     aplt.tracer.subplot_tracer(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
         sub_plotter=aplt.SubPlotter(
             output=aplt.Output(ray_tracing_plotter_path, format="png")
@@ -131,12 +125,11 @@ def test__tracer_sub_plot_output(
 
 
 def test__tracer_individuals__dependent_on_input(
-    tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, include_all, ray_tracing_plotter_path, plot_patch
+    tracer_x2_plane_7x7, sub_grid_7x7, include_all, ray_tracing_plotter_path, plot_patch
 ):
     aplt.tracer.individual(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         plot_profile_image=True,
         plot_source_plane=True,
         plot_potential=True,

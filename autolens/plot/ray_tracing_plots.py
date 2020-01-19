@@ -36,7 +36,6 @@ def subplot_tracer(
     profile_image(
         tracer=tracer,
         grid=grid,
-        mask=include.mask_from_grid(grid=grid),
         positions=positions,
         include=include,
         plotter=sub_plotter,
@@ -49,7 +48,6 @@ def subplot_tracer(
         convergence(
             tracer=tracer,
             grid=grid,
-            mask=include.mask_from_grid(grid=grid),
             include=include,
             plotter=sub_plotter,
         )
@@ -59,7 +57,6 @@ def subplot_tracer(
         potential(
             tracer=tracer,
             grid=grid,
-            mask=include.mask_from_grid(grid=grid),
             include=include,
             plotter=sub_plotter,
         )
@@ -83,7 +80,6 @@ def subplot_tracer(
         deflections_y(
             tracer=tracer,
             grid=grid,
-            mask=include.mask_from_grid(grid=grid),
             include=include,
             plotter=sub_plotter,
         )
@@ -93,7 +89,6 @@ def subplot_tracer(
         deflections_x(
             tracer=tracer,
             grid=grid,
-            mask=include.mask_from_grid(grid=grid),
             include=include,
             plotter=sub_plotter,
         )
@@ -137,7 +132,6 @@ def individual(
         profile_image(
             tracer=tracer,
             grid=grid,
-            mask=include.mask_from_grid(grid=grid),
             positions=positions,
             include=include,
             plotter=plotter,
@@ -148,7 +142,6 @@ def individual(
         convergence(
             tracer=tracer,
             grid=grid,
-            mask=include.mask_from_grid(grid=grid),
             include=include,
             plotter=plotter,
         )
@@ -158,7 +151,6 @@ def individual(
         potential(
             tracer=tracer,
             grid=grid,
-            mask=include.mask_from_grid(grid=grid),
             include=include,
             plotter=plotter,
         )
@@ -183,7 +175,6 @@ def individual(
         deflections_y(
             tracer=tracer,
             grid=grid,
-            mask=include.mask_from_grid(grid=grid),
             include=include,
             plotter=plotter,
         )
@@ -191,7 +182,6 @@ def individual(
         deflections_x(
             tracer=tracer,
             grid=grid,
-            mask=include.mask_from_grid(grid=grid),
             include=include,
             plotter=plotter,
         )
@@ -201,7 +191,6 @@ def individual(
         magnification(
             tracer=tracer,
             grid=grid,
-            mask=include.mask_from_grid(grid=grid),
             include=include,
             plotter=plotter,
         )
@@ -220,8 +209,10 @@ def profile_image(
         array=tracer.profile_image_from_grid(grid=grid),
         mask=include.mask_from_grid(grid=grid),
         positions=positions,
-        lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        critical_curves=include.critical_curves_from_obj(obj=tracer),
+        light_profile_centres=include.light_profile_centres_of_planes_from_obj(obj=tracer),
+        mass_profile_centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        include_origin=include.origin,
     )
 
 
@@ -236,8 +227,10 @@ def convergence(
     plotter.plot_array(
         array=tracer.convergence_from_grid(grid=grid),
         mask=include.mask_from_grid(grid=grid),
-        lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        critical_curves=include.critical_curves_from_obj(obj=tracer),
+        light_profile_centres=include.light_profile_centres_of_planes_from_obj(obj=tracer),
+        mass_profile_centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        include_origin=include.origin,
     )
 
 
@@ -252,8 +245,10 @@ def potential(
     plotter.plot_array(
         array=tracer.potential_from_grid(grid=grid),
         mask=include.mask_from_grid(grid=grid),
-        lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        critical_curves=include.critical_curves_from_obj(obj=tracer),
+        light_profile_centres=include.light_profile_centres_of_planes_from_obj(obj=tracer),
+        mass_profile_centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        include_origin=include.origin,
     )
 
 
@@ -273,8 +268,10 @@ def deflections_y(
     plotter.plot_array(
         array=deflections_y,
         mask=include.mask_from_grid(grid=grid),
-        lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        critical_curves=include.critical_curves_from_obj(obj=tracer),
+        light_profile_centres=include.light_profile_centres_of_planes_from_obj(obj=tracer),
+        mass_profile_centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        include_origin=include.origin,
     )
 
 
@@ -294,8 +291,10 @@ def deflections_x(
     plotter.plot_array(
         array=deflections_x,
         mask=include.mask_from_grid(grid=grid),
-        lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        critical_curves=include.critical_curves_from_obj(obj=tracer),
+        light_profile_centres=include.light_profile_centres_of_planes_from_obj(obj=tracer),
+        mass_profile_centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        include_origin=include.origin,
     )
 
 @plotters.set_labels
@@ -309,13 +308,16 @@ def magnification(
     plotter.plot_array(
         array=tracer.magnification_from_grid(grid=grid),
         mask=include.mask_from_grid(grid=grid),
-        lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        critical_curves=include.critical_curves_from_obj(obj=tracer),
+        light_profile_centres=include.light_profile_centres_of_planes_from_obj(obj=tracer),
+        mass_profile_centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        include_origin=include.origin,
     )
 
 @plotters.set_labels
 def contribution_map(
     tracer,
+    mask=None,
     positions=None,
     include=lensing_plotters.Include(),
     plotter=lensing_plotters.Plotter(),
@@ -323,8 +325,10 @@ def contribution_map(
 
     plotter.plot_array(
         array=tracer.contribution_map,
-        mask=include.mask_from_grid(grid=grid),
+        mask=mask,
         positions=positions,
-        lines=include.critical_curves_from_obj(obj=tracer),
-        centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        critical_curves=include.critical_curves_from_obj(obj=tracer),
+        light_profile_centres=include.light_profile_centres_of_planes_from_obj(obj=tracer),
+        mass_profile_centres=include.mass_profile_centres_of_planes_from_obj(obj=tracer),
+        include_origin=include.origin,
     )
