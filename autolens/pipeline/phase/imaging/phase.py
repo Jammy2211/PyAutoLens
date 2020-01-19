@@ -129,7 +129,7 @@ class PhaseImaging(dataset.PhaseDataset):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         self.meta_imaging_fit.model = self.model
-        modified_image = self.modify_image(image=dataset.profile_image, results=results)
+        modified_image = self.modify_image(image=dataset.image, results=results)
 
         masked_imaging = self.meta_imaging_fit.masked_dataset_from(
             dataset=dataset,

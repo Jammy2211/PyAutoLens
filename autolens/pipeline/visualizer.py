@@ -523,7 +523,6 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
             plot_residual_map=self.plot_fit_residual_map,
             plot_chi_squared_map=self.plot_fit_chi_squared_map,
             plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
-            plot_reconstruction=self.plot_fit_inversion_reconstruction,
             include=self.include,
             plotter=plotter
         )
