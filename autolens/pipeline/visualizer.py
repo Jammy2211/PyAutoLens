@@ -4,8 +4,7 @@ from autoarray.plot import plotters
 from autoarray.plot import mat_objs
 from autoastro.plot import lensing_plotters
 from autoastro.plot import fit_galaxy_plots
-from autolens.plot import ray_tracing_plots, hyper_plots, fit_imaging_plots
-from autolens.plot.fit_interferometer_plots import fit_interferometer_plots
+from autolens.plot import ray_tracing_plots, hyper_plots, fit_imaging_plots, fit_interferometer_plots
 
 import copy
 

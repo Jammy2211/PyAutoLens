@@ -208,6 +208,8 @@ def reconstructed_image(
     inversion,
     image_positions=None,
     grid=None,
+    light_profile_centres=None,
+    mass_profile_centres=None,
     critical_curves=None,
     include=lensing_plotters.Include(),
     plotter=lensing_plotters.Plotter(),
@@ -218,6 +220,8 @@ def reconstructed_image(
         mask=include.mask_from_grid(grid=inversion.mapper.grid),
         positions=image_positions,
         grid=grid,
+        light_profile_centres=light_profile_centres,
+        mass_profile_centres=mass_profile_centres,
         critical_curves=critical_curves,
         include_origin=include.origin,
     )
