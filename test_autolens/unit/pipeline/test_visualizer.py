@@ -112,10 +112,10 @@ class TestPhaseImagingVisualizer:
         )
         assert plot_path + "imaging/potential_chi_squared_map.png" in plot_patch.paths
 
-    def test__source_and_lens__visualizes_fit_using_configs(
+    def test__source_and_lens__visualizes_fit_and_inversion_using_configs(
         self,
         masked_imaging_7x7,
-        masked_imaging_fit_x2_plane_7x7,
+        masked_imaging_fit_x2_plane_inversion_7x7,
         include_all,
         plot_path,
         plot_patch,
@@ -131,7 +131,7 @@ class TestPhaseImagingVisualizer:
         )
 
         visualizer.visualize_fit(
-            fit=masked_imaging_fit_x2_plane_7x7, during_analysis=True
+            fit=masked_imaging_fit_x2_plane_inversion_7x7, during_analysis=True
         )
 
         assert plot_path + "subplots/subplot_fit_imaging.png" in plot_patch.paths
@@ -158,6 +158,17 @@ class TestPhaseImagingVisualizer:
         )
         assert plot_path + "fit_imaging/plane_image_of_plane_0.png" in plot_patch.paths
         assert plot_path + "fit_imaging/plane_image_of_plane_1.png" in plot_patch.paths
+
+        assert plot_path + "subplots/subplot_inversion.png" in plot_patch.paths
+        assert plot_path + "inversion/reconstructed_image.png" in plot_patch.paths
+        assert plot_path + "inversion/reconstruction.png" in plot_patch.paths
+        assert plot_path + "inversion/errors.png" not in plot_patch.paths
+        assert plot_path + "inversion/residual_map.png" not in plot_patch.paths
+        assert plot_path + "inversion/normalized_residual_map.png" not in plot_patch.paths
+        assert plot_path + "inversion/chi_squared_map.png" in plot_patch.paths
+        assert plot_path + "inversion/regularization_weight_map.png" not in plot_patch.paths
+        assert plot_path + "inversion/interpolated_reconstruction.png" not in plot_patch.paths
+        assert plot_path + "inversion/interpolated_errors.png" in plot_patch.paths
 
     def test__visualizes_hyper_images_using_config(
         self,
@@ -225,7 +236,7 @@ class TestPhaseInterferometerVisualizer:
     def test__source_and_lens__visualizes_fit_using_configs(
         self,
         masked_interferometer_7,
-        masked_interferometer_fit_x2_plane_7x7,
+        masked_interferometer_fit_x2_plane_inversion_7x7,
         include_all,
         plot_path,
         plot_patch,
@@ -241,7 +252,7 @@ class TestPhaseInterferometerVisualizer:
         )
 
         visualizer.visualize_fit(
-            fit=masked_interferometer_fit_x2_plane_7x7, during_analysis=True
+            fit=masked_interferometer_fit_x2_plane_inversion_7x7, during_analysis=True
         )
 
         assert plot_path + "subplots/subplot_fit_interferometer.png" in plot_patch.paths
@@ -267,6 +278,17 @@ class TestPhaseInterferometerVisualizer:
             plot_path + "fit_interferometer/chi_squared_map_vs_uv_distances_real.png"
             in plot_patch.paths
         )
+
+    #    assert plot_path + "subplots/subplot_inversion.png" in plot_patch.paths
+        assert plot_path + "inversion/reconstructed_image.png" in plot_patch.paths
+        assert plot_path + "inversion/reconstruction.png" in plot_patch.paths
+        assert plot_path + "inversion/errors.png" not in plot_patch.paths
+      #  assert plot_path + "inversion/residual_map.png" not in plot_patch.paths
+      #  assert plot_path + "inversion/normalized_residual_map.png" not in plot_patch.paths
+      #  assert plot_path + "inversion/chi_squared_map.png" in plot_patch.paths
+        assert plot_path + "inversion/regularization_weight_map.png" not in plot_patch.paths
+        assert plot_path + "inversion/interpolated_reconstruction.png" not in plot_patch.paths
+        assert plot_path + "inversion/interpolated_errors.png" in plot_patch.paths
 
 
 class TestHyperGalaxyVisualizer:
