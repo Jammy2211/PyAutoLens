@@ -1,7 +1,6 @@
 from autoarray.operators import convolver, transformer
 import autolens as al
 import numpy as np
-import pytest
 
 
 class TestMaskedImaging(object):
@@ -87,7 +86,7 @@ class TestMaskedImaging(object):
         )
 
         assert (
-                masked_imaging_3x3.profile_image.in_2d == np.ones((3, 3)) * np.invert(binned_mask)
+                masked_imaging_3x3.image.in_2d == np.ones((3, 3)) * np.invert(binned_mask)
         ).all()
         assert (masked_imaging_3x3.psf.in_2d == np.ones((3, 3))).all()
         assert (
@@ -97,7 +96,7 @@ class TestMaskedImaging(object):
 
         assert (masked_imaging_3x3.mask == binned_mask).all()
 
-        assert (masked_imaging_3x3.profile_image.in_1d == np.ones((1))).all()
+        assert (masked_imaging_3x3.image.in_1d == np.ones((1))).all()
         assert (masked_imaging_3x3.noise_map.in_1d == np.ones((1))).all()
 
     def test__masked_imaging_7x7_with_signal_to_noise_limit(
