@@ -55,7 +55,7 @@ def subplot_fit_real_space(
             inversion=fit.inversion,
             mask=include.real_space_mask_from_fit(fit=fit),
             lines=include.critical_curves_from_obj(obj=fit.tracer),
-            positions=include.positions_from_fit(fit=fit),
+            image_positions=include.positions_from_fit(fit=fit),
             grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
             plotter=sub_plotter,
         )

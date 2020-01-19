@@ -2,7 +2,7 @@ import autofit as af
 import autolens as al
 from autolens.fit.fit import ImagingFit, InterferometerFit
 
-from test_autolens.mock import mock_masked_dataset, mock_pipeline
+from test_autolens.mock import mock_pipeline
 from test_autoastro.unit.conftest import *
 
 directory = path.dirname(path.realpath(__file__))
@@ -20,31 +20,6 @@ def set_config_path():
 ############
 
 # Lens Data #
-
-
-@pytest.fixture(name="masked_imaging_7x7")
-def make_masked_imaging_7x7(
-    imaging_7x7, mask_7x7, sub_grid_7x7, blurring_grid_7x7, convolver_7x7
-):
-    return mock_masked_dataset.MockMaskedImaging(
-        imaging=imaging_7x7,
-        mask=mask_7x7,
-        grid=sub_grid_7x7,
-        blurring_grid=blurring_grid_7x7,
-        convolver=convolver_7x7,
-    )
-
-
-@pytest.fixture(name="masked_interferometer_7")
-def make_masked_interferometer_7(
-    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7
-):
-    return mock_masked_dataset.MockMaskedInterferometer(
-        interferometer=interferometer_7,
-        real_space_mask=mask_7x7,
-        grid=sub_grid_7x7,
-        transformer=transformer_7x7_7,
-    )
 
 
 # Plane #
@@ -232,3 +207,4 @@ def make_results_collection(results_7x7):
     results_collection = af.ResultsCollection()
     results_collection.add("phase", results_7x7)
     return results_collection
+
