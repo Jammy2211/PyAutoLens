@@ -21,6 +21,18 @@ def set_config_path():
 
 # Lens Data #
 
+@pytest.fixture(name="masked_imaging_7x7")
+def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
+    return al.masked.imaging.manual(imaging=imaging_7x7, mask=sub_mask_7x7)
+
+
+@pytest.fixture(name="masked_interferometer_7")
+def make_masked_interferometer_7(
+    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7
+):
+    return al.masked.interferometer.manual(
+        interferometer=interferometer_7, real_space_mask=mask_7x7
+    )
 
 # Plane #
 
