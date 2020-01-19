@@ -18,7 +18,6 @@ from autoarray.operators.inversion.mappers import mapper
 from autoarray.operators.inversion.inversions import inversion
 from autoarray.operators.inversion import pixelizations as pix, regularization as reg
 from autoarray import conf
-from autoarray import plotters as plotter
 
 from autoastro import dimensions as dim
 from autoastro import util
@@ -65,6 +64,6 @@ from autolens.pipeline.pipeline import (
     PipelineDataset,
     PipelinePositions,
 )
-from autolens import plots as plot
+from autolens import plot
 
 __version__ = "0.34.1"

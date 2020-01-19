@@ -1,11 +1,12 @@
 import autoarray as aa
 import autofit as af
-from autoarray.plotters import plotters, mat_objs
-from autoastro.plots import lensing_plotters
-from autoastro.plots import fit_galaxy_plots
-from autolens.plots import ray_tracing_plots, hyper_plots
-from autolens.plots.fit_imaging_plots import fit_imaging_plots
-from autolens.plots.fit_interferometer_plots import fit_interferometer_plots
+from autoarray.plot import plotters
+from autoarray.plot import mat_objs
+from autoastro.plot import lensing_plotters
+from autoastro.plot import fit_galaxy_plots
+from autolens.plot import ray_tracing_plots, hyper_plots
+from autolens.plot.fit_imaging_plots import fit_imaging_plots
+from autolens.plot.fit_interferometer_plots import fit_interferometer_plots
 
 import copy
 
@@ -21,7 +22,7 @@ class AbstractVisualizer:
     def __init__(self, image_path):
 
         self.plotter = plotters.Plotter(output=mat_objs.Output(path=image_path, format="png"))
-        self.sub_plotter = plotters.SubPlotter(output=mat_objs.Output(path=image_path+"subplots/", format="png"))
+        self.sub_plotter = plotters.SubPlotter(output=mat_objs.Output(path=image_path + "subplots/", format="png"))
         self.include = lensing_plotters.Include()
 
         self.plot_ray_tracing_all_at_end_png = plot_setting(
@@ -352,14 +353,14 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                     plot_residual_map=True,
                     plot_normalized_residual_map=True,
                     plot_chi_squared_map=True,
-                    plot_inversion_reconstruction=True,
-                    plot_inversion_errors=True,
-                    plot_inversion_residual_map=True,
-                    plot_inversion_normalized_residual_map=True,
-                    plot_inversion_chi_squared_map=True,
-                    plot_inversion_regularization_weight_map=True,
-                    plot_inversion_interpolated_reconstruction=True,
-                    plot_inversion_interpolated_errors=True,
+                    plot_inversion_reconstruction=self.plot_fit_inversion_reconstruction,
+                    plot_inversion_errors=self.plot_fit_inversion_errors,
+                    plot_inversion_residual_map=self.plot_fit_inversion_residual_map,
+                    plot_inversion_normalized_residual_map=self.plot_fit_normalized_residual_map,
+                    plot_inversion_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
+                    plot_inversion_regularization_weight_map=self.plot_fit_inversion_regularization_weights,
+                    plot_inversion_interpolated_reconstruction=self.plot_fit_inversion_interpolated_reconstruction,
+                    plot_inversion_interpolated_errors=self.plot_fit_inversion_interpolated_errors,
                     plot_subtracted_images_of_planes=True,
                     plot_model_images_of_planes=True,
                     plot_plane_images_of_planes=True,
@@ -381,14 +382,14 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                     plot_residual_map=True,
                     plot_normalized_residual_map=True,
                     plot_chi_squared_map=True,
-                    plot_inversion_reconstruction=True,
-                    plot_inversion_errors=True,
-                    plot_inversion_residual_map=True,
-                    plot_inversion_normalized_residual_map=True,
-                    plot_inversion_chi_squared_map=True,
-                    plot_inversion_regularization_weight_map=True,
-                    plot_inversion_interpolated_reconstruction=True,
-                    plot_inversion_interpolated_errors=True,
+                    plot_inversion_reconstruction=self.plot_fit_inversion_reconstruction,
+                    plot_inversion_errors=self.plot_fit_inversion_errors,
+                    plot_inversion_residual_map=self.plot_fit_inversion_residual_map,
+                    plot_inversion_normalized_residual_map=self.plot_fit_normalized_residual_map,
+                    plot_inversion_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
+                    plot_inversion_regularization_weight_map=self.plot_fit_inversion_regularization_weights,
+                    plot_inversion_interpolated_reconstruction=self.plot_fit_inversion_interpolated_reconstruction,
+                    plot_inversion_interpolated_errors=self.plot_fit_inversion_interpolated_errors,
                     plot_subtracted_images_of_planes=True,
                     plot_model_images_of_planes=True,
                     plot_plane_images_of_planes=True,
@@ -499,14 +500,14 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
             plot_residual_map=self.plot_fit_residual_map,
             plot_chi_squared_map=self.plot_fit_chi_squared_map,
             plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
-            plot_inversion_reconstruction=self.plot_fit_inversion_reconstruction,
-            plot_inversion_errors=self.plot_fit_inversion_errors,
+            plot_reconstruction=self.plot_fit_inversion_reconstruction,
+            plot_errors=self.plot_fit_inversion_errors,
             # plot_inversion_residual_map=plot_inversion_residual_map,
             # plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
             # plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
-            plot_inversion_regularization_weight_map=self.plot_fit_inversion_regularization_weights,
-            plot_inversion_interpolated_reconstruction=self.plot_fit_inversion_interpolated_reconstruction,
-            plot_inversion_interpolated_errors=self.plot_fit_inversion_interpolated_errors,
+            plot_regularization_weight_map=self.plot_fit_inversion_regularization_weights,
+            plot_interpolated_reconstruction=self.plot_fit_inversion_interpolated_reconstruction,
+            plot_interpolated_errors=self.plot_fit_inversion_interpolated_errors,
             include=self.include,
             plotter=plotter
         )
@@ -523,14 +524,14 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
                     plot_residual_map=True,
                     plot_normalized_residual_map=True,
                     plot_chi_squared_map=True,
-                    plot_inversion_reconstruction=True,
-                    plot_inversion_errors=True,
+                    plot_reconstruction=True,
+                    plot_errors=True,
                     # plot_inversion_residual_map=True,
                     # plot_inversion_normalized_residual_map=True,
                     # plot_inversion_chi_squared_map=True,
-                    plot_inversion_regularization_weight_map=True,
-                    plot_inversion_interpolated_reconstruction=True,
-                    plot_inversion_interpolated_errors=True,
+                    plot_regularization_weight_map=True,
+                    plot_interpolated_reconstruction=True,
+                    plot_interpolated_errors=True,
                     include=self.include,
                     plotter=plotter
                 )
@@ -549,14 +550,14 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
                     plot_residual_map=True,
                     plot_normalized_residual_map=True,
                     plot_chi_squared_map=True,
-                    plot_inversion_reconstruction=True,
-                    plot_inversion_errors=True,
+                    plot_reconstruction=True,
+                    plot_errors=True,
                     # plot_inversion_residual_map=True,
                     # plot_inversion_normalized_residual_map=True,
                     # plot_inversion_chi_squared_map=True,
-                    plot_inversion_regularization_weight_map=True,
-                    plot_inversion_interpolated_reconstruction=True,
-                    plot_inversion_interpolated_errors=True,
+                    plot_regularization_weight_map=True,
+                    plot_interpolated_reconstruction=True,
+                    plot_interpolated_errors=True,
                     include=self.include,
                     plotter=fits_plotter
                 )

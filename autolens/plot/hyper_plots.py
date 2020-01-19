@@ -1,6 +1,6 @@
 import autoarray as aa
-from autoarray.plotters import plotters
-from autoastro.plots import lensing_plotters
+from autoarray.plot import plotters
+from autoastro.plot import lensing_plotters
 
 
 @plotters.set_subplot_filename
@@ -15,7 +15,7 @@ def subplot_fit_hyper_galaxy(
 
     number_subplots = 6
 
-    sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
+    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
@@ -43,7 +43,7 @@ def subplot_fit_hyper_galaxy(
 
     sub_plotter.output.subplot_to_figure()
 
-    sub_plotter.close_figure()
+    sub_plotter.figure.close()
 
 @plotters.set_subplot_filename
 def subplot_hyper_galaxy_images(
@@ -55,7 +55,7 @@ def subplot_hyper_galaxy_images(
     for i in hyper_galaxy_image_path_dict.items():
         number_subplots += 1
 
-    sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
+    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
 
     hyper_index = 0
 
@@ -73,7 +73,7 @@ def subplot_hyper_galaxy_images(
 
     sub_plotter.output.subplot_to_figure()
 
-    sub_plotter.close_figure()
+    sub_plotter.figure.close()
 
 @plotters.set_labels
 def hyper_model_image(
@@ -82,7 +82,7 @@ def hyper_model_image(
     positions=None,
     image_plane_pix_grid=None,
     include=lensing_plotters.Include(),
-    plotter=plotters.Plotter(),
+    plotter=lensing_plotters.Plotter(),
 ):
     """Plot the image of a hyper_galaxies galaxy image.
 
@@ -96,8 +96,8 @@ def hyper_model_image(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    plotter.array.plot(
-        array=hyper_model_image, mask=mask, grid=image_plane_pix_grid, points=positions,
+    plotter.plot_array(
+        array=hyper_model_image, mask=mask, grid=image_plane_pix_grid, positions=positions,
     )
 
 @plotters.set_labels
@@ -107,7 +107,7 @@ def hyper_galaxy_image(
     positions=None,
     image_plane_pix_grid=None,
     include=lensing_plotters.Include(),
-    plotter=plotters.Plotter(),
+    plotter=lensing_plotters.Plotter(),
 ):
     """Plot the image of a hyper_galaxies galaxy image.
 
@@ -121,8 +121,8 @@ def hyper_galaxy_image(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
 
-    plotter.array.plot(
-        array=galaxy_image, mask=mask, grid=image_plane_pix_grid, points=positions,
+    plotter.plot_array(
+        array=galaxy_image, mask=mask, grid=image_plane_pix_grid, positions=positions,
     )
 
 @plotters.set_labels
@@ -131,7 +131,7 @@ def contribution_map(
     mask=None,
     positions=None,
     include=lensing_plotters.Include(),
-    plotter=plotters.Plotter(),
+    plotter=lensing_plotters.Plotter(),
 ):
     """Plot the summed contribution maps of a hyper_galaxies-fit.
 
@@ -145,6 +145,6 @@ def contribution_map(
         The index of the datas in the datas-set of which the contribution_maps are plotted.
     """
 
-    plotter.array.plot(
-        array=contribution_map_in, mask=mask, points=positions,
+    plotter.plot_array(
+        array=contribution_map_in, mask=mask, positions=positions,
     )

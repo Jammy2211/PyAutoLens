@@ -38,13 +38,13 @@ print(fit.inversion.mapper.pixelization_grid)
 
 print(fit.inversion.interpolated_reconstruction_from_shape_2d())
 
-al.plot.inversion.interpolated_reconstruction(inversion=fit.inversion)
+aplt.inversion.interpolated_reconstruction(inversion=fit.inversion)
 
-al.plot.fit_imaging.subplot_of_plane(
+aplt.fit_imaging.subplot_of_plane(
     fit=fit, plane_index=1, include_image_plane_pix=True, include_caustics=True
 )
 
-al.plot.fit_imaging.subplot_of_plane(
+aplt.fit_imaging.subplot_of_plane(
     fit=fit,
     plane_index=1,
     plot_in_kpc=False,
@@ -52,4 +52,4 @@ al.plot.fit_imaging.subplot_of_plane(
     include_caustics=True,
 )
 
-al.plot.inversion.subplot_imaging(inversion=fit.inversion)
+aplt.inversion.subplot_imaging(inversion=fit.inversion)

@@ -1,7 +1,7 @@
 import autoarray as aa
-from autoarray.plotters import plotters
-from autoastro.plots import lensing_plotters
-from autolens.plots import plane_plots, ray_tracing_plots
+from autoarray.plot import plotters
+from autoastro.plot import lensing_plotters
+from autolens.plot import plane_plots, ray_tracing_plots
 
 
 def subplot_fit_interferometer(
@@ -25,7 +25,7 @@ def subplot_fit_real_space(
 
     number_subplots = 2
 
-    sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
+    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
@@ -45,7 +45,7 @@ def subplot_fit_real_space(
         plane_plots.plane_image(
             plane=fit.tracer.source_plane,
             grid=fit.masked_interferometer.grid,
-            lines=include.caustics_from_obj(obj=fit.tracer),
+            caustics=include.caustics_from_obj(obj=fit.tracer),
             plotter=sub_plotter
         )
 
@@ -89,7 +89,7 @@ def subplot_fit_real_space(
 
     sub_plotter.output.subplot_to_figure()
 
-    sub_plotter.close_figure()
+    sub_plotter.figure.close()
 
 def individuals(
     fit,
@@ -109,7 +109,7 @@ def individuals(
     plot_inversion_interpolated_reconstruction=False,
     plot_inversion_interpolated_errors=False,
     include=lensing_plotters.Include(),
-    plotter=plotters.Plotter(),
+    plotter=lensing_plotters.Plotter(),
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 

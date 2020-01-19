@@ -18,11 +18,11 @@ mask = al.mask.elliptical(
     centre=(0.0, 0.0),
 )
 
-# al.plot.imaging.subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
-# al.plot.imaging.subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='auto')
+# aplt.imaging.subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
+# aplt.imaging.subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='auto')
 
-# al.plot.imaging.image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='square')
-# al.plot.imaging.image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
+# aplt.imaging.image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='square')
+# aplt.imaging.image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
 
 # The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
@@ -42,14 +42,14 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
 
 
-al.plot.fit_imaging.subplot_imaging(
+aplt_array.fit_imaging.subplot_imaging(
     fit=fit, mask=True, include_image_plane_pix=True, aspect="auto"
 )
 
-al.plot.fit_imaging.subplot_imaging(
+aplt_array.fit_imaging.subplot_imaging(
     fit=fit, mask=True, include_image_plane_pix=True, aspect="equal"
 )
 
-al.plot.fit_imaging.subplot_imaging(
+aplt_array.fit_imaging.subplot_imaging(
     fit=fit, mask=True, include_image_plane_pix=True, aspect="square"
 )

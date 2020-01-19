@@ -1,7 +1,7 @@
 import pytest
 import os
 
-import autolens as al
+import autolens.plot as aplt
 
 
 @pytest.fixture(name="fit_interferometer_plotter_path")
@@ -15,11 +15,11 @@ def test__fit_sub_plot(
     masked_interferometer_fit_x2_plane_7x7, include_all, fit_interferometer_plotter_path, plot_patch
 ):
 
-    al.plot.fit_interferometer.subplot_fit_interferometer(
+    aplt.fit_interferometer.subplot_fit_interferometer(
         fit=masked_interferometer_fit_x2_plane_7x7,
         include=include_all,
-        sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(fit_interferometer_plotter_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(fit_interferometer_plotter_path, format="png")
         ),
     )
 
@@ -30,11 +30,11 @@ def test__fit_sub_plot_real_space(
     masked_interferometer_fit_x2_plane_7x7, include_all, fit_interferometer_plotter_path, plot_patch
 ):
 
-    al.plot.fit_interferometer.subplot_fit_real_space(
+    aplt.fit_interferometer.subplot_fit_real_space(
         fit=masked_interferometer_fit_x2_plane_7x7,
         include=include_all,
-        sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(fit_interferometer_plotter_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(fit_interferometer_plotter_path, format="png")
         ),
     )
 
@@ -49,7 +49,7 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
     plot_patch,
 ):
 
-    al.plot.fit_interferometer.individuals(
+    aplt.fit_interferometer.individuals(
         fit=masked_interferometer_fit_x1_plane_7x7,
         plot_visibilities=True,
         plot_noise_map=False,
@@ -57,8 +57,8 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         plot_model_visibilities=True,
         plot_chi_squared_map=True,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(fit_interferometer_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(fit_interferometer_plotter_path, format="png")
         ),
     )
 
