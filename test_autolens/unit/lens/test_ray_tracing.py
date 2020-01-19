@@ -2610,7 +2610,6 @@ class TestAbstractTracerLensing(object):
             )
 
     class TestContributionMap:
-
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
 
             hyper_model_image = al.array.manual_2d([[2.0, 4.0, 10.0]])
@@ -2635,31 +2634,36 @@ class TestAbstractTracerLensing(object):
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
 
-            assert (tracer.contribution_map == tracer.image_plane.contribution_map + tracer.source_plane.contribution_map).all()
             assert (
-                tracer.contribution_maps_of_planes[0].in_1d == tracer.image_plane.contribution_map
+                tracer.contribution_map
+                == tracer.image_plane.contribution_map
+                + tracer.source_plane.contribution_map
+            ).all()
+            assert (
+                tracer.contribution_maps_of_planes[0].in_1d
+                == tracer.image_plane.contribution_map
             ).all()
 
             assert (
-                tracer.contribution_maps_of_planes[1].in_1d == tracer.source_plane.contribution_map
+                tracer.contribution_maps_of_planes[1].in_1d
+                == tracer.source_plane.contribution_map
             ).all()
 
-            galaxy_0 = al.Galaxy(
-                redshift=0.5,
-            )
+            galaxy_0 = al.Galaxy(redshift=0.5)
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
 
-            assert (tracer.contribution_map == tracer.source_plane.contribution_map).all()
+            assert (
+                tracer.contribution_map == tracer.source_plane.contribution_map
+            ).all()
             assert tracer.contribution_maps_of_planes[0] == None
 
             assert (
-                tracer.contribution_maps_of_planes[1].in_1d == tracer.source_plane.contribution_map
+                tracer.contribution_maps_of_planes[1].in_1d
+                == tracer.source_plane.contribution_map
             ).all()
 
-            galaxy_1 = al.Galaxy(
-                redshift=1.0,
-            )
+            galaxy_1 = al.Galaxy(redshift=1.0)
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
 

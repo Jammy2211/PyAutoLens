@@ -16,8 +16,12 @@ def profile_image(
         mask=include.mask_from_grid(grid=grid),
         positions=positions,
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(obj=plane),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
         include_origin=include.origin,
     )
 
@@ -37,54 +41,57 @@ def plane_image(
         positions=positions,
         caustics=caustics,
         grid=include.grid_from_grid(grid=grid),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(obj=plane),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
         include_origin=include.origin,
     )
 
 
 @plotters.set_labels
 def convergence(
-    plane,
-    grid,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    plane, grid, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
 ):
 
     plotter.plot_array(
         array=plane.convergence_from_grid(grid=grid),
         mask=include.mask_from_grid(grid=grid),
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(obj=plane),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
         include_origin=include.origin,
     )
 
 
 @plotters.set_labels
 def potential(
-    plane,
-    grid,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    plane, grid, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
 ):
 
     plotter.plot_array(
         array=plane.potential_from_grid(grid=grid),
         mask=include.mask_from_grid(grid=grid),
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(obj=plane),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
         include_origin=include.origin,
     )
 
 
 @plotters.set_labels
 def deflections_y(
-    plane,
-    grid,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    plane, grid, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
 ):
 
     deflections = plane.deflections_from_grid(grid=grid)
@@ -96,18 +103,19 @@ def deflections_y(
         array=deflections_y,
         mask=include.mask_from_grid(grid=grid),
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(obj=plane),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
         include_origin=include.origin,
     )
 
 
 @plotters.set_labels
 def deflections_x(
-    plane,
-    grid,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    plane, grid, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
 ):
 
     deflections = plane.deflections_from_grid(grid=grid)
@@ -119,26 +127,31 @@ def deflections_x(
         array=deflections_x,
         mask=include.mask_from_grid(grid=grid),
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(obj=plane),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
         include_origin=include.origin,
     )
 
 
 @plotters.set_labels
 def magnification(
-    plane,
-    grid,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    plane, grid, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
 ):
 
     plotter.plot_array(
         array=plane.magnification_from_grid(grid=grid),
         mask=include.mask_from_grid(grid=grid),
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(obj=plane),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
         include_origin=include.origin,
     )
 
@@ -172,7 +185,7 @@ def image_and_source_plane_subplot(
 
     source_plane_grid = image_plane.traced_grid_from_grid(grid=grid)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
     plane_grid(
         plane=source_plane,
@@ -206,11 +219,16 @@ def plane_grid(
         axis_limits=axis_limits,
         critical_curves=critical_curves,
         caustics=caustics,
-        light_profile_centres = include.light_profile_centres_of_galaxies_from_obj(obj=plane),
-        mass_profile_centres = include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
         include_origin=include.origin,
         include_border=include.border,
     )
+
 
 @plotters.set_labels
 def contribution_map(
@@ -225,10 +243,13 @@ def contribution_map(
         array=plane.contribution_map,
         mask=mask,
         positions=positions,
-        light_profile_centres = include.light_profile_centres_of_galaxies_from_obj(obj=plane),
-        mass_profile_centres = include.mass_profile_centres_of_galaxies_from_obj(obj=plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=plane
+        ),
         critical_curves=include.critical_curves_from_obj(obj=plane),
         include_origin=include.origin,
         include_border=include.border,
     )
-

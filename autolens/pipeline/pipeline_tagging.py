@@ -163,9 +163,7 @@ def initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_cent
         return "__init_align_light_mass_centre"
 
 
-def fix_lens_light_tag_from_fix_lens_light(
-    fix_lens_light
-):
+def fix_lens_light_tag_from_fix_lens_light(fix_lens_light):
     """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
      during he analysis, to customize phase names.
 

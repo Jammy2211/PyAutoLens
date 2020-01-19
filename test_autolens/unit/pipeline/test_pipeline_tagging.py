@@ -204,7 +204,10 @@ class TestPipelineTaggers:
             align_bulge_disk_axis_ratio=True,
             align_bulge_disk_phi=True,
         )
-        assert tag == "__bulge_disk_align_centre__bulge_disk_align_axis_ratio__bulge_disk_align_phi"
+        assert (
+            tag
+            == "__bulge_disk_align_centre__bulge_disk_align_axis_ratio__bulge_disk_align_phi"
+        )
 
     def test__disk_as_sersic_tagger(self):
         tag = al.pipeline_tagging.disk_as_sersic_tag_from_disk_as_sersic(

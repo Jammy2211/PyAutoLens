@@ -13,7 +13,8 @@ class Analysis(analysis_dataset.Analysis):
         super(Analysis, self).__init__(cosmology=cosmology)
 
         self.visualizer = visualizer.PhaseImagingVisualizer(
-            masked_dataset=masked_imaging, image_path=image_path, results=results)
+            masked_dataset=masked_imaging, image_path=image_path, results=results
+        )
 
         self.masked_dataset = masked_imaging
 
@@ -135,7 +136,11 @@ class Analysis(analysis_dataset.Analysis):
         )
 
         visualizer = self.visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-            preloaded_critical_curves=tracer.critical_curves, preloaded_caustics=tracer.caustics)
+            preloaded_critical_curves=tracer.critical_curves,
+            preloaded_caustics=tracer.caustics,
+        )
 
-        visualizer.visualize_ray_tracing(tracer=fit.tracer, during_analysis=during_analysis)
+        visualizer.visualize_ray_tracing(
+            tracer=fit.tracer, during_analysis=during_analysis
+        )
         visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)

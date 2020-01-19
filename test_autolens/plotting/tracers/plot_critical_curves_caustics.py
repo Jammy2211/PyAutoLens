@@ -31,7 +31,9 @@ aplt.tracer.profile_image(
     grid=grid,
     mask=mask,
     include=lensing_plotters.Include(critical_curves=True),
-    plotter=plotter
+    plotter=plotter,
 )
 
-aplt.tracer.subplot_tracer(include=lensing_plotters.Include(caustics=True), sub_plotter=sub_plotter)
+aplt.tracer.subplot_tracer(
+    include=lensing_plotters.Include(caustics=True), sub_plotter=sub_plotter
+)

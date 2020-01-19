@@ -13,7 +13,7 @@ class TestMaskedImaging(object):
         assert (masked_imaging_7x7.image.in_1d == np.ones(9)).all()
 
         assert (
-                masked_imaging_7x7.image.in_2d == np.ones((7, 7)) * np.invert(sub_mask_7x7)
+            masked_imaging_7x7.image.in_2d == np.ones((7, 7)) * np.invert(sub_mask_7x7)
         ).all()
 
         assert (masked_imaging_7x7.noise_map.in_1d == 2.0 * np.ones(9)).all()
@@ -86,7 +86,7 @@ class TestMaskedImaging(object):
         )
 
         assert (
-                masked_imaging_3x3.image.in_2d == np.ones((3, 3)) * np.invert(binned_mask)
+            masked_imaging_3x3.image.in_2d == np.ones((3, 3)) * np.invert(binned_mask)
         ).all()
         assert (masked_imaging_3x3.psf.in_2d == np.ones((3, 3))).all()
         assert (

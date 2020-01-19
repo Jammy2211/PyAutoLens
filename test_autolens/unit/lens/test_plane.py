@@ -2022,7 +2022,9 @@ class TestAbstractPlaneData(object):
             assert plane.contribution_maps_of_galaxies[1] == None
             assert plane.contribution_maps_of_galaxies[2] == None
 
-        def test__contribution_map_is_sum_of_galaxy_contribution_maps__handles_nones_correctly(self):
+        def test__contribution_map_is_sum_of_galaxy_contribution_maps__handles_nones_correctly(
+            self
+        ):
             hyper_galaxy_0 = al.HyperGalaxy(
                 contribution_factor=0.0, noise_factor=0.0, noise_power=1.0
             )
@@ -2052,29 +2054,20 @@ class TestAbstractPlaneData(object):
             plane = al.Plane(redshift=0.5, galaxies=[galaxy_0, galaxy_1])
 
             assert (
-                sum(plane.contribution_maps_of_galaxies)
-                == plane.contribution_map
+                sum(plane.contribution_maps_of_galaxies) == plane.contribution_map
             ).all()
 
-            galaxy_1 = al.Galaxy(
-                redshift=0.5,
-            )
+            galaxy_1 = al.Galaxy(redshift=0.5)
 
             plane = al.Plane(redshift=0.5, galaxies=[galaxy_0, galaxy_1])
 
-            assert (
-                galaxy_0.contribution_map
-                == plane.contribution_map
-            ).all()
+            assert (galaxy_0.contribution_map == plane.contribution_map).all()
 
-            galaxy_0 = al.Galaxy(
-                redshift=0.5,
-            )
+            galaxy_0 = al.Galaxy(redshift=0.5)
 
             plane = al.Plane(redshift=0.5, galaxies=[galaxy_0, galaxy_1])
 
             assert plane.contribution_map == None
-
 
     class TestHyperNoiseMap:
         def test__x2_hyper_galaxy__use_numerical_values_of_hyper_noise_map_scaling(

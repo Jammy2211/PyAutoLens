@@ -1,4 +1,15 @@
-from autoarray.plot.mat_objs import Units, Figure, ColorMap, ColorBar, Ticks, Labels, Legend, Output, Scatterer, Liner
+from autoarray.plot.mat_objs import (
+    Units,
+    Figure,
+    ColorMap,
+    ColorBar,
+    Ticks,
+    Labels,
+    Legend,
+    Output,
+    Scatterer,
+    Liner,
+)
 from autoarray.plot import imaging_plots as imaging
 from autoarray.plot import interferometer_plots as interferometer
 

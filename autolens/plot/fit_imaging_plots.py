@@ -2,11 +2,10 @@ from autoarray.plot import plotters, mat_objs
 from autoastro.plot import lensing_plotters
 from autolens.plot import plane_plots, inversion_plots
 
+
 @plotters.set_subplot_filename
 def subplot_fit_imaging(
-    fit,
-    include=lensing_plotters.Include(),
-    sub_plotter=plotters.SubPlotter(),
+    fit, include=lensing_plotters.Include(), sub_plotter=plotters.SubPlotter()
 ):
     number_subplots = 6
 
@@ -42,9 +41,7 @@ def subplot_fit_imaging(
 
 
 def subplot_of_planes(
-    fit,
-    include=lensing_plotters.Include(),
-    sub_plotter=plotters.SubPlotter(),
+    fit, include=lensing_plotters.Include(), sub_plotter=plotters.SubPlotter()
 ):
 
     for plane_index in range(fit.tracer.total_planes):
@@ -60,6 +57,7 @@ def subplot_of_planes(
                 include=include,
                 sub_plotter=sub_plotter,
             )
+
 
 @plotters.set_subplot_filename
 def subplot_of_plane(
@@ -88,47 +86,41 @@ def subplot_of_plane(
     number_subplots = 4
 
     sub_plotter = sub_plotter.plotter_with_new_output(
-        output=mat_objs.Output(filename=sub_plotter.output.filename + "_" + str(plane_index))
+        output=mat_objs.Output(
+            filename=sub_plotter.output.filename + "_" + str(plane_index)
+        )
     )
 
     sub_plotter.open_subplot_figure(number_subplots=number_subplots)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    image(
-        fit=fit,
-        include=include,
-        plotter=sub_plotter,
-    )
+    image(fit=fit, include=include, plotter=sub_plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
     subtracted_image_of_plane(
-        fit=fit,
-        plane_index=plane_index,
-        include=include,
-        plotter=sub_plotter,
+        fit=fit, plane_index=plane_index, include=include, plotter=sub_plotter
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 3)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
     model_image_of_plane(
-        fit=fit,
-        plane_index=plane_index,
-        include=include,
-        plotter=sub_plotter,
+        fit=fit, plane_index=plane_index, include=include, plotter=sub_plotter
     )
 
     if not fit.tracer.planes[plane_index].has_pixelization:
 
-        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4)
+        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
         traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
         plane_plots.plane_image(
             plane=fit.tracer.planes[plane_index],
             grid=traced_grids[plane_index],
-            positions=include.positions_of_plane_from_fit_and_plane_index(fit=fit, plane_index=plane_index),
+            positions=include.positions_of_plane_from_fit_and_plane_index(
+                fit=fit, plane_index=plane_index
+            ),
             caustics=include.caustics_from_obj(obj=fit.tracer),
             include=include,
             plotter=sub_plotter,
@@ -154,11 +146,15 @@ def subplot_of_plane(
         elif sub_plotter.aspect is "equal":
             aspect_inv = 1.0
 
-        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4, aspect=float(aspect_inv))
+        sub_plotter.setup_subplot(
+            number_subplots=number_subplots, subplot_index=4, aspect=float(aspect_inv)
+        )
 
         inversion_plots.reconstruction(
             inversion=fit.inversion,
-            source_positions=include.positions_of_plane_from_fit_and_plane_index(fit=fit, plane_index=plane_index),
+            source_positions=include.positions_of_plane_from_fit_and_plane_index(
+                fit=fit, plane_index=plane_index
+            ),
             caustics=include.caustics_from_obj(obj=fit.tracer),
             include=include,
             plotter=sub_plotter,
@@ -232,10 +228,7 @@ def individuals(
         for plane_index in range(fit.tracer.total_planes):
 
             subtracted_image_of_plane(
-                fit=fit,
-                plane_index=plane_index,
-                include=include,
-                plotter=plotter,
+                fit=fit, plane_index=plane_index, include=include, plotter=plotter
             )
 
     if plot_model_images_of_planes:
@@ -243,10 +236,7 @@ def individuals(
         for plane_index in range(fit.tracer.total_planes):
 
             model_image_of_plane(
-                fit=fit,
-                plane_index=plane_index,
-                include=include,
-                plotter=plotter,
+                fit=fit, plane_index=plane_index, include=include, plotter=plotter
             )
 
     if plot_plane_images_of_planes:
@@ -254,15 +244,21 @@ def individuals(
         for plane_index in range(fit.tracer.total_planes):
 
             plotter = plotter.plotter_with_new_output(
-                output=mat_objs.Output(filename="plane_image_of_plane_" + str(plane_index))
+                output=mat_objs.Output(
+                    filename="plane_image_of_plane_" + str(plane_index)
+                )
             )
 
             if fit.tracer.planes[plane_index].has_light_profile:
 
                 plane_plots.plane_image(
                     plane=fit.tracer.planes[plane_index],
-                    grid=include.traced_grid_of_plane_from_fit_and_plane_index(fit=fit, plane_index=plane_index),
-                    positions=include.positions_of_plane_from_fit_and_plane_index(fit=fit, plane_index=plane_index),
+                    grid=include.traced_grid_of_plane_from_fit_and_plane_index(
+                        fit=fit, plane_index=plane_index
+                    ),
+                    positions=include.positions_of_plane_from_fit_and_plane_index(
+                        fit=fit, plane_index=plane_index
+                    ),
                     caustics=include.caustics_from_obj(obj=fit.tracer),
                     include=include,
                     plotter=plotter,
@@ -272,7 +268,9 @@ def individuals(
 
                 inversion_plots.reconstruction(
                     inversion=fit.inversion,
-                    source_positions=include.positions_of_plane_from_fit_and_plane_index(fit=fit, plane_index=plane_index),
+                    source_positions=include.positions_of_plane_from_fit_and_plane_index(
+                        fit=fit, plane_index=plane_index
+                    ),
                     caustics=include.caustics_from_obj(obj=fit.tracer),
                     include=include,
                     plotter=plotter,
@@ -281,10 +279,7 @@ def individuals(
 
 @plotters.set_labels
 def subtracted_image_of_plane(
-    fit,
-    plane_index,
-    include=lensing_plotters.Include(),
-    plotter=plotters.Plotter(),
+    fit, plane_index, include=lensing_plotters.Include(), plotter=plotters.Plotter()
 ):
     """Plot the model image of a specific plane of a lens fit.
 
@@ -301,7 +296,9 @@ def subtracted_image_of_plane(
     """
 
     plotter = plotter.plotter_with_new_output(
-        output=mat_objs.Output(filename=plotter.output.filename + "_" + str(plane_index))
+        output=mat_objs.Output(
+            filename=plotter.output.filename + "_" + str(plane_index)
+        )
     )
 
     if fit.tracer.total_planes > 1:
@@ -324,17 +321,18 @@ def subtracted_image_of_plane(
         grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
         positions=include.positions_from_fit(fit=fit),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(obj=fit.tracer.image_plane),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(obj=fit.tracer.image_plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=fit.tracer.image_plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=fit.tracer.image_plane
+        ),
     )
 
 
 @plotters.set_labels
 def model_image_of_plane(
-    fit,
-    plane_index,
-    include=lensing_plotters.Include(),
-    plotter=plotters.Plotter(),
+    fit, plane_index, include=lensing_plotters.Include(), plotter=plotters.Plotter()
 ):
     """Plot the model image of a specific plane of a lens fit.
 
@@ -349,7 +347,9 @@ def model_image_of_plane(
     """
 
     plotter = plotter.plotter_with_new_output(
-        output=mat_objs.Output(filename=plotter.output.filename + "_" + str(plane_index))
+        output=mat_objs.Output(
+            filename=plotter.output.filename + "_" + str(plane_index)
+        )
     )
 
     plotter.plot_array(
@@ -357,17 +357,17 @@ def model_image_of_plane(
         mask=include.mask_from_fit(fit=fit),
         positions=include.positions_from_fit(fit=fit),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(obj=fit.tracer.image_plane),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(obj=fit.tracer.image_plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=fit.tracer.image_plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=fit.tracer.image_plane
+        ),
     )
-    
-    
+
+
 @plotters.set_labels
-def image(
-    fit,
-    include=lensing_plotters.Include(),
-    plotter=plotters.Plotter(),
-):
+def image(fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()):
     """Plot the image of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -384,17 +384,19 @@ def image(
         mask=include.mask_from_fit(fit=fit),
         grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
         positions=include.positions_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(obj=fit.tracer.image_plane),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(obj=fit.tracer.image_plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=fit.tracer.image_plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=fit.tracer.image_plane
+        ),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        include_origin=include.origin,            
+        include_origin=include.origin,
     )
 
 
 @plotters.set_labels
-def noise_map(
-    fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()
-):
+def noise_map(fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -406,9 +408,7 @@ def noise_map(
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_array(
-        array=fit.noise_map, mask=include.mask_from_fit(fit=fit),
-    )
+    plotter.plot_array(array=fit.noise_map, mask=include.mask_from_fit(fit=fit))
 
 
 @plotters.set_labels
@@ -427,17 +427,12 @@ def signal_to_noise_map(
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     plotter.plot_array(
-        array=fit.signal_to_noise_map,
-        mask=include.mask_from_fit(fit=fit),        
+        array=fit.signal_to_noise_map, mask=include.mask_from_fit(fit=fit)
     )
 
 
 @plotters.set_labels
-def model_image(
-    fit,
-    include=lensing_plotters.Include(),
-    plotter=plotters.Plotter(),
-):
+def model_image(fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()):
     """Plot the model image of a fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -453,17 +448,19 @@ def model_image(
         array=fit.model_data,
         mask=include.mask_from_fit(fit=fit),
         positions=include.positions_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(obj=fit.tracer.image_plane),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(obj=fit.tracer.image_plane),
+        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+            obj=fit.tracer.image_plane
+        ),
+        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+            obj=fit.tracer.image_plane
+        ),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        include_origin=include.origin,        
+        include_origin=include.origin,
     )
 
 
 @plotters.set_labels
-def residual_map(
-    fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()
-):
+def residual_map(fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()):
     """Plot the residual-map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -475,9 +472,7 @@ def residual_map(
     image_index : int
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
-    plotter.plot_array(
-        array=fit.residual_map, mask=include.mask_from_fit(fit=fit)
-    )
+    plotter.plot_array(array=fit.residual_map, mask=include.mask_from_fit(fit=fit))
 
 
 @plotters.set_labels
@@ -496,8 +491,7 @@ def normalized_residual_map(
         The index of the datas in the datas-set of which the normalized_residual_map are plotted.
     """
     plotter.plot_array(
-        array=fit.normalized_residual_map,
-        mask=include.mask_from_fit(fit=fit),
+        array=fit.normalized_residual_map, mask=include.mask_from_fit(fit=fit)
     )
 
 
@@ -516,7 +510,4 @@ def chi_squared_map(
     image_index : int
         The index of the datas in the datas-set of which the chi-squareds are plotted.
     """
-    plotter.plot_array(
-        array=fit.chi_squared_map,
-        mask=include.mask_from_fit(fit=fit),
-    )
+    plotter.plot_array(array=fit.chi_squared_map, mask=include.mask_from_fit(fit=fit))
