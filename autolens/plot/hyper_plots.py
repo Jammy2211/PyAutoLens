@@ -10,7 +10,7 @@ def subplot_fit_hyper_galaxy(
     galaxy_image,
     contribution_map_in,
     include=lensing_plotters.Include(),
-    sub_plotter=plotters.SubPlotter(),
+    sub_plotter=lensing_plotters.SubPlotter(),
 ):
 
     number_subplots = 6
@@ -23,11 +23,11 @@ def subplot_fit_hyper_galaxy(
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
 
-    aa.plot.fit_imaging.noise_map(fit=fit, points=include.positions_from_fit(fit=fit), include=include, plotter=sub_plotter)
+    aa.plot.fit_imaging.noise_map(fit=fit, include=include, plotter=sub_plotter)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 3)
 
-    aa.plot.fit_imaging.noise_map(fit=hyper_fit, points=include.positions_from_fit(fit=fit), include=include, plotter=sub_plotter)
+    aa.plot.fit_imaging.noise_map(fit=hyper_fit, include=include, plotter=sub_plotter)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4)
 
@@ -35,11 +35,11 @@ def subplot_fit_hyper_galaxy(
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 5)
 
-    aa.plot.fit_imaging.chi_squared_map(fit=fit, points=include.positions_from_fit(fit=fit), include=include, plotter=sub_plotter)
+    aa.plot.fit_imaging.chi_squared_map(fit=fit, include=include, plotter=sub_plotter)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 6)
 
-    aa.plot.fit_imaging.chi_squared_map(fit=hyper_fit, points=include.positions_from_fit(fit=fit), include=include, plotter=sub_plotter)
+    aa.plot.fit_imaging.chi_squared_map(fit=hyper_fit,  include=include, plotter=sub_plotter)
 
     sub_plotter.output.subplot_to_figure()
 
@@ -47,7 +47,7 @@ def subplot_fit_hyper_galaxy(
 
 @plotters.set_subplot_filename
 def subplot_hyper_galaxy_images(
-    hyper_galaxy_image_path_dict, mask=None, include=lensing_plotters.Include(), sub_plotter=plotters.SubPlotter()
+    hyper_galaxy_image_path_dict, mask=None, include=lensing_plotters.Include(), sub_plotter=lensing_plotters.SubPlotter()
 ):
 
     number_subplots = 0
