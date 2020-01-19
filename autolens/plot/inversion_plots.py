@@ -122,6 +122,8 @@ def individuals(
     image_positions=None,
     source_positions=None,
     grid=None,
+    light_profile_centres=None,
+    mass_profile_centres=None,
     critical_curves=None,
     caustics=None,
     plot_reconstructed_image=False,
@@ -154,7 +156,8 @@ def individuals(
     if plot_reconstructed_image:
 
         reconstructed_image(inversion=inversion, image_positions=image_positions,
-                            grid=grid, critical_curves=critical_curves, include=include, plotter=plotter)
+                            grid=grid, light_profile_centres=light_profile_centres, mass_profile_centres=mass_profile_centres,
+                            critical_curves=critical_curves, include=include, plotter=plotter)
 
     if plot_reconstruction:
 
