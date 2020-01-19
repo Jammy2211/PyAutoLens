@@ -18,8 +18,8 @@ def setting(section, name):
     return af.conf.instance.visualize_plots.get(section, name, bool)
 
 
-def plot_setting(name):
-    return setting("plots", name)
+def plot_setting(section, name):
+    return setting(section, name)
 
 
 class AbstractVisualizer:
@@ -34,23 +34,23 @@ class AbstractVisualizer:
         self.include = lensing_plotters.Include()
 
         self.plot_ray_tracing_all_at_end_png = plot_setting(
-            "plot_ray_tracing_all_at_end_png"
+            "ray_tracing", "all_at_end_png"
         )
         self.plot_ray_tracing_all_at_end_fits = plot_setting(
-            "plot_ray_tracing_all_at_end_fits"
+            "ray_tracing", "all_at_end_fits"
         )
-        self.plot_ray_tracing_as_subplot = plot_setting("plot_ray_tracing_as_subplot")
+        self.plot_ray_tracing_as_subplot = plot_setting("ray_tracing", "as_subplot")
         self.plot_ray_tracing_profile_image = plot_setting(
-            "plot_ray_tracing_profile_image"
+            "ray_tracing", "profile_image"
         )
         self.plot_ray_tracing_source_plane = plot_setting(
-            "plot_ray_tracing_source_plane_image"
+            "ray_tracing", "source_plane_image"
         )
-        self.plot_ray_tracing_convergence = plot_setting("plot_ray_tracing_convergence")
-        self.plot_ray_tracing_potential = plot_setting("plot_ray_tracing_potential")
-        self.plot_ray_tracing_deflections = plot_setting("plot_ray_tracing_deflections")
+        self.plot_ray_tracing_convergence = plot_setting("ray_tracing", "convergence")
+        self.plot_ray_tracing_potential = plot_setting("ray_tracing", "potential")
+        self.plot_ray_tracing_deflections = plot_setting("ray_tracing", "deflections")
         self.plot_ray_tracing_magnification = plot_setting(
-            "plot_ray_tracing_magnification"
+            "ray_tracing", "magnification"
         )
 
     def new_visualizer_with_preloaded_critical_curves_and_caustics(
@@ -71,18 +71,18 @@ class PhaseGalaxyVisualizer(AbstractVisualizer):
     def __init__(self, image_path):
         super().__init__(image_path)
         self.plot_galaxy_fit_all_at_end_png = plot_setting(
-            "plot_galaxy_fit_all_at_end_png"
+            "galaxy_fit", "all_at_end_png"
         )
         self.plot_galaxy_fit_all_at_end_fits = plot_setting(
-            "plot_galaxy_fit_all_at_end_fits"
+            "galaxy_fit", "all_at_end_fits"
         )
-        self.plot_galaxy_fit_as_subplot = plot_setting("plot_galaxy_fit_as_subplot")
-        self.plot_galaxy_fit_image = plot_setting("plot_galaxy_fit_image")
-        self.plot_galaxy_fit_noise_map = plot_setting("plot_galaxy_fit_noise_map")
-        self.plot_galaxy_fit_model_image = plot_setting("plot_galaxy_fit_model_image")
-        self.plot_galaxy_fit_residual_map = plot_setting("plot_galaxy_fit_residual_map")
+        self.plot_galaxy_fit_as_subplot = plot_setting("galaxy_fit", "as_subplot")
+        self.plot_galaxy_fit_image = plot_setting("galaxy_fit", "image")
+        self.plot_galaxy_fit_noise_map = plot_setting("galaxy_fit", "noise_map")
+        self.plot_galaxy_fit_model_image = plot_setting("galaxy_fit", "model_image")
+        self.plot_galaxy_fit_residual_map = plot_setting("galaxy_fit", "residual_map")
         self.plot_galaxy_fit_chi_squared_map = plot_setting(
-            "plot_galaxy_fit_chi_squared_map"
+            "galaxy_fit", "chi_squared_map"
         )
 
     def plot_galaxy_fit_subplot(self, fit):
@@ -110,74 +110,68 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
         super().__init__(image_path)
         self.masked_dataset = masked_dataset
 
-        self.plot_dataset_as_subplot = plot_setting("plot_dataset_as_subplot")
-        self.plot_dataset_data = plot_setting("plot_dataset_data")
-        self.plot_dataset_noise_map = plot_setting("plot_dataset_noise_map")
-        self.plot_dataset_psf = plot_setting("plot_dataset_psf")
+        self.plot_dataset_as_subplot = plot_setting("dataset", "as_subplot")
+        self.plot_dataset_data = plot_setting("dataset", "data")
+        self.plot_dataset_noise_map = plot_setting("dataset", "noise_map")
+        self.plot_dataset_psf = plot_setting("dataset", "psf")
 
         self.plot_dataset_signal_to_noise_map = plot_setting(
-            "plot_dataset_signal_to_noise_map"
+            "dataset", "signal_to_noise_map"
         )
         self.plot_dataset_absolute_signal_to_noise_map = plot_setting(
-            "plot_dataset_absolute_signal_to_noise_map"
+            "dataset", "absolute_signal_to_noise_map"
         )
         self.plot_dataset_potential_chi_squared_map = plot_setting(
-            "plot_dataset_potential_chi_squared_map"
+            "dataset", "potential_chi_squared_map"
         )
-        self.plot_fit_all_at_end_png = plot_setting("plot_fit_all_at_end_png")
-        self.plot_fit_all_at_end_fits = plot_setting("plot_fit_all_at_end_fits")
-        self.plot_fit_as_subplot = plot_setting("plot_fit_as_subplot")
-        self.plot_fit_of_planes_as_subplot = plot_setting(
-            "plot_fit_of_planes_as_subplot"
-        )
-        self.plot_fit_inversion_as_subplot = plot_setting(
-            "plot_fit_inversion_as_subplot"
-        )
-        self.plot_fit_data = plot_setting("plot_fit_data")
-        self.plot_fit_noise_map = plot_setting("plot_fit_noise_map")
-        self.plot_fit_signal_to_noise_map = plot_setting("plot_fit_signal_to_noise_map")
-        self.plot_fit_model_data = plot_setting("plot_fit_model_data")
-        self.plot_fit_residual_map = plot_setting("plot_fit_residual_map")
+        self.plot_fit_all_at_end_png = plot_setting("fit", "all_at_end_png")
+        self.plot_fit_all_at_end_fits = plot_setting("fit", "all_at_end_fits")
+        self.plot_fit_as_subplot = plot_setting("fit", "as_subplot")
+        self.plot_fit_of_planes_as_subplot = plot_setting("fit", "of_planes_as_subplot")
+        self.plot_fit_inversion_as_subplot = plot_setting("inversion", "as_subplot")
+        self.plot_fit_data = plot_setting("fit", "data")
+        self.plot_fit_noise_map = plot_setting("fit", "noise_map")
+        self.plot_fit_signal_to_noise_map = plot_setting("fit", "signal_to_noise_map")
+        self.plot_fit_model_data = plot_setting("fit", "model_data")
+        self.plot_fit_residual_map = plot_setting("fit", "residual_map")
         self.plot_fit_normalized_residual_map = plot_setting(
-            "plot_fit_normalized_residual_map"
+            "fit", "normalized_residual_map"
         )
-        self.plot_fit_chi_squared_map = plot_setting("plot_fit_chi_squared_map")
+        self.plot_fit_chi_squared_map = plot_setting("fit", "chi_squared_map")
 
         self.plot_fit_inversion_reconstruction = plot_setting(
-            "plot_fit_inversion_reconstruction"
+            "inversion", "reconstruction"
         )
 
-        self.plot_fit_inversion_errors = plot_setting("plot_fit_inversion_errors")
+        self.plot_fit_inversion_errors = plot_setting("inversion", "errors")
 
-        self.plot_fit_inversion_residual_map = plot_setting(
-            "plot_fit_inversion_residual_map"
-        )
+        self.plot_fit_inversion_residual_map = plot_setting("inversion", "residual_map")
         self.plot_fit_pixelization_normalized_residuals = plot_setting(
-            "plot_fit_inversion_normalized_residual_map"
+            "inversion", "normalized_residual_map"
         )
         self.plot_fit_inversion_chi_squared_map = plot_setting(
-            "plot_fit_inversion_chi_squared_map"
+            "inversion", "chi_squared_map"
         )
         self.plot_fit_inversion_regularization_weights = plot_setting(
-            "plot_fit_inversion_regularization_weight_map"
+            "inversion", "regularization_weight_map"
         )
         self.plot_fit_inversion_interpolated_reconstruction = plot_setting(
-            "plot_fit_inversion_interpolated_reconstruction"
+            "inversion", "interpolated_reconstruction"
         )
         self.plot_fit_inversion_interpolated_errors = plot_setting(
-            "plot_fit_inversion_interpolated_errors"
+            "inversion", "interpolated_errors"
         )
         self.plot_fit_subtracted_images_of_planes = plot_setting(
-            "plot_fit_subtracted_images_of_planes"
+            "fit", "subtracted_images_of_planes"
         )
         self.plot_fit_model_images_of_planes = plot_setting(
-            "plot_fit_model_images_of_planes"
+            "fit", "model_images_of_planes"
         )
         self.plot_fit_plane_images_of_planes = plot_setting(
-            "plot_fit_plane_images_of_planes"
+            "fit", "plane_images_of_planes"
         )
-        self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
-        self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
+        self.plot_hyper_model_image = plot_setting("hyper_galaxy", "model_image")
+        self.plot_hyper_galaxy_images = plot_setting("hyper_galaxy", "images")
 
     def visualize_ray_tracing(self, tracer, during_analysis):
 
@@ -262,10 +256,10 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
             masked_dataset=masked_dataset, image_path=image_path
         )
 
-        self.plot_dataset_psf = plot_setting("plot_dataset_psf")
+        self.plot_dataset_psf = plot_setting("dataset", "psf")
 
-        self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
-        self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
+        self.plot_hyper_model_image = plot_setting("hyper_galaxy", "model_image")
+        self.plot_hyper_galaxy_images = plot_setting("hyper_galaxy", "images")
 
         self.visualize_imaging()
 
@@ -524,11 +518,11 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
             masked_dataset=masked_dataset, image_path=image_path
         )
 
-        self.plot_dataset_uv_wavelengths = plot_setting("plot_dataset_uv_wavelengths")
-        self.plot_dataset_primary_beam = plot_setting("plot_dataset_primary_beam")
+        self.plot_dataset_uv_wavelengths = plot_setting("dataset", "uv_wavelengths")
+        self.plot_dataset_primary_beam = plot_setting("dataset", "primary_beam")
 
-        self.plot_hyper_model_image = plot_setting("plot_hyper_model_image")
-        self.plot_hyper_galaxy_images = plot_setting("plot_hyper_galaxy_images")
+        self.plot_hyper_model_image = plot_setting("hyper_galaxy", "model_image")
+        self.plot_hyper_galaxy_images = plot_setting("hyper_galaxy", "images")
 
         self.visualize_interferometer()
 
@@ -719,7 +713,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
 class HyperGalaxyVisualizer(AbstractVisualizer):
     def __init__(self, image_path):
         super().__init__(image_path)
-        self.plot_hyper_galaxy_subplot = plot_setting("plot_hyper_galaxy_subplot")
+        self.plot_hyper_galaxy_subplot = plot_setting("hyper_galaxy", "subplot")
 
     def visualize_hyper_galaxy(self, fit, hyper_fit, galaxy_image, contribution_map_in):
         hyper_plots.subplot_fit_hyper_galaxy(
