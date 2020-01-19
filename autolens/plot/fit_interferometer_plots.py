@@ -109,11 +109,11 @@ def subplot_fit_real_space(
             )
         )
 
-        if sub_plotter.aspect is "square":
+        if sub_plotter.figure.aspect in "square":
             aspect_inv = ratio
-        elif sub_plotter.aspect is "auto":
+        elif sub_plotter.figure.aspect in "auto":
             aspect_inv = 1.0 / ratio
-        elif sub_plotter.aspect is "equal":
+        elif sub_plotter.figure.aspect in "equal":
             aspect_inv = 1.0
 
         sub_plotter.setup_subplot(

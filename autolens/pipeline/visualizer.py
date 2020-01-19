@@ -139,6 +139,10 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
         )
         self.plot_fit_chi_squared_map = plot_setting("fit", "chi_squared_map")
 
+        self.plot_fit_inversion_reconstructed_image = plot_setting(
+            "inversion", "reconstructed_image"
+        )
+
         self.plot_fit_inversion_reconstruction = plot_setting(
             "inversion", "reconstruction"
         )
@@ -146,7 +150,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
         self.plot_fit_inversion_errors = plot_setting("inversion", "errors")
 
         self.plot_fit_inversion_residual_map = plot_setting("inversion", "residual_map")
-        self.plot_fit_pixelization_normalized_residuals = plot_setting(
+        self.plot_fit_inversion_normalized_residual_map = plot_setting(
             "inversion", "normalized_residual_map"
         )
         self.plot_fit_inversion_chi_squared_map = plot_setting(
@@ -324,14 +328,6 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                 fit=fit, include=self.include, sub_plotter=self.sub_plotter
             )
 
-        if self.plot_fit_inversion_as_subplot and fit.inversion is not None:
-            aa.plot.inversion.subplot_inversion(
-                inversion=fit.inversion,
-                mask=fit.mask,
-                include=self.include,
-                sub_plotter=self.sub_plotter,
-            )
-
         fit_imaging_plots.individuals(
             fit=fit,
             plot_image=self.plot_fit_data,
@@ -349,6 +345,30 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
         )
 
         if fit.inversion is not None:
+
+            if self.plot_fit_inversion_as_subplot:
+                inversion_plots.subplot_inversion(
+                    inversion=fit.inversion,
+                    image_positions=self.include.positions_from_fit(fit=fit),
+                    source_positions=self.include.positions_of_plane_from_fit_and_plane_index(
+                        fit=fit, plane_index=-1
+                    ),
+                    grid=self.include.inversion_image_pixelization_grid_from_fit(fit=fit),
+                    light_profile_centres=self.include.light_profile_centres_of_galaxies_from_obj(
+                        obj=fit.tracer.image_plane
+                    ),
+                    mass_profile_centres=self.include.mass_profile_centres_of_galaxies_from_obj(
+                        obj=fit.tracer.image_plane
+                    ),
+                    critical_curves=self.include.critical_curves_from_obj(obj=fit.tracer),
+                    caustics=self.include.caustics_from_obj(obj=fit.tracer),
+                    include=self.include,
+                    sub_plotter=self.sub_plotter,
+                )
+
+            plotter = self.plotter.plotter_with_new_output(
+                output=mat_objs.Output(path=self.plotter.output.path + "inversion/")
+            )
 
             inversion_plots.individuals(
                 inversion=fit.inversion,
@@ -369,7 +389,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                 plot_reconstruction=self.plot_fit_inversion_reconstruction,
                 plot_errors=self.plot_fit_inversion_errors,
                 plot_residual_map=self.plot_fit_inversion_residual_map,
-                plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
+                plot_normalized_residual_map=self.plot_fit_inversion_normalized_residual_map,
                 plot_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
                 plot_regularization_weight_map=self.plot_fit_inversion_regularization_weights,
                 plot_interpolated_reconstruction=self.plot_fit_inversion_interpolated_reconstruction,
@@ -585,6 +605,30 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
 
         if fit.inversion is not None:
 
+            plotter = self.plotter.plotter_with_new_output(
+                output=mat_objs.Output(path=self.plotter.output.path + "inversion/")
+            )
+
+            # if self.plot_fit_inversion_as_subplot:
+            #     inversion_plots.subplot_inversion(
+            #         inversion=fit.inversion,
+            #         image_positions=self.include.positions_from_fit(fit=fit),
+            #         source_positions=self.include.positions_of_plane_from_fit_and_plane_index(
+            #             fit=fit, plane_index=-1
+            #         ),
+            #         grid=self.include.inversion_image_pixelization_grid_from_fit(fit=fit),
+            #         light_profile_centres=self.include.light_profile_centres_of_galaxies_from_obj(
+            #             obj=fit.tracer.image_plane
+            #         ),
+            #         mass_profile_centres=self.include.mass_profile_centres_of_galaxies_from_obj(
+            #             obj=fit.tracer.image_plane
+            #         ),
+            #         critical_curves=self.include.critical_curves_from_obj(obj=fit.tracer),
+            #         caustics=self.include.caustics_from_obj(obj=fit.tracer),
+            #         include=self.include,
+            #         sub_plotter=self.sub_plotter,
+            #     )
+
             inversion_plots.individuals(
                 inversion=fit.inversion,
                 image_positions=self.include.positions_from_fit(fit=fit),
@@ -603,9 +647,9 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
                 plot_reconstructed_image=self.plot_fit_inversion_reconstruction,
                 plot_reconstruction=self.plot_fit_inversion_reconstruction,
                 plot_errors=self.plot_fit_inversion_errors,
-                plot_residual_map=self.plot_fit_inversion_residual_map,
-                plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
-                plot_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
+             #   plot_residual_map=self.plot_fit_inversion_residual_map,
+             #   plot_normalized_residual_map=self.plot_fit_inversion_normalized_residual_map,
+             #   plot_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
                 plot_regularization_weight_map=self.plot_fit_inversion_regularization_weights,
                 plot_interpolated_reconstruction=self.plot_fit_inversion_interpolated_reconstruction,
                 plot_interpolated_errors=self.plot_fit_inversion_interpolated_errors,

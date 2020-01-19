@@ -59,6 +59,13 @@ def make_tracer_x2_plane_7x7(lp_0, gal_x1_lp, gal_x1_mp):
     return al.Tracer.from_galaxies(galaxies=[gal_x1_mp, gal_x1_lp, source_gal_x1_lp])
 
 
+@pytest.fixture(name="tracer_x2_plane_inversion_7x7")
+def make_tracer_x2_plane_inversion_7x7(lp_0, gal_x1_lp, gal_x1_mp):
+    source_gal_inversion = al.Galaxy(redshift=1.0, pixelization=al.pix.Rectangular(), regularization=al.reg.Constant())
+
+    return al.Tracer.from_galaxies(galaxies=[gal_x1_mp, gal_x1_lp, source_gal_inversion])
+
+
 # Lens Fit #
 
 
@@ -71,6 +78,9 @@ def make_masked_imaging_fit_x1_plane_7x7(masked_imaging_7x7, tracer_x1_plane_7x7
 def make_masked_imaging_fit_x2_plane_7x7(masked_imaging_7x7, tracer_x2_plane_7x7):
     return ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer_x2_plane_7x7)
 
+@pytest.fixture(name="masked_imaging_fit_x2_plane_inversion_7x7")
+def make_masked_imaging_fit_x2_plane_inversion_7x7(masked_imaging_7x7, tracer_x2_plane_inversion_7x7):
+    return ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer_x2_plane_inversion_7x7)
 
 @pytest.fixture(name="masked_interferometer_fit_x1_plane_7x7")
 def make_masked_interferometer_fit_x1_plane_7x7(
@@ -80,7 +90,6 @@ def make_masked_interferometer_fit_x1_plane_7x7(
         masked_interferometer=masked_interferometer_7, tracer=tracer_x1_plane_7x7
     )
 
-
 @pytest.fixture(name="masked_interferometer_fit_x2_plane_7x7")
 def make_masked_interferometer_fit_x2_plane_7x7(
     masked_interferometer_7, tracer_x2_plane_7x7
@@ -89,6 +98,14 @@ def make_masked_interferometer_fit_x2_plane_7x7(
         masked_interferometer=masked_interferometer_7, tracer=tracer_x2_plane_7x7
     )
 
+
+@pytest.fixture(name="masked_interferometer_fit_x2_plane_inversion_7x7")
+def make_masked_interferometer_fit_x2_plane_inversion_7x7(
+    masked_interferometer_7, tracer_x2_plane_inversion_7x7
+):
+    return InterferometerFit(
+        masked_interferometer=masked_interferometer_7, tracer=tracer_x2_plane_inversion_7x7
+    )
 
 @pytest.fixture(name="mask_function_7x7_1_pix")
 def make_mask_function_7x7_1_pix():
