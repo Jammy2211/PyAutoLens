@@ -16,7 +16,7 @@ def make_visualizer_plotter_setup():
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
-        path.join(directory, "../test_files/plotters"), path.join(directory, "output")
+        path.join(directory, "../test_files/plot"), path.join(directory, "output")
     )
 
 

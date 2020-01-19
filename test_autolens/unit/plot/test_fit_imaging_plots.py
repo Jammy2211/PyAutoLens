@@ -1,7 +1,7 @@
 import pytest
 import os
 
-import autolens as al
+import autolens.plot as aplt
 
 from os import path
 
@@ -20,7 +20,7 @@ def make_fit_imaging_plotter_setup():
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
-        path.join(directory, "../test_files/plotters"), path.join(directory, "output")
+        path.join(directory, "../test_files/plot"), path.join(directory, "output")
     )
 
 
@@ -32,12 +32,12 @@ def test__subtracted_image_of_plane_is_output(
     plot_patch,
 ):
 
-    al.plot.fit_imaging.subtracted_image_of_plane(
+    aplt.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -45,12 +45,12 @@ def test__subtracted_image_of_plane_is_output(
         fit_imaging_plotter_path + "subtracted_image_of_plane_0.png" in plot_patch.paths
     )
 
-    al.plot.fit_imaging.subtracted_image_of_plane(
+    aplt.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -58,12 +58,12 @@ def test__subtracted_image_of_plane_is_output(
         fit_imaging_plotter_path + "subtracted_image_of_plane_0.png" in plot_patch.paths
     )
 
-    al.plot.fit_imaging.subtracted_image_of_plane(
+    aplt.fit_imaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -80,34 +80,34 @@ def test__model_image_of_plane_is_output(
     plot_patch,
 ):
 
-    al.plot.fit_imaging.model_image_of_plane(
+    aplt.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
     assert fit_imaging_plotter_path + "model_image_of_plane_0.png" in plot_patch.paths
 
-    al.plot.fit_imaging.model_image_of_plane(
+    aplt.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
     assert fit_imaging_plotter_path + "model_image_of_plane_0.png" in plot_patch.paths
 
-    al.plot.fit_imaging.model_image_of_plane(
+    aplt.fit_imaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -118,11 +118,11 @@ def test_subplot_fit_imaging_is_output(
     masked_imaging_fit_x2_plane_7x7, include_all, fit_imaging_plotter_path, plot_patch
 ):
 
-    al.plot.fit_imaging.subplot_fit_imaging(
+    aplt.fit_imaging.subplot_fit_imaging(
         fit=masked_imaging_fit_x2_plane_7x7,
         include=include_all,
-        sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -137,55 +137,55 @@ def test__subplot_of_plane(
     plot_patch,
 ):
 
-    al.plot.fit_imaging.subplot_of_plane(
+    aplt.fit_imaging.subplot_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
         include=include_all,
-        sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
     assert fit_imaging_plotter_path + "subplot_of_plane_0.png" in plot_patch.paths
 
-    al.plot.fit_imaging.subplot_of_plane(
+    aplt.fit_imaging.subplot_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=0,
         include=include_all,
-        sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
     assert fit_imaging_plotter_path + "subplot_of_plane_0.png" in plot_patch.paths
 
-    al.plot.fit_imaging.subplot_of_plane(
+    aplt.fit_imaging.subplot_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
         plane_index=1,
         include=include_all,
-        sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
     assert fit_imaging_plotter_path + "subplot_of_plane_1.png" in plot_patch.paths
 
 
-    al.plot.fit_imaging.subplot_of_planes(
+    aplt.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x1_plane_7x7,
         include=include_all,
-        sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
     assert fit_imaging_plotter_path + "subplot_of_plane_0.png" in plot_patch.paths
 
-    al.plot.fit_imaging.subplot_of_planes(
+    aplt.fit_imaging.subplot_of_planes(
         fit=masked_imaging_fit_x2_plane_7x7,
         include=include_all,
-        sub_plotter=al.plotter.SubPlotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -201,7 +201,7 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
     plot_patch,
 ):
 
-    al.plot.fit_imaging.individuals(
+    aplt.fit_imaging.individuals(
         fit=masked_imaging_fit_x1_plane_7x7,
         plot_image=True,
         plot_noise_map=False,
@@ -212,8 +212,8 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plot_model_images_of_planes=True,
         plot_plane_images_of_planes=True,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 
@@ -241,7 +241,7 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
 
     assert fit_imaging_plotter_path + "plane_image_of_plane_0.png" in plot_patch.paths
 
-    al.plot.fit_imaging.individuals(
+    aplt.fit_imaging.individuals(
         fit=masked_imaging_fit_x2_plane_7x7,
         plot_image=True,
         plot_noise_map=False,
@@ -252,8 +252,8 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plot_model_images_of_planes=True,
         plot_plane_images_of_planes=True,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(fit_imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(fit_imaging_plotter_path, format="png")
         ),
     )
 

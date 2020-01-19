@@ -1,4 +1,5 @@
 import autolens as al
+import autolens.plot as aplt
 import pytest
 import os
 
@@ -19,7 +20,7 @@ def make_plane_plotter_setup():
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
-        path.join(directory, "../test_files/plotters"), path.join(directory, "output")
+        path.join(directory, "../test_files/plot"), path.join(directory, "output")
     )
 
 
@@ -27,97 +28,91 @@ def test__all_individual_plotters__output_file_with_default_name(
     plane_7x7, sub_grid_7x7, mask_7x7, positions_7x7, include_all, plane_plotter_path, plot_patch
 ):
 
-    al.plot.plane.profile_image(
+    aplt.plane.profile_image(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         positions=positions_7x7,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(plane_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(plane_plotter_path, format="png")
         ),
     )
 
     assert plane_plotter_path + "profile_image.png" in plot_patch.paths
 
-    al.plot.plane.plane_image(
+    aplt.plane.plane_image(
         plane=plane_7x7,
         grid=sub_grid_7x7,
         positions=positions_7x7,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(plane_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(plane_plotter_path, format="png")
         ),
     )
 
     assert plane_plotter_path + "plane_image.png" in plot_patch.paths
 
-    al.plot.plane.convergence(
+    aplt.plane.convergence(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(plane_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(plane_plotter_path, format="png")
         ),
     )
 
     assert plane_plotter_path + "convergence.png" in plot_patch.paths
 
-    al.plot.plane.potential(
+    aplt.plane.potential(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(plane_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(plane_plotter_path, format="png")
         ),
     )
 
     assert plane_plotter_path + "potential.png" in plot_patch.paths
 
-    al.plot.plane.deflections_y(
+    aplt.plane.deflections_y(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(plane_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(plane_plotter_path, format="png")
         ),
     )
 
     assert plane_plotter_path + "deflections_y.png" in plot_patch.paths
 
-    al.plot.plane.deflections_x(
+    aplt.plane.deflections_x(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(plane_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(plane_plotter_path, format="png")
         ),
     )
 
     assert plane_plotter_path + "deflections_x.png" in plot_patch.paths
 
-    al.plot.plane.magnification(
+    aplt.plane.magnification(
         plane=plane_7x7,
         grid=sub_grid_7x7,
-        mask=mask_7x7,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(plane_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(plane_plotter_path, format="png")
         ),
     )
 
     assert plane_plotter_path + "magnification.png" in plot_patch.paths
 
-    al.plot.plane.plane_grid(
+    aplt.plane.plane_grid(
         plane=plane_7x7,
         grid=sub_grid_7x7,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(plane_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(plane_plotter_path, format="png")
         ),
     )
 
@@ -127,13 +122,13 @@ def test__all_individual_plotters__output_file_with_default_name(
     plane_7x7.galaxies[0].hyper_model_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
     plane_7x7.galaxies[0].hyper_galaxy_image = al.array.ones(shape_2d=(7,7), pixel_scales=0.1)
 
-    al.plot.plane.contribution_map(
+    aplt.plane.contribution_map(
         plane=plane_7x7,
         mask=mask_7x7,
         positions=positions_7x7,
         include=include_all,
-        plotter=al.plotter.Plotter(
-            output=al.plotter.Output(plane_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(plane_plotter_path, format="png")
         ),
     )
 

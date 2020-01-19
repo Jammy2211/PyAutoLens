@@ -61,14 +61,14 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         overwrite=True,
     )
 
-    al.plot.imaging.subplot_imaging(
+    aplt.imaging.subplot_imaging(
         imaging=imaging,
         output_filename="imaging",
         output_path=dataset_path,
         format="png",
     )
 
-    al.plot.imaging.individual(
+    aplt.imaging.individual(
         imaging=imaging,
         plot_image=True,
         plot_noise_map=True,
@@ -78,7 +78,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         format="png",
     )
 
-    al.plot.tracer.subplot_tracer(
+    aplt.tracer.subplot_tracer(
         tracer=tracer,
         grid=simulator.grid,
         output_filename="tracer",
@@ -86,7 +86,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         format="png",
     )
 
-    al.plot.tracer.individual(
+    aplt.tracer.individual(
         tracer=tracer,
         grid=simulator.grid,
         plot_profile_image=True,

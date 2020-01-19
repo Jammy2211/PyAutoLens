@@ -54,7 +54,7 @@ class TestSimulatorImaging:
             noise_seed=1,
         )
 
-        assert (imaging_simulated.image.in_2d == imaging_manual.image.in_2d).all()
+        assert (imaging_simulated.image.in_2d == imaging_manual.profile_image.in_2d).all()
         assert (imaging_simulated.psf == imaging_manual.psf).all()
         assert (imaging_simulated.noise_map == imaging_manual.noise_map).all()
         assert (
@@ -112,7 +112,7 @@ class TestSimulatorImaging:
             noise_seed=1,
         )
 
-        assert (imaging_simulated.image.in_2d == imaging_manual.image.in_2d).all()
+        assert (imaging_simulated.image.in_2d == imaging_manual.profile_image.in_2d).all()
         assert (imaging_simulated.psf == imaging_manual.psf).all()
         assert (imaging_simulated.noise_map == imaging_manual.noise_map).all()
         assert (
@@ -177,7 +177,7 @@ class TestSimulatorImaging:
             noise_if_add_noise_false=0.2,
         )
 
-        assert (imaging_manual.image == imaging_simulated.image).all()
+        assert (imaging_manual.profile_image == imaging_simulated.image).all()
         assert (imaging_manual.psf == imaging_simulated.psf).all()
         assert (imaging_simulated.noise_map.in_2d == 0.2 * np.ones((11, 11))).all()
         assert imaging_manual.noise_map == imaging_simulated.noise_map

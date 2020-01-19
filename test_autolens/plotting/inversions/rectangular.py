@@ -32,7 +32,7 @@ masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
 
-al.plot.fit_imaging.subplot_of_plane(
+aplt.fit_imaging.subplot_of_plane(
     fit=fit,
     plane_index=1,
     plot_in_kpc=True,
@@ -40,7 +40,7 @@ al.plot.fit_imaging.subplot_of_plane(
     include_caustics=True,
 )
 
-al.plot.fit_imaging.subplot_of_plane(
+aplt.fit_imaging.subplot_of_plane(
     fit=fit,
     plane_index=1,
     plot_in_kpc=False,
@@ -49,4 +49,4 @@ al.plot.fit_imaging.subplot_of_plane(
 )
 
 
-al.plot.inversion.subplot_imaging(inversion=fit.inversion)
+aplt.inversion.subplot_imaging(inversion=fit.inversion)

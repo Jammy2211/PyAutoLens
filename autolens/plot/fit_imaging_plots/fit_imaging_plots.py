@@ -1,7 +1,8 @@
 import autoarray as aa
-from autoarray.plotters import plotters, mat_objs
-from autoastro.plots import lensing_plotters
-from autolens.plots import plane_plots
+from autoarray.plot import plotters
+from autoarray.plot import mat_objs
+from autoastro.plot import lensing_plotters
+from autolens.plot import plane_plots
 
 @plotters.set_subplot_filename
 def subplot_fit_imaging(
@@ -70,7 +71,7 @@ def subplot_of_plane(
         output=mat_objs.Output(filename=sub_plotter.output.filename + "_" + str(plane_index))
     )
 
-    sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
+    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
@@ -109,7 +110,7 @@ def subplot_of_plane(
         plane_plots.plane_image(
             plane=fit.tracer.planes[plane_index],
             grid=traced_grids[plane_index],
-            lines=include.caustics_from_obj(obj=fit.tracer),
+            caustics=include.caustics_from_obj(obj=fit.tracer),
             include=include,
             plotter=sub_plotter,
         )
@@ -145,7 +146,7 @@ def subplot_of_plane(
 
     sub_plotter.output.subplot_to_figure()
 
-    sub_plotter.close_figure()
+    sub_plotter.close()
 
 
 def individuals(
@@ -169,7 +170,7 @@ def individuals(
     plot_model_images_of_planes=False,
     plot_plane_images_of_planes=False,
     include=lensing_plotters.Include(),
-    plotter=plotters.Plotter(),
+    plotter=lensing_plotters.Plotter(),
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -244,7 +245,7 @@ def individuals(
                 plane_plots.plane_image(
                     plane=fit.tracer.planes[plane_index],
                     grid=traced_grids[plane_index],
-                    lines=include.caustics_from_obj(obj=fit.tracer),
+                    caustics=include.caustics_from_obj(obj=fit.tracer),
                     include=include,
                     plotter=plotter,
                 )
@@ -264,7 +265,7 @@ def subtracted_image_of_plane(
     fit,
     plane_index,
     include=lensing_plotters.Include(),
-    plotter=plotters.Plotter(),
+    plotter=lensing_plotters.Plotter(),
 ):
     """Plot the model image of a specific plane of a lens fit.
 
@@ -298,11 +299,11 @@ def subtracted_image_of_plane(
 
         subtracted_image = fit.image
 
-    plotter.array.plot(
+    plotter.plot_array(
         array=subtracted_image,
         mask=include.mask_from_fit(fit=fit),
         grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
-        points=include.positions_from_fit(fit=fit),
+        positions=include.positions_from_fit(fit=fit),
         lines=include.critical_curves_from_obj(obj=fit.tracer),
         centres=include.mass_profile_centres_of_planes_from_obj(obj=fit.tracer),
     )
@@ -313,7 +314,7 @@ def model_image_of_plane(
     fit,
     plane_index,
     include=lensing_plotters.Include(),
-    plotter=plotters.Plotter(),
+    plotter=lensing_plotters.Plotter(),
 ):
     """Plot the model image of a specific plane of a lens fit.
 
@@ -331,10 +332,10 @@ def model_image_of_plane(
         output=mat_objs.Output(filename=plotter.output.filename + "_" + str(plane_index))
     )
 
-    plotter.array.plot(
+    plotter.plot_array(
         array=fit.model_images_of_planes[plane_index],
         mask=include.mask_from_fit(fit=fit),
         lines=include.critical_curves_from_obj(obj=fit.tracer),
-        points=include.positions_from_fit(fit=fit),
+        positions=include.positions_from_fit(fit=fit),
         centres=include.mass_profile_centres_of_planes_from_obj(obj=fit.tracer),
     )
