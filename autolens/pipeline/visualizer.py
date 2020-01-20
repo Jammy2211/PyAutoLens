@@ -180,7 +180,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
     def visualize_ray_tracing(self, tracer, during_analysis):
 
         plotter = self.plotter.plotter_with_new_output(
-            output=mat_objs.Output(path=self.plotter.output.path + "ray_tracing/")
+            path=self.plotter.output.path + "ray_tracing/"
         )
 
         if self.plot_ray_tracing_as_subplot:
@@ -233,9 +233,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
             if self.plot_ray_tracing_all_at_end_fits:
 
                 fits_plotter = plotter.plotter_with_new_output(
-                    output=mat_objs.Output(
-                        path=plotter.output.path + "/fits", format="fits"
-                    )
+                    path=plotter.output.path + "/fits", format="fits"
                 )
 
                 ray_tracing_plots.individual(
@@ -278,7 +276,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
     def visualize_imaging(self):
 
         plotter = self.plotter.plotter_with_new_output(
-            output=mat_objs.Output(path=self.plotter.output.path + "imaging/")
+            path=self.plotter.output.path + "imaging/"
         )
 
         if self.plot_dataset_as_subplot:
@@ -315,7 +313,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
     def visualize_fit(self, fit, during_analysis):
 
         plotter = self.plotter.plotter_with_new_output(
-            output=mat_objs.Output(path=self.plotter.output.path + "fit_imaging/")
+            path=self.plotter.output.path + "fit_imaging/"
         )
 
         if self.plot_fit_as_subplot:
@@ -353,21 +351,25 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                     source_positions=self.include.positions_of_plane_from_fit_and_plane_index(
                         fit=fit, plane_index=-1
                     ),
-                    grid=self.include.inversion_image_pixelization_grid_from_fit(fit=fit),
+                    grid=self.include.inversion_image_pixelization_grid_from_fit(
+                        fit=fit
+                    ),
                     light_profile_centres=self.include.light_profile_centres_of_galaxies_from_obj(
                         obj=fit.tracer.image_plane
                     ),
                     mass_profile_centres=self.include.mass_profile_centres_of_galaxies_from_obj(
                         obj=fit.tracer.image_plane
                     ),
-                    critical_curves=self.include.critical_curves_from_obj(obj=fit.tracer),
+                    critical_curves=self.include.critical_curves_from_obj(
+                        obj=fit.tracer
+                    ),
                     caustics=self.include.caustics_from_obj(obj=fit.tracer),
                     include=self.include,
                     sub_plotter=self.sub_plotter,
                 )
 
             plotter = self.plotter.plotter_with_new_output(
-                output=mat_objs.Output(path=self.plotter.output.path + "inversion/")
+                path=self.plotter.output.path + "inversion/"
             )
 
             inversion_plots.individuals(
@@ -452,9 +454,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
 
             if self.plot_fit_all_at_end_fits:
                 fits_plotter = plotter.plotter_with_new_output(
-                    output=mat_objs.Output(
-                        path=plotter.output.path + "/fits", format="fits"
-                    )
+                    path=plotter.output.path + "/fits", format="fits"
                 )
 
                 fit_imaging_plots.individuals(
@@ -504,11 +504,11 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
 
         if last_results is not None:
             plotter = self.plotter.plotter_with_new_output(
-                output=mat_objs.Output(path=self.plotter.output.path + "hyper/")
+                path=self.plotter.output.path + "hyper/"
             )
 
             sub_plotter = self.sub_plotter.plotter_with_new_output(
-                output=mat_objs.Output(path=self.plotter.output.path + "hyper/")
+                path=self.plotter.output.path + "hyper/"
             )
 
             if self.plot_hyper_model_image:
@@ -553,7 +553,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
     def visualize_interferometer(self):
 
         plotter = self.plotter.plotter_with_new_output(
-            output=mat_objs.Output(path=self.plotter.output.path + "interferometer/")
+            path=self.plotter.output.path + "interferometer/"
         )
 
         if self.plot_dataset_as_subplot:
@@ -576,9 +576,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
     def visualize_fit(self, fit, during_analysis):
 
         plotter = self.plotter.plotter_with_new_output(
-            output=mat_objs.Output(
-                path=self.plotter.output.path + "fit_interferometer/"
-            )
+            path=self.plotter.output.path + "fit_interferometer/"
         )
 
         if self.plot_fit_as_subplot:
@@ -606,7 +604,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
         if fit.inversion is not None:
 
             plotter = self.plotter.plotter_with_new_output(
-                output=mat_objs.Output(path=self.plotter.output.path + "inversion/")
+                path=self.plotter.output.path + "inversion/"
             )
 
             # if self.plot_fit_inversion_as_subplot:
@@ -647,9 +645,9 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
                 plot_reconstructed_image=self.plot_fit_inversion_reconstruction,
                 plot_reconstruction=self.plot_fit_inversion_reconstruction,
                 plot_errors=self.plot_fit_inversion_errors,
-             #   plot_residual_map=self.plot_fit_inversion_residual_map,
-             #   plot_normalized_residual_map=self.plot_fit_inversion_normalized_residual_map,
-             #   plot_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
+                #   plot_residual_map=self.plot_fit_inversion_residual_map,
+                #   plot_normalized_residual_map=self.plot_fit_inversion_normalized_residual_map,
+                #   plot_chi_squared_map=self.plot_fit_inversion_chi_squared_map,
                 plot_regularization_weight_map=self.plot_fit_inversion_regularization_weights,
                 plot_interpolated_reconstruction=self.plot_fit_inversion_interpolated_reconstruction,
                 plot_interpolated_errors=self.plot_fit_inversion_interpolated_errors,
@@ -708,9 +706,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
 
             if self.plot_fit_all_at_end_fits:
                 fits_plotter = plotter.plotter_with_new_output(
-                    output=mat_objs.Output(
-                        path=plotter.output.path + "/fits", format="fits"
-                    )
+                    path=plotter.output.path + "/fits", format="fits"
                 )
 
                 fit_interferometer_plots.individuals(
