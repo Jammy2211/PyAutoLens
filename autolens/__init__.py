@@ -60,10 +60,10 @@ from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
 from autolens.pipeline.pipeline import (
     PipelineSettings,
-    PipelineSettingsHyper,
+    PipelineSettings,
     PipelineDataset,
     PipelinePositions,
 )
-from autolens import plotters as plot
+from autolens import plot
 
-__version__ = '0.32.0'
+__version__ = "0.34.1"

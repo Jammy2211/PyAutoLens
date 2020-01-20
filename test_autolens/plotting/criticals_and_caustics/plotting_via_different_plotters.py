@@ -6,7 +6,7 @@ sis_mass_profile = al.mp.EllipticalIsothermal(
     centre=(1.0, 1.0), einstein_radius=1.6, axis_ratio=0.7
 )
 
-al.plot.profile.convergence(
+aplt.profile.convergence(
     mass_profile=sis_mass_profile,
     grid=grid,
     include_critical_curves=False,
@@ -15,7 +15,7 @@ al.plot.profile.convergence(
 
 # galaxy = al.Galaxy(mass=sis_mass_profile, redshift=1)
 #
-# al.plot.galaxy.convergence(
+# aplt.galaxy.convergence(
 #     galaxy=galaxy,
 #     grid=grid,
 #     include_critical_curves=False,

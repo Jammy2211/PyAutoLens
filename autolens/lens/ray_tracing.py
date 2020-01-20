@@ -2,6 +2,10 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 from autoastro import lensing
+from autoarray.util import array_util, grid_util
+from autoarray.mask import mask as msk
+from autoarray.structures import grids
+from autoarray.masked.masked_structures import MaskedArray
 from autoarray.operators.inversion import inversions as inv
 from autoastro.galaxy import galaxy as g
 from autoastro.util import cosmology_util
@@ -94,6 +98,34 @@ class AbstractTracer(lensing.LensingObject):
     @property
     def planes_with_mass_profile(self):
         return list(filter(lambda plane: plane.has_mass_profile, self.planes))
+
+    @property
+    def light_profile_centres(self):
+        return [
+            item
+            for light_profile_centres in self.light_profile_centres_of_planes
+            for item in light_profile_centres
+        ]
+
+    @property
+    def light_profile_centres_of_planes(self):
+        return [
+            plane.light_profile_centres
+            for plane in self.planes
+            if plane.has_light_profile
+        ]
+
+    @property
+    def mass_profiles(self):
+        return [
+            item
+            for mass_profile in self.mass_profiles_of_planes
+            for item in mass_profile
+        ]
+
+    @property
+    def mass_profiles_of_planes(self):
+        return [plane.mass_profiles for plane in self.planes if plane.has_mass_profile]
 
     @property
     def mass_profile_centres(self):
@@ -264,6 +296,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
     def __init__(self, planes, cosmology):
         super(AbstractTracerLensing, self).__init__(planes=planes, cosmology=cosmology)
 
+    @grids.convert_positions_to_grid
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
         grid_calc = grid.copy()  # TODO looks unnecessary? Probably pretty expensive too
@@ -300,35 +333,21 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return traced_grids
 
-    def traced_positions_of_planes_from_positions(self, positions):
-
-        traced_positions_of_planes = [[] for i in range(self.total_planes)]
-
-        for position_grid in positions:
-            traced_position_grids_of_planes = self.traced_grids_of_planes_from_grid(
-                grid=position_grid
-            )
-            for (plane_index, tracer_position_grid_of_plane) in enumerate(
-                traced_position_grids_of_planes
-            ):
-                traced_positions_of_planes[plane_index].append(
-                    traced_position_grids_of_planes[plane_index]
-                )
-
-        return traced_positions_of_planes
-
+    @grids.convert_positions_to_grid
     def deflections_between_planes_from_grid(self, grid, plane_i=0, plane_j=-1):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
+    @grids.convert_positions_to_grid
     def profile_image_from_grid(self, grid):
         profile_image = sum(self.profile_images_of_planes_from_grid(grid=grid))
         return grid.mapping.array_stored_1d_from_sub_array_1d(
             sub_array_1d=profile_image
         )
 
+    @grids.convert_positions_to_grid
     def profile_images_of_planes_from_grid(self, grid):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
@@ -359,19 +378,23 @@ class AbstractTracerLensing(AbstractTracerCosmology):
 
         return self.profile_image_from_grid(grid=padded_grid)
 
+    @grids.convert_positions_to_grid
     def convergence_from_grid(self, grid):
         convergence = sum(
             [plane.convergence_from_grid(grid=grid) for plane in self.planes]
         )
         return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=convergence)
 
+    @grids.convert_positions_to_grid
     def potential_from_grid(self, grid):
         potential = sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
         return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=potential)
 
+    @grids.convert_positions_to_grid
     def deflections_from_grid(self, grid):
         return self.deflections_between_planes_from_grid(grid=grid)
 
+    @grids.convert_positions_to_grid
     def deflections_of_planes_summed_from_grid(self, grid):
         deflections = sum(
             [plane.deflections_from_grid(grid=grid) for plane in self.planes]
@@ -422,6 +445,79 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         tracer = Tracer(planes=planes, cosmology=self.cosmology)
 
         return tracer.traced_grids_of_planes_from_grid(grid=grid)[plane_index_insert]
+
+    def image_plane_multiple_image_positions_of_galaxies(self, grid):
+        return [
+            self.image_plane_multiple_image_positions(
+                grid=grid, source_plane_coordinate=light_profile_centre
+            )
+            for light_profile_centre in self.light_profile_centres_of_planes[-1]
+        ]
+
+    def image_plane_multiple_image_positions(self, grid, source_plane_coordinate):
+
+        # TODO : This should not input as a grid but use a iterative adaptive grid.
+
+        if grid.sub_size > 1:
+            grid = grid.in_1d_binned
+
+        source_plane_grid = self.traced_grids_of_planes_from_grid(grid=grid)[-1]
+
+        source_plane_squared_distances = source_plane_grid.squared_distances_from_coordinate(
+            coordinate=source_plane_coordinate
+        )
+
+        trough_pixels = array_util.trough_pixels_from_array_2d(
+            array_2d=source_plane_squared_distances.in_2d, mask_2d=grid.mask
+        )
+
+        trough_mask = msk.Mask.from_pixel_coordinates(
+            shape_2d=grid.shape_2d,
+            pixel_coordinates=trough_pixels,
+            pixel_scales=grid.pixel_scales,
+            sub_size=grid.sub_size,
+            origin=grid.origin,
+            buffer=1,
+        )
+
+        multiple_image_pixels = grid_util.positions_at_coordinate_from_grid_2d(
+            grid_2d=source_plane_grid.in_2d,
+            coordinate=source_plane_coordinate,
+            mask_2d=trough_mask,
+        )
+
+        return grids.Positions.from_pixels_and_mask(
+            pixels=[multiple_image_pixels], mask=trough_mask
+        )
+
+    @property
+    def contribution_map(self):
+
+        contribution_maps = self.contribution_maps_of_planes
+        if None in contribution_maps:
+            contribution_maps = [i for i in contribution_maps if i is not None]
+
+        if contribution_maps:
+            return sum(contribution_maps)
+        else:
+            return None
+
+    @property
+    def contribution_maps_of_planes(self):
+
+        contribution_maps = []
+
+        for plane in self.planes:
+
+            if plane.contribution_map is not None:
+
+                contribution_maps.append(plane.contribution_map)
+
+            else:
+
+                contribution_maps.append(None)
+
+        return contribution_maps
 
 
 class AbstractTracerData(AbstractTracerLensing):

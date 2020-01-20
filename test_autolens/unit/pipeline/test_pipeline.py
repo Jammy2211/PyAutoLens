@@ -85,7 +85,7 @@ def make_mock_file(monkeypatch):
     yield files
 
 
-class TestMetaData(object):
+class TestMetaData:
     def test_files(self, mock_files):
         pipeline = al.PipelineDataset(
             "pipeline_name", DummyPhaseImaging(phase_name="phase_name")
@@ -94,13 +94,13 @@ class TestMetaData(object):
 
         assert (
             mock_files[1].text
-            == "pipeline=pipeline_name\nphase=phase_name\nsimulator=data_name"
+            == "pipeline=pipeline_name\nphase=phase_name\ndataset_name=data_name\nphase_tag=\npipeline_tag=None"
         )
 
         assert "phase_name///optimizer.pickle" in mock_files[2].filename
 
 
-class TestPassMask(object):
+class TestPassMask:
     def test_pass_mask(self):
         mask = MockMask()
         phase_1 = DummyPhaseImaging("one")
@@ -114,7 +114,7 @@ class TestPassMask(object):
 
 class TestPassPositions(object):
     def test_pass_positions(self):
-        positions = [[[1.0, 1.0], [2.0, 2.0]]]
+        positions = [[(1.0, 1.0), (2.0, 2.0)]]
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = al.PipelineDataset("", phase_1, phase_2)

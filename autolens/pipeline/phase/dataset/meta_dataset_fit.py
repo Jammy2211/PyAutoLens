@@ -49,7 +49,7 @@ class MetaDatasetFit:
         if self.inner_mask_radii is not None:
             inner_mask = aa.mask.circular(
                 shape_2d=mask.shape_2d,
-                pixel_scales=mask.pixel_scales,
+                pixel_scales=pixel_scales,
                 radius=self.inner_mask_radii,
                 sub_size=self.sub_size,
                 invert=True,
@@ -59,7 +59,7 @@ class MetaDatasetFit:
         if mask.sub_size != self.sub_size:
             mask = aa.mask.manual(
                 mask_2d=mask,
-                pixel_scales=mask.pixel_scales,
+                pixel_scales=pixel_scales,
                 sub_size=self.sub_size,
                 origin=mask.origin,
             )

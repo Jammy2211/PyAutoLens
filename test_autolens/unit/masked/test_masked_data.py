@@ -1,7 +1,6 @@
 from autoarray.operators import convolver, transformer
 import autolens as al
 import numpy as np
-import pytest
 
 
 class TestMaskedImaging(object):

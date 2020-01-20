@@ -2,6 +2,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 import autoarray as aa
+from autofit.tools.phase import Dataset
 from autolens.pipeline.phase import abstract
 from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.dataset.result import Result
@@ -51,7 +52,7 @@ class PhaseDataset(abstract.AbstractPhase):
 
         self.is_hyper_phase = False
 
-    def run(self, dataset, results=None, mask=None, positions=None):
+    def run(self, dataset: Dataset, results=None, mask=None, positions=None):
         """
         Run this phase.
 
@@ -70,6 +71,7 @@ class PhaseDataset(abstract.AbstractPhase):
         result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper_galaxies.
         """
+        dataset.save(self.paths.phase_output_path)
         self.model = self.model.populate(results)
 
         analysis = self.make_analysis(
