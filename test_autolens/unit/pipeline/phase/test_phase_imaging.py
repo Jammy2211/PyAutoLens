@@ -96,11 +96,13 @@ class TestPhase(object):
         assert isinstance(result.instance.galaxies[0], al.Galaxy)
         assert isinstance(result.instance.galaxies[0], al.Galaxy)
 
-    def test_modify_image(self, mask_function_7x7, imaging_7x7, mask_7x7):
+    def test__modify_image(self, mask_function_7x7, imaging_7x7, mask_7x7):
         class MyPhase(al.PhaseImaging):
             def modify_image(self, image, results):
                 assert imaging_7x7.image.shape_2d == image.shape_2d
-                image = al.array.full(fill_value=20.0, shape_2d=(7, 7))
+                image = al.array.full(
+                    fill_value=20.0, shape_2d=(7, 7), pixel_scales=1.0
+                )
                 return image
 
         phase_imaging_7x7 = MyPhase(

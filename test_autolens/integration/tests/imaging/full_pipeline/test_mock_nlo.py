@@ -1,5 +1,7 @@
 from test_autolens.integration.tests.imaging.full_pipeline import hyper_no_lens_light_bg
-from test_autolens.integration.tests.imaging.full_pipeline import hyper_no_lens_light_bg_extension_false
+from test_autolens.integration.tests.imaging.full_pipeline import (
+    hyper_no_lens_light_bg_extension_false,
+)
 from test_autolens.integration.tests.imaging.full_pipeline import (
     hyper_with_lens_light_bg,
 )

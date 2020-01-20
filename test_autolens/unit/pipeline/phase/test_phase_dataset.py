@@ -53,6 +53,7 @@ class TestPhase(object):
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
 
         assert (analysis.masked_imaging.mask == mask_input).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
 
@@ -66,8 +67,11 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=None)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
+
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         # If no mask is suppled, nor a mask function, we should use the default mask. This extends behind the edge of
         # 5x5 image, so will raise a MaskException.
@@ -96,6 +100,7 @@ class TestPhase(object):
         mask_input[3, 3] = True
 
         assert (analysis.masked_imaging.mask == mask_input).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         # If a mask function is supplied, we should use this mask, regardless of whether an input mask is supplied.
 
@@ -113,9 +118,11 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=None)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
         assert (analysis.masked_imaging.mask == mask_from_function).all()
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         # If no mask is suppled, nor a mask function, we should use the default mask.
 
@@ -140,12 +147,14 @@ class TestPhase(object):
 
         assert (analysis.masked_imaging.mask == mask_input).all()
         assert analysis.masked_imaging.mask.sub_size == 1
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
         phase_imaging_7x7.meta_imaging_fit.sub_size = 2
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_input)
 
         assert (analysis.masked_imaging.mask == mask_input).all()
         assert analysis.masked_imaging.mask.sub_size == 2
+        assert analysis.masked_imaging.mask.pixel_scales == mask_input.pixel_scales
 
     def test__make_analysis__positions_are_input__are_used_in_analysis(
         self, phase_imaging_7x7, imaging_7x7
@@ -155,7 +164,7 @@ class TestPhase(object):
         phase_imaging_7x7.meta_imaging_fit.positions_threshold = 0.2
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
+            dataset=imaging_7x7, positions=[[(1.0, 1.0), (2.0, 2.0)]]
         )
 
         assert (analysis.masked_dataset.positions[0][0] == np.array([1.0, 1.0])).all()
@@ -180,7 +189,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
+            dataset=imaging_7x7, positions=[[(1.0, 1.0), (2.0, 2.0)]]
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -198,7 +207,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, positions=[[[1.0, 1.0], [2.0, 2.0]]]
+            dataset=imaging_7x7, positions=[[(1.0, 1.0), (2.0, 2.0)]]
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -217,7 +226,7 @@ class TestPhase(object):
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, positions=[[[1.0, 0.0], [-1.0, 0.0]]]
+            dataset=imaging_7x7, positions=[[(1.0, 0.0), (-1.0, 0.0)]]
         )
         tracer = al.Tracer.from_galaxies(
             galaxies=[
@@ -248,7 +257,7 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7,
-            positions=[[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]],
+            positions=[[(0.0, 0.0), (0.0, 0.0)], [(0.0, 0.0), (0.0, 0.0)]],
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -259,7 +268,7 @@ class TestPhase(object):
 
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7,
-            positions=[[[0.0, 0.0], [0.0, 0.0]], [[100.0, 0.0], [0.0, 0.0]]],
+            positions=[[(0.0, 0.0), (0.0, 0.0)], [(100.0, 0.0), (0.0, 0.0)]],
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -738,7 +747,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(dataset=imaging_7x7, positions=[[[1.0, 1.0]]])
+        result = phase_imaging_7x7.run(dataset=imaging_7x7, positions=[[(1.0, 1.0)]])
 
         assert (result.positions[0] == np.array([1.0, 1.0])).all()
 

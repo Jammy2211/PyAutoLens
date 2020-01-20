@@ -10,7 +10,7 @@ imaging = simulate_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="lsst"
 )
 mask = al.mask.circular(
-    shape=imaging.shape, pixel_scales=imaging.pixel_scales, radius=3.0
+    shape_2d=imaging.shape, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
 # The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it
@@ -25,4 +25,4 @@ masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
 fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
-al.plot.fit_imaging.subplot(fit=fit, include_mask=True)
+aplt_array.fit_imaging.subplot_imaging(fit=fit, mask=True)

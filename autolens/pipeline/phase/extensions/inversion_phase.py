@@ -30,6 +30,9 @@ class ModelFixingHyperPhase(HyperPhase):
         phase.optimizer.multimodal = af.conf.instance.non_linear.get(
             "MultiNest", "extension_inversion_multimodal", bool
         )
+        phase.optimizer.evidence_tolerance = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_inversion_evidence_tolerance", bool
+        )
 
         return phase
 

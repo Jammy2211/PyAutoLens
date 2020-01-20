@@ -27,7 +27,7 @@ class TestPipelineNameTag:
             fix_lens_light=True, align_bulge_disk_phi=True
         )
 
-        assert pipeline_tag == "pipeline_tag__fix_lens_light__bd_align_phi"
+        assert pipeline_tag == "pipeline_tag__fix_lens_light__bulge_disk_align_phi"
 
         pipeline_tag = al.pipeline_tagging.pipeline_tag_from_pipeline_settings(
             align_light_dark_centre=True,
@@ -93,6 +93,16 @@ class TestHyperPipelineTaggers:
 
 
 class TestPipelineTaggers:
+    def test__initialize_align_light_mass_centre_tagger(self):
+        tag = al.pipeline_tagging.initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_centre(
+            initialize_align_light_mass_centre=False
+        )
+        assert tag == ""
+        tag = al.pipeline_tagging.initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_centre(
+            initialize_align_light_mass_centre=True
+        )
+        assert tag == "__init_align_light_mass_centre"
+
     def test__include_shear_tagger(self):
         tag = al.pipeline_tagging.include_shear_tag_from_include_shear(
             include_shear=False
@@ -147,7 +157,7 @@ class TestPipelineTaggers:
         tag = al.pipeline_tagging.align_bulge_disk_centre_tag_from_align_bulge_disk_centre(
             align_bulge_disk_centre=True
         )
-        assert tag == "__bd_align_centre"
+        assert tag == "__bulge_disk_align_centre"
 
         tag = al.pipeline_tagging.align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(
             align_bulge_disk_axis_ratio=False
@@ -156,7 +166,7 @@ class TestPipelineTaggers:
         tag = al.pipeline_tagging.align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(
             align_bulge_disk_axis_ratio=True
         )
-        assert tag == "__bd_align_axis_ratio"
+        assert tag == "__bulge_disk_align_axis_ratio"
 
         tag = al.pipeline_tagging.align_bulge_disk_phi_tag_from_align_bulge_disk_phi(
             align_bulge_disk_phi=False
@@ -165,7 +175,7 @@ class TestPipelineTaggers:
         tag = al.pipeline_tagging.align_bulge_disk_phi_tag_from_align_bulge_disk_phi(
             align_bulge_disk_phi=True
         )
-        assert tag == "__bd_align_phi"
+        assert tag == "__bulge_disk_align_phi"
 
     def test__bulge_disk_tag(self):
         tag = al.pipeline_tagging.bulge_disk_tag_from_align_bulge_disks(
@@ -180,21 +190,24 @@ class TestPipelineTaggers:
             align_bulge_disk_axis_ratio=False,
             align_bulge_disk_phi=False,
         )
-        assert tag == "__bd_align_centre"
+        assert tag == "__bulge_disk_align_centre"
 
         tag = al.pipeline_tagging.bulge_disk_tag_from_align_bulge_disks(
             align_bulge_disk_centre=True,
             align_bulge_disk_axis_ratio=False,
             align_bulge_disk_phi=True,
         )
-        assert tag == "__bd_align_centre__bd_align_phi"
+        assert tag == "__bulge_disk_align_centre__bulge_disk_align_phi"
 
         tag = al.pipeline_tagging.bulge_disk_tag_from_align_bulge_disks(
             align_bulge_disk_centre=True,
             align_bulge_disk_axis_ratio=True,
             align_bulge_disk_phi=True,
         )
-        assert tag == "__bd_align_centre__bd_align_axis_ratio__bd_align_phi"
+        assert (
+            tag
+            == "__bulge_disk_align_centre__bulge_disk_align_axis_ratio__bulge_disk_align_phi"
+        )
 
     def test__disk_as_sersic_tagger(self):
         tag = al.pipeline_tagging.disk_as_sersic_tag_from_disk_as_sersic(

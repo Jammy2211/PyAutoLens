@@ -296,6 +296,30 @@ class TestAbstractPlane(object):
             plane = al.Plane(galaxies=[galaxy, al.Galaxy(redshift=0.5)], redshift=None)
             assert plane.has_hyper_galaxy is True
 
+        def test__mass_profiles(self):
+
+            plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+
+            assert plane.mass_profiles == []
+
+            sis_0 = al.mp.SphericalIsothermal(einstein_radius=1.0)
+            sis_1 = al.mp.SphericalIsothermal(einstein_radius=2.0)
+            sis_2 = al.mp.SphericalIsothermal(einstein_radius=3.0)
+
+            plane = al.Plane(
+                galaxies=[al.Galaxy(redshift=0.5, mass_profile=sis_0)], redshift=None
+            )
+            assert plane.mass_profiles == [sis_0]
+
+            plane = al.Plane(
+                galaxies=[
+                    al.Galaxy(redshift=0.5, mass_profile_0=sis_0, mass_profile_1=sis_1),
+                    al.Galaxy(redshift=0.5, mass_profile_0=sis_2, mass_profile_1=sis_1),
+                ],
+                redshift=None,
+            )
+            assert plane.mass_profiles == [sis_0, sis_1, sis_2, sis_1]
+
         def test__hyper_image_of_galaxy_with_pixelization(self):
             galaxy_pix = al.Galaxy(
                 redshift=0.5,
@@ -418,8 +442,74 @@ class TestAbstractPlane(object):
             with pytest.raises(exc.PixelizationException):
                 print(plane.regularization)
 
-    class TestMassProfileGeometry:
+    class TestProfileGeometry:
+        def test__extract_centres_of_all_light_profiles_of_all_galaxies(self):
+            g0 = al.Galaxy(
+                redshift=0.5, light=al.lp.SphericalGaussian(centre=(1.0, 1.0))
+            )
+            g1 = al.Galaxy(
+                redshift=0.5, light=al.lp.SphericalGaussian(centre=(2.0, 2.0))
+            )
+            g2 = al.Galaxy(
+                redshift=0.5,
+                light0=al.lp.SphericalGaussian(centre=(3.0, 3.0)),
+                light1=al.lp.SphericalGaussian(centre=(4.0, 4.0)),
+            )
+
+            plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+            assert plane.light_profile_centres_of_galaxies == []
+            assert plane.light_profile_centres == []
+
+            plane = al.Plane(galaxies=[g0], redshift=None)
+            assert plane.light_profile_centres_of_galaxies == [[(1.0, 1.0)]]
+            assert plane.light_profile_centres == [(1.0, 1.0)]
+
+            plane = al.Plane(galaxies=[g1], redshift=None)
+            assert plane.light_profile_centres_of_galaxies == [[(2.0, 2.0)]]
+            assert plane.light_profile_centres == [(2.0, 2.0)]
+
+            plane = al.Plane(galaxies=[g0, g1], redshift=None)
+            assert plane.light_profile_centres_of_galaxies == [
+                [(1.0, 1.0)],
+                [(2.0, 2.0)],
+            ]
+            assert plane.light_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
+
+            plane = al.Plane(galaxies=[g1, g0], redshift=None)
+            assert plane.light_profile_centres_of_galaxies == [
+                [(2.0, 2.0)],
+                [(1.0, 1.0)],
+            ]
+            assert plane.light_profile_centres == [(2.0, 2.0), (1.0, 1.0)]
+
+            plane = al.Plane(
+                galaxies=[g0, al.Galaxy(redshift=0.5), g1, al.Galaxy(redshift=0.5)],
+                redshift=None,
+            )
+            assert plane.light_profile_centres_of_galaxies == [
+                [(1.0, 1.0)],
+                [(2.0, 2.0)],
+            ]
+            assert plane.light_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
+
+            plane = al.Plane(
+                galaxies=[g0, al.Galaxy(redshift=0.5), g1, al.Galaxy(redshift=0.5), g2],
+                redshift=None,
+            )
+            assert plane.light_profile_centres_of_galaxies == [
+                [(1.0, 1.0)],
+                [(2.0, 2.0)],
+                [(3.0, 3.0), (4.0, 4.0)],
+            ]
+            assert plane.light_profile_centres == [
+                (1.0, 1.0),
+                (2.0, 2.0),
+                (3.0, 3.0),
+                (4.0, 4.0),
+            ]
+
         def test__extract_centres_of_all_mass_profiles_of_all_galaxies(self):
+
             g0 = al.Galaxy(
                 redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
             )
@@ -680,6 +770,17 @@ class TestAbstractPlaneLensing(object):
 
             assert profile_image == pytest.approx(galaxy_image, 1.0e-4)
 
+        def test__profile_image_from_positions__same_as_galaxy_image_with_conversions(
+            self, positions_7x7, gal_x1_lp
+        ):
+            galaxy_image = gal_x1_lp.profile_image_from_grid(grid=positions_7x7)
+
+            plane = al.Plane(galaxies=[gal_x1_lp], redshift=None)
+
+            profile_image = plane.profile_image_from_grid(grid=positions_7x7)
+
+            assert profile_image[0][0] == pytest.approx(galaxy_image[0][0], 1.0e-4)
+
         def test__profile_images_of_galaxies(self, sub_grid_7x7):
             # Overwrite one value so intensity in each pixel is different
             sub_grid_7x7[5] = np.array([2.0, 2.0])
@@ -751,6 +852,32 @@ class TestAbstractPlaneLensing(object):
             profile_image = plane.profile_image_from_grid(grid=sub_grid_7x7)
 
             assert profile_image == pytest.approx(g0_image + g1_image, 1.0e-4)
+
+        def test__same_as_above__grid_is_positions(self):
+            # Overwrite one value so intensity in each pixel is different
+            positions = al.positions(positions=[[(2.0, 2.0)], [(3.0, 3.0)]])
+
+            g0 = al.Galaxy(
+                redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
+            )
+            g1 = al.Galaxy(
+                redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=2.0)
+            )
+
+            g0_image = g0.profile_image_from_grid(grid=positions)
+
+            g1_image = g1.profile_image_from_grid(grid=positions)
+
+            plane = al.Plane(galaxies=[g0, g1], redshift=None)
+
+            profile_image = plane.profile_image_from_grid(grid=positions)
+
+            assert profile_image[0][0] == pytest.approx(
+                g0_image[0][0] + g1_image[0][0], 1.0e-4
+            )
+            assert profile_image[1][0] == pytest.approx(
+                g0_image[1][0] + g1_image[1][0], 1.0e-4
+            )
 
         def test__plane_has_no_galaxies__image_is_zeros_size_of_unlensed_grid(
             self, sub_grid_7x7
@@ -840,6 +967,20 @@ class TestAbstractPlaneLensing(object):
             convergence = plane.convergence_from_grid(grid=sub_grid_7x7)
 
             assert convergence == pytest.approx(g0_convergence + g1_convergence, 1.0e-8)
+
+        def test__convergence_from_grid_as_positions(self, positions_7x7):
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            )
+
+            g0_convergence = g0.convergence_from_grid(grid=positions_7x7)
+
+            plane = al.Plane(galaxies=[g0], redshift=None)
+
+            convergence = plane.convergence_from_grid(grid=positions_7x7)
+
+            assert convergence[0][0] == pytest.approx(g0_convergence[0][0], 1.0e-8)
 
         def test__plane_has_no_galaxies__convergence_is_zeros_size_of_reshaped_sub_array(
             self, sub_grid_7x7
@@ -935,6 +1076,22 @@ class TestAbstractPlaneLensing(object):
             potential = plane.potential_from_grid(grid=sub_grid_7x7)
 
             assert potential == pytest.approx(g0_potential + g1_potential, 1.0e-8)
+
+        def test__potential_from_grid_as_positions(self, positions_7x7):
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            )
+
+            print(positions_7x7)
+
+            g0_potential = g0.potential_from_grid(grid=positions_7x7)
+
+            plane = al.Plane(galaxies=[g0], redshift=None)
+
+            potential = plane.potential_from_grid(grid=positions_7x7)
+
+            assert potential[0][0] == pytest.approx(g0_potential[0][0], 1.0e-8)
 
         def test__plane_has_no_galaxies__potential_is_zeros_size_of_reshaped_sub_array(
             self, sub_grid_7x7
@@ -1043,6 +1200,25 @@ class TestAbstractPlaneLensing(object):
             deflections = plane.deflections_from_grid(grid=sub_grid_7x7)
 
             assert deflections == pytest.approx(g0_deflections + g1_deflections, 1.0e-4)
+
+        def test__deflections_from_grid_as_positions(self, positions_7x7):
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            )
+
+            g0_deflections = g0.deflections_from_grid(grid=positions_7x7)
+
+            plane = al.Plane(galaxies=[g0], redshift=None)
+
+            deflections = plane.deflections_from_grid(grid=positions_7x7)
+
+            assert deflections[0][0][0] == pytest.approx(
+                g0_deflections[0][0][0], 1.0e-8
+            )
+            assert deflections[0][0][1] == pytest.approx(
+                g0_deflections[0][0][1], 1.0e-8
+            )
 
         def test__deflections_numerics__x2_galaxy_in_plane__or_galaxy_x2_sis__deflections_double(
             self, grid_7x7, gal_x1_mp, gal_x2_mp
@@ -1927,6 +2103,53 @@ class TestAbstractPlaneData(object):
             assert plane.contribution_maps_of_galaxies[1] == None
             assert plane.contribution_maps_of_galaxies[2] == None
 
+        def test__contribution_map_is_sum_of_galaxy_contribution_maps__handles_nones_correctly(
+            self
+        ):
+            hyper_galaxy_0 = al.HyperGalaxy(
+                contribution_factor=0.0, noise_factor=0.0, noise_power=1.0
+            )
+            hyper_galaxy_1 = al.HyperGalaxy(
+                contribution_factor=1.0, noise_factor=0.0, noise_power=1.0
+            )
+
+            hyper_model_image = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
+
+            hyper_galaxy_image_0 = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
+            hyper_galaxy_image_1 = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
+
+            galaxy_0 = al.Galaxy(
+                redshift=0.5,
+                hyper_galaxy=hyper_galaxy_0,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image_0,
+            )
+
+            galaxy_1 = al.Galaxy(
+                redshift=0.5,
+                hyper_galaxy=hyper_galaxy_1,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image_1,
+            )
+
+            plane = al.Plane(redshift=0.5, galaxies=[galaxy_0, galaxy_1])
+
+            assert (
+                sum(plane.contribution_maps_of_galaxies) == plane.contribution_map
+            ).all()
+
+            galaxy_1 = al.Galaxy(redshift=0.5)
+
+            plane = al.Plane(redshift=0.5, galaxies=[galaxy_0, galaxy_1])
+
+            assert (galaxy_0.contribution_map == plane.contribution_map).all()
+
+            galaxy_0 = al.Galaxy(redshift=0.5)
+
+            plane = al.Plane(redshift=0.5, galaxies=[galaxy_0, galaxy_1])
+
+            assert plane.contribution_map == None
+
     class TestHyperNoiseMap:
         def test__x2_hyper_galaxy__use_numerical_values_of_hyper_noise_map_scaling(
             self
@@ -2238,6 +2461,21 @@ class TestPlane(object):
                 np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3
             )
             assert traced_grid[3] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
+
+        def test__traced_grid__grid_is_positions__uses_deflections__x2_sis_galaxies(
+            self, gal_x1_mp
+        ):
+
+            positions = al.positions(positions=[[(1.0, 1.0), (1.0, 0.0)]])
+
+            plane = al.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
+
+            traced_grid = plane.traced_grid_from_grid(grid=positions)
+
+            assert traced_grid[0][0] == pytest.approx(
+                (1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707), 1e-3
+            )
+            assert traced_grid[0][1] == pytest.approx((-1.0, 0.0), 1e-3)
 
         def test__plane_has_no_galaxies__traced_grid_is_input_grid_of_sub_grid_7x7(
             self, sub_grid_7x7

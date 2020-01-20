@@ -8,13 +8,14 @@ import autofit as af
 
 @pytest.fixture(name="general_config", autouse=True)
 def make_general_config():
-    general_config_path = "{}/test_files/config/plotting/".format(
-        os.path.dirname(os.path.realpath(__file__))
-    )
-    af.conf.instance.general = af.conf.NamedConfig(general_config_path + "general.ini")
+    directory = os.path.dirname(os.path.realpath(__file__))
+    config_path = f"{directory}/integration/config"
+    plotting_config_path = f"{config_path}/plotting/"
+    af.conf.instance.general = af.conf.NamedConfig(plotting_config_path + "general.ini")
+    af.conf.instance.config_path = config_path
 
 
-class PlotPatch(object):
+class PlotPatch:
     def __init__(self):
         self.paths = []
 
