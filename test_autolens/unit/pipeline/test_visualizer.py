@@ -164,10 +164,18 @@ class TestPhaseImagingVisualizer:
         assert plot_path + "inversion/reconstruction.png" in plot_patch.paths
         assert plot_path + "inversion/errors.png" not in plot_patch.paths
         assert plot_path + "inversion/residual_map.png" not in plot_patch.paths
-        assert plot_path + "inversion/normalized_residual_map.png" not in plot_patch.paths
+        assert (
+            plot_path + "inversion/normalized_residual_map.png" not in plot_patch.paths
+        )
         assert plot_path + "inversion/chi_squared_map.png" in plot_patch.paths
-        assert plot_path + "inversion/regularization_weight_map.png" not in plot_patch.paths
-        assert plot_path + "inversion/interpolated_reconstruction.png" not in plot_patch.paths
+        assert (
+            plot_path + "inversion/regularization_weight_map.png"
+            not in plot_patch.paths
+        )
+        assert (
+            plot_path + "inversion/interpolated_reconstruction.png"
+            not in plot_patch.paths
+        )
         assert plot_path + "inversion/interpolated_errors.png" in plot_patch.paths
 
     def test__visualizes_hyper_images_using_config(
@@ -279,15 +287,21 @@ class TestPhaseInterferometerVisualizer:
             in plot_patch.paths
         )
 
-    #    assert plot_path + "subplots/subplot_inversion.png" in plot_patch.paths
+        #    assert plot_path + "subplots/subplot_inversion.png" in plot_patch.paths
         assert plot_path + "inversion/reconstructed_image.png" in plot_patch.paths
         assert plot_path + "inversion/reconstruction.png" in plot_patch.paths
         assert plot_path + "inversion/errors.png" not in plot_patch.paths
-      #  assert plot_path + "inversion/residual_map.png" not in plot_patch.paths
-      #  assert plot_path + "inversion/normalized_residual_map.png" not in plot_patch.paths
-      #  assert plot_path + "inversion/chi_squared_map.png" in plot_patch.paths
-        assert plot_path + "inversion/regularization_weight_map.png" not in plot_patch.paths
-        assert plot_path + "inversion/interpolated_reconstruction.png" not in plot_patch.paths
+        #  assert plot_path + "inversion/residual_map.png" not in plot_patch.paths
+        #  assert plot_path + "inversion/normalized_residual_map.png" not in plot_patch.paths
+        #  assert plot_path + "inversion/chi_squared_map.png" in plot_patch.paths
+        assert (
+            plot_path + "inversion/regularization_weight_map.png"
+            not in plot_patch.paths
+        )
+        assert (
+            plot_path + "inversion/interpolated_reconstruction.png"
+            not in plot_patch.paths
+        )
         assert plot_path + "inversion/interpolated_errors.png" in plot_patch.paths
 
 

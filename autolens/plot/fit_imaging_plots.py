@@ -86,9 +86,7 @@ def subplot_of_plane(
     number_subplots = 4
 
     sub_plotter = sub_plotter.plotter_with_new_output(
-        output=mat_objs.Output(
-            filename=sub_plotter.output.filename + "_" + str(plane_index)
-        )
+        filename=sub_plotter.output.filename + "_" + str(plane_index)
     )
 
     sub_plotter.open_subplot_figure(number_subplots=number_subplots)
@@ -244,9 +242,7 @@ def individuals(
         for plane_index in range(fit.tracer.total_planes):
 
             plotter = plotter.plotter_with_new_output(
-                output=mat_objs.Output(
-                    filename="plane_image_of_plane_" + str(plane_index)
-                )
+                filename="plane_image_of_plane_" + str(plane_index)
             )
 
             if fit.tracer.planes[plane_index].has_light_profile:
@@ -296,9 +292,7 @@ def subtracted_image_of_plane(
     """
 
     plotter = plotter.plotter_with_new_output(
-        output=mat_objs.Output(
-            filename=plotter.output.filename + "_" + str(plane_index)
-        )
+        filename=plotter.output.filename + "_" + str(plane_index)
     )
 
     if fit.tracer.total_planes > 1:
@@ -347,9 +341,7 @@ def model_image_of_plane(
     """
 
     plotter = plotter.plotter_with_new_output(
-        output=mat_objs.Output(
-            filename=plotter.output.filename + "_" + str(plane_index)
-        )
+        filename=plotter.output.filename + "_" + str(plane_index)
     )
 
     plotter.plot_array(

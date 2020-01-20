@@ -136,9 +136,7 @@ def individual(
             caustics=include.caustics_from_obj(obj=tracer),
             positions=None,
             include=include,
-            plotter=plotter.plotter_with_new_output(
-                output=mat_objs.Output(filename="source_plane")
-            ),
+            plotter=plotter.plotter_with_new_output(filename="source_plane"),
         )
 
     if plot_deflections:
