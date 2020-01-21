@@ -179,9 +179,19 @@ class PhaseImaging(dataset.PhaseDataset):
         inversion=False,
         include_background_sky=False,
         include_background_noise=False,
-        inversion_phase_first=False,
+        hyper_galaxy_phase_first=False,
     ):
         hyper_phase_classes = []
+
+        if self.meta_imaging_fit.has_pixelization and inversion:
+            if not include_background_sky and not include_background_noise:
+                hyper_phase_classes.append(extensions.InversionPhase)
+            elif include_background_sky and not include_background_noise:
+                hyper_phase_classes.append(extensions.InversionBackgroundSkyPhase)
+            elif not include_background_sky and include_background_noise:
+                hyper_phase_classes.append(extensions.InversionBackgroundNoisePhase)
+            else:
+                hyper_phase_classes.append(extensions.InversionBackgroundBothPhase)
 
         if hyper_galaxy:
             if not include_background_sky and not include_background_noise:
@@ -201,17 +211,7 @@ class PhaseImaging(dataset.PhaseDataset):
                     extensions.hyper_galaxy_phase.HyperGalaxyBackgroundBothPhase
                 )
 
-        if inversion:
-            if not include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(extensions.InversionPhase)
-            elif include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(extensions.InversionBackgroundSkyPhase)
-            elif not include_background_sky and include_background_noise:
-                hyper_phase_classes.append(extensions.InversionBackgroundNoisePhase)
-            else:
-                hyper_phase_classes.append(extensions.InversionBackgroundBothPhase)
-
-        if inversion_phase_first:
+        if hyper_galaxy_phase_first:
             if inversion and hyper_galaxy:
                 hyper_phase_classes = [cls for cls in reversed(hyper_phase_classes)]
 

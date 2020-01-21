@@ -135,10 +135,16 @@ class Analysis(analysis_dataset.Analysis):
             hyper_background_noise=hyper_background_noise,
         )
 
-        visualizer = self.visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-            preloaded_critical_curves=tracer.critical_curves,
-            preloaded_caustics=tracer.caustics,
-        )
+        if tracer.has_mass_profile:
+
+            visualizer = self.visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+                preloaded_critical_curves=tracer.critical_curves,
+                preloaded_caustics=tracer.caustics,
+            )
+
+        else:
+
+            visualizer = self.visualizer
 
         visualizer.visualize_ray_tracing(
             tracer=fit.tracer, during_analysis=during_analysis

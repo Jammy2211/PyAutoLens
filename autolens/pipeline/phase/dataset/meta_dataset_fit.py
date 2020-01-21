@@ -84,6 +84,13 @@ class MetaDatasetFit:
                     return galaxy.pixelization
 
     @property
+    def has_pixelization(self):
+        if self.pixelization is not None:
+            return True
+        else:
+            return False
+
+    @property
     def uses_cluster_inversion(self):
         if self.model.galaxies:
             for galaxy in self.model.galaxies:
