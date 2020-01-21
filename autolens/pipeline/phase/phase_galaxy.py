@@ -87,7 +87,7 @@ class AnalysisDeflections(Analysis):
 
         fit_y, fit_x = self.fit_for_instance(instance=instance)
 
-        if self.visualizer.plot_galaxy_fit_as_subplot:
+        if self.visualizer.plot_subplot_galaxy_fit:
             self.visualizer.plot_galaxy_fit_subplot(fit_y, path_suffix="/fit_y_")
             self.visualizer.plot_galaxy_fit_subplot(fit_x, path_suffix="/fit_x_")
 

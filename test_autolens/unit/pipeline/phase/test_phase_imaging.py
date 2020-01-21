@@ -234,38 +234,62 @@ class TestPhase(object):
         assert instance.hyper_image_sky.sky_scale == 0.3
         assert instance.hyper_background_noise.noise_scale == 0.4
 
-    def test__extended_with_hyper_and_pixelizations(self, phase_imaging_7x7):
-        phase_extended = phase_imaging_7x7.extend_with_multiple_hyper_phases(
+    def test__extended_with_hyper_and_pixelizations(self):
+
+        phase_no_pixelization = al.PhaseImaging(
+            optimizer_class=mock_pipeline.MockNLO, phase_name="test_phase"
+        )
+
+        phase_extended = phase_no_pixelization.extend_with_multiple_hyper_phases(
             hyper_galaxy=False, inversion=False
         )
-        assert phase_extended == phase_imaging_7x7
+        assert phase_extended == phase_no_pixelization
 
-        phase_extended = phase_imaging_7x7.extend_with_multiple_hyper_phases(
+        # This phase does not have a pixelization, so even though inversion=True it will not be extended
+
+        phase_extended = phase_no_pixelization.extend_with_multiple_hyper_phases(
+            inversion=True
+        )
+        assert phase_extended == phase_no_pixelization
+
+        phase_with_pixelization = al.PhaseImaging(
+            galaxies=dict(
+                source=al.GalaxyModel(
+                    redshift=0.5,
+                    pixelization=al.pix.Rectangular,
+                    regularization=al.reg.Constant,
+                )
+            ),
+            optimizer_class=mock_pipeline.MockNLO,
+            phase_name="test_phase",
+        )
+
+        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
             inversion=True
         )
         assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
 
-        phase_extended = phase_imaging_7x7.extend_with_multiple_hyper_phases(
+        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
             hyper_galaxy=True, inversion=False
         )
         assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
 
-        phase_extended = phase_imaging_7x7.extend_with_multiple_hyper_phases(
+        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
             hyper_galaxy=False, inversion=True
         )
         assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
 
-        phase_extended = phase_imaging_7x7.extend_with_multiple_hyper_phases(
+        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
             hyper_galaxy=True, inversion=True
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
-        assert type(phase_extended.hyper_phases[1]) == al.InversionPhase
-
-        phase_extended = phase_imaging_7x7.extend_with_multiple_hyper_phases(
-            hyper_galaxy=True, inversion=True, inversion_phase_first=True
         )
         assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
         assert type(phase_extended.hyper_phases[1]) == al.HyperGalaxyPhase
+
+        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
+            hyper_galaxy=True, inversion=True, hyper_galaxy_phase_first=True
+        )
+        assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
+        assert type(phase_extended.hyper_phases[1]) == al.InversionPhase
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, imaging_7x7, mask_function_7x7

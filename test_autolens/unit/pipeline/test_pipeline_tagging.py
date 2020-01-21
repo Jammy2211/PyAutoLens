@@ -94,14 +94,14 @@ class TestHyperPipelineTaggers:
 
 class TestPipelineTaggers:
     def test__initialize_align_light_mass_centre_tagger(self):
-        tag = al.pipeline_tagging.initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_centre(
+        tag = al.pipeline_tagging.align_light_mass_centre_tag_from_align_light_mass_centre(
             initialize_align_light_mass_centre=False
         )
         assert tag == ""
-        tag = al.pipeline_tagging.initialize_align_light_mass_centre_tag_from_initialize_align_light_mass_centre(
+        tag = al.pipeline_tagging.align_light_mass_centre_tag_from_align_light_mass_centre(
             initialize_align_light_mass_centre=True
         )
-        assert tag == "__init_align_light_mass_centre"
+        assert tag == "__align_light_mass_centre"
 
     def test__include_shear_tagger(self):
         tag = al.pipeline_tagging.include_shear_tag_from_include_shear(

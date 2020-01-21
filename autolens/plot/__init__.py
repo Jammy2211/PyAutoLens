@@ -28,6 +28,11 @@ from autoastro.plot.lensing_mat_objs import (
     CausticsLiner,
 )
 
+from autoastro.plot.lensing_plotters import plot_array as array
+from autoastro.plot.lensing_plotters import plot_grid as grid
+from autoastro.plot.lensing_plotters import plot_line as line
+from autoastro.plot.lensing_plotters import plot_mapper_obj as mapper_obj
+
 from autoastro.plot.lensing_plotters import Plotter, SubPlotter, Include
 from autoastro.plot import light_profile_plots as lp
 from autoastro.plot import mass_profile_plots as mp

@@ -8,7 +8,7 @@ from astropy import cosmology as cosmo
 import autofit as af
 import autolens as al
 import autoarray as aa
-from autofit import Paths
+
 from autolens import exc
 from test_autolens.mock import mock_pipeline
 
@@ -399,6 +399,7 @@ class TestPhase(object):
         )
 
         assert phase_imaging_7x7.meta_imaging_fit.pixelization is None
+        assert phase_imaging_7x7.meta_imaging_fit.has_pixelization is False
 
         source_galaxy = al.Galaxy(
             redshift=0.5,
@@ -416,6 +417,7 @@ class TestPhase(object):
         assert isinstance(
             phase_imaging_7x7.meta_imaging_fit.pixelization, al.pix.Rectangular
         )
+        assert phase_imaging_7x7.meta_imaging_fit.has_pixelization is True
 
         source_galaxy = al.GalaxyModel(
             redshift=0.5,
@@ -433,6 +435,7 @@ class TestPhase(object):
         assert type(phase_imaging_7x7.meta_imaging_fit.pixelization) == type(
             al.pix.Rectangular
         )
+        assert phase_imaging_7x7.meta_imaging_fit.has_pixelization is True
 
     def test__default_mask_function(self, phase_imaging_7x7, imaging_7x7):
         masked_imaging = al.masked.imaging(

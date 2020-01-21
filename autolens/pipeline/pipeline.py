@@ -4,37 +4,55 @@ from autoarray.operators.inversion import pixelizations as pix
 from autoarray.operators.inversion import regularization as reg
 
 
-class PipelineSettings(object):
+class PipelineHyperSettings(object):
+    def __init__(self, galaxies=False, image_sky=False, background_noise=False):
+
+        self.galaxies = galaxies
+        self.image_sky = image_sky
+        self.background_noise = background_noise
+
+
+class PipelineSourceSettings(object):
     def __init__(
         self,
-        hyper_galaxies=False,
-        hyper_image_sky=False,
-        hyper_background_noise=False,
-        initialize_align_light_mass_centre=True,
-        include_shear=False,
-        fix_lens_light=False,
         pixelization=pix.VoronoiBrightnessImage,
         regularization=reg.AdaptiveBrightness,
+        align_light_mass_centre=True,
+        fix_lens_light=True,
+    ):
+
+        self.pixelization = pixelization
+        self.regularization = regularization
+        self.align_light_mass_centre = align_light_mass_centre
+        self.fix_lens_light = fix_lens_light
+
+
+class PipelineLightSettings(object):
+    def __init__(
+        self,
         align_bulge_disk_centre=False,
         align_bulge_disk_phi=False,
         align_bulge_disk_axis_ratio=False,
         disk_as_sersic=False,
-        align_light_dark_centre=True,
-        align_bulge_dark_centre=True,
     ):
 
-        self.hyper_galaxies = hyper_galaxies
-        self.hyper_image_sky = hyper_image_sky
-        self.hyper_background_noise = hyper_background_noise
-        self.initialize_align_light_mass_centre = initialize_align_light_mass_centre
-        self.include_shear = include_shear
-        self.fix_lens_light = fix_lens_light
-        self.pixelization = pixelization
-        self.regularization = regularization
         self.align_bulge_disk_centre = align_bulge_disk_centre
         self.align_bulge_disk_phi = align_bulge_disk_phi
         self.align_bulge_disk_axis_ratio = align_bulge_disk_axis_ratio
         self.disk_as_sersic = disk_as_sersic
+
+
+class PipelineMassSettings(object):
+    def __init__(
+        self,
+        include_shear=False,
+        fix_lens_light=False,
+        align_light_dark_centre=True,
+        align_bulge_dark_centre=True,
+    ):
+
+        self.include_shear = include_shear
+        self.fix_lens_light = fix_lens_light
         self.align_light_dark_centre = align_light_dark_centre
         self.align_bulge_dark_centre = align_bulge_dark_centre
 
