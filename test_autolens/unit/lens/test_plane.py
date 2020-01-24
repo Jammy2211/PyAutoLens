@@ -855,7 +855,7 @@ class TestAbstractPlaneLensing(object):
 
         def test__same_as_above__grid_is_positions(self):
             # Overwrite one value so intensity in each pixel is different
-            positions = al.positions(positions=[[(2.0, 2.0)], [(3.0, 3.0)]])
+            positions = al.coordinates(coordinates=[[(2.0, 2.0)], [(3.0, 3.0)]])
 
             g0 = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
@@ -2386,7 +2386,7 @@ class TestPlane(object):
             self, gal_x1_mp
         ):
 
-            positions = al.positions(positions=[[(1.0, 1.0), (1.0, 0.0)]])
+            positions = al.coordinates(coordinates=[[(1.0, 1.0), (1.0, 0.0)]])
 
             plane = al.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
 

@@ -10,10 +10,10 @@ class TestPipelineNameTag:
         assert pipeline_tag == "pipeline_tag__hyper_galaxies_bg_sky_bg_noise"
 
         pipeline_tag = al.pipeline_tagging.pipeline_tag_from_pipeline_settings(
-            fix_lens_light=True
+            lens_light_centre=(1.0, 2.0), lens_mass_centre=(3.0, 4.0), fix_lens_light=True
         )
 
-        assert pipeline_tag == "pipeline_tag__fix_lens_light"
+        assert pipeline_tag == "pipeline_tag__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__fix_lens_light"
 
         pipeline_tag = al.pipeline_tagging.pipeline_tag_from_pipeline_settings(
             fix_lens_light=True,
@@ -93,7 +93,7 @@ class TestHyperPipelineTaggers:
 
 
 class TestPipelineTaggers:
-    def test__initialize_align_light_mass_centre_tagger(self):
+    def test__align_light_mass_centre_tagger(self):
         tag = al.pipeline_tagging.align_light_mass_centre_tag_from_align_light_mass_centre(
             initialize_align_light_mass_centre=False
         )
@@ -103,13 +103,35 @@ class TestPipelineTaggers:
         )
         assert tag == "__align_light_mass_centre"
 
-    def test__include_shear_tagger(self):
-        tag = al.pipeline_tagging.include_shear_tag_from_include_shear(
-            include_shear=False
+    def test__lens_light_centre_tagger(self):
+
+        tag = al.pipeline_tagging.lens_light_centre_tag_from_lens_light_centre(lens_light_centre=None)
+        assert tag == ""
+        tag = al.pipeline_tagging.lens_light_centre_tag_from_lens_light_centre(lens_light_centre=(2.0, 2.0))
+        assert tag == "__lens_light_centre_(2.00,2.00)"
+        tag = al.pipeline_tagging.lens_light_centre_tag_from_lens_light_centre(lens_light_centre=(3.0, 4.0))
+        assert tag == "__lens_light_centre_(3.00,4.00)"
+        tag = al.pipeline_tagging.lens_light_centre_tag_from_lens_light_centre(lens_light_centre=(3.027, 4.033))
+        assert tag == "__lens_light_centre_(3.03,4.03)"
+
+    def test__lens_mass_centre_tagger(self):
+
+        tag = al.pipeline_tagging.lens_mass_centre_tag_from_lens_mass_centre(lens_mass_centre=None)
+        assert tag == ""
+        tag = al.pipeline_tagging.lens_mass_centre_tag_from_lens_mass_centre(lens_mass_centre=(2.0, 2.0))
+        assert tag == "__lens_mass_centre_(2.00,2.00)"
+        tag = al.pipeline_tagging.lens_mass_centre_tag_from_lens_mass_centre(lens_mass_centre=(3.0, 4.0))
+        assert tag == "__lens_mass_centre_(3.00,4.00)"
+        tag = al.pipeline_tagging.lens_mass_centre_tag_from_lens_mass_centre(lens_mass_centre=(3.027, 4.033))
+        assert tag == "__lens_mass_centre_(3.03,4.03)"
+
+    def test__with_shear_tagger(self):
+        tag = al.pipeline_tagging.with_shear_tag_from_with_shear(
+            with_shear=False
         )
         assert tag == ""
-        tag = al.pipeline_tagging.include_shear_tag_from_include_shear(
-            include_shear=True
+        tag = al.pipeline_tagging.with_shear_tag_from_with_shear(
+            with_shear=True
         )
         assert tag == "__with_shear"
 

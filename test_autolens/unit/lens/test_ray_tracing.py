@@ -1361,7 +1361,7 @@ class TestAbstractTracerLensing(object):
             )
 
             traced_positions_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=al.positions([[(1.0, 1.0), (1.0, 1.0)], [(1.0, 1.0)]])
+                grid=al.coordinates([[(1.0, 1.0), (1.0, 1.0)], [(1.0, 1.0)]])
             )
 
             # From unit test_autoarray below:
@@ -1494,7 +1494,7 @@ class TestAbstractTracerLensing(object):
             )
 
             traced_positions_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=al.positions([[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
+                grid=al.coordinates([[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
             )
 
             assert traced_positions_of_planes[0][0][0] == tuple(

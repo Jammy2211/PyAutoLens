@@ -2306,27 +2306,27 @@ class MockTracerPositions:
 class TestPositionsFit:
     def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
 
-        positions = al.positions(positions=[[(0.0, 0.0), (0.0, 1.0)]])
+        positions = al.coordinates(coordinates=[[(0.0, 0.0), (0.0, 1.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separations[0] == 1.0
 
-        positions = al.positions([[(0.0, 0.0), (1.0, 1.0)]])
+        positions = al.coordinates([[(0.0, 0.0), (1.0, 1.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(2)
 
-        positions = al.positions([[(0.0, 0.0), (1.0, 3.0)]])
+        positions = al.coordinates([[(0.0, 0.0), (1.0, 3.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(1.0) + np.square(3.0))
 
-        positions = al.positions([[(-2.0, -4.0), (1.0, 3.0)]])
+        positions = al.coordinates([[(-2.0, -4.0), (1.0, 3.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
-        positions = al.positions([[(8.0, 4.0), (-9.0, -4.0)]])
+        positions = al.coordinates([[(8.0, 4.0), (-9.0, -4.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
@@ -2334,22 +2334,22 @@ class TestPositionsFit:
     def test_multiple_positions__mock_position_tracer__maximum_separation_is_correct(
         self
     ):
-        positions = al.positions([[(0.0, 0.0), (0.0, 1.0), (0.0, 0.5)]])
+        positions = al.coordinates([[(0.0, 0.0), (0.0, 1.0), (0.0, 0.5)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separations[0] == 1.0
 
-        positions = al.positions([[(0.0, 0.0), (0.0, 0.0), (3.0, 3.0)]])
+        positions = al.coordinates([[(0.0, 0.0), (0.0, 0.0), (3.0, 3.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(18)
 
-        al.positions([[(0.0, 0.0), (1.0, 1.0), (3.0, 3.0)]])
+        al.coordinates([[(0.0, 0.0), (1.0, 1.0), (3.0, 3.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(18)
 
-        positions = al.positions(
+        positions = al.coordinates(
             [
                 [
                     (-2.0, -4.0),
@@ -2365,13 +2365,13 @@ class TestPositionsFit:
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
-        positions = al.positions([[(8.0, 4.0), (8.0, 4.0), (-9.0, -4.0)]])
+        positions = al.coordinates([[(8.0, 4.0), (8.0, 4.0), (-9.0, -4.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
     def test_multiple_sets_of_positions__multiple_sets_of_max_distances(self):
-        positions = al.positions(
+        positions = al.coordinates(
             [
                 [(0.0, 0.0), (0.0, 1.0), (0.0, 0.5)],
                 [(0.0, 0.0), (0.0, 0.0), (3.0, 3.0)],
@@ -2387,7 +2387,7 @@ class TestPositionsFit:
         assert fit.maximum_separations[2] == np.sqrt(18)
 
     def test__likelihood__is_sum_of_separations_divided_by_noise(self):
-        positions = al.positions(
+        positions = al.coordinates(
             [
                 [(0.0, 0.0), (0.0, 1.0), (0.0, 0.5)],
                 [(0.0, 0.0), (0.0, 0.0), (3.0, 3.0)],
@@ -2423,7 +2423,7 @@ class TestPositionsFit:
 
     def test__threshold__if_not_met_returns_ray_tracing_exception(self):
 
-        positions = al.positions([[(0.0, 0.0), (0.0, 1.0)]])
+        positions = al.coordinates([[(0.0, 0.0), (0.0, 1.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
 
@@ -2441,11 +2441,11 @@ class TestPositionsFit:
             ]
         )
 
-        positions = al.positions([[(1.0, 0.0), (-1.0, 0.0)]])
+        positions = al.coordinates([[(1.0, 0.0), (-1.0, 0.0)]])
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separation_within_threshold(threshold=0.01)
 
-        positions = al.positions([[(1.2, 0.0), (-1.0, 0.0)]])
+        positions = al.coordinates([[(1.2, 0.0), (-1.0, 0.0)]])
         fit = al.fit_positions(positions=positions, tracer=tracer, noise_map=1.0)
         assert fit.maximum_separation_within_threshold(threshold=0.3)
         assert not fit.maximum_separation_within_threshold(threshold=0.15)
