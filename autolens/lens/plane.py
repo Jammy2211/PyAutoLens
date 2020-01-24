@@ -275,7 +275,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             redshift=redshift, galaxies=galaxies, cosmology=cosmology
         )
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def profile_image_from_grid(self, grid):
         """Compute the profile-image plane image of the list of galaxies of the plane's sub-grid, by summing the
         individual images of each galaxy's light profile.
@@ -310,7 +310,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             map(lambda galaxy: galaxy.profile_image_from_grid(grid=grid), self.galaxies)
         )
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def convergence_from_grid(self, grid):
         """Compute the convergence of the list of galaxies of the plane's sub-grid, by summing the individual convergences \
         of each galaxy's mass profile.
@@ -341,7 +341,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                 sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
             )
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def potential_from_grid(self, grid):
         """Compute the potential of the list of galaxies of the plane's sub-grid, by summing the individual potentials \
         of each galaxy's mass profile.
@@ -372,7 +372,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                 sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
             )
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def deflections_from_grid(self, grid):
         if self.galaxies:
             deflections = sum(
@@ -384,7 +384,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                 sub_grid_1d=np.full((grid.sub_shape_1d, 2), 0.0)
             )
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def traced_grid_from_grid(self, grid):
         """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
 

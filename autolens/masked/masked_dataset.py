@@ -8,7 +8,7 @@ class AbstractLensMasked(object):
     def __init__(self, positions, positions_threshold, preload_sparse_grids_of_planes):
 
         if positions is not None:
-            self.positions = grids.Positions(positions=positions)
+            self.positions = grids.Coordinates(coordinates=positions)
         else:
             self.positions = None
 

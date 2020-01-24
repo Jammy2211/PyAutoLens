@@ -4,12 +4,13 @@ from autoarray.operators.inversion import pixelizations as pix
 from autoarray.operators.inversion import regularization as reg
 
 
-class PipelineHyperSettings(object):
-    def __init__(self, galaxies=False, image_sky=False, background_noise=False):
+class PipelineGeneralSettings(object):
+    def __init__(self, hyper_galaxies=False, hyper_image_sky=False, hyper_background_noise=False, with_shear=True):
 
-        self.galaxies = galaxies
-        self.image_sky = image_sky
-        self.background_noise = background_noise
+        self.hyper_galaxies = hyper_galaxies
+        self.hyper_image_sky = hyper_image_sky
+        self.hyper_background_noise = hyper_background_noise
+        self.with_shear = with_shear
 
 
 class PipelineSourceSettings(object):
@@ -17,12 +18,16 @@ class PipelineSourceSettings(object):
         self,
         pixelization=pix.VoronoiBrightnessImage,
         regularization=reg.AdaptiveBrightness,
+        lens_light_centre=None,
+        lens_mass_centre=None,
         align_light_mass_centre=True,
         fix_lens_light=True,
     ):
 
         self.pixelization = pixelization
         self.regularization = regularization
+        self.lens_light_centre = lens_light_centre
+        self.lens_mass_centre = lens_mass_centre
         self.align_light_mass_centre = align_light_mass_centre
         self.fix_lens_light = fix_lens_light
 
@@ -45,13 +50,11 @@ class PipelineLightSettings(object):
 class PipelineMassSettings(object):
     def __init__(
         self,
-        include_shear=False,
         fix_lens_light=False,
         align_light_dark_centre=True,
         align_bulge_dark_centre=True,
     ):
 
-        self.include_shear = include_shear
         self.fix_lens_light = fix_lens_light
         self.align_light_dark_centre = align_light_dark_centre
         self.align_bulge_dark_centre = align_bulge_dark_centre

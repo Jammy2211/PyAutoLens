@@ -5,7 +5,7 @@ from autoarray.structures.grids import (
     GridIrregular as grid_irregular,
     GridRectangular as grid_rectangular,
     GridVoronoi as grid_voronoi,
-    Positions as positions,
+    Coordinates as coordinates,
 )
 from autoarray.structures.kernel import Kernel as kernel
 from autoarray.structures.visibilities import Visibilities as visibilities
@@ -59,7 +59,7 @@ from autolens.pipeline.phase.imaging.phase import PhaseImaging
 from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
 from autolens.pipeline.pipeline import (
-    PipelineHyperSettings,
+    PipelineGeneralSettings,
     PipelineSourceSettings,
     PipelineLightSettings,
     PipelineMassSettings,
