@@ -3,10 +3,9 @@ from autoastro.plot import lensing_plotters
 from autolens.plot import plane_plots, ray_tracing_plots, inversion_plots
 
 
+@lensing_plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
-def subplot_fit_interferometer(
-    fit, include=lensing_plotters.Include(), sub_plotter=lensing_plotters.SubPlotter()
-):
+def subplot_fit_interferometer(fit, include=None, sub_plotter=None):
 
     number_subplots = 6
 
@@ -49,10 +48,9 @@ def subplot_fit_interferometer(
     sub_plotter.figure.close()
 
 
+@lensing_plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
-def subplot_fit_real_space(
-    fit, include=lensing_plotters.Include(), sub_plotter=lensing_plotters.SubPlotter()
-):
+def subplot_fit_real_space(fit, include=None, sub_plotter=None):
 
     number_subplots = 2
 
@@ -144,8 +142,8 @@ def individuals(
     plot_residual_map=False,
     plot_normalized_residual_map=False,
     plot_chi_squared_map=False,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -209,10 +207,9 @@ def individuals(
         )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def visibilities(
-    fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
-):
+def visibilities(fit, include=None, plotter=None):
     """Plot the visibilities of a lens fit.
 
     Set *autolens.datas.grid.lensing_plotters.Plotters* for a description of all input parameters not described below.
@@ -227,10 +224,9 @@ def visibilities(
     plotter.plot_grid(grid=fit.visibilities)
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def noise_map(
-    fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
-):
+def noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.lensing_plotters.Plotters* for a description of all input parameters not described below.
@@ -245,10 +241,9 @@ def noise_map(
     plotter.plot_grid(grid=fit.visibilities, color_array=fit.noise_map[:, 0])
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def signal_to_noise_map(
-    fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
-):
+def signal_to_noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.lensing_plotters.Plotters* for a description of all input parameters not described below.
@@ -263,10 +258,9 @@ def signal_to_noise_map(
     plotter.plot_grid(grid=fit.visibilities, color_array=fit.signal_to_noise_map[:, 0])
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def model_visibilities(
-    fit, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
-):
+def model_visibilities(fit, include=None, plotter=None):
     """Plot the model visibilities of a fit.
 
     Set *autolens.datas.grid.lensing_plotters.Plotters* for a description of all input parameters not described below.
@@ -281,14 +275,15 @@ def model_visibilities(
     plotter.plot_grid(grid=fit.visibilities)
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def residual_map_vs_uv_distances(
     fit,
     plot_real=True,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the residual-map of a lens fit.
 
@@ -322,14 +317,15 @@ def residual_map_vs_uv_distances(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def normalized_residual_map_vs_uv_distances(
     fit,
     plot_real=True,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the residual-map of a lens fit.
 
@@ -363,14 +359,15 @@ def normalized_residual_map_vs_uv_distances(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def chi_squared_map_vs_uv_distances(
     fit,
     plot_real=True,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the residual-map of a lens fit.
 

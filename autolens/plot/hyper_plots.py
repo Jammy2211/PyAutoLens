@@ -3,14 +3,10 @@ from autoarray.plot import plotters
 from autoastro.plot import lensing_plotters
 
 
+@lensing_plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
 def subplot_fit_hyper_galaxy(
-    fit,
-    hyper_fit,
-    galaxy_image,
-    contribution_map_in,
-    include=lensing_plotters.Include(),
-    sub_plotter=lensing_plotters.SubPlotter(),
+    fit, hyper_fit, galaxy_image, contribution_map_in, include=None, sub_plotter=None
 ):
 
     number_subplots = 6
@@ -54,12 +50,10 @@ def subplot_fit_hyper_galaxy(
     sub_plotter.figure.close()
 
 
+@lensing_plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
 def subplot_hyper_galaxy_images(
-    hyper_galaxy_image_path_dict,
-    mask=None,
-    include=lensing_plotters.Include(),
-    sub_plotter=lensing_plotters.SubPlotter(),
+    hyper_galaxy_image_path_dict, mask=None, include=None, sub_plotter=None
 ):
 
     number_subplots = 0
@@ -86,14 +80,15 @@ def subplot_hyper_galaxy_images(
     sub_plotter.figure.close()
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def hyper_model_image(
     hyper_model_image,
     mask=None,
     positions=None,
     image_plane_pix_grid=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the image of a hyper_galaxies galaxy image.
 
@@ -115,14 +110,15 @@ def hyper_model_image(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def hyper_galaxy_image(
     galaxy_image,
     mask=None,
     positions=None,
     image_plane_pix_grid=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the image of a hyper_galaxies galaxy image.
 
@@ -141,13 +137,10 @@ def hyper_galaxy_image(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def contribution_map(
-    contribution_map_in,
-    mask=None,
-    positions=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    contribution_map_in, mask=None, positions=None, include=None, plotter=None
 ):
     """Plot the summed contribution maps of a hyper_galaxies-fit.
 

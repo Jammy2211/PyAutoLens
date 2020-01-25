@@ -2,6 +2,7 @@ from autoarray.plot import plotters
 from autoastro.plot import lensing_plotters
 
 
+@lensing_plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
 def subplot_inversion(
     inversion,
@@ -14,7 +15,7 @@ def subplot_inversion(
     caustics=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=lensing_plotters.Include(),
+    include=None,
     sub_plotter=plotters.SubPlotter(),
 ):
 
@@ -139,8 +140,8 @@ def individuals(
     plot_regularization_weight_map=False,
     plot_interpolated_reconstruction=False,
     plot_interpolated_errors=False,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -217,6 +218,7 @@ def individuals(
         )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def reconstructed_image(
     inversion,
@@ -225,8 +227,8 @@ def reconstructed_image(
     light_profile_centres=None,
     mass_profile_centres=None,
     critical_curves=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     plotter.plot_array(
@@ -241,6 +243,7 @@ def reconstructed_image(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def reconstruction(
     inversion,
@@ -248,8 +251,8 @@ def reconstruction(
     caustics=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
@@ -270,6 +273,7 @@ def reconstruction(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def errors(
     inversion,
@@ -277,8 +281,8 @@ def errors(
     caustics=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
@@ -299,6 +303,7 @@ def errors(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def residual_map(
     inversion,
@@ -306,8 +311,8 @@ def residual_map(
     caustics=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
@@ -328,6 +333,7 @@ def residual_map(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def normalized_residual_map(
     inversion,
@@ -335,8 +341,8 @@ def normalized_residual_map(
     caustics=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
@@ -357,6 +363,7 @@ def normalized_residual_map(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def chi_squared_map(
     inversion,
@@ -364,8 +371,8 @@ def chi_squared_map(
     caustics=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
@@ -386,6 +393,7 @@ def chi_squared_map(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def regularization_weights(
     inversion,
@@ -393,8 +401,8 @@ def regularization_weights(
     caustics=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     regularization_weights = inversion.regularization.regularization_weights_from_mapper(
@@ -415,14 +423,15 @@ def regularization_weights(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def interpolated_reconstruction(
     inversion,
     source_positions=None,
     grid=None,
     caustics=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     plotter.plot_array(
@@ -434,14 +443,15 @@ def interpolated_reconstruction(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def interpolated_errors(
     inversion,
     source_positions=None,
     grid=None,
     caustics=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     plotter.plot_array(
