@@ -28,9 +28,8 @@ def run(
 
     if mask is None:
         mask = aa.mask.circular(
-            shape_2d=imaging.shape_2d,
-            pixel_scales=imaging.pixel_scales,
-            radius=3.0)
+            shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
+        )
 
     module.make_pipeline(
         name=test_name,

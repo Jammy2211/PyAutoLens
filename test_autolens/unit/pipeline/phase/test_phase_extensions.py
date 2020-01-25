@@ -408,7 +408,7 @@ class TestHyperGalaxyPhase(object):
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
 
         mask = phase_imaging_7x7.meta_imaging_fit.mask_with_phase_sub_size_from_mask(
-            mask=mask_7x7,
+            mask=mask_7x7
         )
         assert mask.sub_size == 2
 

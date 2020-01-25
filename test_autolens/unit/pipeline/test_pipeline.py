@@ -54,6 +54,7 @@ class DummyPhaseImaging(af.AbstractPhase):
 class MockImagingData(object):
     pass
 
+
 class MockFile(object):
     def __init__(self):
         self.text = None

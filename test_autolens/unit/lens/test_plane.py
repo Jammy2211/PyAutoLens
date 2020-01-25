@@ -508,7 +508,9 @@ class TestAbstractPlane(object):
                 (4.0, 4.0),
             ]
 
-        def test__extract_centres_of_all_mass_profiles_of_all_galaxies__ignores_mass_sheets(self):
+        def test__extract_centres_of_all_mass_profiles_of_all_galaxies__ignores_mass_sheets(
+            self
+        ):
 
             g0 = al.Galaxy(
                 redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
@@ -575,13 +577,19 @@ class TestAbstractPlane(object):
             ]
 
             g0 = al.Galaxy(
-                redshift=0.5, mass=al.mp.SphericalIsothermal(
-                    centre=(1.0, 1.0)),
-                    sheet=al.mp.MassSheet(centre=(10.0, 10.0))
+                redshift=0.5,
+                mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0)),
+                sheet=al.mp.MassSheet(centre=(10.0, 10.0)),
             )
 
             plane = al.Plane(
-                galaxies=[g0, al.Galaxy(redshift=0.5, sheet=al.mp.MassSheet(centre=(10.0, 10.0))), g1, al.Galaxy(redshift=0.5, sheet=al.mp.MassSheet(centre=(10.0, 10.0))), g2],
+                galaxies=[
+                    g0,
+                    al.Galaxy(redshift=0.5, sheet=al.mp.MassSheet(centre=(10.0, 10.0))),
+                    g1,
+                    al.Galaxy(redshift=0.5, sheet=al.mp.MassSheet(centre=(10.0, 10.0))),
+                    g2,
+                ],
                 redshift=None,
             )
             assert plane.mass_profile_centres_of_galaxies == [

@@ -46,7 +46,7 @@ class TestPhase(object):
         assert phase_dataset_7x7.model.galaxies == [al.GalaxyModel(redshift=0.5)]
 
     def test__customize(
-        self, results_7x7, results_collection_7x7, imaging_7x7, mask_7x7,
+        self, results_7x7, results_collection_7x7, imaging_7x7, mask_7x7
     ):
         class MyPlanePhaseAnd(al.PhaseImaging):
             def customize_priors(self, results):
@@ -59,8 +59,7 @@ class TestPhase(object):
         setattr(results_7x7.model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(
-            phase_name="test_phase",
-            optimizer_class=mock_pipeline.MockNLO,
+            phase_name="test_phase", optimizer_class=mock_pipeline.MockNLO
         )
 
         phase_dataset_7x7.make_analysis(
@@ -81,8 +80,7 @@ class TestPhase(object):
         setattr(results_7x7.model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(
-            phase_name="test_phase",
-            optimizer_class=mock_pipeline.MockNLO,
+            phase_name="test_phase", optimizer_class=mock_pipeline.MockNLO
         )
 
         phase_dataset_7x7.make_analysis(
@@ -104,12 +102,8 @@ class TestPhase(object):
 
         assert phase_dataset_7x7.galaxies is not None
 
-    def test__uses_pixelization_preload_grids_if_possible(
-        self, imaging_7x7, mask_7x7
-    ):
-        phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-        )
+    def test__uses_pixelization_preload_grids_if_possible(self, imaging_7x7, mask_7x7):
+        phase_dataset_7x7 = al.PhaseImaging(phase_name="test_phase")
 
         analysis = phase_dataset_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
 
@@ -226,9 +220,7 @@ class TestPhase(object):
 
 
 class TestResult(object):
-    def test__results_of_phase_are_available_as_properties(
-        self, imaging_7x7, mask_7x7
-    ):
+    def test__results_of_phase_are_available_as_properties(self, imaging_7x7, mask_7x7):
         clean_images()
 
         phase_dataset_7x7 = al.PhaseImaging(
@@ -243,9 +235,7 @@ class TestResult(object):
 
         assert isinstance(result, al.AbstractPhase.Result)
 
-    def test__most_likely_tracer_available_as_result(
-        self, imaging_7x7, mask_7x7
-    ):
+    def test__most_likely_tracer_available_as_result(self, imaging_7x7, mask_7x7):
 
         phase_dataset_7x7 = al.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,

@@ -9,8 +9,6 @@ data_resolution = "lsst"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-
-
     class LensPlaneGalaxyX2Phase(al.PhaseImaging):
         def customize_priors(self, results):
 

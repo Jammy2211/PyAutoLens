@@ -16,7 +16,6 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             self.galaxies.lens.mass.centre.centre_1 = 2.0
             self.galaxies.lens.mass.einstein_radius = 1.2
 
-
     phase1 = SourcePix(
         phase_name="phase_1",
         phase_folders=phase_folders,

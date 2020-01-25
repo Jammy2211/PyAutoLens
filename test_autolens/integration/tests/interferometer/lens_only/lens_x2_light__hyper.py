@@ -15,8 +15,6 @@ def make_pipeline(
     real_space_pixel_scales=(0.1, 0.1),
     optimizer_class=af.MultiNest,
 ):
-
-
     class LensPlaneGalaxyX2Phase(al.PhaseInterferometer):
         def customize_priors(self, results):
 

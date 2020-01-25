@@ -160,9 +160,7 @@ def make_pipeline(
         inversion=True,
     )
 
-    return al.PipelineDataset(
-        name, phase1, phase2, phase3, phase4, phase5
-    )
+    return al.PipelineDataset(name, phase1, phase2, phase3, phase4, phase5)
 
 
 if __name__ == "__main__":
