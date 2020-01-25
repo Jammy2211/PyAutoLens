@@ -3,10 +3,9 @@ from autoastro.plot import lensing_plotters
 from autolens.plot import plane_plots, inversion_plots
 
 
+@lensing_plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
-def subplot_fit_imaging(
-    fit, include=lensing_plotters.Include(), sub_plotter=plotters.SubPlotter()
-):
+def subplot_fit_imaging(fit, include=None, sub_plotter=plotters.SubPlotter()):
     number_subplots = 6
 
     sub_plotter.open_subplot_figure(number_subplots=number_subplots)
@@ -40,9 +39,7 @@ def subplot_fit_imaging(
     sub_plotter.figure.close()
 
 
-def subplot_of_planes(
-    fit, include=lensing_plotters.Include(), sub_plotter=plotters.SubPlotter()
-):
+def subplot_of_planes(fit, include=None, sub_plotter=plotters.SubPlotter()):
 
     for plane_index in range(fit.tracer.total_planes):
 
@@ -59,13 +56,9 @@ def subplot_of_planes(
             )
 
 
+@lensing_plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
-def subplot_of_plane(
-    fit,
-    plane_index,
-    include=lensing_plotters.Include(),
-    sub_plotter=plotters.SubPlotter(),
-):
+def subplot_of_plane(fit, plane_index, include=None, sub_plotter=plotters.SubPlotter()):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
@@ -175,7 +168,7 @@ def individuals(
     plot_subtracted_images_of_planes=False,
     plot_model_images_of_planes=False,
     plot_plane_images_of_planes=False,
-    include=lensing_plotters.Include(),
+    include=None,
     plotter=plotters.Plotter(),
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
@@ -273,9 +266,10 @@ def individuals(
                 )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def subtracted_image_of_plane(
-    fit, plane_index, include=lensing_plotters.Include(), plotter=plotters.Plotter()
+    fit, plane_index, include=None, plotter=plotters.Plotter()
 ):
     """Plot the model image of a specific plane of a lens fit.
 
@@ -324,10 +318,9 @@ def subtracted_image_of_plane(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def model_image_of_plane(
-    fit, plane_index, include=lensing_plotters.Include(), plotter=plotters.Plotter()
-):
+def model_image_of_plane(fit, plane_index, include=None, plotter=plotters.Plotter()):
     """Plot the model image of a specific plane of a lens fit.
 
     Set *autolens.datas.arrays.plotters.plotters* for a description of all input parameters not described below.
@@ -358,8 +351,9 @@ def model_image_of_plane(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def image(fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()):
+def image(fit, include=None, plotter=plotters.Plotter()):
     """Plot the image of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -387,8 +381,9 @@ def image(fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()):
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def noise_map(fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()):
+def noise_map(fit, include=None, plotter=plotters.Plotter()):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -414,10 +409,9 @@ def noise_map(fit, include=lensing_plotters.Include(), plotter=plotters.Plotter(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def signal_to_noise_map(
-    fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()
-):
+def signal_to_noise_map(fit, include=None, plotter=plotters.Plotter()):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -443,8 +437,9 @@ def signal_to_noise_map(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def model_image(fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()):
+def model_image(fit, include=None, plotter=plotters.Plotter()):
     """Plot the model image of a fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -471,8 +466,9 @@ def model_image(fit, include=lensing_plotters.Include(), plotter=plotters.Plotte
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def residual_map(fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()):
+def residual_map(fit, include=None, plotter=plotters.Plotter()):
     """Plot the residual-map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -498,10 +494,9 @@ def residual_map(fit, include=lensing_plotters.Include(), plotter=plotters.Plott
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def normalized_residual_map(
-    fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()
-):
+def normalized_residual_map(fit, include=None, plotter=plotters.Plotter()):
     """Plot the residual-map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -527,10 +522,9 @@ def normalized_residual_map(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def chi_squared_map(
-    fit, include=lensing_plotters.Include(), plotter=plotters.Plotter()
-):
+def chi_squared_map(fit, include=None, plotter=plotters.Plotter()):
     """Plot the chi-squared map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.

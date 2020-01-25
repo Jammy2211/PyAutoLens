@@ -1,6 +1,8 @@
 from autoarray.plot import plotters
+from autoastro.plot import lensing_plotters
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def subplot_image_and_mapper(
     image,

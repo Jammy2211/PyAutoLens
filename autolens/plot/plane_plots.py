@@ -2,14 +2,9 @@ from autoarray.plot import plotters
 from autoastro.plot import lensing_plotters
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def profile_image(
-    plane,
-    grid,
-    positions=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
-):
+def profile_image(plane, grid, positions=None, include=None, plotter=None):
 
     plotter.plot_array(
         array=plane.profile_image_from_grid(grid=grid),
@@ -26,15 +21,9 @@ def profile_image(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def plane_image(
-    plane,
-    grid,
-    positions=None,
-    caustics=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
-):
+def plane_image(plane, grid, positions=None, caustics=None, include=None, plotter=None):
 
     plotter.plot_array(
         array=plane.plane_image_from_grid(grid=grid).array,
@@ -51,10 +40,9 @@ def plane_image(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def convergence(
-    plane, grid, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
-):
+def convergence(plane, grid, include=None, plotter=None):
 
     plotter.plot_array(
         array=plane.convergence_from_grid(grid=grid),
@@ -70,10 +58,9 @@ def convergence(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def potential(
-    plane, grid, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
-):
+def potential(plane, grid, include=None, plotter=None):
 
     plotter.plot_array(
         array=plane.potential_from_grid(grid=grid),
@@ -89,10 +76,9 @@ def potential(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def deflections_y(
-    plane, grid, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
-):
+def deflections_y(plane, grid, include=None, plotter=None):
 
     deflections = plane.deflections_from_grid(grid=grid)
     deflections_y = grid.mapping.array_stored_1d_from_sub_array_1d(
@@ -113,10 +99,9 @@ def deflections_y(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def deflections_x(
-    plane, grid, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
-):
+def deflections_x(plane, grid, include=None, plotter=None):
 
     deflections = plane.deflections_from_grid(grid=grid)
     deflections_x = grid.mapping.array_stored_1d_from_sub_array_1d(
@@ -137,10 +122,9 @@ def deflections_x(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def magnification(
-    plane, grid, include=lensing_plotters.Include(), plotter=lensing_plotters.Plotter()
-):
+def magnification(plane, grid, include=None, plotter=None):
 
     plotter.plot_array(
         array=plane.magnification_from_grid(grid=grid),
@@ -156,6 +140,7 @@ def magnification(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def image_and_source_plane_subplot(
     image_plane,
@@ -163,7 +148,7 @@ def image_and_source_plane_subplot(
     grid,
     positions=None,
     axis_limits=None,
-    include=lensing_plotters.Include(),
+    include=None,
     sub_plotter=plotters.SubPlotter(),
 ):
 
@@ -201,6 +186,7 @@ def image_and_source_plane_subplot(
     sub_plotter.figure.close()
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def plane_grid(
     plane,
@@ -209,8 +195,8 @@ def plane_grid(
     positions=None,
     critical_curves=None,
     caustics=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     plotter.plot_grid(
@@ -230,14 +216,9 @@ def plane_grid(
     )
 
 
+@lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def contribution_map(
-    plane,
-    mask=None,
-    positions=None,
-    include=lensing_plotters.Include(),
-    plotter=lensing_plotters.Plotter(),
-):
+def contribution_map(plane, mask=None, positions=None, include=None, plotter=None):
 
     plotter.plot_array(
         array=plane.contribution_map,
