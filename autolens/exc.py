@@ -15,3 +15,7 @@ class PhaseException(Exception):
 
 class PixelizationException(af.exc.FitException):
     pass
+
+
+class SettingsException(Exception):
+    pass

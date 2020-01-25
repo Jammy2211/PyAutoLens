@@ -39,7 +39,7 @@ from autolens.lens.ray_tracing import Tracer
 from autolens import util
 from autolens.fit.fit import fit
 from autolens.fit.fit import PositionsFit as fit_positions
-from autolens.pipeline import phase_tagging, pipeline_tagging
+from autolens.pipeline import phase_tagging
 from autolens.pipeline.phase.abstract import phase
 from autolens.pipeline.phase.abstract.phase import AbstractPhase
 from autolens.pipeline.phase.extensions import CombinedHyperPhase
@@ -59,12 +59,14 @@ from autolens.pipeline.phase.imaging.phase import PhaseImaging
 from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
 from autolens.pipeline.pipeline import (
+    PipelineDataset,
+    PipelinePositions,
+)
+from autolens.pipeline.pipeline_settings import (
     PipelineGeneralSettings,
     PipelineSourceSettings,
     PipelineLightSettings,
     PipelineMassSettings,
-    PipelineDataset,
-    PipelinePositions,
 )
 from autolens import plot
 
