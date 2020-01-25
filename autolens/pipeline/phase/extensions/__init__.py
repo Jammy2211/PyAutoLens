@@ -37,8 +37,8 @@ class CombinedHyperPhase(HyperPhase):
     def run(
         self,
         dataset,
+        mask,
         results: af.ResultsCollection = None,
-        mask=None,
         positions=None,
         **kwargs
     ) -> af.Result:
@@ -65,7 +65,7 @@ class CombinedHyperPhase(HyperPhase):
         """
         results = results.copy() if results is not None else af.ResultsCollection()
         result = self.phase.run(
-            dataset, results=results, mask=mask, positions=positions, **kwargs
+           dataset=dataset, mask=mask, results=results, positions=positions, **kwargs
         )
         results.add(self.phase.paths.phase_name, result)
 
@@ -107,7 +107,7 @@ class CombinedHyperPhase(HyperPhase):
 
         return phase.run(
             dataset,
-            results=results,
             mask=results.last.mask,
+            results=results,
             positions=results.last.positions,
         )

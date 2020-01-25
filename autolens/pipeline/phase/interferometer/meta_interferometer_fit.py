@@ -11,8 +11,6 @@ class MetaInterferometerFit(dataset.MetaDatasetFit):
         sub_size=2,
         is_hyper_phase=False,
         positions_threshold=None,
-        mask_function=None,
-        inner_mask_radii=None,
         pixel_scale_interpolation_grid=None,
         inversion_uses_border=True,
         inversion_pixel_limit=None,
@@ -24,8 +22,6 @@ class MetaInterferometerFit(dataset.MetaDatasetFit):
             sub_size=sub_size,
             is_hyper_phase=is_hyper_phase,
             positions_threshold=positions_threshold,
-            mask_function=mask_function,
-            inner_mask_radii=inner_mask_radii,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_uses_border=inversion_uses_border,
             inversion_pixel_limit=inversion_pixel_limit,
@@ -38,11 +34,8 @@ class MetaInterferometerFit(dataset.MetaDatasetFit):
     def masked_dataset_from(
         self, dataset, mask, positions, results, modified_visibilities
     ):
-        mask = self.setup_phase_mask(
-            shape_2d=self.real_space_shape_2d,
-            pixel_scales=self.real_space_pixel_scales,
-            mask=mask,
-        )
+
+        mask = self.mask_with_phase_sub_size_from_mask(mask=mask)
 
         self.check_positions(positions=positions)
 

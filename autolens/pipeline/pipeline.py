@@ -61,19 +61,11 @@ class PipelineMassSettings(object):
 
 
 class PipelineDataset(af.Pipeline):
-    def __init__(self, pipeline_name, pipeline_tag, *phases, hyper_mode=False):
+    def __init__(self, pipeline_name, pipeline_tag, *phases):
 
         super(PipelineDataset, self).__init__(pipeline_name, pipeline_tag, *phases)
 
-        self.hyper_mode = hyper_mode
-
-    def run(self, dataset, mask=None, positions=None, data_name=None):
-
-        if self.hyper_mode and mask is None:
-            raise exc.PhaseException(
-                "The pipeline is running in hyper_galaxies mode, but has not received an input mask. Add"
-                "a mask to the run function of the pipeline (e.g. pipeline.run(data_type=data_type, mask=mask)"
-            )
+    def run(self, dataset, mask, positions=None, data_name=None):
 
         def runner(phase, results):
             return phase.run(

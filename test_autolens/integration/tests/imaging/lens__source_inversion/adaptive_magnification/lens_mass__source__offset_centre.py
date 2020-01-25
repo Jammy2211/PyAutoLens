@@ -16,14 +16,6 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             self.galaxies.lens.mass.centre.centre_1 = 2.0
             self.galaxies.lens.mass.einstein_radius = 1.2
 
-    def mask_function(shape_2d, pixel_scales):
-        return al.mask.circular(
-            shape_2d=shape_2d,
-            pixel_scales=pixel_scales,
-            centre=(2.0, 2.0),
-            sub_size=2,
-            radius=2.4,
-        )
 
     phase1 = SourcePix(
         phase_name="phase_1",
@@ -36,7 +28,6 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 regularization=al.reg.Constant,
             ),
         ),
-        mask_function=mask_function,
         optimizer_class=optimizer_class,
     )
 

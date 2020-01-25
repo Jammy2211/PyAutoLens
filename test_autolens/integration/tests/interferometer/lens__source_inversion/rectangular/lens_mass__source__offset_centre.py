@@ -24,14 +24,6 @@ def make_pipeline(
             self.galaxies.source.pixelization.shape_0 = 20.0
             self.galaxies.source.pixelization.shape_1 = 20.0
 
-    def mask_function(shape_2d, pixel_scales):
-        return al.mask.circular(
-            shape_2d=shape_2d,
-            pixel_scales=pixel_scales,
-            centre=(2.0, 2.0),
-            sub_size=2,
-            radius=2.4,
-        )
 
     phase1 = SourcePix(
         phase_name="phase_1",
@@ -44,7 +36,6 @@ def make_pipeline(
                 regularization=al.reg.Constant,
             ),
         ),
-        mask_function=mask_function,
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
         optimizer_class=optimizer_class,

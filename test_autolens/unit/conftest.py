@@ -122,71 +122,46 @@ def make_masked_interferometer_fit_x2_plane_inversion_7x7(
     )
 
 
-@pytest.fixture(name="mask_function_7x7_1_pix")
-def make_mask_function_7x7_1_pix():
+@pytest.fixture(name="mask_7x7_1_pix")
+def make_mask_7x7_1_pix():
     # noinspection PyUnusedLocal
-    def mask_function_7x7_1_pix(shape_2d, pixel_scales):
-        array = np.array(
-            [
-                [True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True],
-                [True, True, True, False, True, True, True],
-                [True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True],
-            ]
-        )
 
-        return aa.mask.manual(mask_2d=array)
+    array = np.array(
+        [
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, False, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ]
+    )
 
-    return mask_function_7x7_1_pix
-
-
-@pytest.fixture(name="mask_function_7x7")
-def make_mask_function_7x7():
-    # noinspection PyUnusedLocal
-    def mask_function_7x7(shape_2d, pixel_scales):
-        array = np.array(
-            [
-                [True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True],
-                [True, True, False, False, False, True, True],
-                [True, True, False, False, False, True, True],
-                [True, True, False, False, False, True, True],
-                [True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True],
-            ]
-        )
-
-        return al.mask.manual(mask_2d=array, pixel_scales=1.0)
-
-    return mask_function_7x7
+    return aa.mask.manual(mask_2d=array)
 
 
 @pytest.fixture(name="phase_dataset_7x7")
-def make_phase_data(mask_function_7x7):
+def make_phase_data(mask_7x7):
     return al.PhaseDataset(
         optimizer_class=mock_pipeline.MockNLO, phase_tag="", phase_name="test_phase"
     )
 
 
 @pytest.fixture(name="phase_imaging_7x7")
-def make_phase_imaging_7x7(mask_function_7x7):
+def make_phase_imaging_7x7():
     return al.PhaseImaging(
         optimizer_class=mock_pipeline.MockNLO,
-        mask_function=mask_function_7x7,
         phase_name="test_phase",
     )
 
 
 @pytest.fixture(name="phase_interferometer_7")
-def make_phase_interferometer_7(mask_function_7x7):
+def make_phase_interferometer_7():
     return al.PhaseInterferometer(
         optimizer_class=mock_pipeline.MockNLO,
         real_space_shape_2d=(7, 7),
         real_space_pixel_scales=(0.1, 0.1),
-        mask_function=mask_function_7x7,
         phase_name="test_phase",
     )
 

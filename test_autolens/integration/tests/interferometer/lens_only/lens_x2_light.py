@@ -23,10 +23,6 @@ def make_pipeline(
             self.galaxies.lens_1.light.centre_0 = 1.0
             self.galaxies.lens_1.light.centre_1 = 1.0
 
-    def mask_function(shape_2d, pixel_scales):
-        return al.mask.circular(
-            shape_2d=shape_2d, pixel_scales=pixel_scales, radius=5.0
-        )
 
     phase1 = LensPlanex2GalPhase(
         phase_name="phase_1",
@@ -35,7 +31,6 @@ def make_pipeline(
             lens_0=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
             lens_1=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
         ),
-        mask_function=mask_function,
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
         optimizer_class=optimizer_class,

@@ -3,7 +3,6 @@ import autoarray as aa
 from autolens import exc
 from autoarray.operators.inversion import pixelizations as pix
 from autolens.pipeline.phase.dataset.phase import (
-    default_mask_function,
     isinstance_or_prior,
 )
 
@@ -15,8 +14,6 @@ class MetaDatasetFit:
         sub_size=2,
         signal_to_noise_limit=None,
         positions_threshold=None,
-        mask_function=None,
-        inner_mask_radii=None,
         pixel_scale_interpolation_grid=None,
         inversion_uses_border=True,
         inversion_pixel_limit=None,
@@ -27,8 +24,6 @@ class MetaDatasetFit:
         self.sub_size = sub_size
         self.signal_to_noise_limit = signal_to_noise_limit
         self.positions_threshold = positions_threshold
-        self.mask_function = mask_function
-        self.inner_mask_radii = inner_mask_radii
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
         self.inversion_uses_border = inversion_uses_border
         self.inversion_pixel_limit = (
@@ -38,28 +33,12 @@ class MetaDatasetFit:
             )
         )
 
-    def setup_phase_mask(self, shape_2d, pixel_scales, mask):
-
-        if self.mask_function is not None:
-            mask = self.mask_function(shape_2d=shape_2d, pixel_scales=pixel_scales)
-
-        elif mask is None and self.mask_function is None:
-            mask = default_mask_function(shape_2d=shape_2d, pixel_scales=pixel_scales)
-
-        if self.inner_mask_radii is not None:
-            inner_mask = aa.mask.circular(
-                shape_2d=mask.shape_2d,
-                pixel_scales=pixel_scales,
-                radius=self.inner_mask_radii,
-                sub_size=self.sub_size,
-                invert=True,
-            )
-            mask = mask + inner_mask
+    def mask_with_phase_sub_size_from_mask(self, mask):
 
         if mask.sub_size != self.sub_size:
             mask = aa.mask.manual(
                 mask_2d=mask,
-                pixel_scales=pixel_scales,
+                pixel_scales=mask.pixel_scales,
                 sub_size=self.sub_size,
                 origin=mask.origin,
             )
