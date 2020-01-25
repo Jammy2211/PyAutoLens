@@ -197,8 +197,7 @@ The following papers use **PyAutoLens**:
 
 [CO, H2O, H2O+ line & dust emission in a z = 3.63 strongly lensed starburst merger at sub-kiloparsec scales](https://arxiv.org/abs/1903.00273)
 
-[Subaru FOCAS IFU observations of two z=0.12 strong-lensing elliptical galaxies from SDSS MaNGA]
-(https://arxiv.org/abs/1911.06338)
+[Subaru FOCAS IFU observations of two z=0.12 strong-lensing elliptical galaxies from SDSS MaNGA](https://arxiv.org/abs/1911.06338)
 
 ## Credits
 
