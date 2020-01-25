@@ -40,7 +40,9 @@ class TestPhase(object):
     def test__make_analysis__masks_visibilities_and_noise_map_correctly(
         self, phase_interferometer_7, interferometer_7, mask_7x7
     ):
-        analysis = phase_interferometer_7.make_analysis(dataset=interferometer_7, mask=mask_7x7)
+        analysis = phase_interferometer_7.make_analysis(
+            dataset=interferometer_7, mask=mask_7x7
+        )
 
         assert (
             analysis.masked_interferometer.visibilities == interferometer_7.visibilities
@@ -108,7 +110,9 @@ class TestPhase(object):
             real_space_pixel_scales=(0.1, 0.1),
         )
 
-        analysis = phase_interferometer_7.make_analysis(dataset=interferometer_7, mask=mask_7x7)
+        analysis = phase_interferometer_7.make_analysis(
+            dataset=interferometer_7, mask=mask_7x7
+        )
         assert (
             analysis.masked_dataset.visibilities == 20.0 * np.ones(shape=(7, 2))
         ).all()
@@ -177,12 +181,14 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_interferometer_7.make_analysis(dataset=interferometer_7, mask=mask_7x7)
+        analysis = phase_interferometer_7.make_analysis(
+            dataset=interferometer_7, mask=mask_7x7
+        )
         instance = phase_interferometer_7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_interferometer_7.meta_interferometer_fit.mask_with_phase_sub_size_from_mask(
-            mask = mask_7x7
+            mask=mask_7x7
         )
         masked_interferometer = al.masked.interferometer(
             interferometer=interferometer_7, real_space_mask=mask
@@ -212,12 +218,14 @@ class TestPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_interferometer_7.make_analysis(dataset=interferometer_7, mask=mask_7x7)
+        analysis = phase_interferometer_7.make_analysis(
+            dataset=interferometer_7, mask=mask_7x7
+        )
         instance = phase_interferometer_7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_interferometer_7.meta_interferometer_fit.mask_with_phase_sub_size_from_mask(
-             mask=mask_7x7
+            mask=mask_7x7
         )
         assert mask.sub_size == 4
 

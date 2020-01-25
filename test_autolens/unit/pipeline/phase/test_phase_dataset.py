@@ -38,9 +38,7 @@ def clean_images():
 
 
 class TestPhase(object):
-    def test__make_analysis__mask_input_uses_mask(
-        self, phase_imaging_7x7, imaging_7x7,
-    ):
+    def test__make_analysis__mask_input_uses_mask(self, phase_imaging_7x7, imaging_7x7):
         # If an input mask is supplied we use mask input.
 
         mask_input = al.mask.circular(
@@ -93,7 +91,9 @@ class TestPhase(object):
         # If position threshold is input (not None) and but no positions are supplied, raise an error
 
         with pytest.raises(exc.PhaseException):
-            phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7, positions=None)
+            phase_imaging_7x7.make_analysis(
+                dataset=imaging_7x7, mask=mask_7x7, positions=None
+            )
             phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
 
     def test__make_analysis__positions_do_not_trace_within_threshold__raises_exception(
@@ -300,15 +300,11 @@ class TestPhase(object):
         assert hasattr(analysis.masked_imaging.grid, "interpolator")
         assert hasattr(analysis.masked_imaging.blurring_grid, "interpolator")
 
-    def test__pixelization_property_extracts_pixelization(
-        self, imaging_7x7, mask_7x7,
-    ):
+    def test__pixelization_property_extracts_pixelization(self, imaging_7x7, mask_7x7):
         source_galaxy = al.Galaxy(redshift=0.5)
 
         phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=[source_galaxy],
-            cosmology=cosmo.FLRW,
-            phase_name="test_phase",
+            galaxies=[source_galaxy], cosmology=cosmo.FLRW, phase_name="test_phase"
         )
 
         assert phase_imaging_7x7.meta_imaging_fit.pixelization is None
@@ -321,9 +317,7 @@ class TestPhase(object):
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=[source_galaxy],
-            cosmology=cosmo.FLRW,
-            phase_name="test_phase",
+            galaxies=[source_galaxy], cosmology=cosmo.FLRW, phase_name="test_phase"
         )
 
         assert isinstance(
@@ -338,9 +332,7 @@ class TestPhase(object):
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=[source_galaxy],
-            cosmology=cosmo.FLRW,
-            phase_name="test_phase",
+            galaxies=[source_galaxy], cosmology=cosmo.FLRW, phase_name="test_phase"
         )
 
         assert type(phase_imaging_7x7.meta_imaging_fit.pixelization) == type(
@@ -422,7 +414,7 @@ class TestPhase(object):
         assert phase_imaging_7x7.meta_imaging_fit.uses_cluster_inversion is True
 
     def test__use_border__determines_if_border_pixel_relocation_is_used(
-        self, imaging_7x7, mask_7x7,
+        self, imaging_7x7, mask_7x7
     ):
         # noinspection PyTypeChecker
 
@@ -473,26 +465,21 @@ class TestPhase(object):
 
         assert fit.inversion.mapper.grid[4][0] == pytest.approx(200.0, 1.0e-4)
 
-    def test__inversion_pixel_limit_computed_via_config_or_input(
-        self,
-    ):
+    def test__inversion_pixel_limit_computed_via_config_or_input(self,):
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="phase_imaging_7x7",
-            inversion_pixel_limit=None,
+            phase_name="phase_imaging_7x7", inversion_pixel_limit=None
         )
 
         assert phase_imaging_7x7.meta_imaging_fit.inversion_pixel_limit == 3000
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="phase_imaging_7x7",
-            inversion_pixel_limit=10,
+            phase_name="phase_imaging_7x7", inversion_pixel_limit=10
         )
 
         assert phase_imaging_7x7.meta_imaging_fit.inversion_pixel_limit == 10
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="phase_imaging_7x7",
-            inversion_pixel_limit=2000,
+            phase_name="phase_imaging_7x7", inversion_pixel_limit=2000
         )
 
         assert phase_imaging_7x7.meta_imaging_fit.inversion_pixel_limit == 2000
@@ -502,9 +489,7 @@ class TestPhase(object):
     ):
         results_collection_7x7.last.hyper_combined.preload_sparse_grids_of_planes = 1
 
-        phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-        )
+        phase_imaging_7x7 = al.PhaseImaging(phase_name="test_phase")
 
         results_collection_7x7.last.pixelization = None
 
@@ -514,9 +499,7 @@ class TestPhase(object):
 
         assert analysis.masked_dataset.preload_sparse_grids_of_planes is None
 
-        phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-        )
+        phase_imaging_7x7 = al.PhaseImaging(phase_name="test_phase")
 
         results_collection_7x7.last.pixelization = al.pix.Rectangular
 
@@ -566,9 +549,7 @@ class TestPhase(object):
 
 
 class TestResult(object):
-    def test__results_of_phase_are_available_as_properties(
-        self, imaging_7x7, mask_7x7
-    ):
+    def test__results_of_phase_are_available_as_properties(self, imaging_7x7, mask_7x7):
         clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -630,7 +611,9 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_imaging_7x7.run(dataset=imaging_7x7, mask=mask_7x7, positions=[[(1.0, 1.0)]])
+        result = phase_imaging_7x7.run(
+            dataset=imaging_7x7, mask=mask_7x7, positions=[[(1.0, 1.0)]]
+        )
 
         assert (result.positions[0] == np.array([1.0, 1.0])).all()
 

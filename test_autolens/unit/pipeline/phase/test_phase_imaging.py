@@ -51,7 +51,9 @@ class TestPhase(object):
             == imaging_7x7.noise_map.in_2d * np.invert(mask_7x7)
         ).all()
 
-    def test__make_analysis__phase_info_is_made(self, phase_imaging_7x7, imaging_7x7, mask_7x7):
+    def test__make_analysis__phase_info_is_made(
+        self, phase_imaging_7x7, imaging_7x7, mask_7x7
+    ):
         phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
 
         file_phase_info = "{}/{}".format(
@@ -103,9 +105,7 @@ class TestPhase(object):
                 )
                 return image
 
-        phase_imaging_7x7 = MyPhase(
-            phase_name="phase_imaging_7x7",
-        )
+        phase_imaging_7x7 = MyPhase(phase_name="phase_imaging_7x7")
 
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
         assert (
@@ -114,19 +114,18 @@ class TestPhase(object):
         ).all()
         assert (analysis.masked_dataset.image.in_1d == 20.0 * np.ones(shape=9)).all()
 
-    def test__masked_imaging_signal_to_noise_limit(
-        self, imaging_7x7, mask_7x7_1_pix,
-    ):
+    def test__masked_imaging_signal_to_noise_limit(self, imaging_7x7, mask_7x7_1_pix):
         imaging_snr_limit = imaging_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
             signal_to_noise_limit=1.0
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="phase_imaging_7x7",
-            signal_to_noise_limit=1.0,
+            phase_name="phase_imaging_7x7", signal_to_noise_limit=1.0
         )
 
-        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7_1_pix)
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7, mask=mask_7x7_1_pix
+        )
         assert (
             analysis.masked_dataset.image.in_2d
             == imaging_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
@@ -141,11 +140,12 @@ class TestPhase(object):
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="phase_imaging_7x7",
-            signal_to_noise_limit=0.1,
+            phase_name="phase_imaging_7x7", signal_to_noise_limit=0.1
         )
 
-        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7_1_pix)
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7, mask=mask_7x7_1_pix
+        )
         assert (
             analysis.masked_dataset.image.in_2d
             == imaging_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
@@ -155,9 +155,7 @@ class TestPhase(object):
             == imaging_snr_limit.noise_map.in_2d * np.invert(mask_7x7_1_pix)
         ).all()
 
-    def test__masked_imaging_is_binned_up(
-        self, imaging_7x7, mask_7x7_1_pix,
-    ):
+    def test__masked_imaging_is_binned_up(self, imaging_7x7, mask_7x7_1_pix):
         binned_up_imaging = imaging_7x7.binned_from_bin_up_factor(bin_up_factor=2)
 
         binned_up_mask = mask_7x7_1_pix.mapping.binned_mask_from_bin_up_factor(
@@ -165,11 +163,12 @@ class TestPhase(object):
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="phase_imaging_7x7",
-            bin_up_factor=2,
+            phase_name="phase_imaging_7x7", bin_up_factor=2
         )
 
-        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7_1_pix)
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7, mask=mask_7x7_1_pix
+        )
         assert (
             analysis.masked_dataset.image.in_2d
             == binned_up_imaging.image.in_2d * np.invert(binned_up_mask)
@@ -335,7 +334,7 @@ class TestPhase(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase_imaging_7x7.meta_imaging_fit.mask_with_phase_sub_size_from_mask(
-            mask=mask_7x7,
+            mask=mask_7x7
         )
         assert mask.sub_size == 4
 

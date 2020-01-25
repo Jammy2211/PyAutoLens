@@ -65,7 +65,7 @@ class CombinedHyperPhase(HyperPhase):
         """
         results = results.copy() if results is not None else af.ResultsCollection()
         result = self.phase.run(
-           dataset=dataset, mask=mask, results=results, positions=positions, **kwargs
+            dataset=dataset, mask=mask, results=results, positions=positions, **kwargs
         )
         results.add(self.phase.paths.phase_name, result)
 

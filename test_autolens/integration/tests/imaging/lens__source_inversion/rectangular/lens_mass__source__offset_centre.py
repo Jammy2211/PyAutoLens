@@ -18,7 +18,6 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             self.galaxies.source.pixelization.shape_0 = 20.0
             self.galaxies.source.pixelization.shape_1 = 20.0
 
-
     phase1 = SourcePix(
         phase_name="phase_1",
         phase_folders=phase_folders,

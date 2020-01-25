@@ -58,16 +58,14 @@ from autolens.pipeline.phase.dataset.phase import PhaseDataset
 from autolens.pipeline.phase.imaging.phase import PhaseImaging
 from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
-from autolens.pipeline.pipeline import (
-    PipelineDataset,
-    PipelinePositions,
-)
+from autolens.pipeline.pipeline import PipelineDataset, PipelinePositions
 from autolens.pipeline.pipeline_settings import (
     PipelineGeneralSettings,
     PipelineSourceSettings,
     PipelineLightSettings,
     PipelineMassSettings,
 )
+from autolens.pipeline import pipeline_settings
 from autolens import plot
 
 __version__ = "0.34.1"

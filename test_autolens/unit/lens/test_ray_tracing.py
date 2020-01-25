@@ -609,7 +609,9 @@ class TestAbstractTracer(object):
             ]
             assert tracer.mass_profiles == [g0.mass, g1.mass, g2.mass0, g2.mass1]
 
-        def test__extract_centres_of_all_mass_profiles_of_all_planes_and_galaxies__ignores_mass_sheets(self):
+        def test__extract_centres_of_all_mass_profiles_of_all_planes_and_galaxies__ignores_mass_sheets(
+            self
+        ):
             g0 = al.Galaxy(
                 redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
             )
@@ -655,14 +657,15 @@ class TestAbstractTracer(object):
             ]
 
             g1 = al.Galaxy(
-                redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(2.0, 2.0)),
-            sheet = al.mp.MassSheet(centre=(10.0, 10.0))
+                redshift=0.5,
+                mass=al.mp.SphericalIsothermal(centre=(2.0, 2.0)),
+                sheet=al.mp.MassSheet(centre=(10.0, 10.0)),
             )
             g2 = al.Galaxy(
                 redshift=1.0,
                 mass0=al.mp.SphericalIsothermal(centre=(3.0, 3.0)),
                 mass1=al.mp.SphericalIsothermal(centre=(4.0, 4.0)),
-                sheet=al.mp.MassSheet(centre=(10.0, 10.0))
+                sheet=al.mp.MassSheet(centre=(10.0, 10.0)),
             )
 
             plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)

@@ -17,7 +17,6 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             self.galaxies.lens_1.light.centre_0 = 1.0
             self.galaxies.lens_1.light.centre_1 = 1.0
 
-
     phase1 = LensPlanex2GalPhase(
         phase_name="phase_1",
         phase_folders=phase_folders,
