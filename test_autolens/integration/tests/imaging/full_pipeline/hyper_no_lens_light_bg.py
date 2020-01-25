@@ -162,7 +162,7 @@ def make_pipeline(
     )
 
     return al.PipelineDataset(
-        name, phase1, phase2, phase3, phase4, phase5, hyper_mode=False
+        name, phase1, phase2, phase3, phase4, phase5
     )
 
 

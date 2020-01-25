@@ -8,12 +8,6 @@ from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.dataset.result import Result
 
 
-def default_mask_function(shape_2d, pixel_scales):
-    return aa.mask.circular(
-        shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, radius=3.0
-    )
-
-
 def isinstance_or_prior(obj, cls):
     if isinstance(obj, cls):
         return True
@@ -52,7 +46,7 @@ class PhaseDataset(abstract.AbstractPhase):
 
         self.is_hyper_phase = False
 
-    def run(self, dataset: Dataset, results=None, mask=None, positions=None):
+    def run(self, dataset: Dataset, mask, results=None, positions=None):
         """
         Run this phase.
 
@@ -75,7 +69,7 @@ class PhaseDataset(abstract.AbstractPhase):
         self.model = self.model.populate(results)
 
         analysis = self.make_analysis(
-            dataset=dataset, results=results, mask=mask, positions=positions
+            dataset=dataset, mask=mask, results=results, positions=positions
         )
 
         self.customize_priors(results)
@@ -85,7 +79,7 @@ class PhaseDataset(abstract.AbstractPhase):
 
         return self.make_result(result=result, analysis=analysis)
 
-    def make_analysis(self, dataset, results=None, mask=None, positions=None):
+    def make_analysis(self, dataset, mask, results=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.

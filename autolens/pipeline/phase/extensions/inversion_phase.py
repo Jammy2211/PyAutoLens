@@ -49,8 +49,8 @@ class ModelFixingHyperPhase(HyperPhase):
 
         return phase.run(
             dataset,
-            results=results,
             mask=results.last.mask,
+            results=results,
             positions=results.last.positions,
         )
 

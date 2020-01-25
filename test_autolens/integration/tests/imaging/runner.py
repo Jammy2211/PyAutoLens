@@ -1,6 +1,7 @@
 import os
 
 import autofit as af
+import autoarray as aa
 from test_autolens.integration import integration_util
 from test_autolens.simulate.imaging import simulate_util
 from autofit.optimize.non_linear.mock_nlo import MockNLO
@@ -11,6 +12,7 @@ def run(
     test_name=None,
     optimizer_class=af.MultiNest,
     config_folder="config",
+    mask=None,
     positions=None,
 ):
     test_name = test_name or module.test_name
@@ -24,11 +26,17 @@ def run(
         data_type=module.data_type, data_resolution=module.data_resolution
     )
 
+    if mask is None:
+        mask = aa.mask.circular(
+            shape_2d=imaging.shape_2d,
+            pixel_scales=imaging.pixel_scales,
+            radius=3.0)
+
     module.make_pipeline(
         name=test_name,
         phase_folders=[module.test_type, test_name],
         optimizer_class=optimizer_class,
-    ).run(dataset=imaging, positions=positions)
+    ).run(dataset=imaging, mask=mask, positions=positions)
 
 
 def run_a_mock(module):

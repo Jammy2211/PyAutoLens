@@ -9,10 +9,7 @@ data_resolution = "lsst"
 
 
 def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
-    def mask_function(shape_2d, pixel_scales):
-        return al.mask.circular(
-            shape_2d=shape_2d, pixel_scales=pixel_scales, radius=3.0, centre=(4.0, 4.0)
-        )
+
 
     class LensPhase(al.PhaseImaging):
         def customize_priors(self, results):
@@ -29,7 +26,6 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        mask_function=mask_function,
         positions_threshold=0.5,
         optimizer_class=optimizer_class,
     )
@@ -46,5 +42,5 @@ if __name__ == "__main__":
 
     runner.run(
         sys.modules[__name__],
-        positions=[[5.6, 4.0], [4.0, 5.6], [2.4, 4.0], [4.0, 2.4]]],
+        positions=[[(5.6, 4.0), (4.0, 5.6), (2.4, 4.0), (4.0, 2.4)]],
     )
