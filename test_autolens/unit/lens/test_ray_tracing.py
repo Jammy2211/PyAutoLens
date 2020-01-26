@@ -3518,6 +3518,8 @@ class TestAbstractTracerData(object):
             self, sub_grid_7x7, masked_interferometer_7
         ):
 
+            masked_interferometer_7.visibilities = al.visibilities.ones(shape_1d=(7,))
+
             pix = al.pix.Rectangular(shape=(7, 7))
             reg = al.reg.Constant(coefficient=0.0)
 

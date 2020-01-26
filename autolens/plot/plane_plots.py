@@ -140,12 +140,13 @@ def magnification(plane, grid, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
+@lensing_plotters.set_include_and_sub_plotter
 @plotters.set_labels
 def image_and_source_plane_subplot(
     image_plane,
     source_plane,
     grid,
+    indexes=None,
     positions=None,
     axis_limits=None,
     include=None,
@@ -161,6 +162,7 @@ def image_and_source_plane_subplot(
     plane_grid(
         plane=image_plane,
         grid=grid,
+        indexes=indexes,
         axis_limits=axis_limits,
         positions=positions,
         critical_curves=include.critical_curves_from_obj(obj=image_plane),
@@ -175,6 +177,7 @@ def image_and_source_plane_subplot(
     plane_grid(
         plane=source_plane,
         grid=source_plane_grid,
+        indexes=indexes,
         axis_limits=axis_limits,
         positions=positions,
         caustics=include.caustics_from_obj(obj=image_plane),
@@ -191,6 +194,7 @@ def image_and_source_plane_subplot(
 def plane_grid(
     plane,
     grid,
+    indexes=None,
     axis_limits=None,
     positions=None,
     critical_curves=None,
@@ -201,8 +205,9 @@ def plane_grid(
 
     plotter.plot_grid(
         grid=grid,
-        indexes=positions,
+        positions=positions,
         axis_limits=axis_limits,
+        indexes=indexes,
         critical_curves=critical_curves,
         caustics=caustics,
         light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
