@@ -16,7 +16,7 @@ def subplot_inversion(
     image_pixel_indexes=None,
     source_pixel_indexes=None,
     include=None,
-    sub_plotter=plotters.SubPlotter(),
+    sub_plotter=None,
 ):
 
     number_subplots = 6
