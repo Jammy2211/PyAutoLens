@@ -160,7 +160,9 @@ class TestMaskedImaging(object):
 
 
 class TestMaskedInterferometer(object):
-    def test__masked_dataset_via_autoarray(self, interferometer_7, sub_mask_7x7, visibilities_7x2, noise_map_7x2):
+    def test__masked_dataset_via_autoarray(
+        self, interferometer_7, sub_mask_7x7, visibilities_7x2, noise_map_7x2
+    ):
 
         masked_interferometer_7 = al.masked.interferometer(
             interferometer=interferometer_7, real_space_mask=sub_mask_7x7

@@ -150,7 +150,7 @@ def image_and_source_plane_subplot(
     positions=None,
     axis_limits=None,
     include=None,
-    sub_plotter=plotters.SubPlotter(),
+    sub_plotter=None,
 ):
 
     number_subplots = 2

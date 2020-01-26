@@ -2,7 +2,7 @@ from autoarray.plot import plotters
 from autoastro.plot import lensing_plotters
 
 
-@lensing_plotters.set_include_and_plotter
+@lensing_plotters.set_include_and_sub_plotter
 @plotters.set_labels
 def subplot_image_and_mapper(
     image,
@@ -14,7 +14,7 @@ def subplot_image_and_mapper(
     image_pixel_indexes=None,
     source_pixel_indexes=None,
     include=plotters.Include(),
-    sub_plotter=plotters.SubPlotter(),
+    sub_plotter=None,
 ):
 
     number_subplots = 2
