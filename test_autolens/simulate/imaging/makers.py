@@ -200,9 +200,9 @@ def make_lens_x2_light(data_resolutions, sub_size):
         )
 
 
-def make_lens_mass__source_smooth(data_resolutions, sub_size):
+def make_lens_sie__source_smooth(data_resolutions, sub_size):
 
-    data_type = "lens_mass__source_smooth"
+    data_type = "lens_sie__source_smooth"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -235,9 +235,9 @@ def make_lens_mass__source_smooth(data_resolutions, sub_size):
         )
 
 
-def make_lens_mass__source_cuspy(data_resolutions, sub_size):
+def make_lens_sie__source_cuspy(data_resolutions, sub_size):
 
-    data_type = "lens_mass__source_cuspy"
+    data_type = "lens_sie__source_cuspy"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -303,9 +303,9 @@ def make_lens_sis__source_smooth(data_resolutions, sub_size):
         )
 
 
-def make_lens_mass__source_smooth__offset_centre(data_resolutions, sub_size):
+def make_lens_sie__source_smooth__offset_centre(data_resolutions, sub_size):
 
-    data_type = "lens_mass__source_smooth__offset_centre"
+    data_type = "lens_sie__source_smooth__offset_centre"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 

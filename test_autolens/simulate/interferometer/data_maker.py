@@ -26,16 +26,14 @@ makers.make_lens_light_dev_vaucouleurs(
 )
 makers.make_lens_bulge_disk(data_resolutions=data_resolutions, sub_size=sub_size)
 makers.make_lens_x2_light(data_resolutions=data_resolutions, sub_size=sub_size)
-makers.make_lens_mass__source_smooth(
+makers.make_lens_sie__source_smooth(
     data_resolutions=data_resolutions, sub_size=sub_size
 )
-makers.make_lens_mass__source_cuspy(
-    data_resolutions=data_resolutions, sub_size=sub_size
-)
+makers.make_lens_sie__source_cuspy(data_resolutions=data_resolutions, sub_size=sub_size)
 makers.make_lens_sis__source_smooth(
     data_resolutions=data_resolutions, sub_size=sub_size
 )
-makers.make_lens_mass__source_smooth__offset_centre(
+makers.make_lens_sie__source_smooth__offset_centre(
     data_resolutions=data_resolutions, sub_size=sub_size
 )
 makers.make_lens_light__source_smooth(

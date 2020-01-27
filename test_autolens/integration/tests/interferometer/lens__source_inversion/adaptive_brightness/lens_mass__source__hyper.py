@@ -4,7 +4,7 @@ from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_adaptive_brightness__hyper"
-data_type = "lens_mass__source_smooth"
+data_type = "lens_sie__source_smooth"
 data_resolution = "sma"
 
 
