@@ -161,11 +161,13 @@ class TestMaskedImaging(object):
 
 class TestMaskedInterferometer(object):
     def test__masked_dataset_via_autoarray(
-        self, interferometer_7, sub_mask_7x7, visibilities_7x2, noise_map_7x2
+        self, interferometer_7, sub_mask_7x7, visibilities_mask_7x2, visibilities_7x2, noise_map_7x2
     ):
 
         masked_interferometer_7 = al.masked.interferometer(
-            interferometer=interferometer_7, real_space_mask=sub_mask_7x7
+            interferometer=interferometer_7,
+            visibilities_mask=visibilities_mask_7x2,
+            real_space_mask=sub_mask_7x7
         )
 
         assert (
@@ -195,11 +197,12 @@ class TestMaskedInterferometer(object):
         assert type(masked_interferometer_7.transformer) == transformer.Transformer
 
     def test__inheritance_via_autoarray(
-        self, interferometer_7, sub_mask_7x7, grid_7x7, sub_grid_7x7
+        self, interferometer_7, sub_mask_7x7, visibilities_mask_7x2, grid_7x7, sub_grid_7x7
     ):
 
         masked_interferometer_7 = al.masked.interferometer(
             interferometer=interferometer_7,
+            visibilities_mask=visibilities_mask_7x2,
             real_space_mask=sub_mask_7x7,
             pixel_scale_interpolation_grid=1.0,
             primary_beam_shape_2d=(3, 3),
@@ -235,14 +238,18 @@ class TestMaskedInterferometer(object):
             noise_map=al.visibilities.full(fill_value=2.0, shape_1d=(19,)),
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
-        mask = al.mask.unmasked(
+
+        visibilities_mask = np.full(fill_value=False, shape=(19,))
+
+        real_space_mask = al.mask.unmasked(
             shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
-        mask[9, 9] = False
+        real_space_mask[9, 9] = False
 
         masked_interferometer = al.masked.interferometer(
             interferometer=interferometer,
-            real_space_mask=mask,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=real_space_mask,
             primary_beam_shape_2d=(5, 5),
             positions=[al.grid_irregular.manual_1d([[1.0, 1.0]])],
             positions_threshold=1.0,

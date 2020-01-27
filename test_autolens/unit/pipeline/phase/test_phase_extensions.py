@@ -235,7 +235,7 @@ class TestImagePassing(object):
             image_path="",
         )
 
-        instance = analysis.associate_images(instance=instance)
+        instance = analysis.associate_hyper_images(instance=instance)
 
         lens_hyper_image = result.image_galaxy_dict[("galaxies", "lens")]
         source_hyper_image = result.image_galaxy_dict[("galaxies", "source")]

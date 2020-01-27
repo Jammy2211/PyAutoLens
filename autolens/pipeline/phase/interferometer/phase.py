@@ -23,8 +23,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         self,
         paths,
         *,
-        real_space_shape_2d,
-        real_space_pixel_scales,
+        real_space_mask,
         galaxies=None,
         hyper_background_noise=None,
         optimizer_class=af.MultiNest,
@@ -50,13 +49,10 @@ class PhaseInterferometer(dataset.PhaseDataset):
             The side length of the subgrid
         """
 
-        if type(real_space_pixel_scales) is float:
-            real_space_pixel_scales = (real_space_pixel_scales, real_space_pixel_scales)
-
         paths.phase_tag = phase_tagging.phase_tag_from_phase_settings(
             sub_size=sub_size,
-            real_space_shape_2d=real_space_shape_2d,
-            real_space_pixel_scales=real_space_pixel_scales,
+            real_space_shape_2d=real_space_mask.shape_2d,
+            real_space_pixel_scales=real_space_mask.pixel_scales,
             primary_beam_shape_2d=primary_beam_shape_2d,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
@@ -76,8 +72,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         self.meta_interferometer_fit = MetaInterferometerFit(
             model=self.model,
             sub_size=sub_size,
-            real_space_shape_2d=real_space_shape_2d,
-            real_space_pixel_scales=real_space_pixel_scales,
+            real_space_mask=real_space_mask,
             primary_beam_shape_2d=primary_beam_shape_2d,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
