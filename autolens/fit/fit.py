@@ -225,8 +225,12 @@ class InterferometerFit(aa_fit.InterferometerFit):
         A dictionary associating galaxies with their corresponding model images
         """
         galaxy_model_image_dict = self.tracer.galaxy_profile_image_dict_from_grid(
-            grid=self.grid,
+            grid=self.grid
         )
+
+        for path, image in galaxy_model_image_dict.items():
+            if hasattr(image, "in_1d_binned"):
+                galaxy_model_image_dict[path] = image.in_1d_binned
 
         # TODO : Extend to multiple inversioons across Planes
 
