@@ -10,8 +10,6 @@ class MetaImagingFit(dataset.MetaDatasetFit):
         is_hyper_phase=False,
         signal_to_noise_limit=None,
         positions_threshold=None,
-        mask_function=None,
-        inner_mask_radii=None,
         pixel_scale_interpolation_grid=None,
         inversion_uses_border=True,
         inversion_pixel_limit=None,
@@ -24,8 +22,6 @@ class MetaImagingFit(dataset.MetaDatasetFit):
             is_hyper_phase=is_hyper_phase,
             signal_to_noise_limit=signal_to_noise_limit,
             positions_threshold=positions_threshold,
-            mask_function=mask_function,
-            inner_mask_radii=inner_mask_radii,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_uses_border=inversion_uses_border,
             inversion_pixel_limit=inversion_pixel_limit,
@@ -34,9 +30,8 @@ class MetaImagingFit(dataset.MetaDatasetFit):
         self.bin_up_factor = bin_up_factor
 
     def masked_dataset_from(self, dataset, mask, positions, results, modified_image):
-        mask = self.setup_phase_mask(
-            shape_2d=dataset.shape_2d, pixel_scales=dataset.pixel_scales, mask=mask
-        )
+
+        mask = self.mask_with_phase_sub_size_from_mask(mask=mask)
 
         self.check_positions(positions=positions)
 

@@ -46,7 +46,7 @@ class TestPhase(object):
         assert phase_dataset_7x7.model.galaxies == [al.GalaxyModel(redshift=0.5)]
 
     def test__customize(
-        self, mask_function_7x7, results_7x7, results_collection_7x7, imaging_7x7
+        self, results_7x7, results_collection_7x7, imaging_7x7, mask_7x7
     ):
         class MyPlanePhaseAnd(al.PhaseImaging):
             def customize_priors(self, results):
@@ -59,13 +59,11 @@ class TestPhase(object):
         setattr(results_7x7.model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(
-            phase_name="test_phase",
-            optimizer_class=mock_pipeline.MockNLO,
-            mask_function=mask_function_7x7,
+            phase_name="test_phase", optimizer_class=mock_pipeline.MockNLO
         )
 
         phase_dataset_7x7.make_analysis(
-            dataset=imaging_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, mask=mask_7x7, results=results_collection_7x7
         )
         phase_dataset_7x7.customize_priors(results_collection_7x7)
 
@@ -82,13 +80,11 @@ class TestPhase(object):
         setattr(results_7x7.model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(
-            phase_name="test_phase",
-            optimizer_class=mock_pipeline.MockNLO,
-            mask_function=mask_function_7x7,
+            phase_name="test_phase", optimizer_class=mock_pipeline.MockNLO
         )
 
         phase_dataset_7x7.make_analysis(
-            dataset=imaging_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, mask=mask_7x7, results=results_collection_7x7
         )
         phase_dataset_7x7.customize_priors(results_collection_7x7)
 
@@ -106,14 +102,10 @@ class TestPhase(object):
 
         assert phase_dataset_7x7.galaxies is not None
 
-    def test__uses_pixelization_preload_grids_if_possible(
-        self, imaging_7x7, mask_function_7x7
-    ):
-        phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase", mask_function=mask_function_7x7
-        )
+    def test__uses_pixelization_preload_grids_if_possible(self, imaging_7x7, mask_7x7):
+        phase_dataset_7x7 = al.PhaseImaging(phase_name="test_phase")
 
-        analysis = phase_dataset_7x7.make_analysis(dataset=imaging_7x7)
+        analysis = phase_dataset_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
 
         assert analysis.masked_dataset.preload_sparse_grids_of_planes is None
 
@@ -228,31 +220,25 @@ class TestPhase(object):
 
 
 class TestResult(object):
-    def test__results_of_phase_are_available_as_properties(
-        self, imaging_7x7, mask_function_7x7
-    ):
+    def test__results_of_phase_are_available_as_properties(self, imaging_7x7, mask_7x7):
         clean_images()
 
         phase_dataset_7x7 = al.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,
-            mask_function=mask_function_7x7,
             galaxies=[
                 al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
             phase_name="test_phase_2",
         )
 
-        result = phase_dataset_7x7.run(dataset=imaging_7x7)
+        result = phase_dataset_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
 
         assert isinstance(result, al.AbstractPhase.Result)
 
-    def test__most_likely_tracer_available_as_result(
-        self, imaging_7x7, mask_function_7x7
-    ):
+    def test__most_likely_tracer_available_as_result(self, imaging_7x7, mask_7x7):
 
         phase_dataset_7x7 = al.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,
-            mask_function=mask_function_7x7,
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
@@ -264,7 +250,7 @@ class TestResult(object):
             phase_name="test_phase_2",
         )
 
-        result = phase_dataset_7x7.run(dataset=imaging_7x7)
+        result = phase_dataset_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
 
         assert isinstance(result.most_likely_tracer, al.Tracer)
         assert result.most_likely_tracer.galaxies[0].light.intensity == 1.0
@@ -274,13 +260,12 @@ class TestResult(object):
 class TestPhasePickle(object):
 
     # noinspection PyTypeChecker
-    def test_assertion_failure(self, imaging_7x7, mask_function_7x7):
+    def test_assertion_failure(self, imaging_7x7, mask_7x7):
         def make_analysis(*args, **kwargs):
             return mock_pipeline.GalaxiesMockAnalysis(1, 1)
 
         phase_dataset_7x7 = al.PhaseImaging(
             phase_name="phase_name",
-            mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
@@ -295,7 +280,6 @@ class TestPhasePickle(object):
 
         phase_dataset_7x7 = al.PhaseImaging(
             phase_name="phase_name",
-            mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
@@ -314,7 +298,6 @@ class TestPhasePickle(object):
 
         phase_dataset_7x7 = CustomPhase(
             phase_name="phase_name",
-            mask_function=mask_function_7x7,
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)

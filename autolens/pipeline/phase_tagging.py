@@ -5,7 +5,6 @@ def phase_tag_from_phase_settings(
     psf_shape_2d=None,
     primary_beam_shape_2d=None,
     positions_threshold=None,
-    inner_mask_radii=None,
     pixel_scale_interpolation_grid=None,
     real_space_shape_2d=None,
     real_space_pixel_scales=None,
@@ -22,9 +21,6 @@ def phase_tag_from_phase_settings(
 
     positions_threshold_tag = positions_threshold_tag_from_positions_threshold(
         positions_threshold=positions_threshold
-    )
-    inner_mask_radii_tag = inner_mask_radii_tag_from_inner_circular_mask_radii(
-        inner_mask_radii=inner_mask_radii
     )
     pixel_scale_interpolation_grid_tag = pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
         pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
@@ -50,7 +46,6 @@ def phase_tag_from_phase_settings(
         + psf_shape_tag
         + primary_beam_shape_tag
         + positions_threshold_tag
-        + inner_mask_radii_tag
         + pixel_scale_interpolation_grid_tag
     )
 
@@ -113,22 +108,6 @@ def bin_up_factor_tag_from_bin_up_factor(bin_up_factor):
         return ""
     else:
         return "__bin_" + str(bin_up_factor)
-
-
-def inner_mask_radii_tag_from_inner_circular_mask_radii(inner_mask_radii):
-    """Generate an inner mask radii tag, to customize phase names based on the size of the circular masked area in the \
-    centre of an image.
-
-    This changes the phase name 'phase_name' as follows:
-
-    inner_circular_mask_radii = 1 -> phase_name
-    inner_circular_mask_radii = 2 -> phase_name_inner_circular_mask_radii_2
-    inner_circular_mask_radii = 2 -> phase_name_inner_circular_mask_radii_2
-    """
-    if inner_mask_radii == None:
-        return ""
-    else:
-        return "__inner_mask_{0:.2f}".format(inner_mask_radii)
 
 
 def psf_shape_tag_from_psf_shape_2d(psf_shape_2d):

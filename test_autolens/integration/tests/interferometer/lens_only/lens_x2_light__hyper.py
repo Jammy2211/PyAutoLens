@@ -15,11 +15,6 @@ def make_pipeline(
     real_space_pixel_scales=(0.1, 0.1),
     optimizer_class=af.MultiNest,
 ):
-    def modify_mask_function(shape_2d, pixel_scales):
-        return al.mask.circular(
-            shape_2d=shape_2d, pixel_scales=pixel_scales, radius=5.0
-        )
-
     class LensPlaneGalaxyX2Phase(al.PhaseInterferometer):
         def customize_priors(self, results):
 
@@ -36,7 +31,6 @@ def make_pipeline(
             lens_0=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
             lens_1=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
         ),
-        mask_function=modify_mask_function,
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
         optimizer_class=optimizer_class,
@@ -63,7 +57,6 @@ def make_pipeline(
                 hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.lens_1.hyper_galaxy,
             ),
         ),
-        mask_function=modify_mask_function,
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
         optimizer_class=optimizer_class,

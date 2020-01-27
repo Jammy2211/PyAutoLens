@@ -5,7 +5,7 @@ from autoarray.structures.grids import (
     GridIrregular as grid_irregular,
     GridRectangular as grid_rectangular,
     GridVoronoi as grid_voronoi,
-    Positions as positions,
+    Coordinates as coordinates,
 )
 from autoarray.structures.kernel import Kernel as kernel
 from autoarray.structures.visibilities import Visibilities as visibilities
@@ -39,7 +39,7 @@ from autolens.lens.ray_tracing import Tracer
 from autolens import util
 from autolens.fit.fit import fit
 from autolens.fit.fit import PositionsFit as fit_positions
-from autolens.pipeline import phase_tagging, pipeline_tagging
+from autolens.pipeline import phase_tagging
 from autolens.pipeline.phase.abstract import phase
 from autolens.pipeline.phase.abstract.phase import AbstractPhase
 from autolens.pipeline.phase.extensions import CombinedHyperPhase
@@ -58,12 +58,14 @@ from autolens.pipeline.phase.dataset.phase import PhaseDataset
 from autolens.pipeline.phase.imaging.phase import PhaseImaging
 from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
-from autolens.pipeline.pipeline import (
-    PipelineSettings,
-    PipelineSettingsHyper,
-    PipelineDataset,
-    PipelinePositions,
+from autolens.pipeline.pipeline import PipelineDataset, PipelinePositions
+from autolens.pipeline.pipeline_settings import (
+    PipelineGeneralSettings,
+    PipelineSourceSettings,
+    PipelineLightSettings,
+    PipelineMassSettings,
 )
-from autolens import plotters as plot
+from autolens.pipeline import pipeline_settings
+from autolens import plot
 
-__version__ = '0.34.1'
+__version__ = "0.34.1"

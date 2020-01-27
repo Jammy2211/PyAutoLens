@@ -90,7 +90,7 @@ class TestMetaData:
         pipeline = al.PipelineDataset(
             "pipeline_name", DummyPhaseImaging(phase_name="phase_name")
         )
-        pipeline.run(MockImagingData(), data_name="data_name")
+        pipeline.run(dataset=MockImagingData(), mask=MockMask(), data_name="data_name")
 
         assert (
             mock_files[1].text
@@ -118,7 +118,7 @@ class TestPassPositions(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = al.PipelineDataset("", phase_1, phase_2)
-        pipeline.run(dataset=MockImagingData(), positions=positions)
+        pipeline.run(dataset=MockImagingData(), mask=MockMask(), positions=positions)
 
         assert phase_1.positions == positions
         assert phase_2.positions == positions
@@ -131,7 +131,7 @@ class TestPipelineImaging(object):
 
         pipeline = al.PipelineDataset("", phase_1, phase_2)
 
-        pipeline.run(MockImagingData())
+        pipeline.run(dataset=MockImagingData(), mask=MockMask())
 
         assert len(phase_2.results) == 2
 
@@ -144,21 +144,6 @@ class TestPipelineImaging(object):
         pipeline2 = al.PipelineDataset("", phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
-
-    def test__hyper_mode_on__must_receive_mask(self):
-        phase_1 = DummyPhaseImaging("one")
-        phase_2 = DummyPhaseImaging("two")
-
-        pipeline = al.PipelineDataset("", phase_1, phase_2, hyper_mode=False)
-
-        pipeline.run(MockImagingData())
-
-        pipeline = al.PipelineDataset("", phase_1, phase_2, hyper_mode=True)
-
-        with pytest.raises(exc.PhaseException):
-            pipeline.run(MockImagingData())
-
-        pipeline.run(dataset=MockImagingData, mask=1.0)
 
 
 class DummyPhasePositions(af.AbstractPhase):
@@ -185,7 +170,7 @@ class TestPipelinePositions(object):
         phase_2 = DummyPhasePositions(phase_name="two")
         pipeline = al.PipelinePositions("", phase_1, phase_2)
 
-        pipeline.run(None, None)
+        pipeline.run(positions=None, pixel_scales=None)
 
         assert len(phase_2.results) == 2
 

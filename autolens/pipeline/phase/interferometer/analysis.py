@@ -10,26 +10,21 @@ from autolens.pipeline.phase.dataset import analysis as analysis_data
 class Analysis(analysis_data.Analysis):
     def __init__(self, masked_interferometer, cosmology, image_path=None, results=None):
 
-        super(Analysis, self).__init__(cosmology=cosmology)
+        super(Analysis, self).__init__(cosmology=cosmology, results=results)
 
         self.visualizer = visualizer.PhaseInterferometerVisualizer(
-            masked_interferometer, image_path
+            masked_dataset=masked_interferometer, image_path=image_path
         )
 
         self.masked_dataset = masked_interferometer
 
         if results is not None and results.last is not None:
-            last_results = results.last
-
-            # self.visualizer.plot_hyper_visibilities(last_results)
 
             self.hyper_galaxy_visibilities_path_dict = (
-                last_results.hyper_galaxy_visibilities_path_dict
+                results.last.hyper_galaxy_visibilities_path_dict
             )
 
-            self.hyper_model_visibilities = last_results.hyper_model_visibilities
-
-            # self.visualizer.plot_hyper_visibilities(last_results=last_results)
+            self.hyper_model_visibilities = results.last.hyper_model_visibilities
 
     @property
     def masked_interferometer(self):
@@ -50,7 +45,7 @@ class Analysis(analysis_data.Analysis):
             A fractional value indicating how well this model fit and the model masked_interferometer itself
         """
 
-        self.associate_visibilities(instance=instance)
+        self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
         self.masked_dataset.check_positions_trace_within_threshold_via_tracer(
@@ -73,7 +68,9 @@ class Analysis(analysis_data.Analysis):
         except InversionException as e:
             raise FitException from e
 
-    def associate_visibilities(self, instance: af.ModelInstance) -> af.ModelInstance:
+    def associate_hyper_visibilities(
+        self, instance: af.ModelInstance
+    ) -> af.ModelInstance:
         """
         Takes visibilities from the last result, if there is one, and associates them with galaxies in this phase
         where full-path galaxy names match.
@@ -118,7 +115,7 @@ class Analysis(analysis_data.Analysis):
         )
 
     def visualize(self, instance, during_analysis):
-        instance = self.associate_visibilities(instance=instance)
+        instance = self.associate_hyper_visibilities(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
         hyper_background_noise = self.hyper_background_noise_for_instance(
             instance=instance
@@ -127,5 +124,13 @@ class Analysis(analysis_data.Analysis):
         fit = self.masked_interferometer_fit_for_tracer(
             tracer=tracer, hyper_background_noise=hyper_background_noise
         )
-        self.visualizer.plot_ray_tracing(fit.tracer, during_analysis)
-        self.visualizer.plot_fit(fit, during_analysis)
+
+        visualizer = self.visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+            preloaded_critical_curves=tracer.critical_curves,
+            preloaded_caustics=tracer.caustics,
+        )
+
+        visualizer.visualize_ray_tracing(
+            tracer=fit.tracer, during_analysis=during_analysis
+        )
+        visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)

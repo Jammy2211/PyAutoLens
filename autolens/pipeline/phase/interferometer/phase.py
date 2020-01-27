@@ -23,8 +23,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         self,
         paths,
         *,
-        real_space_shape_2d,
-        real_space_pixel_scales,
+        real_space_mask,
         galaxies=None,
         hyper_background_noise=None,
         optimizer_class=af.MultiNest,
@@ -32,8 +31,6 @@ class PhaseInterferometer(dataset.PhaseDataset):
         sub_size=2,
         primary_beam_shape_2d=None,
         positions_threshold=None,
-        mask_function=None,
-        inner_mask_radii=None,
         pixel_scale_interpolation_grid=None,
         inversion_uses_border=True,
         inversion_pixel_limit=None,
@@ -52,16 +49,12 @@ class PhaseInterferometer(dataset.PhaseDataset):
             The side length of the subgrid
         """
 
-        if type(real_space_pixel_scales) is float:
-            real_space_pixel_scales = (real_space_pixel_scales, real_space_pixel_scales)
-
         paths.phase_tag = phase_tagging.phase_tag_from_phase_settings(
             sub_size=sub_size,
-            real_space_shape_2d=real_space_shape_2d,
-            real_space_pixel_scales=real_space_pixel_scales,
+            real_space_shape_2d=real_space_mask.shape_2d,
+            real_space_pixel_scales=real_space_mask.pixel_scales,
             primary_beam_shape_2d=primary_beam_shape_2d,
             positions_threshold=positions_threshold,
-            inner_mask_radii=inner_mask_radii,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
         )
 
@@ -79,12 +72,9 @@ class PhaseInterferometer(dataset.PhaseDataset):
         self.meta_interferometer_fit = MetaInterferometerFit(
             model=self.model,
             sub_size=sub_size,
-            real_space_shape_2d=real_space_shape_2d,
-            real_space_pixel_scales=real_space_pixel_scales,
+            real_space_mask=real_space_mask,
             primary_beam_shape_2d=primary_beam_shape_2d,
             positions_threshold=positions_threshold,
-            mask_function=mask_function,
-            inner_mask_radii=inner_mask_radii,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_uses_border=inversion_uses_border,
             inversion_pixel_limit=inversion_pixel_limit,
@@ -109,7 +99,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         """
         return visibilities
 
-    def make_analysis(self, dataset, results=None, mask=None, positions=None):
+    def make_analysis(self, dataset, mask, results=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and masked_interferometer modifying functions to allow child
         classes to change the behaviour of the phase.

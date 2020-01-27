@@ -6,7 +6,6 @@ from autoastro.galaxy import fit_galaxy
 from autoastro.galaxy import masked
 from autolens.pipeline.phase import abstract
 from autolens.pipeline import visualizer
-from autolens.pipeline.phase.dataset.phase import default_mask_function
 
 
 class Analysis(af.Analysis):
@@ -87,7 +86,7 @@ class AnalysisDeflections(Analysis):
 
         fit_y, fit_x = self.fit_for_instance(instance=instance)
 
-        if self.visualizer.plot_galaxy_fit_as_subplot:
+        if self.visualizer.plot_subplot_galaxy_fit:
             self.visualizer.plot_galaxy_fit_subplot(fit_y, path_suffix="/fit_y_")
             self.visualizer.plot_galaxy_fit_subplot(fit_x, path_suffix="/fit_x_")
 
@@ -142,7 +141,6 @@ class PhaseGalaxy(abstract.AbstractPhase):
         optimizer_class=af.MultiNest,
         sub_size=2,
         pixel_scale_interpolation_grid=None,
-        mask_function=None,
         cosmology=cosmo.Planck15,
     ):
         """
@@ -170,9 +168,8 @@ class PhaseGalaxy(abstract.AbstractPhase):
         self.galaxies = galaxies
         self.sub_size = sub_size
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
-        self.mask_function = mask_function
 
-    def run(self, galaxy_data, results=None, mask=None):
+    def run(self, galaxy_data, mask, results=None):
         """
         Run this phase.
 
@@ -202,25 +199,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
         return self.make_result(result, analysis)
 
-    def setup_phase_mask(self, data, mask):
-
-        if self.mask_function is not None:
-            mask = self.mask_function(shape_2d, pixel_scales=data.image)
-
-        elif mask is None and self.mask_function is None:
-            mask = default_mask_function(shape_2d, pixel_scales=data.image)
-
-        if mask.sub_size != self.sub_size:
-            mask = msk.Mask.manual(
-                mask_2d=mask,
-                pixel_scales=mask.pixel_scales,
-                sub_size=self.sub_size,
-                origin=mask.origin,
-            )
-
-        return mask
-
-    def make_analysis(self, galaxy_data, results=None, mask=None):
+    def make_analysis(self, galaxy_data, mask, results=None):
         """
         Create an lens object. Also calls the prior passing and masked_imaging modifying
         functions to allow child classes to change the behaviour of the phase.
@@ -239,8 +218,6 @@ class PhaseGalaxy(abstract.AbstractPhase):
             An lens object that the non-linear optimizer calls to determine the fit of a
              set of values
         """
-
-        mask = self.setup_phase_mask(data=galaxy_data[0], mask=mask)
 
         if self.use_image or self.use_convergence or self.use_potential:
 

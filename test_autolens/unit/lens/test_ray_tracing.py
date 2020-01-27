@@ -609,7 +609,9 @@ class TestAbstractTracer(object):
             ]
             assert tracer.mass_profiles == [g0.mass, g1.mass, g2.mass0, g2.mass1]
 
-        def test__extract_centres_of_all_mass_profiles_of_all_planes_and_galaxies(self):
+        def test__extract_centres_of_all_mass_profiles_of_all_planes_and_galaxies__ignores_mass_sheets(
+            self
+        ):
             g0 = al.Galaxy(
                 redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
             )
@@ -637,6 +639,34 @@ class TestAbstractTracer(object):
 
             assert tracer.mass_profile_centres_of_planes == [[(1.0, 1.0)], [(2.0, 2.0)]]
             assert tracer.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
+
+            plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
+            plane_1 = al.Plane(galaxies=[g2], redshift=None)
+
+            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
+
+            assert tracer.mass_profile_centres_of_planes == [
+                [(1.0, 1.0), (2.0, 2.0)],
+                [(3.0, 3.0), (4.0, 4.0)],
+            ]
+            assert tracer.mass_profile_centres == [
+                (1.0, 1.0),
+                (2.0, 2.0),
+                (3.0, 3.0),
+                (4.0, 4.0),
+            ]
+
+            g1 = al.Galaxy(
+                redshift=0.5,
+                mass=al.mp.SphericalIsothermal(centre=(2.0, 2.0)),
+                sheet=al.mp.MassSheet(centre=(10.0, 10.0)),
+            )
+            g2 = al.Galaxy(
+                redshift=1.0,
+                mass0=al.mp.SphericalIsothermal(centre=(3.0, 3.0)),
+                mass1=al.mp.SphericalIsothermal(centre=(4.0, 4.0)),
+                sheet=al.mp.MassSheet(centre=(10.0, 10.0)),
+            )
 
             plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
             plane_1 = al.Plane(galaxies=[g2], redshift=None)
@@ -1361,7 +1391,7 @@ class TestAbstractTracerLensing(object):
             )
 
             traced_positions_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=al.positions([[(1.0, 1.0), (1.0, 1.0)], [(1.0, 1.0)]])
+                grid=al.coordinates([[(1.0, 1.0), (1.0, 1.0)], [(1.0, 1.0)]])
             )
 
             # From unit test_autoarray below:
@@ -1494,7 +1524,7 @@ class TestAbstractTracerLensing(object):
             )
 
             traced_positions_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=al.positions([[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
+                grid=al.coordinates([[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
             )
 
             assert traced_positions_of_planes[0][0][0] == tuple(
@@ -2609,6 +2639,69 @@ class TestAbstractTracerLensing(object):
                 == tracer.image_plane_multiple_image_positions_of_galaxies(grid=grid)[0]
             )
 
+    class TestContributionMap:
+        def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
+
+            hyper_model_image = al.array.manual_2d([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = al.array.manual_2d([[1.0, 5.0, 8.0]])
+
+            hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
+            hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
+
+            galaxy_0 = al.Galaxy(
+                redshift=0.5,
+                hyper_galaxy=hyper_galaxy_0,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
+            )
+
+            galaxy_1 = al.Galaxy(
+                redshift=1.0,
+                hyper_galaxy=hyper_galaxy_1,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image,
+            )
+
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
+
+            assert (
+                tracer.contribution_map
+                == tracer.image_plane.contribution_map
+                + tracer.source_plane.contribution_map
+            ).all()
+            assert (
+                tracer.contribution_maps_of_planes[0].in_1d
+                == tracer.image_plane.contribution_map
+            ).all()
+
+            assert (
+                tracer.contribution_maps_of_planes[1].in_1d
+                == tracer.source_plane.contribution_map
+            ).all()
+
+            galaxy_0 = al.Galaxy(redshift=0.5)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
+
+            assert (
+                tracer.contribution_map == tracer.source_plane.contribution_map
+            ).all()
+            assert tracer.contribution_maps_of_planes[0] == None
+
+            assert (
+                tracer.contribution_maps_of_planes[1].in_1d
+                == tracer.source_plane.contribution_map
+            ).all()
+
+            galaxy_1 = al.Galaxy(redshift=1.0)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
+
+            assert tracer.contribution_map == None
+            assert tracer.contribution_maps_of_planes[0] == None
+
+            assert tracer.contribution_maps_of_planes[1] == None
+
     class TestLensingObject(object):
         def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(
             self
@@ -3424,6 +3517,8 @@ class TestAbstractTracerData(object):
         def test__x1_inversion_interferometer_in_tracer__performs_inversion_correctly(
             self, sub_grid_7x7, masked_interferometer_7
         ):
+
+            masked_interferometer_7.visibilities = al.visibilities.ones(shape_1d=(7,))
 
             pix = al.pix.Rectangular(shape=(7, 7))
             reg = al.reg.Constant(coefficient=0.0)
