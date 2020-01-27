@@ -32,7 +32,7 @@ class Analysis(af.Analysis):
 
         self.masked_imaging = masked_imaging
 
-        self.visualizer = visualizer.HyperGalaxyVisualizer(image_path)
+        self.visualizer = visualizer.HyperGalaxyVisualizer(image_path=image_path)
 
         self.hyper_model_image = hyper_model_image
         self.hyper_galaxy_image = hyper_galaxy_image
@@ -64,13 +64,11 @@ class Analysis(af.Analysis):
                 hyper_background_noise=hyper_background_noise,
             )
 
-            self.visualizer.hyper_galaxy_subplot(
-                hyper_galaxy_image=self.hyper_galaxy_image,
-                contribution_map=contribution_map,
-                noise_map=self.masked_imaging.noise_map,
-                hyper_noise_map=fit_hyper.noise_map,
-                chi_squared_map=fit_normal.chi_squared_map,
-                hyper_chi_squared_map=fit_hyper.chi_squared_map,
+            self.visualizer.visualize_hyper_galaxy(
+                fit=fit_normal,
+                hyper_fit=fit_hyper,
+                galaxy_image=self.hyper_galaxy_image,
+                contribution_map_in=contribution_map,
             )
 
     def fit(self, instance):
@@ -218,6 +216,9 @@ class HyperGalaxyPhase(HyperPhase):
             )
             optimizer.multimodal = af.conf.instance.non_linear.get(
                 "MultiNest", "extension_hyper_galaxy_multimodal", bool
+            )
+            optimizer.evidence_tolerance = af.conf.instance.non_linear.get(
+                "MultiNest", "extension_hyper_galaxy_evidence_tolerance", float
             )
 
             model = copy.deepcopy(phase.model)

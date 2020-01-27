@@ -188,16 +188,12 @@ class TestImagePassing(object):
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
     def test__results_are_passed_to_new_analysis__sets_up_hyper_images(
-        self, mask_function_7x7, results_collection_7x7, imaging_7x7
+        self, results_collection_7x7, imaging_7x7, mask_7x7
     ):
 
-        mask = mask_function_7x7(
-            shape_2d=imaging_7x7.shape_2d, pixel_scales=imaging_7x7.pixel_scales
-        )
-
         results_collection_7x7[0].galaxy_images = [
-            al.masked.array.full(fill_value=2.0, mask=mask),
-            al.masked.array.full(fill_value=2.0, mask=mask),
+            al.masked.array.full(fill_value=2.0, mask=mask_7x7),
+            al.masked.array.full(fill_value=2.0, mask=mask_7x7),
         ]
         results_collection_7x7[0].galaxy_images[0][3] = -1.0
         results_collection_7x7[0].galaxy_images[1][5] = -1.0
@@ -207,12 +203,11 @@ class TestImagePassing(object):
                 lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
             ),
             optimizer_class=mock_pipeline.MockNLO,
-            mask_function=mask_function_7x7,
             phase_name="test_phase",
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, mask=mask_7x7, results=results_collection_7x7
         )
 
         assert (
@@ -240,7 +235,7 @@ class TestImagePassing(object):
             image_path="",
         )
 
-        instance = analysis.associate_images(instance=instance)
+        instance = analysis.associate_hyper_images(instance=instance)
 
         lens_hyper_image = result.image_galaxy_dict[("galaxies", "lens")]
         source_hyper_image = result.image_galaxy_dict[("galaxies", "source")]
@@ -323,7 +318,7 @@ def make_combined():
 
 class TestHyperAPI(object):
     def test_combined_result(self, hyper_combined):
-        result = hyper_combined.run(None)
+        result = hyper_combined.run(dataset=None, mask=None)
 
         assert hasattr(result, "hyper_galaxy")
         assert isinstance(result.hyper_galaxy, MockResult)
@@ -390,7 +385,7 @@ class TestHyperAPI(object):
 
 class TestHyperGalaxyPhase(object):
     def test__likelihood_function_is_same_as_normal_phase_likelihood_function(
-        self, imaging_7x7, mask_function_7x7
+        self, imaging_7x7, mask_7x7
     ):
 
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
@@ -401,7 +396,6 @@ class TestHyperGalaxyPhase(object):
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            mask_function=mask_function_7x7,
             galaxies=dict(lens=lens_galaxy),
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -410,13 +404,11 @@ class TestHyperGalaxyPhase(object):
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7)
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
 
-        mask = phase_imaging_7x7.meta_imaging_fit.setup_phase_mask(
-            shape_2d=imaging_7x7.shape_2d,
-            pixel_scales=imaging_7x7.pixel_scales,
-            mask=None,
+        mask = phase_imaging_7x7.meta_imaging_fit.mask_with_phase_sub_size_from_mask(
+            mask=mask_7x7
         )
         assert mask.sub_size == 2
 
@@ -441,7 +433,7 @@ class TestHyperGalaxyPhase(object):
             masked_imaging=masked_imaging,
             hyper_model_image=fit.model_image,
             hyper_galaxy_image=fit.model_image,
-            image_path=None,
+            image_path="",
         )
 
         fit_hyper = analysis.fit_for_hyper_galaxy(

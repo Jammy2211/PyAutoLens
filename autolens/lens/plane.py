@@ -160,11 +160,12 @@ class AbstractPlane(lensing.LensingObject):
 
     @property
     def mass_profile_centres_of_galaxies(self):
-        return [
+        centres = [
             galaxy.mass_profile_centres
             for galaxy in self.galaxies
             if galaxy.has_mass_profile
         ]
+        return list(filter(None, centres))
 
     @property
     def mass_profile_axis_ratios_of_galaxies(self):
@@ -275,7 +276,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             redshift=redshift, galaxies=galaxies, cosmology=cosmology
         )
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def profile_image_from_grid(self, grid):
         """Compute the profile-image plane image of the list of galaxies of the plane's sub-grid, by summing the
         individual images of each galaxy's light profile.
@@ -310,7 +311,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             map(lambda galaxy: galaxy.profile_image_from_grid(grid=grid), self.galaxies)
         )
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def convergence_from_grid(self, grid):
         """Compute the convergence of the list of galaxies of the plane's sub-grid, by summing the individual convergences \
         of each galaxy's mass profile.
@@ -341,7 +342,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                 sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
             )
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def potential_from_grid(self, grid):
         """Compute the potential of the list of galaxies of the plane's sub-grid, by summing the individual potentials \
         of each galaxy's mass profile.
@@ -372,7 +373,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                 sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
             )
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def deflections_from_grid(self, grid):
         if self.galaxies:
             deflections = sum(
@@ -384,7 +385,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
                 sub_grid_1d=np.full((grid.sub_shape_1d, 2), 0.0)
             )
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def traced_grid_from_grid(self, grid):
         """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
 
@@ -601,6 +602,18 @@ class AbstractPlaneData(AbstractPlaneLensing):
         return hyper_noise_maps
 
     @property
+    def contribution_map(self):
+
+        contribution_maps = self.contribution_maps_of_galaxies
+        if None in contribution_maps:
+            contribution_maps = [i for i in contribution_maps if i is not None]
+
+        if contribution_maps:
+            return sum(contribution_maps)
+        else:
+            return None
+
+    @property
     def contribution_maps_of_galaxies(self):
 
         contribution_maps = []
@@ -609,12 +622,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
             if galaxy.hyper_galaxy is not None:
 
-                contribution_map = galaxy.hyper_galaxy.contribution_map_from_hyper_images(
-                    hyper_model_image=galaxy.hyper_model_image,
-                    hyper_galaxy_image=galaxy.hyper_galaxy_image,
-                )
-
-                contribution_maps.append(contribution_map)
+                contribution_maps.append(galaxy.contribution_map)
 
             else:
 

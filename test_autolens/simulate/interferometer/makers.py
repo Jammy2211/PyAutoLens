@@ -54,29 +54,29 @@ def simulate_interferometer_from_galaxies_and_output_to_fits(
         overwrite=True,
     )
 
-    al.plot.interferometer.subplot(
+    aplt.interferometer.subplot_imaging(
         interferometer=interferometer,
         output_filename="interferometer",
         output_path=dataset_path,
-        output_format="png",
+        format="png",
     )
 
-    al.plot.interferometer.individual(
+    aplt.interferometer.individual(
         interferometer=interferometer,
         plot_visibilities=True,
         output_path=dataset_path,
-        output_format="png",
+        format="png",
     )
 
-    al.plot.tracer.subplot(
+    aplt.tracer.subplot_tracer(
         tracer=tracer,
         grid=simulator.grid,
         output_filename="tracer",
         output_path=dataset_path,
-        output_format="png",
+        format="png",
     )
 
-    al.plot.tracer.individual(
+    aplt.tracer.individual(
         tracer=tracer,
         grid=simulator.grid,
         plot_profile_image=True,
@@ -85,7 +85,7 @@ def simulate_interferometer_from_galaxies_and_output_to_fits(
         plot_potential=True,
         plot_deflections=True,
         output_path=dataset_path,
-        output_format="png",
+        format="png",
     )
 
 

@@ -53,7 +53,7 @@ phase = al.PhaseImaging(
 
 # We pass the imaging data and mask to the phase, thereby fitting it with the lens model above & plot the resulting fit.
 result = phase.run(data=imaging, mask=mask)
-al.plot.fit_imaging.subplot(fit=result.most_likely_fit)
+aplt.fit_imaging.subplot_fit_imaging(fit=result.most_likely_fit)
 ```
 
 ## Slack

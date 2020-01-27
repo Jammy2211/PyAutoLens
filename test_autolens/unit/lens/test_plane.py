@@ -10,6 +10,7 @@ import autoastro as am
 import autolens as al
 from autolens.lens import plane
 from autolens import exc
+import autoarray as aa
 
 from test_autoarray.mock import mock_inversion
 
@@ -507,7 +508,9 @@ class TestAbstractPlane(object):
                 (4.0, 4.0),
             ]
 
-        def test__extract_centres_of_all_mass_profiles_of_all_galaxies(self):
+        def test__extract_centres_of_all_mass_profiles_of_all_galaxies__ignores_mass_sheets(
+            self
+        ):
 
             g0 = al.Galaxy(
                 redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
@@ -559,6 +562,34 @@ class TestAbstractPlane(object):
 
             plane = al.Plane(
                 galaxies=[g0, al.Galaxy(redshift=0.5), g1, al.Galaxy(redshift=0.5), g2],
+                redshift=None,
+            )
+            assert plane.mass_profile_centres_of_galaxies == [
+                [(1.0, 1.0)],
+                [(2.0, 2.0)],
+                [(3.0, 3.0), (4.0, 4.0)],
+            ]
+            assert plane.mass_profile_centres == [
+                (1.0, 1.0),
+                (2.0, 2.0),
+                (3.0, 3.0),
+                (4.0, 4.0),
+            ]
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0)),
+                sheet=al.mp.MassSheet(centre=(10.0, 10.0)),
+            )
+
+            plane = al.Plane(
+                galaxies=[
+                    g0,
+                    al.Galaxy(redshift=0.5, sheet=al.mp.MassSheet(centre=(10.0, 10.0))),
+                    g1,
+                    al.Galaxy(redshift=0.5, sheet=al.mp.MassSheet(centre=(10.0, 10.0))),
+                    g2,
+                ],
                 redshift=None,
             )
             assert plane.mass_profile_centres_of_galaxies == [
@@ -854,7 +885,7 @@ class TestAbstractPlaneLensing(object):
 
         def test__same_as_above__grid_is_positions(self):
             # Overwrite one value so intensity in each pixel is different
-            positions = al.positions(positions=[[(2.0, 2.0)], [(3.0, 3.0)]])
+            positions = al.coordinates(coordinates=[[(2.0, 2.0)], [(3.0, 3.0)]])
 
             g0 = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
@@ -2022,6 +2053,53 @@ class TestAbstractPlaneData(object):
             assert plane.contribution_maps_of_galaxies[1] == None
             assert plane.contribution_maps_of_galaxies[2] == None
 
+        def test__contribution_map_is_sum_of_galaxy_contribution_maps__handles_nones_correctly(
+            self
+        ):
+            hyper_galaxy_0 = al.HyperGalaxy(
+                contribution_factor=0.0, noise_factor=0.0, noise_power=1.0
+            )
+            hyper_galaxy_1 = al.HyperGalaxy(
+                contribution_factor=1.0, noise_factor=0.0, noise_power=1.0
+            )
+
+            hyper_model_image = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
+
+            hyper_galaxy_image_0 = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
+            hyper_galaxy_image_1 = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
+
+            galaxy_0 = al.Galaxy(
+                redshift=0.5,
+                hyper_galaxy=hyper_galaxy_0,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image_0,
+            )
+
+            galaxy_1 = al.Galaxy(
+                redshift=0.5,
+                hyper_galaxy=hyper_galaxy_1,
+                hyper_model_image=hyper_model_image,
+                hyper_galaxy_image=hyper_galaxy_image_1,
+            )
+
+            plane = al.Plane(redshift=0.5, galaxies=[galaxy_0, galaxy_1])
+
+            assert (
+                sum(plane.contribution_maps_of_galaxies) == plane.contribution_map
+            ).all()
+
+            galaxy_1 = al.Galaxy(redshift=0.5)
+
+            plane = al.Plane(redshift=0.5, galaxies=[galaxy_0, galaxy_1])
+
+            assert (galaxy_0.contribution_map == plane.contribution_map).all()
+
+            galaxy_0 = al.Galaxy(redshift=0.5)
+
+            plane = al.Plane(redshift=0.5, galaxies=[galaxy_0, galaxy_1])
+
+            assert plane.contribution_map == None
+
     class TestHyperNoiseMap:
         def test__x2_hyper_galaxy__use_numerical_values_of_hyper_noise_map_scaling(
             self
@@ -2338,7 +2416,7 @@ class TestPlane(object):
             self, gal_x1_mp
         ):
 
-            positions = al.positions(positions=[[(1.0, 1.0), (1.0, 0.0)]])
+            positions = al.coordinates(coordinates=[[(1.0, 1.0), (1.0, 0.0)]])
 
             plane = al.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
 

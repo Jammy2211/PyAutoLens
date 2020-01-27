@@ -8,7 +8,7 @@ class AbstractLensMasked(object):
     def __init__(self, positions, positions_threshold, preload_sparse_grids_of_planes):
 
         if positions is not None:
-            self.positions = grids.Positions(positions=positions)
+            self.positions = grids.Coordinates(coordinates=positions)
         else:
             self.positions = None
 
@@ -144,6 +144,7 @@ class MaskedInterferometer(masked_dataset.MaskedInterferometer, AbstractLensMask
     def __init__(
         self,
         interferometer,
+        visibilities_mask,
         real_space_mask,
         primary_beam_shape_2d=None,
         pixel_scale_interpolation_grid=None,
@@ -187,6 +188,7 @@ class MaskedInterferometer(masked_dataset.MaskedInterferometer, AbstractLensMask
 
         super(MaskedInterferometer, self).__init__(
             interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
             primary_beam_shape_2d=primary_beam_shape_2d,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
