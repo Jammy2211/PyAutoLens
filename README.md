@@ -53,7 +53,7 @@ phase = al.PhaseImaging(
 
 # We pass the imaging data and mask to the phase, thereby fitting it with the lens model above & plot the resulting fit.
 result = phase.run(data=imaging, mask=mask)
-aplt.fit_imaging.subplot_fit_imaging(fit=result.most_likely_fit)
+al.plot.fit_imaging.subplot_fit_imaging(fit=result.most_likely_fit)
 ```
 
 ## Slack
@@ -86,14 +86,18 @@ Included with **PyAutoLens** is the **HowToLens** lecture series, which provides
 
 **PyAutoLens** comes with a workspace, which can be found [here](https://github.com/Jammy2211/autolens_workspace) & which includes:
 
-- **Config** - Configuration files which customize the **PyAutoLens** analysis.
-- **Data** - Your data folder, including example data-sets distributed with **PyAutoLens**.
+- **Aggregator** - Manipulate large suites of model-fits via Jupyter notebooks, using **PyAutoFit**'s in-built results database.
+- **Config** - Configuration files which customize **PyAutoLens**'s behaviour.
+- **Dataset** - Where data is stored, including example datasets distributed with **PyAutoLens**.
 - **HowToLens** - The **HowToLens** lecture series.
-- **Output** - Where the **PyAutoLens** analysis & visualization are output.
-- **Pipelines** - Example pipelines for modeling strong lenses or to use a template for your own pipeline.
-- **Plotting** - Scripts enabling customized figures & images.
+- **Output** - Where the **PyAutoLens** analysis and visualization are output.
+- **Pipelines** - Example pipelines for modeling strong lenses.
+- **Plot** - Example scripts for customizing figures and images.
+- **Preprocessing** - Tools for preprocessing data before an analysis and creating auxilary data like masks.
+- **Quick Start** - A quick start guide, so you can begin modeling your own lens data within hours.
 - **Runners** - Scripts for running a **PyAutoLens** pipeline.
-- **Tools** - Tools for simulating strong lens data, creating masks & using many other **PyAutoLens** features.
+- **Simulators** - Scripts for simulating strong lens datasets with **PyAutoLens**.
+- **Tools** - Extra tools for using many other **PyAutoLens** features.
 
 If you install **PyAutoLens** with conda or pip, you will need to download the workspace from the [autolens_workspace](https://github.com/Jammy2211/autolens_workspace) repository, which is described in the installation instructions below.
 
@@ -125,10 +129,10 @@ Install multinest:
 conda install -c conda-forge multinest
 ```
 
-Install autolens (v0.32.0 is the most recent stable build):
+Install autolens (v0.35.0 is the most recent stable build):
 
 ```
-pip install autolens==0.32.0
+pip install autolens==0.35.0
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment model:
@@ -145,15 +149,15 @@ export PYTHONPATH=/path/to/autolens_workspace/
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 ```
-python3 /path/to/autolens_workspace/runners/simple/runner__lens_sie__source_inversion.py
+python3 /path/to/autolens_workspace/runners/beginner/no_lens_light/lens_sie__source_inversion.py
 ```
 
 ## Installation with pip
 
-Installation is also available via pip (v0.32.0 is the most recent stable build), however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
+Installation is also available via pip (v0.35.0 is the most recent stable build), however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
 
 ```
-$ pip install autolens==0.32.0
+$ pip install autolens==0.35.0
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment model:
@@ -170,7 +174,7 @@ export PYTHONPATH=/path/to/autolens_workspace
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 ```
-python3 /path/to/autolens_workspace/runners/simple/runner__lens_sie__source_inversion.py
+python3 /path/to/autolens_workspace/runners/beginner/no_lens_light/lens_sie__source_inversion.py
 ```
 
 ## Support & Discussion
