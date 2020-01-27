@@ -4,7 +4,7 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "full_pipeline"
 test_name = "hyper_with_lens_light_bg"
-data_type = "lens_mass__source_smooth"
+data_type = "lens_sie__source_smooth"
 data_resolution = "lsst"
 
 

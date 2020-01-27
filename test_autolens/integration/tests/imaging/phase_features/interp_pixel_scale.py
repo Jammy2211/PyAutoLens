@@ -4,7 +4,7 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "phase_features"
 test_name = "pixel_scale_interpolation_grid"
-data_type = "lens_mass__source_smooth"
+data_type = "lens_sie__source_smooth"
 data_resolution = "lsst"
 
 
