@@ -220,6 +220,29 @@ class InterferometerFit(aa_fit.InterferometerFit):
         return self.masked_interferometer.grid
 
     @property
+    def galaxy_model_image_dict(self) -> {g.Galaxy: np.ndarray}:
+        """
+        A dictionary associating galaxies with their corresponding model images
+        """
+        galaxy_model_image_dict = self.tracer.galaxy_profile_image_dict_from_grid(
+            grid=self.grid,
+        )
+
+        # TODO : Extend to multiple inversioons across Planes
+
+        for plane_index in self.tracer.plane_indexes_with_pixelizations:
+
+            galaxy_model_image_dict.update(
+                {
+                    self.tracer.planes[plane_index].galaxies[
+                        0
+                    ]: self.inversion.mapped_reconstructed_image
+                }
+            )
+
+        return galaxy_model_image_dict
+
+    @property
     def galaxy_model_visibilities_dict(self) -> {g.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
