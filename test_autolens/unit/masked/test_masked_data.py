@@ -161,13 +161,18 @@ class TestMaskedImaging(object):
 
 class TestMaskedInterferometer(object):
     def test__masked_dataset_via_autoarray(
-        self, interferometer_7, sub_mask_7x7, visibilities_mask_7x2, visibilities_7x2, noise_map_7x2
+        self,
+        interferometer_7,
+        sub_mask_7x7,
+        visibilities_mask_7x2,
+        visibilities_7x2,
+        noise_map_7x2,
     ):
 
         masked_interferometer_7 = al.masked.interferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
-            real_space_mask=sub_mask_7x7
+            real_space_mask=sub_mask_7x7,
         )
 
         assert (
@@ -197,7 +202,12 @@ class TestMaskedInterferometer(object):
         assert type(masked_interferometer_7.transformer) == transformer.Transformer
 
     def test__inheritance_via_autoarray(
-        self, interferometer_7, sub_mask_7x7, visibilities_mask_7x2, grid_7x7, sub_grid_7x7
+        self,
+        interferometer_7,
+        sub_mask_7x7,
+        visibilities_mask_7x2,
+        grid_7x7,
+        sub_grid_7x7,
     ):
 
         masked_interferometer_7 = al.masked.interferometer(

@@ -33,7 +33,9 @@ class MetaInterferometerFit(dataset.MetaDatasetFit):
         self, dataset, mask, positions, results, modified_visibilities
     ):
 
-        real_space_mask = self.mask_with_phase_sub_size_from_mask(mask=self.real_space_mask)
+        real_space_mask = self.mask_with_phase_sub_size_from_mask(
+            mask=self.real_space_mask
+        )
 
         self.check_positions(positions=positions)
 

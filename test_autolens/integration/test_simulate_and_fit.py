@@ -226,8 +226,10 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     real_space_mask = al.mask.unmasked(shape_2d=(51, 51), pixel_scales=0.1, sub_size=2)
 
     masked_interferometer = al.masked.interferometer(
-        interferometer=interferometer, visibilities_mask=visibilities_mask,
-        real_space_mask=real_space_mask, inversion_uses_border=False
+        interferometer=interferometer,
+        visibilities_mask=visibilities_mask,
+        real_space_mask=real_space_mask,
+        inversion_uses_border=False,
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])

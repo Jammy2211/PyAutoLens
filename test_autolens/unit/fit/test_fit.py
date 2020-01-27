@@ -1580,7 +1580,9 @@ class TestInterferometerFit:
             )
 
             masked_interferometer = al.masked.interferometer(
-                interferometer=interferometer, visibilities_mask=visibilities_mask, real_space_mask=real_space_mask
+                interferometer=interferometer,
+                visibilities_mask=visibilities_mask,
+                real_space_mask=real_space_mask,
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -1643,7 +1645,9 @@ class TestInterferometerFit:
             )
 
             masked_interferometer = al.masked.interferometer(
-                interferometer=interferometer, visibilities_mask=visibilities_mask,real_space_mask=real_space_mask
+                interferometer=interferometer,
+                visibilities_mask=visibilities_mask,
+                real_space_mask=real_space_mask,
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -1742,7 +1746,9 @@ class TestInterferometerFit:
             )
 
             masked_interferometer = al.masked.interferometer(
-                interferometer=interferometer, visibilities_mask=visibilities_mask, real_space_mask=real_space_mask
+                interferometer=interferometer,
+                visibilities_mask=visibilities_mask,
+                real_space_mask=real_space_mask,
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -1854,11 +1860,11 @@ class TestInterferometerFit:
             )
 
             g0_profile_image = g0.profile_image_from_grid(
-                grid=traced_grids_of_planes[0],
+                grid=traced_grids_of_planes[0]
             )
 
             g1_profile_image = g1.profile_image_from_grid(
-                grid=traced_grids_of_planes[1],
+                grid=traced_grids_of_planes[1]
             )
 
             assert fit.galaxy_model_image_dict[g0].in_1d == pytest.approx(
@@ -2317,13 +2323,9 @@ class TestInterferometerFit:
                 regularization=reg,
             )
 
-            g0_image = g0.profile_image_from_grid(
-                grid=traced_grids[0],
-            )
+            g0_image = g0.profile_image_from_grid(grid=traced_grids[0])
 
-            g1_image = g1.profile_image_from_grid(
-                grid=traced_grids[1],
-            )
+            g1_image = g1.profile_image_from_grid(grid=traced_grids[1])
 
             assert (fit.galaxy_model_image_dict[g2].in_2d == np.zeros((7, 7))).all()
 
@@ -2333,9 +2335,7 @@ class TestInterferometerFit:
             assert fit.galaxy_model_image_dict[g1].in_1d == pytest.approx(
                 g1_image.in_1d, 1.0e-4
             )
-            assert fit.galaxy_model_image_dict[
-                galaxy_pix
-            ].in_1d == pytest.approx(
+            assert fit.galaxy_model_image_dict[galaxy_pix].in_1d == pytest.approx(
                 inversion.mapped_reconstructed_image.in_1d, 1.0e-4
             )
 

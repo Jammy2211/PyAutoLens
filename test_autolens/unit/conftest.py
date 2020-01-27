@@ -32,7 +32,9 @@ def make_masked_interferometer_7(
     interferometer_7, mask_7x7, visibilities_mask_7x2, sub_grid_7x7, transformer_7x7_7
 ):
     return al.masked.interferometer.manual(
-        interferometer=interferometer_7, visibilities_mask=visibilities_mask_7x2, real_space_mask=mask_7x7
+        interferometer=interferometer_7,
+        visibilities_mask=visibilities_mask_7x2,
+        real_space_mask=mask_7x7,
     )
 
 

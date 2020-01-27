@@ -55,8 +55,7 @@ class TestPhase(object):
         self, phase_interferometer_7, interferometer_7, visibilities_mask_7x2
     ):
         phase_interferometer_7.make_analysis(
-            dataset=interferometer_7,
-            mask=visibilities_mask_7x2
+            dataset=interferometer_7, mask=visibilities_mask_7x2
         )
 
         file_phase_info = "{}/{}".format(
@@ -83,7 +82,9 @@ class TestPhase(object):
             "Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n"
         )
 
-    def test__fit_using_interferometer(self, interferometer_7, mask_7x7, visibilities_mask_7x2):
+    def test__fit_using_interferometer(
+        self, interferometer_7, mask_7x7, visibilities_mask_7x2
+    ):
 
         phase_interferometer_7 = al.PhaseInterferometer(
             optimizer_class=mock_pipeline.MockNLO,
@@ -95,11 +96,15 @@ class TestPhase(object):
             phase_name="test_phase_test_fit",
         )
 
-        result = phase_interferometer_7.run(dataset=interferometer_7, mask=visibilities_mask_7x2)
+        result = phase_interferometer_7.run(
+            dataset=interferometer_7, mask=visibilities_mask_7x2
+        )
         assert isinstance(result.instance.galaxies[0], al.Galaxy)
         assert isinstance(result.instance.galaxies[0], al.Galaxy)
 
-    def test_modify_visibilities(self, interferometer_7, mask_7x7, visibilities_mask_7x2):
+    def test_modify_visibilities(
+        self, interferometer_7, mask_7x7, visibilities_mask_7x2
+    ):
         class MyPhase(al.PhaseInterferometer):
             def modify_visibilities(self, visibilities, results):
                 assert interferometer_7.visibilities.shape_1d == visibilities.shape_1d
@@ -107,8 +112,7 @@ class TestPhase(object):
                 return visibilities
 
         phase_interferometer_7 = MyPhase(
-            phase_name="phase_interferometer_7",
-            real_space_mask=mask_7x7,
+            phase_name="phase_interferometer_7", real_space_mask=mask_7x7
         )
 
         analysis = phase_interferometer_7.make_analysis(
@@ -190,7 +194,9 @@ class TestPhase(object):
             mask=mask_7x7
         )
         masked_interferometer = al.masked.interferometer(
-            interferometer=interferometer_7, visibilities_mask=visibilities_mask_7x2, real_space_mask=real_space_mask
+            interferometer=interferometer_7,
+            visibilities_mask=visibilities_mask_7x2,
+            real_space_mask=real_space_mask,
         )
         tracer = analysis.tracer_for_instance(instance=instance)
 
@@ -228,7 +234,9 @@ class TestPhase(object):
         assert real_space_mask.sub_size == 4
 
         masked_interferometer = al.masked.interferometer(
-            interferometer=interferometer_7, visibilities_mask=visibilities_mask_7x2, real_space_mask=real_space_mask
+            interferometer=interferometer_7,
+            visibilities_mask=visibilities_mask_7x2,
+            real_space_mask=real_space_mask,
         )
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = InterferometerFit(

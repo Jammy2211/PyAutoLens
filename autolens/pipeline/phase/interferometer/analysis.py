@@ -68,7 +68,9 @@ class Analysis(analysis_data.Analysis):
         except InversionException as e:
             raise FitException from e
 
-    def associate_hyper_visibilities(self, instance: af.ModelInstance) -> af.ModelInstance:
+    def associate_hyper_visibilities(
+        self, instance: af.ModelInstance
+    ) -> af.ModelInstance:
         """
         Takes visibilities from the last result, if there is one, and associates them with galaxies in this phase
         where full-path galaxy names match.
