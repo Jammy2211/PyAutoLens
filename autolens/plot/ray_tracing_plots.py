@@ -103,6 +103,9 @@ def individual(
         in the python interpreter window.
     """
 
+    if include is None:
+        include = lensing_plotters.Include()
+
     if plot_profile_image:
 
         profile_image(

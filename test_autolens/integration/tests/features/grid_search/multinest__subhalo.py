@@ -4,7 +4,7 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "grid_search"
 test_name = "multinest_grid__subhalo"
-data_type = "lens_mass__source_smooth"
+data_type = "lens_sie__source_smooth"
 data_resolution = "lsst"
 
 
