@@ -147,6 +147,17 @@ Set PYTHONPATH to include the autolens_workspace directory:
 export PYTHONPATH=/path/to/autolens_workspace/
 ```
 
+Matplotlib uses the backend set in the config file autolens_workspace/config/visualize/general.ini:
+ 
+ ```
+[general]
+backend = TKAgg ; Alternatives: Qt5Agg, Qt4Agg, WXAgg, WX, Agg (outputs to .fits / .png but doesn't'show' figure)
+``` 
+
+There have been reports that the default TKAgg backend causes crashes when running the test script below (either the 
+code crashes without a error or your computer restarts). If this happens, change the config's backend until the test
+works (Qt5Agg has worked for new MACs).
+
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 ```
 python3 /path/to/autolens_workspace/runners/beginner/no_lens_light/lens_sie__source_inversion.py
@@ -171,6 +182,17 @@ Set PYTHONPATH to include the autolens_workspace directory:
 ```
 export PYTHONPATH=/path/to/autolens_workspace
 ```
+
+Matplotlib uses the backend set in the config file autolens_workspace/config/visualize/general.ini:
+ 
+ ```
+[general]
+backend = TKAgg ; Alternatives: Qt5Agg, Qt4Agg, WXAgg, WX, Agg (outputs to .fits / .png but doesn't'show' figure)
+``` 
+
+There have been reports that the default TKAgg backend causes crashes when running the test script below (either the 
+code crashes without a error or your computer restarts). If this happens, change the config's backend until the test
+works (Qt5Agg has worked for new MACs).
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 ```
