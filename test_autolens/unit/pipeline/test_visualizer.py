@@ -1,3 +1,4 @@
+import autolens as al
 from autolens.pipeline import visualizer as vis
 import os
 import pytest
@@ -177,6 +178,32 @@ class TestPhaseImagingVisualizer:
             not in plot_patch.paths
         )
         assert plot_path + "inversion/interpolated_errors.png" in plot_patch.paths
+
+    # def test__source_and_lens__visualizes_fit_in_fits_correctly(
+    #     self,
+    #     masked_imaging_7x7,
+    #     masked_imaging_fit_x2_plane_inversion_7x7,
+    #     include_all,
+    #     plot_path,
+    #     plot_patch,
+    # ):
+    #
+    #     path = "{}/../test_files/plotting/visualizer/".format(
+    #     os.path.dirname(os.path.realpath(__file__))
+    # )
+    #
+    #     visualizer = vis.PhaseImagingVisualizer(
+    #         masked_dataset=masked_imaging_7x7, image_path=path
+    #     )
+    #
+    #     visualizer.visualize_fit_in_fits(
+    #         fit=masked_imaging_fit_x2_plane_inversion_7x7,
+    #     )
+    #
+    #
+    #     image = al.util.array.numpy_array_2d_from_fits(file_path=path+"fit_imaging/fits/image.fits", hdu=0)
+    #
+    #     assert image.shape == (7,7)
 
     def test__visualizes_hyper_images_using_config(
         self,

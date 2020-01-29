@@ -457,52 +457,40 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                     )
 
             if self.plot_fit_all_at_end_fits:
-                fits_plotter = plotter.plotter_with_new_output(
-                    path=plotter.output.path + "/fits/", format="fits"
-                )
 
-                fit_imaging_plots.individuals(
-                    fit=fit,
-                    plot_image=True,
-                    plot_noise_map=True,
-                    plot_signal_to_noise_map=True,
-                    plot_model_image=True,
-                    plot_residual_map=True,
-                    plot_normalized_residual_map=True,
-                    plot_chi_squared_map=True,
-                    plot_subtracted_images_of_planes=True,
-                    plot_model_images_of_planes=True,
-                    plot_plane_images_of_planes=True,
-                    include=self.include,
-                    plotter=fits_plotter,
-                )
+                self.visualize_fit_in_fits(fit=fit, plotter=plotter)
 
-                if fit.inversion is not None:
-                    inversion_plots.individuals(
-                        inversion=fit.inversion,
-                        image_positions=self.include.positions_from_fit(fit=fit),
-                        source_positions=self.include.positions_of_plane_from_fit_and_plane_index(
-                            fit=fit, plane_index=-1
-                        ),
-                        grid=self.include.inversion_image_pixelization_grid_from_fit(
-                            fit=fit
-                        ),
-                        light_profile_centres=self.include.light_profile_centres_of_galaxies_from_obj(
-                            obj=fit.tracer.image_plane
-                        ),
-                        mass_profile_centres=self.include.mass_profile_centres_of_galaxies_from_obj(
-                            obj=fit.tracer.image_plane
-                        ),
-                        critical_curves=self.include.critical_curves_from_obj(
-                            obj=fit.tracer
-                        ),
-                        caustics=self.include.caustics_from_obj(obj=fit.tracer),
-                        plot_reconstructed_image=True,
-                        plot_interpolated_reconstruction=True,
-                        plot_interpolated_errors=True,
-                        include=self.include,
-                        plotter=plotter,
-                    )
+    def visualize_fit_in_fits(self, fit):
+
+        fits_plotter = self.plotter.plotter_with_new_output(
+            path=self.plotter.output.path + "fit_imaging/fits/", format="fits"
+        )
+
+        fit_imaging_plots.individuals(
+            fit=fit,
+            plot_image=True,
+            plot_noise_map=True,
+            plot_signal_to_noise_map=True,
+            plot_model_image=True,
+            plot_residual_map=True,
+            plot_normalized_residual_map=True,
+            plot_chi_squared_map=True,
+            plot_subtracted_images_of_planes=True,
+            plot_model_images_of_planes=True,
+            plot_plane_images_of_planes=True,
+            include=self.include,
+            plotter=fits_plotter,
+        )
+
+        if fit.inversion is not None:
+            inversion_plots.individuals(
+                inversion=fit.inversion,
+                plot_reconstructed_image=True,
+                plot_interpolated_reconstruction=True,
+                plot_interpolated_errors=True,
+                include=self.include,
+                plotter=fits_plotter,
+            )
 
     def visualize_hyper_images(self, last_results):
 
