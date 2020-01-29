@@ -1,3 +1,4 @@
+autoconf==0.2.2
 autofit==0.48.1
 autoarray==0.7.1
 autoastro==0.3.1

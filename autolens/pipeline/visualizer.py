@@ -129,7 +129,9 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
         self.plot_fit_all_at_end_png = plot_setting("fit", "all_at_end_png")
         self.plot_fit_all_at_end_fits = plot_setting("fit", "all_at_end_fits")
         self.plot_subplot_fit = plot_setting("fit", "subplot_fit")
-        self.plot_subplot_of_plane_fits = plot_setting("fit", "subplots_of_plane_fits")
+        self.plot_subplots_of_all_planes_fits = plot_setting(
+            "fit", "subplots_of_plane_fits"
+        )
 
         self.plot_fit_data = plot_setting("fit", "data")
         self.plot_fit_noise_map = plot_setting("fit", "noise_map")
@@ -323,8 +325,8 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                 fit=fit, include=self.include, sub_plotter=self.sub_plotter
             )
 
-        if self.plot_subplot_of_plane_fits:
-            fit_imaging_plots.subplot_of_planes(
+        if self.plot_subplots_of_all_planes_fits:
+            fit_imaging_plots.subplots_of_all_planes(
                 fit=fit, include=self.include, sub_plotter=self.sub_plotter
             )
 
