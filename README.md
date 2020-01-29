@@ -68,33 +68,34 @@ Unfortunately, Slack is invitation-only, so first send me an [email](https://git
 
 - **Galaxies** - Use light & mass profiles to make galaxies & perform lensing calculations.
 - **Pipelines** - Write automated analysis pipelines to fit complex lens models to large samples of strong lenses.
-- **Extended Sources** - Reconstruct complex source galaxy morphologies on a variety of pixel-aa.
+- **Extended Sources** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
 - **Adaption** - Adapt the lensing analysis to the features of the observed strong lens imaging.
 - **Multi-Plane** - Perform multi-plane ray-tracing & model multi-plane lens systems.
 - **Visualization** - Custom visualization libraries for plotting physical lensing quantities & modeling results.
 
 ## HowToLens
 
-Included with **PyAutoLens** is the **HowToLens** lecture series, which provides an introduction to strong gravitational lens modeling with **PyAutoLens**. It can be found in the workspace & consists of 4 chapters:
+Included with **PyAutoLens** is the **HowToLens** lecture series, which provides an introduction to strong gravitational lens modeling with **PyAutoLens**. It can be found in the workspace & consists of 5 chapters:
 
 - **Introduction** - An introduction to strong gravitational lensing & **PyAutolens**.
 - **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
 - **Pipelines** - How to build pipelines & tailor them to your own science case.
 - **Inversions** - How to perform pixelized reconstructions of the source-galaxy.
+- **Hyper-Mode** - How to use **PyAutoLens** advanced modeling features that adapt the model to the strong lens being analysed.
 
 ## Workspace
 
 **PyAutoLens** comes with a workspace, which can be found [here](https://github.com/Jammy2211/autolens_workspace) & which includes:
 
-- **Aggregator** - Manipulate large suites of model-fits via Jupyter notebooks, using **PyAutoFit**'s in-built results database.
+- **Aggregator** - Manipulate large suites of modeling results via Jupyter notebooks, using **PyAutoFit**'s in-built results database.
 - **Config** - Configuration files which customize **PyAutoLens**'s behaviour.
 - **Dataset** - Where data is stored, including example datasets distributed with **PyAutoLens**.
 - **HowToLens** - The **HowToLens** lecture series.
 - **Output** - Where the **PyAutoLens** analysis and visualization are output.
 - **Pipelines** - Example pipelines for modeling strong lenses.
 - **Plot** - Example scripts for customizing figures and images.
-- **Preprocessing** - Tools for preprocessing data before an analysis and creating auxilary data like masks.
-- **Quick Start** - A quick start guide, so you can begin modeling your own lens data within hours.
+- **Preprocessing** - Tools for preprocessing data before an analysis (e.g. creating a mask).
+- **Quick Start** - A quick start guide, so you can begin modeling your lenses within hours.
 - **Runners** - Scripts for running a **PyAutoLens** pipeline.
 - **Simulators** - Scripts for simulating strong lens datasets with **PyAutoLens**.
 - **Tools** - Extra tools for using many other **PyAutoLens** features.
@@ -151,7 +152,7 @@ Matplotlib uses the backend set in the config file autolens_workspace/config/vis
  
  ```
 [general]
-backend = TKAgg ; Alternatives: Qt5Agg, Qt4Agg, WXAgg, WX, Agg (outputs to .fits / .png but doesn't'show' figure)
+backend = TKAgg
 ``` 
 
 There have been reports that the default TKAgg backend causes crashes when running the test script below (either the 
@@ -187,7 +188,7 @@ Matplotlib uses the backend set in the config file autolens_workspace/config/vis
  
  ```
 [general]
-backend = TKAgg ; Alternatives: Qt5Agg, Qt4Agg, WXAgg, WX, Agg (outputs to .fits / .png but doesn't'show' figure)
+backend = TKAgg
 ``` 
 
 There have been reports that the default TKAgg backend causes crashes when running the test script below (either the 

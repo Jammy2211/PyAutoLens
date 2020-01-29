@@ -1,6 +1,8 @@
-from autoarray.plot import plotters, mat_objs
+from autoarray.plot import plotters
 from autoastro.plot import lensing_plotters
 from autolens.plot import plane_plots, inversion_plots
+
+import numpy as np
 
 
 @lensing_plotters.set_include_and_sub_plotter
@@ -39,7 +41,7 @@ def subplot_fit_imaging(fit, include=None, sub_plotter=None):
     sub_plotter.figure.close()
 
 
-def subplot_of_planes(fit, include=None, sub_plotter=None):
+def subplots_of_all_planes(fit, include=None, sub_plotter=None):
 
     for plane_index in range(fit.tracer.total_planes):
 
@@ -283,9 +285,10 @@ def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
         The plane from which the model image is generated.
     """
 
-    plotter = plotter.plotter_with_new_output(
-        filename=plotter.output.filename + "_" + str(plane_index)
-    )
+    if isinstance(plotter, lensing_plotters.Plotter):
+        plotter = plotter.plotter_with_new_output(
+            filename=plotter.output.filename + "_" + str(plane_index)
+        )
 
     if fit.tracer.total_planes > 1:
 
@@ -301,7 +304,12 @@ def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
 
         subtracted_image = fit.image
 
-    plotter.plot_array(
+    plotter_norm = plotter.plotter_with_new_cmap(
+        norm_max=np.max(fit.model_images_of_planes[plane_index]),
+        norm_min=np.min(fit.model_images_of_planes[plane_index]),
+    )
+
+    plotter_norm.plot_array(
         array=subtracted_image,
         mask=include.mask_from_fit(fit=fit),
         grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
@@ -331,9 +339,10 @@ def model_image_of_plane(fit, plane_index, include=None, plotter=None):
         The plane from which the model image is generated.
     """
 
-    plotter = plotter.plotter_with_new_output(
-        filename=plotter.output.filename + "_" + str(plane_index)
-    )
+    if isinstance(plotter, lensing_plotters.Plotter):
+        plotter = plotter.plotter_with_new_output(
+            filename=plotter.output.filename + "_" + str(plane_index)
+        )
 
     plotter.plot_array(
         array=fit.model_images_of_planes[plane_index],

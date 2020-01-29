@@ -218,7 +218,7 @@ def test__subplot_of_plane(
 
     assert plot_path + "subplot_of_plane_1.png" in plot_patch.paths
 
-    aplt.fit_imaging.subplot_of_planes(
+    aplt.fit_imaging.subplots_of_all_planes(
         fit=masked_imaging_fit_x1_plane_7x7,
         include=include_all,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
@@ -226,7 +226,7 @@ def test__subplot_of_plane(
 
     assert plot_path + "subplot_of_plane_0.png" in plot_patch.paths
 
-    aplt.fit_imaging.subplot_of_planes(
+    aplt.fit_imaging.subplots_of_all_planes(
         fit=masked_imaging_fit_x2_plane_7x7,
         include=include_all,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
