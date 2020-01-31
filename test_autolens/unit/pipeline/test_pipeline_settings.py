@@ -28,7 +28,7 @@ class TestPipelineGeneralSettings:
         )
         assert pipeline_general_settings.hyper_background_noise_tag == "_bg_noise"
 
-    def test__with_shear_tagger(self):
+    def test__with_shear_tag(self):
         pipeline_general_settings = al.PipelineGeneralSettings(with_shear=False)
         assert pipeline_general_settings.hyper_galaxies_tag == ""
 
@@ -60,7 +60,7 @@ class TestPipelineGeneralSettings:
 
 
 class TestPipelineSourceSettings:
-    def test__pixelization_tagger(self):
+    def test__pixelization_tag(self):
         pipeline_source_settings = al.PipelineSourceSettings(pixelization=None)
         assert pipeline_source_settings.pixelization_tag == ""
         pipeline_source_settings = al.PipelineSourceSettings(
@@ -72,7 +72,7 @@ class TestPipelineSourceSettings:
         )
         assert pipeline_source_settings.pixelization_tag == "__pix_voro_image"
 
-    def test__regularization_tagger(self):
+    def test__regularization_tag(self):
         pipeline_source_settings = al.PipelineSourceSettings(regularization=None)
         assert pipeline_source_settings.regularization_tag == ""
         pipeline_source_settings = al.PipelineSourceSettings(
@@ -84,7 +84,7 @@ class TestPipelineSourceSettings:
         )
         assert pipeline_source_settings.regularization_tag == "__reg_adapt_bright"
 
-    def test__lens_light_centre_tagger(self):
+    def test__lens_light_centre_tag(self):
 
         pipeline_source_settings = al.PipelineSourceSettings(lens_light_centre=None)
         assert pipeline_source_settings.lens_light_centre_tag == ""
@@ -110,7 +110,7 @@ class TestPipelineSourceSettings:
             == "__lens_light_centre_(3.03,4.03)"
         )
 
-    def test__lens_mass_centre_tagger(self):
+    def test__lens_mass_centre_tag(self):
 
         pipeline_source_settings = al.PipelineSourceSettings(lens_mass_centre=None)
         assert pipeline_source_settings.lens_mass_centre_tag == ""
@@ -136,7 +136,7 @@ class TestPipelineSourceSettings:
             == "__lens_mass_centre_(3.03,4.03)"
         )
 
-    def test__align_light_mass_centre_tagger__is_empty_sting_if_both_lens_light_and_mass_centres_input(
+    def test__align_light_mass_centre_tag__is_empty_sting_if_both_lens_light_and_mass_centres_input(
         self
     ):
         pipeline_source_settings = al.PipelineSourceSettings(
@@ -157,7 +157,15 @@ class TestPipelineSourceSettings:
         )
         assert pipeline_source_settings.align_light_mass_centre_tag == ""
 
-    def test__fix_lens_light_tagger(self):
+    def test__lens_light_bulge_only_tag(self):
+        pipeline_source_settings = al.PipelineSourceSettings(
+            lens_light_bulge_only=False
+        )
+        assert pipeline_source_settings.lens_light_bulge_only_tag == ""
+        pipeline_source_settings = al.PipelineSourceSettings(lens_light_bulge_only=True)
+        assert pipeline_source_settings.lens_light_bulge_only_tag == "__bulge_only"
+
+    def test__fix_lens_light_tag(self):
         pipeline_source_settings = al.PipelineSourceSettings(fix_lens_light=False)
         assert pipeline_source_settings.fix_lens_light_tag == ""
         pipeline_source_settings = al.PipelineSourceSettings(fix_lens_light=True)
@@ -184,22 +192,23 @@ class TestPipelineSourceSettings:
         pipeline_source_settings = al.PipelineSourceSettings(
             align_light_mass_centre=True,
             fix_lens_light=True,
+            lens_light_bulge_only=True,
             pixelization=al.pix.Rectangular,
             regularization=al.reg.Constant,
         )
 
         assert (
             pipeline_source_settings.tag
-            == "__pix_rect__reg_const__align_light_mass_centre__fix_lens_light"
+            == "__pix_rect__reg_const__align_light_mass_centre__bulge_only__fix_lens_light"
         )
         assert (
             pipeline_source_settings.tag_no_inversion
-            == "__align_light_mass_centre__fix_lens_light"
+            == "__align_light_mass_centre__bulge_only__fix_lens_light"
         )
 
 
 class TestPipelineLightSettings:
-    def test__align_bulge_disk_taggers(self):
+    def test__align_bulge_disk_tags(self):
 
         pipeline_light_settings = al.PipelineLightSettings(
             align_bulge_disk_centre=False
@@ -259,7 +268,7 @@ class TestPipelineLightSettings:
             == "__align_bulge_disk_centre_axis_ratio_phi"
         )
 
-    def test__disk_as_sersic_tagger(self):
+    def test__disk_as_sersic_tag(self):
         pipeline_light_settings = al.PipelineLightSettings(disk_as_sersic=False)
         assert pipeline_light_settings.disk_as_sersic_tag == ""
         pipeline_light_settings = al.PipelineLightSettings(disk_as_sersic=True)
@@ -283,7 +292,7 @@ class TestPipelineLightSettings:
 
 
 class TestPipelineMassSettings:
-    def test__align_light_dark_tagger(self):
+    def test__align_light_dark_tag(self):
 
         pipeline_mass_settings = al.PipelineMassSettings(align_light_dark_centre=False)
         assert pipeline_mass_settings.align_light_dark_centre_tag == ""
@@ -293,7 +302,7 @@ class TestPipelineMassSettings:
             == "__align_light_dark_centre"
         )
 
-    def test__align_bulge_dark_tagger(self):
+    def test__align_bulge_dark_tag(self):
         pipeline_mass_settings = al.PipelineMassSettings(align_bulge_dark_centre=False)
         assert pipeline_mass_settings.align_bulge_dark_centre_tag == ""
         pipeline_mass_settings = al.PipelineMassSettings(align_bulge_dark_centre=True)
@@ -302,7 +311,7 @@ class TestPipelineMassSettings:
             == "__align_bulge_dark_centre"
         )
 
-    def test__fix_lens_light_tagger(self):
+    def test__fix_lens_light_tag(self):
         pipeline_mass_settings = al.PipelineMassSettings(fix_lens_light=False)
         assert pipeline_mass_settings.fix_lens_light_tag == ""
         pipeline_mass_settings = al.PipelineMassSettings(fix_lens_light=True)
