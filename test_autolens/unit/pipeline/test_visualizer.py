@@ -3,6 +3,7 @@ from autolens.pipeline import visualizer as vis
 import os
 import pytest
 from os import path
+import shutil
 from autofit import conf
 
 directory = path.dirname(path.realpath(__file__))
@@ -63,6 +64,10 @@ class TestPhaseDataSetVisualizer:
         plot_path,
         plot_patch,
     ):
+
+        if os.path.exists(plot_path):
+            shutil.rmtree(plot_path)
+
         visualizer = vis.PhaseDatasetVisualizer(
             masked_dataset=masked_imaging_7x7, image_path=plot_path
         )
@@ -73,7 +78,7 @@ class TestPhaseDataSetVisualizer:
         )
 
         visualizer.visualize_ray_tracing(
-            tracer=tracer_x2_plane_7x7, during_analysis=True
+            tracer=tracer_x2_plane_7x7, during_analysis=False
         )
 
         assert plot_path + "subplots/subplot_tracer.png" in plot_patch.paths
@@ -84,6 +89,12 @@ class TestPhaseDataSetVisualizer:
         assert plot_path + "ray_tracing/deflections_y.png" not in plot_patch.paths
         assert plot_path + "ray_tracing/deflections_x.png" not in plot_patch.paths
         assert plot_path + "ray_tracing/magnification.png" in plot_patch.paths
+
+        convergence = al.util.array.numpy_array_2d_from_fits(
+            file_path=plot_path + "ray_tracing/fits/convergence.fits", hdu=0
+        )
+
+        assert convergence.shape == (5, 5)
 
 
 class TestPhaseImagingVisualizer:
@@ -122,6 +133,9 @@ class TestPhaseImagingVisualizer:
         plot_patch,
     ):
 
+        if os.path.exists(plot_path):
+            shutil.rmtree(plot_path)
+
         visualizer = vis.PhaseImagingVisualizer(
             masked_dataset=masked_imaging_7x7, image_path=plot_path
         )
@@ -132,7 +146,7 @@ class TestPhaseImagingVisualizer:
         )
 
         visualizer.visualize_fit(
-            fit=masked_imaging_fit_x2_plane_inversion_7x7, during_analysis=True
+            fit=masked_imaging_fit_x2_plane_inversion_7x7, during_analysis=False
         )
 
         assert plot_path + "subplots/subplot_fit_imaging.png" in plot_patch.paths
@@ -179,31 +193,18 @@ class TestPhaseImagingVisualizer:
         )
         assert plot_path + "inversion/interpolated_errors.png" in plot_patch.paths
 
-    # def test__source_and_lens__visualizes_fit_in_fits_correctly(
-    #     self,
-    #     masked_imaging_7x7,
-    #     masked_imaging_fit_x2_plane_inversion_7x7,
-    #     include_all,
-    #     plot_path,
-    #     plot_patch,
-    # ):
-    #
-    #     path = "{}/../test_files/plotting/visualizer/".format(
-    #     os.path.dirname(os.path.realpath(__file__))
-    # )
-    #
-    #     visualizer = vis.PhaseImagingVisualizer(
-    #         masked_dataset=masked_imaging_7x7, image_path=path
-    #     )
-    #
-    #     visualizer.visualize_fit_in_fits(
-    #         fit=masked_imaging_fit_x2_plane_inversion_7x7,
-    #     )
-    #
-    #
-    #     image = al.util.array.numpy_array_2d_from_fits(file_path=path+"fit_imaging/fits/image.fits", hdu=0)
-    #
-    #     assert image.shape == (7,7)
+        image = al.util.array.numpy_array_2d_from_fits(
+            file_path=plot_path + "fit_imaging/fits/image.fits", hdu=0
+        )
+
+        assert image.shape == (5, 5)
+
+        image = al.util.array.numpy_array_2d_from_fits(
+            file_path=plot_path + "inversion/fits/interpolated_reconstruction.fits",
+            hdu=0,
+        )
+
+        assert image.shape == (7, 7)
 
     def test__visualizes_hyper_images_using_config(
         self,
