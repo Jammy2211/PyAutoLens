@@ -106,6 +106,7 @@ class PipelineSourceSettings(object):
         lens_light_centre=None,
         lens_mass_centre=None,
         align_light_mass_centre=False,
+        lens_light_bulge_only=False,
         fix_lens_light=False,
     ):
 
@@ -114,6 +115,7 @@ class PipelineSourceSettings(object):
         self.lens_light_centre = lens_light_centre
         self.lens_mass_centre = lens_mass_centre
         self.align_light_mass_centre = align_light_mass_centre
+        self.lens_light_bulge_only = lens_light_bulge_only
         self.fix_lens_light = fix_lens_light
 
     @property
@@ -124,6 +126,7 @@ class PipelineSourceSettings(object):
             + self.lens_light_centre_tag
             + self.lens_mass_centre_tag
             + self.align_light_mass_centre_tag
+            + self.lens_light_bulge_only_tag
             + self.fix_lens_light_tag
         )
 
@@ -133,8 +136,29 @@ class PipelineSourceSettings(object):
             self.lens_light_centre_tag
             + self.lens_mass_centre_tag
             + self.align_light_mass_centre_tag
+            + self.lens_light_bulge_only_tag
             + self.fix_lens_light_tag
         )
+
+    @property
+    def pixelization_tag(self):
+
+        if self.pixelization is None:
+            return ""
+        else:
+            return "__pix_" + af.conf.instance.label.get(
+                "tag", self.pixelization().__class__.__name__, str
+            )
+
+    @property
+    def regularization_tag(self):
+
+        if self.regularization is None:
+            return ""
+        else:
+            return "__reg_" + af.conf.instance.label.get(
+                "tag", self.regularization().__class__.__name__, str
+            )
 
     @property
     def lens_light_centre_tag(self,):
@@ -189,6 +213,21 @@ class PipelineSourceSettings(object):
             return "__align_light_mass_centre"
 
     @property
+    def lens_light_bulge_only_tag(self):
+        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
+         during he analysis, to customize phase names.
+
+        This changes the phase name 'pipeline_name__' as follows:
+
+        fix_lens_light = False -> pipeline_name__
+        fix_lens_light = True -> pipeline_name___fix_lens_light
+        """
+        if not self.lens_light_bulge_only:
+            return ""
+        elif self.lens_light_bulge_only:
+            return "__bulge_only"
+
+    @property
     def fix_lens_light_tag(self):
         """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
          during he analysis, to customize phase names.
@@ -202,26 +241,6 @@ class PipelineSourceSettings(object):
             return ""
         elif self.fix_lens_light:
             return "__fix_lens_light"
-
-    @property
-    def pixelization_tag(self):
-
-        if self.pixelization is None:
-            return ""
-        else:
-            return "__pix_" + af.conf.instance.label.get(
-                "tag", self.pixelization().__class__.__name__, str
-            )
-
-    @property
-    def regularization_tag(self):
-
-        if self.regularization is None:
-            return ""
-        else:
-            return "__reg_" + af.conf.instance.label.get(
-                "tag", self.regularization().__class__.__name__, str
-            )
 
 
 class PipelineLightSettings(object):

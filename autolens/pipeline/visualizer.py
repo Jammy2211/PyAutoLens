@@ -236,24 +236,25 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
 
             if self.plot_ray_tracing_all_at_end_fits:
 
-                fits_plotter = plotter.plotter_with_new_output(
-                    path=plotter.output.path + "/fits/", format="fits"
-                )
+                self.visualize_ray_tracing_in_fits(tracer=tracer)
 
-                ray_tracing_plots.individual(
-                    tracer=tracer,
-                    grid=self.masked_dataset.grid,
-                    positions=self.include.positions_from_masked_dataset(
-                        masked_dataset=self.masked_dataset
-                    ),
-                    plot_profile_image=True,
-                    plot_source_plane=True,
-                    plot_convergence=True,
-                    plot_potential=True,
-                    plot_deflections=True,
-                    include=self.include,
-                    plotter=fits_plotter,
-                )
+    def visualize_ray_tracing_in_fits(self, tracer):
+
+        fits_plotter = self.plotter.plotter_with_new_output(
+            path=self.plotter.output.path + "/ray_tracing/fits/", format="fits"
+        )
+
+        ray_tracing_plots.individual(
+            tracer=tracer,
+            grid=self.masked_dataset.grid,
+            plot_profile_image=True,
+            plot_source_plane=True,
+            plot_convergence=True,
+            plot_potential=True,
+            plot_deflections=True,
+            include=self.include,
+            plotter=fits_plotter,
+        )
 
 
 class PhaseImagingVisualizer(PhaseDatasetVisualizer):
@@ -458,7 +459,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
 
             if self.plot_fit_all_at_end_fits:
 
-                self.visualize_fit_in_fits(fit=fit, plotter=plotter)
+                self.visualize_fit_in_fits(fit=fit)
 
     def visualize_fit_in_fits(self, fit):
 
@@ -483,6 +484,11 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
         )
 
         if fit.inversion is not None:
+
+            fits_plotter = self.plotter.plotter_with_new_output(
+                path=self.plotter.output.path + "inversion/fits/", format="fits"
+            )
+
             inversion_plots.individuals(
                 inversion=fit.inversion,
                 plot_reconstructed_image=True,
