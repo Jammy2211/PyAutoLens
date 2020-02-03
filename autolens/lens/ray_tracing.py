@@ -1,3 +1,5 @@
+from abc import ABC
+
 import numpy as np
 from astropy import cosmology as cosmo
 
@@ -13,7 +15,7 @@ from autolens.lens import plane as pl
 from autolens.util import lens_util
 
 
-class AbstractTracer(lensing.LensingObject):
+class AbstractTracer(lensing.LensingObject, ABC):
     def __init__(self, planes, cosmology):
         """Ray-tracer for a lens system with any number of planes.
 
