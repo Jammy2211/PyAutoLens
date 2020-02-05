@@ -76,6 +76,7 @@ def subplot_inversion(
         inversion=inversion,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
+        caustics=caustics,
         include=include,
         plotter=sub_plotter,
     )
@@ -88,6 +89,7 @@ def subplot_inversion(
         inversion=inversion,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
+        caustics=caustics,
         include=include,
         plotter=sub_plotter,
     )
@@ -100,6 +102,7 @@ def subplot_inversion(
         inversion=inversion,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
+        caustics=caustics,
         include=include,
         plotter=sub_plotter,
     )
@@ -113,6 +116,7 @@ def subplot_inversion(
         source_positions=source_positions,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
+        caustics=caustics,
         include=include,
         plotter=sub_plotter,
     )
@@ -183,23 +187,23 @@ def individuals(
 
     if plot_errors:
 
-        errors(inversion=inversion, include=include, plotter=plotter)
+        errors(inversion=inversion, include=include, caustics=caustics, plotter=plotter)
 
     if plot_residual_map:
 
-        residual_map(inversion=inversion, include=include, plotter=plotter)
+        residual_map(inversion=inversion, include=include, caustics=caustics, plotter=plotter)
 
     if plot_normalized_residual_map:
 
-        normalized_residual_map(inversion=inversion, include=include, plotter=plotter)
+        normalized_residual_map(inversion=inversion, caustics=caustics, include=include, plotter=plotter)
 
     if plot_chi_squared_map:
 
-        chi_squared_map(inversion=inversion, include=include, plotter=plotter)
+        chi_squared_map(inversion=inversion, caustics=caustics, include=include, plotter=plotter)
 
     if plot_regularization_weight_map:
 
-        regularization_weights(inversion=inversion, include=include, plotter=plotter)
+        regularization_weights(inversion=inversion, caustics=caustics, include=include, plotter=plotter)
 
     if plot_interpolated_reconstruction:
 
