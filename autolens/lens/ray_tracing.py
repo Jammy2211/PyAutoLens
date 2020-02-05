@@ -1,3 +1,5 @@
+from abc import ABC
+
 import numpy as np
 from astropy import cosmology as cosmo
 
@@ -13,7 +15,7 @@ from autolens.lens import plane as pl
 from autolens.util import lens_util
 
 
-class AbstractTracer(lensing.LensingObject):
+class AbstractTracer(lensing.LensingObject, ABC):
     def __init__(self, planes, cosmology):
         """Ray-tracer for a lens system with any number of planes.
 
@@ -225,12 +227,7 @@ class AbstractTracer(lensing.LensingObject):
             return None
 
 
-class AbstractTracerCosmology(AbstractTracer):
-    def __init__(self, planes, cosmology):
-        super(AbstractTracerCosmology, self).__init__(
-            planes=planes, cosmology=cosmology
-        )
-
+class AbstractTracerCosmology(AbstractTracer, ABC):
     def arcsec_per_kpc_proper_of_plane(self, i):
         return cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(
             redshift=self.plane_redshifts[i], cosmology=self.cosmology
@@ -292,10 +289,7 @@ class AbstractTracerCosmology(AbstractTracer):
         )
 
 
-class AbstractTracerLensing(AbstractTracerCosmology):
-    def __init__(self, planes, cosmology):
-        super(AbstractTracerLensing, self).__init__(planes=planes, cosmology=cosmology)
-
+class AbstractTracerLensing(AbstractTracerCosmology, ABC):
     @grids.convert_coordinates_to_grid
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
@@ -520,10 +514,7 @@ class AbstractTracerLensing(AbstractTracerCosmology):
         return contribution_maps
 
 
-class AbstractTracerData(AbstractTracerLensing):
-    def __init__(self, planes, cosmology):
-        super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
-
+class AbstractTracerData(AbstractTracerLensing, ABC):
     def blurred_profile_image_from_grid_and_psf(self, grid, psf, blurring_grid):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a psf (see imaging.convolution).
@@ -894,9 +885,6 @@ class AbstractTracerData(AbstractTracerLensing):
 
 
 class Tracer(AbstractTracerData):
-    def __init__(self, planes, cosmology):
-        super(AbstractTracerData, self).__init__(planes=planes, cosmology=cosmology)
-
     @classmethod
     def from_galaxies(cls, galaxies, cosmology=cosmo.Planck15):
 
