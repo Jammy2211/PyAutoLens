@@ -476,14 +476,22 @@ def source_tag_from_source(source):
         return "inversion"
 
 
-def source_from_result(result):
+def source_from_result(result, include_hyper_source):
+
+    if include_hyper_source:
+        hyper_galaxy = af.last.hyper_combined.instance.optional.galaxies.source.hyper_galaxy
+        hyper_galaxy.noise_factor = (
+            af.last.hyper_combined.model.galaxies.source.hyper_galaxy.noise_factor
+        )
+    else:
+        hyper_galaxy = None
 
     if result.model.galaxies.source.pixelization is None:
 
         return aast.GalaxyModel(
             redshift=result.instance.galaxies.source.redshift,
             light=result.model.galaxies.source.light,
-            #        hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+            hyper_galaxy=hyper_galaxy,
         )
 
     else:
@@ -492,5 +500,5 @@ def source_from_result(result):
             redshift=result.instance.galaxies.source.redshift,
             pixelization=result.instance.galaxies.source.pixelization,
             regularization=result.instance.galaxies.source.regularization,
-            #        hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+            hyper_galaxy=hyper_galaxy
         )
