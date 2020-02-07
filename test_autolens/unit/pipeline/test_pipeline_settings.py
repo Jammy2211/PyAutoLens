@@ -350,19 +350,19 @@ class TestTags:
 
         shear_tag = al.pipeline_settings.shear_tag_from_lens(lens=galaxy)
 
-        assert shear_tag == "no_shear"
+        assert shear_tag == "__no_shear"
 
         galaxy = al.Galaxy(redshift=0.5, shear=None)
 
         shear_tag = al.pipeline_settings.shear_tag_from_lens(lens=galaxy)
 
-        assert shear_tag == "no_shear"
+        assert shear_tag == "__no_shear"
 
         galaxy = al.Galaxy(redshift=0.5, shear=al.mp.ExternalShear())
 
         shear_tag = al.pipeline_settings.shear_tag_from_lens(lens=galaxy)
 
-        assert shear_tag == "with_shear"
+        assert shear_tag == "__with_shear"
 
     def test__source_tag_from_pipeline_general_settings_and_source(self):
 
