@@ -191,19 +191,27 @@ def individuals(
 
     if plot_residual_map:
 
-        residual_map(inversion=inversion, include=include, caustics=caustics, plotter=plotter)
+        residual_map(
+            inversion=inversion, include=include, caustics=caustics, plotter=plotter
+        )
 
     if plot_normalized_residual_map:
 
-        normalized_residual_map(inversion=inversion, caustics=caustics, include=include, plotter=plotter)
+        normalized_residual_map(
+            inversion=inversion, caustics=caustics, include=include, plotter=plotter
+        )
 
     if plot_chi_squared_map:
 
-        chi_squared_map(inversion=inversion, caustics=caustics, include=include, plotter=plotter)
+        chi_squared_map(
+            inversion=inversion, caustics=caustics, include=include, plotter=plotter
+        )
 
     if plot_regularization_weight_map:
 
-        regularization_weights(inversion=inversion, caustics=caustics, include=include, plotter=plotter)
+        regularization_weights(
+            inversion=inversion, caustics=caustics, include=include, plotter=plotter
+        )
 
     if plot_interpolated_reconstruction:
 

@@ -28,12 +28,29 @@ class TestPipelineGeneralSettings:
         )
         assert pipeline_general_settings.hyper_background_noise_tag == "_bg_noise"
 
-    def test__with_shear_tag(self):
-        pipeline_general_settings = al.PipelineGeneralSettings(with_shear=False)
-        assert pipeline_general_settings.hyper_galaxies_tag == ""
+    def test__pixelization_tag(self):
+        pipeline_general_settings = al.PipelineGeneralSettings(pixelization=None)
+        assert pipeline_general_settings.pixelization_tag == ""
+        pipeline_general_settings = al.PipelineGeneralSettings(
+            pixelization=al.pix.Rectangular
+        )
+        assert pipeline_general_settings.pixelization_tag == "__pix_rect"
+        pipeline_general_settings = al.PipelineGeneralSettings(
+            pixelization=al.pix.VoronoiBrightnessImage
+        )
+        assert pipeline_general_settings.pixelization_tag == "__pix_voro_image"
 
-        pipeline_general_settings = al.PipelineGeneralSettings(with_shear=True)
-        assert pipeline_general_settings.with_shear_tag == "__with_shear"
+    def test__regularization_tag(self):
+        pipeline_general_settings = al.PipelineGeneralSettings(regularization=None)
+        assert pipeline_general_settings.regularization_tag == ""
+        pipeline_general_settings = al.PipelineGeneralSettings(
+            regularization=al.reg.Constant
+        )
+        assert pipeline_general_settings.regularization_tag == "__reg_const"
+        pipeline_general_settings = al.PipelineGeneralSettings(
+            regularization=al.reg.AdaptiveBrightness
+        )
+        assert pipeline_general_settings.regularization_tag == "__reg_adapt_bright"
 
     def test__tag(self):
 
@@ -41,49 +58,37 @@ class TestPipelineGeneralSettings:
             hyper_galaxies=True,
             hyper_image_sky=True,
             hyper_background_noise=True,
-            with_shear=False,
+            pixelization=al.pix.Rectangular,
+            regularization=al.reg.Constant,
         )
 
         assert (
             pipeline_general_settings.tag
+            == "pipeline_tag__hyper_galaxies_bg_sky_bg_noise__pix_rect__reg_const"
+        )
+        assert (
+            pipeline_general_settings.tag_no_inversion
             == "pipeline_tag__hyper_galaxies_bg_sky_bg_noise"
         )
 
         pipeline_general_settings = al.PipelineGeneralSettings(
-            hyper_galaxies=True, hyper_background_noise=True, with_shear=True
+            hyper_galaxies=True,
+            hyper_background_noise=True,
+            pixelization=al.pix.Rectangular,
+            regularization=al.reg.Constant,
         )
 
         assert (
             pipeline_general_settings.tag
-            == "pipeline_tag__hyper_galaxies_bg_noise__with_shear"
+            == "pipeline_tag__hyper_galaxies_bg_noise__pix_rect__reg_const"
+        )
+        assert (
+            pipeline_general_settings.tag_no_inversion
+            == "pipeline_tag__hyper_galaxies_bg_noise"
         )
 
 
 class TestPipelineSourceSettings:
-    def test__pixelization_tag(self):
-        pipeline_source_settings = al.PipelineSourceSettings(pixelization=None)
-        assert pipeline_source_settings.pixelization_tag == ""
-        pipeline_source_settings = al.PipelineSourceSettings(
-            pixelization=al.pix.Rectangular
-        )
-        assert pipeline_source_settings.pixelization_tag == "__pix_rect"
-        pipeline_source_settings = al.PipelineSourceSettings(
-            pixelization=al.pix.VoronoiBrightnessImage
-        )
-        assert pipeline_source_settings.pixelization_tag == "__pix_voro_image"
-
-    def test__regularization_tag(self):
-        pipeline_source_settings = al.PipelineSourceSettings(regularization=None)
-        assert pipeline_source_settings.regularization_tag == ""
-        pipeline_source_settings = al.PipelineSourceSettings(
-            regularization=al.reg.Constant
-        )
-        assert pipeline_source_settings.regularization_tag == "__reg_const"
-        pipeline_source_settings = al.PipelineSourceSettings(
-            regularization=al.reg.AdaptiveBrightness
-        )
-        assert pipeline_source_settings.regularization_tag == "__reg_adapt_bright"
-
     def test__lens_light_centre_tag(self):
 
         pipeline_source_settings = al.PipelineSourceSettings(lens_light_centre=None)
@@ -165,6 +170,13 @@ class TestPipelineSourceSettings:
         pipeline_source_settings = al.PipelineSourceSettings(lens_light_bulge_only=True)
         assert pipeline_source_settings.lens_light_bulge_only_tag == "__bulge_only"
 
+    def test__no_shear_tag(self):
+        pipeline_source_settings = al.PipelineSourceSettings(no_shear=False)
+        assert pipeline_source_settings.no_shear_tag == ""
+
+        pipeline_source_settings = al.PipelineSourceSettings(no_shear=True)
+        assert pipeline_source_settings.no_shear_tag == "__no_shear"
+
     def test__fix_lens_light_tag(self):
         pipeline_source_settings = al.PipelineSourceSettings(fix_lens_light=False)
         assert pipeline_source_settings.fix_lens_light_tag == ""
@@ -177,32 +189,23 @@ class TestPipelineSourceSettings:
             lens_light_centre=(1.0, 2.0),
             lens_mass_centre=(3.0, 4.0),
             align_light_mass_centre=False,
+            no_shear=True,
             fix_lens_light=True,
         )
 
         assert (
             pipeline_source_settings.tag
-            == "__pix_voro_image__reg_adapt_bright__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__fix_lens_light"
-        )
-        assert (
-            pipeline_source_settings.tag_no_inversion
-            == "__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__fix_lens_light"
+            == "__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__no_shear__fix_lens_light"
         )
 
         pipeline_source_settings = al.PipelineSourceSettings(
             align_light_mass_centre=True,
             fix_lens_light=True,
             lens_light_bulge_only=True,
-            pixelization=al.pix.Rectangular,
-            regularization=al.reg.Constant,
         )
 
         assert (
             pipeline_source_settings.tag
-            == "__pix_rect__reg_const__align_light_mass_centre__bulge_only__fix_lens_light"
-        )
-        assert (
-            pipeline_source_settings.tag_no_inversion
             == "__align_light_mass_centre__bulge_only__fix_lens_light"
         )
 
@@ -292,6 +295,13 @@ class TestPipelineLightSettings:
 
 
 class TestPipelineMassSettings:
+    def test__no_shear_tag(self):
+        pipeline_mass_settings = al.PipelineMassSettings(no_shear=False)
+        assert pipeline_mass_settings.no_shear_tag == ""
+
+        pipeline_mass_settings = al.PipelineMassSettings(no_shear=True)
+        assert pipeline_mass_settings.no_shear_tag == "__no_shear"
+
     def test__align_light_dark_tag(self):
 
         pipeline_mass_settings = al.PipelineMassSettings(align_light_dark_centre=False)
@@ -320,10 +330,13 @@ class TestPipelineMassSettings:
     def test__tag(self):
 
         pipeline_mass_settings = al.PipelineMassSettings(
-            align_light_dark_centre=True, fix_lens_light=True
+            no_shear=True, align_light_dark_centre=True, fix_lens_light=True
         )
 
-        assert pipeline_mass_settings.tag == "__align_light_dark_centre__fix_lens_light"
+        assert (
+            pipeline_mass_settings.tag
+            == "__no_shear__align_light_dark_centre__fix_lens_light"
+        )
 
         pipeline_mass_settings = al.PipelineMassSettings(align_bulge_dark_centre=True)
 
@@ -331,11 +344,37 @@ class TestPipelineMassSettings:
 
 
 class TestTags:
-    def test__source_tag_from_galaxies(self):
+    def test__shear_tag_from_lens(self):
 
         galaxy = al.Galaxy(redshift=0.5)
 
-        source_tag = al.pipeline_settings.source_tag_from_source(source=galaxy)
+        shear_tag = al.pipeline_settings.shear_tag_from_lens(lens=galaxy)
+
+        assert shear_tag == "no_shear"
+
+        galaxy = al.Galaxy(redshift=0.5, shear=None)
+
+        shear_tag = al.pipeline_settings.shear_tag_from_lens(lens=galaxy)
+
+        assert shear_tag == "no_shear"
+
+        galaxy = al.Galaxy(redshift=0.5, shear=al.mp.ExternalShear())
+
+        shear_tag = al.pipeline_settings.shear_tag_from_lens(lens=galaxy)
+
+        assert shear_tag == ""
+
+    def test__source_tag_from_pipeline_general_settings_and_source(self):
+
+        pipeline_general_settings = al.PipelineGeneralSettings(
+            pixelization=al.pix.VoronoiMagnification, regularization=al.reg.Constant
+        )
+
+        galaxy = al.Galaxy(redshift=0.5)
+
+        source_tag = al.pipeline_settings.source_tag_from_pipeline_general_settings_and_source(
+            pipeline_general_settings=pipeline_general_settings, source=galaxy
+        )
 
         assert source_tag == "parametric"
 
@@ -345,7 +384,9 @@ class TestTags:
             mass=al.mp.EllipticalIsothermal(),
         )
 
-        source_tag = al.pipeline_settings.source_tag_from_source(source=galaxy)
+        source_tag = al.pipeline_settings.source_tag_from_pipeline_general_settings_and_source(
+            pipeline_general_settings=pipeline_general_settings, source=galaxy
+        )
 
         assert source_tag == "parametric"
 
@@ -355,13 +396,17 @@ class TestTags:
             regularization=al.reg.Constant(),
         )
 
-        source_tag = al.pipeline_settings.source_tag_from_source(source=galaxy)
+        source_tag = al.pipeline_settings.source_tag_from_pipeline_general_settings_and_source(
+            pipeline_general_settings=pipeline_general_settings, source=galaxy
+        )
 
-        assert source_tag == "inversion"
+        assert source_tag == "pix_voro_mag__reg_const"
 
         galaxy = al.GalaxyModel(redshift=0.5)
 
-        source_tag = al.pipeline_settings.source_tag_from_source(source=galaxy)
+        source_tag = al.pipeline_settings.source_tag_from_pipeline_general_settings_and_source(
+            pipeline_general_settings=pipeline_general_settings, source=galaxy
+        )
 
         assert source_tag == "parametric"
 
@@ -371,7 +416,9 @@ class TestTags:
             mass=al.mp.EllipticalIsothermal,
         )
 
-        source_tag = al.pipeline_settings.source_tag_from_source(source=galaxy)
+        source_tag = al.pipeline_settings.source_tag_from_pipeline_general_settings_and_source(
+            pipeline_general_settings=pipeline_general_settings, source=galaxy
+        )
 
         assert source_tag == "parametric"
 
@@ -381,9 +428,11 @@ class TestTags:
             regularization=al.reg.Constant,
         )
 
-        source_tag = al.pipeline_settings.source_tag_from_source(source=galaxy)
+        source_tag = al.pipeline_settings.source_tag_from_pipeline_general_settings_and_source(
+            pipeline_general_settings=pipeline_general_settings, source=galaxy
+        )
 
-        assert source_tag == "inversion"
+        assert source_tag == "pix_voro_mag__reg_const"
 
     # def test__source_from_source(self):
     #
