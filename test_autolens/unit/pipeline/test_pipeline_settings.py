@@ -172,7 +172,7 @@ class TestPipelineSourceSettings:
 
     def test__no_shear_tag(self):
         pipeline_source_settings = al.PipelineSourceSettings(no_shear=False)
-        assert pipeline_source_settings.no_shear_tag == ""
+        assert pipeline_source_settings.no_shear_tag == "__with_shear"
 
         pipeline_source_settings = al.PipelineSourceSettings(no_shear=True)
         assert pipeline_source_settings.no_shear_tag == "__no_shear"
@@ -195,7 +195,7 @@ class TestPipelineSourceSettings:
 
         assert (
             pipeline_source_settings.tag
-            == "__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__no_shear__fix_lens_light"
+            == "__no_shear__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__fix_lens_light"
         )
 
         pipeline_source_settings = al.PipelineSourceSettings(
@@ -206,7 +206,7 @@ class TestPipelineSourceSettings:
 
         assert (
             pipeline_source_settings.tag
-            == "__align_light_mass_centre__bulge_only__fix_lens_light"
+            == "__with_shear__align_light_mass_centre__bulge_only__fix_lens_light"
         )
 
 
@@ -297,7 +297,7 @@ class TestPipelineLightSettings:
 class TestPipelineMassSettings:
     def test__no_shear_tag(self):
         pipeline_mass_settings = al.PipelineMassSettings(no_shear=False)
-        assert pipeline_mass_settings.no_shear_tag == ""
+        assert pipeline_mass_settings.no_shear_tag == "__with_shear"
 
         pipeline_mass_settings = al.PipelineMassSettings(no_shear=True)
         assert pipeline_mass_settings.no_shear_tag == "__no_shear"
@@ -340,7 +340,7 @@ class TestPipelineMassSettings:
 
         pipeline_mass_settings = al.PipelineMassSettings(align_bulge_dark_centre=True)
 
-        assert pipeline_mass_settings.tag == "__align_bulge_dark_centre"
+        assert pipeline_mass_settings.tag == "__with_shear__align_bulge_dark_centre"
 
 
 class TestTags:
@@ -362,7 +362,7 @@ class TestTags:
 
         shear_tag = al.pipeline_settings.shear_tag_from_lens(lens=galaxy)
 
-        assert shear_tag == ""
+        assert shear_tag == "with_shear"
 
     def test__source_tag_from_pipeline_general_settings_and_source(self):
 
