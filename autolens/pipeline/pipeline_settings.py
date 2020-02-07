@@ -7,27 +7,16 @@ from autoarray.operators.inversion import regularization as reg
 
 class PipelineGeneralSettings(object):
     def __init__(
-        self,
-        hyper_galaxies=False,
-        hyper_image_sky=False,
-        hyper_background_noise=False,
-        pixelization=pix.VoronoiBrightnessImage,
-        regularization=reg.AdaptiveBrightness,
+        self, hyper_galaxies=False, hyper_image_sky=False, hyper_background_noise=False
     ):
 
         self.hyper_galaxies = hyper_galaxies
         self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
-        self.pixelization = pixelization
-        self.regularization = regularization
 
     @property
     def tag(self):
-        return "pipeline_tag" + self.hyper_tag + self.inversion_tag
-
-    @property
-    def tag_no_inversion(self):
-        return "pipeline_tag" + self.hyper_tag
+        return "general" + self.hyper_tag
 
     @property
     def hyper_tag(self):
@@ -88,6 +77,74 @@ class PipelineGeneralSettings(object):
         elif self.hyper_background_noise:
             return "_bg_noise"
 
+
+class PipelineSourceSettings(object):
+    def __init__(
+        self,
+        pixelization=pix.VoronoiBrightnessImage,
+        regularization=reg.AdaptiveBrightness,
+        no_shear=False,
+        lens_light_centre=None,
+        lens_mass_centre=None,
+        align_light_mass_centre=False,
+        lens_light_bulge_only=False,
+        fix_lens_light=False,
+    ):
+
+        self.pixelization = pixelization
+        self.regularization = regularization
+        self.no_shear = no_shear
+        self.lens_light_centre = lens_light_centre
+        self.lens_mass_centre = lens_mass_centre
+        self.align_light_mass_centre = align_light_mass_centre
+        self.lens_light_bulge_only = lens_light_bulge_only
+        self.fix_lens_light = fix_lens_light
+
+    @property
+    def tag(self):
+        return (
+            "source"
+            + self.inversion_tag
+            + self.no_shear_tag
+            + self.lens_light_centre_tag
+            + self.lens_mass_centre_tag
+            + self.align_light_mass_centre_tag
+            + self.lens_light_bulge_only_tag
+            + self.fix_lens_light_tag
+        )
+
+    @property
+    def tag_no_inversion(self):
+        return (
+            "source"
+            + self.no_shear_tag
+            + self.lens_light_centre_tag
+            + self.lens_mass_centre_tag
+            + self.align_light_mass_centre_tag
+            + self.lens_light_bulge_only_tag
+            + self.fix_lens_light_tag
+        )
+
+    def tag_from_source(self, source):
+
+        source_is_inversion = source_is_inversion_from_source(source=source)
+
+        if source_is_inversion:
+            source_tag = self.inversion_tag
+        else:
+            source_tag = "__parametric"
+
+        return (
+            "source"
+            + source_tag
+            + self.no_shear_tag
+            + self.lens_light_centre_tag
+            + self.lens_mass_centre_tag
+            + self.align_light_mass_centre_tag
+            + self.lens_light_bulge_only_tag
+            + self.fix_lens_light_tag
+        )
+
     @property
     def inversion_tag(self):
         return self.pixelization_tag + self.regularization_tag
@@ -111,36 +168,6 @@ class PipelineGeneralSettings(object):
             return "__reg_" + af.conf.instance.label.get(
                 "tag", self.regularization().__class__.__name__, str
             )
-
-
-class PipelineSourceSettings(object):
-    def __init__(
-        self,
-        no_shear=False,
-        lens_light_centre=None,
-        lens_mass_centre=None,
-        align_light_mass_centre=False,
-        lens_light_bulge_only=False,
-        fix_lens_light=False,
-    ):
-
-        self.no_shear = no_shear
-        self.lens_light_centre = lens_light_centre
-        self.lens_mass_centre = lens_mass_centre
-        self.align_light_mass_centre = align_light_mass_centre
-        self.lens_light_bulge_only = lens_light_bulge_only
-        self.fix_lens_light = fix_lens_light
-
-    @property
-    def tag(self):
-        return (
-            self.no_shear_tag
-            + self.lens_light_centre_tag
-            + self.lens_mass_centre_tag
-            + self.align_light_mass_centre_tag
-            + self.lens_light_bulge_only_tag
-            + self.fix_lens_light_tag
-        )
 
     @property
     def no_shear_tag(self):
@@ -256,7 +283,18 @@ class PipelineLightSettings(object):
 
     @property
     def tag(self):
-        return self.align_bulge_disk_tag + self.disk_as_sersic_tag
+        return "light" + self.align_bulge_disk_tag + self.disk_as_sersic_tag
+
+    def tag_from_lens(self, lens):
+
+        lens_light_tag = lens_light_tag_from_lens(lens=lens)
+
+        return (
+            "light"
+            + lens_light_tag
+            + self.align_bulge_disk_tag
+            + self.disk_as_sersic_tag
+        )
 
     @property
     def align_bulge_disk_centre_tag(self):
@@ -331,7 +369,7 @@ class PipelineLightSettings(object):
         disk_as_sersic = True -> pipeline_name___disk_as_sersic
         """
         if not self.disk_as_sersic:
-            return ""
+            return "__disk_exp"
         elif self.disk_as_sersic:
             return "__disk_sersic"
 
@@ -361,7 +399,8 @@ class PipelineMassSettings(object):
     @property
     def tag(self):
         return (
-            self.no_shear_tag
+            "mass__"
+            + self.no_shear_tag
             + self.align_light_dark_centre_tag
             + self.align_bulge_dark_centre_tag
             + self.fix_lens_light_tag
@@ -438,9 +477,9 @@ def shear_tag_from_lens(lens):
 def lens_light_tag_from_lens(lens):
 
     if hasattr(lens, "sersic") or hasattr(lens, "light"):
-        return "sersic"
+        return "__bulge_disk"
     elif hasattr(lens, "bulge") or hasattr(lens, "disk"):
-        return "bulge_disk"
+        return "__bulge_disk"
     else:
         return ""
 
@@ -492,17 +531,15 @@ def lens_from_result(result, fix_lens_light):
         )
 
 
-def source_tag_from_pipeline_general_settings_and_source(
-    pipeline_general_settings, source
-):
+def source_is_inversion_from_source(source):
 
     if source.pixelization is None:
 
-        return "parametric"
+        return False
 
     else:
 
-        return pipeline_general_settings.inversion_tag[2:]
+        return True
 
 
 def source_from_result(result, include_hyper_source):
