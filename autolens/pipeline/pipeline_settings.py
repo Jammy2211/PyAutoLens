@@ -116,34 +116,49 @@ class PipelineGeneralSettings(object):
 class PipelineSourceSettings(object):
     def __init__(
         self,
+        no_shear=False,
         lens_light_centre=None,
         lens_mass_centre=None,
         align_light_mass_centre=False,
         lens_light_bulge_only=False,
-        no_shear=False,
         fix_lens_light=False,
     ):
 
+        self.no_shear = no_shear
         self.lens_light_centre = lens_light_centre
         self.lens_mass_centre = lens_mass_centre
         self.align_light_mass_centre = align_light_mass_centre
         self.lens_light_bulge_only = lens_light_bulge_only
-        self.no_shear = no_shear
         self.fix_lens_light = fix_lens_light
 
     @property
     def tag(self):
         return (
-            self.lens_light_centre_tag
+            self.no_shear_tag
+            + self.lens_light_centre_tag
             + self.lens_mass_centre_tag
             + self.align_light_mass_centre_tag
             + self.lens_light_bulge_only_tag
-            + self.no_shear_tag
             + self.fix_lens_light_tag
         )
 
     @property
-    def lens_light_centre_tag(self,):
+    def no_shear_tag(self):
+        """Generate a tag for if an external shear is included in the mass model of the pipeline and / or phase are fixed
+        to a previous estimate, or varied during he analysis, to customize phase names.
+
+        This changes the phase name 'pipeline_name__' as follows:
+
+        fix_lens_light = False -> pipeline_name__
+        fix_lens_light = True -> pipeline_name___with_shear
+        """
+        if not self.no_shear:
+            return "__with_shear"
+        elif self.no_shear:
+            return "__no_shear"
+
+    @property
+    def lens_light_centre_tag(self):
         """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
          during he analysis, to customize phase names.
 
@@ -208,21 +223,6 @@ class PipelineSourceSettings(object):
             return ""
         elif self.lens_light_bulge_only:
             return "__bulge_only"
-
-    @property
-    def no_shear_tag(self):
-        """Generate a tag for if an external shear is included in the mass model of the pipeline and / or phase are fixed
-        to a previous estimate, or varied during he analysis, to customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___with_shear
-        """
-        if not self.no_shear:
-            return ""
-        elif self.no_shear:
-            return "__no_shear"
 
     @property
     def fix_lens_light_tag(self):
@@ -378,7 +378,7 @@ class PipelineMassSettings(object):
         fix_lens_light = True -> pipeline_name___with_shear
         """
         if not self.no_shear:
-            return ""
+            return "__with_shear"
         elif self.no_shear:
             return "__no_shear"
 
@@ -430,7 +430,7 @@ def shear_tag_from_lens(lens):
         return "no_shear"
 
     if lens.shear is not None:
-        return ""
+        return "with_shear"
     else:
         return "no_shear"
 
