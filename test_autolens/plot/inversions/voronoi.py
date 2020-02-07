@@ -16,7 +16,7 @@ mask = al.mask.circular(
     pixel_scales=imaging.pixel_scales,
     radius=3.0,
     centre=(0.0, 0.0),
-    sub_size=4
+    sub_size=4,
 )
 
 lens_galaxy = al.Galaxy(
