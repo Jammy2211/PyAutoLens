@@ -11,17 +11,23 @@ class PipelineGeneralSettings(object):
         hyper_galaxies=False,
         hyper_image_sky=False,
         hyper_background_noise=False,
-        with_shear=True,
+        pixelization=pix.VoronoiBrightnessImage,
+        regularization=reg.AdaptiveBrightness,
     ):
 
         self.hyper_galaxies = hyper_galaxies
         self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
-        self.with_shear = with_shear
+        self.pixelization = pixelization
+        self.regularization = regularization
 
     @property
     def tag(self):
-        return "pipeline_tag" + self.hyper_tag + self.with_shear_tag
+        return "pipeline_tag" + self.hyper_tag + self.inversion_tag
+
+    @property
+    def tag_no_inversion(self):
+        return "pipeline_tag" + self.hyper_tag
 
     @property
     def hyper_tag(self):
@@ -83,62 +89,8 @@ class PipelineGeneralSettings(object):
             return "_bg_noise"
 
     @property
-    def with_shear_tag(self):
-        """Generate a tag for if an external shear is included in the mass model of the pipeline and / or phase are fixed
-        to a previous estimate, or varied during he analysis, to customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___with_shear
-        """
-        if not self.with_shear:
-            return ""
-        elif self.with_shear:
-            return "__with_shear"
-
-
-class PipelineSourceSettings(object):
-    def __init__(
-        self,
-        pixelization=pix.VoronoiBrightnessImage,
-        regularization=reg.AdaptiveBrightness,
-        lens_light_centre=None,
-        lens_mass_centre=None,
-        align_light_mass_centre=False,
-        lens_light_bulge_only=False,
-        fix_lens_light=False,
-    ):
-
-        self.pixelization = pixelization
-        self.regularization = regularization
-        self.lens_light_centre = lens_light_centre
-        self.lens_mass_centre = lens_mass_centre
-        self.align_light_mass_centre = align_light_mass_centre
-        self.lens_light_bulge_only = lens_light_bulge_only
-        self.fix_lens_light = fix_lens_light
-
-    @property
-    def tag(self):
-        return (
-            self.pixelization_tag
-            + self.regularization_tag
-            + self.lens_light_centre_tag
-            + self.lens_mass_centre_tag
-            + self.align_light_mass_centre_tag
-            + self.lens_light_bulge_only_tag
-            + self.fix_lens_light_tag
-        )
-
-    @property
-    def tag_no_inversion(self):
-        return (
-            self.lens_light_centre_tag
-            + self.lens_mass_centre_tag
-            + self.align_light_mass_centre_tag
-            + self.lens_light_bulge_only_tag
-            + self.fix_lens_light_tag
-        )
+    def inversion_tag(self):
+        return self.pixelization_tag + self.regularization_tag
 
     @property
     def pixelization_tag(self):
@@ -159,6 +111,36 @@ class PipelineSourceSettings(object):
             return "__reg_" + af.conf.instance.label.get(
                 "tag", self.regularization().__class__.__name__, str
             )
+
+
+class PipelineSourceSettings(object):
+    def __init__(
+        self,
+        lens_light_centre=None,
+        lens_mass_centre=None,
+        align_light_mass_centre=False,
+        lens_light_bulge_only=False,
+        no_shear=False,
+        fix_lens_light=False,
+    ):
+
+        self.lens_light_centre = lens_light_centre
+        self.lens_mass_centre = lens_mass_centre
+        self.align_light_mass_centre = align_light_mass_centre
+        self.lens_light_bulge_only = lens_light_bulge_only
+        self.no_shear = no_shear
+        self.fix_lens_light = fix_lens_light
+
+    @property
+    def tag(self):
+        return (
+            self.lens_light_centre_tag
+            + self.lens_mass_centre_tag
+            + self.align_light_mass_centre_tag
+            + self.lens_light_bulge_only_tag
+            + self.no_shear_tag
+            + self.fix_lens_light_tag
+        )
 
     @property
     def lens_light_centre_tag(self,):
@@ -226,6 +208,21 @@ class PipelineSourceSettings(object):
             return ""
         elif self.lens_light_bulge_only:
             return "__bulge_only"
+
+    @property
+    def no_shear_tag(self):
+        """Generate a tag for if an external shear is included in the mass model of the pipeline and / or phase are fixed
+        to a previous estimate, or varied during he analysis, to customize phase names.
+
+        This changes the phase name 'pipeline_name__' as follows:
+
+        fix_lens_light = False -> pipeline_name__
+        fix_lens_light = True -> pipeline_name___with_shear
+        """
+        if not self.no_shear:
+            return ""
+        elif self.no_shear:
+            return "__no_shear"
 
     @property
     def fix_lens_light_tag(self):
@@ -342,10 +339,13 @@ class PipelineLightSettings(object):
 class PipelineMassSettings(object):
     def __init__(
         self,
+        no_shear=False,
         align_light_dark_centre=False,
         align_bulge_dark_centre=False,
         fix_lens_light=False,
     ):
+
+        self.no_shear = no_shear
 
         if align_light_dark_centre and align_bulge_dark_centre:
             raise exc.SettingsException(
@@ -361,10 +361,26 @@ class PipelineMassSettings(object):
     @property
     def tag(self):
         return (
-            self.align_light_dark_centre_tag
+            self.no_shear_tag
+            + self.align_light_dark_centre_tag
             + self.align_bulge_dark_centre_tag
             + self.fix_lens_light_tag
         )
+
+    @property
+    def no_shear_tag(self):
+        """Generate a tag for if an external shear is included in the mass model of the pipeline and / or phase are fixed
+        to a previous estimate, or varied during he analysis, to customize phase names.
+
+        This changes the phase name 'pipeline_name__' as follows:
+
+        fix_lens_light = False -> pipeline_name__
+        fix_lens_light = True -> pipeline_name___with_shear
+        """
+        if not self.no_shear:
+            return ""
+        elif self.no_shear:
+            return "__no_shear"
 
     @property
     def align_light_dark_centre_tag(self):
@@ -406,6 +422,17 @@ class PipelineMassSettings(object):
             return ""
         elif self.fix_lens_light:
             return "__fix_lens_light"
+
+
+def shear_tag_from_lens(lens):
+
+    if not hasattr(lens, "shear"):
+        return "no_shear"
+
+    if lens.shear is not None:
+        return ""
+    else:
+        return "no_shear"
 
 
 def lens_light_tag_from_lens(lens):
@@ -465,7 +492,9 @@ def lens_from_result(result, fix_lens_light):
         )
 
 
-def source_tag_from_source(source):
+def source_tag_from_pipeline_general_settings_and_source(
+    pipeline_general_settings, source
+):
 
     if source.pixelization is None:
 
@@ -473,13 +502,15 @@ def source_tag_from_source(source):
 
     else:
 
-        return "inversion"
+        return pipeline_general_settings.inversion_tag[2:]
 
 
 def source_from_result(result, include_hyper_source):
 
     if include_hyper_source:
-        hyper_galaxy = af.last.hyper_combined.instance.optional.galaxies.source.hyper_galaxy
+        hyper_galaxy = (
+            af.last.hyper_combined.instance.optional.galaxies.source.hyper_galaxy
+        )
         hyper_galaxy.noise_factor = (
             af.last.hyper_combined.model.galaxies.source.hyper_galaxy.noise_factor
         )
@@ -500,5 +531,5 @@ def source_from_result(result, include_hyper_source):
             redshift=result.instance.galaxies.source.redshift,
             pixelization=result.instance.galaxies.source.pixelization,
             regularization=result.instance.galaxies.source.regularization,
-            hyper_galaxy=hyper_galaxy
+            hyper_galaxy=hyper_galaxy,
         )
