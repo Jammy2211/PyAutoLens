@@ -427,12 +427,12 @@ class PipelineMassSettings(object):
 def shear_tag_from_lens(lens):
 
     if not hasattr(lens, "shear"):
-        return "no_shear"
+        return "__no_shear"
 
     if lens.shear is not None:
-        return "with_shear"
+        return "__with_shear"
     else:
-        return "no_shear"
+        return "__no_shear"
 
 
 def lens_light_tag_from_lens(lens):
