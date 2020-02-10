@@ -5,7 +5,16 @@ from autoarray.operators.inversion import pixelizations as pix
 from autoarray.operators.inversion import regularization as reg
 
 
-class PipelineGeneralSettings(object):
+class Setup(object):
+    def __init__(self, general=None, source=None, light=None, mass=None):
+
+        self.general = general
+        self.source = source
+        self.light = light
+        self.mass = mass
+
+
+class General(object):
     def __init__(
         self, hyper_galaxies=False, hyper_image_sky=False, hyper_background_noise=False
     ):
@@ -78,7 +87,7 @@ class PipelineGeneralSettings(object):
             return "_bg_noise"
 
 
-class PipelineSourceSettings(object):
+class Source(object):
     def __init__(
         self,
         pixelization=pix.VoronoiBrightnessImage,
@@ -267,7 +276,7 @@ class PipelineSourceSettings(object):
             return "__fix_lens_light"
 
 
-class PipelineLightSettings(object):
+class Light(object):
     def __init__(
         self,
         align_bulge_disk_centre=False,
@@ -374,7 +383,7 @@ class PipelineLightSettings(object):
             return "__disk_sersic"
 
 
-class PipelineMassSettings(object):
+class Mass(object):
     def __init__(
         self,
         no_shear=False,
