@@ -399,7 +399,7 @@ class PipelineMassSettings(object):
     @property
     def tag(self):
         return (
-            "mass__"
+            "mass"
             + self.no_shear_tag
             + self.align_light_dark_centre_tag
             + self.align_bulge_dark_centre_tag
@@ -461,17 +461,6 @@ class PipelineMassSettings(object):
             return ""
         elif self.fix_lens_light:
             return "__fix_lens_light"
-
-
-def shear_tag_from_lens(lens):
-
-    if not hasattr(lens, "shear"):
-        return "__no_shear"
-
-    if lens.shear is not None:
-        return "__with_shear"
-    else:
-        return "__no_shear"
 
 
 def lens_light_tag_from_lens(lens):
