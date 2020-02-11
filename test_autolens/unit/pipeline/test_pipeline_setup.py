@@ -189,11 +189,11 @@ class TestPipelineSourceSettings:
         )
         assert (
             source.tag_beginner
-            == "source__pix_rect__reg_const__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__fix_lens_light"
+            == "source__pix_rect__reg_const"
         )
         assert (
             source.tag_beginner_no_inversion
-            == "source__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__fix_lens_light"
+            == "source"
         )
 
         source = al.setup.Source(
