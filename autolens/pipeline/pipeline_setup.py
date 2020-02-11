@@ -44,7 +44,7 @@ class General(object):
 
     @property
     def hyper_galaxies_tag(self):
-        """Generate a tag for if hyper_galaxies-galaxies are used in a hyper_galaxies pipeline to customize phase names.
+        """Generate a tag for if hyper-galaxies are used in a hyper_galaxies pipeline to customize phase names.
 
         This changes the phase name 'pipeline_name__' as follows:
 
@@ -133,6 +133,14 @@ class Source(object):
             + self.lens_light_bulge_only_tag
             + self.fix_lens_light_tag
         )
+
+    @property
+    def tag_beginner(self):
+        return "source" + self.inversion_tag
+
+    @property
+    def tag_beginner_no_inversion(self):
+        return "source"
 
     def tag_from_source(self, source):
 
