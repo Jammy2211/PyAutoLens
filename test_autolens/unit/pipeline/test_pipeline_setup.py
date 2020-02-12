@@ -187,14 +187,8 @@ class TestPipelineSourceSettings:
             source.tag_no_inversion
             == "source__no_shear__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__fix_lens_light"
         )
-        assert (
-            source.tag_beginner
-            == "source__pix_rect__reg_const"
-        )
-        assert (
-            source.tag_beginner_no_inversion
-            == "source"
-        )
+        assert source.tag_beginner == "source__pix_rect__reg_const"
+        assert source.tag_beginner_no_inversion == "source"
 
         source = al.setup.Source(
             pixelization=al.pix.Rectangular,
