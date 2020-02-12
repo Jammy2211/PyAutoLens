@@ -8,14 +8,26 @@ class Analysis(af.Analysis):
 
         self.cosmology = cosmology
 
+        # TODO : This if loop is because of an OptimizerGridSeach, where the 'best_result' we do not want to update
+        # TODO: the hyper images using.
+
         if results is not None and results.last is not None:
-            last_results = results.last
 
-            self.hyper_galaxy_image_path_dict = (
-                last_results.hyper_galaxy_image_path_dict
-            )
+            if hasattr(results[-1], "hyper_galaxy_image_path_dict"):
 
-            self.hyper_model_image = last_results.hyper_model_image
+                self.hyper_galaxy_image_path_dict = results[
+                    -1
+                ].hyper_galaxy_image_path_dict
+
+                self.hyper_model_image = results[-1].hyper_model_image
+
+            else:
+
+                self.hyper_galaxy_image_path_dict = results[
+                    -2
+                ].hyper_galaxy_image_path_dict
+
+                self.hyper_model_image = results[-2].hyper_model_image
 
     def hyper_image_sky_for_instance(self, instance):
 
