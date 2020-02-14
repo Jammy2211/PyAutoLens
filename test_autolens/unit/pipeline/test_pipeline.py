@@ -8,7 +8,7 @@ from autofit import Paths
 from autolens import exc
 
 
-class MockAnalysis(object):
+class MockAnalysis:
     def __init__(self, number_galaxies, shape, value):
         self.number_galaxies = number_galaxies
         self.shape = shape
@@ -19,11 +19,11 @@ class MockAnalysis(object):
         return self.number_galaxies * [np.full(self.shape, self.value)]
 
 
-class MockMask(object):
+class MockMask:
     pass
 
 
-class Optimizer(object):
+class Optimizer:
     def __init__(self, phase_name="dummy_phase"):
         self.phase_name = phase_name
         self.phase_path = ""
@@ -51,11 +51,11 @@ class DummyPhaseImaging(af.AbstractPhase):
         return af.Result(af.ModelInstance(), 1)
 
 
-class MockImagingData(object):
+class MockImagingData:
     pass
 
 
-class MockFile(object):
+class MockFile:
     def __init__(self):
         self.text = None
         self.filename = None
@@ -112,7 +112,7 @@ class TestPassMask:
         assert phase_2.mask is mask
 
 
-class TestPassPositions(object):
+class TestPassPositions:
     def test_pass_positions(self):
         positions = [[(1.0, 1.0), (2.0, 2.0)]]
         phase_1 = DummyPhaseImaging("one")
@@ -124,7 +124,7 @@ class TestPassPositions(object):
         assert phase_2.positions == positions
 
 
-class TestPipelineImaging(object):
+class TestPipelineImaging:
     def test_run_pipeline(self):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
@@ -164,7 +164,7 @@ class DummyPhasePositions(af.AbstractPhase):
         return af.Result(af.ModelInstance(), 1)
 
 
-class TestPipelinePositions(object):
+class TestPipelinePositions:
     def test_run_pipeline(self):
         phase_1 = DummyPhasePositions(phase_name="one")
         phase_2 = DummyPhasePositions(phase_name="two")

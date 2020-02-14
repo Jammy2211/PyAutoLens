@@ -1,4 +1,4 @@
-class PipelineTuple(object):
+class PipelineTuple:
     def __init__(self, module):
         self.make = module.make
         self.__doc__ = module.__doc__
@@ -28,7 +28,7 @@ def add(module):
 # add(initialize)
 
 
-class TestPipeline(object):
+class TestPipeline:
     # noinspection PyMethodMayBeStatic
     def run(self, dataset):
         print(dataset)

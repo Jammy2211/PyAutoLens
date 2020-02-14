@@ -4,7 +4,7 @@ import autofit as af
 import autolens as al
 
 
-class GalaxiesMockAnalysis(object):
+class GalaxiesMockAnalysis:
     def __init__(self, number_galaxies, value):
         self.number_galaxies = number_galaxies
         self.value = value
@@ -17,7 +17,7 @@ class GalaxiesMockAnalysis(object):
         return 1
 
 
-class MockResults(object):
+class MockResults:
     def __init__(
         self,
         model_image=None,
@@ -111,7 +111,7 @@ class MockResult:
         self.positions = None
 
 
-class MockHyperCombinedPhase(object):
+class MockHyperCombinedPhase:
     def __init__(self):
         pass
 
@@ -122,7 +122,7 @@ class MockHyperCombinedPhase(object):
 
 class MockNLO(af.NonLinearOptimizer):
     def fit(self, analysis, model):
-        class Fitness(object):
+        class Fitness:
             def __init__(self, instance_from_physical_vector):
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
