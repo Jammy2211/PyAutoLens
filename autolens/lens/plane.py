@@ -711,7 +711,7 @@ class Plane(AbstractPlaneData):
         return summary
 
 
-class PlaneImage(object):
+class PlaneImage:
     def __init__(self, array, grid):
         self.array = array
         self.grid = grid

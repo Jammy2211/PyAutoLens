@@ -50,12 +50,12 @@ def make_result(masked_imaging_7x7, instance):
     )
 
 
-class MostLikelyFit(object):
+class MostLikelyFit:
     def __init__(self, model_image_2d):
         self.model_image_2d = model_image_2d
 
 
-class MockResult(object):
+class MockResult:
     def __init__(self, most_likely_fit=None):
         self.most_likely_fit = most_likely_fit
         self.analysis = MockAnalysis()
@@ -65,7 +65,7 @@ class MockResult(object):
         self.positions = None
 
 
-class MockAnalysis(object):
+class MockAnalysis:
     pass
 
 
@@ -80,7 +80,7 @@ class MockOptimizer(af.NonLinearOptimizer):
         return af.Result(None, analysis.fit(None), None)
 
 
-class MockPhase(object):
+class MockPhase:
     def __init__(self):
         self.paths = autofit.optimize.non_linear.paths.Paths(
             phase_name="phase_name",
@@ -96,7 +96,7 @@ class MockPhase(object):
         return MockResult()
 
 
-class TestModelFixing(object):
+class TestModelFixing:
     def test__defaults_both(self):
         # noinspection PyTypeChecker
         phase = al.InversionBackgroundBothPhase(MockPhase())
@@ -175,7 +175,7 @@ class TestModelFixing(object):
         assert mapper.source_galaxy.light.axis_ratio == 1.0
 
 
-class TestImagePassing(object):
+class TestImagePassing:
     def test___image_dict(self, result):
         image_dict = result.image_galaxy_dict
         assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
@@ -316,7 +316,7 @@ def make_combined():
     return hyper_combined
 
 
-class TestHyperAPI(object):
+class TestHyperAPI:
     def test_combined_result(self, hyper_combined):
         result = hyper_combined.run(dataset=None, mask=None)
 
@@ -383,7 +383,7 @@ class TestHyperAPI(object):
         assert isinstance(result.hyper_galaxy, MockResult)
 
 
-class TestHyperGalaxyPhase(object):
+class TestHyperGalaxyPhase:
     def test__likelihood_function_is_same_as_normal_phase_likelihood_function(
         self, imaging_7x7, mask_7x7
     ):

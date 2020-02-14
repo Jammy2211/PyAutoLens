@@ -72,7 +72,7 @@ def simulate_integration_image(test_name, pixel_scales, galaxies):
     )
 
 
-class TestAdvancedModelMapper(object):
+class TestAdvancedModelMapper:
     def test_fully_qualified_paramnames(self):
         mapper = af.ModelMapper()
         galaxy_model = al.GalaxyModel(
@@ -92,7 +92,7 @@ class TestAdvancedModelMapper(object):
         assert mapper.param_names[0] == "galaxy_model_light_profile_centre_0"
 
 
-class TestPhaseModelMapper(object):
+class TestPhaseModelMapper:
     def test_pairing_works(self):
 
         test_name = "pair_floats"

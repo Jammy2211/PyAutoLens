@@ -5,7 +5,7 @@ from autofit.tools.phase import Dataset
 from autolens.pipeline.phase import abstract
 
 
-class HyperPhase(object):
+class HyperPhase:
     def __init__(self, phase: abstract.AbstractPhase, hyper_name: str):
         """
         Abstract HyperPhase. Wraps a phase, performing that phase before performing the action

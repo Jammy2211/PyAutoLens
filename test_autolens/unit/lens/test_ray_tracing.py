@@ -52,7 +52,7 @@ def caustics_via_magnification_from_tracer_and_grid(tracer, grid):
     return caustics
 
 
-class TestAbstractTracer(object):
+class TestAbstractTracer:
     class TestProperties:
         def test__total_planes(self):
 
@@ -863,7 +863,7 @@ class TestAbstractTracer(object):
             assert tracer.cosmology == 1
 
 
-class TestAbstractTracerCosmology(object):
+class TestAbstractTracerCosmology:
     def test__2_planes__z01_and_z1(self):
         g0 = al.Galaxy(redshift=0.1)
         g1 = al.Galaxy(redshift=1.0)
@@ -1154,7 +1154,7 @@ class TestAbstractTracerCosmology(object):
         assert tracer.planes[3].galaxies == [g3, g5]
 
 
-class TestAbstractTracerLensing(object):
+class TestAbstractTracerLensing:
     class TestTracedGridsFromGrid:
         def test__x2_planes__no_galaxy__image_and_source_planes_setup__same_coordinates(
             self, sub_grid_7x7
@@ -2702,7 +2702,7 @@ class TestAbstractTracerLensing(object):
 
             assert tracer.contribution_maps_of_planes[1] == None
 
-    class TestLensingObject(object):
+    class TestLensingObject:
         def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(
             self
         ):
@@ -2732,7 +2732,7 @@ class TestAbstractTracerLensing(object):
             )
 
 
-class TestAbstractTracerData(object):
+class TestAbstractTracerData:
     class TestBlurredProfileImages:
         def test__blurred_image_from_grid_and_psf(
             self, sub_grid_7x7, blurring_grid_7x7, psf_3x3
@@ -3609,7 +3609,7 @@ class TestAbstractTracerData(object):
             assert (hyper_noise_maps[1].in_1d == hyper_noise_map_1).all()
 
 
-class TestTracer(object):
+class TestTracer:
     class TestTracedDeflectionsFromGrid:
         def test__x2_planes__no_galaxy__all_deflections_are_zeros(
             self, sub_grid_7x7_simple
@@ -3808,7 +3808,7 @@ class TestTracer(object):
         #     ).all()
 
 
-class TestTacerFixedSlices(object):
+class TestTacerFixedSlices:
     class TestCosmology:
         def test__4_planes_after_slicing(self, sub_grid_7x7):
 
