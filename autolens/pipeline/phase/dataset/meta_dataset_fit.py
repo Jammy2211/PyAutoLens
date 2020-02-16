@@ -54,11 +54,12 @@ class MetaDatasetFit:
     @property
     def pixelization(self):
         for galaxy in self.model.galaxies:
-            if galaxy.pixelization is not None:
-                if isinstance(galaxy.pixelization, af.PriorModel):
-                    return galaxy.pixelization.cls
-                else:
-                    return galaxy.pixelization
+            if hasattr(galaxy, "pixelization"):
+                if galaxy.pixelization is not None:
+                    if isinstance(galaxy.pixelization, af.PriorModel):
+                        return galaxy.pixelization.cls
+                    else:
+                        return galaxy.pixelization
 
     @property
     def has_pixelization(self):
