@@ -290,7 +290,7 @@ class InterferometerFit(aa_fit.InterferometerFit):
         return len(list(filter(None, self.tracer.regularizations_of_planes)))
 
 
-class PositionsFit(object):
+class PositionsFit:
     def __init__(self, positions, tracer, noise_map):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher likelihood.
