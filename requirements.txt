@@ -1,7 +1,7 @@
 autoconf==0.2.2
 autofit==0.48.1
 autoarray==0.7.6
-autoastro==0.3.5
+autoastro==0.4.0
 astropy>=3.0.0
 matplotlib>=3.0.3
 numba>=0.42.1

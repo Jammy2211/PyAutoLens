@@ -583,7 +583,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
         hyper_noise_maps = []
 
         for galaxy in self.galaxies:
-            if galaxy.hyper_galaxy is not None:
+            if galaxy.has_hyper_galaxy:
 
                 hyper_noise_map_1d = galaxy.hyper_galaxy.hyper_noise_map_from_hyper_images_and_noise_map(
                     noise_map=noise_map,

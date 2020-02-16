@@ -109,6 +109,14 @@ class TestPipelineSourceSettings:
         source = al.setup.Source(fix_lens_light=True)
         assert source.fix_lens_light_tag == "__fix_lens_light"
 
+    def test__number_of_gaussians_tag(self):
+        source = al.setup.Source()
+        assert source.number_of_gaussians_tag == ""
+        source = al.setup.Source(number_of_gaussians=1)
+        assert source.number_of_gaussians_tag == "__gaussians_x1"
+        source = al.setup.Source(number_of_gaussians=2)
+        assert source.number_of_gaussians_tag == "__gaussians_x2"
+
     def test__tag_from_source(self):
 
         source = al.setup.Source(
@@ -194,17 +202,20 @@ class TestPipelineSourceSettings:
             pixelization=al.pix.Rectangular,
             regularization=al.reg.Constant,
             align_light_mass_centre=True,
+            number_of_gaussians=1,
             fix_lens_light=True,
             lens_light_bulge_only=True,
         )
 
+        print(source.tag)
+
         assert (
             source.tag
-            == "source__pix_rect__reg_const__with_shear__align_light_mass_centre__bulge_only__fix_lens_light"
+            == "source__pix_rect__reg_const__gaussians_x1__with_shear__align_light_mass_centre__bulge_only__fix_lens_light"
         )
         assert (
             source.tag_no_inversion
-            == "source__with_shear__align_light_mass_centre__bulge_only__fix_lens_light"
+            == "source__gaussians_x1__with_shear__align_light_mass_centre__bulge_only__fix_lens_light"
         )
 
 
@@ -261,6 +272,14 @@ class TestPipelineLightSettings:
         light = al.setup.Light(disk_as_sersic=True)
         assert light.disk_as_sersic_tag == "__disk_sersic"
 
+    def test__number_of_gaussians_tag(self):
+        source = al.setup.Source()
+        assert source.number_of_gaussians_tag == ""
+        source = al.setup.Source(number_of_gaussians=1)
+        assert source.number_of_gaussians_tag == "__gaussians_x1"
+        source = al.setup.Source(number_of_gaussians=2)
+        assert source.number_of_gaussians_tag == "__gaussians_x2"
+
     def test__tag(self):
         light = al.setup.Light(align_bulge_disk_phi=True)
 
@@ -273,6 +292,15 @@ class TestPipelineLightSettings:
         )
 
         assert light.tag == "light__align_bulge_disk_centre_axis_ratio__disk_sersic"
+
+        light = al.setup.Light(
+            align_bulge_disk_centre=True,
+            align_bulge_disk_axis_ratio=True,
+            disk_as_sersic=True,
+            number_of_gaussians=2,
+        )
+
+        assert light.tag == "light__gaussians_x2"
 
 
 class TestPipelineMassSettings:
