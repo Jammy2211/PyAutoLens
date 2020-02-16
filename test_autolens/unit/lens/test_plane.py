@@ -208,7 +208,7 @@ def caustics_via_magnification_from_plane_and_grid(plane, grid):
     return caustics
 
 
-class TestAbstractPlane(object):
+class TestAbstractPlane:
     class TestProperties:
         def test__has_light_profile(self):
             plane = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
@@ -685,7 +685,7 @@ class TestAbstractPlane(object):
             assert plane.mass_profile_phis_of_galaxies == [[0.9], [0.8], [0.7, 0.6]]
 
 
-class TestAbstractPlaneCosmology(object):
+class TestAbstractPlaneCosmology:
     def test__all_cosmological_quantities_match_cosmology_util(self):
         plane = al.Plane(redshift=0.1, cosmology=planck)
 
@@ -764,7 +764,7 @@ class TestAbstractPlaneCosmology(object):
         )
 
 
-class TestAbstractPlaneLensing(object):
+class TestAbstractPlaneLensing:
     class TestProfileImage:
         def test__profile_image_from_grid__same_as_its_light_profile_image(
             self, sub_grid_7x7, gal_x1_lp
@@ -1440,7 +1440,7 @@ class TestAbstractPlaneLensing(object):
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
 
-    class TestLensingObject(object):
+    class TestLensingObject:
         def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(
             self
         ):
@@ -1466,7 +1466,7 @@ class TestAbstractPlaneLensing(object):
             )
 
 
-class TestAbstractPlaneData(object):
+class TestAbstractPlaneData:
     class TestBlurredImagePlaneImage:
         def test__blurred_image_from_grid_and_psf(
             self, sub_grid_7x7, blurring_grid_7x7, psf_3x3, convolver_7x7
@@ -2367,7 +2367,7 @@ class TestAbstractPlaneData(object):
             assert hyper_noise_map == np.zeros((3, 1))
 
 
-class TestPlane(object):
+class TestPlane:
     class TestTracedGrid:
         def test__traced_grid_same_as_manual_deflections_calc_via_galaxy___use_multiple_galaxies(
             self, sub_grid_7x7

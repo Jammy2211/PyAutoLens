@@ -36,7 +36,7 @@ def clean_images():
     af.conf.instance.dataset_path = directory
 
 
-class TestPhase(object):
+class TestPhase:
     def test__make_analysis__masks_visibilities_and_noise_map_correctly(
         self, phase_interferometer_7, interferometer_7, visibilities_mask_7x2
     ):

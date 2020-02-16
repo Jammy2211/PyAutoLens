@@ -8,7 +8,7 @@ import autofit as af
 directory = path.dirname(path.realpath(__file__))
 
 
-class MockClass(object):
+class MockClass:
     pass
 
 
@@ -17,7 +17,7 @@ def make_label_config():
     return af.conf.instance.label
 
 
-class TestLabel(object):
+class TestLabel:
     def test_basic(self, label_config):
         assert label_config.label("centre_0") == "x"
         assert label_config.label("redshift") == "z"
