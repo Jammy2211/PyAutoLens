@@ -4,7 +4,7 @@ from autolens.fit import fit
 from autolens import exc
 
 
-class AbstractLensMasked(object):
+class AbstractLensMasked:
     def __init__(self, positions, positions_threshold, preload_sparse_grids_of_planes):
 
         if positions is not None:

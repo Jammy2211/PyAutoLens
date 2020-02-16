@@ -3,7 +3,7 @@ import autolens as al
 import numpy as np
 
 
-class TestMaskedImaging(object):
+class TestMaskedImaging:
     def test__masked_dataset_via_autoarray(self, imaging_7x7, sub_mask_7x7):
 
         masked_imaging_7x7 = al.masked.imaging.manual(
@@ -159,7 +159,7 @@ class TestMaskedImaging(object):
         assert masked_imaging_new.preload_sparse_grids_of_planes == 3
 
 
-class TestMaskedInterferometer(object):
+class TestMaskedInterferometer:
     def test__masked_dataset_via_autoarray(
         self,
         interferometer_7,

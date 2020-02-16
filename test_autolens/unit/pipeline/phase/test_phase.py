@@ -33,7 +33,7 @@ def clean_images():
     af.conf.instance.dataset_path = directory
 
 
-class TestPhase(object):
+class TestPhase:
 
     # TODO : These tests have both turned to models?
 
@@ -219,7 +219,7 @@ class TestPhase(object):
         assert instance.galaxies[1].redshift == 0.8
 
 
-class TestResult(object):
+class TestResult:
     def test__results_of_phase_are_available_as_properties(self, imaging_7x7, mask_7x7):
         clean_images()
 
@@ -257,7 +257,7 @@ class TestResult(object):
         assert result.most_likely_tracer.galaxies[1].light.intensity == 2.0
 
 
-class TestPhasePickle(object):
+class TestPhasePickle:
 
     # noinspection PyTypeChecker
     def test_assertion_failure(self, imaging_7x7, mask_7x7):
