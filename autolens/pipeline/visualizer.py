@@ -272,7 +272,9 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
 
         if results is not None and results.last is not None:
 
-            self.visualize_hyper_images(last_results=results.last)
+            if hasattr(results.last, "hyper_model_image"):
+
+                self.visualize_hyper_images(last_results=results.last)
 
     @property
     def masked_imaging(self):
