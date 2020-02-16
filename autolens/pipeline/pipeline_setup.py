@@ -97,6 +97,7 @@ class Source(object):
         lens_mass_centre=None,
         align_light_mass_centre=False,
         lens_light_bulge_only=False,
+        number_of_gaussians=None,
         fix_lens_light=False,
     ):
 
@@ -107,6 +108,7 @@ class Source(object):
         self.lens_mass_centre = lens_mass_centre
         self.align_light_mass_centre = align_light_mass_centre
         self.lens_light_bulge_only = lens_light_bulge_only
+        self.number_of_gaussians = number_of_gaussians
         self.fix_lens_light = fix_lens_light
 
     @property
@@ -114,6 +116,7 @@ class Source(object):
         return (
             "source"
             + self.inversion_tag
+            + self.number_of_gaussians_tag
             + self.no_shear_tag
             + self.lens_light_centre_tag
             + self.lens_mass_centre_tag
@@ -126,6 +129,7 @@ class Source(object):
     def tag_no_inversion(self):
         return (
             "source"
+            + self.number_of_gaussians_tag
             + self.no_shear_tag
             + self.lens_light_centre_tag
             + self.lens_mass_centre_tag
@@ -154,6 +158,7 @@ class Source(object):
         return (
             "source"
             + source_tag
+            + self.number_of_gaussians_tag
             + self.no_shear_tag
             + self.lens_light_centre_tag
             + self.lens_mass_centre_tag
@@ -283,6 +288,13 @@ class Source(object):
         elif self.fix_lens_light:
             return "__fix_lens_light"
 
+    @property
+    def number_of_gaussians_tag(self):
+        if self.number_of_gaussians is None:
+            return ""
+        else:
+            return "__gaussians_x" + str(self.number_of_gaussians)
+
 
 class Light(object):
     def __init__(
@@ -291,16 +303,21 @@ class Light(object):
         align_bulge_disk_phi=False,
         align_bulge_disk_axis_ratio=False,
         disk_as_sersic=False,
+        number_of_gaussians=None,
     ):
 
         self.align_bulge_disk_centre = align_bulge_disk_centre
         self.align_bulge_disk_phi = align_bulge_disk_phi
         self.align_bulge_disk_axis_ratio = align_bulge_disk_axis_ratio
         self.disk_as_sersic = disk_as_sersic
+        self.number_of_gaussians = number_of_gaussians
 
     @property
     def tag(self):
-        return "light" + self.align_bulge_disk_tag + self.disk_as_sersic_tag
+        if self.number_of_gaussians is None:
+            return "light" + self.align_bulge_disk_tag + self.disk_as_sersic_tag
+        else:
+            return "light" + self.number_of_gaussians_tag
 
     def tag_from_lens(self, lens):
 
@@ -389,6 +406,13 @@ class Light(object):
             return "__disk_exp"
         elif self.disk_as_sersic:
             return "__disk_sersic"
+
+    @property
+    def number_of_gaussians_tag(self):
+        if self.number_of_gaussians is None:
+            return ""
+        else:
+            return "__gaussians_x" + str(self.number_of_gaussians)
 
 
 class Mass(object):
@@ -483,30 +507,41 @@ class Mass(object):
 def lens_light_tag_from_lens(lens):
 
     if hasattr(lens, "sersic") or hasattr(lens, "light"):
-        return "__bulge_disk"
+        return "__sersic"
     elif hasattr(lens, "bulge") or hasattr(lens, "disk"):
         return "__bulge_disk"
+    elif hasattr(lens, "gaussian_0"):
+        return "__gaussians"
     else:
         return ""
 
 
-def lens_from_result(result, fix_lens_light):
+def lens_from_result(result, hyper_result, fix_lens_light, fix_lens_mass):
 
-    if hasattr(result, "light"):
+    lens = lens_with_light_only_from_result(
+        result=result, fix_lens_light=fix_lens_light
+    )
 
-        if fix_lens_light:
+    if fix_lens_mass:
 
-            light = result.instance.galaxies.lens.light
+        lens.mass = result.instance.galaxies.lens.mass
+        lens.shear = result.instance.galaxies.lens.shear
 
-        else:
+    else:
 
-            light = result.model.galaxies.lens.light
+        lens.mass = result.model.galaxies.lens.mass
+        lens.shear = result.model.galaxies.lens.shear
 
-        return aast.GalaxyModel(
-            redshift=result.instance.galaxies.lens.redshift, light=light
-        )
+    lens.hyper_galaxy = (
+        hyper_result.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy
+    )
 
-    elif hasattr(result, "sersic"):
+    return lens
+
+
+def lens_with_light_only_from_result(result, fix_lens_light):
+
+    if hasattr(result, "sersic"):
 
         if fix_lens_light:
 
@@ -534,6 +569,30 @@ def lens_from_result(result, fix_lens_light):
 
         return aast.GalaxyModel(
             redshift=result.instance.galaxies.lens.redshift, bulge=bulge, disk=disk
+        )
+
+    elif hasattr(result, "gaussian_0"):
+
+        if fix_lens_light:
+
+            gaussian_0 = result.instance.galaxies.lens.gaussian_0
+            gaussian_1 = result.instance.galaxies.lens.gaussian_1
+            gaussian_2 = result.instance.galaxies.lens.gaussian_2
+            gaussian_3 = result.instance.galaxies.lens.gaussian_3
+
+        else:
+
+            gaussian_0 = result.model.galaxies.lens.gaussian_0
+            gaussian_1 = result.model.galaxies.lens.gaussian_1
+            gaussian_2 = result.model.galaxies.lens.gaussian_2
+            gaussian_3 = result.model.galaxies.lens.gaussian_3
+
+        return aast.GalaxyModel(
+            redshift=result.instance.galaxies.lens.redshift,
+            gaussian_0=gaussian_0,
+            gaussian_1=gaussian_1,
+            gaussian_2=gaussian_2,
+            gaussian_3=gaussian_3,
         )
 
 

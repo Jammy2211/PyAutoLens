@@ -1,4 +1,4 @@
-from autoarray.exc import InversionException
+from autoarray.exc import InversionException, GridException
 from autofit.exc import FitException
 from autolens.fit import fit
 from autolens.pipeline import visualizer
@@ -60,7 +60,7 @@ class Analysis(analysis_dataset.Analysis):
             )
 
             return fit.figure_of_merit
-        except InversionException as e:
+        except InversionException or GridException as e:
             raise FitException from e
 
     def masked_imaging_fit_for_tracer(
