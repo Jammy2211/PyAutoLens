@@ -37,7 +37,7 @@ def clean_images():
     af.conf.instance.dataset_path = directory
 
 
-class TestPhase(object):
+class TestPhase:
     def test__make_analysis__mask_input_uses_mask(self, phase_imaging_7x7, imaging_7x7):
         # If an input mask is supplied we use mask input.
 
@@ -548,7 +548,7 @@ class TestPhase(object):
         assert analysis.masked_dataset.preload_sparse_grids_of_planes == 1
 
 
-class TestResult(object):
+class TestResult:
     def test__results_of_phase_are_available_as_properties(self, imaging_7x7, mask_7x7):
         clean_images()
 
@@ -706,7 +706,7 @@ class TestResult(object):
         assert result.most_likely_pixelization_grids_of_planes[-1].shape == (6, 2)
 
 
-class TestPhasePickle(object):
+class TestPhasePickle:
 
     # noinspection PyTypeChecker
     def test_assertion_failure(self, imaging_7x7, mask_7x7):

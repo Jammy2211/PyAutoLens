@@ -5,7 +5,7 @@ from autoarray.operators.inversion import pixelizations as pix
 from autoarray.operators.inversion import regularization as reg
 
 
-class Setup(object):
+class Setup:
     def __init__(self, general=None, source=None, light=None, mass=None):
 
         self.general = general
@@ -14,7 +14,7 @@ class Setup(object):
         self.mass = mass
 
 
-class General(object):
+class General:
     def __init__(
         self, hyper_galaxies=False, hyper_image_sky=False, hyper_background_noise=False
     ):
@@ -87,7 +87,7 @@ class General(object):
             return "_bg_noise"
 
 
-class Source(object):
+class Source:
     def __init__(
         self,
         pixelization=pix.VoronoiBrightnessImage,
@@ -296,7 +296,7 @@ class Source(object):
             return "__gaussians_x" + str(self.number_of_gaussians)
 
 
-class Light(object):
+class Light:
     def __init__(
         self,
         align_bulge_disk_centre=False,
@@ -415,7 +415,7 @@ class Light(object):
             return "__gaussians_x" + str(self.number_of_gaussians)
 
 
-class Mass(object):
+class Mass:
     def __init__(
         self,
         no_shear=False,

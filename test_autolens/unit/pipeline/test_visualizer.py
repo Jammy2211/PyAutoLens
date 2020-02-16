@@ -225,7 +225,7 @@ class TestPhaseImagingVisualizer:
             preloaded_caustics=include_all.preloaded_caustics,
         )
 
-        class MockLastResults(object):
+        class MockLastResults:
             def __init__(self, hyper_model_image, hyper_galaxy_image_path_dict):
 
                 self.hyper_model_image = hyper_model_image
