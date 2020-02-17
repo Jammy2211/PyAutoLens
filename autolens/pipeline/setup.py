@@ -4,6 +4,8 @@ from autolens import exc
 from autoarray.operators.inversion import pixelizations as pix
 from autoarray.operators.inversion import regularization as reg
 
+from copy import deepcopy
+
 
 class Setup:
     def __init__(self, general=None, source=None, light=None, mass=None):
@@ -12,6 +14,18 @@ class Setup:
         self.source = source
         self.light = light
         self.mass = mass
+
+    def set_source_type(self, source_type):
+
+        self.source.type_tag = source_type
+
+    def set_light_type(self, light_type):
+
+        self.light.type_tag = light_type
+
+    def set_mass_type(self, mass_type):
+
+        self.mass.type_tag = mass_type
 
 
 class General:
@@ -110,25 +124,13 @@ class Source:
         self.lens_light_bulge_only = lens_light_bulge_only
         self.number_of_gaussians = number_of_gaussians
         self.fix_lens_light = fix_lens_light
+        self.type_tag = None
 
     @property
     def tag(self):
         return (
-            "source"
-            + self.inversion_tag
-            + self.number_of_gaussians_tag
-            + self.no_shear_tag
-            + self.lens_light_centre_tag
-            + self.lens_mass_centre_tag
-            + self.align_light_mass_centre_tag
-            + self.lens_light_bulge_only_tag
-            + self.fix_lens_light_tag
-        )
-
-    @property
-    def tag_no_inversion(self):
-        return (
-            "source"
+            "source__"
+            + self.type_tag
             + self.number_of_gaussians_tag
             + self.no_shear_tag
             + self.lens_light_centre_tag
@@ -140,32 +142,11 @@ class Source:
 
     @property
     def tag_beginner(self):
-        return "source" + self.inversion_tag
+        return "source__" + self.inversion_tag
 
     @property
     def tag_beginner_no_inversion(self):
         return "source"
-
-    def tag_from_source(self, source):
-
-        source_is_inversion = source_is_inversion_from_source(source=source)
-
-        if source_is_inversion:
-            source_tag = self.inversion_tag
-        else:
-            source_tag = "__parametric"
-
-        return (
-            "source"
-            + source_tag
-            + self.number_of_gaussians_tag
-            + self.no_shear_tag
-            + self.lens_light_centre_tag
-            + self.lens_mass_centre_tag
-            + self.align_light_mass_centre_tag
-            + self.lens_light_bulge_only_tag
-            + self.fix_lens_light_tag
-        )
 
     @property
     def inversion_tag(self):
@@ -177,7 +158,7 @@ class Source:
         if self.pixelization is None:
             return ""
         else:
-            return "__pix_" + af.conf.instance.label.get(
+            return "pix_" + af.conf.instance.label.get(
                 "tag", self.pixelization().__class__.__name__, str
             )
 
@@ -311,24 +292,26 @@ class Light:
         self.align_bulge_disk_axis_ratio = align_bulge_disk_axis_ratio
         self.disk_as_sersic = disk_as_sersic
         self.number_of_gaussians = number_of_gaussians
+        self.type_tag = None
 
     @property
     def tag(self):
         if self.number_of_gaussians is None:
+            return (
+                "light__"
+                + self.type_tag
+                + self.align_bulge_disk_tag
+                + self.disk_as_sersic_tag
+            )
+        else:
+            return "light__" + self.type_tag + self.number_of_gaussians_tag
+
+    @property
+    def tag_beginner(self):
+        if self.number_of_gaussians is None:
             return "light" + self.align_bulge_disk_tag + self.disk_as_sersic_tag
         else:
             return "light" + self.number_of_gaussians_tag
-
-    def tag_from_lens(self, lens):
-
-        lens_light_tag = lens_light_tag_from_lens(lens=lens)
-
-        return (
-            "light"
-            + lens_light_tag
-            + self.align_bulge_disk_tag
-            + self.disk_as_sersic_tag
-        )
 
     @property
     def align_bulge_disk_centre_tag(self):
@@ -436,9 +419,21 @@ class Mass:
         self.align_bulge_dark_centre = align_bulge_dark_centre
 
         self.fix_lens_light = fix_lens_light
+        self.type_tag = None
 
     @property
     def tag(self):
+        return (
+            "mass__"
+            + self.type_tag
+            + self.no_shear_tag
+            + self.align_light_dark_centre_tag
+            + self.align_bulge_dark_centre_tag
+            + self.fix_lens_light_tag
+        )
+
+    @property
+    def tag_beginner(self):
         return (
             "mass"
             + self.no_shear_tag
@@ -502,136 +497,3 @@ class Mass:
             return ""
         elif self.fix_lens_light:
             return "__fix_lens_light"
-
-
-def lens_light_tag_from_lens(lens):
-
-    if hasattr(lens, "sersic") or hasattr(lens, "light"):
-        return "__sersic"
-    elif hasattr(lens, "bulge") or hasattr(lens, "disk"):
-        return "__bulge_disk"
-    elif hasattr(lens, "gaussian_0"):
-        return "__gaussians"
-    else:
-        return ""
-
-
-def lens_from_result(result, hyper_result, fix_lens_light, fix_lens_mass):
-
-    lens = lens_with_light_only_from_result(
-        result=result, fix_lens_light=fix_lens_light
-    )
-
-    if fix_lens_mass:
-
-        lens.mass = result.instance.galaxies.lens.mass
-        lens.shear = result.instance.galaxies.lens.shear
-
-    else:
-
-        lens.mass = result.model.galaxies.lens.mass
-        lens.shear = result.model.galaxies.lens.shear
-
-    lens.hyper_galaxy = (
-        hyper_result.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy
-    )
-
-    return lens
-
-
-def lens_with_light_only_from_result(result, fix_lens_light):
-
-    if hasattr(result, "sersic"):
-
-        if fix_lens_light:
-
-            sersic = result.instance.galaxies.lens.sersic
-
-        else:
-
-            sersic = result.model.galaxies.lens.sersic
-
-        return aast.GalaxyModel(
-            redshift=result.instance.galaxies.lens.redshift, sersic=sersic
-        )
-
-    elif hasattr(result, "bulge"):
-
-        if fix_lens_light:
-
-            bulge = result.instance.galaxies.lens.bulge
-            disk = result.instance.galaxies.lens.disk
-
-        else:
-
-            bulge = result.model.galaxies.lens.bulge
-            disk = result.model.galaxies.lens.disk
-
-        return aast.GalaxyModel(
-            redshift=result.instance.galaxies.lens.redshift, bulge=bulge, disk=disk
-        )
-
-    elif hasattr(result, "gaussian_0"):
-
-        if fix_lens_light:
-
-            gaussian_0 = result.instance.galaxies.lens.gaussian_0
-            gaussian_1 = result.instance.galaxies.lens.gaussian_1
-            gaussian_2 = result.instance.galaxies.lens.gaussian_2
-            gaussian_3 = result.instance.galaxies.lens.gaussian_3
-
-        else:
-
-            gaussian_0 = result.model.galaxies.lens.gaussian_0
-            gaussian_1 = result.model.galaxies.lens.gaussian_1
-            gaussian_2 = result.model.galaxies.lens.gaussian_2
-            gaussian_3 = result.model.galaxies.lens.gaussian_3
-
-        return aast.GalaxyModel(
-            redshift=result.instance.galaxies.lens.redshift,
-            gaussian_0=gaussian_0,
-            gaussian_1=gaussian_1,
-            gaussian_2=gaussian_2,
-            gaussian_3=gaussian_3,
-        )
-
-
-def source_is_inversion_from_source(source):
-
-    if source.pixelization is None:
-
-        return False
-
-    else:
-
-        return True
-
-
-def source_from_result(result, include_hyper_source):
-
-    if include_hyper_source:
-        hyper_galaxy = (
-            af.last.hyper_combined.instance.optional.galaxies.source.hyper_galaxy
-        )
-        hyper_galaxy.noise_factor = (
-            af.last.hyper_combined.model.galaxies.source.hyper_galaxy.noise_factor
-        )
-    else:
-        hyper_galaxy = None
-
-    if result.model.galaxies.source.pixelization is None:
-
-        return aast.GalaxyModel(
-            redshift=result.instance.galaxies.source.redshift,
-            light=result.model.galaxies.source.light,
-            hyper_galaxy=hyper_galaxy,
-        )
-
-    else:
-
-        return aast.GalaxyModel(
-            redshift=result.instance.galaxies.source.redshift,
-            pixelization=result.instance.galaxies.source.pixelization,
-            regularization=result.instance.galaxies.source.regularization,
-            hyper_galaxy=hyper_galaxy,
-        )
