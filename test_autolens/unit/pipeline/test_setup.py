@@ -42,9 +42,9 @@ class TestPipelineSourceSettings:
         source = al.setup.Source(pixelization=None)
         assert source.pixelization_tag == ""
         source = al.setup.Source(pixelization=al.pix.Rectangular)
-        assert source.pixelization_tag == "__pix_rect"
+        assert source.pixelization_tag == "pix_rect"
         source = al.setup.Source(pixelization=al.pix.VoronoiBrightnessImage)
-        assert source.pixelization_tag == "__pix_voro_image"
+        assert source.pixelization_tag == "pix_voro_image"
 
     def test__regularization_tag(self):
         source = al.setup.Source(regularization=None)
@@ -117,64 +117,6 @@ class TestPipelineSourceSettings:
         source = al.setup.Source(number_of_gaussians=2)
         assert source.number_of_gaussians_tag == "__gaussians_x2"
 
-    def test__tag_from_source(self):
-
-        source = al.setup.Source(
-            pixelization=al.pix.VoronoiMagnification, regularization=al.reg.Constant
-        )
-
-        galaxy = al.Galaxy(redshift=0.5)
-
-        source_tag = source.tag_from_source(source=galaxy)
-
-        assert source_tag == "source__parametric__with_shear"
-
-        galaxy = al.Galaxy(
-            redshift=0.5,
-            light=al.lp.EllipticalExponential(),
-            mass=al.mp.EllipticalIsothermal(),
-        )
-
-        source_tag = source.tag_from_source(source=galaxy)
-
-        assert source_tag == "source__parametric__with_shear"
-
-        galaxy = al.Galaxy(
-            redshift=0.5,
-            pixelization=al.pix.VoronoiMagnification(),
-            regularization=al.reg.Constant(),
-        )
-
-        source_tag = source.tag_from_source(source=galaxy)
-
-        assert source_tag == "source__pix_voro_mag__reg_const__with_shear"
-
-        galaxy = al.GalaxyModel(redshift=0.5)
-
-        source_tag = source.tag_from_source(source=galaxy)
-
-        assert source_tag == "source__parametric__with_shear"
-
-        galaxy = al.GalaxyModel(
-            redshift=0.5,
-            light=al.lp.EllipticalExponential,
-            mass=al.mp.EllipticalIsothermal,
-        )
-
-        source_tag = source.tag_from_source(source=galaxy)
-
-        assert source_tag == "source__parametric__with_shear"
-
-        galaxy = al.GalaxyModel(
-            redshift=0.5,
-            pixelization=al.pix.VoronoiMagnification,
-            regularization=al.reg.Constant,
-        )
-
-        source_tag = source.tag_from_source(source=galaxy)
-
-        assert source_tag == "source__pix_voro_mag__reg_const__with_shear"
-
     def test__tag(self):
 
         source = al.setup.Source(
@@ -187,16 +129,14 @@ class TestPipelineSourceSettings:
             fix_lens_light=True,
         )
 
+        source.type_tag = source.inversion_tag
+
         assert (
             source.tag
             == "source__pix_rect__reg_const__no_shear__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__fix_lens_light"
         )
-        assert (
-            source.tag_no_inversion
-            == "source__no_shear__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__fix_lens_light"
-        )
+
         assert source.tag_beginner == "source__pix_rect__reg_const"
-        assert source.tag_beginner_no_inversion == "source"
 
         source = al.setup.Source(
             pixelization=al.pix.Rectangular,
@@ -207,16 +147,22 @@ class TestPipelineSourceSettings:
             lens_light_bulge_only=True,
         )
 
-        print(source.tag)
+        source.type_tag = "test"
 
         assert (
             source.tag
-            == "source__pix_rect__reg_const__gaussians_x1__with_shear__align_light_mass_centre__bulge_only__fix_lens_light"
+            == "source__test__gaussians_x1__with_shear__align_light_mass_centre__bulge_only__fix_lens_light"
         )
-        assert (
-            source.tag_no_inversion
-            == "source__gaussians_x1__with_shear__align_light_mass_centre__bulge_only__fix_lens_light"
+
+    def test__tag_beginner(self):
+
+        source = al.setup.Source(
+            pixelization=al.pix.Rectangular, regularization=al.reg.Constant
         )
+
+        assert source.tag_beginner_no_inversion == "source"
+
+        assert source.tag_beginner == "source__pix_rect__reg_const"
 
 
 class TestPipelineLightSettings:
@@ -281,9 +227,11 @@ class TestPipelineLightSettings:
         assert source.number_of_gaussians_tag == "__gaussians_x2"
 
     def test__tag(self):
-        light = al.setup.Light(align_bulge_disk_phi=True)
 
-        assert light.tag == "light__align_bulge_disk_phi__disk_exp"
+        light = al.setup.Light(align_bulge_disk_phi=True)
+        light.type_tag = ""
+
+        assert light.tag == "light____align_bulge_disk_phi__disk_exp"
 
         light = al.setup.Light(
             align_bulge_disk_centre=True,
@@ -291,7 +239,38 @@ class TestPipelineLightSettings:
             disk_as_sersic=True,
         )
 
-        assert light.tag == "light__align_bulge_disk_centre_axis_ratio__disk_sersic"
+        light.type_tag = "lol"
+
+        assert (
+            light.tag == "light__lol__align_bulge_disk_centre_axis_ratio__disk_sersic"
+        )
+
+        light = al.setup.Light(
+            align_bulge_disk_centre=True,
+            align_bulge_disk_axis_ratio=True,
+            disk_as_sersic=True,
+            number_of_gaussians=2,
+        )
+        light.type_tag = "test"
+
+        assert light.tag == "light__test__gaussians_x2"
+
+    def test__tag_beginner(self):
+
+        light = al.setup.Light(align_bulge_disk_phi=True)
+
+        assert light.tag_beginner == "light__align_bulge_disk_phi__disk_exp"
+
+        light = al.setup.Light(
+            align_bulge_disk_centre=True,
+            align_bulge_disk_axis_ratio=True,
+            disk_as_sersic=True,
+        )
+
+        assert (
+            light.tag_beginner
+            == "light__align_bulge_disk_centre_axis_ratio__disk_sersic"
+        )
 
         light = al.setup.Light(
             align_bulge_disk_centre=True,
@@ -300,7 +279,7 @@ class TestPipelineLightSettings:
             number_of_gaussians=2,
         )
 
-        assert light.tag == "light__gaussians_x2"
+        assert light.tag_beginner == "light__gaussians_x2"
 
 
 class TestPipelineMassSettings:
@@ -335,20 +314,27 @@ class TestPipelineMassSettings:
         mass = al.setup.Mass(
             no_shear=True, align_light_dark_centre=True, fix_lens_light=True
         )
+        mass.type_tag = ""
 
-        assert mass.tag == "mass__no_shear__align_light_dark_centre__fix_lens_light"
+        assert mass.tag == "mass____no_shear__align_light_dark_centre__fix_lens_light"
 
         mass = al.setup.Mass(align_bulge_dark_centre=True)
 
-        assert mass.tag == "mass__with_shear__align_bulge_dark_centre"
+        mass.type_tag = "test"
 
+        assert mass.tag == "mass__test__with_shear__align_bulge_dark_centre"
 
-# class TestTags:
+    def test__tag_beginner(self):
 
-# def test__source_from_source(self):
-#
-#     galaxy = al.Galaxy(redshift=0.5, light=al.lp.El)
-#
-#     source = al.pipeline_settings.source_from_source(source=galaxy)
-#
-#     assert source.redshift == 0.5
+        mass = al.setup.Mass(
+            no_shear=True, align_light_dark_centre=True, fix_lens_light=True
+        )
+
+        assert (
+            mass.tag_beginner
+            == "mass__no_shear__align_light_dark_centre__fix_lens_light"
+        )
+
+        mass = al.setup.Mass(align_bulge_dark_centre=True)
+
+        assert mass.tag_beginner == "mass__with_shear__align_bulge_dark_centre"

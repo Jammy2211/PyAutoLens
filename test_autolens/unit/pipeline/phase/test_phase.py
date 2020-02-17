@@ -45,6 +45,23 @@ class TestPhase:
         phase_dataset_7x7.galaxies = [al.GalaxyModel(redshift=0.5)]
         assert phase_dataset_7x7.model.galaxies == [al.GalaxyModel(redshift=0.5)]
 
+    def test__promise_attrbutes(self):
+        phase = al.PhaseDataset(
+            galaxies=dict(
+                lens=al.GalaxyModel(
+                    redshift=0.5,
+                    mass=al.mp.EllipticalIsothermal,
+                    shear=al.mp.ExternalShear,
+                ),
+                source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+            ),
+            optimizer_class=mock_pipeline.MockNLO,
+            phase_tag="",
+            phase_name="test_phase",
+        )
+
+        print(hasattr(af.last.result.instance.galaxies.lens, "mas2s"))
+
     def test__customize(
         self, results_7x7, results_collection_7x7, imaging_7x7, mask_7x7
     ):
