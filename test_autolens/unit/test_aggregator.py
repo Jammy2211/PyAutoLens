@@ -51,9 +51,9 @@ class TestCase:
         assert isinstance(three.output, MockOutput)
 
     def test__file_paths(self, one, two, three):
-        assert three.file_path == "{}/three/metadata".format(aggregator_directory)
-        assert one.file_path == "{}/one/metadata".format(aggregator_directory)
-        assert two.file_path == "{}/two/metadata".format(aggregator_directory)
+        assert three.file_path == "{}/three/three/metadata".format(aggregator_directory)
+        assert one.file_path == "{}/one/one/metadata".format(aggregator_directory)
+        assert two.file_path == "{}/two/two/metadata".format(aggregator_directory)
 
     # def test_attributes(self, one, two, three):
     #     assert one.pipeline == "pipeline_1"
