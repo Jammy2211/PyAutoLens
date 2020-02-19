@@ -8,5 +8,6 @@ from autoarray.util import pixelization_util as pixelization
 from autoarray.util import regularization_util as regularization
 from autoarray.util import mapper_util as mapper
 from autoarray.util import inversion_util as inversion
+from autoarray.util import transformer_util as transformer
 from autoastro.util import cosmology_util as cosmology
 from autolens.util import lens_util as lens
