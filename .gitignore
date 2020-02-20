@@ -12,7 +12,13 @@ lib/
 .env
 .pytest_cache
 MultiNest/
-hyper/
+hyper
+hyper_galaxies
+imaging
+Nonesubplots
+scripts
+subplots
+test_files
 scripts/
 subplots/
 multinest
