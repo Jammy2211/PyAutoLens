@@ -33,7 +33,7 @@ imaging = al.imaging.from_fits(
     pixel_scales=0.1)
 
 # Create a mask for the data, which we setup as a 3.0" circle.
-mask = al.mask.circular(shape=imaging.shape, pixel_scales=imaging.pixel_scales, radius=3.0)
+mask = al.mask.circular(shape_2d=imaging.shape, pixel_scales=imaging.pixel_scales, radius=3.0)
 
 # We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) & our source galaxy 
 # a light profile (an elliptical Sersic).
@@ -130,10 +130,10 @@ Install multinest:
 conda install -c conda-forge multinest
 ```
 
-Install autolens (v0.38.3 is the most recent stable build):
+Install autolens (v0.38.4 is the most recent stable build):
 
 ```
-pip install autolens==0.38.3
+pip install autolens==0.38.4
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment model:
@@ -166,10 +166,10 @@ python3 /path/to/autolens_workspace/runners/beginner/no_lens_light/lens_sie__sou
 
 ## Installation with pip
 
-Installation is also available via pip (v0.38.3 is the most recent stable build), however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
+Installation is also available via pip (v0.38.4 is the most recent stable build), however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
 
 ```
-$ pip install autolens==0.38.3
+$ pip install autolens==0.38.4
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment model:
