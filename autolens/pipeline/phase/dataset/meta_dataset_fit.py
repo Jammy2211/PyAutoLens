@@ -84,11 +84,13 @@ class MetaDatasetFit:
         if (
             results is not None
             and results.last is not None
-            and hasattr(results.last, "hyper_combined")
             and self.pixelization is not None
         ):
             if self.pixelization.__class__ is results.last.pixelization.__class__:
-                return (
-                    results.last.hyper_combined.most_likely_pixelization_grids_of_planes
-                )
+                if hasattr(results.last, "hyper_combined"):
+                    return (
+                        results.last.hyper_combined.most_likely_pixelization_grids_of_planes
+                    )
+                else:
+                    return results.last.most_likely_pixelization_grids_of_planes
         return None
