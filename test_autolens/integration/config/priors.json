@@ -1,5 +1,5 @@
 {
-    "*.total_mass_profiles": {
+    "total_mass_profiles": {
         "SphericalIsothermal": {
             "centre_0": {
                 "type": "Gaussian",
@@ -460,7 +460,7 @@
             }
         }
     },
-    "*.dark_mass_profiles": {
+    "dark_mass_profiles": {
         "SphericalNFW": {
             "centre_0": {
                 "type": "Gaussian",
@@ -810,7 +810,7 @@
             }
         }
     },
-    "*.pixelizations": {
+    "pixelizations": {
         "Rectangular": {
             "shape_0": {
                 "type": "Uniform",
@@ -881,7 +881,7 @@
             }
         }
     },
-    "*.geometry_profiles": {
+    "geometry_profiles": {
         "GeometryProfile": {
             "centre_0": {
                 "type": "Gaussian",
@@ -974,7 +974,7 @@
             }
         }
     },
-    "*.hyper_data": {
+    "hyper_data": {
         "HyperImageSky": {
             "sky_scale": {
                 "type": "Uniform",
@@ -998,7 +998,7 @@
             }
         }
     },
-    "*.light_profiles": {
+    "light_profiles": {
         "SphericalSersic": {
             "centre_0": {
                 "type": "Gaussian",
@@ -1608,7 +1608,7 @@
             }
         }
     },
-    "*.stellar_mass_profiles": {
+    "stellar_mass_profiles": {
         "SphericalSersic": {
             "centre_0": {
                 "type": "Gaussian",
@@ -2134,7 +2134,7 @@
             }
         }
     },
-    "*.mass_sheets": {
+    "mass_sheets": {
         "ExternalShear": {
             "magnitude": {
                 "type": "Uniform",
@@ -2152,7 +2152,7 @@
             }
         }
     },
-    "*.galaxy": {
+    "galaxy": {
         "Redshift": {
             "redshift": {
                 "type": "Uniform",
@@ -2194,7 +2194,7 @@
             }
         }
     },
-    "*.regularization": {
+    "regularization": {
         "Constant": {
             "coefficient": {
                 "type": "LogUniform",
