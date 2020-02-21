@@ -19,13 +19,6 @@ pytestmark = pytest.mark.filterwarnings(
 directory = path.dirname(path.realpath(__file__))
 
 
-@pytest.fixture(scope="session", autouse=True)
-def do_something():
-    af.conf.instance = af.conf.Config(
-        "{}/../test_files/config/phase_imaging_7x7".format(directory)
-    )
-
-
 def clean_images():
     try:
         os.remove("{}/source_lens_phase/source_image_0.fits".format(directory))
