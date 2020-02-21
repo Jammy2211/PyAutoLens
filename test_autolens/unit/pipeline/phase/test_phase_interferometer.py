@@ -19,13 +19,6 @@ pytestmark = pytest.mark.filterwarnings(
 directory = path.dirname(path.realpath(__file__))
 
 
-@pytest.fixture(scope="session", autouse=True)
-def do_something():
-    af.conf.instance = af.conf.Config(
-        "{}/../test_files/config/phase_interferometer_7".format(directory)
-    )
-
-
 def clean_images():
     try:
         os.remove("{}/source_lens_phase/source_image_0.fits".format(directory))
@@ -38,21 +31,21 @@ def clean_images():
 
 class TestPhase:
     def test__make_analysis__masks_visibilities_and_noise_map_correctly(
-        self, phase_interferometer_7, interferometer_7, visibilities_mask_7x2
+            self, phase_interferometer_7, interferometer_7, visibilities_mask_7x2
     ):
         analysis = phase_interferometer_7.make_analysis(
             dataset=interferometer_7, mask=visibilities_mask_7x2
         )
 
         assert (
-            analysis.masked_interferometer.visibilities == interferometer_7.visibilities
+                analysis.masked_interferometer.visibilities == interferometer_7.visibilities
         ).all()
         assert (
-            analysis.masked_interferometer.noise_map == interferometer_7.noise_map
+                analysis.masked_interferometer.noise_map == interferometer_7.noise_map
         ).all()
 
     def test__make_analysis__phase_info_is_made(
-        self, phase_interferometer_7, interferometer_7, visibilities_mask_7x2
+            self, phase_interferometer_7, interferometer_7, visibilities_mask_7x2
     ):
         phase_interferometer_7.make_analysis(
             dataset=interferometer_7, mask=visibilities_mask_7x2
@@ -77,15 +70,14 @@ class TestPhase:
         assert primary_beam_shape_2d == "Primary Beam shape = None \n"
         assert positions_threshold == "Positions Threshold = None \n"
         assert (
-            cosmology
-            == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, '
-            "Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n"
+                cosmology
+                == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, '
+                   "Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n"
         )
 
     def test__fit_using_interferometer(
-        self, interferometer_7, mask_7x7, visibilities_mask_7x2
+            self, interferometer_7, mask_7x7, visibilities_mask_7x2
     ):
-
         phase_interferometer_7 = al.PhaseInterferometer(
             optimizer_class=mock_pipeline.MockNLO,
             galaxies=dict(
@@ -103,7 +95,7 @@ class TestPhase:
         assert isinstance(result.instance.galaxies[0], al.Galaxy)
 
     def test_modify_visibilities(
-        self, interferometer_7, mask_7x7, visibilities_mask_7x2
+            self, interferometer_7, mask_7x7, visibilities_mask_7x2
     ):
         class MyPhase(al.PhaseInterferometer):
             def modify_visibilities(self, visibilities, results):
@@ -119,7 +111,7 @@ class TestPhase:
             dataset=interferometer_7, mask=visibilities_mask_7x2
         )
         assert (
-            analysis.masked_dataset.visibilities == 20.0 * np.ones(shape=(7, 2))
+                analysis.masked_dataset.visibilities == 20.0 * np.ones(shape=(7, 2))
         ).all()
 
     def test__phase_can_receive_hyper_image_and_noise_maps(self, mask_7x7):
@@ -170,7 +162,7 @@ class TestPhase:
         assert type(phase_extended.hyper_phases[1]) == al.InversionPhase
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
-        self, interferometer_7, mask_7x7, visibilities_mask_7x2
+            self, interferometer_7, mask_7x7, visibilities_mask_7x2
     ):
         lens_galaxy = al.Galaxy(
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
@@ -205,7 +197,7 @@ class TestPhase:
         assert fit.likelihood == fit_figure_of_merit
 
     def test__fit_figure_of_merit__includes_hyper_image_and_noise__matches_fit(
-        self, interferometer_7, mask_7x7, visibilities_mask_7x2
+            self, interferometer_7, mask_7x7, visibilities_mask_7x2
     ):
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
