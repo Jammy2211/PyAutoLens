@@ -12,6 +12,15 @@ lib/
 .env
 .pytest_cache
 MultiNest/
+hyper
+hyper_galaxies
+imaging
+Nonesubplots
+scripts
+subplots
+test_files
+scripts/
+subplots/
 multinest
 .DS_Store
 temp.txt
