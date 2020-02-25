@@ -106,6 +106,12 @@ If you install **PyAutoLens** with conda or pip, you will need to download the w
 
 **PyAutoLens** requires [PyMultiNest](http://johannesbuchner.github.io/pymultinest-tutorial/install.html) & [Numba](https://github.com/numba/numba).
 
+## Forking / Cloning
+
+**PyAutoLens** requires a valid config directory to be present when it is run. Therefore, if you fork or clone the 
+**PyAutoLens** repository, you need the **autolens_workspace** with the PYTHONPATH and WORKSPACE enviroment variables 
+set up as described in the installation instructions below.
+
 ## Installation with conda
 
 We recommend installation using a conda environment as this circumvents a number of compatibility issues when installing **PyMultiNest**.
@@ -130,10 +136,10 @@ Install multinest:
 conda install -c conda-forge multinest
 ```
 
-Install autolens (v0.39.1 is the most recent stable build):
+Install autolens (v0.39.2 is the most recent stable build):
 
 ```
-pip install autolens==0.39.1
+pip install autolens==0.39.2
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment model:
@@ -166,10 +172,10 @@ python3 /path/to/autolens_workspace/runners/beginner/no_lens_light/lens_sie__sou
 
 ## Installation with pip
 
-Installation is also available via pip (v0.39.1 is the most recent stable build), however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
+Installation is also available via pip (v0.39.2 is the most recent stable build), however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
 
 ```
-$ pip install autolens==0.39.1
+$ pip install autolens==0.39.2
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment model:
