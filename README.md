@@ -253,3 +253,5 @@ Mattia Negrello - Visibility models in the uv-plane via direct Fourier transform
 [Andrea Enia](https://github.com/AndreaEnia) - Voronoi source-plane plotting tools.
 
 [Aristeidis Amvrosiadis](https://github.com/Sketos) - ALMA imaging data loading.
+
+[Conor O'Riordan] - Broken Power-Law mass profile.

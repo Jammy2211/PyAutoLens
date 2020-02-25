@@ -126,9 +126,7 @@ class TestPhase:
             phase_name="test_phase",
         )
 
-        instance = phase_interferometer_7.model.instance_from_physical_vector(
-            [0.1, 0.2, 0.3]
-        )
+        instance = phase_interferometer_7.model.instance_from_vector([0.1, 0.2, 0.3])
 
         assert instance.galaxies[0].redshift == 0.1
         assert instance.galaxies[1].redshift == 0.2

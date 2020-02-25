@@ -212,9 +212,7 @@ class TestPhase:
             phase_name="test_phase",
         )
 
-        instance = phase_imaging_7x7.model.instance_from_physical_vector(
-            [0.1, 0.2, 0.3, 0.4]
-        )
+        instance = phase_imaging_7x7.model.instance_from_vector([0.1, 0.2, 0.3, 0.4])
 
         assert instance.galaxies[0].redshift == 0.1
         assert instance.galaxies[1].redshift == 0.2
