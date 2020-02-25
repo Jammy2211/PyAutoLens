@@ -123,12 +123,12 @@ class MockHyperCombinedPhase:
 class MockNLO(af.NonLinearOptimizer):
     def fit(self, analysis, model):
         class Fitness:
-            def __init__(self, instance_from_physical_vector):
+            def __init__(self, instance_from_vector):
                 self.result = None
-                self.instance_from_physical_vector = instance_from_physical_vector
+                self.instance_from_vector = instance_from_vector
 
             def __call__(self, vector):
-                instance = self.instance_from_physical_vector(vector)
+                instance = self.instance_from_vector(vector)
 
                 likelihood = analysis.fit(instance)
                 self.result = MockResult(instance, likelihood)
@@ -136,7 +136,7 @@ class MockNLO(af.NonLinearOptimizer):
                 # Return Chi squared
                 return -2 * likelihood
 
-        fitness_function = Fitness(model.instance_from_physical_vector)
+        fitness_function = Fitness(model.instance_from_vector)
         fitness_function(model.prior_count * [0.8])
 
         return fitness_function.result
