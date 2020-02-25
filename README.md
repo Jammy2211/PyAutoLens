@@ -110,7 +110,7 @@ If you install **PyAutoLens** with conda or pip, you will need to download the w
 
 **PyAutoLens** requires a valid config directory to be present when it is run. Therefore, if you fork or clone the 
 **PyAutoLens** repository, you need the **autolens_workspace** with the PYTHONPATH and WORKSPACE enviroment variables 
-set up as described in the installation instructions below.
+set up as described on the *autolens_workspace* repository or in the installation instructions below.
 
 ## Installation with conda
 
