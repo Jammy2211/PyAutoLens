@@ -109,8 +109,8 @@ If you install **PyAutoLens** with conda or pip, you will need to download the w
 ## Forking / Cloning
 
 **PyAutoLens** requires a valid config to run. Therefore, if you fork or clone the 
-**PyAutoLens** repository, you need the [autolens_workspace]https://github.com/Jammy2211/autolens_workspace with the PYTHONPATH and WORKSPACE enviroment variables 
-set up as described on the [autolens_workspace]https://github.com/Jammy2211/autolens_workspace repository or in the installation instructions below.
+**PyAutoLens** repository, you need the [autolens_workspace](https://github.com/Jammy2211/autolens_workspace) with the PYTHONPATH and WORKSPACE enviroment variables 
+set up as described on the [autolens_workspace](https://github.com/Jammy2211/autolens_workspace) repository or in the installation instructions below.
 
 ## Installation with conda
 
