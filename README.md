@@ -136,10 +136,10 @@ Install multinest:
 conda install -c conda-forge multinest
 ```
 
-Install autolens (v0.39.2 is the most recent stable build):
+Install autolens (v0.39.3 is the most recent stable build):
 
 ```
-pip install autolens==0.39.2
+pip install autolens==0.39.3
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment model:
@@ -172,10 +172,10 @@ python3 /path/to/autolens_workspace/runners/beginner/no_lens_light/lens_sie__sou
 
 ## Installation with pip
 
-Installation is also available via pip (v0.39.2 is the most recent stable build), however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
+Installation is also available via pip (v0.39.3 is the most recent stable build), however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
 
 ```
-$ pip install autolens==0.39.2
+$ pip install autolens==0.39.3
 ```
 
 Clone autolens workspace & set WORKSPACE enviroment model:
@@ -231,6 +231,8 @@ The following papers use **PyAutoLens**:
 [CO, H2O, H2O+ line & dust emission in a z = 3.63 strongly lensed starburst merger at sub-kiloparsec scales](https://arxiv.org/abs/1903.00273)
 
 [Subaru FOCAS IFU observations of two z=0.12 strong-lensing elliptical galaxies from SDSS MaNGA](https://arxiv.org/abs/1911.06338)
+
+[MNELLS: The MUSE Nearby Early-Type Galaxy Lens Locator Survey](https://arxiv.org/abs/2002.07191)
 
 ## Credits
 
