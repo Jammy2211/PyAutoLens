@@ -39,7 +39,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             subhalo=al.GalaxyModel(
                 redshift=0.5, mass=al.mp.SphericalTruncatedNFWChallenge
             ),
-            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+            source=al.GalaxyModel(
+                redshift=1.0,
+                pixelization=al.pix.VoronoiMagnification,
+                regularization=al.reg.Constant,
+            ),
         ),
         optimizer_class=optimizer_class,
         number_of_steps=2,
