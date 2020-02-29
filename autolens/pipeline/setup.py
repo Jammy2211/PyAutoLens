@@ -1,10 +1,7 @@
 import autofit as af
-import autoastro as aast
 from autolens import exc
 from autoarray.operators.inversion import pixelizations as pix
 from autoarray.operators.inversion import regularization as reg
-
-from copy import deepcopy
 
 
 class Setup:

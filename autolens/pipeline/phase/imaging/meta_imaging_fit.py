@@ -16,6 +16,7 @@ class MetaImagingFit(dataset.MetaDatasetFit):
         psf_shape_2d=None,
         bin_up_factor=None,
     ):
+
         super().__init__(
             model=model,
             sub_size=sub_size,
