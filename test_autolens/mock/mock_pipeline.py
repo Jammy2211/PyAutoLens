@@ -101,9 +101,9 @@ class MockResults:
 
 
 class MockResult:
-    def __init__(self, instance, figure_of_merit, model=None):
+    def __init__(self, instance, likelihood, model=None):
         self.instance = instance
-        self.figure_of_merit = figure_of_merit
+        self.likelihood = likelihood
         self.model = model
         self.previous_model = model
         self.gaussian_tuples = None

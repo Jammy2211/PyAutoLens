@@ -40,7 +40,7 @@ def make_instance(all_galaxies):
 def make_result(masked_imaging_7x7, instance):
     return al.PhaseImaging.Result(
         instance=instance,
-        figure_of_merit=1.0,
+        likelihood=1.0,
         previous_model=af.ModelMapper(),
         gaussian_tuples=None,
         analysis=al.PhaseImaging.Analysis(
@@ -272,7 +272,7 @@ class TestImagePassing:
 
         instance.galaxies.lens.hyper_galaxy = hyper_galaxy
 
-        fit_figure_of_merit = analysis.fit(instance=instance)
+        fit_likelihood = analysis.fit(instance=instance)
 
         lens_hyper_image = result.image_galaxy_dict[("galaxies", "lens")]
         source_hyper_image = result.image_galaxy_dict[("galaxies", "source")]
@@ -294,7 +294,7 @@ class TestImagePassing:
 
         fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
-        assert (fit_figure_of_merit == fit.figure_of_merit).all()
+        assert (fit_likelihood == fit.likelihood).all()
 
 
 @pytest.fixture(name="hyper_combined")
@@ -442,7 +442,7 @@ class TestHyperGalaxyPhase:
             hyper_background_noise=hyper_background_noise,
         )
 
-        assert fit_hyper.figure_of_merit == fit.figure_of_merit
+        assert fit_hyper.likelihood == fit.likelihood
 
         fit_hyper = analysis.fit_for_hyper_galaxy(
             hyper_galaxy=al.HyperGalaxy(noise_factor=1.0),
@@ -450,10 +450,10 @@ class TestHyperGalaxyPhase:
             hyper_background_noise=hyper_background_noise,
         )
 
-        assert fit_hyper.figure_of_merit != fit.figure_of_merit
+        assert fit_hyper.likelihood != fit.likelihood
 
         instance.hyper_galaxy = al.HyperGalaxy(noise_factor=0.0)
 
-        figure_of_merit = analysis.fit(instance=instance)
+        likelihood = analysis.fit(instance=instance)
 
-        assert figure_of_merit == fit.figure_of_merit
+        assert likelihood == fit.likelihood
