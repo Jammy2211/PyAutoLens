@@ -24,28 +24,11 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         optimizer_class=optimizer_class,
     )
 
-    class InversionPhase(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            ## Lens Mass, SIE -> SIE, Shear -> Shear ###
-
-            self.galaxies.lens.light = results.from_phase(
-                "phase_1"
-            ).instance.galaxies.lens.light
-            self.galaxies.lens.mass = results.from_phase(
-                "phase_1"
-            ).instance.galaxies.lens.mass
-
-    phase2 = InversionPhase(
+    phase2 = al.PhaseImaging(
         phase_name="phase_2_weighted_regularization",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(
-                redshift=0.5,
-                light=al.lp.EllipticalSersic,
-                mass=al.mp.EllipticalIsothermal,
-                shear=al.mp.ExternalShear,
-            ),
+            lens=phase1.result.instance.galaxies.lens,
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiBrightnessImage,
