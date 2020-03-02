@@ -14,14 +14,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     # This will lead to pretty weird results
 
-    # TODO : In Autolens, I have to write these as priors to avoid an error. Probably to do with GalaxyModel?
-
-    # sersic.axis_ratio = af.UniformPrior(lower_limit=0.2, upper_limit=1.0)
-    # sersic.effective_radius = af.UniformPrior(lower_limit=0.0, upper_limit=4.0)
-
-    sersic.add_assertion(sersic.axis_ratio > sersic.effective_radius)
-    #  sersic.add_assertion(sersic.axis_ratio > sersic.sersic_index)
-    #  sersic.add_assertion(sersic.axis_ratio > sersic.intensity)
+    sersic.add_assertion(sersic.axis_ratio > sersic.intensity)
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",

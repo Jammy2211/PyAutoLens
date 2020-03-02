@@ -45,7 +45,7 @@ class AbstractPhase(af.AbstractPhase):
     def make_result(self, result, analysis):
         return self.Result(
             instance=result.instance,
-            figure_of_merit=result.figure_of_merit,
+            likelihood=result.likelihood,
             previous_model=result.previous_model,
             gaussian_tuples=result.gaussian_tuples,
             analysis=analysis,
