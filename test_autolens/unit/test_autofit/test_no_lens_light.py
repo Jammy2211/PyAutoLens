@@ -61,7 +61,6 @@ def test_phase_2(phase2):
     assert phase2.model.prior_count == 3
 
 
-
 @pytest.fixture(
     name="phase3"
 )
@@ -84,13 +83,36 @@ def make_phase_3(phase2):
     )
 
 
-def test_phase_3(phase3):
+class MockResult:
+    def __init__(self, model, instance):
+        self.model = model
+        self.instance = instance
+
+
+def test_phase_3(phase1, phase2, phase3):
+    collection = af.ResultsCollection()
+    collection.add(
+        "phase_1",
+        MockResult(
+            phase1.model,
+            phase1.model.instance_from_prior_medians()
+        )
+    )
+
+    model = phase2.model.populate(collection)
+    collection.add(
+        "phase_2",
+        MockResult(
+            model,
+            model.instance_from_prior_medians()
+        )
+    )
     # 5 Lens SIE
-    assert phase3.model.prior_count == 5
+    model = phase3.model.populate(collection)
+    assert model.prior_count == 5
 
 
 def test_no_lens_light(phase2, phase3):
-
     phase4 = al.PhaseImaging(
         phase_name="phase_4",
         galaxies=dict(
