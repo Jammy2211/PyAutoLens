@@ -154,16 +154,22 @@ Set PYTHONPATH to include the autolens_workspace directory:
 export PYTHONPATH=/path/to/autolens_workspace/
 ```
 
-Matplotlib uses the backend set in the config file autolens_workspace/config/visualize/general.ini:
+Matplotlib uses the default backend on your computer, as set in the config file 
+autolens_workspace/config/visualize/general.ini:
  
+ ```
+[general]
+backend = default
+``` 
+
+There have been reports that using the default backend causes crashes when running the test script below (either the 
+code crashes without a error or your computer restarts). If this happens, change the config's backend until the test
+works (TKAgg has worked on Linux machines, Qt5Agg has worked on new MACs). For example:
+
  ```
 [general]
 backend = TKAgg
 ``` 
-
-There have been reports that the default TKAgg backend causes crashes when running the test script below (either the 
-code crashes without a error or your computer restarts). If this happens, change the config's backend until the test
-works (Qt5Agg has worked for new MACs).
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 ```

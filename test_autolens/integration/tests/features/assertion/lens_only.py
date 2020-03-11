@@ -14,19 +14,12 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
 
     # This will lead to pretty weird results
 
-    sersic.add_assertion(
-        sersic.axis_ratio > sersic.intensity
-    )
+    sersic.add_assertion(sersic.axis_ratio > sersic.intensity)
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
-        galaxies=dict(
-            lens=al.GalaxyModel(
-                redshift=0.5,
-                sersic=sersic
-            )
-        ),
+        galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=sersic)),
         optimizer_class=optimizer_class,
     )
 
@@ -39,9 +32,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
     phase2 = al.PhaseImaging(
         phase_name="phase_2",
         phase_folders=phase_folders,
-        galaxies=dict(
-            lens=phase1.result.model.galaxies.lens
-        ),
+        galaxies=dict(lens=phase1.result.model.galaxies.lens),
         optimizer_class=optimizer_class,
     )
 
