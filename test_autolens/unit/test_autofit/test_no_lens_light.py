@@ -1,3 +1,5 @@
+import pytest
+
 import autofit as af
 import autolens as al
 from autofit.optimize.non_linear.mock_nlo import MockNLO
@@ -6,10 +8,11 @@ redshift_lens = 0.5,
 redshift_source = 1.0,
 
 
-def make_pipeline_no_lens_light():
-    pipeline_name = "pipeline__no_lens_light__test"
-
-    phase1 = al.PhaseImaging(
+@pytest.fixture(
+    name="phase1"
+)
+def make_phase_1():
+    return al.PhaseImaging(
         phase_name="phase_1",
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -22,7 +25,17 @@ def make_pipeline_no_lens_light():
         optimizer_class=MockNLO,
     )
 
-    phase2 = al.PhaseImaging(
+
+def test_phase_1(phase1):
+    # 5 Lens SIE + 12 Source Sersic
+    assert phase1.model.prior_count == 12
+
+
+@pytest.fixture(
+    name="phase2"
+)
+def make_phase_2():
+    return al.PhaseImaging(
         phase_name="phase_2",
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -42,7 +55,18 @@ def make_pipeline_no_lens_light():
         optimizer_class=MockNLO,
     )
 
-    phase3 = al.PhaseImaging(
+
+def test_phase_2(phase2):
+    # 3 Source Inversion
+    assert phase2.model.prior_count == 3
+
+
+
+@pytest.fixture(
+    name="phase3"
+)
+def make_phase_3(phase2):
+    return al.PhaseImaging(
         phase_name="phase_3",
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -58,6 +82,14 @@ def make_pipeline_no_lens_light():
         ),
         optimizer_class=MockNLO,
     )
+
+
+def test_phase_3(phase3):
+    # 5 Lens SIE
+    assert phase3.model.prior_count == 5
+
+
+def test_no_lens_light(phase2, phase3):
 
     phase4 = al.PhaseImaging(
         phase_name="phase_4",
@@ -123,26 +155,11 @@ def make_pipeline_no_lens_light():
         optimizer_class=MockNLO,
     )
 
-    return al.PipelineDataset(pipeline_name, phase1, phase2, phase3, phase4, phase5, phase6)
-
-
-def test__pipeline_no_lens_light__has_correct_free_parameters():
-    pipeline = make_pipeline_no_lens_light()
-
-    # 5 Lens SIE + 12 Source Sersic
-    assert pipeline.phases[0].model.prior_count == 12
-
-    # 3 Source Inversion
-    assert pipeline.phases[1].model.prior_count == 3
-
-    # 5 Lens SIE
-    assert pipeline.phases[2].model.prior_count == 5
-
     # 6 Source Inversion
-    assert pipeline.phases[3].model.prior_count == 6
+    assert phase4.model.prior_count == 6
 
     # 5 Lens SIE
-    assert pipeline.phases[4].model.prior_count == 5
+    assert phase5.model.prior_count == 5
 
     # 6 Lens SPLE
-    assert pipeline.phases[5].model.prior_count == 6
+    assert phase6.model.prior_count == 6
