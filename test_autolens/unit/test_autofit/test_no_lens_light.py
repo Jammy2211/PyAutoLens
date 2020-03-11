@@ -176,7 +176,7 @@ def test_phase_3(collection_3, phase3):
     # 5 Lens SIE
     assert phase3.model.populate(
         collection_3
-    ).prior_count == 0
+    ).prior_count == 5
 
 
 @pytest.fixture(
