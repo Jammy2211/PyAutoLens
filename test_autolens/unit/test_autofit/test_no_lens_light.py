@@ -8,6 +8,93 @@ redshift_lens = 0.5,
 redshift_source = 1.0,
 
 
+class MockResult:
+    def __init__(self, model, instance):
+        self.model = model
+        self.instance = instance
+
+
+class MagicResultsCollection(
+    af.ResultsCollection
+):
+    def add_phase(
+            self,
+            phase
+    ):
+        model = phase.model.populate(
+            self
+        )
+        self.add(
+            phase.phase_name,
+            MockResult(
+                model,
+                model.instance_from_prior_medians()
+            )
+        )
+
+
+@pytest.fixture(
+    name="collection_1"
+)
+def make_collection_1():
+    return MagicResultsCollection()
+
+
+@pytest.fixture(
+    name="collection_2"
+)
+def make_collection_2(
+        collection_1,
+        phase1
+):
+    collection_1.add_phase(phase1)
+    return collection_1
+
+
+@pytest.fixture(
+    name="collection_3"
+)
+def make_collection_3(
+        collection_2,
+        phase2
+):
+    collection_2.add_phase(phase2)
+    return collection_2
+
+
+@pytest.fixture(
+    name="collection_4"
+)
+def make_collection_4(
+        collection_3,
+        phase3
+):
+    collection_3.add_phase(phase3)
+    return collection_3
+
+
+@pytest.fixture(
+    name="collection_5"
+)
+def make_collection_5(
+        collection_4,
+        phase4
+):
+    collection_4.add_phase(phase4)
+    return collection_4
+
+
+@pytest.fixture(
+    name="collection_6"
+)
+def make_collection_6(
+        collection_5,
+        phase5
+):
+    collection_5.add_phase(phase5)
+    return collection_5
+
+
 @pytest.fixture(
     name="phase1"
 )
@@ -56,9 +143,11 @@ def make_phase_2():
     )
 
 
-def test_phase_2(phase2):
+def test_phase_2(collection_2, phase2):
     # 3 Source Inversion
-    assert phase2.model.prior_count == 3
+    assert phase2.model.populate(
+        collection_2
+    ).prior_count == 3
 
 
 @pytest.fixture(
@@ -83,37 +172,21 @@ def make_phase_3(phase2):
     )
 
 
-class MockResult:
-    def __init__(self, model, instance):
-        self.model = model
-        self.instance = instance
-
-
-def test_phase_3(phase1, phase2, phase3):
-    collection = af.ResultsCollection()
-    collection.add(
-        "phase_1",
-        MockResult(
-            phase1.model,
-            phase1.model.instance_from_prior_medians()
-        )
-    )
-
-    model = phase2.model.populate(collection)
-    collection.add(
-        "phase_2",
-        MockResult(
-            model,
-            model.instance_from_prior_medians()
-        )
-    )
+def test_phase_3(collection_3, phase3):
     # 5 Lens SIE
-    model = phase3.model.populate(collection)
-    assert model.prior_count == 5
+    assert phase3.model.populate(
+        collection_3
+    ).prior_count == 0
 
 
-def test_no_lens_light(phase2, phase3):
-    phase4 = al.PhaseImaging(
+@pytest.fixture(
+    name="phase4"
+)
+def make_phase_phase_4(
+        phase2,
+        phase3
+):
+    return al.PhaseImaging(
         phase_name="phase_4",
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -132,7 +205,22 @@ def test_no_lens_light(phase2, phase3):
         optimizer_class=MockNLO,
     )
 
-    phase5 = al.PhaseImaging(
+
+def test_phase_4(
+        collection_4,
+        phase4
+):
+    # 6 Source Inversion
+    assert phase4.model.populate(
+        collection_4
+    ).prior_count == 6
+
+
+@pytest.fixture(
+    name="phase5"
+)
+def make_phase_5(phase2, phase4):
+    return al.PhaseImaging(
         phase_name="phase_5",
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -151,6 +239,21 @@ def test_no_lens_light(phase2, phase3):
         optimizer_class=MockNLO,
     )
 
+
+def test_phase_5(
+        collection_5,
+        phase5
+):
+    # 5 Lens SIE
+    assert phase5.model.populate(
+        collection_5
+    ).prior_count == 5
+
+
+@pytest.fixture(
+    name="phase6"
+)
+def make_phase_6():
     mass = af.PriorModel(al.mp.EllipticalPowerLaw)
 
     mass.centre = af.last.model.galaxies.lens.mass.centre
@@ -166,7 +269,7 @@ def test_no_lens_light(phase2, phase3):
         regularization=af.last.hyper_combined.instance.galaxies.source.regularization,
     )
 
-    phase6 = al.PhaseImaging(
+    return al.PhaseImaging(
         phase_name="phase_6",
         galaxies=dict(
             lens=al.GalaxyModel(redshift=redshift_lens, mass=mass),
@@ -177,11 +280,12 @@ def test_no_lens_light(phase2, phase3):
         optimizer_class=MockNLO,
     )
 
-    # 6 Source Inversion
-    assert phase4.model.prior_count == 6
 
-    # 5 Lens SIE
-    assert phase5.model.prior_count == 5
-
+def test_phase_6(
+        collection_6,
+        phase6
+):
     # 6 Lens SPLE
-    assert phase6.model.prior_count == 6
+    assert phase6.model.populate(
+        collection_6
+    ).prior_count == 6
