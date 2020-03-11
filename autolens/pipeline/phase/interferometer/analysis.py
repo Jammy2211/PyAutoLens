@@ -115,7 +115,8 @@ class Analysis(analysis_data.Analysis):
         )
 
     def visualize(self, instance, during_analysis):
-        instance = self.associate_hyper_visibilities(instance=instance)
+
+        self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
         hyper_background_noise = self.hyper_background_noise_for_instance(
             instance=instance

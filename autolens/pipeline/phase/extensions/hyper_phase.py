@@ -65,6 +65,12 @@ class HyperPhase:
         phase.optimizer.evidence_tolerance = af.conf.instance.non_linear.get(
             "MultiNest", "extension_combined_evidence_tolerance", float
         )
+        phase.optimizer.terminate_at_acceptance_ratio = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_combined_terminate_at_acceptance_ratio", bool
+        )
+        phase.optimizer.acceptance_ratio_threshold = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_combined_acceptance_ratio_threshold", float
+        )
 
         phase.is_hyper_phase = True
         phase.customize_priors = self.customize_priors
