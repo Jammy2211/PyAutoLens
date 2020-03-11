@@ -24,7 +24,7 @@ def run(
         data_type=module.data_type, data_resolution=module.data_resolution
     )
 
-    module.make_pipeline(
+    module.make_pipeline_no_lens_light(
         name=test_name,
         phase_folders=[module.test_type, test_name],
         optimizer_class=optimizer_class,
