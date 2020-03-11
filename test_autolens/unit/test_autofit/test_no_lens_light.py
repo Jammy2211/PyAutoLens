@@ -127,25 +127,22 @@ def make_pipeline_no_lens_light():
 
 
 def test__pipeline_no_lens_light__has_correct_free_parameters():
+    pipeline = make_pipeline_no_lens_light()
 
-        pipeline = make_pipeline_no_lens_light()
+    # 5 Lens SIE + 12 Source Sersic
+    assert pipeline.phases[0].model.prior_count == 12
 
-        # 5 Lens SIE + 12 Source Sersic
-        assert pipeline.phases[0].model.prior_count == 12
+    # 3 Source Inversion
+    assert pipeline.phases[1].model.prior_count == 3
 
-        # 3 Source Inversion
-        assert pipeline.phases[1].model.prior_count == 3
+    # 5 Lens SIE
+    assert pipeline.phases[2].model.prior_count == 5
 
-        # 5 Lens SIE
-        assert pipeline.phases[2].model.prior_count == 5
+    # 6 Source Inversion
+    assert pipeline.phases[3].model.prior_count == 6
 
-        # 6 Source Inversion
-        assert pipeline.phases[3].model.prior_count == 6
+    # 5 Lens SIE
+    assert pipeline.phases[4].model.prior_count == 5
 
-        # 5 Lens SIE
-        assert pipeline.phases[4].model.prior_count == 5
-
-        # 6 Lens SPLE
-        assert pipeline.phases[5].model.prior_count == 6
-
-
+    # 6 Lens SPLE
+    assert pipeline.phases[5].model.prior_count == 6
