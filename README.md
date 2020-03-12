@@ -102,6 +102,10 @@ Included with **PyAutoLens** is the **HowToLens** lecture series, which provides
 
 If you install **PyAutoLens** with conda or pip, you will need to download the workspace from the [autolens_workspace](https://github.com/Jammy2211/autolens_workspace) repository, which is described in the installation instructions below.
 
+## Issues, Help and Problems
+
+If the installation below does not work or you have issues running scripts in the workspace, please post an issue on the [issues section of the autolens_workspace](https://github.com/Jammy2211/autolens_workspace/issues).
+
 ## Depedencies
 
 **PyAutoLens** requires [PyMultiNest](http://johannesbuchner.github.io/pymultinest-tutorial/install.html) & [Numba](https://github.com/numba/numba).
