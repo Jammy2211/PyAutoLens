@@ -44,7 +44,7 @@ class DummyPhaseImaging(af.AbstractPhase):
 
     def run(self, dataset, results, mask=None, positions=None):
         self.save_metadata(
-            dataset.name
+            dataset
         )
         self.dataset = dataset
         self.results = results
@@ -55,6 +55,13 @@ class DummyPhaseImaging(af.AbstractPhase):
 
 
 class MockImagingData(af.Dataset):
+    def __init__(self, metadata=None):
+        self._metadata = metadata or dict()
+
+    @property
+    def metadata(self) -> dict:
+        return self._metadata
+
     @property
     def name(self) -> str:
         return "data_name"
@@ -163,7 +170,7 @@ class DummyPhasePositions(af.AbstractPhase):
         self.optimizer = Optimizer(phase_name)
 
     def run(self, positions, pixel_scales, results):
-        self.save_metadata("data_name")
+        self.save_metadata(MockImagingData())
         self.positions = positions
         self.pixel_scales = pixel_scales
         self.results = results
