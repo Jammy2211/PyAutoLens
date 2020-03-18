@@ -191,6 +191,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
             galaxy_data=galaxy_data, results=results, mask=mask
         )
 
+        self.save_metadata(galaxy_data.name)
         self.model = self.model.populate(results)
         self.customize_priors(results)
         self.assert_and_save_pickle()

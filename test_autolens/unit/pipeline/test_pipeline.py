@@ -43,6 +43,9 @@ class DummyPhaseImaging(af.AbstractPhase):
         self.optimizer = Optimizer(phase_name)
 
     def run(self, dataset, results, mask=None, positions=None):
+        self.save_metadata(
+            dataset.name
+        )
         self.dataset = dataset
         self.results = results
         self.mask = mask
@@ -51,8 +54,10 @@ class DummyPhaseImaging(af.AbstractPhase):
         return af.Result(af.ModelInstance(), 1)
 
 
-class MockImagingData:
-    pass
+class MockImagingData(af.Dataset):
+    @property
+    def name(self) -> str:
+        return "data_name"
 
 
 class MockFile:
@@ -90,7 +95,7 @@ class TestMetaData:
         pipeline = al.PipelineDataset(
             "pipeline_name", DummyPhaseImaging(phase_name="phase_name")
         )
-        pipeline.run(dataset=MockImagingData(), mask=MockMask(), data_name="data_name")
+        pipeline.run(dataset=MockImagingData(), mask=MockMask())
 
         assert (
                 mock_files[2].text
@@ -158,6 +163,7 @@ class DummyPhasePositions(af.AbstractPhase):
         self.optimizer = Optimizer(phase_name)
 
     def run(self, positions, pixel_scales, results):
+        self.save_metadata("data_name")
         self.positions = positions
         self.pixel_scales = pixel_scales
         self.results = results
