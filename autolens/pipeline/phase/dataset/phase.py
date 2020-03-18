@@ -66,6 +66,7 @@ class PhaseDataset(abstract.AbstractPhase):
             A result object comprising the best fit model and other hyper_galaxies.
         """
         dataset.save(self.paths.phase_output_path)
+        self.save_metadata(dataset.name)
         self.model = self.model.populate(results)
 
         analysis = self.make_analysis(
