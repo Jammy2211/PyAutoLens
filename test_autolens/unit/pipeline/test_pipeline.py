@@ -1,11 +1,11 @@
 import builtins
+
 import numpy as np
 import pytest
 
 import autofit as af
 import autolens as al
 from autofit import Paths
-from autolens import exc
 
 
 class MockAnalysis:
@@ -93,8 +93,8 @@ class TestMetaData:
         pipeline.run(dataset=MockImagingData(), mask=MockMask(), data_name="data_name")
 
         assert (
-            mock_files[2].text
-            == "pipeline=pipeline_name\nphase=phase_name\ndataset_name=data_name\nphase_tag=\npipeline_tag=None"
+                mock_files[2].text
+                == "pipeline=pipeline_name\nphase=phase_name\ndataset_name=data_name\nphase_tag=\npipeline_tag=None"
         )
 
         assert "phase_name///optimizer.pickle" in mock_files[3].filename
