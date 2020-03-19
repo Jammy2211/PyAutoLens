@@ -2,7 +2,7 @@ import numpy as np
 
 from autoarray.fit import fit as aa_fit
 from autoastro.galaxy import galaxy as g
-from autolens.masked import masked_dataset as md
+from autolens.dataset import masked_dataset as md
 
 
 def fit(masked_dataset, tracer, hyper_image_sky=None, hyper_background_noise=None):

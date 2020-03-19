@@ -92,7 +92,7 @@ class MockResults:
     @property
     def hyper_model_image(self):
 
-        hyper_model_image = al.masked.array.zeros(mask=self.mask_2d)
+        hyper_model_image = al.masked_array.zeros(mask=self.mask_2d)
 
         for path, galaxy in self.path_galaxy_tuples:
             hyper_model_image += self.hyper_galaxy_image_path_dict[path]

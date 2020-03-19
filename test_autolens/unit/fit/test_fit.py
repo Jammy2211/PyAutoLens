@@ -91,7 +91,7 @@ class TestImagingFit:
                 sub_size=1,
             )
 
-            masked_imaging_7x7 = al.masked.imaging(imaging=imaging, mask=mask)
+            masked_imaging_7x7 = al.masked_imaging(imaging=imaging, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -194,7 +194,7 @@ class TestImagingFit:
                 sub_size=1,
             )
 
-            masked_imaging_7x7 = al.masked.imaging(imaging=imaging, mask=mask)
+            masked_imaging_7x7 = al.masked_imaging(imaging=imaging, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -301,7 +301,7 @@ class TestImagingFit:
                 sub_size=1,
             )
 
-            masked_imaging_7x7 = al.masked.imaging(imaging=imaging, mask=mask)
+            masked_imaging_7x7 = al.masked_imaging(imaging=imaging, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -405,7 +405,7 @@ class TestImagingFit:
                 sub_size=1,
             )
 
-            masked_imaging_7x7 = al.masked.imaging(imaging=imaging, mask=mask)
+            masked_imaging_7x7 = al.masked_imaging(imaging=imaging, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -511,7 +511,7 @@ class TestImagingFit:
                 sub_size=1,
             )
 
-            masked_imaging_7x7 = al.masked.imaging(imaging=imaging, mask=mask)
+            masked_imaging_7x7 = al.masked_imaging(imaging=imaging, mask=mask)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -1579,7 +1579,7 @@ class TestInterferometerFit:
                 sub_size=1,
             )
 
-            masked_interferometer = al.masked.interferometer(
+            masked_interferometer = al.masked_interferometer(
                 interferometer=interferometer,
                 visibilities_mask=visibilities_mask,
                 real_space_mask=real_space_mask,
@@ -1644,7 +1644,7 @@ class TestInterferometerFit:
                 sub_size=1,
             )
 
-            masked_interferometer = al.masked.interferometer(
+            masked_interferometer = al.masked_interferometer(
                 interferometer=interferometer,
                 visibilities_mask=visibilities_mask,
                 real_space_mask=real_space_mask,
@@ -1745,7 +1745,7 @@ class TestInterferometerFit:
                 sub_size=1,
             )
 
-            masked_interferometer = al.masked.interferometer(
+            masked_interferometer = al.masked_interferometer(
                 interferometer=interferometer,
                 visibilities_mask=visibilities_mask,
                 real_space_mask=real_space_mask,

@@ -23,7 +23,7 @@ class TestPlaneImageFromGrid:
             sub_size=1,
         )
 
-        grid = al.masked.grid.manual_1d(
+        grid = al.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -1.0],
@@ -70,7 +70,7 @@ class TestPlaneImageFromGrid:
             sub_size=1,
         )
 
-        grid = al.masked.grid.manual_1d(
+        grid = al.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -1.0],
@@ -106,7 +106,7 @@ class TestPlaneImageFromGrid:
             sub_size=1,
         )
 
-        grid = al.masked.grid.manual_1d(
+        grid = al.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [-0.75, -1.0],
@@ -139,7 +139,7 @@ class TestPlaneImageFromGrid:
             sub_size=1,
         )
 
-        grid = al.masked.grid.manual_1d(
+        grid = al.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -0.75],
@@ -172,7 +172,7 @@ class TestPlaneImageFromGrid:
             sub_size=1,
         )
 
-        grid = al.masked.grid.manual_1d(
+        grid = al.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [-1.0, -1.0],

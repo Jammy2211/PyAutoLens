@@ -1,5 +1,5 @@
 from autoarray.structures import grids
-from autoarray.masked import masked_dataset
+from autoarray.dataset import masked_dataset
 from autolens.fit import fit
 from autolens import exc
 
