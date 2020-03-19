@@ -183,7 +183,7 @@ class TestPhase:
         real_space_mask = phase_interferometer_7.meta_interferometer_fit.mask_with_phase_sub_size_from_mask(
             mask=mask_7x7
         )
-        masked_interferometer = al.masked.interferometer(
+        masked_interferometer = al.masked_interferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=real_space_mask,
@@ -223,7 +223,7 @@ class TestPhase:
         )
         assert real_space_mask.sub_size == 4
 
-        masked_interferometer = al.masked.interferometer(
+        masked_interferometer = al.masked_interferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=real_space_mask,

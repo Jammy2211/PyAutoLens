@@ -174,7 +174,7 @@ class TestPhase:
 
         assert (analysis.masked_dataset.mask == binned_up_mask).all()
 
-        masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
+        masked_imaging = al.masked_imaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
 
         binned_up_masked_imaging = masked_imaging.binned_from_bin_up_factor(
             bin_up_factor=2
@@ -294,7 +294,7 @@ class TestPhase:
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask_7x7)
+        masked_imaging = al.masked_imaging(imaging=imaging_7x7, mask=mask_7x7)
         tracer = analysis.tracer_for_instance(instance=instance)
 
         fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
@@ -329,7 +329,7 @@ class TestPhase:
         )
         assert mask.sub_size == 4
 
-        masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.masked_imaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = ImagingFit(
             masked_imaging=masked_imaging,

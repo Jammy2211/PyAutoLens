@@ -7,7 +7,7 @@ from autoastro import lensing
 from autoarray.util import array_util, grid_util
 from autoarray.mask import mask as msk
 from autoarray.structures import grids
-from autoarray.masked.masked_structures import MaskedArray
+from autoarray.structures.arrays import MaskedArray
 from autoarray.operators.inversion import inversions as inv
 from autoastro.galaxy import galaxy as g
 from autoastro.util import cosmology_util

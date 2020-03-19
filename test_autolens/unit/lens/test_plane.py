@@ -1880,7 +1880,7 @@ class TestAbstractPlaneData:
 
             mask = al.mask.unmasked(shape_2d=(5, 5), pixel_scales=1.0, sub_size=1)
 
-            grid = al.masked.grid.from_mask(mask=mask)
+            grid = al.masked_grid.from_mask(mask=mask)
 
             g0 = al.Galaxy(
                 redshift=0.5,

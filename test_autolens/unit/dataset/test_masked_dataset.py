@@ -6,7 +6,7 @@ import numpy as np
 class TestMaskedImaging:
     def test__masked_dataset_via_autoarray(self, imaging_7x7, sub_mask_7x7):
 
-        masked_imaging_7x7 = al.masked.imaging.manual(
+        masked_imaging_7x7 = al.masked_imaging.manual(
             imaging=imaging_7x7, mask=sub_mask_7x7
         )
 
@@ -32,7 +32,7 @@ class TestMaskedImaging:
         self, imaging_7x7, sub_mask_7x7, blurring_grid_7x7
     ):
 
-        masked_imaging_7x7 = al.masked.imaging(
+        masked_imaging_7x7 = al.masked_imaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
             pixel_scale_interpolation_grid=1.0,
@@ -46,7 +46,7 @@ class TestMaskedImaging:
         assert masked_imaging_7x7.inversion_uses_border == False
         assert masked_imaging_7x7.preload_sparse_grids_of_planes == 1
 
-        grid = al.masked.grid.from_mask(mask=sub_mask_7x7)
+        grid = al.masked_grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (masked_imaging_7x7.grid == new_grid).all()
@@ -75,7 +75,7 @@ class TestMaskedImaging:
 
     def test__masked_imaging_6x6_with_binned_up_imaging(self, imaging_6x6, mask_6x6):
 
-        masked_imaging_6x6 = al.masked.imaging(imaging=imaging_6x6, mask=mask_6x6)
+        masked_imaging_6x6 = al.masked_imaging(imaging=imaging_6x6, mask=mask_6x6)
 
         binned_mask = np.array(
             [[True, True, True], [True, False, True], [True, True, True]]
@@ -103,7 +103,7 @@ class TestMaskedImaging:
         self, imaging_7x7, sub_mask_7x7
     ):
 
-        masked_imaging_7x7 = al.masked.imaging(imaging=imaging_7x7, mask=sub_mask_7x7)
+        masked_imaging_7x7 = al.masked_imaging(imaging=imaging_7x7, mask=sub_mask_7x7)
 
         masked_imaging_snr_limit = masked_imaging_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
             signal_to_noise_limit=0.25
@@ -134,7 +134,7 @@ class TestMaskedImaging:
         self, imaging_7x7, sub_mask_7x7
     ):
 
-        masked_imaging_7x7 = al.masked.imaging(
+        masked_imaging_7x7 = al.masked_imaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
             positions=[1],
@@ -169,7 +169,7 @@ class TestMaskedInterferometer:
         noise_map_7x2,
     ):
 
-        masked_interferometer_7 = al.masked.interferometer(
+        masked_interferometer_7 = al.masked_interferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=sub_mask_7x7,
@@ -210,7 +210,7 @@ class TestMaskedInterferometer:
         sub_grid_7x7,
     ):
 
-        masked_interferometer_7 = al.masked.interferometer(
+        masked_interferometer_7 = al.masked_interferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=sub_mask_7x7,
@@ -228,7 +228,7 @@ class TestMaskedInterferometer:
         assert masked_interferometer_7.inversion_uses_border == False
         assert masked_interferometer_7.preload_sparse_grids_of_planes == 1
 
-        grid = al.masked.grid.from_mask(mask=sub_mask_7x7)
+        grid = al.masked_grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (masked_interferometer_7.grid == new_grid).all()
@@ -256,7 +256,7 @@ class TestMaskedInterferometer:
         )
         real_space_mask[9, 9] = False
 
-        masked_interferometer = al.masked.interferometer(
+        masked_interferometer = al.masked_interferometer(
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,

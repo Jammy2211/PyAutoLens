@@ -192,8 +192,8 @@ class TestImagePassing:
     ):
 
         results_collection_7x7[0].galaxy_images = [
-            al.masked.array.full(fill_value=2.0, mask=mask_7x7),
-            al.masked.array.full(fill_value=2.0, mask=mask_7x7),
+            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
+            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
         ]
         results_collection_7x7[0].galaxy_images[0][3] = -1.0
         results_collection_7x7[0].galaxy_images[1][5] = -1.0
@@ -412,7 +412,7 @@ class TestHyperGalaxyPhase:
         )
         assert mask.sub_size == 2
 
-        masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.masked_imaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = ImagingFit(
             masked_imaging=masked_imaging,

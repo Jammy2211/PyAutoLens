@@ -1,4 +1,4 @@
-from autolens.masked import masked_dataset
+from autolens.dataset import masked_dataset
 from autolens.pipeline.phase import dataset
 
 

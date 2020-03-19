@@ -43,9 +43,7 @@ class DummyPhaseImaging(af.AbstractPhase):
         self.optimizer = Optimizer(phase_name)
 
     def run(self, dataset, results, mask=None, positions=None):
-        self.save_metadata(
-            dataset
-        )
+        self.save_metadata(dataset)
         self.dataset = dataset
         self.results = results
         self.mask = mask
@@ -105,8 +103,8 @@ class TestMetaData:
         pipeline.run(dataset=MockImagingData(), mask=MockMask())
 
         assert (
-                mock_files[2].text
-                == "phase=phase_name\nphase_tag=\npipeline=pipeline_name\npipeline_tag=\ndataset_name=data_name"
+            mock_files[2].text
+            == "phase=phase_name\nphase_tag=\npipeline=pipeline_name\npipeline_tag=\ndataset_name=data_name"
         )
 
         assert "phase_name///optimizer.pickle" in mock_files[3].filename
