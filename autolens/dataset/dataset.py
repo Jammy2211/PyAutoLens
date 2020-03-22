@@ -1,5 +1,5 @@
 from autoarray.structures import grids
-from autoarray.masked import masked_dataset
+from autoarray.dataset import imaging, interferometer
 from autolens.fit import fit
 from autolens import exc
 
@@ -41,7 +41,7 @@ class AbstractLensMasked:
                         raise exc.PixelizationException
 
 
-class MaskedImaging(masked_dataset.MaskedImaging, AbstractLensMasked):
+class MaskedImaging(imaging.MaskedImaging, AbstractLensMasked):
     def __init__(
         self,
         imaging,
@@ -140,7 +140,7 @@ class MaskedImaging(masked_dataset.MaskedImaging, AbstractLensMasked):
         )
 
 
-class MaskedInterferometer(masked_dataset.MaskedInterferometer, AbstractLensMasked):
+class MaskedInterferometer(interferometer.MaskedInterferometer, AbstractLensMasked):
     def __init__(
         self,
         interferometer,

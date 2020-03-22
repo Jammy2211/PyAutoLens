@@ -3002,7 +3002,7 @@ class TestAbstractTracerData:
                 sub_size=1,
             )
 
-            grid = al.masked.grid.from_mask(mask=mask)
+            grid = al.masked_grid.from_mask(mask=mask)
 
             g0 = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=0.1)

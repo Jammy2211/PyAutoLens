@@ -132,32 +132,70 @@ class TestPhase:
         assert instance.galaxies[1].redshift == 0.2
         assert instance.hyper_background_noise.noise_scale == 0.3
 
-    def test__extended_with_hyper_and_pixelizations(self, phase_interferometer_7):
-        phase_extended = phase_interferometer_7.extend_with_multiple_hyper_phases(
-            hyper_galaxy=False, inversion=False
-        )
-        assert phase_extended == phase_interferometer_7
+    def test__phase_is_extended_with_hyper_phases__sets_up_hyper_images(
+        self, results_collection_7x7, interferometer_7, mask_7x7
+    ):
+        results_collection_7x7[0].galaxy_images = [
+            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
+            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
+        ]
+        results_collection_7x7[0].galaxy_images[0][3] = -1.0
+        results_collection_7x7[0].galaxy_images[1][5] = -1.0
 
-        phase_extended = phase_interferometer_7.extend_with_multiple_hyper_phases(
-            inversion=True
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
+        results_collection_7x7[0].galaxy_visibilities = [
+            al.visibilities.full(fill_value=2.0, shape_1d=(7,)),
+            al.visibilities.full(fill_value=2.0, shape_1d=(7,)),
+        ]
 
-        phase_extended = phase_interferometer_7.extend_with_multiple_hyper_phases(
-            hyper_galaxy=True, inversion=False
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
+        results_collection_7x7[0].galaxy_visibilities[0][3, 1] = -1.0
+        results_collection_7x7[0].galaxy_visibilities[1][5, 1] = -1.0
 
-        phase_extended = phase_interferometer_7.extend_with_multiple_hyper_phases(
-            hyper_galaxy=False, inversion=True
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
+        results_collection_7x7[0].use_as_hyper_dataset = True
 
-        phase_extended = phase_interferometer_7.extend_with_multiple_hyper_phases(
-            hyper_galaxy=True, inversion=True
+        phase_interferometer_7 = al.PhaseInterferometer(
+            galaxies=dict(
+                lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
+            ),
+            real_space_mask=mask_7x7,
+            optimizer_class=mock_pipeline.MockNLO,
+            phase_name="test_phase",
         )
-        assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
-        assert type(phase_extended.hyper_phases[1]) == al.InversionPhase
+
+        phase_interferometer_7.extend_with_multiple_hyper_phases()
+
+        analysis = phase_interferometer_7.make_analysis(
+            dataset=interferometer_7, mask=mask_7x7, results=results_collection_7x7
+        )
+
+        assert (
+            analysis.hyper_galaxy_image_path_dict[("g0",)].in_1d
+            == np.array([2.0, 2.0, 2.0, 0.02, 2.0, 2.0, 2.0, 2.0, 2.0])
+        ).all()
+
+        assert (
+            analysis.hyper_galaxy_image_path_dict[("g1",)].in_1d
+            == np.array([2.0, 2.0, 2.0, 2.0, 2.0, 0.02, 2.0, 2.0, 2.0])
+        ).all()
+
+        assert (
+            analysis.hyper_model_image.in_1d
+            == np.array([4.0, 4.0, 4.0, 2.02, 4.0, 2.02, 4.0, 4.0, 4.0])
+        ).all()
+
+        assert (
+            analysis.hyper_galaxy_visibilities_path_dict[("g0",)][:, 1]
+            == np.array([2.0, 2.0, 2.0, -1.0, 2.0, 2.0, 2.0])
+        ).all()
+
+        assert (
+            analysis.hyper_galaxy_visibilities_path_dict[("g1",)][:, 1]
+            == np.array([2.0, 2.0, 2.0, 2.0, 2.0, -1.0, 2.0])
+        ).all()
+
+        assert (
+            analysis.hyper_model_visibilities[:, 1]
+            == np.array([4.0, 4.0, 4.0, 1.0, 4.0, 1.0, 4.0])
+        ).all()
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, interferometer_7, mask_7x7, visibilities_mask_7x2
@@ -180,10 +218,10 @@ class TestPhase:
         instance = phase_interferometer_7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        real_space_mask = phase_interferometer_7.meta_interferometer_fit.mask_with_phase_sub_size_from_mask(
+        real_space_mask = phase_interferometer_7.meta_dataset.mask_with_phase_sub_size_from_mask(
             mask=mask_7x7
         )
-        masked_interferometer = al.masked.interferometer(
+        masked_interferometer = al.masked_interferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=real_space_mask,
@@ -218,12 +256,12 @@ class TestPhase:
         instance = phase_interferometer_7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        real_space_mask = phase_interferometer_7.meta_interferometer_fit.mask_with_phase_sub_size_from_mask(
+        real_space_mask = phase_interferometer_7.meta_dataset.mask_with_phase_sub_size_from_mask(
             mask=mask_7x7
         )
         assert real_space_mask.sub_size == 4
 
-        masked_interferometer = al.masked.interferometer(
+        masked_interferometer = al.masked_interferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=real_space_mask,

@@ -3,7 +3,7 @@ from astropy import cosmology as cosmo
 import autofit as af
 from autoarray.mask import mask as msk
 from autoastro.galaxy import fit_galaxy
-from autoastro.galaxy import masked
+from autoastro.galaxy import masked_galaxy_data
 from autolens.pipeline.phase import abstract
 from autolens.pipeline import visualizer
 
@@ -191,6 +191,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
             galaxy_data=galaxy_data, results=results, mask=mask
         )
 
+        self.save_metadata(galaxy_data.name)
         self.model = self.model.populate(results)
         self.customize_priors(results)
         self.assert_and_save_pickle()
@@ -221,7 +222,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
         if self.use_image or self.use_convergence or self.use_potential:
 
-            galaxy_data = masked.galaxy_data(
+            galaxy_data = masked_galaxy_data.MaskedGalaxyData(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
@@ -241,7 +242,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
         elif self.use_deflections:
 
-            galaxy_data_y = masked.galaxy_data(
+            galaxy_data_y = masked_galaxy_data.MaskedGalaxyData(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
@@ -252,7 +253,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
                 use_deflections_x=False,
             )
 
-            galaxy_data_x = masked.galaxy_data(
+            galaxy_data_x = masked_galaxy_data.MaskedGalaxyData(
                 galaxy_data=galaxy_data[1],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,

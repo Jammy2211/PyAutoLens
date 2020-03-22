@@ -225,18 +225,10 @@ class TestPhaseImagingVisualizer:
             preloaded_caustics=include_all.preloaded_caustics,
         )
 
-        class MockLastResults:
-            def __init__(self, hyper_model_image, hyper_galaxy_image_path_dict):
-
-                self.hyper_model_image = hyper_model_image
-                self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
-
-        last_results = MockLastResults(
-            hyper_model_image=hyper_model_image_7x7,
+        visualizer.visualize_hyper_images(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict_7x7,
+            hyper_model_image=hyper_model_image_7x7,
         )
-
-        visualizer.visualize_hyper_images(last_results=last_results)
 
         assert plot_path + "hyper/hyper_model_image.png" in plot_patch.paths
         assert plot_path + "hyper/subplot_hyper_galaxy_images.png" in plot_patch.paths

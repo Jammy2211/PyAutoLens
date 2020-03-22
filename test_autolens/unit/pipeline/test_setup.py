@@ -24,6 +24,13 @@ class TestPipelineGeneralSettings:
         general = al.setup.General(hyper_background_noise=True)
         assert general.hyper_background_noise_tag == "_bg_noise"
 
+    def test__hyper_fixed_after_source(self):
+        general = al.setup.General(hyper_fixed_after_source=False)
+        assert general.hyper_fixed_after_source_tag == ""
+
+        general = al.setup.General(hyper_fixed_after_source=True)
+        assert general.hyper_fixed_after_source_tag == "_fixed"
+
     def test__tag(self):
 
         general = al.setup.General(
@@ -31,10 +38,21 @@ class TestPipelineGeneralSettings:
         )
 
         assert general.tag == "general__hyper_galaxies_bg_sky_bg_noise"
+        assert general.source_tag == "general__hyper_galaxies_bg_sky_bg_noise"
 
         general = al.setup.General(hyper_galaxies=True, hyper_background_noise=True)
 
         assert general.tag == "general__hyper_galaxies_bg_noise"
+        assert general.source_tag == "general__hyper_galaxies_bg_noise"
+
+        general = al.setup.General(
+            hyper_fixed_after_source=True,
+            hyper_galaxies=True,
+            hyper_background_noise=True,
+        )
+
+        assert general.tag == "general__hyper_galaxies_bg_noise_fixed"
+        assert general.source_tag == "general__hyper_galaxies_bg_noise"
 
 
 class TestPipelineSourceSettings:

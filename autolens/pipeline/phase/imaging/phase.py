@@ -1,11 +1,10 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens.pipeline import phase_tagging
+from autolens.pipeline import tagging
 from autolens.pipeline.phase import dataset
-from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.imaging.analysis import Analysis
-from autolens.pipeline.phase.imaging.meta_imaging_fit import MetaImagingFit
+from autolens.pipeline.phase.imaging.meta_imaging import MetaImaging
 from autolens.pipeline.phase.imaging.result import Result
 
 
@@ -50,7 +49,7 @@ class PhaseImaging(dataset.PhaseDataset):
             The side length of the subgrid
         """
 
-        phase_tag = phase_tagging.phase_tag_from_phase_settings(
+        phase_tag = tagging.phase_tag_from_phase_settings(
             sub_size=sub_size,
             signal_to_noise_limit=signal_to_noise_limit,
             bin_up_factor=bin_up_factor,
@@ -72,7 +71,7 @@ class PhaseImaging(dataset.PhaseDataset):
 
         self.is_hyper_phase = False
 
-        self.meta_imaging_fit = MetaImagingFit(
+        self.meta_dataset = MetaImaging(
             model=self.model,
             bin_up_factor=bin_up_factor,
             psf_shape_2d=psf_shape_2d,
@@ -123,10 +122,10 @@ class PhaseImaging(dataset.PhaseDataset):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        self.meta_imaging_fit.model = self.model
+        self.meta_dataset.model = self.model
         modified_image = self.modify_image(image=dataset.image, results=results)
 
-        masked_imaging = self.meta_imaging_fit.masked_dataset_from(
+        masked_imaging = self.meta_dataset.masked_dataset_from(
             dataset=dataset,
             mask=mask,
             positions=positions,
@@ -153,66 +152,13 @@ class PhaseImaging(dataset.PhaseDataset):
 
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.optimizer).__name__))
-            phase_info.write(
-                "Sub-grid size = {} \n".format(self.meta_imaging_fit.sub_size)
-            )
-            phase_info.write(
-                "PSF shape = {} \n".format(self.meta_imaging_fit.psf_shape_2d)
-            )
+            phase_info.write("Sub-grid size = {} \n".format(self.meta_dataset.sub_size))
+            phase_info.write("PSF shape = {} \n".format(self.meta_dataset.psf_shape_2d))
             phase_info.write(
                 "Positions Threshold = {} \n".format(
-                    self.meta_imaging_fit.positions_threshold
+                    self.meta_dataset.positions_threshold
                 )
             )
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
 
             phase_info.close()
-
-    def extend_with_multiple_hyper_phases(
-        self,
-        hyper_galaxy=False,
-        inversion=False,
-        include_background_sky=False,
-        include_background_noise=False,
-        hyper_galaxy_phase_first=False,
-    ):
-        hyper_phase_classes = []
-
-        if self.meta_imaging_fit.has_pixelization and inversion:
-            if not include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(extensions.InversionPhase)
-            elif include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(extensions.InversionBackgroundSkyPhase)
-            elif not include_background_sky and include_background_noise:
-                hyper_phase_classes.append(extensions.InversionBackgroundNoisePhase)
-            else:
-                hyper_phase_classes.append(extensions.InversionBackgroundBothPhase)
-
-        if hyper_galaxy:
-            if not include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(
-                    extensions.hyper_galaxy_phase.HyperGalaxyPhase
-                )
-            elif include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(
-                    extensions.hyper_galaxy_phase.HyperGalaxyBackgroundSkyPhase
-                )
-            elif not include_background_sky and include_background_noise:
-                hyper_phase_classes.append(
-                    extensions.hyper_galaxy_phase.HyperGalaxyBackgroundNoisePhase
-                )
-            else:
-                hyper_phase_classes.append(
-                    extensions.hyper_galaxy_phase.HyperGalaxyBackgroundBothPhase
-                )
-
-        if hyper_galaxy_phase_first:
-            if inversion and hyper_galaxy:
-                hyper_phase_classes = [cls for cls in reversed(hyper_phase_classes)]
-
-        if len(hyper_phase_classes) == 0:
-            return self
-        else:
-            return extensions.CombinedHyperPhase(
-                phase=self, hyper_phase_classes=hyper_phase_classes
-            )
