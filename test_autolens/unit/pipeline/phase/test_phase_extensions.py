@@ -9,47 +9,6 @@ from autolens.fit.fit import ImagingFit
 from test_autolens.mock import mock_pipeline
 
 
-@pytest.fixture(name="lens_galaxy")
-def make_lens_galaxy():
-    return al.Galaxy(
-        redshift=1.0, light=al.lp.SphericalSersic(), mass=al.mp.SphericalIsothermal()
-    )
-
-
-@pytest.fixture(name="source_galaxy")
-def make_source_galaxy():
-    return al.Galaxy(redshift=2.0, light=al.lp.SphericalSersic())
-
-
-@pytest.fixture(name="all_galaxies")
-def make_all_galaxies(lens_galaxy, source_galaxy):
-    galaxies = af.ModelInstance()
-    galaxies.lens = lens_galaxy
-    galaxies.source = source_galaxy
-    return galaxies
-
-
-@pytest.fixture(name="instance")
-def make_instance(all_galaxies):
-    instance = af.ModelInstance()
-    instance.galaxies = all_galaxies
-    return instance
-
-
-@pytest.fixture(name="result")
-def make_result(masked_imaging_7x7, instance):
-    return al.PhaseImaging.Result(
-        instance=instance,
-        likelihood=1.0,
-        previous_model=af.ModelMapper(),
-        gaussian_tuples=None,
-        analysis=al.PhaseImaging.Analysis(
-            masked_imaging=masked_imaging_7x7, cosmology=cosmo.Planck15, image_path=""
-        ),
-        optimizer=None,
-    )
-
-
 class MostLikelyFit:
     def __init__(self, model_image_2d):
         self.model_image_2d = model_image_2d
@@ -187,115 +146,6 @@ class TestImagePassing:
         assert (image_dict[("galaxies", "lens")].in_2d == np.zeros((7, 7))).all()
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
-    def test__results_are_passed_to_new_analysis__sets_up_hyper_images(
-        self, results_collection_7x7, imaging_7x7, mask_7x7
-    ):
-
-        results_collection_7x7[0].galaxy_images = [
-            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
-            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
-        ]
-        results_collection_7x7[0].galaxy_images[0][3] = -1.0
-        results_collection_7x7[0].galaxy_images[1][5] = -1.0
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=dict(
-                lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
-            ),
-            optimizer_class=mock_pipeline.MockNLO,
-            phase_name="test_phase",
-        )
-
-        analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=results_collection_7x7
-        )
-
-        assert (
-            analysis.hyper_galaxy_image_path_dict[("g0",)].in_1d
-            == np.array([2.0, 2.0, 2.0, 0.02, 2.0, 2.0, 2.0, 2.0, 2.0])
-        ).all()
-
-        assert (
-            analysis.hyper_galaxy_image_path_dict[("g1",)].in_1d
-            == np.array([2.0, 2.0, 2.0, 2.0, 2.0, 0.02, 2.0, 2.0, 2.0])
-        ).all()
-
-        assert (
-            analysis.hyper_model_image.in_1d
-            == np.array([4.0, 4.0, 4.0, 2.02, 4.0, 2.02, 4.0, 4.0, 4.0])
-        ).all()
-
-    def test__associate_images_(self, instance, result, masked_imaging_7x7):
-        results_collection = af.ResultsCollection()
-        results_collection.add("phase", result)
-        analysis = al.PhaseImaging.Analysis(
-            masked_imaging=masked_imaging_7x7,
-            cosmology=None,
-            results=results_collection,
-            image_path="",
-        )
-
-        instance = analysis.associate_hyper_images(instance=instance)
-
-        lens_hyper_image = result.image_galaxy_dict[("galaxies", "lens")]
-        source_hyper_image = result.image_galaxy_dict[("galaxies", "source")]
-
-        hyper_model_image = lens_hyper_image + source_hyper_image
-
-        assert instance.galaxies.lens.hyper_galaxy_image.in_2d == pytest.approx(
-            lens_hyper_image.in_2d, 1.0e-4
-        )
-        assert instance.galaxies.source.hyper_galaxy_image.in_2d == pytest.approx(
-            source_hyper_image.in_2d, 1.0e-4
-        )
-
-        assert instance.galaxies.lens.hyper_model_image.in_2d == pytest.approx(
-            hyper_model_image.in_2d, 1.0e-4
-        )
-        assert instance.galaxies.source.hyper_model_image.in_2d == pytest.approx(
-            hyper_model_image.in_2d, 1.0e-4
-        )
-
-    def test__fit_uses_hyper_fit_correctly(self, instance, result, masked_imaging_7x7):
-        results_collection = af.ResultsCollection()
-        results_collection.add("phase", result)
-        analysis = al.PhaseImaging.Analysis(
-            masked_imaging=masked_imaging_7x7,
-            cosmology=cosmo.Planck15,
-            results=results_collection,
-            image_path="",
-        )
-
-        hyper_galaxy = al.HyperGalaxy(
-            contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
-        )
-
-        instance.galaxies.lens.hyper_galaxy = hyper_galaxy
-
-        fit_likelihood = analysis.fit(instance=instance)
-
-        lens_hyper_image = result.image_galaxy_dict[("galaxies", "lens")]
-        source_hyper_image = result.image_galaxy_dict[("galaxies", "source")]
-
-        hyper_model_image = lens_hyper_image + source_hyper_image
-
-        g0 = al.Galaxy(
-            redshift=0.5,
-            light_profile=instance.galaxies.lens.light,
-            mass_profile=instance.galaxies.lens.mass,
-            hyper_galaxy=hyper_galaxy,
-            hyper_model_image=hyper_model_image,
-            hyper_galaxy_image=lens_hyper_image,
-            hyper_minimum_value=0.0,
-        )
-        g1 = al.Galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
-
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
-
-        fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
-
-        assert (fit_likelihood == fit.likelihood).all()
-
 
 @pytest.fixture(name="hyper_combined")
 def make_combined():
@@ -407,7 +257,7 @@ class TestHyperGalaxyPhase:
         analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
 
-        mask = phase_imaging_7x7.meta_imaging_fit.mask_with_phase_sub_size_from_mask(
+        mask = phase_imaging_7x7.meta_dataset.mask_with_phase_sub_size_from_mask(
             mask=mask_7x7
         )
         assert mask.sub_size == 2

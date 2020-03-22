@@ -20,24 +20,29 @@ class GalaxiesMockAnalysis:
 class MockResults:
     def __init__(
         self,
-        model_image=None,
         mask=None,
+        model_image=None,
         galaxy_images=(),
+        model_visibilities=None,
+        galaxy_visibilities=(),
         instance=None,
         analysis=None,
         optimizer=None,
         pixelization=None,
     ):
+        self.mask_2d = mask
         self.model_image = model_image
         self.unmasked_model_image = model_image
-        self.mask_2d = mask
         self.galaxy_images = galaxy_images
+        self.model_visibilities = model_visibilities
+        self.galaxy_visibilities = galaxy_visibilities
         self.instance = instance or af.ModelInstance()
         self.model = af.ModelMapper()
         self.analysis = analysis
         self.optimizer = optimizer
         self.pixelization = pixelization
         self.hyper_combined = MockHyperCombinedPhase()
+        self.use_as_hyper_dataset = False
 
     @property
     def path_galaxy_tuples(self) -> [(str, al.Galaxy)]:
@@ -98,6 +103,44 @@ class MockResults:
             hyper_model_image += self.hyper_galaxy_image_path_dict[path]
 
         return hyper_model_image
+
+    @property
+    def visibilities_galaxy_dict(self) -> {str: al.Galaxy}:
+        """
+        A dictionary associating galaxy names with model visibilities of those galaxies
+        """
+        return {
+            galaxy_path: self.galaxy_visibilities[i]
+            for i, galaxy_path, galaxy in self.path_galaxy_tuples_with_index
+        }
+
+    @property
+    def hyper_galaxy_visibilities_path_dict(self):
+        """
+        A dictionary associating 1D hyper_galaxies galaxy visibilities with their names.
+        """
+
+        hyper_galaxy_visibilities_path_dict = {}
+
+        for path, galaxy in self.path_galaxy_tuples:
+
+            hyper_galaxy_visibilities_path_dict[path] = self.visibilities_galaxy_dict[
+                path
+            ]
+
+        return hyper_galaxy_visibilities_path_dict
+
+    @property
+    def hyper_model_visibilities(self):
+
+        hyper_model_visibilities = al.visibilities.zeros(
+            shape_1d=(self.galaxy_visibilities[0].shape_1d,)
+        )
+
+        for path, galaxy in self.path_galaxy_tuples:
+            hyper_model_visibilities += self.hyper_galaxy_visibilities_path_dict[path]
+
+        return hyper_model_visibilities
 
 
 class MockResult:

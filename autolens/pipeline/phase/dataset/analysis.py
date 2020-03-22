@@ -3,31 +3,30 @@ from autoastro.galaxy import galaxy as g
 from autolens.lens import ray_tracing
 
 
+def last_result_with_use_as_hyper_dataset(results):
+
+    if results is not None:
+        for index, result in enumerate(reversed(results)):
+            if result.use_as_hyper_dataset:
+                return result
+
+
 class Analysis(af.Analysis):
     def __init__(self, cosmology, results):
 
         self.cosmology = cosmology
 
-        # TODO : This if loop is because of an OptimizerGridSeach, where the 'best_result' we do not want to update
-        # TODO: the hyper images using.
+        result = last_result_with_use_as_hyper_dataset(results=results)
 
-        if results is not None and results.last is not None:
+        if result is not None:
 
-            if hasattr(results[-1], "hyper_galaxy_image_path_dict"):
+            self.hyper_galaxy_image_path_dict = result.hyper_galaxy_image_path_dict
+            self.hyper_model_image = result.hyper_model_image
 
-                self.hyper_galaxy_image_path_dict = results[
-                    -1
-                ].hyper_galaxy_image_path_dict
+        else:
 
-                self.hyper_model_image = results[-1].hyper_model_image
-
-            else:
-
-                self.hyper_galaxy_image_path_dict = results[
-                    -2
-                ].hyper_galaxy_image_path_dict
-
-                self.hyper_model_image = results[-2].hyper_model_image
+            self.hyper_galaxy_image_path_dict = None
+            self.hyper_model_image = None
 
     def hyper_image_sky_for_instance(self, instance):
 
@@ -72,7 +71,7 @@ class Analysis(af.Analysis):
         instance
            The input instance with images associated with galaxies where possible.
         """
-        if hasattr(self, "hyper_galaxy_image_path_dict"):
+        if self.hyper_galaxy_image_path_dict is not None:
             for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
                 g.Galaxy
             ):

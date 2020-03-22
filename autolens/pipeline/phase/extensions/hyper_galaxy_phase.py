@@ -6,7 +6,7 @@ from typing import cast
 import autofit as af
 from autoarray.fit import fit as aa_fit
 from autolens.fit import fit
-from autolens.dataset import masked_dataset
+from autolens.dataset import dataset as d
 from autoastro.galaxy import galaxy as g
 from autoastro.hyper import hyper_data as hd
 from autolens.pipeline.phase import imaging
@@ -169,23 +169,23 @@ class HyperGalaxyPhase(HyperPhase):
 
         phase = self.make_hyper_phase()
 
-        masked_imaging = masked_dataset.MaskedImaging(
+        masked_imaging = d.MaskedImaging(
             imaging=dataset,
             mask=results.last.mask,
             psf_shape_2d=dataset.psf.shape_2d,
             positions=results.last.positions,
             positions_threshold=cast(
                 imaging.PhaseImaging, phase
-            ).meta_imaging_fit.positions_threshold,
+            ).meta_dataset.positions_threshold,
             pixel_scale_interpolation_grid=cast(
                 imaging.PhaseImaging, phase
-            ).meta_imaging_fit.pixel_scale_interpolation_grid,
+            ).meta_dataset.pixel_scale_interpolation_grid,
             inversion_pixel_limit=cast(
                 imaging.PhaseImaging, phase
-            ).meta_imaging_fit.inversion_pixel_limit,
+            ).meta_dataset.inversion_pixel_limit,
             inversion_uses_border=cast(
                 imaging.PhaseImaging, phase
-            ).meta_imaging_fit.inversion_uses_border,
+            ).meta_dataset.inversion_uses_border,
             preload_sparse_grids_of_planes=None,
         )
 

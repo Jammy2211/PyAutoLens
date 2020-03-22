@@ -56,6 +56,9 @@ def subplot_hyper_galaxy_images(
     hyper_galaxy_image_path_dict, mask=None, include=None, sub_plotter=None
 ):
 
+    if hyper_galaxy_image_path_dict is None:
+        return
+
     number_subplots = 0
 
     for i in hyper_galaxy_image_path_dict.items():
