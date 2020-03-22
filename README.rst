@@ -108,15 +108,10 @@ We're building a **PyAutoLens** community on Slack, so you should contact us on 
 
 Unfortunately, Slack is invitation-only, so first send me an `email <https://github.com/Jammy2211>`_ requesting an invite.
 
-Installation
-------------
+Documentation & Installation
+----------------------------
 
-Instructions for installing **PyAutoLens** can be found on our :ref:`installation` page.
-
-Support & Discussion
---------------------
-
-If you're having difficulty with installation, lens modeling, or just want a chat, feel free to message us on our `Slack channel <https://pyautolens.slack.com/>`_.
+The PyAutoLens documentation can be found at our `readthedocs  <https://pyautolens.readthedocs.io/en/latest>`_, including instructions on `installation <https://pyautolens.readthedocs.io/en/latest/installation.html>`_.
 
 Contributing
 ------------
@@ -126,7 +121,7 @@ If you have any suggestions or would like to contribute please get in touch.
 Papers
 ------
 
-A list of published articles using **PyAutoLens** can be found at our :ref:`papers` page.
+A list of published articles using **PyAutoLens** can be found `here <https://pyautolens.readthedocs.io/en/latest/papers.html>`_ .
 
 Credits
 -------
