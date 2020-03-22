@@ -66,7 +66,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             source=af.last.instance.galaxies.source,
         ),
         optimizer_class=optimizer_class,
-        number_of_steps=5,
+        number_of_steps=2,
     )
 
     phase2.optimizer.const_efficiency_mode = True
