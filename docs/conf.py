@@ -1,7 +1,4 @@
 import datetime
-import sphinx_rtd_theme
-import sphinx_gallery
-from sphinx_gallery.sorting import ExampleTitleSortKey
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -51,8 +48,6 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 sphinx_gallery_conf = {
     # Remove the "Download all examples" button from the top level gallery
     'download_all_examples': False,
-    # Sort gallery example by file name instead of number of lines (default)
-    'within_subsection_order': ExampleTitleSortKey,
     # directory where function granular galleries are stored
     'backreferences_dir': 'api/generated/backreferences',
     # Modules for which function level galleries are created.
