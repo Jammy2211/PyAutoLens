@@ -25,9 +25,9 @@ Dependencies
 
 **PyMultiNest** http://johannesbuchner.github.io/pymultinest-tutorial/install.html
 
-**astropy** https://www.astropy.org/
-
 **emcee** https://github.com/dfm/emcee
+
+**astropy** https://www.astropy.org/
 
 **GetDist** https://getdist.readthedocs.io/en/latest/
 
@@ -46,7 +46,7 @@ Installation with conda
 
 We recommend installation using a conda environment as this circumvents a number of compatibility issues when installing **PyMultiNest**.
 
-First, install [conda](https://conda.io/miniconda.html).
+First, install `conda <https://conda.io/miniconda.html>`_.
 
 Create a conda environment:
 
@@ -69,14 +69,14 @@ Install multinest:
     conda install -c conda-forge multinest
 
 
-Install autolens (v0.39.3 is the most recent stable build):
+Install autolens (v0.40.0 is the most recent stable build):
 
 .. code-block:: bash
 
-    pip install autolens==0.39.3
+    pip install autolens==0.40.0
 
 
-Clonethe  autolens workspace & set WORKSPACE environment model:
+Clone the autolens workspace & set WORKSPACE environment model:
 
 .. code-block:: bash
 
@@ -91,24 +91,29 @@ Set PYTHONPATH to include the autolens_workspace directory:
 
     export PYTHONPATH=/path/to/autolens_workspace/
 
-
-Matplotlib uses the backend set in the config file:
+Matplotlib uses the default backend on your computer, as set in the config file:
 
 .. code-block:: bash
 
     autolens_workspace/config/visualize/general.ini
 
-You can change the backend in the following section:
+If unchanged, the backend is set to 'default', meaning it will use the backend automatically set up for Python on
+your system.
 
 .. code-block:: bash
 
     [general]
-    backend = TKAgg # Change this to Qt5Agg / Qt4Agg / WXAgg / WX / Agg
+    backend = default
 
-
-There have been reports that the default TKAgg backend causes crashes when running the test script below (either the
+There have been reports that using the default backend causes crashes when running the test script below (either the
 code crashes without a error or your computer restarts). If this happens, change the config's backend until the test
-works (Qt5Agg has worked for new MACs). You can change the backend in the following section:
+works (TKAgg has worked on Linux machines, Qt5Agg has worked on new MACs). For example:
+
+.. code-block:: bash
+
+    [general]
+    backend = TKAgg
+
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 
@@ -120,14 +125,14 @@ You can test everything is working by running the example pipeline runner in the
 Installation with pip
 ---------------------
 
-Installation is also available via pip (v0.39.3 is the most recent stable build), however there are reported issues with
-installing **PyMultiNest** that can make installation difficult, see the
-file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
+Installation is also available via pip (v0.40.0 is the most recent stable build), however there are reported issues with
+installing **PyMultiNest** that can make installation difficult, see `here <https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes>`_
+
+If **PyMultiNest** has installed correctly you may install **PyAutoLens** via pip as follows.
 
 .. code-block:: bash
 
-    pip install autolens==0.39.3
-
+    pip install autolens==0.40.0
 
 Clone autolens workspace & set WORKSPACE enviroment model:
 
@@ -145,20 +150,31 @@ Set PYTHONPATH to include the autolens_workspace directory:
     export PYTHONPATH=/path/to/autolens_workspace
 
 
-Matplotlib uses the backend set in the config file:
+Matplotlib uses the default backend on your computer, as set in the config file:
 
 .. code-block:: bash
 
     autolens_workspace/config/visualize/general.ini
 
-There have been reports that the default TKAgg backend causes crashes when running the test script below (either the
-code crashes without a error or your computer restarts). If this happens, change the config's backend until the test
-works (Qt5Agg has worked for new MACs). You can change the backend in the following section:
+If unchanged, the backend is set to 'default', meaning it will use the backend automatically set up for Python on
+your system.
 
 .. code-block:: bash
 
     [general]
-    backend = TKAgg # Change this to Qt5Agg / Qt4Agg / WXAgg / WX / Agg
+    backend = default
+
+There have been reports that using the default backend causes crashes when running the test script below (either the
+code crashes without a error or your computer restarts). If this happens, change the config's backend until the test
+works (TKAgg has worked on Linux machines, Qt5Agg has worked on new MACs). For example:
+
+.. code-block:: bash
+
+    [general]
+    backend = TKAgg
+
+
+You can test everything is working by running the example pipeline runner in the autolens_workspace
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 
@@ -171,6 +187,6 @@ Forking / Cloning
 
 Alternatively, you can fork or clone the **PyAutoLens** github repository. Note that **PyAutoLens** requires a valid
 config to run. Therefore, if you fork or clone the **PyAutoLens** repository, you need the
-[autolens_workspace](https://github.com/Jammy2211/autolens_workspace) with the PYTHONPATH and WORKSPACE enviroment
-variables set up as described on the [autolens_workspace](https://github.com/Jammy2211/autolens_workspace) repository
-o the installation instructions below.
+`autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ with the PYTHONPATH and WORKSPACE environment
+variables set up as described on the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ repository
+or the installation instructions below.

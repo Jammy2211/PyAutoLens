@@ -20,6 +20,8 @@ class AbstractPhase(af.AbstractPhase):
             The class of a non_linear optimizer
         """
 
+        self.use_as_hyper_dataset = False
+
         super().__init__(paths=paths, optimizer_class=optimizer_class)
 
     @property
@@ -50,6 +52,7 @@ class AbstractPhase(af.AbstractPhase):
             gaussian_tuples=result.gaussian_tuples,
             analysis=analysis,
             optimizer=self.optimizer,
+            use_as_hyper_dataset=self.use_as_hyper_dataset,
         )
 
     def run(self, dataset, mask, results=None, positions=None):

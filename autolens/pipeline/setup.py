@@ -27,15 +27,24 @@ class Setup:
 
 class General:
     def __init__(
-        self, hyper_galaxies=False, hyper_image_sky=False, hyper_background_noise=False
+        self,
+        hyper_galaxies=False,
+        hyper_image_sky=False,
+        hyper_background_noise=False,
+        hyper_fixed_after_source=False,
     ):
 
         self.hyper_galaxies = hyper_galaxies
         self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
+        self.hyper_fixed_after_source = hyper_fixed_after_source
 
     @property
     def tag(self):
+        return "general" + self.hyper_tag + self.hyper_fixed_after_source_tag
+
+    @property
+    def source_tag(self):
         return "general" + self.hyper_tag
 
     @property
@@ -96,6 +105,21 @@ class General:
             return ""
         elif self.hyper_background_noise:
             return "_bg_noise"
+
+    @property
+    def hyper_fixed_after_source_tag(self):
+        """Generate a tag for if the background noise is hyper as a hyper_galaxies-parameter in a hyper_galaxies pipeline to
+        customize phase names.
+
+        This changes the phase name 'pipeline_name__' as follows:
+
+        fix_lens_light = False -> pipeline_name__
+        fix_lens_light = True -> pipeline_name___hyper_bg_noise
+        """
+        if not self.hyper_fixed_after_source:
+            return ""
+        elif self.hyper_fixed_after_source:
+            return "_fixed"
 
 
 class Source:

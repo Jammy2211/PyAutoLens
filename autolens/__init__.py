@@ -9,6 +9,8 @@ from autoarray.structures.grids import (
 )
 from autoarray.structures.kernel import Kernel as kernel
 from autoarray.structures.visibilities import Visibilities as visibilities
+from autoarray.structures.arrays import MaskedArray as masked_array
+from autoarray.structures.grids import MaskedGrid as masked_grid
 from autoarray.dataset.imaging import Imaging as imaging
 from autoarray.dataset.interferometer import Interferometer as interferometer
 from autoarray.dataset import data_converter
@@ -33,13 +35,16 @@ from autoastro.galaxy.galaxy_model import GalaxyModel
 from autoastro.hyper import hyper_data
 
 from autolens import simulator
-from autolens import masked
+from autolens.dataset.dataset import (
+    MaskedImaging as masked_imaging,
+    MaskedInterferometer as masked_interferometer,
+)
 from autolens.lens.plane import Plane
 from autolens.lens.ray_tracing import Tracer
 from autolens import util
 from autolens.fit.fit import fit
 from autolens.fit.fit import PositionsFit as fit_positions
-from autolens.pipeline import phase_tagging
+from autolens.pipeline import tagging
 from autolens.pipeline.phase.abstract import phase
 from autolens.pipeline.phase.abstract.phase import AbstractPhase
 from autolens.pipeline.phase.extensions import CombinedHyperPhase
@@ -62,4 +67,4 @@ from autolens.pipeline.pipeline import PipelineDataset, PipelinePositions
 from autolens.pipeline import setup
 from autolens import plot
 
-__version__ = '0.40.0'
+__version__ = '0.41.0'

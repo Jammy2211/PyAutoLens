@@ -44,7 +44,7 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
+masked_imaging = al.masked_imaging(imaging=imaging, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)

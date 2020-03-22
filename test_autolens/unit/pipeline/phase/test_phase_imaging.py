@@ -29,66 +29,7 @@ def clean_images():
     af.conf.instance.dataset_path = directory
 
 
-class TestPhase:
-    def test__make_analysis__masks_image_and_noise_map_correctly(
-        self, phase_imaging_7x7, imaging_7x7, mask_7x7
-    ):
-        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
-
-        assert (
-            analysis.masked_imaging.image.in_2d
-            == imaging_7x7.image.in_2d * np.invert(mask_7x7)
-        ).all()
-        assert (
-            analysis.masked_imaging.noise_map.in_2d
-            == imaging_7x7.noise_map.in_2d * np.invert(mask_7x7)
-        ).all()
-
-    def test__make_analysis__phase_info_is_made(
-        self, phase_imaging_7x7, imaging_7x7, mask_7x7
-    ):
-        phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
-
-        file_phase_info = "{}/{}".format(
-            phase_imaging_7x7.optimizer.paths.phase_output_path, "phase.info"
-        )
-
-        phase_info = open(file_phase_info, "r")
-
-        optimizer = phase_info.readline()
-        sub_size = phase_info.readline()
-        psf_shape_2d = phase_info.readline()
-        positions_threshold = phase_info.readline()
-        cosmology = phase_info.readline()
-
-        phase_info.close()
-
-        assert optimizer == "Optimizer = MockNLO \n"
-        assert sub_size == "Sub-grid size = 2 \n"
-        assert psf_shape_2d == "PSF shape = None \n"
-        assert positions_threshold == "Positions Threshold = None \n"
-        assert (
-            cosmology
-            == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, '
-            "Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n"
-        )
-
-    def test__fit_using_imaging(self, imaging_7x7, mask_7x7):
-        clean_images()
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
-            galaxies=dict(
-                lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
-                source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
-            ),
-            phase_name="test_phase_test_fit",
-        )
-
-        result = phase_imaging_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
-        assert isinstance(result.instance.galaxies[0], al.Galaxy)
-        assert isinstance(result.instance.galaxies[0], al.Galaxy)
-
+class TestAttributes:
     def test__modify_image(self, imaging_7x7, mask_7x7):
         class MyPhase(al.PhaseImaging):
             def modify_image(self, image, results):
@@ -174,7 +115,7 @@ class TestPhase:
 
         assert (analysis.masked_dataset.mask == binned_up_mask).all()
 
-        masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
+        masked_imaging = al.masked_imaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
 
         binned_up_masked_imaging = masked_imaging.binned_from_bin_up_factor(
             bin_up_factor=2
@@ -219,64 +160,68 @@ class TestPhase:
         assert instance.hyper_image_sky.sky_scale == 0.3
         assert instance.hyper_background_noise.noise_scale == 0.4
 
-    def test__extended_with_hyper_and_pixelizations(self):
 
-        phase_no_pixelization = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO, phase_name="test_phase"
+class TestMakeAnalysis:
+    def test__masks_image_and_noise_map_correctly(
+        self, phase_imaging_7x7, imaging_7x7, mask_7x7
+    ):
+        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
+
+        assert (
+            analysis.masked_imaging.image.in_2d
+            == imaging_7x7.image.in_2d * np.invert(mask_7x7)
+        ).all()
+        assert (
+            analysis.masked_imaging.noise_map.in_2d
+            == imaging_7x7.noise_map.in_2d * np.invert(mask_7x7)
+        ).all()
+
+    def test___phase_info_is_made(self, phase_imaging_7x7, imaging_7x7, mask_7x7):
+        phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
+
+        file_phase_info = "{}/{}".format(
+            phase_imaging_7x7.optimizer.paths.phase_output_path, "phase.info"
         )
 
-        phase_extended = phase_no_pixelization.extend_with_multiple_hyper_phases(
-            hyper_galaxy=False, inversion=False
+        phase_info = open(file_phase_info, "r")
+
+        optimizer = phase_info.readline()
+        sub_size = phase_info.readline()
+        psf_shape_2d = phase_info.readline()
+        positions_threshold = phase_info.readline()
+        cosmology = phase_info.readline()
+
+        phase_info.close()
+
+        assert optimizer == "Optimizer = MockNLO \n"
+        assert sub_size == "Sub-grid size = 2 \n"
+        assert psf_shape_2d == "PSF shape = None \n"
+        assert positions_threshold == "Positions Threshold = None \n"
+        assert (
+            cosmology
+            == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, '
+            "Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n"
         )
-        assert phase_extended == phase_no_pixelization
 
-        # This phase does not have a pixelization, so even though inversion=True it will not be extended
 
-        phase_extended = phase_no_pixelization.extend_with_multiple_hyper_phases(
-            inversion=True
-        )
-        assert phase_extended == phase_no_pixelization
+class TestFit:
+    def test__fit_using_imaging(self, imaging_7x7, mask_7x7):
+        clean_images()
 
-        phase_with_pixelization = al.PhaseImaging(
-            galaxies=dict(
-                source=al.GalaxyModel(
-                    redshift=0.5,
-                    pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
-                )
-            ),
+        phase_imaging_7x7 = al.PhaseImaging(
             optimizer_class=mock_pipeline.MockNLO,
-            phase_name="test_phase",
+            galaxies=dict(
+                lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
+                source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+            ),
+            phase_name="test_phase_test_fit",
         )
 
-        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
-            inversion=True
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
+        result = phase_imaging_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
+        assert isinstance(result.instance.galaxies[0], al.Galaxy)
+        assert isinstance(result.instance.galaxies[0], al.Galaxy)
 
-        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
-            hyper_galaxy=True, inversion=False
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
-
-        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
-            hyper_galaxy=False, inversion=True
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
-
-        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
-            hyper_galaxy=True, inversion=True
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
-        assert type(phase_extended.hyper_phases[1]) == al.HyperGalaxyPhase
-
-        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
-            hyper_galaxy=True, inversion=True, hyper_galaxy_phase_first=True
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
-        assert type(phase_extended.hyper_phases[1]) == al.InversionPhase
-
-    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(
+    def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, imaging_7x7, mask_7x7
     ):
         lens_galaxy = al.Galaxy(
@@ -294,14 +239,14 @@ class TestPhase:
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask_7x7)
+        masked_imaging = al.masked_imaging(imaging=imaging_7x7, mask=mask_7x7)
         tracer = analysis.tracer_for_instance(instance=instance)
 
         fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
 
         assert fit.likelihood == fit_figure_of_merit
 
-    def test__fit_figure_of_merit__includes_hyper_image_and_noise__matches_fit(
+    def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
         self, imaging_7x7, mask_7x7
     ):
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
@@ -324,12 +269,12 @@ class TestPhase:
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        mask = phase_imaging_7x7.meta_imaging_fit.mask_with_phase_sub_size_from_mask(
+        mask = phase_imaging_7x7.meta_dataset.mask_with_phase_sub_size_from_mask(
             mask=mask_7x7
         )
         assert mask.sub_size == 4
 
-        masked_imaging = al.masked.imaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.masked_imaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = ImagingFit(
             masked_imaging=masked_imaging,
@@ -339,3 +284,44 @@ class TestPhase:
         )
 
         assert fit.likelihood == fit_figure_of_merit
+
+    def test__uses_hyper_fit_correctly(self, instance, result, masked_imaging_7x7):
+        results_collection = af.ResultsCollection()
+        results_collection.add("phase", result)
+        results_collection[0].use_as_hyper_dataset = True
+        analysis = al.PhaseImaging.Analysis(
+            masked_imaging=masked_imaging_7x7,
+            cosmology=cosmo.Planck15,
+            results=results_collection,
+            image_path="",
+        )
+
+        hyper_galaxy = al.HyperGalaxy(
+            contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
+        )
+
+        instance.galaxies.lens.hyper_galaxy = hyper_galaxy
+
+        fit_likelihood = analysis.fit(instance=instance)
+
+        lens_hyper_image = result.image_galaxy_dict[("galaxies", "lens")]
+        source_hyper_image = result.image_galaxy_dict[("galaxies", "source")]
+
+        hyper_model_image = lens_hyper_image + source_hyper_image
+
+        g0 = al.Galaxy(
+            redshift=0.5,
+            light_profile=instance.galaxies.lens.light,
+            mass_profile=instance.galaxies.lens.mass,
+            hyper_galaxy=hyper_galaxy,
+            hyper_model_image=hyper_model_image,
+            hyper_galaxy_image=lens_hyper_image,
+            hyper_minimum_value=0.0,
+        )
+        g1 = al.Galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+        fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+
+        assert (fit_likelihood == fit.likelihood).all()

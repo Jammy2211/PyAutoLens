@@ -2,19 +2,19 @@ import numpy as np
 
 from autoarray.fit import fit as aa_fit
 from autoastro.galaxy import galaxy as g
-from autolens.masked import masked_dataset as md
+from autolens.dataset import dataset as d
 
 
 def fit(masked_dataset, tracer, hyper_image_sky=None, hyper_background_noise=None):
 
-    if isinstance(masked_dataset, md.MaskedImaging):
+    if isinstance(masked_dataset, d.MaskedImaging):
         return ImagingFit(
             masked_imaging=masked_dataset,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
-    elif isinstance(masked_dataset, md.MaskedInterferometer):
+    elif isinstance(masked_dataset, d.MaskedInterferometer):
         return InterferometerFit(
             masked_interferometer=masked_dataset,
             tracer=tracer,
