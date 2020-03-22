@@ -2,10 +2,10 @@ import autofit as af
 import autoarray as aa
 from autolens import exc
 from autoarray.operators.inversion import pixelizations as pix
-from autolens.pipeline.phase.dataset.phase import isinstance_or_prior
+from autolens.pipeline.phase.dataset.phase import isprior, isinstance_or_prior
 
 
-class MetaDatasetFit:
+class MetaDataset:
     def __init__(
         self,
         model,
@@ -76,6 +76,14 @@ class MetaDatasetFit:
                     return True
         return False
 
+    @property
+    def pixelizaition_is_model(self):
+        if self.model.galaxies:
+            for galaxy in self.model.galaxies:
+                if isprior(galaxy.pixelization, pix.Pixelization):
+                    return True
+        return False
+
     def preload_pixelization_grids_of_planes_from_results(self, results):
 
         if self.is_hyper_phase:
@@ -85,6 +93,7 @@ class MetaDatasetFit:
             results is not None
             and results.last is not None
             and self.pixelization is not None
+            and not self.pixelizaition_is_model
         ):
             if self.pixelization.__class__ is results.last.pixelization.__class__:
                 if hasattr(results.last, "hyper_combined"):

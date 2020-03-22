@@ -4,7 +4,14 @@ from autoastro.galaxy import galaxy as g
 
 class Result(af.Result):
     def __init__(
-        self, instance, likelihood, previous_model, gaussian_tuples, analysis, optimizer
+        self,
+        instance,
+        likelihood,
+        previous_model,
+        gaussian_tuples,
+        analysis,
+        optimizer,
+        use_as_hyper_dataset=False,
     ):
         """
         The result of a phase
@@ -18,6 +25,7 @@ class Result(af.Result):
 
         self.analysis = analysis
         self.optimizer = optimizer
+        self.use_as_hyper_dataset = use_as_hyper_dataset
 
     @property
     def most_likely_tracer(self):

@@ -1,3 +1,5 @@
+from astropy import cosmology as cosmo
+
 import autofit as af
 import autolens as al
 from autolens.fit.fit import ImagingFit, InterferometerFit
@@ -230,3 +232,44 @@ def make_results_collection(results_7x7):
     results_collection = af.ResultsCollection()
     results_collection.add("phase", results_7x7)
     return results_collection
+
+
+@pytest.fixture(name="lens_galaxy")
+def make_lens_galaxy():
+    return al.Galaxy(
+        redshift=1.0, light=al.lp.SphericalSersic(), mass=al.mp.SphericalIsothermal()
+    )
+
+
+@pytest.fixture(name="source_galaxy")
+def make_source_galaxy():
+    return al.Galaxy(redshift=2.0, light=al.lp.SphericalSersic())
+
+
+@pytest.fixture(name="all_galaxies")
+def make_all_galaxies(lens_galaxy, source_galaxy):
+    galaxies = af.ModelInstance()
+    galaxies.lens = lens_galaxy
+    galaxies.source = source_galaxy
+    return galaxies
+
+
+@pytest.fixture(name="instance")
+def make_instance(all_galaxies):
+    instance = af.ModelInstance()
+    instance.galaxies = all_galaxies
+    return instance
+
+
+@pytest.fixture(name="result")
+def make_result(masked_imaging_7x7, instance):
+    return al.PhaseImaging.Result(
+        instance=instance,
+        likelihood=1.0,
+        previous_model=af.ModelMapper(),
+        gaussian_tuples=None,
+        analysis=al.PhaseImaging.Analysis(
+            masked_imaging=masked_imaging_7x7, cosmology=cosmo.Planck15, image_path=""
+        ),
+        optimizer=None,
+    )

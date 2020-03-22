@@ -35,7 +35,7 @@ from autoastro.galaxy.galaxy_model import GalaxyModel
 from autoastro.hyper import hyper_data
 
 from autolens import simulator
-from autolens.dataset.masked_dataset import (
+from autolens.dataset.dataset import (
     MaskedImaging as masked_imaging,
     MaskedInterferometer as masked_interferometer,
 )
@@ -44,7 +44,7 @@ from autolens.lens.ray_tracing import Tracer
 from autolens import util
 from autolens.fit.fit import fit
 from autolens.fit.fit import PositionsFit as fit_positions
-from autolens.pipeline import phase_tagging
+from autolens.pipeline import tagging
 from autolens.pipeline.phase.abstract import phase
 from autolens.pipeline.phase.abstract.phase import AbstractPhase
 from autolens.pipeline.phase.extensions import CombinedHyperPhase

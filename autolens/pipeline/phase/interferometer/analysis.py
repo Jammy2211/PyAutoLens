@@ -16,15 +16,27 @@ class Analysis(analysis_data.Analysis):
             masked_dataset=masked_interferometer, image_path=image_path
         )
 
+        self.visualizer.visualize_hyper_images(
+            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
+            hyper_model_image=self.hyper_model_image,
+        )
+
         self.masked_dataset = masked_interferometer
 
-        if results is not None and results.last is not None:
+        result = analysis_data.last_result_with_use_as_hyper_dataset(results=results)
+
+        if result is not None:
 
             self.hyper_galaxy_visibilities_path_dict = (
-                results.last.hyper_galaxy_visibilities_path_dict
+                result.hyper_galaxy_visibilities_path_dict
             )
 
-            self.hyper_model_visibilities = results.last.hyper_model_visibilities
+            self.hyper_model_visibilities = result.hyper_model_visibilities
+
+        else:
+
+            self.hyper_galaxy_visibilities_path_dict = None
+            self.hyper_model_visibilities = None
 
     @property
     def masked_interferometer(self):
@@ -94,7 +106,7 @@ class Analysis(analysis_data.Analysis):
         instance
            The input instance with visibilities associated with galaxies where possible.
         """
-        if hasattr(self, "hyper_galaxy_visibilities_path_dict"):
+        if self.hyper_galaxy_visibilities_path_dict is not None:
             for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
                 g.Galaxy
             ):
