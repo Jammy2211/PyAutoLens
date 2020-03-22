@@ -111,7 +111,7 @@ Unfortunately, Slack is invitation-only, so first send me an `email <https://git
 Documentation & Installation
 ----------------------------
 
-The PyAutoLens documentation can be found at our `readthedocs  <https://pyautolens.readthedocs.io/en/latest>`_, including instructions on `installation <https://pyautolens.readthedocs.io/en/latest/installation.html>`_.
+The PyAutoLens documentation can be found at our `readthedocs  <https://pyautolens.readthedocs.io/en/latest>`_, including instructions on `installation <https://pyautolens.readthedocs.io/en/master/installation.html>`_.
 
 Contributing
 ------------
@@ -121,7 +121,7 @@ If you have any suggestions or would like to contribute please get in touch.
 Papers
 ------
 
-A list of published articles using **PyAutoLens** can be found `here <https://pyautolens.readthedocs.io/en/latest/papers.html>`_ .
+A list of published articles using **PyAutoLens** can be found `here <https://pyautolens.readthedocs.io/en/master/papers.html>`_ .
 
 Credits
 -------
