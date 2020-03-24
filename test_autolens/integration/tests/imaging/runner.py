@@ -23,7 +23,10 @@ def run(
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
     imaging = simulate_util.load_test_imaging(
-        data_type=module.data_type, data_resolution=module.data_resolution
+        data_type=module.data_type,
+        data_resolution=module.data_resolution,
+        name="test_dataset",
+        metadata={"test": 2},
     )
 
     if mask is None:

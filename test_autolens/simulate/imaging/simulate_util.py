@@ -33,7 +33,7 @@ def pixel_scale_from_data_resolution(data_resolution):
 
 
 def load_test_imaging(
-    data_type, data_resolution, psf_shape_2d=(11, 11), lens_name=None
+    data_type, data_resolution, psf_shape_2d=(11, 11), name=None, metadata=None
 ):
 
     pixel_scales = pixel_scale_from_data_resolution(data_resolution=data_resolution)
@@ -48,5 +48,6 @@ def load_test_imaging(
         noise_map_path=dataset_path + "/noise_map.fits",
         pixel_scales=pixel_scales,
         resized_psf_shape=psf_shape_2d,
-        lens_name=lens_name,
+        name=name,
+        metadata=metadata,
     )
