@@ -1,6 +1,7 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
+from autoarray.operators import transformer
 from autolens.pipeline import tagging
 from autolens.pipeline.phase import dataset
 from autolens.pipeline.phase.interferometer.analysis import Analysis
@@ -24,6 +25,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         paths,
         *,
         real_space_mask,
+        transformer_class=transformer.TransformerNUFFT,
         galaxies=None,
         hyper_background_noise=None,
         optimizer_class=af.MultiNest,
@@ -73,6 +75,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
             model=self.model,
             sub_size=sub_size,
             real_space_mask=real_space_mask,
+            transformer_class=transformer_class,
             primary_beam_shape_2d=primary_beam_shape_2d,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,

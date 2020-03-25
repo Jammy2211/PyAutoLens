@@ -2,42 +2,37 @@ from autolens.dataset import dataset as d
 from autolens.pipeline.phase.dataset import meta_dataset
 
 
-class MetaInterferometer(meta_dataset.MetaDataset):
+class MetaImaging(meta_dataset.MetaDataset):
     def __init__(
         self,
         model,
-        real_space_mask,
-        transformer_class,
         sub_size=2,
         is_hyper_phase=False,
+        signal_to_noise_limit=None,
         positions_threshold=None,
         pixel_scale_interpolation_grid=None,
         inversion_uses_border=True,
         inversion_pixel_limit=None,
-        primary_beam_shape_2d=None,
+        psf_shape_2d=None,
         bin_up_factor=None,
     ):
+
         super().__init__(
             model=model,
             sub_size=sub_size,
             is_hyper_phase=is_hyper_phase,
+            signal_to_noise_limit=signal_to_noise_limit,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_uses_border=inversion_uses_border,
             inversion_pixel_limit=inversion_pixel_limit,
         )
-        self.real_space_mask = real_space_mask
-        self.transformer_class = transformer_class
-        self.primary_beam_shape_2d = primary_beam_shape_2d
+        self.psf_shape_2d = psf_shape_2d
         self.bin_up_factor = bin_up_factor
 
-    def masked_dataset_from(
-        self, dataset, mask, positions, results, modified_visibilities
-    ):
+    def masked_dataset_from(self, dataset, mask, positions, results, modified_image):
 
-        real_space_mask = self.mask_with_phase_sub_size_from_mask(
-            mask=self.real_space_mask
-        )
+        mask = self.mask_with_phase_sub_size_from_mask(mask=mask)
 
         self.check_positions(positions=positions)
 
@@ -45,14 +40,10 @@ class MetaInterferometer(meta_dataset.MetaDataset):
             results=results
         )
 
-        masked_interferometer = d.MaskedInterferometer(
-            interferometer=dataset.modified_visibilities_from_visibilities(
-                modified_visibilities
-            ),
-            visibilities_mask=mask,
-            real_space_mask=real_space_mask,
-            transformer_class=self.transformer_class,
-            primary_beam_shape_2d=self.primary_beam_shape_2d,
+        masked_imaging = d.MaskedImaging(
+            imaging=dataset.modified_image_from_image(modified_image),
+            mask=mask,
+            psf_shape_2d=self.psf_shape_2d,
             positions=positions,
             positions_threshold=self.positions_threshold,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
@@ -61,4 +52,14 @@ class MetaInterferometer(meta_dataset.MetaDataset):
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
 
-        return masked_interferometer
+        if self.signal_to_noise_limit is not None:
+            masked_imaging = masked_imaging.signal_to_noise_limited_from_signal_to_noise_limit(
+                signal_to_noise_limit=self.signal_to_noise_limit
+            )
+
+        if self.bin_up_factor is not None:
+            masked_imaging = masked_imaging.binned_from_bin_up_factor(
+                bin_up_factor=self.bin_up_factor
+            )
+
+        return masked_imaging
