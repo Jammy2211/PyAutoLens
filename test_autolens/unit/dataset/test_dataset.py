@@ -173,6 +173,7 @@ class TestMaskedInterferometer:
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=sub_mask_7x7,
+            transformer_class=transformer.TransformerDFT,
         )
 
         assert (
@@ -199,7 +200,7 @@ class TestMaskedInterferometer:
             == -55636.4609375
         )
 
-        assert type(masked_interferometer_7.transformer) == transformer.Transformer
+        assert type(masked_interferometer_7.transformer) == transformer.TransformerDFT
 
     def test__inheritance_via_autoarray(
         self,

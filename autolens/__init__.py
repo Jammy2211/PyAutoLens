@@ -15,7 +15,9 @@ from autoarray.dataset.imaging import Imaging as imaging
 from autoarray.dataset.interferometer import Interferometer as interferometer
 from autoarray.dataset import data_converter
 from autoarray.operators.convolver import Convolver as convolver
-from autoarray.operators.transformer import Transformer as transformer
+from autoarray.operators.transformer import TransformerDFT as transformer_dft
+from autoarray.operators.transformer import TransformerFFT as transformer_fft
+from autoarray.operators.transformer import TransformerNUFFT as transformer_nufft
 from autoarray.operators.inversion.mappers import mapper
 from autoarray.operators.inversion.inversions import inversion
 from autoarray.operators.inversion import pixelizations as pix, regularization as reg
