@@ -37,6 +37,7 @@ def make_masked_interferometer_7(
         interferometer=interferometer_7,
         visibilities_mask=visibilities_mask_7x2,
         real_space_mask=mask_7x7,
+        transformer_class=aa.transformer_dft,
     )
 
 

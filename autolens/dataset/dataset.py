@@ -1,5 +1,6 @@
 from autoarray.structures import grids
 from autoarray.dataset import imaging, interferometer
+from autoarray.operators import transformer
 from autolens.fit import fit
 from autolens import exc
 
@@ -146,6 +147,7 @@ class MaskedInterferometer(interferometer.MaskedInterferometer, AbstractLensMask
         interferometer,
         visibilities_mask,
         real_space_mask,
+        transformer_class=transformer.TransformerNUFFT,
         primary_beam_shape_2d=None,
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
@@ -190,6 +192,7 @@ class MaskedInterferometer(interferometer.MaskedInterferometer, AbstractLensMask
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
+            transformer_class=transformer_class,
             primary_beam_shape_2d=primary_beam_shape_2d,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,

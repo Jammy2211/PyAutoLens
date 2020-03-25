@@ -188,6 +188,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         real_space_shape_2d=(51, 51),
         real_space_pixel_scales=0.1,
         uv_wavelengths=np.ones(shape=(7, 2)),
+        transformer_class=al.transformer_dft,
         sub_size=2,
         exposure_time=300.0,
         background_level=0.0,
@@ -229,6 +230,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         interferometer=interferometer,
         visibilities_mask=visibilities_mask,
         real_space_mask=real_space_mask,
+        transformer_class=al.transformer_dft,
         inversion_uses_border=False,
     )
 

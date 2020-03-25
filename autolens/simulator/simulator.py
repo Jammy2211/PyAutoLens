@@ -1,5 +1,6 @@
 from autoarray.structures import grids
 from autoarray.simulator import simulator
+from autoarray.operators import transformer
 from autolens.lens import ray_tracing
 
 
@@ -124,6 +125,7 @@ class InterferometerSimulator(simulator.InterferometerSimulator):
         sub_size,
         exposure_time,
         background_level,
+        transformer_class=transformer.TransformerDFT,
         primary_beam=None,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
@@ -155,6 +157,7 @@ class InterferometerSimulator(simulator.InterferometerSimulator):
             sub_size=sub_size,
             exposure_time=exposure_time,
             background_level=background_level,
+            transformer_class=transformer_class,
             primary_beam=primary_beam,
             noise_sigma=noise_sigma,
             noise_if_add_noise_false=noise_if_add_noise_false,

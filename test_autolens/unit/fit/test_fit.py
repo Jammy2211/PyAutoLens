@@ -1583,6 +1583,7 @@ class TestInterferometerFit:
                 interferometer=interferometer,
                 visibilities_mask=visibilities_mask,
                 real_space_mask=real_space_mask,
+                transformer_class=trans.TransformerDFT,
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -1623,9 +1624,9 @@ class TestInterferometerFit:
                 primary_beam=None,
             )
 
-            transformer = trans.Transformer(
+            transformer = trans.TransformerDFT(
                 uv_wavelengths=uv_wavelengths,
-                grid_radians=al.grid.manual_2d(
+                grid=al.grid.manual_2d(
                     [[[0.0, -1.0], [0.0, 1.0], [1.0, 1.0]]], pixel_scales=(1.0, 1.0)
                 ),
             )
@@ -1648,6 +1649,7 @@ class TestInterferometerFit:
                 interferometer=interferometer,
                 visibilities_mask=visibilities_mask,
                 real_space_mask=real_space_mask,
+                transformer_class=trans.TransformerDFT,
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
