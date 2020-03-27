@@ -4,11 +4,11 @@ from autoastro.plot import lensing_plotters
 plotter = aplt.Plotter()
 sub_plotter = aplt.SubPlotter()
 
-mask = al.mask.circular(
+mask = al.Mask.circular(
     shape_2d=(200, 200), pixel_scales=0.03, sub_size=1, radius=2.4, centre=(0.0, 0.0)
 )
 
-grid = al.grid.from_mask(mask=mask)
+grid = al.Grid.from_mask(mask=mask)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,

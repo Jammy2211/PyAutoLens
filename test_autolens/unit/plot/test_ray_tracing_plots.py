@@ -100,10 +100,10 @@ def test__all_individual_plotters(
     assert ray_tracing_plotter_path + "magnification.png" in plot_patch.paths
 
     tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy = al.HyperGalaxy()
-    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_model_image = al.array.ones(
+    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_model_image = al.Array.ones(
         shape_2d=(7, 7), pixel_scales=0.1
     )
-    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy_image = al.array.ones(
+    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy_image = al.Array.ones(
         shape_2d=(7, 7), pixel_scales=0.1
     )
 

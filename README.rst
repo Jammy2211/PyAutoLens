@@ -31,14 +31,14 @@ With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. 
     lens_name = 'example_lens'
 
     # Get the relative path to the data in our workspace & load the imaging data.
-    imaging = al.imaging.from_fits(
+    imaging = al.Imaging.from_fits(
         image_path=dataset_path + lens_name + '/image.fits',
         psf_path=dataset_path+lens_name+'/psf.fits',
         noise_map_path=dataset_path+lens_name+'/noise_map.fits',
         pixel_scales=0.1)
 
     # Create a mask for the data, which we setup as a 3.0" circle.
-    mask = al.mask.circular(shape_2d=imaging.shape, pixel_scales=imaging.pixel_scales, radius=3.0)
+    mask = al.Mask.circular(shape_2d=imaging.shape, pixel_scales=imaging.pixel_scales, radius=3.0)
 
     # We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) & our source galaxy
     # a light profile (an elliptical Sersic).

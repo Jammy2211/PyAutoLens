@@ -11,7 +11,7 @@ from test_autolens.simulate.imaging import simulate_util
 imaging = simulate_util.load_test_imaging(
     data_type="lens_mass__source_cuspy", data_resolution="hst"
 )
-mask = al.mask.circular(
+mask = al.Mask.circular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     radius=3.0,
@@ -29,10 +29,10 @@ source_galaxy = al.Galaxy(
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
-masked_imaging = al.masked_imaging(imaging=imaging, mask=mask)
+masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
-fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
+fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
 print(fit.inversion.reconstruction)
 print(fit.inversion.mapper)

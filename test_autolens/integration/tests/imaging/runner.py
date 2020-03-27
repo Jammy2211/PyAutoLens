@@ -30,7 +30,7 @@ def run(
     )
 
     if mask is None:
-        mask = aa.mask.circular(
+        mask = aa.Mask.circular(
             shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
         )
 

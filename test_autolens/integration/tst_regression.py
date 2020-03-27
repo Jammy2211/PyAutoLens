@@ -28,7 +28,7 @@ def simulate_integration_image(test_name, pixel_scales, galaxies):
     psf_shape_2d = (11, 11)
     image_shape = (150, 150)
 
-    psf = al.kernel.from_gaussian(
+    psf = al.Kernel.from_gaussian(
         shape_2d=psf_shape_2d, pixel_scales=pixel_scales, sigma=pixel_scales
     )
 
@@ -118,7 +118,7 @@ class TestPhaseModelMapper:
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        imaging = al.imaging.from_fits(
+        imaging = al.Imaging.from_fits(
             image_path=path + "/test_files/simulator/" + test_name + "/image.fits",
             psf_path=path + "/test_files/simulator/" + test_name + "/psf.fits",
             noise_map_path=path
@@ -192,7 +192,7 @@ class TestPhaseModelMapper:
             os.path.dirname(os.path.realpath(__file__))
         )  # Setup path so we can output the simulated image.
 
-        imaging = al.imaging.from_fits(
+        imaging = al.Imaging.from_fits(
             image_path=path + "/test_files/simulator/" + test_name + "/image.fits",
             psf_path=path + "/test_files/simulator/" + test_name + "/psf.fits",
             noise_map_path=path

@@ -9,7 +9,7 @@ from test import simulate_util
 imaging = simulate_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="lsst"
 )
-mask = al.mask.elliptical(
+mask = al.Mask.elliptical(
     shape=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius=3.0,
@@ -36,10 +36,10 @@ source_galaxy = al.Galaxy(
     regularization=al.reg.instance(coefficient=1.0),
 )
 
-masked_imaging = al.masked_imaging(imaging=imaging, mask=mask)
+masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
-fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
+fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
 
 aplt_array.fit_imaging.subplot_imaging(

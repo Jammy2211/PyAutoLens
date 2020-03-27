@@ -7,7 +7,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 import autolens as al
-from autolens.fit.fit import ImagingFit
+from autolens.fit.fit import FitImaging
 from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
@@ -34,7 +34,7 @@ class TestAttributes:
         class MyPhase(al.PhaseImaging):
             def modify_image(self, image, results):
                 assert imaging_7x7.image.shape_2d == image.shape_2d
-                image = al.array.full(
+                image = al.Array.full(
                     fill_value=20.0, shape_2d=(7, 7), pixel_scales=1.0
                 )
                 return image
@@ -115,7 +115,7 @@ class TestAttributes:
 
         assert (analysis.masked_dataset.mask == binned_up_mask).all()
 
-        masked_imaging = al.masked_imaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
+        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
 
         binned_up_masked_imaging = masked_imaging.binned_from_bin_up_factor(
             bin_up_factor=2
@@ -239,10 +239,10 @@ class TestFit:
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
-        masked_imaging = al.masked_imaging(imaging=imaging_7x7, mask=mask_7x7)
+        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask_7x7)
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
+        fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
         assert fit.likelihood == fit_figure_of_merit
 
@@ -274,9 +274,9 @@ class TestFit:
         )
         assert mask.sub_size == 4
 
-        masked_imaging = al.masked_imaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = ImagingFit(
+        fit = FitImaging(
             masked_imaging=masked_imaging,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
@@ -322,6 +322,6 @@ class TestFit:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = ImagingFit(masked_imaging=masked_imaging_7x7, tracer=tracer)
+        fit = FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
         assert (fit_likelihood == fit.likelihood).all()

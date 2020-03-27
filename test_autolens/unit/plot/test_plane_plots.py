@@ -109,10 +109,10 @@ def test__all_individual_plotters__output_file_with_default_name(
     assert plane_plotter_path + "plane_grid.png" in plot_patch.paths
 
     plane_7x7.galaxies[0].hyper_galaxy = al.HyperGalaxy()
-    plane_7x7.galaxies[0].hyper_model_image = al.array.ones(
+    plane_7x7.galaxies[0].hyper_model_image = al.Array.ones(
         shape_2d=(7, 7), pixel_scales=0.1
     )
-    plane_7x7.galaxies[0].hyper_galaxy_image = al.array.ones(
+    plane_7x7.galaxies[0].hyper_galaxy_image = al.Array.ones(
         shape_2d=(7, 7), pixel_scales=0.1
     )
 
