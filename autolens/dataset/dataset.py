@@ -4,6 +4,8 @@ from autoarray.operators import transformer
 from autolens.fit import fit
 from autolens import exc
 
+import copy
+
 
 class AbstractLensMasked:
     def __init__(self, positions, positions_threshold, preload_sparse_grids_of_planes):
@@ -21,7 +23,7 @@ class AbstractLensMasked:
 
         if self.positions is not None and self.positions_threshold is not None:
 
-            positions_fit = fit.PositionsFit(
+            positions_fit = fit.FitPositions(
                 positions=self.positions,
                 tracer=tracer,
                 noise_map=self.imaging.pixel_scales,
@@ -140,6 +142,15 @@ class MaskedImaging(imaging.MaskedImaging, AbstractLensMasked):
             preload_sparse_grids_of_planes=self.preload_sparse_grids_of_planes,
         )
 
+    def modify_image_and_noise_map(self, image, noise_map):
+
+        masked_imaging = copy.deepcopy(self)
+
+        masked_imaging.image = image
+        masked_imaging.noise_map = noise_map
+
+        return masked_imaging
+
 
 class MaskedInterferometer(interferometer.MaskedInterferometer, AbstractLensMasked):
     def __init__(
@@ -205,3 +216,11 @@ class MaskedInterferometer(interferometer.MaskedInterferometer, AbstractLensMask
             positions_threshold=positions_threshold,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
+
+    def modify_noise_map(self, noise_map):
+
+        masked_interferometer = copy.deepcopy(self)
+
+        masked_interferometer.noise_map = noise_map
+
+        return masked_interferometer

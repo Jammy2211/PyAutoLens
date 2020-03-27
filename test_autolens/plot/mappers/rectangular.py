@@ -6,7 +6,7 @@ import autolens.plot as aplt
 
 # Lets setup a lensed source-plane grid, using a lens galaxy and tracer (our source galaxy doesn't have a light profile,
 # as we're going to reconstruct its light using a pixelization).
-grid = al.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
+grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,

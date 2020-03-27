@@ -42,7 +42,7 @@ def load_test_imaging(
         path=test_path, folder_names=["dataset", "imaging", data_type, data_resolution]
     )
 
-    return al.imaging.from_fits(
+    return al.Imaging.from_fits(
         image_path=dataset_path + "/image.fits",
         psf_path=dataset_path + "/psf.fits",
         noise_map_path=dataset_path + "/noise_map.fits",

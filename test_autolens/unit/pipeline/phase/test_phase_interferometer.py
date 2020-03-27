@@ -7,7 +7,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 import autolens as al
-from autolens.fit.fit import InterferometerFit
+from autolens.fit.fit import FitInterferometer
 from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
@@ -100,7 +100,7 @@ class TestPhase:
         class MyPhase(al.PhaseInterferometer):
             def modify_visibilities(self, visibilities, results):
                 assert interferometer_7.visibilities.shape_1d == visibilities.shape_1d
-                visibilities = al.visibilities.full(fill_value=20.0, shape_1d=(7,))
+                visibilities = al.Visibilities.full(fill_value=20.0, shape_1d=(7,))
                 return visibilities
 
         phase_interferometer_7 = MyPhase(
@@ -136,15 +136,15 @@ class TestPhase:
         self, results_collection_7x7, interferometer_7, mask_7x7
     ):
         results_collection_7x7[0].galaxy_images = [
-            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
-            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
+            al.MaskedArray.full(fill_value=2.0, mask=mask_7x7),
+            al.MaskedArray.full(fill_value=2.0, mask=mask_7x7),
         ]
         results_collection_7x7[0].galaxy_images[0][3] = -1.0
         results_collection_7x7[0].galaxy_images[1][5] = -1.0
 
         results_collection_7x7[0].galaxy_visibilities = [
-            al.visibilities.full(fill_value=2.0, shape_1d=(7,)),
-            al.visibilities.full(fill_value=2.0, shape_1d=(7,)),
+            al.Visibilities.full(fill_value=2.0, shape_1d=(7,)),
+            al.Visibilities.full(fill_value=2.0, shape_1d=(7,)),
         ]
 
         results_collection_7x7[0].galaxy_visibilities[0][3, 1] = -1.0
@@ -221,14 +221,16 @@ class TestPhase:
         real_space_mask = phase_interferometer_7.meta_dataset.mask_with_phase_sub_size_from_mask(
             mask=mask_7x7
         )
-        masked_interferometer = al.masked_interferometer(
+        masked_interferometer = al.MaskedInterferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=real_space_mask,
         )
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        fit = al.fit(masked_dataset=masked_interferometer, tracer=tracer)
+        fit = al.FitInterferometer(
+            masked_interferometer=masked_interferometer, tracer=tracer
+        )
 
         assert fit.likelihood == fit_figure_of_merit
 
@@ -261,13 +263,13 @@ class TestPhase:
         )
         assert real_space_mask.sub_size == 4
 
-        masked_interferometer = al.masked_interferometer(
+        masked_interferometer = al.MaskedInterferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=real_space_mask,
         )
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = InterferometerFit(
+        fit = FitInterferometer(
             masked_interferometer=masked_interferometer,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,

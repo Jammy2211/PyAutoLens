@@ -6,7 +6,7 @@ import os
 # The pixel scale of the image to be simulated
 pixel_scales = 0.1
 
-grid = al.grid.uniform(shape_2d=(50, 50), pixel_scales=pixel_scales, sub_size=1)
+grid = al.Grid.uniform(shape_2d=(50, 50), pixel_scales=pixel_scales, sub_size=1)
 
 print(grid)
 

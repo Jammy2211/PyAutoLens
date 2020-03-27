@@ -6,7 +6,7 @@ import numpy as np
 class TestMaskedImaging:
     def test__masked_dataset_via_autoarray(self, imaging_7x7, sub_mask_7x7):
 
-        masked_imaging_7x7 = al.masked_imaging.manual(
+        masked_imaging_7x7 = al.MaskedImaging.manual(
             imaging=imaging_7x7, mask=sub_mask_7x7
         )
 
@@ -32,7 +32,7 @@ class TestMaskedImaging:
         self, imaging_7x7, sub_mask_7x7, blurring_grid_7x7
     ):
 
-        masked_imaging_7x7 = al.masked_imaging(
+        masked_imaging_7x7 = al.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
             pixel_scale_interpolation_grid=1.0,
@@ -46,7 +46,7 @@ class TestMaskedImaging:
         assert masked_imaging_7x7.inversion_uses_border == False
         assert masked_imaging_7x7.preload_sparse_grids_of_planes == 1
 
-        grid = al.masked_grid.from_mask(mask=sub_mask_7x7)
+        grid = al.MaskedGrid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (masked_imaging_7x7.grid == new_grid).all()
@@ -75,7 +75,7 @@ class TestMaskedImaging:
 
     def test__masked_imaging_6x6_with_binned_up_imaging(self, imaging_6x6, mask_6x6):
 
-        masked_imaging_6x6 = al.masked_imaging(imaging=imaging_6x6, mask=mask_6x6)
+        masked_imaging_6x6 = al.MaskedImaging(imaging=imaging_6x6, mask=mask_6x6)
 
         binned_mask = np.array(
             [[True, True, True], [True, False, True], [True, True, True]]
@@ -103,7 +103,7 @@ class TestMaskedImaging:
         self, imaging_7x7, sub_mask_7x7
     ):
 
-        masked_imaging_7x7 = al.masked_imaging(imaging=imaging_7x7, mask=sub_mask_7x7)
+        masked_imaging_7x7 = al.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
 
         masked_imaging_snr_limit = masked_imaging_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
             signal_to_noise_limit=0.25
@@ -134,7 +134,7 @@ class TestMaskedImaging:
         self, imaging_7x7, sub_mask_7x7
     ):
 
-        masked_imaging_7x7 = al.masked_imaging(
+        masked_imaging_7x7 = al.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
             positions=[1],
@@ -158,6 +158,26 @@ class TestMaskedImaging:
         assert masked_imaging_new.positions_threshold == 2
         assert masked_imaging_new.preload_sparse_grids_of_planes == 3
 
+    def test__modified_image_and_noise_map(
+        self, image_7x7, noise_map_7x7, imaging_7x7, sub_mask_7x7
+    ):
+
+        masked_imaging_7x7 = al.MaskedImaging.manual(
+            imaging=imaging_7x7, mask=sub_mask_7x7
+        )
+
+        image_7x7[0] = 10.0
+        noise_map_7x7[0] = 11.0
+
+        masked_imaging_7x7 = masked_imaging_7x7.modify_image_and_noise_map(
+            image=image_7x7, noise_map=noise_map_7x7
+        )
+
+        assert masked_imaging_7x7.image.in_1d[0] == 10.0
+        assert masked_imaging_7x7.image.in_2d[0, 0] == 10.0
+        assert masked_imaging_7x7.noise_map.in_1d[0] == 11.0
+        assert masked_imaging_7x7.noise_map.in_2d[0, 0] == 11.0
+
 
 class TestMaskedInterferometer:
     def test__masked_dataset_via_autoarray(
@@ -169,7 +189,7 @@ class TestMaskedInterferometer:
         noise_map_7x2,
     ):
 
-        masked_interferometer_7 = al.masked_interferometer(
+        masked_interferometer_7 = al.MaskedInterferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=sub_mask_7x7,
@@ -211,7 +231,7 @@ class TestMaskedInterferometer:
         sub_grid_7x7,
     ):
 
-        masked_interferometer_7 = al.masked_interferometer(
+        masked_interferometer_7 = al.MaskedInterferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=sub_mask_7x7,
@@ -229,7 +249,7 @@ class TestMaskedInterferometer:
         assert masked_interferometer_7.inversion_uses_border == False
         assert masked_interferometer_7.preload_sparse_grids_of_planes == 1
 
-        grid = al.masked_grid.from_mask(mask=sub_mask_7x7)
+        grid = al.MaskedGrid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (masked_interferometer_7.grid == new_grid).all()
@@ -243,26 +263,26 @@ class TestMaskedInterferometer:
     def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
         self
     ):
-        interferometer = al.interferometer.manual(
-            visibilities=al.visibilities.ones(shape_1d=(19,)),
-            primary_beam=al.kernel.ones(shape_2d=(7, 7), pixel_scales=1.0),
-            noise_map=al.visibilities.full(fill_value=2.0, shape_1d=(19,)),
+        interferometer = al.Interferometer.manual(
+            visibilities=al.Visibilities.ones(shape_1d=(19,)),
+            primary_beam=al.Kernel.ones(shape_2d=(7, 7), pixel_scales=1.0),
+            noise_map=al.Visibilities.full(fill_value=2.0, shape_1d=(19,)),
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
 
         visibilities_mask = np.full(fill_value=False, shape=(19,))
 
-        real_space_mask = al.mask.unmasked(
+        real_space_mask = al.Mask.unmasked(
             shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         real_space_mask[9, 9] = False
 
-        masked_interferometer = al.masked_interferometer(
+        masked_interferometer = al.MaskedInterferometer(
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
             primary_beam_shape_2d=(5, 5),
-            positions=[al.grid_irregular.manual_1d([[1.0, 1.0]])],
+            positions=[al.GridIrregular.manual_1d([[1.0, 1.0]])],
             positions_threshold=1.0,
         )
 
@@ -277,3 +297,22 @@ class TestMaskedInterferometer:
 
         assert (masked_interferometer.positions[0] == np.array([[1.0, 1.0]])).all()
         assert masked_interferometer.positions_threshold == 1.0
+
+    def test__modified_noise_map(
+        self, noise_map_7x2, interferometer_7, sub_mask_7x7, visibilities_mask_7x2
+    ):
+
+        masked_interferometer_7 = al.MaskedInterferometer(
+            interferometer=interferometer_7,
+            visibilities_mask=visibilities_mask_7x2,
+            real_space_mask=sub_mask_7x7,
+            transformer_class=transformer.TransformerDFT,
+        )
+
+        noise_map_7x2[0, 0] = 10.0
+
+        masked_interferometer_7 = masked_interferometer_7.modify_noise_map(
+            noise_map=noise_map_7x2
+        )
+
+        assert masked_interferometer_7.noise_map[0, 0] == 10.0

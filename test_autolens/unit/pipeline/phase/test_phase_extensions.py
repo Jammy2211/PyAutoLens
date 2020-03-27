@@ -5,7 +5,7 @@ import pytest
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens.fit.fit import ImagingFit
+from autolens.fit.fit import FitImaging
 from test_autolens.mock import mock_pipeline
 
 
@@ -262,9 +262,9 @@ class TestHyperGalaxyPhase:
         )
         assert mask.sub_size == 2
 
-        masked_imaging = al.masked_imaging(imaging=imaging_7x7, mask=mask)
+        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = ImagingFit(
+        fit = FitImaging(
             masked_imaging=masked_imaging,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,

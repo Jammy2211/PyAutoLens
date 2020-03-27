@@ -279,7 +279,7 @@ class TestMakeAnalysis:
     def test__mask_input_uses_mask(self, phase_imaging_7x7, imaging_7x7):
         # If an input mask is supplied we use mask input.
 
-        mask_input = al.mask.circular(
+        mask_input = al.Mask.circular(
             shape_2d=imaging_7x7.shape_2d, pixel_scales=1.0, sub_size=1, radius=1.5
         )
 
@@ -293,7 +293,7 @@ class TestMakeAnalysis:
     ):
         # If an input mask is supplied we use mask input.
 
-        mask_input = al.mask.circular(
+        mask_input = al.Mask.circular(
             shape_2d=imaging_7x7.shape_2d, pixel_scales=1, sub_size=1, radius=1.5
         )
 
@@ -641,8 +641,8 @@ class TestHyperMethods:
     ):
 
         results_collection_7x7[0].galaxy_images = [
-            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
-            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
+            al.MaskedArray.full(fill_value=2.0, mask=mask_7x7),
+            al.MaskedArray.full(fill_value=2.0, mask=mask_7x7),
         ]
         results_collection_7x7[0].galaxy_images[0][3] = -1.0
         results_collection_7x7[0].galaxy_images[1][5] = -1.0

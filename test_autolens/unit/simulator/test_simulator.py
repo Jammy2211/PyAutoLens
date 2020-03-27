@@ -11,12 +11,12 @@ test_data_dir = "{}/../test_files/arrays/".format(
 
 class TestSimulatorImaging:
     def test__from_tracer__same_as_manual_tracer_input(self):
-        psf = al.kernel.manual_2d(
+        psf = al.Kernel.manual_2d(
             array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
             pixel_scales=1.0,
         )
 
-        grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
+        grid = al.Grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
         lens_galaxy = al.Galaxy(
             redshift=0.5,
@@ -43,7 +43,7 @@ class TestSimulatorImaging:
 
         imaging_simulated = simulator.from_tracer(tracer=tracer)
 
-        imaging_manual = al.imaging.simulate(
+        imaging_manual = al.Imaging.simulate(
             image=tracer.padded_profile_image_from_grid_and_psf_shape(
                 grid=grid, psf_shape_2d=(3, 3)
             ),
@@ -68,12 +68,12 @@ class TestSimulatorImaging:
         self
     ):
 
-        psf = al.kernel.manual_2d(
+        psf = al.Kernel.manual_2d(
             array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
             pixel_scales=0.05,
         )
 
-        grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
+        grid = al.Grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
         lens_galaxy = al.Galaxy(
             redshift=0.5, mass=al.mp.EllipticalIsothermal(einstein_radius=1.6)
@@ -101,7 +101,7 @@ class TestSimulatorImaging:
             galaxies=[source_galaxy],
         )
 
-        imaging_manual = al.imaging.simulate(
+        imaging_manual = al.Imaging.simulate(
             image=tracer.padded_profile_image_from_grid_and_psf_shape(
                 grid=grid, psf_shape_2d=(1, 1)
             ),
@@ -145,9 +145,9 @@ class TestSimulatorImaging:
             ),
         )
 
-        grid = al.grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=1)
+        grid = al.Grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=1)
 
-        psf = al.kernel.from_gaussian(shape_2d=(7, 7), sigma=0.1, pixel_scales=0.2)
+        psf = al.Kernel.from_gaussian(shape_2d=(7, 7), sigma=0.1, pixel_scales=0.2)
 
         simulator = al.simulator.imaging(
             shape_2d=(11, 11),
@@ -166,7 +166,7 @@ class TestSimulatorImaging:
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-        imaging_manual = al.imaging.simulate(
+        imaging_manual = al.Imaging.simulate(
             image=tracer.padded_profile_image_from_grid_and_psf_shape(
                 grid=grid, psf_shape_2d=(7, 7)
             ),
@@ -197,7 +197,7 @@ class TestSimulatorImaging:
 class TestSimulatorInterferometer:
     def test__from_tracer__same_as_manual_tracer_input(self):
 
-        grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
+        grid = al.Grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
         lens_galaxy = al.Galaxy(
             redshift=0.5,
@@ -224,7 +224,7 @@ class TestSimulatorInterferometer:
 
         interferometer_simulated = simulator.from_tracer(tracer=tracer)
 
-        interferometer_manual = al.interferometer.simulate(
+        interferometer_manual = al.Interferometer.simulate(
             real_space_image=tracer.profile_image_from_grid(grid=grid),
             transformer=simulator.transformer,
             real_space_pixel_scales=0.05,
@@ -249,7 +249,7 @@ class TestSimulatorInterferometer:
         self
     ):
 
-        grid = al.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
+        grid = al.Grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
 
         lens_galaxy = al.Galaxy(
             redshift=0.5, mass=al.mp.EllipticalIsothermal(einstein_radius=1.6)
@@ -277,7 +277,7 @@ class TestSimulatorInterferometer:
             galaxies=[source_galaxy],
         )
 
-        interferometer_manual = al.interferometer.simulate(
+        interferometer_manual = al.Interferometer.simulate(
             real_space_image=tracer.profile_image_from_grid(grid=grid),
             real_space_pixel_scales=0.05,
             transformer=simulator.transformer,
@@ -321,7 +321,7 @@ class TestSimulatorInterferometer:
             ),
         )
 
-        grid = al.grid.uniform(shape_2d=(11, 11), pixel_scales=0.05, sub_size=1)
+        grid = al.Grid.uniform(shape_2d=(11, 11), pixel_scales=0.05, sub_size=1)
 
         simulator = al.simulator.interferometer(
             real_space_shape_2d=(11, 11),
@@ -340,7 +340,7 @@ class TestSimulatorInterferometer:
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-        interferometer_manual = al.interferometer.simulate(
+        interferometer_manual = al.Interferometer.simulate(
             real_space_image=tracer.profile_image_from_grid(grid=grid),
             real_space_pixel_scales=0.05,
             transformer=simulator.transformer,

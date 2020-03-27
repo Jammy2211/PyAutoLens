@@ -9,7 +9,7 @@ from autolens.simulator import simulator
 
 
 def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__noise_normalization_correct():
-    psf = al.kernel.manual_2d(
+    psf = al.Kernel.manual_2d(
         array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         pixel_scales=0.2,
     )
@@ -39,7 +39,7 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
 
     imaging_simulated = imaging_simulator.from_tracer(tracer=tracer)
 
-    imaging_simulated.noise_map = al.array.ones(
+    imaging_simulated.noise_map = al.Array.ones(
         shape_2d=imaging_simulated.image.shape_2d
     )
 
@@ -61,22 +61,22 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
         psf_path=path + "/psf.fits",
     )
 
-    imaging = al.imaging.from_fits(
+    imaging = al.Imaging.from_fits(
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
         pixel_scales=0.2,
     )
 
-    mask = al.mask.circular(
+    mask = al.Mask.circular(
         shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=2, radius=0.8
     )
 
-    masked_imaging = al.masked_imaging(imaging=imaging, mask=mask)
+    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
     assert fit.chi_squared == 0.0
 
@@ -90,9 +90,9 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
 
 def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
-    psf = al.kernel.from_gaussian(shape_2d=(3, 3), pixel_scales=0.2, sigma=0.75)
+    psf = al.Kernel.from_gaussian(shape_2d=(3, 3), pixel_scales=0.2, sigma=0.75)
 
-    grid = al.grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=1)
+    grid = al.Grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=1)
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
@@ -120,7 +120,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
             grid=grid, psf_shape_2d=psf.shape_2d
         )
     )
-    imaging_simulated.noise_map = al.array.ones(
+    imaging_simulated.noise_map = al.Array.ones(
         shape_2d=imaging_simulated.image.shape_2d
     )
 
@@ -142,22 +142,22 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
         psf_path=path + "/psf.fits",
     )
 
-    imaging = al.imaging.from_fits(
+    imaging = al.Imaging.from_fits(
         image_path=path + "/image.fits",
         noise_map_path=path + "/noise_map.fits",
         psf_path=path + "/psf.fits",
         pixel_scales=0.2,
     )
 
-    mask = al.mask.circular(
+    mask = al.Mask.circular(
         shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=1, radius=0.8
     )
 
-    masked_imaging = al.masked_imaging(imaging=imaging, mask=mask)
+    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
     assert fit.chi_squared == pytest.approx(0.0, 1e-4)
 
@@ -188,7 +188,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         real_space_shape_2d=(51, 51),
         real_space_pixel_scales=0.1,
         uv_wavelengths=np.ones(shape=(7, 2)),
-        transformer_class=al.transformer_dft,
+        transformer_class=al.TransformerDFT,
         sub_size=2,
         exposure_time=300.0,
         background_level=0.0,
@@ -216,7 +216,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         uv_wavelengths_path=path + "/uv_wavelengths.fits",
     )
 
-    interferometer = al.interferometer.from_fits(
+    interferometer = al.Interferometer.from_fits(
         visibilities_path=path + "/visibilities.fits",
         noise_map_path=path + "/noise_map.fits",
         uv_wavelengths_path=path + "/uv_wavelengths.fits",
@@ -224,19 +224,21 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
 
     visibilities_mask = np.full(fill_value=False, shape=(7, 2))
 
-    real_space_mask = al.mask.unmasked(shape_2d=(51, 51), pixel_scales=0.1, sub_size=2)
+    real_space_mask = al.Mask.unmasked(shape_2d=(51, 51), pixel_scales=0.1, sub_size=2)
 
-    masked_interferometer = al.masked_interferometer(
+    masked_interferometer = al.MaskedInterferometer(
         interferometer=interferometer,
         visibilities_mask=visibilities_mask,
         real_space_mask=real_space_mask,
-        transformer_class=al.transformer_dft,
+        transformer_class=al.TransformerDFT,
         inversion_uses_border=False,
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.fit(masked_dataset=masked_interferometer, tracer=tracer)
+    fit = al.FitInterferometer(
+        masked_interferometer=masked_interferometer, tracer=tracer
+    )
 
     assert fit.chi_squared == 0.0
 
@@ -254,7 +256,9 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.fit(masked_dataset=masked_interferometer, tracer=tracer)
+    fit = al.FitInterferometer(
+        masked_interferometer=masked_interferometer, tracer=tracer
+    )
     assert abs(fit.chi_squared) < 1.0e-4
 
     path = "{}/data_temp".format(

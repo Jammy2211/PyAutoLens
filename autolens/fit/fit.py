@@ -5,24 +5,7 @@ from autoastro.galaxy import galaxy as g
 from autolens.dataset import dataset as d
 
 
-def fit(masked_dataset, tracer, hyper_image_sky=None, hyper_background_noise=None):
-
-    if isinstance(masked_dataset, d.MaskedImaging):
-        return ImagingFit(
-            masked_imaging=masked_dataset,
-            tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-        )
-    elif isinstance(masked_dataset, d.MaskedInterferometer):
-        return InterferometerFit(
-            masked_interferometer=masked_dataset,
-            tracer=tracer,
-            hyper_background_noise=hyper_background_noise,
-        )
-
-
-class ImagingFit(aa_fit.ImagingFit):
+class FitImaging(aa_fit.FitImaging):
     def __init__(
         self, masked_imaging, tracer, hyper_image_sky=None, hyper_background_noise=None
     ):
@@ -37,7 +20,6 @@ class ImagingFit(aa_fit.ImagingFit):
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
 
-        self.masked_dataset = masked_imaging
         self.tracer = tracer
 
         image = hyper_image_from_image_and_hyper_image_sky(
@@ -49,6 +31,16 @@ class ImagingFit(aa_fit.ImagingFit):
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
+
+        if (
+            tracer.has_hyper_galaxy
+            or hyper_image_sky is not None
+            or hyper_background_noise is not None
+        ):
+
+            masked_imaging = masked_imaging.modify_image_and_noise_map(
+                image=image, noise_map=noise_map
+            )
 
         self.blurred_profile_image = tracer.blurred_profile_image_from_grid_and_convolver(
             grid=masked_imaging.grid,
@@ -79,11 +71,7 @@ class ImagingFit(aa_fit.ImagingFit):
             )
 
         super().__init__(
-            mask=masked_imaging.mask,
-            image=image,
-            noise_map=noise_map,
-            model_image=model_image,
-            inversion=inversion,
+            masked_imaging=masked_imaging, model_image=model_image, inversion=inversion
         )
 
     @property
@@ -155,7 +143,7 @@ class ImagingFit(aa_fit.ImagingFit):
         return len(list(filter(None, self.tracer.regularizations_of_planes)))
 
 
-class InterferometerFit(aa_fit.InterferometerFit):
+class FitInterferometer(aa_fit.FitInterferometer):
     def __init__(self, masked_interferometer, tracer, hyper_background_noise=None):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
@@ -175,7 +163,12 @@ class InterferometerFit(aa_fit.InterferometerFit):
         else:
             noise_map = masked_interferometer.noise_map
 
-        self.masked_dataset = masked_interferometer
+        if hyper_background_noise is not None:
+
+            masked_interferometer = masked_interferometer.modify_noise_map(
+                noise_map=noise_map
+            )
+
         self.tracer = tracer
 
         self.profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
@@ -208,9 +201,7 @@ class InterferometerFit(aa_fit.InterferometerFit):
             )
 
         super().__init__(
-            visibilities_mask=masked_interferometer.visibilities_mask,
-            visibilities=masked_interferometer.visibilities,
-            noise_map=noise_map,
+            masked_interferometer=masked_interferometer,
             model_visibilities=model_visibilities,
             inversion=inversion,
         )
@@ -290,7 +281,7 @@ class InterferometerFit(aa_fit.InterferometerFit):
         return len(list(filter(None, self.tracer.regularizations_of_planes)))
 
 
-class PositionsFit:
+class FitPositions:
     def __init__(self, positions, tracer, noise_map):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher likelihood.

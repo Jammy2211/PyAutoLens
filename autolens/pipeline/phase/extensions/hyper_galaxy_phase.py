@@ -51,11 +51,8 @@ class Analysis(af.Analysis):
                 hyper_galaxy_image=self.hyper_galaxy_image,
             )
 
-            fit_normal = aa_fit.ImagingFit(
-                image=self.masked_imaging.image,
-                noise_map=self.masked_imaging.noise_map,
-                mask=self.masked_imaging.mask,
-                model_image=self.hyper_model_image,
+            fit_normal = aa_fit.FitImaging(
+                masked_imaging=self.masked_imaging, model_image=self.hyper_model_image
             )
 
             fit_hyper = self.fit_for_hyper_galaxy(
@@ -130,11 +127,12 @@ class Analysis(af.Analysis):
 
         noise_map = noise_map + hyper_noise_map
 
-        return aa_fit.ImagingFit(
-            image=image,
-            noise_map=noise_map,
-            mask=self.masked_imaging.mask,
-            model_image=self.hyper_model_image,
+        masked_imaging = self.masked_imaging.modify_image_and_noise_map(
+            image=image, noise_map=noise_map
+        )
+
+        return aa_fit.FitImaging(
+            masked_imaging=masked_imaging, model_image=self.hyper_model_image
         )
 
     @classmethod
