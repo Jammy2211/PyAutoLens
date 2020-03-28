@@ -40,16 +40,16 @@ print(fit.inversion.mapper.pixelization_grid)
 
 print(fit.inversion.interpolated_reconstruction_from_shape_2d())
 
-# aplt.inversion.interpolated_reconstruction(inversion=fit.inversion)
+# aplt.Inversion.interpolated_reconstruction(inversion=fit.inversion)
 
-# aplt.fit_imaging.subplot_of_plane(
+# aplt.FitImaging.subplot_of_plane(
 #     fit=fit, plane_index=1,
 # )
 #
-# aplt.fit_imaging.subplot_of_plane(
+# aplt.FitImaging.subplot_of_plane(
 #     fit=fit,
 #     plane_index=1,
 # )
 
-aplt.fit_imaging.subplot_fit_imaging(fit=fit)
-aplt.inversion.subplot_inversion(inversion=fit.inversion, caustics=tracer.caustics)
+aplt.FitImaging.subplot_fit_imaging(fit=fit)
+aplt.Inversion.subplot_inversion(inversion=fit.inversion, caustics=tracer.caustics)

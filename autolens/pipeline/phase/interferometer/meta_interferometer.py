@@ -1,4 +1,4 @@
-from autolens.dataset import dataset as d
+from autolens.dataset import interferometer
 from autolens.pipeline.phase.dataset import meta_dataset
 
 
@@ -45,7 +45,7 @@ class MetaInterferometer(meta_dataset.MetaDataset):
             results=results
         )
 
-        masked_interferometer = d.MaskedInterferometer(
+        masked_interferometer = interferometer.MaskedInterferometer(
             interferometer=dataset.modified_visibilities_from_visibilities(
                 modified_visibilities
             ),

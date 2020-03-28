@@ -73,7 +73,6 @@ class TestFitImaging:
 
             imaging = al.Imaging(
                 image=5.0 * al.Array.ones(shape_2d=(3, 4)),
-                pixel_scales=1.0,
                 psf=psf,
                 noise_map=al.Array.ones(shape_2d=(3, 4)),
             )
@@ -175,8 +174,7 @@ class TestFitImaging:
             )
 
             imaging = al.Imaging(
-                5.0 * al.Array.ones(shape_2d=(3, 4)),
-                pixel_scales=1.0,
+                image=5.0 * al.Array.ones(shape_2d=(3, 4)),
                 psf=psf,
                 noise_map=al.Array.ones(shape_2d=(3, 4)),
             )
@@ -282,8 +280,7 @@ class TestFitImaging:
             )
 
             imaging = al.Imaging(
-                5.0 * al.Array.ones(shape_2d=(3, 4)),
-                pixel_scales=1.0,
+                image=5.0 * al.Array.ones(shape_2d=(3, 4)),
                 psf=psf,
                 noise_map=al.Array.ones(shape_2d=(3, 4)),
             )
@@ -386,8 +383,7 @@ class TestFitImaging:
             )
 
             imaging = al.Imaging(
-                al.Array.full(fill_value=4.0, shape_2d=(3, 4)),
-                pixel_scales=1.0,
+                image=al.Array.full(fill_value=4.0, shape_2d=(3, 4)),
                 psf=psf,
                 noise_map=al.Array.ones(shape_2d=(3, 4)),
             )
@@ -492,8 +488,7 @@ class TestFitImaging:
             )
 
             imaging = al.Imaging(
-                5.0 * al.Array.ones(shape_2d=(3, 4)),
-                pixel_scales=1.0,
+                image=5.0 * al.Array.ones(shape_2d=(3, 4)),
                 psf=psf,
                 noise_map=al.Array.ones(shape_2d=(3, 4)),
             )

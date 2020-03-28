@@ -18,9 +18,9 @@ files:
         pixel_scales=0.1,
     )
 
-    aplt.imaging.image(imaging=imaging)
-    aplt.imaging.noise_map(imaging=imaging)
-    aplt.imaging.psf(imaging=imaging, plotter=plotter)
+    aplt.Imaging.image(imaging=imaging)
+    aplt.Imaging.noise_map(imaging=imaging)
+    aplt.Imaging.psf(imaging=imaging, plotter=plotter)
 
 Here's what our image, noise-map and point-spread function look like:
 
@@ -39,7 +39,7 @@ omitted from the fit:
 
     masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
-    aplt.imaging.image(imaging=masked_imaging)
+    aplt.Imaging.image(imaging=masked_imaging)
 
 Here is what our image looks like with the mask applied:
 
@@ -55,9 +55,9 @@ to create the model imag we fit the data with, such as blurring the tracer's ima
 
     fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-    aplt.fit_imaging.model_imagefit=fit)
-    aplt.fit_imaging.residual_map(fit=fit)
-    aplt.fit_imaging.chi_squared_map(fit=fit)
+    aplt.FitImaging.model_imagefit=fit)
+    aplt.FitImaging.residual_map(fit=fit)
+    aplt.FitImaging.chi_squared_map(fit=fit)
 
 For a good lens model, that is one whose model image (and therefore tracer) is representative of the data one will
 see the residuals and chi-squared values minimized:

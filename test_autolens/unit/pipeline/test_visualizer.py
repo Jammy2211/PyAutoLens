@@ -11,7 +11,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="plot_path")
 def make_visualizer_plotter_setup():
-    return "{}/../test_files/plotting/visualizer/".format(
+    return "{}/files/plot/visualizer/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 
@@ -19,7 +19,7 @@ def make_visualizer_plotter_setup():
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
-        path.join(directory, "../test_files/plot"), path.join(directory, "output")
+        path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 
 

@@ -26,7 +26,7 @@ Cartesian grids of (y,x) coordinates. Below, we make and plot a uniform Cartesia
         shape_2d=(50, 50), pixel_scales=0.05 # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
     )
 
-    aplt.grid(grid=grid)
+    aplt.Grid(grid=grid)
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/grid.png
   :width: 400
@@ -58,7 +58,7 @@ The plot module provides convinience methods for plotting properties of objects,
 
 .. code-block:: bash
 
-    aplt.lp(light_profile=sersic_light_profile)
+    aplt.LightProfile(light_profile=sersic_light_profile)
 
 Heres the image of the light profile:
 
@@ -83,9 +83,9 @@ potential and deflection angles on our Cartesian grid:
     potential = isothermal_mass_profile.potential_from_grid(grid=grid)
     deflections = isothermal_mass_profile.deflections_from_grid(grid=grid)
 
-    aplt.mp.convergence(mass_profile=isothermal_mass_profile)
-    aplt.mp.potential(mass_profile=isothermal_mass_profile)
-    aplt.mp.deflections(mass_profile=isothermal_mass_profile)
+    aplt.MassProfile.convergence(mass_profile=isothermal_mass_profile)
+    aplt.MassProfile.potential(mass_profile=isothermal_mass_profile)
+    aplt.MassProfile.deflections(mass_profile=isothermal_mass_profile)
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/isothermal_mass_profile_convergence.png
   :width: 400
@@ -131,7 +131,7 @@ lens system.
 
     image = tracer.profile_image_from_grid(grid=grid)
 
-    aplt.tracer.profile_image(tracer=tracer, grid=grid)
+    aplt.Tracer.profile_image(tracer=tracer, grid=grid)
 
 When computing the imae from the tracer above, the tracer performs all ray-tracing for the given strong lens system.
 This includes using the lens galaxy's mass profile to deflect the light-rays that are traced to the source galaxy.
@@ -197,7 +197,7 @@ distinct Einstein rings!
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
 
-    aplt.tracer.profile_image(tracer=tracer, grid=grid)
+    aplt.Tracer.profile_image(tracer=tracer, grid=grid)
 
 This is what the lens looks like:
 

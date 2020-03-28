@@ -18,11 +18,11 @@ mask = al.Mask.elliptical(
     centre=(0.0, 0.0),
 )
 
-# aplt.imaging.subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
-# aplt.imaging.subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='auto')
+# aplt.Imaging.subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
+# aplt.Imaging.subplot(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='auto')
 
-# aplt.imaging.image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='square')
-# aplt.imaging.image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
+# aplt.Imaging.image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='square')
+# aplt.Imaging.image(imaging=imaging, mask=mask, zoom_around_mask=True, aspect='equal')
 
 # The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.

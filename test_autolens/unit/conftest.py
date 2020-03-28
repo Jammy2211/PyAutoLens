@@ -13,7 +13,7 @@ directory = path.dirname(path.realpath(__file__))
 @pytest.fixture(autouse=True)
 def set_config_path():
     af.conf.instance = af.conf.Config(
-        path.join(directory, "test_files/config"), path.join(directory, "output")
+        path.join(directory, "config"), path.join(directory, "pipeline/output")
     )
 
 
@@ -26,14 +26,14 @@ def set_config_path():
 
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
-    return al.MaskedImaging.manual(imaging=imaging_7x7, mask=sub_mask_7x7)
+    return al.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="masked_interferometer_7")
 def make_masked_interferometer_7(
     interferometer_7, mask_7x7, visibilities_mask_7x2, sub_grid_7x7, transformer_7x7_7
 ):
-    return al.MaskedInterferometer.manual(
+    return al.MaskedInterferometer(
         interferometer=interferometer_7,
         visibilities_mask=visibilities_mask_7x2,
         real_space_mask=mask_7x7,

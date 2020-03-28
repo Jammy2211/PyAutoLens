@@ -33,7 +33,7 @@ mapper = rectangular.mapper_from_grid_and_sparse_grid(grid=source_plane_grid)
 
 # Infact, we can plot the source-plane grid and rectangular pixelization grid on our pixelization - to make it look
 # slightly less boring!
-aplt.mapper_obj(
+aplt.MapperObj(
     mapper=mapper,
     include=aplt.Include(inversion_grid=True, inversion_pixelization_grid=True),
     plotter=aplt.Plotter(
