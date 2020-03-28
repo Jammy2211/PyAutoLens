@@ -42,13 +42,13 @@ def fit_with_offset_centre(centre):
 
 fit = fit_with_offset_centre(centre=(2.0, 2.0))
 
-# aplt.fit_imaging.subplot_for_plane(fit=fit, plane_index=1, plot_source_grid=True)
+# aplt.FitImaging.subplot_for_plane(fit=fit, plane_index=1, plot_source_grid=True)
 
-aplt.inversion.reconstruction(inversion=fit.inversion, include_grid=True)
+aplt.Inversion.reconstruction(inversion=fit.inversion, include_grid=True)
 
 stop
 
-aplt.fit_imaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit,
     mask=True,
     positions=[[(2.2, 2.2), (-0.2, -0.2), (-0.2, 2.2), (2.2, -0.2)]],
@@ -58,7 +58,7 @@ aplt.fit_imaging.subplot_fit_imaging(
 fit = fit_with_offset_centre(centre=(2.05, 2.05))
 
 
-aplt.fit_imaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit,
     mask=True,
     positions=[[(2.2, 2.2), (-0.2, -0.2), (-0.2, 2.2), (2.2, -0.2)]],
@@ -67,7 +67,7 @@ aplt.fit_imaging.subplot_fit_imaging(
 
 fit = fit_with_offset_centre(centre=(2.1, 2.1))
 
-aplt.fit_imaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit,
     mask=True,
     positions=[[(2.2, 2.2), (-0.2, -0.2), (-0.2, 2.2), (2.2, -0.2)]],
@@ -76,7 +76,7 @@ aplt.fit_imaging.subplot_fit_imaging(
 
 fit = fit_with_offset_centre(centre=(2.95, 2.95))
 
-aplt.fit_imaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit,
     mask=True,
     positions=[[(2.2, 2.2), (-0.2, -0.2), (-0.2, 2.2), (2.2, -0.2)]],
@@ -85,7 +85,7 @@ aplt.fit_imaging.subplot_fit_imaging(
 
 fit = fit_with_offset_centre(centre=(5.9, 5.9))
 
-aplt.fit_imaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit,
     mask=True,
     positions=[[(2.2, 2.2), (-0.2, -0.2), (-0.2, 2.2), (2.2, -0.2)]],

@@ -16,15 +16,15 @@ def simulator_from_data_resolution(data_resolution, sub_size):
         A string giving the resolution of the desired data_type type (LSST | Euclid | HST | HST_Up | AO).
     """
     if data_resolution == "lsst":
-        return al.simulator.imaging.lsst(sub_size=sub_size)
+        return al.SimulatorImaging.lsst(sub_size=sub_size)
     elif data_resolution == "euclid":
-        return al.simulator.imaging.euclid(sub_size=sub_size)
+        return al.SimulatorImaging.euclid(sub_size=sub_size)
     elif data_resolution == "hst":
-        return al.simulator.imaging.hst(sub_size=sub_size)
+        return al.SimulatorImaging.hst(sub_size=sub_size)
     elif data_resolution == "hst_up":
-        return al.simulator.imaging.hst_up_sampled(sub_size=sub_size)
+        return al.SimulatorImaging.hst_up_sampled(sub_size=sub_size)
     elif data_resolution == "ao":
-        return al.simulator.imaging.keck_adaptive_optics(sub_size=sub_size)
+        return al.SimulatorImaging.keck_adaptive_optics(sub_size=sub_size)
     else:
         raise ValueError(
             "An invalid data_type resolution was entered - ", data_resolution
@@ -45,7 +45,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
     # Use the input galaxies to setup a tracer, which will generate the image for the simulated imaging data.
     tracer = al.Tracer.from_galaxies(galaxies=galaxies)
 
-    imaging = simulator.from_tracer(tracer=tracer)
+    imaging = simulator.from_tracer_and_grid(tracer=tracer)
 
     # Now, lets output this simulated imaging-data to the test_autoarray/simulator folder.
     test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
@@ -61,14 +61,14 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         overwrite=True,
     )
 
-    aplt.imaging.subplot_imaging(
+    aplt.Imaging.subplot_imaging(
         imaging=imaging,
         output_filename="imaging",
         output_path=dataset_path,
         format="png",
     )
 
-    aplt.imaging.individual(
+    aplt.Imaging.individual(
         imaging=imaging,
         plot_image=True,
         plot_noise_map=True,
@@ -78,7 +78,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         format="png",
     )
 
-    aplt.tracer.subplot_tracer(
+    aplt.Tracer.subplot_tracer(
         tracer=tracer,
         grid=simulator.grid,
         output_filename="tracer",
@@ -86,7 +86,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
         format="png",
     )
 
-    aplt.tracer.individual(
+    aplt.Tracer.individual(
         tracer=tracer,
         grid=simulator.grid,
         plot_profile_image=True,

@@ -2474,7 +2474,7 @@ class TestPlane:
     class TestSummarize:
         def test__plane_x2_galaxies__summarize_is_correct(self):
 
-            test_path = "{}/../test_files/summary".format(
+            test_path = "{}/files/summary".format(
                 os.path.dirname(os.path.realpath(__file__))
             )
             af.conf.instance = af.conf.Config(config_path=test_path)

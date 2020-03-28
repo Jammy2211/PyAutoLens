@@ -7,7 +7,7 @@
 # from autofit.optimize.non_linear.mock_nlo import MockOutput
 #
 # directory = path.dirname(path.realpath(__file__))
-# aggregator_directory = "{}/test_files/aggregator".format(directory)
+# aggregator_directory = "{}/files/aggregator".format(directory)
 #
 #
 # @pytest.fixture(name="aggregator")

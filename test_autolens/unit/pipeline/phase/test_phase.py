@@ -18,9 +18,9 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
-    print("{}/../test_files/config/".format(directory))
+    print("{}/config/".format(directory))
 
-    af.conf.instance = af.conf.Config("{}/../../test_files/config/".format(directory))
+    af.conf.instance = af.conf.Config("{}/config/".format(directory))
 
 
 def clean_images():

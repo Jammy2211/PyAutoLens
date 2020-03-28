@@ -2,7 +2,6 @@ import numpy as np
 
 from autoarray.fit import fit as aa_fit
 from autoastro.galaxy import galaxy as g
-from autolens.dataset import dataset as d
 
 
 class FitImaging(aa_fit.FitImaging):

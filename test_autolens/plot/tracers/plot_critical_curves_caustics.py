@@ -26,7 +26,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-aplt.tracer.profile_image(
+aplt.Tracer.profile_image(
     tracer=tracer,
     grid=grid,
     mask=mask,
@@ -34,6 +34,6 @@ aplt.tracer.profile_image(
     plotter=plotter,
 )
 
-aplt.tracer.subplot_tracer(
+aplt.Tracer.subplot_tracer(
     include=lensing_plotters.Include(caustics=True), sub_plotter=sub_plotter
 )

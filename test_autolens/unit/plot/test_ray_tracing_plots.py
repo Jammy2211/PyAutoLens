@@ -13,7 +13,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="ray_tracing_plotter_path")
 def make_ray_tracing_plotter_setup():
-    return "{}/../../test_files/plotting/ray_tracing/".format(
+    return "{}/files/plots/ray_tracing/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 
@@ -21,7 +21,7 @@ def make_ray_tracing_plotter_setup():
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
-        path.join(directory, "../test_files/plot"), path.join(directory, "output")
+        path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 
 
@@ -33,7 +33,7 @@ def test__all_individual_plotters(
     ray_tracing_plotter_path,
     plot_patch,
 ):
-    aplt.tracer.profile_image(
+    aplt.Tracer.profile_image(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         include=include_all,
@@ -44,7 +44,7 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "profile_image.png" in plot_patch.paths
 
-    aplt.tracer.convergence(
+    aplt.Tracer.convergence(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         include=include_all,
@@ -55,7 +55,7 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "convergence.png" in plot_patch.paths
 
-    aplt.tracer.potential(
+    aplt.Tracer.potential(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         include=include_all,
@@ -66,7 +66,7 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "potential.png" in plot_patch.paths
 
-    aplt.tracer.deflections_y(
+    aplt.Tracer.deflections_y(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         include=include_all,
@@ -77,7 +77,7 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "deflections_y.png" in plot_patch.paths
 
-    aplt.tracer.deflections_x(
+    aplt.Tracer.deflections_x(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         include=include_all,
@@ -88,7 +88,7 @@ def test__all_individual_plotters(
 
     assert ray_tracing_plotter_path + "deflections_x.png" in plot_patch.paths
 
-    aplt.tracer.magnification(
+    aplt.Tracer.magnification(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         include=include_all,
@@ -107,7 +107,7 @@ def test__all_individual_plotters(
         shape_2d=(7, 7), pixel_scales=0.1
     )
 
-    aplt.tracer.contribution_map(
+    aplt.Tracer.contribution_map(
         tracer=tracer_x2_plane_7x7,
         mask=mask_7x7,
         include=include_all,
@@ -122,7 +122,7 @@ def test__all_individual_plotters(
 def test__tracer_sub_plot_output(
     tracer_x2_plane_7x7, sub_grid_7x7, include_all, ray_tracing_plotter_path, plot_patch
 ):
-    aplt.tracer.subplot_tracer(
+    aplt.Tracer.subplot_tracer(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         include=include_all,
@@ -137,7 +137,7 @@ def test__tracer_sub_plot_output(
 def test__tracer_individuals__dependent_on_input(
     tracer_x2_plane_7x7, sub_grid_7x7, include_all, ray_tracing_plotter_path, plot_patch
 ):
-    aplt.tracer.individual(
+    aplt.Tracer.individual(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         plot_profile_image=True,

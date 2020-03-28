@@ -83,25 +83,6 @@ class PhaseImaging(dataset.PhaseDataset):
             inversion_pixel_limit=inversion_pixel_limit,
         )
 
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
-    def modify_image(self, image, results):
-        """
-        Customize an masked_imaging. e.g. removing lens light.
-
-        Parameters
-        ----------
-        image: scaled_array.ScaledSquarePixelArray
-            An masked_imaging that has been masked
-        results: autofit.tools.pipeline.ResultsCollection
-            The result of the previous lens
-
-        Returns
-        -------
-        masked_imaging: scaled_array.ScaledSquarePixelArray
-            The modified image (not changed by default)
-        """
-        return image
-
     def make_analysis(self, dataset, mask, results=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
@@ -123,14 +104,9 @@ class PhaseImaging(dataset.PhaseDataset):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         self.meta_dataset.model = self.model
-        modified_image = self.modify_image(image=dataset.image, results=results)
 
         masked_imaging = self.meta_dataset.masked_dataset_from(
-            dataset=dataset,
-            mask=mask,
-            positions=positions,
-            results=results,
-            modified_image=modified_image,
+            dataset=dataset, mask=mask, positions=positions, results=results
         )
 
         self.output_phase_info()

@@ -30,24 +30,6 @@ def clean_images():
 
 
 class TestAttributes:
-    def test__modify_image(self, imaging_7x7, mask_7x7):
-        class MyPhase(al.PhaseImaging):
-            def modify_image(self, image, results):
-                assert imaging_7x7.image.shape_2d == image.shape_2d
-                image = al.Array.full(
-                    fill_value=20.0, shape_2d=(7, 7), pixel_scales=1.0
-                )
-                return image
-
-        phase_imaging_7x7 = MyPhase(phase_name="phase_imaging_7x7")
-
-        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
-        assert (
-            analysis.masked_dataset.image.in_2d
-            == 20.0 * np.ones(shape=(7, 7)) * np.invert(mask_7x7)
-        ).all()
-        assert (analysis.masked_dataset.image.in_1d == 20.0 * np.ones(shape=9)).all()
-
     def test__masked_imaging_signal_to_noise_limit(self, imaging_7x7, mask_7x7_1_pix):
         imaging_snr_limit = imaging_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
             signal_to_noise_limit=1.0
@@ -114,32 +96,6 @@ class TestAttributes:
         ).all()
 
         assert (analysis.masked_dataset.mask == binned_up_mask).all()
-
-        masked_imaging = al.MaskedImaging(imaging=imaging_7x7, mask=mask_7x7_1_pix)
-
-        binned_up_masked_imaging = masked_imaging.binned_from_bin_up_factor(
-            bin_up_factor=2
-        )
-
-        assert (
-            analysis.masked_dataset.image.in_2d
-            == binned_up_masked_imaging.image.in_2d * np.invert(binned_up_mask)
-        ).all()
-        assert (analysis.masked_dataset.psf == binned_up_masked_imaging.psf).all()
-        assert (
-            analysis.masked_dataset.noise_map.in_2d
-            == binned_up_masked_imaging.noise_map.in_2d * np.invert(binned_up_mask)
-        ).all()
-
-        assert (analysis.masked_dataset.mask == binned_up_masked_imaging.mask).all()
-
-        assert (
-            analysis.masked_dataset.image.in_1d == binned_up_masked_imaging.image.in_1d
-        ).all()
-        assert (
-            analysis.masked_dataset.noise_map.in_1d
-            == binned_up_masked_imaging.noise_map.in_1d
-        ).all()
 
     def test__phase_can_receive_hyper_image_and_noise_maps(self):
         phase_imaging_7x7 = al.PhaseImaging(

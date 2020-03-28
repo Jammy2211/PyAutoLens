@@ -21,7 +21,7 @@ test_name = "tests"
 
 def simulate_integration_image(test_name, pixel_scales, galaxies):
     output_path = (
-        "{}/test_files/simulator/".format(os.path.dirname(os.path.realpath(__file__)))
+        "{}/files/simulator/".format(os.path.dirname(os.path.realpath(__file__)))
         + test_name
         + "/"
     )
@@ -40,7 +40,7 @@ def simulate_integration_image(test_name, pixel_scales, galaxies):
 
     ### Setup as a simulated image_coords and output as a fits for an lens ###
 
-    imaging_simulated = al.SimulatedImagingData.from_tracer(
+    imaging_simulated = al.SimulatedImagingData.from_tracer_and_grid(
         tracer=tracer,
         pixel_scales=pixel_scales,
         exposure_time=100.0,
@@ -119,12 +119,9 @@ class TestPhaseModelMapper:
         )  # Setup path so we can output the simulated image.
 
         imaging = al.Imaging.from_fits(
-            image_path=path + "/test_files/simulator/" + test_name + "/image.fits",
-            psf_path=path + "/test_files/simulator/" + test_name + "/psf.fits",
-            noise_map_path=path
-            + "/test_files/simulator/"
-            + test_name
-            + "/noise_map.fits",
+            image_path=path + "/files/simulator/" + test_name + "/image.fits",
+            psf_path=path + "/files/simulator/" + test_name + "/psf.fits",
+            noise_map_path=path + "/files/simulator/" + test_name + "/noise_map.fits",
             real_space_pixel_scales=0.1,
         )
 
@@ -193,12 +190,9 @@ class TestPhaseModelMapper:
         )  # Setup path so we can output the simulated image.
 
         imaging = al.Imaging.from_fits(
-            image_path=path + "/test_files/simulator/" + test_name + "/image.fits",
-            psf_path=path + "/test_files/simulator/" + test_name + "/psf.fits",
-            noise_map_path=path
-            + "/test_files/simulator/"
-            + test_name
-            + "/noise_map.fits",
+            image_path=path + "/files/simulator/" + test_name + "/image.fits",
+            psf_path=path + "/files/simulator/" + test_name + "/psf.fits",
+            noise_map_path=path + "/files/simulator/" + test_name + "/noise_map.fits",
             real_space_pixel_scales=0.1,
         )
 

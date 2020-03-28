@@ -13,7 +13,7 @@ from autoarray.structures.arrays import MaskedArray
 from autoarray.structures.grids import MaskedGrid
 from autoarray.dataset.imaging import Imaging
 from autoarray.dataset.interferometer import Interferometer
-from autoarray.dataset import data_converter
+from autoarray.dataset import preprocess
 from autoarray.operators.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerFFT
@@ -36,8 +36,11 @@ from autoastro.galaxy.fit_galaxy import FitGalaxy
 from autoastro.galaxy.galaxy_model import GalaxyModel
 from autoastro.hyper import hyper_data
 
-from autolens import simulator
-from autolens.dataset.dataset import MaskedImaging, MaskedInterferometer
+from autolens.dataset.imaging import MaskedImaging, SimulatorImaging
+from autolens.dataset.interferometer import (
+    MaskedInterferometer,
+    SimulatorInterferometer,
+)
 from autolens.lens.plane import Plane
 from autolens.lens.ray_tracing import Tracer
 from autolens import util
