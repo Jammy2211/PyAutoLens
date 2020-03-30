@@ -10,7 +10,7 @@ imaging = simulate_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="lsst"
 )
 mask = al.Mask.circular(
-    shape_2d=imaging.shape,
+    shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     radius=3.0,
     centre=(4.0, 4.0),
