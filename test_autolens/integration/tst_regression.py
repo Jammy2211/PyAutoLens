@@ -135,7 +135,7 @@ class TestPhaseModelMapper:
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)
             ),
-            optimizer_class=af.MultiNest,
+            non_linear_class=af.MultiNest,
             phase_name="{}/phase1".format(test_name),
         )
 
@@ -208,7 +208,7 @@ class TestPhaseModelMapper:
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)
             ),
-            optimizer_class=af.MultiNest,
+            non_linear_class=af.MultiNest,
             phase_name="{}/phase1".format(name),
         )
 

@@ -48,7 +48,7 @@ def galaxy_fit_phase():
         ),
         use_deflections=True,
         sub_size=4,
-        optimizer_class=af.MultiNest,
+        non_linear_class=af.MultiNest,
     )
 
     phase1.run(galaxy_data=[data_y, data_x])

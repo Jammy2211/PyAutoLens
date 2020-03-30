@@ -13,7 +13,7 @@ def make_pipeline(
     phase_folders,
     pipeline_pixelization=al.pix.VoronoiBrightnessImage,
     pipeline_regularization=al.reg.AdaptiveBrightness,
-    optimizer_class=af.MultiNest,
+    non_linear_class=af.MultiNest,
 ):
     phase1 = al.PhaseImaging(
         phase_name="phase_1__lens_sie__source_sersic",
@@ -24,7 +24,7 @@ def make_pipeline(
             ),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
@@ -52,7 +52,7 @@ def make_pipeline(
         ),
         hyper_image_sky=phase1.result.hyper_combined.instance.optional.hyper_image_sky,
         hyper_background_noise=phase1.result.hyper_combined.instance.optional.hyper_background_noise,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase2.optimizer.const_efficiency_mode = True
@@ -83,7 +83,7 @@ def make_pipeline(
         ),
         hyper_image_sky=phase2.result.hyper_combined.instance.hyper_image_sky,
         hyper_background_noise=phase2.result.hyper_combined.instance.hyper_background_noise,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase3.optimizer.const_efficiency_mode = True
@@ -114,7 +114,7 @@ def make_pipeline(
         ),
         hyper_image_sky=phase3.result.hyper_combined.instance.hyper_image_sky,
         hyper_background_noise=phase3.result.hyper_combined.instance.hyper_background_noise,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase4.optimizer.const_efficiency_mode = True
@@ -146,7 +146,7 @@ def make_pipeline(
         ),
         hyper_image_sky=phase4.result.hyper_combined.instance.hyper_image_sky,
         hyper_background_noise=phase4.result.hyper_combined.instance.hyper_background_noise,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase5.optimizer.const_efficiency_mode = True

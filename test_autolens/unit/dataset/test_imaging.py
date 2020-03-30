@@ -1,4 +1,3 @@
-from autoarray.operators import convolver, transformer
 import autolens as al
 import numpy as np
 
@@ -20,11 +19,11 @@ class TestMaskedImaging:
             == 2.0 * np.ones((7, 7)) * np.invert(sub_mask_7x7)
         ).all()
 
-        assert (masked_imaging_7x7.psf.in_1d == np.ones(9)).all()
-        assert (masked_imaging_7x7.psf.in_2d == np.ones((3, 3))).all()
+        assert (masked_imaging_7x7.psf.in_1d == (1.0 / 9.0) * np.ones(9)).all()
+        assert (masked_imaging_7x7.psf.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
         assert masked_imaging_7x7.psf_shape_2d == (3, 3)
 
-        assert type(masked_imaging_7x7.convolver) == convolver.Convolver
+        assert type(masked_imaging_7x7.convolver) == al.Convolver
 
     def test__inheritance_from_autoarray(
         self, imaging_7x7, sub_mask_7x7, blurring_grid_7x7

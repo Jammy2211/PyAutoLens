@@ -55,7 +55,7 @@ class TestPhase:
                 ),
                 source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
             ),
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             phase_tag="",
             phase_name="test_phase",
         )
@@ -76,7 +76,7 @@ class TestPhase:
         setattr(results_7x7.model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(
-            phase_name="test_phase", optimizer_class=mock_pipeline.MockNLO
+            phase_name="test_phase", non_linear_class=mock_pipeline.MockNLO
         )
 
         phase_dataset_7x7.make_analysis(
@@ -97,7 +97,7 @@ class TestPhase:
         setattr(results_7x7.model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(
-            phase_name="test_phase", optimizer_class=mock_pipeline.MockNLO
+            phase_name="test_phase", non_linear_class=mock_pipeline.MockNLO
         )
 
         phase_dataset_7x7.make_analysis(
@@ -138,7 +138,7 @@ class TestPhase:
                     sis=al.mp.SphericalIsothermal, redshift=al.Redshift
                 ),
             ),
-            optimizer_class=af.MultiNest,
+            non_linear_class=af.MultiNest,
             phase_name="test_phase",
         )
 
@@ -195,7 +195,7 @@ class TestPhase:
                     sis=al.mp.SphericalIsothermal, redshift=al.Redshift
                 ),
             ),
-            optimizer_class=af.MultiNest,
+            non_linear_class=af.MultiNest,
             phase_name="test_phase",
         )
 
@@ -241,7 +241,7 @@ class TestResult:
         clean_images()
 
         phase_dataset_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=[
                 al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
@@ -255,7 +255,7 @@ class TestResult:
     def test__most_likely_tracer_available_as_result(self, imaging_7x7, mask_7x7):
 
         phase_dataset_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
@@ -283,7 +283,7 @@ class TestPhasePickle:
 
         phase_dataset_7x7 = al.PhaseImaging(
             phase_name="phase_name",
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
@@ -297,7 +297,7 @@ class TestPhasePickle:
 
         phase_dataset_7x7 = al.PhaseImaging(
             phase_name="phase_name",
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
@@ -315,7 +315,7 @@ class TestPhasePickle:
 
         phase_dataset_7x7 = CustomPhase(
             phase_name="phase_name",
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),

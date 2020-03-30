@@ -138,7 +138,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         use_convergence=False,
         use_potential=False,
         use_deflections=False,
-        optimizer_class=af.MultiNest,
+        non_linear_class=af.MultiNest,
         sub_size=2,
         pixel_scale_interpolation_grid=None,
         cosmology=cosmo.Planck15,
@@ -149,7 +149,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
         Parameters
         ----------
-        optimizer_class: class
+        non_linear_class: class
             The class of a non_linear optimizer
         sub_size: int
             The side length of the subgrid
@@ -158,7 +158,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         super(PhaseGalaxy, self).__init__(
             phase_name=phase_name,
             phase_folders=phase_folders,
-            optimizer_class=optimizer_class,
+            non_linear_class=non_linear_class,
         )
         self.cosmology = cosmology
         self.use_image = use_image

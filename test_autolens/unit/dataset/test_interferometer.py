@@ -1,4 +1,3 @@
-from autoarray.operators import transformer
 import autolens as al
 import numpy as np
 import pytest
@@ -18,7 +17,7 @@ class TestMaskedInterferometer:
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=sub_mask_7x7,
-            transformer_class=transformer.TransformerDFT,
+            transformer_class=al.TransformerDFT,
         )
 
         assert (
@@ -33,7 +32,9 @@ class TestMaskedInterferometer:
             == np.full(fill_value=False, shape=(7, 2))
         ).all()
 
-        assert (masked_interferometer_7.primary_beam.in_2d == np.ones((3, 3))).all()
+        assert (
+            masked_interferometer_7.primary_beam.in_2d == (1.0 / 9.0) * np.ones((3, 3))
+        ).all()
         assert masked_interferometer_7.primary_beam_shape_2d == (3, 3)
 
         assert (
@@ -45,7 +46,7 @@ class TestMaskedInterferometer:
             == -55636.4609375
         )
 
-        assert type(masked_interferometer_7.transformer) == transformer.TransformerDFT
+        assert type(masked_interferometer_7.transformer) == al.TransformerDFT
 
     def test__inheritance_via_autoarray(
         self,
@@ -117,7 +118,9 @@ class TestMaskedInterferometer:
             masked_interferometer.interferometer.uv_wavelengths
             == 3.0 * np.ones((19, 2))
         ).all()
-        assert (masked_interferometer.primary_beam.in_2d == np.ones((5, 5))).all()
+        assert (
+            masked_interferometer.primary_beam.in_2d == (1.0 / 25.0) * np.ones((5, 5))
+        ).all()
         assert masked_interferometer.primary_beam_shape_2d == (5, 5)
 
         assert (masked_interferometer.positions[0] == np.array([[1.0, 1.0]])).all()
@@ -131,7 +134,7 @@ class TestMaskedInterferometer:
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=sub_mask_7x7,
-            transformer_class=transformer.TransformerDFT,
+            transformer_class=al.TransformerDFT,
         )
 
         noise_map_7x2[0, 0] = 10.0

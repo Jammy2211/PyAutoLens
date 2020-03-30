@@ -149,21 +149,21 @@ def make_mask_7x7_1_pix():
 @pytest.fixture(name="phase_dataset_7x7")
 def make_phase_data(mask_7x7):
     return al.PhaseDataset(
-        optimizer_class=mock_pipeline.MockNLO, phase_tag="", phase_name="test_phase"
+        non_linear_class=mock_pipeline.MockNLO, phase_tag="", phase_name="test_phase"
     )
 
 
 @pytest.fixture(name="phase_imaging_7x7")
 def make_phase_imaging_7x7():
     return al.PhaseImaging(
-        optimizer_class=mock_pipeline.MockNLO, phase_name="test_phase"
+        non_linear_class=mock_pipeline.MockNLO, phase_name="test_phase"
     )
 
 
 @pytest.fixture(name="phase_interferometer_7")
 def make_phase_interferometer_7(mask_7x7):
     return al.PhaseInterferometer(
-        optimizer_class=mock_pipeline.MockNLO,
+        non_linear_class=mock_pipeline.MockNLO,
         real_space_mask=mask_7x7,
         phase_name="test_phase",
     )

@@ -89,7 +89,10 @@ class TestAttributes:
             analysis.masked_dataset.image.in_2d
             == binned_up_imaging.image.in_2d * np.invert(binned_up_mask)
         ).all()
-        assert (analysis.masked_dataset.psf == binned_up_imaging.psf).all()
+
+        assert (
+            analysis.masked_dataset.psf == (1.0 / 9.0) * binned_up_imaging.psf
+        ).all()
         assert (
             analysis.masked_dataset.noise_map.in_2d
             == binned_up_imaging.noise_map.in_2d * np.invert(binned_up_mask)
@@ -105,7 +108,7 @@ class TestAttributes:
             ),
             hyper_image_sky=al.hyper_data.HyperImageSky,
             hyper_background_noise=al.hyper_data.HyperBackgroundNoise,
-            optimizer_class=af.MultiNest,
+            non_linear_class=af.MultiNest,
             phase_name="test_phase",
         )
 
@@ -165,7 +168,7 @@ class TestFit:
         clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
                 source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
