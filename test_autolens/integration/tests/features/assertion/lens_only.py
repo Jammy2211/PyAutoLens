@@ -8,7 +8,7 @@ data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "lsst"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
 
     sersic = af.PriorModel(al.lp.EllipticalSersic)
 
@@ -20,7 +20,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=sersic)),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
@@ -33,7 +33,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
         phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(lens=phase1.result.model.galaxies.lens),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase2.optimizer.const_efficiency_mode = True

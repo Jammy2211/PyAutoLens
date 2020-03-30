@@ -6,7 +6,7 @@ import pytest
 
 @pytest.fixture(name="plot_path")
 def make_hyper_plotter_setup():
-    return "{}/../test_files/plotting/hyper_galaxies/".format(
+    return "{}/files/plots/hyper_galaxies/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 

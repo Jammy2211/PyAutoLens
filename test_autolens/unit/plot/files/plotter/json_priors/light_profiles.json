@@ -1,0 +1,80 @@
+{
+    "EllipticalExponential": {
+        "centre_0": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 1.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "gaussian_limits": {
+                "lower": "-inf",
+                "upper": "inf"
+            }
+        },
+        "centre_1": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 0.5,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "gaussian_limits": {
+                "lower": "-inf",
+                "upper": "inf"
+            }
+        },
+        "axis_ratio": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 0.5,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.2
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": 1.0
+            }
+        },
+        "phi": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 0.5,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 20.0
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": 180.0
+            }
+        },
+        "intensity": {
+            "type": "Gaussian",
+            "lower_limit": 0.0,
+            "upper_limit": "inf",
+            "width_modifier": {
+                "type": "Relative",
+                "value": 0.5
+            },
+            "mean": 0.0,
+            "sigma": 0.5
+        },
+        "effective_radius": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 2.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 2.0
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        }
+    }
+}

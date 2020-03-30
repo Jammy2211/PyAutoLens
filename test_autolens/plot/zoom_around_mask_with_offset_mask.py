@@ -9,7 +9,7 @@ import autolens as al
 imaging = simulate_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="lsst"
 )
-mask = al.mask.circular(
+mask = al.Mask.circular(
     shape_2d=imaging.shape,
     pixel_scales=imaging.pixel_scales,
     radius=3.0,
@@ -25,8 +25,8 @@ lens_galaxy = al.Galaxy(
     ),
 )
 
-masked_imaging = al.masked_imaging(imaging=imaging, mask=mask)
+masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
-fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
-aplt.fit_imaging.subplot_fit_imaging(fit=fit, mask=True)
+fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+aplt.FitImaging.subplot_fit_imaging(fit=fit, mask=True)

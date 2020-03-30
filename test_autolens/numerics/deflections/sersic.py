@@ -6,7 +6,7 @@ import os
 # The pixel scale of the image to be simulated
 pixel_scales = 0.1
 
-grid = al.grid.uniform(shape_2d=(50, 50), pixel_scales=pixel_scales, sub_size=1)
+grid = al.Grid.uniform(shape_2d=(50, 50), pixel_scales=pixel_scales, sub_size=1)
 
 print(grid)
 
@@ -51,4 +51,4 @@ source_galaxy = al.Galaxy(
 # Use these galaxies to setup a tracer, which will generate the image for the simulated imaging dataset.
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-aplt.tracer.subplot_tracer(tracer=tracer, grid=grid, include_critical_curves=True)
+aplt.Tracer.subplot_tracer(tracer=tracer, grid=grid, include_critical_curves=True)

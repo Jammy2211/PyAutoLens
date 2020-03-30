@@ -8,7 +8,7 @@ data_type = "lens_sie__source_smooth"
 data_resolution = "lsst"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
     class SourcePix(al.PhaseImaging):
         def customize_priors(self, results):
 
@@ -27,7 +27,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 regularization=al.reg.Constant,
             ),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
@@ -50,7 +50,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 hyper_galaxy=phase1.result.instance.galaxies.source.hyper_galaxy,
             ),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase2.optimizer.const_efficiency_mode = True
@@ -73,7 +73,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 hyper_galaxy=phase2.result.instance.galaxies.source.hyper_galaxy,
             ),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase3.optimizer.const_efficiency_mode = True

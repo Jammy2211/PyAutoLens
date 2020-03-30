@@ -1,4 +1,4 @@
-from autolens.dataset import dataset as d
+from autolens.dataset import interferometer
 from autolens.pipeline.phase.dataset import meta_dataset
 
 
@@ -7,6 +7,7 @@ class MetaInterferometer(meta_dataset.MetaDataset):
         self,
         model,
         real_space_mask,
+        transformer_class,
         sub_size=2,
         is_hyper_phase=False,
         positions_threshold=None,
@@ -26,6 +27,7 @@ class MetaInterferometer(meta_dataset.MetaDataset):
             inversion_pixel_limit=inversion_pixel_limit,
         )
         self.real_space_mask = real_space_mask
+        self.transformer_class = transformer_class
         self.primary_beam_shape_2d = primary_beam_shape_2d
         self.bin_up_factor = bin_up_factor
 
@@ -43,12 +45,13 @@ class MetaInterferometer(meta_dataset.MetaDataset):
             results=results
         )
 
-        masked_interferometer = d.MaskedInterferometer(
+        masked_interferometer = interferometer.MaskedInterferometer(
             interferometer=dataset.modified_visibilities_from_visibilities(
                 modified_visibilities
             ),
             visibilities_mask=mask,
             real_space_mask=real_space_mask,
+            transformer_class=self.transformer_class,
             primary_beam_shape_2d=self.primary_beam_shape_2d,
             positions=positions,
             positions_threshold=self.positions_threshold,

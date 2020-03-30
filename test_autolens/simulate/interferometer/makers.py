@@ -16,7 +16,7 @@ def simulator_from_data_resolution(data_resolution, sub_size):
         A string giving the resolution of the desired data_type type (LSST | Euclid | HST | HST_Up | AO).
     """
     if data_resolution == "sma":
-        return al.simulator.interferometer.sma(sub_size=sub_size)
+        return al.SimulatorInterferometer.sma(sub_size=sub_size)
     else:
         raise ValueError(
             "An invalid data_type resolution was entered - ", data_resolution
@@ -37,7 +37,7 @@ def simulate_interferometer_from_galaxies_and_output_to_fits(
     # Use the input galaxies to setup a tracer, which will generate the image for the simulated imaging data.
     tracer = al.Tracer.from_galaxies(galaxies=galaxies)
 
-    interferometer = simulator.from_tracer(tracer=tracer)
+    interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
     # Now, lets output this simulated interferometer-simulator to the test_autoarray/simulator folder.
     test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
@@ -54,31 +54,31 @@ def simulate_interferometer_from_galaxies_and_output_to_fits(
         overwrite=True,
     )
 
-    aplt.interferometer.subplot_imaging(
+    aplt.Interferometer.subplot_imaging(
         interferometer=interferometer,
         output_filename="interferometer",
         output_path=dataset_path,
         format="png",
     )
 
-    aplt.interferometer.individual(
+    aplt.Interferometer.individual(
         interferometer=interferometer,
         plot_visibilities=True,
         output_path=dataset_path,
         format="png",
     )
 
-    aplt.tracer.subplot_tracer(
+    aplt.Tracer.subplot_tracer(
         tracer=tracer,
-        grid=simulator.grid,
+        grid=grid,
         output_filename="tracer",
         output_path=dataset_path,
         format="png",
     )
 
-    aplt.tracer.individual(
+    aplt.Tracer.individual(
         tracer=tracer,
-        grid=simulator.grid,
+        grid=grid,
         plot_profile_image=True,
         plot_source_plane=True,
         plot_convergence=True,
