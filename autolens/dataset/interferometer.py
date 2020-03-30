@@ -22,6 +22,7 @@ class MaskedInterferometer(
         inversion_uses_border=True,
         positions=None,
         positions_threshold=None,
+        renormalize_primary_beam=True,
         preload_sparse_grids_of_planes=None,
     ):
         """
@@ -65,6 +66,7 @@ class MaskedInterferometer(
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
+            renormalize_primary_beam=renormalize_primary_beam,
         )
 
         abstract.AbstractLensMasked.__init__(

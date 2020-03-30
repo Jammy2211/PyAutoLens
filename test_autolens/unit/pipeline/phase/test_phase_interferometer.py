@@ -79,7 +79,7 @@ class TestPhase:
         self, interferometer_7, mask_7x7, visibilities_mask_7x2
     ):
         phase_interferometer_7 = al.PhaseInterferometer(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
                 source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
@@ -122,7 +122,7 @@ class TestPhase:
             ),
             real_space_mask=mask_7x7,
             hyper_background_noise=al.hyper_data.HyperBackgroundNoise,
-            optimizer_class=af.MultiNest,
+            non_linear_class=af.MultiNest,
             phase_name="test_phase",
         )
 
@@ -157,7 +157,7 @@ class TestPhase:
                 lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
             ),
             real_space_mask=mask_7x7,
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             phase_name="test_phase",
         )
 

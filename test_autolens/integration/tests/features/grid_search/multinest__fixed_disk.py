@@ -8,7 +8,7 @@ data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "euclid"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
     class QuickPhase(al.PhaseImaging):
         def customize_priors(self, results):
 
@@ -61,7 +61,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 redshift=0.5, bulge=al.lp.EllipticalSersic, disk=al.lp.EllipticalSersic
             )
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
@@ -107,7 +107,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             )
         ),
         number_of_steps=2,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase2.optimizer.const_efficiency_mode = True

@@ -13,7 +13,7 @@ def make_pipeline(
     phase_folders,
     pipeline_pixelization=al.pix.VoronoiBrightnessImage,
     pipeline_regularization=al.reg.AdaptiveBrightness,
-    optimizer_class=af.MultiNest,
+    non_linear_class=af.MultiNest,
 ):
     phase1 = al.PhaseImaging(
         phase_name="phase_1__lens_sersic",
@@ -22,7 +22,7 @@ def make_pipeline(
             source=al.GalaxyModel(redshift=1.0, light=al.lp.SphericalExponential),
             lens=al.GalaxyModel(redshift=0.5, light=al.mp.SphericalIsothermal()),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
@@ -50,7 +50,7 @@ def make_pipeline(
         ),
         hyper_image_sky=phase1.result.hyper_combined.instance.hyper_image_sky,
         hyper_background_noise=phase1.result.hyper_combined.instance.hyper_background_noise,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase6.optimizer.const_efficiency_mode = True
@@ -82,7 +82,7 @@ def make_pipeline(
         ),
         hyper_image_sky=phase1.result.hyper_combined.instance.hyper_image_sky,
         hyper_background_noise=phase1.result.hyper_combined.instance.hyper_background_noise,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase7.optimizer.const_efficiency_mode = True

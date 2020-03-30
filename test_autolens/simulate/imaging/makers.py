@@ -45,7 +45,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
     # Use the input galaxies to setup a tracer, which will generate the image for the simulated imaging data.
     tracer = al.Tracer.from_galaxies(galaxies=galaxies)
 
-    imaging = simulator.from_tracer_and_grid(tracer=tracer)
+    imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
     # Now, lets output this simulated imaging-data to the test_autoarray/simulator folder.
     test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
@@ -80,7 +80,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
 
     aplt.Tracer.subplot_tracer(
         tracer=tracer,
-        grid=simulator.grid,
+        grid=grid,
         output_filename="tracer",
         output_path=dataset_path,
         format="png",
@@ -88,7 +88,7 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
 
     aplt.Tracer.individual(
         tracer=tracer,
-        grid=simulator.grid,
+        grid=grid,
         plot_profile_image=True,
         plot_source_plane=True,
         plot_convergence=True,

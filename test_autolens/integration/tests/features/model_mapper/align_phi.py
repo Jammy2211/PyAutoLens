@@ -8,7 +8,7 @@ data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "lsst"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
     class MMPhase(al.PhaseImaging):
         pass
 
@@ -24,7 +24,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 align_phi=True,
             )
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
