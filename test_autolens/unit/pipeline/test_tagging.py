@@ -28,12 +28,15 @@ class TestPhaseTag:
 
         phase_tag = al.tagging.phase_tag_from_phase_settings(
             sub_size=1,
+            transformer_class=al.TransformerDFT,
             real_space_shape_2d=(3, 3),
             real_space_pixel_scales=(1.0, 2.0),
             primary_beam_shape_2d=(2, 2),
         )
 
-        assert phase_tag == "phase_tag__rs_shape_3x3__rs_pix_1.00x2.00__sub_1__pb_2x2"
+        assert (
+            phase_tag == "phase_tag__dft__rs_shape_3x3__rs_pix_1.00x2.00__sub_1__pb_2x2"
+        )
 
 
 class TestPhaseTaggers:
@@ -118,6 +121,22 @@ class TestPhaseTaggers:
             pixel_scale_interpolation_grid=0.234
         )
         assert tag == "__interp_0.234"
+
+    def test__transformer_tagger(self):
+        tag = al.tagging.transformer_tag_from_transformer_class(
+            transformer_class=al.TransformerDFT
+        )
+        assert tag == "__dft"
+        tag = al.tagging.transformer_tag_from_transformer_class(
+            transformer_class=al.TransformerFFT
+        )
+        assert tag == "__fft"
+        tag = al.tagging.transformer_tag_from_transformer_class(
+            transformer_class=al.TransformerNUFFT
+        )
+        assert tag == "__nufft"
+        tag = al.tagging.transformer_tag_from_transformer_class(transformer_class=None)
+        assert tag == ""
 
     def test__primary_beam_shape_2d_tagger(self):
         tag = al.tagging.primary_beam_shape_tag_from_primary_beam_shape_2d(

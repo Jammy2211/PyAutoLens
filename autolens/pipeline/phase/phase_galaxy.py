@@ -63,8 +63,8 @@ class AnalysisSingle(Analysis):
             A fractional value indicating how well this model fit and the model
             masked_imaging itself
         """
-        return fit_galaxy.GalaxyFit(
-            galaxy_data=self.galaxy_data, model_galaxies=instance.galaxies
+        return fit_galaxy.FitGalaxy(
+            masked_galaxy_dataset=self.galaxy_data, model_galaxies=instance.galaxies
         )
 
 
@@ -114,11 +114,11 @@ class AnalysisDeflections(Analysis):
 
     def fit_for_instance(self, instance):
 
-        fit_y = fit_galaxy.GalaxyFit(
-            galaxy_data=self.galaxy_data_y, model_galaxies=instance.galaxies
+        fit_y = fit_galaxy.FitGalaxy(
+            masked_galaxy_dataset=self.galaxy_data_y, model_galaxies=instance.galaxies
         )
-        fit_x = fit_galaxy.GalaxyFit(
-            galaxy_data=self.galaxy_data_x, model_galaxies=instance.galaxies
+        fit_x = fit_galaxy.FitGalaxy(
+            masked_galaxy_dataset=self.galaxy_data_x, model_galaxies=instance.galaxies
         )
 
         return fit_y, fit_x
@@ -138,7 +138,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         use_convergence=False,
         use_potential=False,
         use_deflections=False,
-        optimizer_class=af.MultiNest,
+        non_linear_class=af.MultiNest,
         sub_size=2,
         pixel_scale_interpolation_grid=None,
         cosmology=cosmo.Planck15,
@@ -149,7 +149,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
         Parameters
         ----------
-        optimizer_class: class
+        non_linear_class: class
             The class of a non_linear optimizer
         sub_size: int
             The side length of the subgrid
@@ -158,7 +158,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         super(PhaseGalaxy, self).__init__(
             phase_name=phase_name,
             phase_folders=phase_folders,
-            optimizer_class=optimizer_class,
+            non_linear_class=non_linear_class,
         )
         self.cosmology = cosmology
         self.use_image = use_image
@@ -222,7 +222,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
         if self.use_image or self.use_convergence or self.use_potential:
 
-            galaxy_data = masked_galaxy_data.MaskedGalaxyData(
+            galaxy_data = masked_galaxy_data.MaskedGalaxyDataset(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
@@ -242,7 +242,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
         elif self.use_deflections:
 
-            galaxy_data_y = masked_galaxy_data.MaskedGalaxyData(
+            galaxy_data_y = masked_galaxy_data.MaskedGalaxyDataset(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
@@ -253,7 +253,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
                 use_deflections_x=False,
             )
 
-            galaxy_data_x = masked_galaxy_data.MaskedGalaxyData(
+            galaxy_data_x = masked_galaxy_data.MaskedGalaxyDataset(
                 galaxy_data=galaxy_data[1],
                 mask=mask,
                 pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,

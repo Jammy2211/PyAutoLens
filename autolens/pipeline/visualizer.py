@@ -311,7 +311,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
         )
 
         if self.plot_subplot_dataset:
-            aa.plot.imaging.subplot_imaging(
+            aa.plot.Imaging.subplot_imaging(
                 imaging=self.masked_imaging.imaging,
                 mask=self.include.mask_from_masked_dataset(
                     masked_dataset=self.masked_dataset
@@ -323,7 +323,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                 sub_plotter=self.sub_plotter,
             )
 
-        aa.plot.imaging.individual(
+        aa.plot.Imaging.individual(
             imaging=self.masked_imaging.imaging,
             mask=self.include.mask_from_masked_dataset(
                 masked_dataset=self.masked_dataset
@@ -550,13 +550,13 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
         )
 
         if self.plot_subplot_dataset:
-            aa.plot.interferometer.subplot_interferometer(
+            aa.plot.Interferometer.subplot_interferometer(
                 interferometer=self.masked_dataset.interferometer,
                 include=self.include,
                 sub_plotter=self.sub_plotter,
             )
 
-        aa.plot.interferometer.individual(
+        aa.plot.Interferometer.individual(
             interferometer=self.masked_dataset.interferometer,
             plot_visibilities=self.plot_dataset_data,
             plot_u_wavelengths=self.plot_dataset_uv_wavelengths,

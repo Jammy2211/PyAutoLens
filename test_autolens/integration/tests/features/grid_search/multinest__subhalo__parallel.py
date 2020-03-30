@@ -8,7 +8,7 @@ data_type = "lens_sie__source_smooth"
 data_resolution = "lsst"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
     class GridPhase(af.as_grid_search(al.PhaseImaging, parallel=True)):
         @property
         def grid_priors(self):
@@ -45,7 +45,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 regularization=al.reg.Constant,
             ),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
         number_of_steps=2,
     )
 

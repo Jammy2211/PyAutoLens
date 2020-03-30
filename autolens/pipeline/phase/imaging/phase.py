@@ -24,7 +24,7 @@ class PhaseImaging(dataset.PhaseDataset):
         galaxies=None,
         hyper_image_sky=None,
         hyper_background_noise=None,
-        optimizer_class=af.MultiNest,
+        non_linear_class=af.MultiNest,
         cosmology=cosmo.Planck15,
         sub_size=2,
         signal_to_noise_limit=None,
@@ -43,7 +43,7 @@ class PhaseImaging(dataset.PhaseDataset):
 
         Parameters
         ----------
-        optimizer_class: class
+        non_linear_class: class
             The class of a non_linear optimizer
         sub_size: int
             The side length of the subgrid
@@ -62,7 +62,7 @@ class PhaseImaging(dataset.PhaseDataset):
         super().__init__(
             paths,
             galaxies=galaxies,
-            optimizer_class=optimizer_class,
+            non_linear_class=non_linear_class,
             cosmology=cosmology,
         )
 
@@ -82,25 +82,6 @@ class PhaseImaging(dataset.PhaseDataset):
             inversion_uses_border=inversion_uses_border,
             inversion_pixel_limit=inversion_pixel_limit,
         )
-
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
-    def modify_image(self, image, results):
-        """
-        Customize an masked_imaging. e.g. removing lens light.
-
-        Parameters
-        ----------
-        image: scaled_array.ScaledSquarePixelArray
-            An masked_imaging that has been masked
-        results: autofit.tools.pipeline.ResultsCollection
-            The result of the previous lens
-
-        Returns
-        -------
-        masked_imaging: scaled_array.ScaledSquarePixelArray
-            The modified image (not changed by default)
-        """
-        return image
 
     def make_analysis(self, dataset, mask, results=None, positions=None):
         """
@@ -123,14 +104,9 @@ class PhaseImaging(dataset.PhaseDataset):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         self.meta_dataset.model = self.model
-        modified_image = self.modify_image(image=dataset.image, results=results)
 
         masked_imaging = self.meta_dataset.masked_dataset_from(
-            dataset=dataset,
-            mask=mask,
-            positions=positions,
-            results=results,
-            modified_image=modified_image,
+            dataset=dataset, mask=mask, positions=positions, results=results
         )
 
         self.output_phase_info()

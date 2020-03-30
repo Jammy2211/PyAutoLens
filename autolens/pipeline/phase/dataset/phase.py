@@ -32,7 +32,7 @@ class PhaseDataset(abstract.AbstractPhase):
         self,
         paths,
         galaxies=None,
-        optimizer_class=af.MultiNest,
+        non_linear_class=af.MultiNest,
         cosmology=cosmo.Planck15,
     ):
         """
@@ -42,11 +42,11 @@ class PhaseDataset(abstract.AbstractPhase):
 
         Parameters
         ----------
-        optimizer_class: class
+        non_linear_class: class
             The class of a non_linear optimizer
         """
 
-        super(PhaseDataset, self).__init__(paths, optimizer_class=optimizer_class)
+        super(PhaseDataset, self).__init__(paths, non_linear_class=non_linear_class)
         self.galaxies = galaxies or []
         self.cosmology = cosmology
 
