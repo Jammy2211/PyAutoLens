@@ -9,7 +9,7 @@ from autolens.fit import fit
 from autolens.dataset import imaging
 from autoastro.galaxy import galaxy as g
 from autoastro.hyper import hyper_data as hd
-from autolens.pipeline.phase import imaging
+from autolens.pipeline.phase.imaging import PhaseImaging
 from autolens.pipeline import visualizer
 from .hyper_phase import HyperPhase
 
@@ -173,16 +173,16 @@ class HyperGalaxyPhase(HyperPhase):
             psf_shape_2d=dataset.psf.shape_2d,
             positions=results.last.positions,
             positions_threshold=cast(
-                imaging.PhaseImaging, phase
+                PhaseImaging, phase
             ).meta_dataset.positions_threshold,
             pixel_scale_interpolation_grid=cast(
-                imaging.PhaseImaging, phase
+                PhaseImaging, phase
             ).meta_dataset.pixel_scale_interpolation_grid,
             inversion_pixel_limit=cast(
-                imaging.PhaseImaging, phase
+                PhaseImaging, phase
             ).meta_dataset.inversion_pixel_limit,
             inversion_uses_border=cast(
-                imaging.PhaseImaging, phase
+                PhaseImaging, phase
             ).meta_dataset.inversion_uses_border,
             preload_sparse_grids_of_planes=None,
         )

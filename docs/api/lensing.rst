@@ -8,7 +8,12 @@ intervening mass of the foreground galaxy. Its light can be fully bent around th
 paths to the Earth, meaning that the background galaxy is observed multiple times. This by-chance alignment of two
 galaxies is called a strong gravitational lens and a two-dimensional scheme of such a system is pictured below.
 
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/grid.png
+  :width: 400
+  :alt: Alternative text
 
+(Image Credit: Image credit: F. Courbin, S. G. Djorgovski, G. Meylan, et al., Caltech / EPFL / WMKO,
+https://www.astro.caltech.edu/~george/qsolens/)
 
 To begin, lets import autolens and its plot module - these conventions are adopted throughout all tutorials!
 
