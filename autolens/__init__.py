@@ -18,8 +18,8 @@ from autoarray.operators.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerFFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.operators.inversion.mappers import mapper
-from autoarray.operators.inversion.inversions import inversion
+from autoarray.operators.inversion.mappers import mapper as Mapper
+from autoarray.operators.inversion.inversions import inversion as Inversion
 from autoarray.operators.inversion import pixelizations as pix, regularization as reg
 from autoarray import conf
 
@@ -69,4 +69,4 @@ from autolens.pipeline.pipeline import PipelineDataset, PipelinePositions
 from autolens.pipeline import setup
 from autolens import plot
 
-__version__ = '0.42.0'
+__version__ = "0.42.1"
