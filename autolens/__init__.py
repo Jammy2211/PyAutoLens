@@ -69,8 +69,4 @@ from autolens.pipeline.pipeline import PipelineDataset, PipelinePositions
 from autolens.pipeline import setup
 from autolens import plot
 
-<<<<<<< HEAD
-__version__ = "0.42.1"
-=======
 __version__ = '0.42.2'
->>>>>>> release/0.42.2
