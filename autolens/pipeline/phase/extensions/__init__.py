@@ -1,5 +1,5 @@
 import autofit as af
-from autolens.pipeline.phase import imaging
+from autolens.pipeline.phase.imaging import PhaseImaging
 from .hyper_galaxy_phase import HyperGalaxyPhase
 from .hyper_phase import HyperPhase
 from .inversion_phase import InversionBackgroundBothPhase
@@ -10,16 +10,14 @@ from .inversion_phase import ModelFixingHyperPhase
 
 
 class CombinedHyperPhase(HyperPhase):
-    def __init__(
-        self, phase: imaging.PhaseImaging, hyper_phase_classes: (type,) = tuple()
-    ):
+    def __init__(self, phase: PhaseImaging, hyper_phase_classes: (type,) = tuple()):
         """
         A hyper_combined hyper_galaxies phase that can run zero or more other hyper_galaxies phases after the initial phase is
         run.
 
         Parameters
         ----------
-        phase : phase_imaging.PhaseImaging
+        phase : phase_PhaseImaging
             The phase wrapped by this hyper_galaxies phase
         hyper_phase_classes
             The classes of hyper_galaxies phases to be run following the initial phase
