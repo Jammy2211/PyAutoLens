@@ -1,25 +1,10 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-import autoarray as aa
 from autofit.tools.phase import Dataset
 from autolens.pipeline.phase import abstract
 from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.dataset.result import Result
-
-
-def isprior(obj, cls):
-    if isinstance(obj, af.PriorModel):
-        return True
-    return False
-
-
-def isinstance_or_prior(obj, cls):
-    if isinstance(obj, cls):
-        return True
-    if isinstance(obj, af.PriorModel) and obj.cls == cls:
-        return True
-    return False
 
 
 class PhaseDataset(abstract.AbstractPhase):
@@ -29,11 +14,11 @@ class PhaseDataset(abstract.AbstractPhase):
 
     @af.convert_paths
     def __init__(
-        self,
-        paths,
-        galaxies=None,
-        non_linear_class=af.MultiNest,
-        cosmology=cosmo.Planck15,
+            self,
+            paths,
+            galaxies=None,
+            non_linear_class=af.MultiNest,
+            cosmology=cosmo.Planck15,
     ):
         """
 
@@ -112,12 +97,12 @@ class PhaseDataset(abstract.AbstractPhase):
         return extensions.InversionPhase(phase=self)
 
     def extend_with_multiple_hyper_phases(
-        self,
-        hyper_galaxy=False,
-        inversion=False,
-        include_background_sky=False,
-        include_background_noise=False,
-        hyper_galaxy_phase_first=False,
+            self,
+            hyper_galaxy=False,
+            inversion=False,
+            include_background_sky=False,
+            include_background_noise=False,
+            hyper_galaxy_phase_first=False,
     ):
 
         self.use_as_hyper_dataset = True
