@@ -4,10 +4,10 @@ from shutil import rmtree
 import pytest
 
 import autofit as af
-from autofit.optimize.non_linear.mock_nlo import MockOutput
+import autolens as al
 
 directory = path.dirname(path.realpath(__file__))
-aggregator_directory = "{}/files/aggregator".format(directory)
+aggregator_directory = "{}/aggregator".format(directory)
 
 
 @pytest.fixture(name="aggregator")
@@ -46,14 +46,14 @@ class TestCase:
         assert len(aggregator.phases) == 3
 
     def test__optimizer_output(self, one, two, three):
-        assert isinstance(one.output, MockOutput)
-        assert isinstance(two.output, MockOutput)
-        assert isinstance(three.output, MockOutput)
+        assert isinstance(one.output, af.MultiNestOutput)
+        assert isinstance(two.output, af.MultiNestOutput)
+        assert isinstance(three.output, af.MultiNestOutput)
 
     def test__file_paths(self, one, two, three):
-        assert three.file_path == "{}/three/three/metadata".format(aggregator_directory)
-        assert one.file_path == "{}/one/one/metadata".format(aggregator_directory)
-        assert two.file_path == "{}/two/two/metadata".format(aggregator_directory)
+        assert three.file_path == "{}/three/metadata".format(aggregator_directory)
+        assert one.file_path == "{}/one/metadata".format(aggregator_directory)
+        assert two.file_path == "{}/two/metadata".format(aggregator_directory)
 
     # def test_attributes(self, one, two, three):
     #     assert one.pipeline == "pipeline_1"
@@ -87,11 +87,6 @@ class TestCase:
     #     result = aggregator.phases_with(pipeline="pipeline_2", phase="phase_1")
     #     assert [two] == result
 
-    def test_phase_model_results(self, one, two, three):
-        assert one.model_results == "results_one"
-        assert two.model_results == "results_two"
-        assert three.model_results == "results_three"
-
     # def test_header(self, one, two, three):
     #     assert one.header == "pipeline_1/phase_1/lens_1"
     #     assert two.header == "pipeline_2/phase_1/lens_1"
@@ -120,16 +115,3 @@ class TestCase:
         assert three.optimizer is not None
 
         assert one.model.priors == two.model.priors
-
-    def test_filter_optimizers(self, aggregator, one, two, three):
-        result = aggregator.optimizer
-
-        assert len(result) == 3
-        assert one.optimizer in result
-        assert two.optimizer in result
-        assert three.optimizer in result
-
-        result = aggregator.filter(pipeline="pipeline_1").optimizer
-        assert len(result) == 2
-        assert one.optimizer in result
-        assert three.optimizer in result
