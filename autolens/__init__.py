@@ -13,7 +13,6 @@ from autoarray.structures.arrays import MaskedArray
 from autoarray.structures.grids import MaskedGrid
 from autoarray.dataset.imaging import Imaging
 from autoarray.dataset.interferometer import Interferometer
-from autoarray.dataset import preprocess
 from autoarray.operators.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerFFT

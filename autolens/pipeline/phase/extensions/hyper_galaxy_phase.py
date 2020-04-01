@@ -1,22 +1,23 @@
 import copy
+import pickle
+from typing import cast
 
 import numpy as np
-from typing import cast
 
 import autofit as af
 from autoarray.fit import fit as aa_fit
-from autolens.fit import fit
-from autolens.dataset import imaging
 from autoastro.galaxy import galaxy as g
 from autoastro.hyper import hyper_data as hd
-from autolens.pipeline.phase.imaging import PhaseImaging
+from autolens.dataset import imaging
+from autolens.fit import fit
 from autolens.pipeline import visualizer
+from autolens.pipeline.phase.imaging import PhaseImaging
 from .hyper_phase import HyperPhase
 
 
 class Analysis(af.Analysis):
     def __init__(
-        self, masked_imaging, hyper_model_image, hyper_galaxy_image, image_path
+            self, masked_imaging, hyper_model_image, hyper_galaxy_image, image_path
     ):
         """
         An analysis to fit the noise for a single galaxy image.
@@ -105,7 +106,7 @@ class Analysis(af.Analysis):
             return instance.hyper_background_noise
 
     def fit_for_hyper_galaxy(
-        self, hyper_galaxy, hyper_image_sky, hyper_background_noise
+            self, hyper_galaxy, hyper_image_sky, hyper_background_noise
     ):
 
         image = fit.hyper_image_from_image_and_hyper_image_sky(
@@ -197,6 +198,14 @@ class HyperGalaxyPhase(HyperPhase):
             results.last.hyper_galaxy_image_path_dict
         )
 
+        with open(
+                f"{self.paths.phase_output_path}/hyper_galaxy_images.pickle",
+                "wb+"
+        ) as f:
+            pickle.dump(
+                results.last.hyper_galaxy_image_path_dict, f
+            )
+
         for path, galaxy in results.last.path_galaxy_tuples:
 
             # TODO : NEed t be sure these wont mess up anything else.
@@ -236,12 +245,13 @@ class HyperGalaxyPhase(HyperPhase):
             # If arrays is all zeros, galaxy did not have image in previous phase and
             # shoumasked_imaging be ignored
             if not np.all(
-                hyper_result.analysis.hyper_galaxy_image_path_dict[path] == 0
+                    hyper_result.analysis.hyper_galaxy_image_path_dict[path] == 0
             ):
+                hyper_model_image = hyper_result.analysis.hyper_model_image
 
                 analysis = self.Analysis(
                     masked_imaging=masked_imaging,
-                    hyper_model_image=hyper_result.analysis.hyper_model_image,
+                    hyper_model_image=hyper_model_image,
                     hyper_galaxy_image=hyper_result.analysis.hyper_galaxy_image_path_dict[
                         path
                     ],
