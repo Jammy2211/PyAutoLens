@@ -200,7 +200,7 @@ class HyperGalaxyPhase(HyperPhase):
 
         with open(
                 f"{self.paths.phase_output_path}/hyper_galaxy_images.pickle",
-                "w+"
+                "wb+"
         ) as f:
             pickle.dump(
                 results.last.hyper_galaxy_image_path_dict, f
