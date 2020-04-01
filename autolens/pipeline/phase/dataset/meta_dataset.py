@@ -2,7 +2,20 @@ import autofit as af
 import autoarray as aa
 from autolens import exc
 from autoarray.operators.inversion import pixelizations as pix
-from autolens.pipeline.phase.dataset.phase import isprior, isinstance_or_prior
+
+
+def isprior(obj):
+    if isinstance(obj, af.PriorModel):
+        return True
+    return False
+
+
+def isinstance_or_prior(obj, cls):
+    if isinstance(obj, cls):
+        return True
+    if isinstance(obj, af.PriorModel) and obj.cls == cls:
+        return True
+    return False
 
 
 class MetaDataset:
@@ -80,7 +93,7 @@ class MetaDataset:
     def pixelizaition_is_model(self):
         if self.model.galaxies:
             for galaxy in self.model.galaxies:
-                if isprior(galaxy.pixelization, pix.Pixelization):
+                if isprior(galaxy.pixelization):
                     return True
         return False
 

@@ -8,20 +8,6 @@ from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.dataset.result import Result
 
 
-def isprior(obj, cls):
-    if isinstance(obj, af.PriorModel):
-        return True
-    return False
-
-
-def isinstance_or_prior(obj, cls):
-    if isinstance(obj, cls):
-        return True
-    if isinstance(obj, af.PriorModel) and obj.cls == cls:
-        return True
-    return False
-
-
 class PhaseDataset(abstract.AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
 
@@ -46,7 +32,7 @@ class PhaseDataset(abstract.AbstractPhase):
             The class of a non_linear optimizer
         """
 
-        super(PhaseDataset, self).__init__(paths, optimizer_class=optimizer_class)
+        super().__init__(paths, optimizer_class=optimizer_class)
         self.galaxies = galaxies or []
         self.cosmology = cosmology
 
