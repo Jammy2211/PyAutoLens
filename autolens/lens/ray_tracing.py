@@ -714,6 +714,10 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
             sparse_image_plane_grids_of_planes = preload_sparse_grids_of_planes
 
+            print("aaaaaaaaaaaaaa")
+            print("aaaaaaaaaaaaaa")
+            print("aaaaaaaaaaaaaa")
+
         traced_sparse_grids_of_planes = []
 
         for (plane_index, plane) in enumerate(self.planes):

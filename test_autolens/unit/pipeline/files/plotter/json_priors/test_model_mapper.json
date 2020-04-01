@@ -1,0 +1,18 @@
+{
+    "MockClassMM": {
+        "one": {},
+        "two": {}
+    },
+    "ExtendedMockClass": {
+        "three": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 1.0
+        }
+    },
+    "MockProfile": {
+        "centre_0": {},
+        "centre_1": {},
+        "intensity": {}
+    }
+}

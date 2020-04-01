@@ -47,7 +47,7 @@ class MetaDataset:
     def mask_with_phase_sub_size_from_mask(self, mask):
 
         if mask.sub_size != self.sub_size:
-            mask = aa.mask.manual(
+            mask = aa.Mask.manual(
                 mask_2d=mask,
                 pixel_scales=mask.pixel_scales,
                 sub_size=self.sub_size,

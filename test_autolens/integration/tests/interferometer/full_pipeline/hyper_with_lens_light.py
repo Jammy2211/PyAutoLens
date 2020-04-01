@@ -13,7 +13,7 @@ def make_pipeline(
     phase_folders,
     pipeline_pixelization=al.pix.VoronoiBrightnessImage,
     pipeline_regularization=al.reg.AdaptiveBrightness,
-    optimizer_class=af.MultiNest,
+    non_linear_class=af.MultiNest,
 ):
 
     phase1 = al.PhaseInterferometer(
@@ -22,7 +22,7 @@ def make_pipeline(
         galaxies=dict(lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic)),
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
@@ -68,7 +68,7 @@ def make_pipeline(
         ),
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase2.optimizer.const_efficiency_mode = False
@@ -124,7 +124,7 @@ def make_pipeline(
         ),
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase3.optimizer.const_efficiency_mode = True
@@ -174,7 +174,7 @@ def make_pipeline(
         ),
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase4.optimizer.const_efficiency_mode = True
@@ -228,7 +228,7 @@ def make_pipeline(
         ),
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase5.optimizer.const_efficiency_mode = True
@@ -283,7 +283,7 @@ def make_pipeline(
         ),
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase6.optimizer.const_efficiency_mode = True
@@ -344,7 +344,7 @@ def make_pipeline(
         ),
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase7.optimizer.const_efficiency_mode = True

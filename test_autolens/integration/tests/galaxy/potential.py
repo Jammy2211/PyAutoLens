@@ -19,7 +19,7 @@ def galaxy_fit_phase():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    grid = al.grid.uniform(shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=4)
+    grid = al.Grid.uniform(shape_2d=image_shape, pixel_scales=pixel_scales, sub_size=4)
 
     galaxy = al.Galaxy(
         redshift=0.5,
@@ -28,7 +28,7 @@ def galaxy_fit_phase():
 
     potential = galaxy.convergence_from_grid(galaxies=[galaxy], grid=grid)
 
-    noise_map = al.array.manual_2d
+    noise_map = al.Array.manual_2d
         sub_array_1d=np.ones(potential.shape), pixel_scales=pixel_scales
     )
 
@@ -43,7 +43,7 @@ def galaxy_fit_phase():
         ),
         use_convergence=True,
         sub_size=4,
-        optimizer_class=af.MultiNest,
+        non_linear_class=af.MultiNest,
     )
 
     phase1.run(galaxy_data=[data])

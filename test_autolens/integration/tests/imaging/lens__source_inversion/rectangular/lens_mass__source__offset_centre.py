@@ -8,7 +8,7 @@ data_type = "lens_sie__source_smooth__offset_centre"
 data_resolution = "euclid"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
     class SourcePix(al.PhaseImaging):
         def customize_priors(self, results):
 
@@ -29,7 +29,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 regularization=al.reg.Constant,
             ),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True

@@ -1,4 +1,4 @@
-from autolens.dataset import dataset as d
+from autolens.dataset import imaging
 from autolens.pipeline.phase.dataset import meta_dataset
 
 
@@ -30,7 +30,7 @@ class MetaImaging(meta_dataset.MetaDataset):
         self.psf_shape_2d = psf_shape_2d
         self.bin_up_factor = bin_up_factor
 
-    def masked_dataset_from(self, dataset, mask, positions, results, modified_image):
+    def masked_dataset_from(self, dataset, mask, positions, results):
 
         mask = self.mask_with_phase_sub_size_from_mask(mask=mask)
 
@@ -40,8 +40,23 @@ class MetaImaging(meta_dataset.MetaDataset):
             results=results
         )
 
-        masked_imaging = d.MaskedImaging(
-            imaging=dataset.modified_image_from_image(modified_image),
+        if self.bin_up_factor is not None:
+
+            dataset = dataset.binned_from_bin_up_factor(
+                bin_up_factor=self.bin_up_factor
+            )
+
+            mask = mask.mapping.binned_mask_from_bin_up_factor(
+                bin_up_factor=self.bin_up_factor
+            )
+
+        if self.signal_to_noise_limit is not None:
+            dataset = dataset.signal_to_noise_limited_from_signal_to_noise_limit(
+                signal_to_noise_limit=self.signal_to_noise_limit
+            )
+
+        masked_imaging = imaging.MaskedImaging(
+            imaging=dataset,
             mask=mask,
             psf_shape_2d=self.psf_shape_2d,
             positions=positions,
@@ -51,15 +66,5 @@ class MetaImaging(meta_dataset.MetaDataset):
             inversion_uses_border=self.inversion_uses_border,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
-
-        if self.signal_to_noise_limit is not None:
-            masked_imaging = masked_imaging.signal_to_noise_limited_from_signal_to_noise_limit(
-                signal_to_noise_limit=self.signal_to_noise_limit
-            )
-
-        if self.bin_up_factor is not None:
-            masked_imaging = masked_imaging.binned_from_bin_up_factor(
-                bin_up_factor=self.bin_up_factor
-            )
 
         return masked_imaging

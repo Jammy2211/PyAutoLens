@@ -9,7 +9,7 @@ data_type = "lens_sie__source_smooth"
 data_resolution = "lsst"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
@@ -18,7 +18,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source_0=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
@@ -34,7 +34,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             source_1=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
             source_2=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase2.optimizer.const_efficiency_mode = True
