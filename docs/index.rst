@@ -2,11 +2,11 @@
 
 .. toctree::
    :caption: Getting Started:
-   :maxdepth: 1
+   :maxdepth: 2
    :hidden:
 
    installation
-   api
+   api/lensing
    workspace
    howtolens
 

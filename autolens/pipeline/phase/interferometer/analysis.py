@@ -120,7 +120,7 @@ class Analysis(analysis_data.Analysis):
 
     def masked_interferometer_fit_for_tracer(self, tracer, hyper_background_noise):
 
-        return fit.InterferometerFit(
+        return fit.FitInterferometer(
             masked_interferometer=self.masked_dataset,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,

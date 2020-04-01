@@ -28,7 +28,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         transformer_class=transformer.TransformerNUFFT,
         galaxies=None,
         hyper_background_noise=None,
-        optimizer_class=af.MultiNest,
+        non_linear_class=af.MultiNest,
         cosmology=cosmo.Planck15,
         sub_size=2,
         primary_beam_shape_2d=None,
@@ -45,7 +45,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         Parameters
         ----------
-        optimizer_class: class
+        non_linear_class: class
             The class of a non_linear optimizer
         sub_size: int
             The side length of the subgrid
@@ -63,7 +63,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         super().__init__(
             paths,
             galaxies=galaxies,
-            optimizer_class=optimizer_class,
+            non_linear_class=non_linear_class,
             cosmology=cosmology,
         )
 

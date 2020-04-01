@@ -220,7 +220,7 @@ class TestAttributes:
     def test__extended_with_hyper_and_pixelizations(self):
 
         phase_no_pixelization = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO, phase_name="test_phase"
+            non_linear_class=mock_pipeline.MockNLO, phase_name="test_phase"
         )
 
         phase_extended = phase_no_pixelization.extend_with_multiple_hyper_phases(
@@ -243,7 +243,7 @@ class TestAttributes:
                     regularization=al.reg.Constant,
                 )
             ),
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             phase_name="test_phase",
         )
 
@@ -279,7 +279,7 @@ class TestMakeAnalysis:
     def test__mask_input_uses_mask(self, phase_imaging_7x7, imaging_7x7):
         # If an input mask is supplied we use mask input.
 
-        mask_input = al.mask.circular(
+        mask_input = al.Mask.circular(
             shape_2d=imaging_7x7.shape_2d, pixel_scales=1.0, sub_size=1, radius=1.5
         )
 
@@ -293,7 +293,7 @@ class TestMakeAnalysis:
     ):
         # If an input mask is supplied we use mask input.
 
-        mask_input = al.mask.circular(
+        mask_input = al.Mask.circular(
             shape_2d=imaging_7x7.shape_2d, pixel_scales=1, sub_size=1, radius=1.5
         )
 
@@ -641,8 +641,8 @@ class TestHyperMethods:
     ):
 
         results_collection_7x7[0].galaxy_images = [
-            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
-            al.masked_array.full(fill_value=2.0, mask=mask_7x7),
+            al.MaskedArray.full(fill_value=2.0, mask=mask_7x7),
+            al.MaskedArray.full(fill_value=2.0, mask=mask_7x7),
         ]
         results_collection_7x7[0].galaxy_images[0][3] = -1.0
         results_collection_7x7[0].galaxy_images[1][5] = -1.0
@@ -653,7 +653,7 @@ class TestHyperMethods:
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
             ),
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             phase_name="test_phase",
         )
 
@@ -682,7 +682,7 @@ class TestResult:
         clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=[
                 al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
@@ -699,7 +699,7 @@ class TestResult:
         clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=[
                 al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
@@ -717,7 +717,7 @@ class TestResult:
         clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=[
                 al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
@@ -729,7 +729,7 @@ class TestResult:
         assert result.positions == None
 
         phase_imaging_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
@@ -752,7 +752,7 @@ class TestResult:
         clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
@@ -773,7 +773,7 @@ class TestResult:
         assert result.pixelization.shape == (2, 3)
 
         phase_imaging_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
@@ -801,7 +801,7 @@ class TestResult:
         clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=[
                 al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
@@ -813,7 +813,7 @@ class TestResult:
         assert result.most_likely_pixelization_grids_of_planes == [None]
 
         phase_imaging_7x7 = al.PhaseImaging(
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
@@ -844,7 +844,7 @@ class TestPhasePickle:
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="phase_name",
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
@@ -858,7 +858,7 @@ class TestPhasePickle:
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="phase_name",
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),
@@ -876,7 +876,7 @@ class TestPhasePickle:
 
         phase_imaging_7x7 = CustomPhase(
             phase_name="phase_name",
-            optimizer_class=mock_pipeline.MockNLO,
+            non_linear_class=mock_pipeline.MockNLO,
             galaxies=dict(
                 lens=al.Galaxy(light=al.lp.EllipticalLightProfile, redshift=1)
             ),

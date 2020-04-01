@@ -11,15 +11,13 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="plot_path")
 def make_plotter_setup():
-    return "{}/../../../test_files/plotting/mapper/".format(
-        os.path.dirname(os.path.realpath(__file__))
-    )
+    return "{}/files/plots/mapper/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 @pytest.fixture(autouse=True)
 def set_config_path():
     af.conf.instance = af.conf.Config(
-        path.join(directory, "../test_files/plot"), path.join(directory, "output")
+        path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 
 
@@ -30,7 +28,7 @@ def test__image_and_mapper_subplot_is_output_for_all_mappers(
     critical_curves = [(0.0, 0.0), (0.1, 0.1)]
     caustics = [(0.0, 0.0), (0.1, 0.1)]
 
-    aplt.mapper.subplot_image_and_mapper(
+    aplt.Mapper.subplot_image_and_mapper(
         image=imaging_7x7.image,
         mapper=rectangular_mapper_7x7_3x3,
         critical_curves=critical_curves,
@@ -44,7 +42,7 @@ def test__image_and_mapper_subplot_is_output_for_all_mappers(
     )
     assert plot_path + "subplot_image_and_mapper.png" in plot_patch.paths
 
-    aplt.mapper.subplot_image_and_mapper(
+    aplt.Mapper.subplot_image_and_mapper(
         image=imaging_7x7.image,
         mapper=voronoi_mapper_9_3x3,
         critical_curves=critical_curves,

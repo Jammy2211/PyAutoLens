@@ -31,7 +31,7 @@ def load_test_interferometer(data_type, data_resolution):
         folder_names=["dataset", "interferometer", data_type, data_resolution],
     )
 
-    return al.interferometer.from_fits(
+    return al.Interferometer.from_fits(
         visibilities_path=dataset_path + "/visibilities.fits",
         noise_map_path=dataset_path + "/noise_map.fits",
         uv_wavelengths_path=dataset_path + "/uv_wavelengths.fits",

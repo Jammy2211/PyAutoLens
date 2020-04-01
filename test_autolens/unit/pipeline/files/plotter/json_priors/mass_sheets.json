@@ -1,0 +1,26 @@
+{
+    "ExternalShear": {
+        "magnitude": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 0.25,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        },
+        "phi": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 180.0,
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": 180.0
+            }
+        }
+    }
+}

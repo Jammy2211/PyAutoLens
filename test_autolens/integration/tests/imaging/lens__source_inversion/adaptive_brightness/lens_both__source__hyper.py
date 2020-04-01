@@ -8,7 +8,7 @@ data_type = "lens_light__source_smooth"
 data_resolution = "lsst"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
@@ -21,7 +21,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             ),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True
@@ -41,7 +41,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             ),
         ),
         inversion_pixel_limit=50,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase2.optimizer.const_efficiency_mode = True
@@ -59,7 +59,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             source=phase2.result.instance.galaxies.source,
         ),
         inversion_pixel_limit=50,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase3.optimizer.const_efficiency_mode = True

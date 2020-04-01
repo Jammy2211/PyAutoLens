@@ -69,7 +69,7 @@
 #                 redshift=redshift_source, sersic=al.lp.EllipticalSersic
 #             ),
 #         ),
-#         optimizer_class=MockNLO,
+#         non_linear_class=MockNLO,
 #     )
 #
 #
@@ -97,7 +97,7 @@
 #         ),
 #         hyper_image_sky=af.last.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=af.last.hyper_combined.instance.optional.hyper_background_noise,
-#         optimizer_class=MockNLO,
+#         non_linear_class=MockNLO,
 #     )
 #
 #
@@ -121,7 +121,7 @@
 #                 hyper_galaxy=phase2.result.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         optimizer_class=MockNLO,
+#         non_linear_class=MockNLO,
 #     )
 #
 #
@@ -147,7 +147,7 @@
 #         ),
 #         hyper_image_sky=phase3.result.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=phase3.result.hyper_combined.instance.optional.hyper_background_noise,
-#         optimizer_class=MockNLO,
+#         non_linear_class=MockNLO,
 #     )
 #
 #
@@ -173,7 +173,7 @@
 #         ),
 #         hyper_image_sky=phase4.result.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=phase4.result.hyper_combined.instance.optional.hyper_background_noise,
-#         optimizer_class=MockNLO,
+#         non_linear_class=MockNLO,
 #     )
 #
 #
@@ -206,7 +206,7 @@
 #         ),
 #         hyper_image_sky=af.last.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=af.last.hyper_combined.instance.optional.hyper_background_noise,
-#         optimizer_class=MockNLO,
+#         non_linear_class=MockNLO,
 #     )
 #
 #

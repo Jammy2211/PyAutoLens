@@ -1,3 +1,6 @@
+from autoarray.operators import transformer
+
+
 def phase_tag_from_phase_settings(
     sub_size,
     signal_to_noise_limit=None,
@@ -6,6 +9,7 @@ def phase_tag_from_phase_settings(
     primary_beam_shape_2d=None,
     positions_threshold=None,
     pixel_scale_interpolation_grid=None,
+    transformer_class=None,
     real_space_shape_2d=None,
     real_space_pixel_scales=None,
 ):
@@ -25,7 +29,9 @@ def phase_tag_from_phase_settings(
     pixel_scale_interpolation_grid_tag = pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
         pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
     )
-
+    transformer_tag = transformer_tag_from_transformer_class(
+        transformer_class=transformer_class
+    )
     primary_beam_shape_tag = primary_beam_shape_tag_from_primary_beam_shape_2d(
         primary_beam_shape_2d=primary_beam_shape_2d
     )
@@ -38,6 +44,7 @@ def phase_tag_from_phase_settings(
 
     return (
         "phase_tag"
+        + transformer_tag
         + real_space_shape_2d_tag
         + real_space_pixel_scales_tag
         + sub_size_tag
@@ -144,6 +151,26 @@ def pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
         return ""
     else:
         return "__interp_{0:.3f}".format(pixel_scale_interpolation_grid)
+
+
+def transformer_tag_from_transformer_class(transformer_class):
+    """Generate an image psf shape tag, to customize phase names based on size of the image PSF that the original PSF \
+    is trimmed to for faster run times.
+
+    This changes the phase name 'phase_name' as follows:
+
+    image_psf_shape = 1 -> phase_name
+    image_psf_shape = 2 -> phase_name_image_psf_shape_2
+    image_psf_shape = 2 -> phase_name_image_psf_shape_2
+    """
+    if transformer_class is transformer.TransformerDFT:
+        return "__dft"
+    elif transformer_class is transformer.TransformerFFT:
+        return "__fft"
+    elif transformer_class is transformer.TransformerNUFFT:
+        return "__nufft"
+    elif transformer_class is None:
+        return ""
 
 
 def primary_beam_shape_tag_from_primary_beam_shape_2d(primary_beam_shape_2d):
