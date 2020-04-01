@@ -31,7 +31,7 @@ class PhaseDataset(abstract.AbstractPhase):
             The class of a non_linear optimizer
         """
 
-        super(PhaseDataset, self).__init__(paths, non_linear_class=non_linear_class)
+        super().__init__(paths, non_linear_class=non_linear_class)
         self.galaxies = galaxies or []
         self.cosmology = cosmology
 
@@ -58,6 +58,8 @@ class PhaseDataset(abstract.AbstractPhase):
         """
         dataset.save(self.paths.phase_output_path)
         self.save_metadata(dataset)
+        if mask is not None:
+            self.save_mask(mask)
         self.model = self.model.populate(results)
 
         analysis = self.make_analysis(
