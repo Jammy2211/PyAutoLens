@@ -1,3 +1,4 @@
+from autoarray import preprocess
 from autoarray.mask.mask import Mask
 from autoarray.structures.arrays import Array
 from autoarray.structures.grids import (
