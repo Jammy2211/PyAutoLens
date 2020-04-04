@@ -89,17 +89,16 @@ Workspace
 **PyAutoLens** comes with a workspace, which can be found `here <https://github.com/Jammy2211/autolens_workspace>`_ & which includes:
 
 - **Aggregator** - Manipulate large suites of modeling results via Jupyter notebooks, using **PyAutoFit**'s in-built results database.
+- **API** - Illustrative scripts of the **PyAutoLens** interface, for examples on how to make plots, peform lensing calculations, etc.
 - **Config** - Configuration files which customize **PyAutoLens**'s behaviour.
 - **Dataset** - Where data is stored, including example datasets distributed with **PyAutoLens**.
 - **HowToLens** - The **HowToLens** lecture series.
 - **Output** - Where the **PyAutoLens** analysis and visualization are output.
 - **Pipelines** - Example pipelines for modeling strong lenses.
-- **Plot** - Example scripts for customizing figures and images.
-- **Preprocessing** - Tools for preprocessing data before an analysis (e.g. creating a mask).
+- **Preprocess** - Tools to preprocess data before an analysis (e.g. convert units, create masks).
 - **Quick Start** - A quick start guide, so you can begin modeling your lenses within hours.
 - **Runners** - Scripts for running a **PyAutoLens** pipeline.
 - **Simulators** - Scripts for simulating strong lens datasets with **PyAutoLens**.
-- **Tools** - Extra tools for using many other **PyAutoLens** features.
 
 Slack
 -----

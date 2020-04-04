@@ -3,9 +3,8 @@
 API - Fitting
 -------------
 
-We've shown how with **PyAutoLens** we can create *Tracer* objects that represent a strong lensing system. Now, we're
-going to look at how we can use these objects to fit imaging data of a strong lens, which we begin by loading from .fits
-files:
+**PyAutoLens** can create *Tracer* objects to represent a strong lensing system. Now, we're going use these objects to
+fit imaging data of a strong lens, which we begin by loading from .fits files:
 
 .. code-block:: bash
 
@@ -20,16 +19,23 @@ files:
 
     aplt.Imaging.image(imaging=imaging)
     aplt.Imaging.noise_map(imaging=imaging)
-    aplt.Imaging.psf(imaging=imaging, plotter=plotter)
+    aplt.Imaging.psf(imaging=imaging)
 
 Here's what our image, noise-map and point-spread function look like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/grid.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/image.png
   :width: 400
   :alt: Alternative text
 
-We now need a mask that we will apply to the data, such that regions where there is no signal (e.g. the signal) are
-omitted from the fit:
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/noise_map.png
+  :width: 400
+  :alt: Alternative text
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/psf.png
+  :width: 400
+  :alt: Alternative text
+
+We now need to mask the data, so that regions where there is no signal (e.g. the edges) are omitted from the fit:
 
 .. code-block:: bash
 
@@ -41,15 +47,16 @@ omitted from the fit:
 
     aplt.Imaging.image(imaging=masked_imaging)
 
-Here is what our image looks like with the mask applied:
+Here is what our image looks like with the mask applied, where PyAutoLens has automatically zoomed around the mask
+to make the lensed source appear bigger:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/grid.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/masked_image.png
   :width: 400
   :alt: Alternative text
 
 Following the lensing API guide, we can make a tracer from a collection of *LightProfile*, *MassProfile* and *Galaxy*
-objects. We can then use the *FitImaging* module to fit this tracer to the data-set, performing all necessary tasks
-to create the model imag we fit the data with, such as blurring the tracer's image with the imaging PSF:
+objects. We can then use the *FitImaging* object to fit this tracer to the dataset, performing all necessary tasks
+to create the model image we fit the data with, such as blurring the tracer's image with the imaging PSF:
 
 .. code-block:: bash
 
@@ -59,23 +66,78 @@ to create the model imag we fit the data with, such as blurring the tracer's ima
     aplt.FitImaging.residual_map(fit=fit)
     aplt.FitImaging.chi_squared_map(fit=fit)
 
-For a good lens model, that is one whose model image (and therefore tracer) is representative of the data one will
-see the residuals and chi-squared values minimized:
+For a good lens model, that is one whose model image (and therefore tracer) is representative of the dataset the
+residuals and chi-squared values minimized:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/grid.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/residual_map.png
   :width: 400
   :alt: Alternative text
 
-In contrast, a poor lens model will show features in the residual-map and chi-squareds:
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/grid.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/chi_squared_map.png
   :width: 400
   :alt: Alternative text
 
-Of course, given a dataset, the quesiton is next how do we determine a 'good' lens model? How do we figure out an
-appropriate tracer (and therefore combination of light profiles, mass profiles and galaxies) to minimize the residuals
-and chi-squared values?
+In contrast, a bad lens model will show features in the residual-map and chi-squareds:
 
-To do this, we need to perform lens modeling, which essentially fits many tracers to the data using a non-linear search
-algorithm. This side of the model fitting is handled by our sister project **PyAutoFit**, which is a probablistic
-programming language for non-linear model fitting. In the code below, we create a *PhaseImaging* object out of the
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/bad_residual_map.png
+  :width: 400
+  :alt: Alternative text
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/bad_chi_squared_map.png
+  :width: 400
+  :alt: Alternative text
+
+
+Given a strong lens dataset, how do we determine a 'good' lens model? How do we determine the (and therefore
+combination of light profiles, mass profiles and galaxies) that minimize the residuals and chi-squared values?
+
+To do this, we perform lens modeling, which uses a non-linear search algorithm to fit many different tracers to the data.
+This model-fitting is handled by our project **PyAutoFit**, a probablistic programming language for non-linear model
+fitting. Below, we setup our model as *GalaxyModel* objects, which repesent the light profiles, mass profiles and
+therefore galaxies we fit to our data:
+
+.. code-block:: bash
+
+    lens_galaxy_model = al.GalaxyModel(
+        redshift=0.5, light=al.lp.EllipticalDevVaucouleurs, mass=al.mp.EllipticalIsothermal
+    )
+    source_galaxy_model = al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalExponential)
+
+To perform the fit, we create a *PhaseImaging* object and 'run' the phase by passing it the dataset and mask. Note that
+we also pass the phase a non-linear search class, which instructs this phase to fit the lens data using the sampling
+algorithm **PyMultiNest**.
+
+.. code-block:: bash
+
+    phase = al.PhaseImaging(
+        galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
+        phase_name="phase_example",
+        non_linear_class=af.MultiNest,
+    )
+
+    phase.run(data=imaging, mask=mask)
+
+By simply changing the *GalaxyModel* objecs it is therefore simple to parameterize and fit many different lens models
+using different combinations of light profiles, mass profiles and perhaps even modeling the system with different
+numbers of galaxies!
+
+Furthermore, **PyAutoFit** provides us with many ways to customize our model fit.
+
+.. code-block:: bash
+
+    # This aligns the light and mass profile centres in the model, reducing the number of free parameter fitted for by
+    # MultiNest by 2.
+    lens_galaxy_model.light.centre = lens_galaxy_model.mass.centre
+
+    # This fixes the lens galaxy light profile's rotation angle phi to a value of 45.0 degrees, removing another
+    # free parameter.
+    lens_galaxy_model.light.phi = 45.0
+
+    # This forces the mass profile to be rounder than the light profile.
+    lens_galaxy_model.mass.axis_ratio > lens_galaxy_model.light.axis_ratio
+
+There is a lot more to lens modeling with **PyAutoLens** than shown here. For example, to fit complex lens models we
+use *Pipeline* objects, that chain together a series of the phase fits shown above. The pipeline changes the lens model
+between phases, using the fits of earlier phases to guide the non-linear search in later phases.
+
+You can learn more about advanced lens modeling in **PyAutoens** in chapters 2 and 3 of the **HowToLens** lecture series.
