@@ -5,7 +5,7 @@ from test_autolens.integration.tests.imaging import runner
 import os
 
 test_type = "features"
-test_name = "aggregator_dataset"
+test_name = "agg_dataset"
 data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "lsst"
 
@@ -32,9 +32,9 @@ if __name__ == "__main__":
 
     test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
     output_path = test_path + "../output"
-    aggregator = af.Aggregator(directory=str(output_path))
+    agg = af.Aggregator(directory=str(output_path))
 
-    datasets = aggregator.dataset
+    datasets = agg.dataset
 
     # This should print "test_dataset" -> see integration/tests/imaging/runner.py
 

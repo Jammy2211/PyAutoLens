@@ -35,6 +35,7 @@ from autoastro.galaxy.fit_galaxy import FitGalaxy
 from autoastro.galaxy.galaxy_model import GalaxyModel
 from autoastro.hyper import hyper_data
 
+from autolens import aggregator as agg
 from autolens.dataset.imaging import MaskedImaging, SimulatorImaging
 from autolens.dataset.interferometer import (
     MaskedInterferometer,
