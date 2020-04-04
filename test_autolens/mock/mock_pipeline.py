@@ -8,6 +8,8 @@ class GalaxiesMockAnalysis:
     def __init__(self, number_galaxies, value):
         self.number_galaxies = number_galaxies
         self.value = value
+        self.hyper_model_image = None
+        self.hyper_galaxy_image_path_dict = None
 
     # noinspection PyUnusedLocal
     def galaxy_images_for_model(self, model):
@@ -183,3 +185,20 @@ class MockNLO(af.NonLinearOptimizer):
         fitness_function(model.prior_count * [0.8])
 
         return fitness_function.result
+
+    def output_from_model(self, model, paths):
+        return MockOutput()
+
+
+class MockOutput:
+    def __init__(self):
+        pass
+
+    @property
+    def most_likely_instance(self):
+        self.galaxies = [
+            al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(centre=(0.0, 1.0))),
+            al.Galaxy(redshift=1.0, light=al.lp.EllipticalSersic()),
+        ]
+
+        return self

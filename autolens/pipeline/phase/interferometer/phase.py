@@ -146,6 +146,9 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         return analysis
 
+    def make_phase_attributes(self, analysis):
+        return PhaseAttributes(cosmology=self.cosmology)
+
     def output_phase_info(self):
 
         file_phase_info = "{}/{}".format(
@@ -168,3 +171,9 @@ class PhaseInterferometer(dataset.PhaseDataset):
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
 
             phase_info.close()
+
+
+class PhaseAttributes:
+    def __init__(self, cosmology):
+
+        self.cosmology = cosmology

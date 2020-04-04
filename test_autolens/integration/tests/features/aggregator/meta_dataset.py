@@ -5,7 +5,7 @@ from test_autolens.integration.tests.imaging import runner
 import os
 
 test_type = "features"
-test_name = "agg_mask"
+test_name = "agg_meta_dataset"
 data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "lsst"
 
@@ -34,6 +34,7 @@ if __name__ == "__main__":
     output_path = test_path + "../output"
     agg = af.Aggregator(directory=str(output_path))
 
-    masks = agg.mask
+    meta_datasets = agg.meta_dataset
 
-    print(masks)
+    print(meta_datasets[0].sub_size)
+    print(meta_datasets[0].positions_threshold)
