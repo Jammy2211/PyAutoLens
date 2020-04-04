@@ -1,25 +1,12 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-import autoarray as aa
 from autofit.tools.phase import Dataset
 from autolens.pipeline.phase import abstract
 from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.dataset.result import Result
 
-
-def isprior(obj, cls):
-    if isinstance(obj, af.PriorModel):
-        return True
-    return False
-
-
-def isinstance_or_prior(obj, cls):
-    if isinstance(obj, cls):
-        return True
-    if isinstance(obj, af.PriorModel) and obj.cls == cls:
-        return True
-    return False
+import pickle
 
 
 class PhaseDataset(abstract.AbstractPhase):
@@ -46,7 +33,7 @@ class PhaseDataset(abstract.AbstractPhase):
             The class of a non_linear optimizer
         """
 
-        super(PhaseDataset, self).__init__(paths, non_linear_class=non_linear_class)
+        super().__init__(paths, non_linear_class=non_linear_class)
         self.galaxies = galaxies or []
         self.cosmology = cosmology
 
@@ -73,11 +60,17 @@ class PhaseDataset(abstract.AbstractPhase):
         """
         dataset.save(self.paths.phase_output_path)
         self.save_metadata(dataset)
+        self.save_mask(mask)
+        self.save_meta_dataset(meta_dataset=self.meta_dataset)
+
         self.model = self.model.populate(results)
 
         analysis = self.make_analysis(
             dataset=dataset, mask=mask, results=results, positions=positions
         )
+
+        phase_attributes = self.make_phase_attributes(analysis=analysis)
+        self.save_phase_attributes(phase_attributes=phase_attributes)
 
         self.customize_priors(results)
         self.assert_and_save_pickle()

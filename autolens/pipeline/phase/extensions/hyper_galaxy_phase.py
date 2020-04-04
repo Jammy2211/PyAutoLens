@@ -1,16 +1,17 @@
 import copy
+import pickle
+from typing import cast
 
 import numpy as np
-from typing import cast
 
 import autofit as af
 from autoarray.fit import fit as aa_fit
-from autolens.fit import fit
-from autolens.dataset import imaging
 from autoastro.galaxy import galaxy as g
 from autoastro.hyper import hyper_data as hd
-from autolens.pipeline.phase import imaging
+from autolens.dataset import imaging
+from autolens.fit import fit
 from autolens.pipeline import visualizer
+from autolens.pipeline.phase.imaging import PhaseImaging
 from .hyper_phase import HyperPhase
 
 
@@ -173,16 +174,16 @@ class HyperGalaxyPhase(HyperPhase):
             psf_shape_2d=dataset.psf.shape_2d,
             positions=results.last.positions,
             positions_threshold=cast(
-                imaging.PhaseImaging, phase
+                PhaseImaging, phase
             ).meta_dataset.positions_threshold,
             pixel_scale_interpolation_grid=cast(
-                imaging.PhaseImaging, phase
+                PhaseImaging, phase
             ).meta_dataset.pixel_scale_interpolation_grid,
             inversion_pixel_limit=cast(
-                imaging.PhaseImaging, phase
+                PhaseImaging, phase
             ).meta_dataset.inversion_pixel_limit,
             inversion_uses_border=cast(
-                imaging.PhaseImaging, phase
+                PhaseImaging, phase
             ).meta_dataset.inversion_uses_border,
             preload_sparse_grids_of_planes=None,
         )
@@ -238,10 +239,11 @@ class HyperGalaxyPhase(HyperPhase):
             if not np.all(
                 hyper_result.analysis.hyper_galaxy_image_path_dict[path] == 0
             ):
+                hyper_model_image = hyper_result.analysis.hyper_model_image
 
                 analysis = self.Analysis(
                     masked_imaging=masked_imaging,
-                    hyper_model_image=hyper_result.analysis.hyper_model_image,
+                    hyper_model_image=hyper_model_image,
                     hyper_galaxy_image=hyper_result.analysis.hyper_galaxy_image_path_dict[
                         path
                     ],

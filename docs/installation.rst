@@ -69,11 +69,11 @@ Install multinest:
     conda install -c conda-forge multinest
 
 
-Install autolens (v0.40.0 is the most recent stable build):
+Install autolens:
 
 .. code-block:: bash
 
-    pip install autolens==0.40.0
+    pip install autolens
 
 
 Clone the autolens workspace & set WORKSPACE environment model:
@@ -125,14 +125,14 @@ You can test everything is working by running the example pipeline runner in the
 Installation with pip
 ---------------------
 
-Installation is also available via pip (v0.40.0 is the most recent stable build), however there are reported issues with
+Installation is also available via pip, however there are reported issues with
 installing **PyMultiNest** that can make installation difficult, see `here <https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes>`_
 
 If **PyMultiNest** has installed correctly you may install **PyAutoLens** via pip as follows.
 
 .. code-block:: bash
 
-    pip install autolens==0.40.0
+    pip install autolens
 
 Clone autolens workspace & set WORKSPACE enviroment model:
 
