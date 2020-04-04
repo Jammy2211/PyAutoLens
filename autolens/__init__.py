@@ -1,3 +1,4 @@
+from autoarray import preprocess
 from autoarray.mask.mask import Mask
 from autoarray.structures.arrays import Array
 from autoarray.structures.grids import (
@@ -69,4 +70,4 @@ from autolens.pipeline.pipeline import PipelineDataset, PipelinePositions
 from autolens.pipeline import setup
 from autolens import plot
 
-__version__ = '0.43.0'
+__version__ = '0.43.1'
