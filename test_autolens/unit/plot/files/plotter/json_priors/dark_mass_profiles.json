@@ -188,7 +188,7 @@
             }
         }
     },
-    "SphericalTruncatedNFWMassToConcentration": {
+    "SphericalTruncatedNFWMCR": {
         "centre_0": {
             "type": "Gaussian",
             "lower_limit": "-inf",

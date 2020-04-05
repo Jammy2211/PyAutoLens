@@ -50,9 +50,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
                 self.model.galaxies.subhalo.mass.centre_1,
             ]
 
-    subhalo = al.GalaxyModel(
-        redshift=0.5, mass=al.mp.SphericalTruncatedNFWMassToConcentration
-    )
+    subhalo = al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalTruncatedNFWMCRLudlow)
 
     subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
 
