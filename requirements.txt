@@ -1,7 +1,7 @@
 autoconf==0.4.0
 autofit==0.55.1
 autoarray==0.10.2
-autoastro==0.6.6
+autoastro==0.7.0
 astropy>=3.0.0
 emcee==3.0.2
 matplotlib>=3.0.3
