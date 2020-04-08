@@ -6,6 +6,8 @@ from autolens.pipeline.phase import abstract
 from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.dataset.result import Result
 
+import pickle
+
 
 class PhaseDataset(abstract.AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
@@ -14,11 +16,11 @@ class PhaseDataset(abstract.AbstractPhase):
 
     @af.convert_paths
     def __init__(
-            self,
-            paths,
-            galaxies=None,
-            non_linear_class=af.MultiNest,
-            cosmology=cosmo.Planck15,
+        self,
+        paths,
+        galaxies=None,
+        non_linear_class=af.MultiNest,
+        cosmology=cosmo.Planck15,
     ):
         """
 
@@ -58,13 +60,17 @@ class PhaseDataset(abstract.AbstractPhase):
         """
         dataset.save(self.paths.phase_output_path)
         self.save_metadata(dataset)
-        if mask is not None:
-            self.save_mask(mask)
+        self.save_mask(mask)
+        self.save_meta_dataset(meta_dataset=self.meta_dataset)
+
         self.model = self.model.populate(results)
 
         analysis = self.make_analysis(
             dataset=dataset, mask=mask, results=results, positions=positions
         )
+
+        phase_attributes = self.make_phase_attributes(analysis=analysis)
+        self.save_phase_attributes(phase_attributes=phase_attributes)
 
         self.customize_priors(results)
         self.assert_and_save_pickle()
@@ -99,12 +105,12 @@ class PhaseDataset(abstract.AbstractPhase):
         return extensions.InversionPhase(phase=self)
 
     def extend_with_multiple_hyper_phases(
-            self,
-            hyper_galaxy=False,
-            inversion=False,
-            include_background_sky=False,
-            include_background_noise=False,
-            hyper_galaxy_phase_first=False,
+        self,
+        hyper_galaxy=False,
+        inversion=False,
+        include_background_sky=False,
+        include_background_noise=False,
+        hyper_galaxy_phase_first=False,
     ):
 
         self.use_as_hyper_dataset = True

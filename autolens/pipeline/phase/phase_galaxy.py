@@ -1,7 +1,6 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autoarray.mask import mask as msk
 from autoastro.galaxy import fit_galaxy
 from autoastro.galaxy import masked_galaxy_data
 from autolens.pipeline.phase import abstract

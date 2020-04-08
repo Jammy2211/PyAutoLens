@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; PyAutoLens</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="HowToLens" href="howtolens.html" />
+    <link rel="prev" title="PyAutoLens" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyAutoLens
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-with-conda">Installation with conda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-with-pip">Installation with pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#forking-cloning">Forking / Cloning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="howtolens.html">HowToLens</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyAutoLens</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>We strive to make <strong>PyAutoLens</strong> as easy to install as possible. However, one of our dependencies, <strong>PyMultiNest</strong>,
+has proven difficult to install on many machines. We therefore recommend users to install <strong>PyAutoLens</strong> via conda
+following the instructions below, which handles the installation of <strong>PyMultiNest</strong>.</p>
+<p>Users who wish to install PyAutoLens via pip or fork the respository will need to install <strong>PyMultiNest</strong> manually.</p>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p><strong>PyAutoLens</strong> dependencies can be found in the requirements.txt file and they are automatically installed with
+<strong>PyAutoLens</strong>. The libraries are:</p>
+<p><strong>PyAutoConf</strong> <a class="reference external" href="https://github.com/rhayes777/PyAutoConf">https://github.com/rhayes777/PyAutoConf</a></p>
+<p><strong>PyAutoFit</strong> <a class="reference external" href="https://github.com/rhayes777/PyAutoFit">https://github.com/rhayes777/PyAutoFit</a></p>
+<p><strong>PyAutoArray</strong> <a class="reference external" href="https://github.com/Jammy2211/PyAutoArray">https://github.com/Jammy2211/PyAutoArray</a></p>
+<p><strong>PyAutoAstro</strong> <a class="reference external" href="https://github.com/Jammy2211/PyAutoAstro">https://github.com/Jammy2211/PyAutoAstro</a></p>
+<p><strong>PyMultiNest</strong> <a class="reference external" href="http://johannesbuchner.github.io/pymultinest-tutorial/install.html">http://johannesbuchner.github.io/pymultinest-tutorial/install.html</a></p>
+<p><strong>emcee</strong> <a class="reference external" href="https://github.com/dfm/emcee">https://github.com/dfm/emcee</a></p>
+<p><strong>astropy</strong> <a class="reference external" href="https://www.astropy.org/">https://www.astropy.org/</a></p>
+<p><strong>GetDist</strong> <a class="reference external" href="https://getdist.readthedocs.io/en/latest/">https://getdist.readthedocs.io/en/latest/</a></p>
+<p><strong>matplotlib</strong> <a class="reference external" href="https://matplotlib.org/">https://matplotlib.org/</a></p>
+<p><strong>numba</strong> <a class="reference external" href="https://github.com/numba/numba">https://github.com/numba/numba</a>.</p>
+<p><strong>numpy</strong> <a class="reference external" href="https://numpy.org/">https://numpy.org/</a></p>
+<p><strong>pyquad</strong> <a class="reference external" href="https://github.com/AshKelly/pyquad">https://github.com/AshKelly/pyquad</a></p>
+<p><strong>scipy</strong> <a class="reference external" href="https://www.scipy.org/">https://www.scipy.org/</a></p>
+</div>
+<div class="section" id="installation-with-conda">
+<h2>Installation with conda<a class="headerlink" href="#installation-with-conda" title="Permalink to this headline">¶</a></h2>
+<p>We recommend installation using a conda environment as this circumvents a number of compatibility issues when installing <strong>PyMultiNest</strong>.</p>
+<p>First, install <a class="reference external" href="https://conda.io/miniconda.html">conda</a>.</p>
+<p>Create a conda environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;&gt; conda create -n autolens <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.7 anaconda
+</pre></div>
+</div>
+<p>Activate the conda environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate autolens
+</pre></div>
+</div>
+<p>Install multinest:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c conda-forge multinest
+</pre></div>
+</div>
+<p>Install autolens (v0.40.0 is the most recent stable build):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install <span class="nv">autolens</span><span class="o">==</span><span class="m">0</span>.40.0
+</pre></div>
+</div>
+<p>Clone the autolens workspace &amp; set WORKSPACE environment model:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> /path/where/you/want/autolens_workspace
+git clone https://github.com/Jammy2211/autolens_workspace
+<span class="nb">export</span> <span class="nv">WORKSPACE</span><span class="o">=</span>/path/to/autolens_workspace/
+</pre></div>
+</div>
+<p>Set PYTHONPATH to include the autolens_workspace directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/autolens_workspace/
+</pre></div>
+</div>
+<p>Matplotlib uses the default backend on your computer, as set in the config file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>autolens_workspace/config/visualize/general.ini
+</pre></div>
+</div>
+<p>If unchanged, the backend is set to ‘default’, meaning it will use the backend automatically set up for Python on
+your system.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>general<span class="o">]</span>
+<span class="nv">backend</span> <span class="o">=</span> default
+</pre></div>
+</div>
+<p>There have been reports that using the default backend causes crashes when running the test script below (either the
+code crashes without a error or your computer restarts). If this happens, change the config’s backend until the test
+works (TKAgg has worked on Linux machines, Qt5Agg has worked on new MACs). For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>general<span class="o">]</span>
+<span class="nv">backend</span> <span class="o">=</span> TKAgg
+</pre></div>
+</div>
+<p>You can test everything is working by running the example pipeline runner in the autolens_workspace</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 /path/to/autolens_workspace/runners/beginner/no_lens_light/lens_sie__source_inversion.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="installation-with-pip">
+<h2>Installation with pip<a class="headerlink" href="#installation-with-pip" title="Permalink to this headline">¶</a></h2>
+<p>Installation is also available via pip (v0.40.0 is the most recent stable build), however there are reported issues with
+installing <strong>PyMultiNest</strong> that can make installation difficult, see <a class="reference external" href="https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes">here</a></p>
+<p>If <strong>PyMultiNest</strong> has installed correctly you may install <strong>PyAutoLens</strong> via pip as follows.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install <span class="nv">autolens</span><span class="o">==</span><span class="m">0</span>.40.0
+</pre></div>
+</div>
+<p>Clone autolens workspace &amp; set WORKSPACE enviroment model:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> /path/where/you/want/autolens_workspace
+git clone https://github.com/Jammy2211/autolens_workspace
+<span class="nb">export</span> <span class="nv">WORKSPACE</span><span class="o">=</span>/path/to/autolens_workspace/
+</pre></div>
+</div>
+<p>Set PYTHONPATH to include the autolens_workspace directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/autolens_workspace
+</pre></div>
+</div>
+<p>Matplotlib uses the default backend on your computer, as set in the config file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>autolens_workspace/config/visualize/general.ini
+</pre></div>
+</div>
+<p>If unchanged, the backend is set to ‘default’, meaning it will use the backend automatically set up for Python on
+your system.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>general<span class="o">]</span>
+<span class="nv">backend</span> <span class="o">=</span> default
+</pre></div>
+</div>
+<p>There have been reports that using the default backend causes crashes when running the test script below (either the
+code crashes without a error or your computer restarts). If this happens, change the config’s backend until the test
+works (TKAgg has worked on Linux machines, Qt5Agg has worked on new MACs). For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>general<span class="o">]</span>
+<span class="nv">backend</span> <span class="o">=</span> TKAgg
+</pre></div>
+</div>
+<p>You can test everything is working by running the example pipeline runner in the autolens_workspace</p>
+<p>You can test everything is working by running the example pipeline runner in the autolens_workspace</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 /path/to/autolens_workspace/runners/beginner/no_lens_light/lens_sie__source_inversion.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="forking-cloning">
+<h2>Forking / Cloning<a class="headerlink" href="#forking-cloning" title="Permalink to this headline">¶</a></h2>
+<p>Alternatively, you can fork or clone the <strong>PyAutoLens</strong> github repository. Note that <strong>PyAutoLens</strong> requires a valid
+config to run. Therefore, if you fork or clone the <strong>PyAutoLens</strong> repository, you need the
+<a class="reference external" href="https://github.com/Jammy2211/autolens_workspace">autolens_workspace</a> with the PYTHONPATH and WORKSPACE environment
+variables set up as described on the <a class="reference external" href="https://github.com/Jammy2211/autolens_workspace">autolens_workspace</a> repository
+or the installation instructions below.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="howtolens.html" class="btn btn-neutral float-right" title="HowToLens" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="PyAutoLens" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, James Nightingale, Richard Hayes
+      <span class="lastupdated">
+        Last updated on Mar 22, 2020.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

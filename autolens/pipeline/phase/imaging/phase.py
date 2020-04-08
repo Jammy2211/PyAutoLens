@@ -83,6 +83,13 @@ class PhaseImaging(dataset.PhaseDataset):
             inversion_pixel_limit=inversion_pixel_limit,
         )
 
+    def make_phase_attributes(self, analysis):
+        return PhaseAttributes(
+            cosmology=self.cosmology,
+            hyper_model_image=analysis.hyper_model_image,
+            hyper_galaxy_image_path_dict=analysis.hyper_galaxy_image_path_dict,
+        )
+
     def make_analysis(self, dataset, mask, results=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
@@ -138,3 +145,11 @@ class PhaseImaging(dataset.PhaseDataset):
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
 
             phase_info.close()
+
+
+class PhaseAttributes:
+    def __init__(self, cosmology, hyper_model_image, hyper_galaxy_image_path_dict):
+
+        self.cosmology = cosmology
+        self.hyper_model_image = hyper_model_image
+        self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
