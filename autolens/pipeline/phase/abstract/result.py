@@ -32,6 +32,20 @@ class Result(af.Result):
         return self.analysis.tracer_for_instance(instance=self.instance)
 
     @property
+    def source_plane_light_profile_centres(self):
+        if self.most_likely_tracer.source_plane.has_light_profile:
+            return self.most_likely_tracer.light_profile_centres_of_planes[-1]
+        else:
+            return []
+
+    @property
+    def source_plane_inversion_centres(self):
+        if self.most_likely_tracer.source_plane.has_pixelization:
+            return self.most_likely_fit.inversion.brightest_reconstruction_pixel_centre
+        else:
+            return []
+
+    @property
     def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:
         """
         Tuples associating the names of galaxies with instances from the best fit

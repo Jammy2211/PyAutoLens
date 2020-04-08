@@ -13,7 +13,9 @@ import os
 # The psf will be output as '/autolens_workspace/dataset/dataset_label/dataset_name/psf.fits'.
 
 # Setup the path to the autolens_workspace, using a relative directory name.
-plot_path = "{}/../images/simulating/".format(os.path.dirname(os.path.realpath(__file__)))
+plot_path = "{}/../images/simulating/".format(
+    os.path.dirname(os.path.realpath(__file__))
+)
 
 # (these files are already in the autolens_workspace and are remade running this script)
 dataset_name = "lens_sersic_sie__source_sersic"
