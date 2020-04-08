@@ -35,6 +35,10 @@ class Result(af.Result):
 
     @property
     def source_plane_light_profile_centres(self):
+        """Return a list of all light profiles centres in the most-likely tracer's source-plane.
+
+        These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
+        (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
         if self.most_likely_tracer.source_plane.has_light_profile:
             return self.most_likely_tracer.light_profile_centres_of_planes[-1]
         else:
@@ -42,6 +46,11 @@ class Result(af.Result):
 
     @property
     def source_plane_inversion_centres(self):
+        """Return a list of the centres of a pixelized source reconstruction in the source-plane of a most likely fit.
+        The brightest source pixel(s) are used to determine these centres.
+
+        These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
+        (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
         if self.most_likely_tracer.source_plane.has_pixelization:
             return [
                 self.most_likely_fit.inversion.brightest_reconstruction_pixel_centre
@@ -51,6 +60,11 @@ class Result(af.Result):
 
     @property
     def source_plane_centres(self):
+        """Combine the source-plane light profile and inversion centres (see above) into a single list of source-plane
+        centres.
+
+        These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
+        (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
         centres = (
             self.source_plane_light_profile_centres
             + self.source_plane_inversion_centres
@@ -59,6 +73,11 @@ class Result(af.Result):
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(self):
+        """Combine the source-plane light profile and inversion centres (see above) into a single list of source-plane
+        centres.
+
+        These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
+        (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
 
         # TODO : In the future, the multiple image positions functioon wil use an in-built adaptive grid.
 
