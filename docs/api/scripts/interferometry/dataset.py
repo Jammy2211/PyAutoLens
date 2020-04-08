@@ -6,7 +6,9 @@ import autolens as al
 import autolens.plot as aplt
 
 # Setup the path to the autolens_workspace, using a relative directory name.
-plot_path = "{}/../images/interferometry/".format(os.path.dirname(os.path.realpath(__file__)))
+plot_path = "{}/../images/interferometry/".format(
+    os.path.dirname(os.path.realpath(__file__))
+)
 dataset_path = "{}/dataset/".format(os.path.dirname(os.path.realpath(__file__)))
 
 # This loads the interferometer dataset,.

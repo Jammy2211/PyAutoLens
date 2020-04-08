@@ -8,7 +8,9 @@ import os
 workspace_path = "{}/../../../../../autolens_workspace/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
-plot_path = "{}/../images/interferometry/".format(os.path.dirname(os.path.realpath(__file__)))
+plot_path = "{}/../images/interferometry/".format(
+    os.path.dirname(os.path.realpath(__file__))
+)
 dataset_path = "{}/dataset/".format(os.path.dirname(os.path.realpath(__file__)))
 
 # This loads the interferometer dataset,.
@@ -24,8 +26,11 @@ real_space_mask = al.Mask.circular(
 
 masked_interferometer = al.MaskedInterferometer(
     interferometer=interferometer,
-    visibilities_mask=np.full(fill_value=False, shape=interferometer.visibilities.shape),
-    real_space_mask=real_space_mask)
+    visibilities_mask=np.full(
+        fill_value=False, shape=interferometer.visibilities.shape
+    ),
+    real_space_mask=real_space_mask,
+)
 
 # Setup the lens galaxy's light (elliptical Sersic), mass (SIE+Shear) and source galaxy light (elliptical Sersic) for
 # this simulated lens.
@@ -57,7 +62,9 @@ plotter = aplt.Plotter(
     output=aplt.Output(path=plot_path, filename="image_pre_ft", format="png"),
 )
 
-aplt.Tracer.profile_image(tracer=tracer, grid=masked_interferometer.grid, plotter=plotter)
+aplt.Tracer.profile_image(
+    tracer=tracer, grid=masked_interferometer.grid, plotter=plotter
+)
 
 fit = al.FitInterferometer(masked_interferometer=masked_interferometer, tracer=tracer)
 
@@ -73,25 +80,33 @@ plotter = aplt.Plotter(
     output=aplt.Output(path=plot_path, filename="residual_map", format="png"),
 )
 
-aplt.FitInterferometer.residual_map_vs_uv_distances(fit=fit, plot_real=True, plotter=plotter)
+aplt.FitInterferometer.residual_map_vs_uv_distances(
+    fit=fit, plot_real=True, plotter=plotter
+)
 
 plotter = aplt.Plotter(
     labels=aplt.Labels(title="Residual Map vs UV-distances (Imaginary)"),
     output=aplt.Output(path=plot_path, filename="residual_map", format="png"),
 )
 
-aplt.FitInterferometer.residual_map_vs_uv_distances(fit=fit, plot_real=False, plotter=plotter)
+aplt.FitInterferometer.residual_map_vs_uv_distances(
+    fit=fit, plot_real=False, plotter=plotter
+)
 
 plotter = aplt.Plotter(
     labels=aplt.Labels(title="Chi-Squared Map vs UV-distances (Real)"),
     output=aplt.Output(path=plot_path, filename="chi_squared_map", format="png"),
 )
 
-aplt.FitInterferometer.chi_squared_map_vs_uv_distances(fit=fit, plot_real=True, plotter=plotter)
+aplt.FitInterferometer.chi_squared_map_vs_uv_distances(
+    fit=fit, plot_real=True, plotter=plotter
+)
 
 plotter = aplt.Plotter(
     labels=aplt.Labels(title="Chi-Squared Map vs UV-distances (Imaginary)"),
     output=aplt.Output(path=plot_path, filename="chi_squared_map", format="png"),
 )
 
-aplt.FitInterferometer.chi_squared_map_vs_uv_distances(fit=fit, plot_real=False, plotter=plotter)
+aplt.FitInterferometer.chi_squared_map_vs_uv_distances(
+    fit=fit, plot_real=False, plotter=plotter
+)
