@@ -39,8 +39,6 @@ def test__dataset_generator_from_aggregator(imaging_7x7, mask_7x7):
 
     agg = af.Aggregator(directory=phase_imaging_7x7.paths.phase_output_path)
 
-    print(agg)
-
     dataset_gen = al.agg.Dataset(aggregator=agg)
 
     for dataset in dataset_gen:

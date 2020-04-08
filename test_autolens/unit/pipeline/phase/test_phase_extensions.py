@@ -34,7 +34,11 @@ class MockOptimizer(af.NonLinearOptimizer):
     def __init__(self, paths):
         super().__init__(paths=paths)
 
-    def fit(self, analysis, model):
+    def _simple_fit(self, analysis, fitness_function):
+        # noinspection PyTypeChecker
+        return af.Result(None, analysis.fit(None), None)
+
+    def _fit(self, analysis, model):
         # noinspection PyTypeChecker
         return af.Result(None, analysis.fit(None), None)
 
@@ -49,6 +53,9 @@ class MockPhase:
         )
         self.optimizer = MockOptimizer(paths=self.paths)
         self.model = af.ModelMapper()
+
+    def save_dataset(self, dataset):
+        pass
 
     # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def run(self, *args, **kwargs):
