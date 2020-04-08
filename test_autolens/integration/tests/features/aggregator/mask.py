@@ -5,7 +5,7 @@ from test_autolens.integration.tests.imaging import runner
 import os
 
 test_type = "features"
-test_name = "aggregator_mask"
+test_name = "agg_mask"
 data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "lsst"
 
@@ -32,6 +32,8 @@ if __name__ == "__main__":
 
     test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
     output_path = test_path + "../output"
-    aggregator = af.Aggregator(directory=str(output_path))
+    agg = af.Aggregator(directory=str(output_path))
 
-    masks = aggregator.mask
+    masks = agg.mask
+
+    print(masks)
