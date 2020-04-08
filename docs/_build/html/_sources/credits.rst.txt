@@ -1,0 +1,6 @@
+.. _credits:
+
+Credits
+-------
+
+test
