@@ -41,9 +41,18 @@ class Result(af.Result):
     @property
     def source_plane_inversion_centres(self):
         if self.most_likely_tracer.source_plane.has_pixelization:
-            return self.most_likely_fit.inversion.brightest_reconstruction_pixel_centre
+            return [
+                self.most_likely_fit.inversion.brightest_reconstruction_pixel_centre
+            ]
         else:
             return []
+
+    @property
+    def source_plane_centres(self):
+        return (
+            self.source_plane_light_profile_centres
+            + self.source_plane_inversion_centres
+        )
 
     @property
     def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:
