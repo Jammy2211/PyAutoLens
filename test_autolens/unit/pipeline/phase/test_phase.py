@@ -1,5 +1,6 @@
 import os
 from os import path
+import numpy as np
 
 import pytest
 
@@ -332,28 +333,45 @@ class TestResult:
 
         assert result.source_plane_light_profile_centres == []
 
+    def test__most_likely_tracer_source_inversion_centres_correct(
+        self, imaging_7x7, mask_7x7
+    ):
 
-#    def test__most_likely_tracer_source_inversion_centres_correct(self, imaging_7x7, mask_7x7):
-#
-#        phase_dataset_7x7 = al.PhaseImaging(
-#            non_linear_class=mock_pipeline.MockNLO,
-#            galaxies=dict(
-#                lens=al.Galaxy(
-#                    redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
-#                ),
-#                source=al.Galaxy(
-#                    redshift=1.0, pixelization=al.pix.Rectangular((3,3)), regularization=al.reg.Constant(coefficient=1.0)
-#                ),
-#            ),
-#            phase_name="test_phase_2",
-#        )
-#
-#        result = phase_dataset_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
-#
-#        assert result.most_likely_fit.inversion.reconstruction == pytest.approx(np.array[0.80707817 0.80929118 0.80707817 0.80929118 0.81251066 0.80929118
-# 0.80707817 0.80929118 0.80707817], 1.0e-4)
-#
-#        assert result.source_plane_inversion_centres == (0.0, 0.0)
+        phase_dataset_7x7 = al.PhaseImaging(
+            non_linear_class=mock_pipeline.MockNLO,
+            galaxies=dict(
+                lens=al.Galaxy(
+                    redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
+                ),
+                source=al.Galaxy(
+                    redshift=1.0,
+                    pixelization=al.pix.Rectangular((3, 3)),
+                    regularization=al.reg.Constant(coefficient=1.0),
+                ),
+            ),
+            phase_name="test_phase_2",
+        )
+
+        result = phase_dataset_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
+
+        assert result.most_likely_fit.inversion.reconstruction == pytest.approx(
+            np.array(
+                [
+                    0.80707817,
+                    0.80929118,
+                    0.80707817,
+                    0.80929118,
+                    0.81251066,
+                    0.80929118,
+                    0.80707817,
+                    0.80929118,
+                    0.80707817,
+                ]
+            ),
+            1.0e-4,
+        )
+
+        assert result.source_plane_inversion_centres == (0.0, 0.0)
 
 
 class TestPhasePickle:
