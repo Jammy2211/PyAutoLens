@@ -7,6 +7,7 @@ def phase_tag_from_phase_settings(
     bin_up_factor=None,
     psf_shape_2d=None,
     primary_beam_shape_2d=None,
+    auto_positions_factor=None,
     positions_threshold=None,
     pixel_scale_interpolation_grid=None,
     transformer_class=None,

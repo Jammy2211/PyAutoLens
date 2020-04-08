@@ -10,6 +10,7 @@ class MetaInterferometer(meta_dataset.MetaDataset):
         transformer_class,
         sub_size=2,
         is_hyper_phase=False,
+        auto_positions_factor=None,
         positions_threshold=None,
         pixel_scale_interpolation_grid=None,
         inversion_uses_border=True,
@@ -37,6 +38,10 @@ class MetaInterferometer(meta_dataset.MetaDataset):
 
         real_space_mask = self.mask_with_phase_sub_size_from_mask(
             mask=self.real_space_mask
+        )
+
+        positions = self.update_positions_and_threshold(
+            positions=positions, results=results
         )
 
         self.check_positions(positions=positions)
