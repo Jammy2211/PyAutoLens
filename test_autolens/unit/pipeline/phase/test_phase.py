@@ -393,9 +393,9 @@ class TestResult:
 
         result = phase_dataset_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
 
-        assert result.source_plane_centres == [(9.0, 8.0), (0.0, 0.0)]
+        assert result.source_plane_centres == [[(9.0, 8.0), (0.0, 0.0)]]
 
-    def test__most_likely_tracer__multiple_image_positions_of_source_plane_centres(
+    def test__most_likely_tracer__multiple_image_positions_of_source_plane_centres_and_separations(
         self, imaging_7x7, mask_7x7
     ):
 
@@ -437,6 +437,13 @@ class TestResult:
         assert coordinates[1][0][1] == pytest.approx((0.025, -0.975), 1.0e-4)
         assert coordinates[1][0][2] == pytest.approx((0.025, 0.975), 1.0e-4)
         assert coordinates[1][0][3] == pytest.approx((-1.025, -0.025), 1.0e-4)
+
+        separations = (
+            result.image_plane_multiple_image_position_source_plane_separations
+        )
+
+        assert separations[0] == pytest.approx(0.044002, 1.0e-2)
+        assert separations[1] == pytest.approx(0.044002, 1.0e-2)
 
 
 class TestPhasePickle:
