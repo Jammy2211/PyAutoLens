@@ -61,6 +61,17 @@ class MetaDataset:
         return mask
 
     def update_positions_and_threshold(self, positions, results):
+        """If automatic position updating and thresholding is on, update the phase's positions and threshold using
+        the results of the previous phase's lens model.
+
+        The outcome of this function are as follows:
+
+        1) If auto positioning is off (self.auto_positions_factor is None), use the previous phase's positions.
+        2) If auto positioning is on (self.auto_positions_factor not None) use positions based on the previous phase's
+           best-fit tracer.
+        3) If auto positioning is on or off and there is no previous phase, use the input positions.
+        """
+
         if self.auto_positions_factor is not None:
             if results is not None:
                 if results.last is not None:
@@ -70,6 +81,12 @@ class MetaDataset:
                     return (
                         results.last.image_plane_multiple_image_positions_of_source_plane_centres
                     )
+
+        if results is not None:
+            if results.last is not None:
+                if results.last.positions is not None:
+                    return results.last.positions
+
         return positions
 
     def check_positions(self, positions):

@@ -31,6 +31,7 @@ class MockResults:
         analysis=None,
         optimizer=None,
         pixelization=None,
+        positions=None,
         new_positions=None,
         new_positions_threshold=None,
     ):
@@ -47,6 +48,7 @@ class MockResults:
         self.pixelization = pixelization
         self.hyper_combined = MockHyperCombinedPhase()
         self.use_as_hyper_dataset = False
+        self.positions = positions
         self.new_positions = new_positions
         self.new_positions_threshold = new_positions_threshold
 
