@@ -34,32 +34,27 @@ class Result(af.Result):
         return self.analysis.tracer_for_instance(instance=self.instance)
 
     @property
-    def source_plane_light_profile_centres(self):
-        """Return a list of all light profiles centres in the most-likely tracer's source-plane.
+    def source_plane_light_profile_centres(self) -> grids.Coordinates:
+        """Return a list of all light profiles centres of all galaxies in the most-likely tracer's source-plane.
 
-        These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
-        (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
-        if self.most_likely_tracer.source_plane.has_light_profile:
-            return self.most_likely_tracer.light_profile_centres_of_planes[-1]
-        else:
-            return []
+        These centres are used by automatic position updating to determine the best-fit lens model's image-plane
+        multiple-image positions."""
+        return self.most_likely_tracer.source_plane.light_profile_centres
 
     @property
-    def source_plane_inversion_centres(self):
-        """Return a list of the centres of a pixelized source reconstruction in the source-plane of a most likely fit.
+    def source_plane_inversion_centres(self) -> grids.Coordinates:
+        """Return a list of all centres of a pixelized source reconstruction in the source-plane of the most likely fit.
         The brightest source pixel(s) are used to determine these centres.
 
-        These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
-        (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
-        if self.most_likely_tracer.source_plane.has_pixelization:
-            return [
-                self.most_likely_fit.inversion.brightest_reconstruction_pixel_centre
-            ]
-        else:
-            return []
+        These centres are used by automatic position updating to determine the best-fit lens model's image-plane
+        multiple-image positions."""
+        try:
+            return self.most_likely_fit.inversion.brightest_reconstruction_pixel_centre
+        except AttributeError:
+            return grids.Coordinates(coordinates=[])
 
     @property
-    def source_plane_centres(self):
+    def source_plane_centres(self) -> grids.Coordinates:
         """Combine the source-plane light profile and inversion centres (see above) into a single list of source-plane
         centres.
 
@@ -72,18 +67,22 @@ class Result(af.Result):
         return grids.Coordinates(coordinates=[centres])
 
     @property
-    def image_plane_multiple_image_positions_of_source_plane_centres(self):
-        """Combine the source-plane light profile and inversion centres (see above) into a single list of source-plane
-        centres.
+    def image_plane_multiple_image_positions_of_source_plane_centres(
+        self
+    ) -> grids.Coordinates:
+        """Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
+        the multiple image position of the source(s) in the image-plane..
 
-        These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
-        (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
+        These image-plane positions are used by the next phase in a pipeline if automatic position updating is turned
+        on."""
 
         # TODO : In the future, the multiple image positions functioon wil use an in-built adaptive grid.
 
         grid = self.analysis.masked_dataset.mask.geometry.unmasked_grid
 
-        return list(
+        # TODO: Tracer method will ultimately return Coordinates, need to determine best way to implement method.
+
+        positions = list(
             map(
                 lambda centre: self.most_likely_tracer.image_plane_multiple_image_positions(
                     grid=grid, source_plane_coordinate=centre
@@ -91,9 +90,15 @@ class Result(af.Result):
                 self.source_plane_centres[0],
             )
         )
+        return grids.Coordinates(coordinates=positions)
 
     @property
-    def image_plane_multiple_image_position_source_plane_separations(self):
+    def image_plane_multiple_image_position_source_plane_separations(self) -> [float]:
+        """Ray-trace forward the image-plane multiple images positioons of the source-plane centres (see above) via
+        the mass model to determine how far apart they are separated.
+
+        These separations are used by the next phase in a pipeline to set the positions_threshold if automatic
+        position updating is turned on."""
 
         positions_fits = list(
             map(

@@ -373,6 +373,21 @@ class TestResult:
 
         assert result.source_plane_inversion_centres == [(0.0, 0.0)]
 
+        phase_dataset_7x7 = al.PhaseImaging(
+            non_linear_class=mock_pipeline.MockNLO,
+            galaxies=dict(
+                lens=al.Galaxy(
+                    redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
+                ),
+                source=al.Galaxy(redshift=1.0),
+            ),
+            phase_name="test_phase_2",
+        )
+
+        result = phase_dataset_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
+
+        assert result.source_plane_inversion_centres == []
+
     def test__most_likely_tracer_source_centres_correct(self, imaging_7x7, mask_7x7):
 
         phase_dataset_7x7 = al.PhaseImaging(
