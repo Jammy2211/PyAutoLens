@@ -3,6 +3,8 @@ import autoarray as aa
 from autolens import exc
 from autoarray.operators.inversion import pixelizations as pix
 
+import numpy as np
+
 
 def isprior(obj):
     if isinstance(obj, af.PriorModel):
@@ -24,6 +26,7 @@ class MetaDataset:
         model,
         sub_size=2,
         signal_to_noise_limit=None,
+        auto_positions_factor=None,
         positions_threshold=None,
         pixel_scale_interpolation_grid=None,
         inversion_uses_border=True,
@@ -34,6 +37,7 @@ class MetaDataset:
         self.model = model
         self.sub_size = sub_size
         self.signal_to_noise_limit = signal_to_noise_limit
+        self.auto_positions_factor = auto_positions_factor
         self.positions_threshold = positions_threshold
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
         self.inversion_uses_border = inversion_uses_border
@@ -55,6 +59,18 @@ class MetaDataset:
             )
 
         return mask
+
+    def update_positions_and_threshold(self, positions, results):
+        if self.auto_positions_factor is not None:
+            if results is not None:
+                if results.last is not None:
+                    self.positions_threshold = self.auto_positions_factor * np.max(
+                        results.last.image_plane_multiple_image_position_source_plane_separations
+                    )
+                    return (
+                        results.last.image_plane_multiple_image_positions_of_source_plane_centres
+                    )
+        return positions
 
     def check_positions(self, positions):
 

@@ -31,6 +31,8 @@ class MockResults:
         analysis=None,
         optimizer=None,
         pixelization=None,
+        new_positions=None,
+        new_positions_threshold=None,
     ):
         self.mask_2d = mask
         self.model_image = model_image
@@ -45,6 +47,8 @@ class MockResults:
         self.pixelization = pixelization
         self.hyper_combined = MockHyperCombinedPhase()
         self.use_as_hyper_dataset = False
+        self.new_positions = new_positions
+        self.new_positions_threshold = new_positions_threshold
 
     @property
     def path_galaxy_tuples(self) -> [(str, al.Galaxy)]:
@@ -144,6 +148,18 @@ class MockResults:
 
         return hyper_model_visibilities
 
+    @property
+    def last(self):
+        return self
+
+    @property
+    def image_plane_multiple_image_positions_of_source_plane_centres(self):
+        return self.new_positions
+
+    @property
+    def image_plane_multiple_image_position_source_plane_separations(self) -> [float]:
+        return self.new_positions_threshold
+
 
 class MockResult:
     def __init__(self, instance, likelihood, model=None):
@@ -154,6 +170,83 @@ class MockResult:
         self.gaussian_tuples = None
         self.mask_2d = None
         self.positions = None
+
+
+class MockResultsCollection:
+    def __init__(self, result):
+        """
+        A collection of results from previous phases. Results can be obtained using an index or the name of the phase
+        from whence they came.
+        """
+        self.__result_list = [result]
+        self.__result_dict = {}
+
+    def copy(self):
+        collection = MockResultsCollection()
+        collection.__result_dict = self.__result_dict
+        collection.__result_list = self.__result_list
+        return collection
+
+    @property
+    def reversed(self):
+        return reversed(self.__result_list)
+
+    @property
+    def last(self):
+        """
+        The result of the last phase
+        """
+        if len(self.__result_list) > 0:
+            return self.__result_list[-1]
+        return None
+
+    @property
+    def first(self):
+        """
+        The result of the first phase
+        """
+        if len(self.__result_list) > 0:
+            return self.__result_list[0]
+        return None
+
+    def add(self, phase_name, result):
+        """
+        Add the result of a phase.
+
+        Parameters
+        ----------
+        phase_name: str
+            The name of the phase
+        result
+            The result of that phase
+        """
+        try:
+            self.__result_list[self.__result_list.index(result)] = result
+        except ValueError:
+            self.__result_list.append(result)
+        self.__result_dict[phase_name] = result
+
+    def __getitem__(self, item):
+        """
+        Get the result of a previous phase by index
+
+        Parameters
+        ----------
+        item: int
+            The index of the result
+
+        Returns
+        -------
+        result: Result
+            The result of a previous phase
+        """
+        return self.__result_list[item]
+
+    def __len__(self):
+        return len(self.__result_list)
+
+    def __contains__(self, item):
+        return item in self.__result_dict
 
 
 class MockHyperCombinedPhase:

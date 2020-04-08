@@ -30,6 +30,75 @@ def clean_images():
 
 
 class TestAttributes:
+    def test__auto_positions_update__updates_correct_using_factor(
+        self,
+        phase_imaging_7x7,
+        phase_interferometer_7,
+        imaging_7x7,
+        interferometer_7,
+        mask_7x7,
+    ):
+
+        phase_imaging_7x7.meta_dataset.positions_threshold = 0.1
+        phase_imaging_7x7.meta_dataset.auto_positions_factor = None
+
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7,
+            mask=mask_7x7,
+            positions=al.Coordinates(coordinates=[(1.0, 1.0)]),
+        )
+
+        assert analysis.masked_dataset.positions == [(1.0, 1.0)]
+
+        phase_imaging_7x7.meta_dataset.positions_threshold = None
+        phase_imaging_7x7.meta_dataset.auto_positions_factor = 1.0
+
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7,
+            mask=mask_7x7,
+            positions=al.Coordinates(coordinates=[(1.0, 1.0)]),
+        )
+
+        assert analysis.masked_dataset.positions == [(1.0, 1.0)]
+
+        phase_imaging_7x7.meta_dataset.positions_threshold = None
+        phase_imaging_7x7.meta_dataset.auto_positions_factor = 2.0
+
+        result = mock_pipeline.MockResults(
+            new_positions=al.Coordinates(coordinates=[(1.0, 1.0)]),
+            new_positions_threshold=0.3,
+        )
+        results = mock_pipeline.MockResultsCollection(result=result)
+
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7,
+            mask=mask_7x7,
+            positions=al.Coordinates(coordinates=[(1.0, 1.0)]),
+            results=results,
+        )
+
+        assert analysis.masked_dataset.positions == [(1.0, 1.0)]
+        assert analysis.masked_dataset.positions_threshold == 0.6
+
+        phase_interferometer_7.meta_dataset.positions_threshold = None
+        phase_interferometer_7.meta_dataset.auto_positions_factor = 2.0
+
+        result = mock_pipeline.MockResults(
+            new_positions=al.Coordinates(coordinates=[(1.0, 1.0)]),
+            new_positions_threshold=0.3,
+        )
+        results = mock_pipeline.MockResultsCollection(result=result)
+
+        analysis = phase_interferometer_7.make_analysis(
+            dataset=interferometer_7,
+            mask=mask_7x7,
+            positions=al.Coordinates(coordinates=[(1.0, 1.0)]),
+            results=results,
+        )
+
+        assert analysis.masked_dataset.positions == [(1.0, 1.0)]
+        assert analysis.masked_dataset.positions_threshold == 0.6
+
     def test__pixelization_property_extracts_pixelization(self, imaging_7x7, mask_7x7):
         source_galaxy = al.Galaxy(redshift=0.5)
 
