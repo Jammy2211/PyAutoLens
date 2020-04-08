@@ -39,6 +39,8 @@ class TestAttributes:
         mask_7x7,
     ):
 
+        # Auto positioning is OFF, so use input positions + threshold.
+
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.1
         phase_imaging_7x7.meta_dataset.auto_positions_factor = None
 
@@ -48,9 +50,12 @@ class TestAttributes:
             positions=al.Coordinates(coordinates=[(1.0, 1.0)]),
         )
 
+        assert analysis.masked_dataset.positions_threshold == 0.1
         assert analysis.masked_dataset.positions == [(1.0, 1.0)]
 
-        phase_imaging_7x7.meta_dataset.positions_threshold = None
+        # Auto positioning is ON, but there are no previous results, so use input positions.
+
+        phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 1.0
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -59,9 +64,13 @@ class TestAttributes:
             positions=al.Coordinates(coordinates=[(1.0, 1.0)]),
         )
 
+        assert analysis.masked_dataset.positions_threshold == 0.2
         assert analysis.masked_dataset.positions == [(1.0, 1.0)]
 
-        phase_imaging_7x7.meta_dataset.positions_threshold = None
+        # Auto positioning is ON, there are previous results so use their new positions and threshold (which is
+        # multiplied by the auto_positions_factor).
+
+        phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 2.0
 
         result = mock_pipeline.MockResults(
@@ -79,6 +88,30 @@ class TestAttributes:
 
         assert analysis.masked_dataset.positions == [(1.0, 1.0)]
         assert analysis.masked_dataset.positions_threshold == 0.6
+
+        # Auto positioning is Off, but there are previous results with updated positions relative to the input
+        # positions, so use those with their positions threshold.
+
+        phase_imaging_7x7.meta_dataset.positions_threshold = 0.1
+        phase_imaging_7x7.meta_dataset.auto_positions_factor = None
+
+        result = mock_pipeline.MockResults(
+            positions=al.Coordinates(coordinates=[(3.0, 3.0)]),
+            new_positions_threshold=0.3,
+        )
+        results = mock_pipeline.MockResultsCollection(result=result)
+
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7,
+            mask=mask_7x7,
+            positions=al.Coordinates(coordinates=[(2.0, 2.0)]),
+            results=results,
+        )
+
+        assert analysis.masked_dataset.positions == [(3.0, 3.0)]
+        assert analysis.masked_dataset.positions_threshold == 0.1
+
+        # Test function is called for phase_inteferometer
 
         phase_interferometer_7.meta_dataset.positions_threshold = None
         phase_interferometer_7.meta_dataset.auto_positions_factor = 2.0
