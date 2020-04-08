@@ -55,6 +55,22 @@ class Result(af.Result):
         )
 
     @property
+    def image_plane_multiple_image_positions_of_source_plane_centres(self):
+
+        # TODO : In the future, the multiple image positions functioon wil use an in-built adaptive grid.
+
+        grid = self.analysis.masked_dataset.mask.geometry.unmasked_grid
+
+        return list(
+            map(
+                lambda centre: self.most_likely_tracer.image_plane_multiple_image_positions(
+                    grid=grid, source_plane_coordinate=centre
+                ),
+                self.source_plane_centres,
+            )
+        )
+
+    @property
     def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:
         """
         Tuples associating the names of galaxies with instances from the best fit
