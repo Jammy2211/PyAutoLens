@@ -39,7 +39,7 @@ class PhaseDataset(abstract.AbstractPhase):
 
         self.is_hyper_phase = False
 
-    def run(self, dataset: Dataset, mask, results=None, positions=None):
+    def run(self, dataset: Dataset, mask, results=None, positions=None, info=None):
         """
         Run this phase.
 
@@ -58,10 +58,11 @@ class PhaseDataset(abstract.AbstractPhase):
         result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper_galaxies.
         """
-        dataset.save(self.paths.phase_output_path)
-        self.save_metadata(dataset)
+        self.save_metadata(dataset=dataset)
+        self.save_dataset(dataset=dataset)
         self.save_mask(mask)
         self.save_meta_dataset(meta_dataset=self.meta_dataset)
+        self.save_info(info=info)
 
         self.model = self.model.populate(results)
 

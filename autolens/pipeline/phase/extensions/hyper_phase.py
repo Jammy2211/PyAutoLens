@@ -100,7 +100,7 @@ class HyperPhase:
             The result of the phase, with a hyper_galaxies result attached as an attribute with the hyper_name of this
             phase.
         """
-        dataset.save(self.paths.phase_output_path)
+        self.save_dataset(dataset=dataset)
 
         results = (
             copy.deepcopy(results) if results is not None else af.ResultsCollection()

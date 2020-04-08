@@ -166,7 +166,11 @@ class MockHyperCombinedPhase:
 
 
 class MockNLO(af.NonLinearOptimizer):
-    def fit(self, analysis, model):
+    def _simple_fit(self, analysis, fitness_function):
+        # noinspection PyTypeChecker
+        return af.Result(None, analysis.fit(None), None)
+
+    def _fit(self, analysis, model):
         class Fitness:
             def __init__(self, instance_from_vector):
                 self.result = None
