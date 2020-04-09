@@ -108,9 +108,7 @@ class HyperPhase:
 
         result = self.phase.run(dataset, results=results, **kwargs)
         results.add(self.phase.paths.phase_name, result)
-        hyper_result = self.run_hyper(
-            dataset=dataset, results=results, info=info, **kwargs
-        )
+        hyper_result = self.run_hyper(dataset=dataset, results=results, **kwargs)
         setattr(result, self.hyper_name, hyper_result)
         return result
 
