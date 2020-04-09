@@ -1,9 +1,0 @@
-{
-    "Instrumentation": {
-        "param": {
-            "type": "Uniform",
-            "lower_limit": 1.0,
-            "upper_limit": 2.0
-        }
-    }
-}
