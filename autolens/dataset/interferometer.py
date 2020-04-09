@@ -55,8 +55,6 @@ class MaskedInterferometer(
             up run.
         """
 
-        self.interferometer = interferometer
-
         super(MaskedInterferometer, self).__init__(
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
