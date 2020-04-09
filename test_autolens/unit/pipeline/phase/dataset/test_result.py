@@ -21,7 +21,6 @@ directory = path.dirname(path.realpath(__file__))
 
 class TestResult:
     def test__results_of_phase_are_available_as_properties(self, imaging_7x7, mask_7x7):
-        clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
             non_linear_class=mock_pipeline.MockNLO,
@@ -40,7 +39,6 @@ class TestResult:
     def test__results_of_phase_include_mask__available_as_property(
         self, imaging_7x7, mask_7x7
     ):
-        clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
             non_linear_class=mock_pipeline.MockNLO,
@@ -60,7 +58,6 @@ class TestResult:
     def test__results_of_phase_include_positions__available_as_property(
         self, imaging_7x7, mask_7x7
     ):
-        clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
             non_linear_class=mock_pipeline.MockNLO,
@@ -100,7 +97,6 @@ class TestResult:
     def test__results_of_phase_include_pixelization__available_as_property(
         self, imaging_7x7, mask_7x7
     ):
-        clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
             non_linear_class=mock_pipeline.MockNLO,
@@ -153,7 +149,6 @@ class TestResult:
     def test__results_of_phase_include_pixelization_grid__available_as_property(
         self, imaging_7x7, mask_7x7
     ):
-        clean_images()
 
         phase_imaging_7x7 = al.PhaseImaging(
             non_linear_class=mock_pipeline.MockNLO,
