@@ -439,53 +439,6 @@ class TestMakeAnalysis:
         assert analysis.masked_dataset.preload_sparse_grids_of_planes == 1
 
 
-class TestHyperMethods:
-    def test__phase_is_extended_with_hyper_phases__sets_up_hyper_dataset_from_results(
-        self, results_collection_7x7, imaging_7x7, mask_7x7
-    ):
-
-        galaxies = af.ModelInstance()
-        galaxies.lens = al.Galaxy(redshift=0.5)
-        galaxies.source = al.Galaxy(redshift=1.0)
-
-        instance = af.ModelInstance()
-        instance.galaxies = galaxies
-
-        hyper_galaxy_image_path_dict = {
-            ("galaxies", "lens"): np.ones((3, 3)),
-            ("galaxies", "source"): 2.0 * np.ones((3, 3)),
-        }
-        results = mock_pipeline.MockResults(
-            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-            mask=mask_7x7,
-            use_as_hyper_dataset=True,
-        )
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=dict(
-                lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
-            ),
-            non_linear_class=mock_pipeline.MockNLO,
-            phase_name="test_phase",
-        )
-
-        analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=results
-        )
-
-        assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")]
-            == np.ones((3, 3))
-        ).all()
-
-        assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxies", "source")]
-            == 2.0 * np.ones((3, 3))
-        ).all()
-
-        assert (analysis.hyper_model_image == 3.0 * np.ones((3, 3))).all()
-
-
 class TestPhasePickle:
 
     # noinspection PyTypeChecker

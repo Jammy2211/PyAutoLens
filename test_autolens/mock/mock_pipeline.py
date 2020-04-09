@@ -29,6 +29,8 @@ class MockResult:
         model_image=None,
         hyper_galaxy_image_path_dict=None,
         hyper_model_image=None,
+        hyper_galaxy_visibilities_path_dict=None,
+        hyper_model_visibilities=None,
         galaxy_images=(),
         model_visibilities=None,
         galaxy_visibilities=(),
@@ -50,6 +52,8 @@ class MockResult:
         self.mask_2d = mask
         self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
         self.hyper_model_image = hyper_model_image
+        self.hyper_galaxy_visibilities_path_dict = hyper_galaxy_visibilities_path_dict
+        self.hyper_model_visibilities = hyper_model_visibilities
         self.model_image = model_image
         self.unmasked_model_image = model_image
         self.galaxy_images = galaxy_images
@@ -72,44 +76,6 @@ class MockResult:
         )
 
     @property
-    def visibilities_galaxy_dict(self) -> {str: al.Galaxy}:
-        """
-        A dictionary associating galaxy names with model visibilities of those galaxies
-        """
-        return {
-            galaxy_path: self.galaxy_visibilities[i]
-            for i, galaxy_path, galaxy in self.path_galaxy_tuples_with_index
-        }
-
-    @property
-    def hyper_galaxy_visibilities_path_dict(self):
-        """
-        A dictionary associating 1D hyper_galaxies galaxy visibilities with their names.
-        """
-
-        hyper_galaxy_visibilities_path_dict = {}
-
-        for path, galaxy in self.path_galaxy_tuples:
-
-            hyper_galaxy_visibilities_path_dict[path] = self.visibilities_galaxy_dict[
-                path
-            ]
-
-        return hyper_galaxy_visibilities_path_dict
-
-    @property
-    def hyper_model_visibilities(self):
-
-        hyper_model_visibilities = al.Visibilities.zeros(
-            shape_1d=(self.galaxy_visibilities[0].shape_1d,)
-        )
-
-        for path, galaxy in self.path_galaxy_tuples:
-            hyper_model_visibilities += self.hyper_galaxy_visibilities_path_dict[path]
-
-        return hyper_model_visibilities
-
-    @property
     def last(self):
         return self
 
@@ -130,6 +96,8 @@ class MockResults(af.ResultsCollection):
         model_image=None,
         hyper_galaxy_image_path_dict=None,
         hyper_model_image=None,
+        hyper_galaxy_visibilities_path_dict=None,
+        hyper_model_visibilities=None,
         galaxy_images=(),
         model_visibilities=None,
         galaxy_visibilities=(),
@@ -155,6 +123,8 @@ class MockResults(af.ResultsCollection):
             galaxy_images=galaxy_images,
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=hyper_model_image,
+            hyper_galaxy_visibilities_path_dict=hyper_galaxy_visibilities_path_dict,
+            hyper_model_visibilities=hyper_model_visibilities,
             model_visibilities=model_visibilities,
             galaxy_visibilities=galaxy_visibilities,
             pixelization=pixelization,
