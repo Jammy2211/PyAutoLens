@@ -40,7 +40,9 @@ class TestAttributes:
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7_1_pix
+            dataset=imaging_7x7,
+            mask=mask_7x7_1_pix,
+            results=mock_pipeline.MockResults(result=None),
         )
         assert (
             analysis.masked_dataset.image.in_2d
@@ -60,7 +62,9 @@ class TestAttributes:
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7_1_pix
+            dataset=imaging_7x7,
+            mask=mask_7x7_1_pix,
+            results=mock_pipeline.MockResults(result=None),
         )
         assert (
             analysis.masked_dataset.image.in_2d
@@ -83,7 +87,9 @@ class TestAttributes:
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7_1_pix
+            dataset=imaging_7x7,
+            mask=mask_7x7_1_pix,
+            results=mock_pipeline.MockResults(result=None),
         )
         assert (
             analysis.masked_dataset.image.in_2d
@@ -124,7 +130,11 @@ class TestMakeAnalysis:
     def test__masks_image_and_noise_map_correctly(
         self, phase_imaging_7x7, imaging_7x7, mask_7x7
     ):
-        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7,
+            mask=mask_7x7,
+            results=mock_pipeline.MockResults(result=None),
+        )
 
         assert (
             analysis.masked_imaging.image.in_2d
@@ -136,7 +146,11 @@ class TestMakeAnalysis:
         ).all()
 
     def test___phase_info_is_made(self, phase_imaging_7x7, imaging_7x7, mask_7x7):
-        phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
+        phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7,
+            mask=mask_7x7,
+            results=mock_pipeline.MockResults(result=None),
+        )
 
         file_phase_info = "{}/{}".format(
             phase_imaging_7x7.optimizer.paths.phase_output_path, "phase.info"
@@ -176,7 +190,11 @@ class TestFit:
             phase_name="test_phase_test_fit",
         )
 
-        result = phase_imaging_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
+        result = phase_imaging_7x7.run(
+            dataset=imaging_7x7,
+            mask=mask_7x7,
+            results=mock_pipeline.MockResults(result=None),
+        )
         assert isinstance(result.instance.galaxies[0], al.Galaxy)
         assert isinstance(result.instance.galaxies[0], al.Galaxy)
 
@@ -194,7 +212,11 @@ class TestFit:
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7,
+            mask=mask_7x7,
+            results=mock_pipeline.MockResults(result=None),
+        )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
@@ -224,7 +246,11 @@ class TestFit:
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7,
+            mask=mask_7x7,
+            results=mock_pipeline.MockResults(result=None),
+        )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.fit(instance=instance)
 
@@ -245,13 +271,15 @@ class TestFit:
         assert fit.likelihood == fit_figure_of_merit
 
     def test__uses_hyper_fit_correctly(self, instance, result, masked_imaging_7x7):
-        results_collection = af.ResultsCollection()
-        results_collection.add("phase", result)
-        results_collection[0].use_as_hyper_dataset = True
+
+        results = mock_pipeline.MockResults(
+            result=mock_pipeline.MockResult(use_as_hyper_dataset=True)
+        )
+
         analysis = al.PhaseImaging.Analysis(
             masked_imaging=masked_imaging_7x7,
             cosmology=cosmo.Planck15,
-            results=results_collection,
+            results=results,
             image_path="",
         )
 

@@ -17,6 +17,9 @@ class AbstractLensMasked:
 
     def check_positions_trace_within_threshold_via_tracer(self, tracer):
 
+        print(self.positions)
+        print(self.positions_threshold)
+
         if self.positions is not None and self.positions_threshold is not None:
 
             positions_fit = fit.FitPositions(
