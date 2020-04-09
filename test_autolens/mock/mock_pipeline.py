@@ -125,17 +125,6 @@ class MockResults(af.ResultsCollection):
         )
 
         self.__result_list = [result]
-        self.__result_dict = {}
-
-    def copy(self):
-        collection = MockResults()
-        collection.__result_dict = self.__result_dict
-        collection.__result_list = self.__result_list
-        return collection
-
-    @property
-    def reversed(self):
-        return reversed(self.__result_list)
 
     @property
     def last(self):
@@ -145,32 +134,6 @@ class MockResults(af.ResultsCollection):
         if len(self.__result_list) > 0:
             return self.__result_list[-1]
         return None
-
-    @property
-    def first(self):
-        """
-        The result of the first phase
-        """
-        if len(self.__result_list) > 0:
-            return self.__result_list[0]
-        return None
-
-    def add(self, phase_name, result):
-        """
-        Add the result of a phase.
-
-        Parameters
-        ----------
-        phase_name: str
-            The name of the phase
-        result
-            The result of that phase
-        """
-        try:
-            self.__result_list[self.__result_list.index(result)] = result
-        except ValueError:
-            self.__result_list.append(result)
-        self.__result_dict[phase_name] = result
 
     def __getitem__(self, item):
         """
@@ -190,9 +153,6 @@ class MockResults(af.ResultsCollection):
 
     def __len__(self):
         return len(self.__result_list)
-
-    def __contains__(self, item):
-        return item in self.__result_dict
 
 
 class MockHyperCombinedPhase:
