@@ -28,6 +28,7 @@ class MockResult:
         mask=None,
         model_image=None,
         hyper_galaxy_image_path_dict=None,
+        hyper_model_image=None,
         galaxy_images=(),
         model_visibilities=None,
         galaxy_visibilities=(),
@@ -48,6 +49,7 @@ class MockResult:
         self.positions = None
         self.mask_2d = mask
         self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
+        self.hyper_model_image = hyper_model_image
         self.model_image = model_image
         self.unmasked_model_image = model_image
         self.galaxy_images = galaxy_images
@@ -68,10 +70,6 @@ class MockResult:
         self.most_likely_tracer = al.Tracer.from_galaxies(
             galaxies=[al.Galaxy(redshift=0.5)]
         )
-
-    @property
-    def hyper_model_image(self):
-        return 3.0 * np.ones((3, 3))
 
     @property
     def visibilities_galaxy_dict(self) -> {str: al.Galaxy}:
@@ -131,6 +129,7 @@ class MockResults(af.ResultsCollection):
         mask=None,
         model_image=None,
         hyper_galaxy_image_path_dict=None,
+        hyper_model_image=None,
         galaxy_images=(),
         model_visibilities=None,
         galaxy_visibilities=(),
@@ -155,6 +154,7 @@ class MockResults(af.ResultsCollection):
             model_image=model_image,
             galaxy_images=galaxy_images,
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+            hyper_model_image=hyper_model_image,
             model_visibilities=model_visibilities,
             galaxy_visibilities=galaxy_visibilities,
             pixelization=pixelization,
