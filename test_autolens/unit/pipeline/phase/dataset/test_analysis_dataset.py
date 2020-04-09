@@ -28,13 +28,16 @@ class TestHyperMethods:
         instance.galaxies = galaxies
 
         hyper_galaxy_image_path_dict = {
-            ("galaxies", "lens"): np.ones((3, 3)),
-            ("galaxies", "source"): 2.0 * np.ones((3, 3)),
+            ("galaxies", "lens"): al.Array.ones(shape_2d=(3, 3), pixel_scales=1.0),
+            ("galaxies", "source"): al.Array.full(
+                fill_value=2.0, shape_2d=(3, 3), pixel_scales=1.0
+            ),
         }
 
         results = mock_pipeline.MockResults(
             instance=instance,
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+            hyper_model_image=al.Array.full(fill_value=3.0, shape_2d=(3, 3)),
             use_as_hyper_dataset=True,
         )
 
@@ -47,16 +50,16 @@ class TestHyperMethods:
 
         instance = analysis.associate_hyper_images(instance=instance)
 
-        assert instance.galaxies.lens.hyper_galaxy_image == pytest.approx(
+        assert instance.galaxies.lens.hyper_galaxy_image.in_2d == pytest.approx(
             np.ones((3, 3)), 1.0e-4
         )
-        assert instance.galaxies.source.hyper_galaxy_image == pytest.approx(
+        assert instance.galaxies.source.hyper_galaxy_image.in_2d == pytest.approx(
             2.0 * np.ones((3, 3)), 1.0e-4
         )
 
-        assert instance.galaxies.lens.hyper_model_image == pytest.approx(
+        assert instance.galaxies.lens.hyper_model_image.in_2d == pytest.approx(
             3.0 * np.ones((3, 3)), 1.0e-4
         )
-        assert instance.galaxies.source.hyper_model_image == pytest.approx(
+        assert instance.galaxies.source.hyper_model_image.in_2d == pytest.approx(
             3.0 * np.ones((3, 3)), 1.0e-4
         )

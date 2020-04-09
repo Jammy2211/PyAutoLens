@@ -25,17 +25,14 @@ class MockResult:
         instance=None,
         likelihood=None,
         model=None,
+        analysis=None,
+        optimizer=None,
         mask=None,
         model_image=None,
         hyper_galaxy_image_path_dict=None,
         hyper_model_image=None,
         hyper_galaxy_visibilities_path_dict=None,
         hyper_model_visibilities=None,
-        galaxy_images=(),
-        model_visibilities=None,
-        galaxy_visibilities=(),
-        analysis=None,
-        optimizer=None,
         pixelization=None,
         positions=None,
         updated_positions=None,
@@ -56,9 +53,6 @@ class MockResult:
         self.hyper_model_visibilities = hyper_model_visibilities
         self.model_image = model_image
         self.unmasked_model_image = model_image
-        self.galaxy_images = galaxy_images
-        self.model_visibilities = model_visibilities
-        self.galaxy_visibilities = galaxy_visibilities
         self.instance = instance or af.ModelInstance()
         self.model = af.ModelMapper()
         self.analysis = analysis
@@ -98,9 +92,6 @@ class MockResults(af.ResultsCollection):
         hyper_model_image=None,
         hyper_galaxy_visibilities_path_dict=None,
         hyper_model_visibilities=None,
-        galaxy_images=(),
-        model_visibilities=None,
-        galaxy_visibilities=(),
         pixelization=None,
         positions=None,
         updated_positions=None,
@@ -112,6 +103,8 @@ class MockResults(af.ResultsCollection):
         from whence they came.
         """
 
+        super(MockResults, self).__init__()
+
         result = MockResult(
             instance=instance,
             likelihood=likelihood,
@@ -120,13 +113,10 @@ class MockResults(af.ResultsCollection):
             model=model,
             mask=mask,
             model_image=model_image,
-            galaxy_images=galaxy_images,
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=hyper_model_image,
             hyper_galaxy_visibilities_path_dict=hyper_galaxy_visibilities_path_dict,
             hyper_model_visibilities=hyper_model_visibilities,
-            model_visibilities=model_visibilities,
-            galaxy_visibilities=galaxy_visibilities,
             pixelization=pixelization,
             positions=positions,
             updated_positions=updated_positions,

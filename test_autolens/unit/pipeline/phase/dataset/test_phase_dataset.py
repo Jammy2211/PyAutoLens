@@ -376,26 +376,29 @@ class TestMakeAnalysis:
         assert hasattr(analysis.masked_imaging.blurring_grid, "interpolator")
 
     def test__determines_if_pixelization_is_same_as_previous_phase(
-        self, imaging_7x7, mask_7x7, results_collection_7x7
+        self, imaging_7x7, mask_7x7
     ):
-        results_collection_7x7.last.hyper_combined.preload_sparse_grids_of_planes = 1
+
+        results = mock_pipeline.MockResults()
+
+        results.last.hyper_combined.preload_sparse_grids_of_planes = 1
 
         phase_imaging_7x7 = al.PhaseImaging(phase_name="test_phase")
 
-        results_collection_7x7.last.pixelization = None
+        results.last.pixelization = None
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
         assert analysis.masked_dataset.preload_sparse_grids_of_planes is None
 
         phase_imaging_7x7 = al.PhaseImaging(phase_name="test_phase")
 
-        results_collection_7x7.last.pixelization = al.pix.Rectangular
+        results.last.pixelization = al.pix.Rectangular
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
         assert analysis.masked_dataset.preload_sparse_grids_of_planes is None
@@ -411,10 +414,10 @@ class TestMakeAnalysis:
             ],
         )
 
-        results_collection_7x7.last.pixelization = None
+        results.last.pixelization = None
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
         assert analysis.masked_dataset.preload_sparse_grids_of_planes is None
@@ -430,10 +433,10 @@ class TestMakeAnalysis:
             ],
         )
 
-        results_collection_7x7.last.pixelization = al.pix.Rectangular
+        results.last.pixelization = al.pix.Rectangular
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
         assert analysis.masked_dataset.preload_sparse_grids_of_planes == 1

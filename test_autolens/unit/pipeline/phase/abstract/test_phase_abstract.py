@@ -48,27 +48,27 @@ class TestModel:
 
         print(hasattr(af.last.result.instance.galaxies.lens, "mas2s"))
 
-    def test__customize(
-        self, results_7x7, results_collection_7x7, imaging_7x7, mask_7x7
-    ):
+    def test__customize(self, imaging_7x7, mask_7x7):
         class MyPlanePhaseAnd(al.PhaseImaging):
             def customize_priors(self, results):
                 self.galaxies = results.last.instance.galaxies
 
+        results = mock_pipeline.MockResults()
+
         galaxy = al.Galaxy(redshift=0.5)
         galaxy_model = al.GalaxyModel(redshift=0.5)
 
-        setattr(results_7x7.instance, "galaxies", [galaxy])
-        setattr(results_7x7.model, "galaxies", [galaxy_model])
+        setattr(results[0].instance, "galaxies", [galaxy])
+        setattr(results[0].model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(
             phase_name="test_phase", non_linear_class=mock_pipeline.MockNLO
         )
 
         phase_dataset_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
-        phase_dataset_7x7.customize_priors(results_collection_7x7)
+        phase_dataset_7x7.customize_priors(results=results)
 
         assert phase_dataset_7x7.galaxies == [galaxy]
 
@@ -76,20 +76,22 @@ class TestModel:
             def customize_priors(self, results):
                 self.galaxies = results.last.model.galaxies
 
+        results = mock_pipeline.MockResults()
+
         galaxy = al.Galaxy(redshift=0.5)
         galaxy_model = al.GalaxyModel(redshift=0.5)
 
-        setattr(results_7x7.instance, "galaxies", [galaxy])
-        setattr(results_7x7.model, "galaxies", [galaxy_model])
+        setattr(results[0].instance, "galaxies", [galaxy])
+        setattr(results[0].model, "galaxies", [galaxy_model])
 
         phase_dataset_7x7 = MyPlanePhaseAnd(
             phase_name="test_phase", non_linear_class=mock_pipeline.MockNLO
         )
 
         phase_dataset_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=results_collection_7x7
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
-        phase_dataset_7x7.customize_priors(results_collection_7x7)
+        phase_dataset_7x7.customize_priors(results)
 
         assert phase_dataset_7x7.galaxies == [galaxy_model]
 
