@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
-import autofit as af
 import autolens as al
 from autolens import exc
 from test_autolens.mock import mock_pipeline
@@ -140,12 +139,18 @@ class TestMakeAnalysis:
         # If position threshold is input (not None) and but no positions are supplied, raise an error
 
         with pytest.raises(exc.PhaseException):
+
+            phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
+
             phase_imaging_7x7.make_analysis(
                 dataset=imaging_7x7,
                 mask=mask_7x7,
                 positions=None,
                 results=mock_pipeline.MockResults(),
             )
+
+            phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
+
             phase_imaging_7x7.make_analysis(
                 dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
             )

@@ -79,8 +79,11 @@ class MetaDataset:
                 results.last.image_plane_multiple_image_positions_of_source_plane_centres
             )
 
-            if len(updated_positions) > 1:
-                return updated_positions
+            # TODO : Coorrdinates refascotr will sort out index call here
+
+            if updated_positions:
+                if len(updated_positions[0]) > 1:
+                    return updated_positions
 
         if results.last is not None:
             if results.last.positions and results.last.positions is not None:
@@ -98,8 +101,11 @@ class MetaDataset:
 
         if self.auto_positions_factor and results.last is not None:
 
+            if positions is None:
+                return None
+
             positions_fits = fit.FitPositions(
-                positions=aa.Coordinates(coordinates=[positions]),
+                positions=aa.Coordinates(coordinates=positions),
                 tracer=results.last.most_likely_tracer,
                 noise_map=1.0,
             )
