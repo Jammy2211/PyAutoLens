@@ -19,23 +19,35 @@ class GalaxiesMockAnalysis:
         return 1
 
 
-class MockResults:
+class MockResult:
     def __init__(
         self,
+        instance=None,
+        likelihood=None,
+        model=None,
         mask=None,
         model_image=None,
+        hyper_galaxy_image_path_dict=None,
         galaxy_images=(),
         model_visibilities=None,
         galaxy_visibilities=(),
-        instance=None,
         analysis=None,
         optimizer=None,
         pixelization=None,
         positions=None,
-        new_positions=None,
-        new_positions_threshold=None,
+        updated_positions=None,
+        updated_positions_threshold=None,
+        use_as_hyper_dataset=False,
     ):
+        self.instance = instance
+        self.likelihood = likelihood
+        self.model = model
+        self.previous_model = model
+        self.gaussian_tuples = None
+        self.mask_2d = None
+        self.positions = None
         self.mask_2d = mask
+        self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
         self.model_image = model_image
         self.unmasked_model_image = model_image
         self.galaxy_images = galaxy_images
@@ -47,70 +59,19 @@ class MockResults:
         self.optimizer = optimizer
         self.pixelization = pixelization
         self.hyper_combined = MockHyperCombinedPhase()
-        self.use_as_hyper_dataset = False
+        self.use_as_hyper_dataset = use_as_hyper_dataset
         self.positions = positions
-        self.new_positions = new_positions
-        self.new_positions_threshold = new_positions_threshold
-
-    @property
-    def path_galaxy_tuples(self) -> [(str, al.Galaxy)]:
-        """
-        Tuples associating the names of galaxies with instances from the best fit
-        """
-        return [(("g0",), al.Galaxy(redshift=0.5)), (("g1",), al.Galaxy(redshift=1.0))]
-
-    @property
-    def path_galaxy_tuples_with_index(self) -> [(str, al.Galaxy)]:
-        """
-        Tuples associating the names of galaxies with instances from the best fit
-        """
-        return [
-            (0, ("g0",), al.Galaxy(redshift=0.5)),
-            (1, ("g1",), al.Galaxy(redshift=1.0)),
-        ]
-
-    @property
-    def image_galaxy_dict(self) -> {str: al.Galaxy}:
-        """
-        A dictionary associating galaxy names with model images of those galaxies
-        """
-        return {
-            galaxy_path: self.galaxy_images[i]
-            for i, galaxy_path, galaxy in self.path_galaxy_tuples_with_index
-        }
-
-    @property
-    def hyper_galaxy_image_path_dict(self):
-        """
-        A dictionary associating 1D hyper_galaxies galaxy images with their names.
-        """
-
-        hyper_minimum_percent = af.conf.instance.general.get(
-            "hyper", "hyper_minimum_percent", float
+        self.updated_positions = (
+            updated_positions if updated_positions is not None else []
         )
-
-        hyper_galaxy_image_path_dict = {}
-
-        for path, galaxy in self.path_galaxy_tuples:
-            galaxy_image = self.image_galaxy_dict[path]
-
-            minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image)
-
-            galaxy_image[galaxy_image < minimum_galaxy_value] = minimum_galaxy_value
-
-            hyper_galaxy_image_path_dict[path] = galaxy_image
-
-        return hyper_galaxy_image_path_dict
+        self.updated_positions_threshold = updated_positions_threshold
+        self.most_likely_tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5)]
+        )
 
     @property
     def hyper_model_image(self):
-
-        hyper_model_image = al.MaskedArray.zeros(mask=self.mask_2d)
-
-        for path, galaxy in self.path_galaxy_tuples:
-            hyper_model_image += self.hyper_galaxy_image_path_dict[path]
-
-        return hyper_model_image
+        return 3.0 * np.ones((3, 3))
 
     @property
     def visibilities_galaxy_dict(self) -> {str: al.Galaxy}:
@@ -156,35 +117,58 @@ class MockResults:
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(self):
-        return self.new_positions
-
-    @property
-    def image_plane_multiple_image_position_source_plane_separations(self) -> [float]:
-        return self.new_positions_threshold
+        return self.updated_positions
 
 
-class MockResult:
-    def __init__(self, instance, likelihood, model=None):
-        self.instance = instance
-        self.likelihood = likelihood
-        self.model = model
-        self.previous_model = model
-        self.gaussian_tuples = None
-        self.mask_2d = None
-        self.positions = None
-
-
-class MockResultsCollection:
-    def __init__(self, result):
+class MockResults(af.ResultsCollection):
+    def __init__(
+        self,
+        instance=None,
+        likelihood=None,
+        analysis=None,
+        optimizer=None,
+        model=None,
+        mask=None,
+        model_image=None,
+        hyper_galaxy_image_path_dict=None,
+        galaxy_images=(),
+        model_visibilities=None,
+        galaxy_visibilities=(),
+        pixelization=None,
+        positions=None,
+        updated_positions=None,
+        updated_positions_threshold=None,
+        use_as_hyper_dataset=False,
+    ):
         """
         A collection of results from previous phases. Results can be obtained using an index or the name of the phase
         from whence they came.
         """
+
+        result = MockResult(
+            instance=instance,
+            likelihood=likelihood,
+            analysis=analysis,
+            optimizer=optimizer,
+            model=model,
+            mask=mask,
+            model_image=model_image,
+            galaxy_images=galaxy_images,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+            model_visibilities=model_visibilities,
+            galaxy_visibilities=galaxy_visibilities,
+            pixelization=pixelization,
+            positions=positions,
+            updated_positions=updated_positions,
+            updated_positions_threshold=updated_positions_threshold,
+            use_as_hyper_dataset=use_as_hyper_dataset,
+        )
+
         self.__result_list = [result]
         self.__result_dict = {}
 
     def copy(self):
-        collection = MockResultsCollection()
+        collection = MockResults()
         collection.__result_dict = self.__result_dict
         collection.__result_list = self.__result_list
         return collection

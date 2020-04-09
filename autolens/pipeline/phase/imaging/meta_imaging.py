@@ -23,6 +23,7 @@ class MetaImaging(meta_dataset.MetaDataset):
             sub_size=sub_size,
             is_hyper_phase=is_hyper_phase,
             signal_to_noise_limit=signal_to_noise_limit,
+            auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_uses_border=inversion_uses_border,
@@ -35,7 +36,10 @@ class MetaImaging(meta_dataset.MetaDataset):
 
         mask = self.mask_with_phase_sub_size_from_mask(mask=mask)
 
-        positions = self.update_positions_and_threshold(
+        positions = self.updated_positions_from_positions_and_results(
+            positions=positions, results=results
+        )
+        self.positions_threshold = self.updated_positions_threshold_from_positions(
             positions=positions, results=results
         )
 

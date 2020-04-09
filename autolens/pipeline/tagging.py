@@ -23,7 +23,9 @@ def phase_tag_from_phase_settings(
         bin_up_factor=bin_up_factor
     )
     psf_shape_tag = psf_shape_tag_from_psf_shape_2d(psf_shape_2d=psf_shape_2d)
-
+    auto_positions_factor_tag = auto_positions_factor_tag_from_auto_positions_factor(
+        auto_positions_factor=auto_positions_factor
+    )
     positions_threshold_tag = positions_threshold_tag_from_positions_threshold(
         positions_threshold=positions_threshold
     )
@@ -53,9 +55,26 @@ def phase_tag_from_phase_settings(
         + bin_up_factor_tag
         + psf_shape_tag
         + primary_beam_shape_tag
+        + auto_positions_factor_tag
         + positions_threshold_tag
         + pixel_scale_interpolation_grid_tag
     )
+
+
+def auto_positions_factor_tag_from_auto_positions_factor(auto_positions_factor):
+    """Generate an auto positions factor tag, to customize phase names based on the factor automated positions are
+    required to trace within one another.
+
+    This changes the phase name 'phase_name' as follows:
+
+    auto_positions_factor = None -> phase_name
+    auto_positions_factor = 2.0 -> phase_name__auto_pos_x2.00
+    auto_positions_factor = 3.0 -> phase_name__auto_pos_x3.00
+    """
+    if auto_positions_factor == None:
+        return ""
+    else:
+        return "__auto_pos_x{0:.2f}".format(auto_positions_factor)
 
 
 def positions_threshold_tag_from_positions_threshold(positions_threshold):

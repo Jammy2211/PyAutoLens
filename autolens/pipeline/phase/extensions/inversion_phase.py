@@ -45,7 +45,7 @@ class ModelFixingHyperPhase(HyperPhase):
     def make_model(self, instance):
         return instance.as_model(self.model_classes)
 
-    def run_hyper(self, dataset, results=None, **kwargs):
+    def run_hyper(self, dataset, info=None, results=None, **kwargs):
         """
         Run the phase, overriding the optimizer's model instance with one created to
         only fit pixelization hyperparameters.

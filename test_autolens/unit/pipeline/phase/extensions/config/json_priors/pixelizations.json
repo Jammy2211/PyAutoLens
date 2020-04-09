@@ -1,0 +1,99 @@
+{
+    "Rectangular": {
+        "shape_0": {
+            "type": "Uniform",
+            "lower_limit": 20.0,
+            "upper_limit": 45.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 8.0
+            },
+            "gaussian_limits": {
+                "lower": 3.0,
+                "upper": "inf"
+            }
+        },
+        "shape_1": {
+            "type": "Uniform",
+            "lower_limit": 20.0,
+            "upper_limit": 45.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 8.0
+            },
+            "gaussian_limits": {
+                "lower": 3.0,
+                "upper": "inf"
+            }
+        }
+    },
+    "VoronoiMagnification": {
+        "shape_0": {
+            "type": "Uniform",
+            "lower_limit": 20.0,
+            "upper_limit": 45.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 8.0
+            },
+            "gaussian_limits": {
+                "lower": 3.0,
+                "upper": "inf"
+            }
+        },
+        "shape_1": {
+            "type": "Uniform",
+            "lower_limit": 20.0,
+            "upper_limit": 45.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 8.0
+            },
+            "gaussian_limits": {
+                "lower": 3.0,
+                "upper": "inf"
+            }
+        }
+    },
+    "VoronoiBrightnessImage": {
+        "pixels": {
+            "type": "Uniform",
+            "lower_limit": 50.0,
+            "upper_limit": 1500.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 400.0
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        },
+        "weight_floor": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 1.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.1
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        },
+        "weight_power": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 20.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 5.0
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        }
+    }
+}
