@@ -39,6 +39,7 @@ class MetaImaging(meta_dataset.MetaDataset):
         positions = self.updated_positions_from_positions_and_results(
             positions=positions, results=results
         )
+
         self.positions_threshold = self.updated_positions_threshold_from_positions(
             positions=positions, results=results
         )
