@@ -141,19 +141,6 @@ class TestModelFixing:
         assert mapper.source_galaxy.light.axis_ratio == 1.0
 
 
-class TestImagePassing:
-    def test___image_dict(self, result):
-        image_dict = result.image_galaxy_dict
-        assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
-        assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
-
-        result.instance.galaxies.lens = al.Galaxy(redshift=0.5)
-
-        image_dict = result.image_galaxy_dict
-        assert (image_dict[("galaxies", "lens")].in_2d == np.zeros((7, 7))).all()
-        assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
-
-
 @pytest.fixture(name="hyper_combined")
 def make_combined():
     normal_phase = MockPhase()
@@ -222,7 +209,7 @@ class TestHyperAPI:
         assert pixelization_phase.hyper_name == "inversion"
         assert isinstance(pixelization_phase, al.InversionPhase)
 
-    def test_hyper_result(self, imaging_7x7):
+    def test_hyper_result(self, imaging_7x7, mask_7x7):
         normal_phase = MockPhase()
 
         # noinspection PyTypeChecker
@@ -234,7 +221,7 @@ class TestHyperAPI:
 
         phase.run_hyper = run_hyper
 
-        result = phase.run(imaging_7x7)
+        result = phase.run(dataset=imaging_7x7)
 
         assert hasattr(result, "hyper_galaxy")
         assert isinstance(result.hyper_galaxy, MockResult)
@@ -261,7 +248,9 @@ class TestHyperGalaxyPhase:
             phase_name="test_phase",
         )
 
-        analysis = phase_imaging_7x7.make_analysis(dataset=imaging_7x7, mask=mask_7x7)
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
 
         mask = phase_imaging_7x7.meta_dataset.mask_with_phase_sub_size_from_mask(
