@@ -41,7 +41,7 @@ class TestHyperMethods:
         analysis = al.PhaseImaging.Analysis(
             masked_imaging=masked_imaging_7x7,
             cosmology=cosmo.Planck15,
-            image_path="",
+            image_path="files/",
             results=results,
         )
 
