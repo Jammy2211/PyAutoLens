@@ -35,7 +35,9 @@ def test__dataset_generator_from_aggregator(imaging_7x7, mask_7x7):
         phase_name="test_phase_aggregator",
     )
 
-    phase_imaging_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
+    phase_imaging_7x7.run(
+        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+    )
 
     agg = af.Aggregator(directory=phase_imaging_7x7.paths.phase_output_path)
 
@@ -57,7 +59,9 @@ def test__mask_generator_from_aggregator(imaging_7x7, mask_7x7):
         phase_name="test_phase_aggregator",
     )
 
-    phase_imaging_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
+    phase_imaging_7x7.run(
+        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+    )
 
     agg = af.Aggregator(directory=phase_imaging_7x7.paths.phase_output_path)
 
@@ -79,7 +83,9 @@ def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
         phase_name="test_phase_aggregator",
     )
 
-    phase_imaging_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
+    phase_imaging_7x7.run(
+        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+    )
 
     agg = af.Aggregator(directory=phase_imaging_7x7.paths.phase_output_path)
 
@@ -102,7 +108,9 @@ def test__tracer_generator_from_aggregator(imaging_7x7, mask_7x7):
         phase_name="test_phase_aggregator",
     )
 
-    phase_imaging_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
+    phase_imaging_7x7.run(
+        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+    )
 
     agg = af.Aggregator(directory=phase_imaging_7x7.paths.phase_output_path)
 
@@ -128,7 +136,9 @@ def test__fit_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
         phase_name="test_phase_aggregator",
     )
 
-    phase_imaging_7x7.run(dataset=imaging_7x7, mask=mask_7x7)
+    phase_imaging_7x7.run(
+        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+    )
 
     agg = af.Aggregator(directory=phase_imaging_7x7.paths.phase_output_path)
 
