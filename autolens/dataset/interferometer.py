@@ -55,8 +55,6 @@ class MaskedInterferometer(
             up run.
         """
 
-        self.interferometer = interferometer
-
         super(MaskedInterferometer, self).__init__(
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
@@ -128,7 +126,7 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
             noise_seed=noise_seed,
         )
 
-    def from_tracer_and_grid(self, tracer, grid, name=None, metadata=None):
+    def from_tracer_and_grid(self, tracer, grid, name=None):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 
@@ -154,9 +152,9 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
 
         image = tracer.profile_image_from_grid(grid=grid)
 
-        return self.from_image(image=image.in_1d_binned, name=name, metadata=metadata)
+        return self.from_image(image=image.in_1d_binned, name=name)
 
-    def from_galaxies_and_grid(self, galaxies, grid, name=None, metadata=None):
+    def from_galaxies_and_grid(self, galaxies, grid, name=None):
         """Simulate imaging data for this data_type, as follows:
 
         1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
@@ -174,13 +172,9 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
 
         tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
 
-        return self.from_tracer_and_grid(
-            tracer=tracer, grid=grid, name=name, metadata=metadata
-        )
+        return self.from_tracer_and_grid(tracer=tracer, grid=grid, name=name)
 
-    def from_deflections_and_galaxies(
-        self, deflections, galaxies, name=None, metadata=None
-    ):
+    def from_deflections_and_galaxies(self, deflections, galaxies, name=None):
 
         grid = grids.Grid.uniform(
             shape_2d=deflections.shape_2d,
@@ -194,4 +188,4 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
             map(lambda g: g.profile_image_from_grid(grid=deflected_grid), galaxies)
         )
 
-        return self.from_image(image=image, name=name, metadata=metadata)
+        return self.from_image(image=image, name=name)

@@ -30,6 +30,7 @@ class PhaseImaging(dataset.PhaseDataset):
         signal_to_noise_limit=None,
         bin_up_factor=None,
         psf_shape_2d=None,
+        auto_positions_factor=None,
         positions_threshold=None,
         pixel_scale_interpolation_grid=None,
         inversion_uses_border=True,
@@ -54,6 +55,7 @@ class PhaseImaging(dataset.PhaseDataset):
             signal_to_noise_limit=signal_to_noise_limit,
             bin_up_factor=bin_up_factor,
             psf_shape_2d=psf_shape_2d,
+            auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
         )
@@ -77,6 +79,7 @@ class PhaseImaging(dataset.PhaseDataset):
             psf_shape_2d=psf_shape_2d,
             sub_size=sub_size,
             signal_to_noise_limit=signal_to_noise_limit,
+            auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_uses_border=inversion_uses_border,
@@ -90,7 +93,9 @@ class PhaseImaging(dataset.PhaseDataset):
             hyper_galaxy_image_path_dict=analysis.hyper_galaxy_image_path_dict,
         )
 
-    def make_analysis(self, dataset, mask, results=None, positions=None):
+    def make_analysis(
+        self, dataset, mask, results=af.ResultsCollection(), positions=None
+    ):
         """
         Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
