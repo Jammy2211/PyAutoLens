@@ -26,22 +26,6 @@ def tracer_from_agg_obj(agg_obj):
     return al.Tracer.from_galaxies(galaxies=galaxies)
 
 
-def dataset_generator_from_aggregator(aggregator):
-    return aggregator.map(func=dataset_from_agg_obj)
-
-
-def dataset_from_agg_obj(agg_obj):
-    return agg_obj.dataset
-
-
-def mask_generator_from_aggregator(aggregator):
-    return aggregator.map(func=mask_from_agg_obj)
-
-
-def mask_from_agg_obj(agg_obj):
-    return agg_obj.mask
-
-
 def masked_imaging_generator_from_aggregator(aggregator):
     return aggregator.map(func=masked_imaging_from_agg_obj)
 

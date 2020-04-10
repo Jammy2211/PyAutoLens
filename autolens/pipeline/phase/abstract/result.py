@@ -1,7 +1,6 @@
 import autofit as af
 from autoarray.structures import grids
 from autoastro.galaxy import galaxy as g
-from autolens.fit import fit
 
 
 class Result(af.Result):
@@ -64,7 +63,7 @@ class Result(af.Result):
             self.source_plane_light_profile_centres
             + self.source_plane_inversion_centres
         )
-        return grids.Coordinates(coordinates=[centres])
+        return grids.Coordinates(coordinates=centres)
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(
@@ -86,32 +85,14 @@ class Result(af.Result):
             map(
                 lambda centre: self.most_likely_tracer.image_plane_multiple_image_positions(
                     grid=grid, source_plane_coordinate=centre
-                ),
-                self.source_plane_centres[0],
+                )[
+                    0
+                ],
+                self.source_plane_centres,
             )
         )
+
         return grids.Coordinates(coordinates=positions)
-
-    @property
-    def image_plane_multiple_image_position_source_plane_separations(self) -> [float]:
-        """Ray-trace forward the image-plane multiple images positioons of the source-plane centres (see above) via
-        the mass model to determine how far apart they are separated.
-
-        These separations are used by the next phase in a pipeline to set the positions_threshold if automatic
-        position updating is turned on."""
-
-        positions_fits = list(
-            map(
-                lambda positions: fit.FitPositions(
-                    positions=positions,
-                    tracer=self.most_likely_tracer,
-                    noise_map=self.analysis.masked_dataset.mask.pixel_scales,
-                ),
-                self.image_plane_multiple_image_positions_of_source_plane_centres,
-            )
-        )
-
-        return list(map(lambda fit: fit.maximum_separations[0], positions_fits))
 
     @property
     def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:
