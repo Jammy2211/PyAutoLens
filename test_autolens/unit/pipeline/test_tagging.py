@@ -20,11 +20,15 @@ class TestPhaseTag:
             signal_to_noise_limit=None,
             bin_up_factor=3,
             psf_shape_2d=(2, 2),
+            auto_positions_factor=0.5,
             positions_threshold=None,
             pixel_scale_interpolation_grid=0.2,
         )
 
-        assert phase_tag == "phase_tag__sub_1__bin_3__psf_2x2__interp_0.200"
+        assert (
+            phase_tag
+            == "phase_tag__sub_1__bin_3__psf_2x2__auto_pos_x0.50__interp_0.200"
+        )
 
         phase_tag = al.tagging.phase_tag_from_phase_settings(
             sub_size=1,
@@ -40,6 +44,21 @@ class TestPhaseTag:
 
 
 class TestPhaseTaggers:
+    def test__auto_positions_factor_tagger(self):
+
+        tag = al.tagging.auto_positions_factor_tag_from_auto_positions_factor(
+            auto_positions_factor=None
+        )
+        assert tag == ""
+        tag = al.tagging.auto_positions_factor_tag_from_auto_positions_factor(
+            auto_positions_factor=1.0
+        )
+        assert tag == "__auto_pos_x1.00"
+        tag = al.tagging.auto_positions_factor_tag_from_auto_positions_factor(
+            auto_positions_factor=2.56
+        )
+        assert tag == "__auto_pos_x2.56"
+
     def test__positions_threshold_tagger(self):
 
         tag = al.tagging.positions_threshold_tag_from_positions_threshold(

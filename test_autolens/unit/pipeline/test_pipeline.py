@@ -42,7 +42,7 @@ class DummyPhaseImaging(af.AbstractPhase):
 
         self.optimizer = Optimizer(phase_name)
 
-    def run(self, dataset, results, mask=None, positions=None):
+    def run(self, dataset, results, mask=None, positions=None, info=None):
         self.save_metadata(dataset)
         self.dataset = dataset
         self.results = results

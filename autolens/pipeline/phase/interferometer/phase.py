@@ -32,6 +32,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         cosmology=cosmo.Planck15,
         sub_size=2,
         primary_beam_shape_2d=None,
+        auto_positions_factor=None,
         positions_threshold=None,
         pixel_scale_interpolation_grid=None,
         inversion_uses_border=True,
@@ -56,6 +57,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
             real_space_shape_2d=real_space_mask.shape_2d,
             real_space_pixel_scales=real_space_mask.pixel_scales,
             primary_beam_shape_2d=primary_beam_shape_2d,
+            auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
         )
@@ -77,6 +79,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
             real_space_mask=real_space_mask,
             transformer_class=transformer_class,
             primary_beam_shape_2d=primary_beam_shape_2d,
+            auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_uses_border=inversion_uses_border,
@@ -102,7 +105,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         """
         return visibilities
 
-    def make_analysis(self, dataset, mask, results=None, positions=None):
+    def make_analysis(self, dataset, mask, results=af.ResultsCollection(), positions=None):
         """
         Create an lens object. Also calls the prior passing and masked_interferometer modifying functions to allow child
         classes to change the behaviour of the phase.
