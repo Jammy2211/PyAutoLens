@@ -19,134 +19,26 @@ class GalaxiesMockAnalysis:
         return 1
 
 
-class MockResults:
+class MockResult:
     def __init__(
         self,
-        mask=None,
-        model_image=None,
-        galaxy_images=(),
-        model_visibilities=None,
-        galaxy_visibilities=(),
         instance=None,
+        likelihood=None,
+        model=None,
         analysis=None,
         optimizer=None,
+        mask=None,
+        model_image=None,
+        hyper_galaxy_image_path_dict=None,
+        hyper_model_image=None,
+        hyper_galaxy_visibilities_path_dict=None,
+        hyper_model_visibilities=None,
         pixelization=None,
+        positions=None,
+        updated_positions=None,
+        updated_positions_threshold=None,
+        use_as_hyper_dataset=False,
     ):
-        self.mask_2d = mask
-        self.model_image = model_image
-        self.unmasked_model_image = model_image
-        self.galaxy_images = galaxy_images
-        self.model_visibilities = model_visibilities
-        self.galaxy_visibilities = galaxy_visibilities
-        self.instance = instance or af.ModelInstance()
-        self.model = af.ModelMapper()
-        self.analysis = analysis
-        self.optimizer = optimizer
-        self.pixelization = pixelization
-        self.hyper_combined = MockHyperCombinedPhase()
-        self.use_as_hyper_dataset = False
-
-    @property
-    def path_galaxy_tuples(self) -> [(str, al.Galaxy)]:
-        """
-        Tuples associating the names of galaxies with instances from the best fit
-        """
-        return [(("g0",), al.Galaxy(redshift=0.5)), (("g1",), al.Galaxy(redshift=1.0))]
-
-    @property
-    def path_galaxy_tuples_with_index(self) -> [(str, al.Galaxy)]:
-        """
-        Tuples associating the names of galaxies with instances from the best fit
-        """
-        return [
-            (0, ("g0",), al.Galaxy(redshift=0.5)),
-            (1, ("g1",), al.Galaxy(redshift=1.0)),
-        ]
-
-    @property
-    def image_galaxy_dict(self) -> {str: al.Galaxy}:
-        """
-        A dictionary associating galaxy names with model images of those galaxies
-        """
-        return {
-            galaxy_path: self.galaxy_images[i]
-            for i, galaxy_path, galaxy in self.path_galaxy_tuples_with_index
-        }
-
-    @property
-    def hyper_galaxy_image_path_dict(self):
-        """
-        A dictionary associating 1D hyper_galaxies galaxy images with their names.
-        """
-
-        hyper_minimum_percent = af.conf.instance.general.get(
-            "hyper", "hyper_minimum_percent", float
-        )
-
-        hyper_galaxy_image_path_dict = {}
-
-        for path, galaxy in self.path_galaxy_tuples:
-            galaxy_image = self.image_galaxy_dict[path]
-
-            minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image)
-
-            galaxy_image[galaxy_image < minimum_galaxy_value] = minimum_galaxy_value
-
-            hyper_galaxy_image_path_dict[path] = galaxy_image
-
-        return hyper_galaxy_image_path_dict
-
-    @property
-    def hyper_model_image(self):
-
-        hyper_model_image = al.MaskedArray.zeros(mask=self.mask_2d)
-
-        for path, galaxy in self.path_galaxy_tuples:
-            hyper_model_image += self.hyper_galaxy_image_path_dict[path]
-
-        return hyper_model_image
-
-    @property
-    def visibilities_galaxy_dict(self) -> {str: al.Galaxy}:
-        """
-        A dictionary associating galaxy names with model visibilities of those galaxies
-        """
-        return {
-            galaxy_path: self.galaxy_visibilities[i]
-            for i, galaxy_path, galaxy in self.path_galaxy_tuples_with_index
-        }
-
-    @property
-    def hyper_galaxy_visibilities_path_dict(self):
-        """
-        A dictionary associating 1D hyper_galaxies galaxy visibilities with their names.
-        """
-
-        hyper_galaxy_visibilities_path_dict = {}
-
-        for path, galaxy in self.path_galaxy_tuples:
-
-            hyper_galaxy_visibilities_path_dict[path] = self.visibilities_galaxy_dict[
-                path
-            ]
-
-        return hyper_galaxy_visibilities_path_dict
-
-    @property
-    def hyper_model_visibilities(self):
-
-        hyper_model_visibilities = al.Visibilities.zeros(
-            shape_1d=(self.galaxy_visibilities[0].shape_1d,)
-        )
-
-        for path, galaxy in self.path_galaxy_tuples:
-            hyper_model_visibilities += self.hyper_galaxy_visibilities_path_dict[path]
-
-        return hyper_model_visibilities
-
-
-class MockResult:
-    def __init__(self, instance, likelihood, model=None):
         self.instance = instance
         self.likelihood = likelihood
         self.model = model
@@ -154,6 +46,113 @@ class MockResult:
         self.gaussian_tuples = None
         self.mask_2d = None
         self.positions = None
+        self.mask_2d = mask
+        self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
+        self.hyper_model_image = hyper_model_image
+        self.hyper_galaxy_visibilities_path_dict = hyper_galaxy_visibilities_path_dict
+        self.hyper_model_visibilities = hyper_model_visibilities
+        self.model_image = model_image
+        self.unmasked_model_image = model_image
+        self.instance = instance or af.ModelInstance()
+        self.model = af.ModelMapper()
+        self.analysis = analysis
+        self.optimizer = optimizer
+        self.pixelization = pixelization
+        self.hyper_combined = MockHyperCombinedPhase()
+        self.use_as_hyper_dataset = use_as_hyper_dataset
+        self.positions = positions
+        self.updated_positions = (
+            updated_positions if updated_positions is not None else []
+        )
+        self.updated_positions_threshold = updated_positions_threshold
+        self.most_likely_tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5)]
+        )
+
+    @property
+    def last(self):
+        return self
+
+    @property
+    def image_plane_multiple_image_positions_of_source_plane_centres(self):
+        return self.updated_positions
+
+
+class MockResults(af.ResultsCollection):
+    def __init__(
+        self,
+        instance=None,
+        likelihood=None,
+        analysis=None,
+        optimizer=None,
+        model=None,
+        mask=None,
+        model_image=None,
+        hyper_galaxy_image_path_dict=None,
+        hyper_model_image=None,
+        hyper_galaxy_visibilities_path_dict=None,
+        hyper_model_visibilities=None,
+        pixelization=None,
+        positions=None,
+        updated_positions=None,
+        updated_positions_threshold=None,
+        use_as_hyper_dataset=False,
+    ):
+        """
+        A collection of results from previous phases. Results can be obtained using an index or the name of the phase
+        from whence they came.
+        """
+
+        super(MockResults, self).__init__()
+
+        result = MockResult(
+            instance=instance,
+            likelihood=likelihood,
+            analysis=analysis,
+            optimizer=optimizer,
+            model=model,
+            mask=mask,
+            model_image=model_image,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+            hyper_model_image=hyper_model_image,
+            hyper_galaxy_visibilities_path_dict=hyper_galaxy_visibilities_path_dict,
+            hyper_model_visibilities=hyper_model_visibilities,
+            pixelization=pixelization,
+            positions=positions,
+            updated_positions=updated_positions,
+            updated_positions_threshold=updated_positions_threshold,
+            use_as_hyper_dataset=use_as_hyper_dataset,
+        )
+
+        self.__result_list = [result]
+
+    @property
+    def last(self):
+        """
+        The result of the last phase
+        """
+        if len(self.__result_list) > 0:
+            return self.__result_list[-1]
+        return None
+
+    def __getitem__(self, item):
+        """
+        Get the result of a previous phase by index
+
+        Parameters
+        ----------
+        item: int
+            The index of the result
+
+        Returns
+        -------
+        result: Result
+            The result of a previous phase
+        """
+        return self.__result_list[item]
+
+    def __len__(self):
+        return len(self.__result_list)
 
 
 class MockHyperCombinedPhase:
@@ -166,7 +165,11 @@ class MockHyperCombinedPhase:
 
 
 class MockNLO(af.NonLinearOptimizer):
-    def fit(self, analysis, model):
+    def _simple_fit(self, analysis, fitness_function):
+        # noinspection PyTypeChecker
+        return af.Result(None, analysis.fit(None), None)
+
+    def _fit(self, analysis, model):
         class Fitness:
             def __init__(self, instance_from_vector):
                 self.result = None

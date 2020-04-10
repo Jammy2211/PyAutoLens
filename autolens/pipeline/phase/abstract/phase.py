@@ -55,5 +55,5 @@ class AbstractPhase(af.AbstractPhase):
             use_as_hyper_dataset=self.use_as_hyper_dataset,
         )
 
-    def run(self, dataset, mask, results=None, positions=None):
+    def run(self, dataset, mask, results=af.ResultsCollection(), positions=None):
         raise NotImplementedError()

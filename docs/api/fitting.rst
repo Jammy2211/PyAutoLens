@@ -23,15 +23,15 @@ fit imaging data of a strong lens, which we begin by loading from .fits files:
 
 Here's what our image, noise-map and point-spread function look like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/noise_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/noise_map.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/psf.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/psf.png
   :width: 400
   :alt: Alternative text
 
@@ -50,7 +50,7 @@ We now need to mask the data, so that regions where there is no signal (e.g. the
 Here is what our image looks like with the mask applied, where PyAutoLens has automatically zoomed around the mask
 to make the lensed source appear bigger:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/masked_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/masked_image.png
   :width: 400
   :alt: Alternative text
 
@@ -69,21 +69,21 @@ to create the model image we fit the data with, such as blurring the tracer's im
 For a good lens model where the model image and tracer are representative of the strong lens system the
 residuals and chi-squared values minimized:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/residual_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/residual_map.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/chi_squared_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/chi_squared_map.png
   :width: 400
   :alt: Alternative text
 
 In contrast, a bad lens model will show features in the residual-map and chi-squareds:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/bad_residual_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/bad_residual_map.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/fitting/bad_chi_squared_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/bad_chi_squared_map.png
   :width: 400
   :alt: Alternative text
 

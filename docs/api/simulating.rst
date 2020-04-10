@@ -29,15 +29,15 @@ and grid:
 
 Here is what our dataset looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/simulating/image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/simulating/image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/simulating/noise_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/simulating/noise_map.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/simulating/psf.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/simulating/psf.png
   :width: 400
   :alt: Alternative text
 
@@ -45,18 +45,18 @@ The **autolens_workspace** includes example simulators for various existing and 
 Vera Rubin Observatry, Euclid, the Hubble Space Telescope and Keck Adaptive Optics Imaging. Below, we show what the
 image above looks like for these different instruments.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/simulating/vro_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/simulating/vro_image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/simulating/euclid_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/simulating/euclid_image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/simulating/hst_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/simulating/hst_image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/images/simulating/ao_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/simulating/ao_image.png
   :width: 400
   :alt: Alternative text

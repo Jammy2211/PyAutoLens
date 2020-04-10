@@ -152,7 +152,7 @@ class HyperGalaxyPhase(HyperPhase):
         self.include_sky_background = False
         self.include_noise_background = False
 
-    def run_hyper(self, dataset, results=None):
+    def run_hyper(self, dataset, info=None, results=None):
         """
         Run a fit for each galaxy from the previous phase.
         Parameters
