@@ -103,7 +103,7 @@ class MockResults(af.ResultsCollection):
         from whence they came.
         """
 
-        super(MockResults, self).__init__()
+        super().__init__()
 
         result = MockResult(
             instance=instance,

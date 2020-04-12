@@ -12,16 +12,6 @@ pytestmark = pytest.mark.filterwarnings(
     "either in an error or a different result."
 )
 
-directory = path.dirname(path.realpath(__file__))
-
-
-@pytest.fixture(scope="session", autouse=True)
-def do_something():
-    print("{}/config/".format(directory))
-
-    af.conf.instance = af.conf.Config("{}/config/".format(directory))
-
-
 class TestModel:
     def test__set_instances(self, phase_dataset_7x7):
         phase_dataset_7x7.galaxies = [al.Galaxy(redshift=0.5)]
