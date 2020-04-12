@@ -106,7 +106,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         return visibilities
 
     def make_analysis(
-        self, dataset, mask, results=af.ResultsCollection(), positions=None
+        self, dataset, mask, results=None, positions=None
     ):
         """
         Create an lens object. Also calls the prior passing and masked_interferometer modifying functions to allow child

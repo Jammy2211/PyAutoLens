@@ -43,7 +43,7 @@ class PhaseDataset(abstract.AbstractPhase):
         self,
         dataset: Dataset,
         mask,
-        results=af.ResultsCollection(),
+        results=None,
         positions=None,
         info=None,
     ):
@@ -72,6 +72,8 @@ class PhaseDataset(abstract.AbstractPhase):
         self.save_info(info=info)
 
         self.model = self.model.populate(results)
+
+        results = results or af.ResultsCollection()
 
         analysis = self.make_analysis(
             dataset=dataset, mask=mask, results=results, positions=positions

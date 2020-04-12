@@ -166,6 +166,8 @@ class HyperGalaxyPhase(HyperPhase):
             A collection of results, with one item per a galaxy
         """
 
+        self.results = results or af.ResultsCollection()
+
         phase = self.make_hyper_phase()
 
         masked_imaging = imaging.MaskedImaging(

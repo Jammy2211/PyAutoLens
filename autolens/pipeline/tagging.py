@@ -71,10 +71,9 @@ def auto_positions_factor_tag_from_auto_positions_factor(auto_positions_factor):
     auto_positions_factor = 2.0 -> phase_name__auto_pos_x2.00
     auto_positions_factor = 3.0 -> phase_name__auto_pos_x3.00
     """
-    if auto_positions_factor == None:
+    if auto_positions_factor is None:
         return ""
-    else:
-        return "__auto_pos_x{0:.2f}".format(auto_positions_factor)
+    return "__auto_pos_x{0:.2f}".format(auto_positions_factor)
 
 
 def positions_threshold_tag_from_positions_threshold(positions_threshold):
@@ -87,10 +86,9 @@ def positions_threshold_tag_from_positions_threshold(positions_threshold):
     positions_threshold = 2 -> phase_name_positions_threshold_2
     positions_threshold = 2 -> phase_name_positions_threshold_2
     """
-    if positions_threshold == None:
+    if positions_threshold is None:
         return ""
-    else:
-        return "__pos_{0:.2f}".format(positions_threshold)
+    return "__pos_{0:.2f}".format(positions_threshold)
 
 
 def sub_size_tag_from_sub_size(sub_size):
@@ -117,8 +115,7 @@ def signal_to_noise_limit_tag_from_signal_to_noise_limit(signal_to_noise_limit):
     """
     if signal_to_noise_limit is None:
         return ""
-    else:
-        return "__snr_" + str(signal_to_noise_limit)
+    return "__snr_" + str(signal_to_noise_limit)
 
 
 def bin_up_factor_tag_from_bin_up_factor(bin_up_factor):
@@ -133,8 +130,7 @@ def bin_up_factor_tag_from_bin_up_factor(bin_up_factor):
     """
     if bin_up_factor == 1 or bin_up_factor is None:
         return ""
-    else:
-        return "__bin_" + str(bin_up_factor)
+    return "__bin_" + str(bin_up_factor)
 
 
 def psf_shape_tag_from_psf_shape_2d(psf_shape_2d):
@@ -149,10 +145,9 @@ def psf_shape_tag_from_psf_shape_2d(psf_shape_2d):
     """
     if psf_shape_2d is None:
         return ""
-    else:
-        y = str(psf_shape_2d[0])
-        x = str(psf_shape_2d[1])
-        return "__psf_" + y + "x" + x
+    y = str(psf_shape_2d[0])
+    x = str(psf_shape_2d[1])
+    return "__psf_" + y + "x" + x
 
 
 def pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
@@ -169,8 +164,7 @@ def pixel_scale_interpolation_grid_tag_from_pixel_scale_interpolation_grid(
     """
     if pixel_scale_interpolation_grid is None:
         return ""
-    else:
-        return "__interp_{0:.3f}".format(pixel_scale_interpolation_grid)
+    return "__interp_{0:.3f}".format(pixel_scale_interpolation_grid)
 
 
 def transformer_tag_from_transformer_class(transformer_class):
@@ -205,10 +199,9 @@ def primary_beam_shape_tag_from_primary_beam_shape_2d(primary_beam_shape_2d):
     """
     if primary_beam_shape_2d is None:
         return ""
-    else:
-        y = str(primary_beam_shape_2d[0])
-        x = str(primary_beam_shape_2d[1])
-        return "__pb_" + y + "x" + x
+    y = str(primary_beam_shape_2d[0])
+    x = str(primary_beam_shape_2d[1])
+    return "__pb_" + y + "x" + x
 
 
 def real_space_shape_2d_tag_from_real_space_shape_2d(real_space_shape_2d):
