@@ -2596,15 +2596,10 @@ class TestAbstractTracerLensing:
                 grid=grid, source_plane_coordinate=(0.0, 0.0)
             )
 
-            assert coordinates[0][0] == pytest.approx((1.025, -0.025), 1.0e-4)
-            assert coordinates[0][1] == pytest.approx((0.025, -0.975), 1.0e-4)
-            assert coordinates[0][2] == pytest.approx((0.025, 0.975), 1.0e-4)
-            assert coordinates[0][3] == pytest.approx((-1.025, -0.025), 1.0e-4)
-            assert coordinates.scaled[0][0] == pytest.approx((1.025, -0.025), 1.0e-4)
-            assert coordinates.scaled[0][1] == pytest.approx((0.025, -0.975), 1.0e-4)
-            assert coordinates.scaled[0][2] == pytest.approx((0.025, 0.975), 1.0e-4)
-            assert coordinates.scaled[0][3] == pytest.approx((-1.025, -0.025), 1.0e-4)
-            assert coordinates.in_pixels == [[(29, 49), (49, 30), (49, 69), (70, 49)]]
+            assert coordinates[0] == pytest.approx((1.025, -0.025), 1.0e-4)
+            assert coordinates[1] == pytest.approx((0.025, -0.975), 1.0e-4)
+            assert coordinates[2] == pytest.approx((0.025, 0.975), 1.0e-4)
+            assert coordinates[3] == pytest.approx((-1.025, -0.025), 1.0e-4)
 
         def test__multiple_image_coordinate_of_light_profile_centres_of_source_plane(
             self
@@ -2614,26 +2609,35 @@ class TestAbstractTracerLensing:
 
             g0 = al.Galaxy(
                 redshift=0.5,
+                light=al.lp.SphericalGaussian(centre=(0.0, 0.0)),
                 mass=al.mp.EllipticalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0, axis_ratio=0.9
                 ),
             )
 
             g1 = al.Galaxy(
-                redshift=1.0, light=al.lp.SphericalGaussian(centre=(0.0, 0.0))
+                redshift=1.0, light=al.lp.SphericalGaussian(centre=(0.1, 0.1))
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            coordinates_manual = tracer.image_plane_multiple_image_positions(
+            coordinates_manual_g0 = tracer.image_plane_multiple_image_positions(
                 grid=grid, source_plane_coordinate=(0.0, 0.0)
             )
 
-            assert coordinates_manual.in_pixels == [[(4, 24), (45, 24)]]
-            assert (
-                coordinates_manual.scaled
-                == tracer.image_plane_multiple_image_positions_of_galaxies(grid=grid)[0]
+            coordinates_manual_g1 = tracer.image_plane_multiple_image_positions(
+                grid=grid, source_plane_coordinate=(2.0, 2.0)
             )
+
+            positions_of_galaxies = tracer.image_plane_multiple_image_positions_of_galaxies(
+                grid=grid
+            )
+
+            print(positions_of_galaxies)
+
+            assert coordinates_manual_g0 == positions_of_galaxies[0]
+
+            assert coordinates_manual_g1 == positions_of_galaxies[1]
 
     class TestContributionMap:
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
