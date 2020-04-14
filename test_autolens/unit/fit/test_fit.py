@@ -2454,7 +2454,7 @@ class MockTracerPositions:
         return [self.positions]
 
 
-class TestPositionsFit:
+class TestFitPositions:
     def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
 
         positions = al.Coordinates(coordinates=[[(0.0, 0.0), (0.0, 1.0)]])

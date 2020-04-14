@@ -2633,10 +2633,7 @@ class TestAbstractTracerLensing:
                 grid=grid
             )
 
-            print(positions_of_galaxies)
-
             assert coordinates_manual_g0 == positions_of_galaxies[0]
-
             assert coordinates_manual_g1 == positions_of_galaxies[1]
 
     class TestContributionMap:
