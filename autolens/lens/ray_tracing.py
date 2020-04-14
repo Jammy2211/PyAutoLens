@@ -336,10 +336,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
     @grids.grid_like_to_numpy
     def profile_image_from_grid(self, grid):
-        profile_image = sum(self.profile_images_of_planes_from_grid(grid=grid))
-        return grid.mapping.array_stored_1d_from_sub_array_1d(
-            sub_array_1d=profile_image
-        )
+        return sum(self.profile_images_of_planes_from_grid(grid=grid))
 
     @grids.grid_like_to_numpy
     def profile_images_of_planes_from_grid(self, grid):
@@ -359,9 +356,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
                 self.upper_plane_index_with_light_profile, self.total_planes - 1
             ):
                 profile_images_of_planes.append(
-                    grid.mapping.array_stored_1d_from_sub_array_1d(
-                        sub_array_1d=np.zeros(shape=profile_images_of_planes[0].shape)
-                    )
+                    np.zeros(shape=profile_images_of_planes[0].shape)
                 )
 
         return profile_images_of_planes
@@ -374,15 +369,11 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
     @grids.grid_like_to_numpy
     def convergence_from_grid(self, grid):
-        convergence = sum(
-            [plane.convergence_from_grid(grid=grid) for plane in self.planes]
-        )
-        return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=convergence)
+        return sum([plane.convergence_from_grid(grid=grid) for plane in self.planes])
 
     @grids.grid_like_to_numpy
     def potential_from_grid(self, grid):
-        potential = sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
-        return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=potential)
+        return sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
 
     @grids.grid_like_to_numpy
     def deflections_from_grid(self, grid):
@@ -390,10 +381,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
     @grids.grid_like_to_numpy
     def deflections_of_planes_summed_from_grid(self, grid):
-        deflections = sum(
-            [plane.deflections_from_grid(grid=grid) for plane in self.planes]
-        )
-        return grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=deflections)
+        return sum([plane.deflections_from_grid(grid=grid) for plane in self.planes])
 
     def grid_at_redshift_from_grid_and_redshift(self, grid, redshift):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
