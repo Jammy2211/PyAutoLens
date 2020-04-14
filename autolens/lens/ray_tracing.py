@@ -431,9 +431,9 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
     def image_plane_multiple_image_positions_of_galaxies(self, grid):
         return [
             self.image_plane_multiple_image_positions(
-                grid=grid, source_plane_coordinate=light_profile_centre
+                grid=grid, source_plane_coordinate=light_profile_centre[0]
             )
-            for light_profile_centre in self.light_profile_centres_of_planes[-1]
+            for light_profile_centre in self.light_profile_centres_of_planes
         ]
 
     def image_plane_multiple_image_positions(self, grid, source_plane_coordinate):
@@ -468,8 +468,11 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
             mask_2d=trough_mask,
         )
 
-        return grids.Coordinates.from_pixels_and_mask(
-            pixels=[multiple_image_pixels], mask=trough_mask
+        return list(
+            map(
+                trough_mask.geometry.scaled_coordinates_from_pixel_coordinates,
+                multiple_image_pixels,
+            )
         )
 
     @property
