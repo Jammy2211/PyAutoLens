@@ -2608,7 +2608,7 @@ class TestAbstractTracerLensing:
             assert coordinates.scaled[0][1] == pytest.approx((0.025, -0.975), 1.0e-4)
             assert coordinates.scaled[0][2] == pytest.approx((0.025, 0.975), 1.0e-4)
             assert coordinates.scaled[0][3] == pytest.approx((-1.025, -0.025), 1.0e-4)
-            assert coordinates.pixels == [[(29, 49), (49, 30), (49, 69), (70, 49)]]
+            assert coordinates.in_pixels == [[(29, 49), (49, 30), (49, 69), (70, 49)]]
 
         def test__multiple_image_coordinate_of_light_profile_centres_of_source_plane(
             self
@@ -2633,7 +2633,7 @@ class TestAbstractTracerLensing:
                 grid=grid, source_plane_coordinate=(0.0, 0.0)
             )
 
-            assert coordinates_manual.pixels == [[(4, 24), (45, 24)]]
+            assert coordinates_manual.in_pixels == [[(4, 24), (45, 24)]]
             assert (
                 coordinates_manual.scaled
                 == tracer.image_plane_multiple_image_positions_of_galaxies(grid=grid)[0]

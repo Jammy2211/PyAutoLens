@@ -275,7 +275,7 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             redshift=redshift, galaxies=galaxies, cosmology=cosmology
         )
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def profile_image_from_grid(self, grid):
         """Compute the profile-image plane image of the list of galaxies of the plane's sub-grid, by summing the
         individual images of each galaxy's light profile.
@@ -291,26 +291,20 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
 
         """
         if self.galaxies:
-            profile_image = sum(
+            return sum(
                 map(
                     lambda galaxy: galaxy.profile_image_from_grid(grid=grid),
                     self.galaxies,
                 )
             )
-            return grid.mapping.array_stored_1d_from_sub_array_1d(
-                sub_array_1d=profile_image
-            )
-        else:
-            return grid.mapping.array_stored_1d_from_sub_array_1d(
-                sub_array_1d=np.zeros((grid.sub_shape_1d,))
-            )
+        return np.zeros((grid.shape[0],))
 
     def profile_images_of_galaxies_from_grid(self, grid):
         return list(
             map(lambda galaxy: galaxy.profile_image_from_grid(grid=grid), self.galaxies)
         )
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def convergence_from_grid(self, grid):
         """Compute the convergence of the list of galaxies of the plane's sub-grid, by summing the individual convergences \
         of each galaxy's mass profile.
@@ -330,18 +324,11 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             The galaxies whose mass profiles are used to compute the surface densities.
         """
         if self.galaxies:
-            convergence = sum(
-                map(lambda g: g.convergence_from_grid(grid=grid), self.galaxies)
-            )
-            return grid.mapping.array_stored_1d_from_sub_array_1d(
-                sub_array_1d=convergence
-            )
+            return sum(map(lambda g: g.convergence_from_grid(grid=grid), self.galaxies))
         else:
-            return grid.mapping.array_stored_1d_from_sub_array_1d(
-                sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
-            )
+            return np.zeros(shape=(grid.shape[0],))
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def potential_from_grid(self, grid):
         """Compute the potential of the list of galaxies of the plane's sub-grid, by summing the individual potentials \
         of each galaxy's mass profile.
@@ -361,35 +348,20 @@ class AbstractPlaneLensing(AbstractPlaneCosmology):
             The galaxies whose mass profiles are used to compute the surface densities.
         """
         if self.galaxies:
-            potential = sum(
-                map(lambda g: g.potential_from_grid(grid=grid), self.galaxies)
-            )
-            return grid.mapping.array_stored_1d_from_sub_array_1d(
-                sub_array_1d=potential
-            )
-        else:
-            return grid.mapping.array_stored_1d_from_sub_array_1d(
-                sub_array_1d=np.full((grid.sub_shape_1d), 0.0)
-            )
+            return sum(map(lambda g: g.potential_from_grid(grid=grid), self.galaxies))
+        return np.zeros((grid.shape[0]))
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def deflections_from_grid(self, grid):
         if self.galaxies:
-            deflections = sum(
-                map(lambda g: g.deflections_from_grid(grid=grid), self.galaxies)
-            )
-            return grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=deflections)
-        else:
-            return grid.mapping.grid_stored_1d_from_sub_grid_1d(
-                sub_grid_1d=np.full((grid.sub_shape_1d, 2), 0.0)
-            )
+            return sum(map(lambda g: g.deflections_from_grid(grid=grid), self.galaxies))
+        return np.zeros(shape=(grid.shape[0], 2))
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def traced_grid_from_grid(self, grid):
         """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
 
-        traced_grid = grid - self.deflections_from_grid(grid=grid)
-        return grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=traced_grid)
+        return grid - self.deflections_from_grid(grid=grid)
 
     def luminosities_of_galaxies_within_circles_in_units(
         self, radius: dim.Length, unit_luminosity="eps", exposure_time=None

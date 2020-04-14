@@ -10,7 +10,6 @@ import autoastro as am
 import autolens as al
 from autolens.lens import plane
 from autolens import exc
-import autoarray as aa
 
 from test_autoarray.mock import mock_inversion
 
@@ -182,7 +181,7 @@ def critical_curve_via_magnification_from_plane_and_grid(plane, grid):
             grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
         )
 
-        critical_curve = al.GridIrregular.manual_1d(grid=critical_curve)
+        critical_curve = np.array(grid=critical_curve)
 
         critical_curves.append(critical_curve)
 
@@ -809,7 +808,9 @@ class TestAbstractPlaneLensing:
 
             profile_image = plane.profile_image_from_grid(grid=positions_7x7)
 
-            assert profile_image[0][0] == pytest.approx(galaxy_image[0][0], 1.0e-4)
+            assert profile_image.in_list[0][0] == pytest.approx(
+                galaxy_image.in_list[0][0], 1.0e-4
+            )
 
         def test__profile_images_of_galaxies(self, sub_grid_7x7):
             # Overwrite one value so intensity in each pixel is different
@@ -902,11 +903,11 @@ class TestAbstractPlaneLensing:
 
             profile_image = plane.profile_image_from_grid(grid=positions)
 
-            assert profile_image[0][0] == pytest.approx(
-                g0_image[0][0] + g1_image[0][0], 1.0e-4
+            assert profile_image.in_list[0][0] == pytest.approx(
+                g0_image.in_list[0][0] + g1_image.in_list[0][0], 1.0e-4
             )
-            assert profile_image[1][0] == pytest.approx(
-                g0_image[1][0] + g1_image[1][0], 1.0e-4
+            assert profile_image.in_list[1][0] == pytest.approx(
+                g0_image.in_list[1][0] + g1_image.in_list[1][0], 1.0e-4
             )
 
         def test__plane_has_no_galaxies__image_is_zeros_size_of_unlensed_grid(
@@ -1010,7 +1011,9 @@ class TestAbstractPlaneLensing:
 
             convergence = plane.convergence_from_grid(grid=positions_7x7)
 
-            assert convergence[0][0] == pytest.approx(g0_convergence[0][0], 1.0e-8)
+            assert convergence.in_list[0][0] == pytest.approx(
+                g0_convergence.in_list[0][0], 1.0e-8
+            )
 
         def test__plane_has_no_galaxies__convergence_is_zeros_size_of_reshaped_sub_array(
             self, sub_grid_7x7
@@ -1121,7 +1124,9 @@ class TestAbstractPlaneLensing:
 
             potential = plane.potential_from_grid(grid=positions_7x7)
 
-            assert potential[0][0] == pytest.approx(g0_potential[0][0], 1.0e-8)
+            assert potential.in_list[0][0] == pytest.approx(
+                g0_potential.in_list[0][0], 1.0e-8
+            )
 
         def test__plane_has_no_galaxies__potential_is_zeros_size_of_reshaped_sub_array(
             self, sub_grid_7x7
@@ -1243,11 +1248,11 @@ class TestAbstractPlaneLensing:
 
             deflections = plane.deflections_from_grid(grid=positions_7x7)
 
-            assert deflections[0][0][0] == pytest.approx(
-                g0_deflections[0][0][0], 1.0e-8
+            assert deflections.in_list[0][0][0] == pytest.approx(
+                g0_deflections.in_list[0][0][0], 1.0e-8
             )
-            assert deflections[0][0][1] == pytest.approx(
-                g0_deflections[0][0][1], 1.0e-8
+            assert deflections.in_list[0][0][1] == pytest.approx(
+                g0_deflections.in_list[0][0][1], 1.0e-8
             )
 
         def test__deflections_numerics__x2_galaxy_in_plane__or_galaxy_x2_sis__deflections_double(
@@ -2422,10 +2427,10 @@ class TestPlane:
 
             traced_grid = plane.traced_grid_from_grid(grid=positions)
 
-            assert traced_grid[0][0] == pytest.approx(
+            assert traced_grid.in_list[0][0] == pytest.approx(
                 (1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707), 1e-3
             )
-            assert traced_grid[0][1] == pytest.approx((-1.0, 0.0), 1e-3)
+            assert traced_grid.in_list[0][1] == pytest.approx((-1.0, 0.0), 1e-3)
 
         def test__plane_has_no_galaxies__traced_grid_is_input_grid_of_sub_grid_7x7(
             self, sub_grid_7x7
