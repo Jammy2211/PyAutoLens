@@ -12,6 +12,7 @@ pytestmark = pytest.mark.filterwarnings(
     "either in an error or a different result."
 )
 
+
 class TestModel:
     def test__set_instances(self, phase_dataset_7x7):
         phase_dataset_7x7.galaxies = [al.Galaxy(redshift=0.5)]

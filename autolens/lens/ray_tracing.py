@@ -290,7 +290,7 @@ class AbstractTracerCosmology(AbstractTracer, ABC):
 
 
 class AbstractTracerLensing(AbstractTracerCosmology, ABC):
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
         grid_calc = grid.copy()  # TODO looks unnecessary? Probably pretty expensive too
@@ -327,21 +327,21 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
         return traced_grids
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def deflections_between_planes_from_grid(self, grid, plane_i=0, plane_j=-1):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def profile_image_from_grid(self, grid):
         profile_image = sum(self.profile_images_of_planes_from_grid(grid=grid))
         return grid.mapping.array_stored_1d_from_sub_array_1d(
             sub_array_1d=profile_image
         )
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def profile_images_of_planes_from_grid(self, grid):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
@@ -372,23 +372,23 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
         return self.profile_image_from_grid(grid=padded_grid)
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def convergence_from_grid(self, grid):
         convergence = sum(
             [plane.convergence_from_grid(grid=grid) for plane in self.planes]
         )
         return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=convergence)
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def potential_from_grid(self, grid):
         potential = sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
         return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=potential)
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def deflections_from_grid(self, grid):
         return self.deflections_between_planes_from_grid(grid=grid)
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def deflections_of_planes_summed_from_grid(self, grid):
         deflections = sum(
             [plane.deflections_from_grid(grid=grid) for plane in self.planes]

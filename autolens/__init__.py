@@ -1,13 +1,7 @@
 from autoarray import preprocess
 from autoarray.mask.mask import Mask
-from autoarray.structures.arrays import Array
-from autoarray.structures.grids import (
-    Grid,
-    GridIrregular,
-    GridRectangular,
-    GridVoronoi,
-    Coordinates,
-)
+from autoarray.structures.arrays import Array, Values
+from autoarray.structures.grids import Grid, GridRectangular, GridVoronoi, Coordinates
 from autoarray.structures.kernel import Kernel
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.arrays import MaskedArray
@@ -70,4 +64,4 @@ from autolens.pipeline.pipeline import PipelineDataset, PipelinePositions
 from autolens.pipeline import setup
 from autolens import plot
 
-__version__ = '0.45.0'
+__version__ = "0.45.0"

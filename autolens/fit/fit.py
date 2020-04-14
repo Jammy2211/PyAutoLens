@@ -305,7 +305,7 @@ class FitPositions:
     def maximum_separations(self):
         return [
             self.max_separation_of_grid(grid=position_list)
-            for position_list in self.source_plane_positions.list_in_1d
+            for position_list in self.source_plane_positions.list_1d
         ]
 
     @staticmethod
