@@ -38,7 +38,10 @@ class Result(af.Result):
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions."""
-        return self.most_likely_tracer.source_plane.light_profile_centres
+        try:
+            return self.most_likely_tracer.source_plane.light_profile_centres
+        except:
+            pass
 
     @property
     def source_plane_inversion_centres(self) -> grids.Coordinates:
@@ -50,7 +53,7 @@ class Result(af.Result):
         try:
             return self.most_likely_fit.inversion.brightest_reconstruction_pixel_centre
         except AttributeError:
-            return grids.Coordinates(coordinates=[])
+            pass
 
     @property
     def source_plane_centres(self) -> grids.Coordinates:
@@ -59,10 +62,15 @@ class Result(af.Result):
 
         These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
         (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
-        centres = (
-            self.source_plane_light_profile_centres
-            + self.source_plane_inversion_centres
-        )
+
+        centres = []
+
+        if self.source_plane_light_profile_centres is not None:
+            centres = centres + self.source_plane_light_profile_centres.in_list
+
+        if self.source_plane_inversion_centres is not None:
+            centres = centres + self.source_plane_inversion_centres.in_list
+
         return grids.Coordinates(coordinates=centres)
 
     @property
@@ -81,16 +89,16 @@ class Result(af.Result):
 
         # TODO: Tracer method will ultimately return Coordinates, need to determine best way to implement method.
 
-        positions = list(
-            map(
-                lambda centre: self.most_likely_tracer.image_plane_multiple_image_positions(
+        positions = []
+
+        for centre_list in self.source_plane_centres.in_list:
+            for centre in centre_list:
+
+                positions_list = self.most_likely_tracer.image_plane_multiple_image_positions(
                     grid=grid, source_plane_coordinate=centre
-                )[
-                    0
-                ],
-                self.source_plane_centres,
-            )
-        )
+                )
+
+                positions.append(positions_list)
 
         return grids.Coordinates(coordinates=positions)
 

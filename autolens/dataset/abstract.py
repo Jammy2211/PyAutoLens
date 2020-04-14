@@ -36,5 +36,5 @@ class AbstractLensMasked:
             pixelizations = list(filter(None, tracer.pixelizations_of_planes))
             if pixelizations:
                 for pixelization in pixelizations:
-                    if pixelization.in_pixels > self.inversion_pixel_limit:
+                    if pixelization.pixels > self.inversion_pixel_limit:
                         raise exc.PixelizationException

@@ -121,11 +121,13 @@ class AbstractPlane(lensing.LensingObject):
 
     @property
     def light_profile_centres(self):
-        return [
-            item
-            for light_profile_centres in self.light_profile_centres_of_galaxies
-            for item in light_profile_centres
-        ]
+        return grids.Coordinates(
+            [
+                item
+                for light_profile_centres in self.light_profile_centres_of_galaxies
+                for item in light_profile_centres
+            ]
+        )
 
     @property
     def light_profile_centres_of_galaxies(self):
