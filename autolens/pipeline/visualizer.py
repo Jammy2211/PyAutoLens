@@ -385,10 +385,10 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                     grid=self.include.inversion_image_pixelization_grid_from_fit(
                         fit=fit
                     ),
-                    light_profile_centres=self.include.light_profile_centres_of_galaxies_from_obj(
+                    light_profile_centres=self.include.light_profile_centres_from_obj(
                         obj=fit.tracer.image_plane
                     ),
-                    mass_profile_centres=self.include.mass_profile_centres_of_galaxies_from_obj(
+                    mass_profile_centres=self.include.mass_profile_centres_from_obj(
                         obj=fit.tracer.image_plane
                     ),
                     critical_curves=self.include.critical_curves_from_obj(
@@ -410,10 +410,10 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                     fit=fit, plane_index=-1
                 ),
                 grid=self.include.inversion_image_pixelization_grid_from_fit(fit=fit),
-                light_profile_centres=self.include.light_profile_centres_of_galaxies_from_obj(
+                light_profile_centres=self.include.light_profile_centres_from_obj(
                     obj=fit.tracer.image_plane
                 ),
-                mass_profile_centres=self.include.mass_profile_centres_of_galaxies_from_obj(
+                mass_profile_centres=self.include.mass_profile_centres_from_obj(
                     obj=fit.tracer.image_plane
                 ),
                 critical_curves=self.include.critical_curves_from_obj(obj=fit.tracer),
@@ -460,10 +460,10 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                         grid=self.include.inversion_image_pixelization_grid_from_fit(
                             fit=fit
                         ),
-                        light_profile_centres=self.include.light_profile_centres_of_galaxies_from_obj(
+                        light_profile_centres=self.include.light_profile_centres_from_obj(
                             obj=fit.tracer.image_plane
                         ),
-                        mass_profile_centres=self.include.mass_profile_centres_of_galaxies_from_obj(
+                        mass_profile_centres=self.include.mass_profile_centres_from_obj(
                             obj=fit.tracer.image_plane
                         ),
                         critical_curves=self.include.critical_curves_from_obj(
@@ -627,10 +627,10 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
                     fit=fit, plane_index=-1
                 ),
                 grid=self.include.inversion_image_pixelization_grid_from_fit(fit=fit),
-                light_profile_centres=self.include.light_profile_centres_of_galaxies_from_obj(
+                light_profile_centres=self.include.light_profile_centres_from_obj(
                     obj=fit.tracer.image_plane
                 ),
-                mass_profile_centres=self.include.mass_profile_centres_of_galaxies_from_obj(
+                mass_profile_centres=self.include.mass_profile_centres_from_obj(
                     obj=fit.tracer.image_plane
                 ),
                 critical_curves=self.include.critical_curves_from_obj(obj=fit.tracer),
@@ -674,10 +674,10 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
                         grid=self.include.inversion_image_pixelization_grid_from_fit(
                             fit=fit
                         ),
-                        light_profile_centres=self.include.light_profile_centres_of_galaxies_from_obj(
+                        light_profile_centres=self.include.light_profile_centres_from_obj(
                             obj=fit.tracer.image_plane
                         ),
-                        mass_profile_centres=self.include.mass_profile_centres_of_galaxies_from_obj(
+                        mass_profile_centres=self.include.mass_profile_centres_from_obj(
                             obj=fit.tracer.image_plane
                         ),
                         critical_curves=self.include.critical_curves_from_obj(
@@ -725,10 +725,10 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
                         grid=self.include.inversion_image_pixelization_grid_from_fit(
                             fit=fit
                         ),
-                        light_profile_centres=self.include.light_profile_centres_of_galaxies_from_obj(
+                        light_profile_centres=self.include.light_profile_centres_from_obj(
                             obj=fit.tracer.image_plane
                         ),
-                        mass_profile_centres=self.include.mass_profile_centres_of_galaxies_from_obj(
+                        mass_profile_centres=self.include.mass_profile_centres_from_obj(
                             obj=fit.tracer.image_plane
                         ),
                         critical_curves=self.include.critical_curves_from_obj(

@@ -132,8 +132,12 @@ class TestMakeAnalysis:
             results=mock_pipeline.MockResults(),
         )
 
-        assert (analysis.masked_dataset.positions[0][0] == np.array([1.0, 1.0])).all()
-        assert (analysis.masked_dataset.positions[0][1] == np.array([2.0, 2.0])).all()
+        assert (
+            analysis.masked_dataset.positions.in_list[0][0] == np.array([1.0, 1.0])
+        ).all()
+        assert (
+            analysis.masked_dataset.positions.in_list[0][1] == np.array([2.0, 2.0])
+        ).all()
         assert analysis.masked_imaging.positions_threshold == 0.2
 
         # If position threshold is input (not None) and but no positions are supplied, raise an error

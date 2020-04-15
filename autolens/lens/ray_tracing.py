@@ -103,19 +103,26 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
     @property
     def light_profile_centres(self):
-        return [
-            item
-            for light_profile_centres in self.light_profile_centres_of_planes
-            for item in light_profile_centres
-        ]
+        """Returns the light profile centres of the tracer as a *Coordinates* object, which structures the centres
+        in lists according to which plane they come from.
 
-    @property
-    def light_profile_centres_of_planes(self):
-        return [
-            plane.light_profile_centres
-            for plane in self.planes
-            if plane.has_light_profile
-        ]
+        Fo example, if the tracer has two planes, the first with one light profile and second with two light profiles
+        this returns:
+
+        [[(y0, x0)], [(y0, x0), (y1, x1)]]
+
+        This is used for visualization, for example plotting the centres of all light profiles colored by their galaxy.
+
+        The centres of light-sheets are filtered out, as their centres are not relevant to lensing calculations
+
+        """
+        return grids.Coordinates(
+            [
+                list(plane.light_profile_centres)
+                for plane in self.planes
+                if plane.has_light_profile
+            ]
+        )
 
     @property
     def mass_profiles(self):
@@ -131,19 +138,26 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
     @property
     def mass_profile_centres(self):
-        return [
-            item
-            for mass_profile_centres in self.mass_profile_centres_of_planes
-            for item in mass_profile_centres
-        ]
+        """Returns the mass profile centres of the tracer as a *Coordinates* object, which structures the centres
+        in lists according to which plane they come from.
 
-    @property
-    def mass_profile_centres_of_planes(self):
-        return [
-            plane.mass_profile_centres
-            for plane in self.planes
-            if plane.has_mass_profile
-        ]
+        Fo example, if the tracer has two planes, the first with one mass profile and second with two mass profiles
+        this returns:
+
+        [[(y0, x0)], [(y0, x0), (y1, x1)]]
+
+        This is used for visualization, for example plotting the centres of all mass profiles colored by their galaxy.
+
+        The centres of mass-sheets are filtered out, as their centres are not relevant to lensing calculations
+
+        """
+        return grids.Coordinates(
+            [
+                list(plane.mass_profile_centres)
+                for plane in self.planes
+                if plane.has_mass_profile
+            ]
+        )
 
     @property
     def plane_indexes_with_pixelizations(self):
@@ -290,7 +304,7 @@ class AbstractTracerCosmology(AbstractTracer, ABC):
 
 
 class AbstractTracerLensing(AbstractTracerCosmology, ABC):
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
         grid_calc = grid.copy()  # TODO looks unnecessary? Probably pretty expensive too
@@ -327,21 +341,18 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
         return traced_grids
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def deflections_between_planes_from_grid(self, grid, plane_i=0, plane_j=-1):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def profile_image_from_grid(self, grid):
-        profile_image = sum(self.profile_images_of_planes_from_grid(grid=grid))
-        return grid.mapping.array_stored_1d_from_sub_array_1d(
-            sub_array_1d=profile_image
-        )
+        return sum(self.profile_images_of_planes_from_grid(grid=grid))
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def profile_images_of_planes_from_grid(self, grid):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
@@ -359,9 +370,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
                 self.upper_plane_index_with_light_profile, self.total_planes - 1
             ):
                 profile_images_of_planes.append(
-                    grid.mapping.array_stored_1d_from_sub_array_1d(
-                        sub_array_1d=np.zeros(shape=profile_images_of_planes[0].shape)
-                    )
+                    np.zeros(shape=profile_images_of_planes[0].shape)
                 )
 
         return profile_images_of_planes
@@ -372,28 +381,21 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
         return self.profile_image_from_grid(grid=padded_grid)
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def convergence_from_grid(self, grid):
-        convergence = sum(
-            [plane.convergence_from_grid(grid=grid) for plane in self.planes]
-        )
-        return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=convergence)
+        return sum([plane.convergence_from_grid(grid=grid) for plane in self.planes])
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def potential_from_grid(self, grid):
-        potential = sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
-        return grid.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=potential)
+        return sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def deflections_from_grid(self, grid):
         return self.deflections_between_planes_from_grid(grid=grid)
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def deflections_of_planes_summed_from_grid(self, grid):
-        deflections = sum(
-            [plane.deflections_from_grid(grid=grid) for plane in self.planes]
-        )
-        return grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=deflections)
+        return sum([plane.deflections_from_grid(grid=grid) for plane in self.planes])
 
     def grid_at_redshift_from_grid_and_redshift(self, grid, redshift):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
@@ -445,7 +447,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
             self.image_plane_multiple_image_positions(
                 grid=grid, source_plane_coordinate=light_profile_centre
             )
-            for light_profile_centre in self.light_profile_centres_of_planes[-1]
+            for light_profile_centre in self.light_profile_centres.in_list[-1]
         ]
 
     def image_plane_multiple_image_positions(self, grid, source_plane_coordinate):
@@ -480,8 +482,11 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
             mask_2d=trough_mask,
         )
 
-        return grids.Coordinates.from_pixels_and_mask(
-            pixels=[multiple_image_pixels], mask=trough_mask
+        return list(
+            map(
+                trough_mask.geometry.scaled_coordinates_from_pixel_coordinates,
+                multiple_image_pixels,
+            )
         )
 
     @property

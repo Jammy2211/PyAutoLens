@@ -81,13 +81,15 @@ class MetaDataset:
 
             # TODO : Coorrdinates refascotr will sort out index call here
 
-            if updated_positions:
-                if len(updated_positions[0]) > 1:
-                    return updated_positions
+            if isinstance(updated_positions, aa.Coordinates):
+                if updated_positions.in_list:
+                    if len(updated_positions.in_list[0]) > 1:
+                        return updated_positions
 
         if results.last is not None:
-            if results.last.positions and results.last.positions is not None:
-                return results.last.positions
+            if results.last.positions is not None:
+                if results.last.positions.in_list:
+                    return results.last.positions
 
         return positions
 

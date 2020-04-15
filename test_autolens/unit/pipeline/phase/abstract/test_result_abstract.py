@@ -88,7 +88,7 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
-        assert result.source_plane_light_profile_centres == [(1.0, 2.0)]
+        assert result.source_plane_light_profile_centres.in_list == [[(1.0, 2.0)]]
 
         phase_dataset_7x7 = al.PhaseImaging(
             non_linear_class=mock_pipeline.MockNLO,
@@ -113,10 +113,9 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
-        assert result.source_plane_light_profile_centres == [
-            (1.0, 2.0),
-            (3.0, 4.0),
-            (5.0, 6.0),
+        assert result.source_plane_light_profile_centres.in_list == [
+            [(1.0, 2.0), (3.0, 4.0)],
+            [(5.0, 6.0)],
         ]
 
         phase_dataset_7x7 = al.PhaseImaging(
@@ -171,7 +170,7 @@ class TestTracer:
             1.0e-4,
         )
 
-        assert result.source_plane_inversion_centres == [(0.0, 0.0)]
+        assert result.source_plane_inversion_centres.in_list == [[(0.0, 0.0)]]
 
         phase_dataset_7x7 = al.PhaseImaging(
             non_linear_class=mock_pipeline.MockNLO,
@@ -212,7 +211,7 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
-        assert result.source_plane_centres == [(9.0, 8.0), (0.0, 0.0)]
+        assert result.source_plane_centres.in_list == [[(9.0, 8.0), (0.0, 0.0)]]
 
     def test__most_likely_tracer__multiple_image_positions_of_source_plane_centres_and_separations(
         self, imaging_7x7, mask_7x7
@@ -231,6 +230,8 @@ class TestTracer:
                     redshift=1.0,
                     light=al.lp.EllipticalCoreSersic(centre=(0.0, 0.0), intensity=2.0),
                     light1=al.lp.EllipticalCoreSersic(centre=(0.0, 0.0), intensity=2.0),
+                    pixelization=al.pix.Rectangular((3, 3)),
+                    regularization=al.reg.Constant(coefficient=1.0),
                 ),
             ),
             phase_name="test_phase_2",
@@ -250,11 +251,13 @@ class TestTracer:
             result.image_plane_multiple_image_positions_of_source_plane_centres
         )
 
-        assert coordinates[0][0] == pytest.approx((1.025, -0.025), 1.0e-4)
-        assert coordinates[0][1] == pytest.approx((0.025, -0.975), 1.0e-4)
-        assert coordinates[0][2] == pytest.approx((0.025, 0.975), 1.0e-4)
-        assert coordinates[0][3] == pytest.approx((-1.025, -0.025), 1.0e-4)
-        assert coordinates[1][0] == pytest.approx((1.025, -0.025), 1.0e-4)
-        assert coordinates[1][1] == pytest.approx((0.025, -0.975), 1.0e-4)
-        assert coordinates[1][2] == pytest.approx((0.025, 0.975), 1.0e-4)
-        assert coordinates[1][3] == pytest.approx((-1.025, -0.025), 1.0e-4)
+        assert coordinates.in_list[0][0] == pytest.approx((1.025, -0.025), 1.0e-4)
+        assert coordinates.in_list[0][1] == pytest.approx((0.025, -0.975), 1.0e-4)
+        assert coordinates.in_list[0][2] == pytest.approx((0.025, 0.975), 1.0e-4)
+        assert coordinates.in_list[0][3] == pytest.approx((-1.025, -0.025), 1.0e-4)
+        assert coordinates.in_list[1][0] == pytest.approx((1.025, -0.025), 1.0e-4)
+        assert coordinates.in_list[1][1] == pytest.approx((0.025, -0.975), 1.0e-4)
+        assert coordinates.in_list[1][2] == pytest.approx((0.025, 0.975), 1.0e-4)
+        assert coordinates.in_list[1][3] == pytest.approx((-1.025, -0.025), 1.0e-4)
+        assert coordinates.in_list[2][0] == pytest.approx((0.225, -0.375), 1.0e-4)
+        assert coordinates.in_list[2][1] == pytest.approx((-1.125, 1.025), 1.0e-4)

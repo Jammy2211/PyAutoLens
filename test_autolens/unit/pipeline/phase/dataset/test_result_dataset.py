@@ -1,13 +1,9 @@
-import os
 from os import path
 
 import numpy as np
 import pytest
-from astropy import cosmology as cosmo
 
-import autofit as af
 import autolens as al
-from autolens import exc
 from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(

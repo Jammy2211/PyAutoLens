@@ -229,7 +229,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         masked_interferometer=masked_interferometer, tracer=tracer
     )
 
-    assert fit.chi_squared == 0.0
+    assert fit.chi_squared == pytest.approx(0.0)
 
     pix = al.pix.Rectangular(shape=(7, 7))
 
