@@ -103,19 +103,26 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
     @property
     def light_profile_centres(self):
-        return [
-            item
-            for light_profile_centres in self.light_profile_centres_of_planes
-            for item in light_profile_centres
-        ]
+        """Returns the light profile centres of the tracer as a *Coordinates* object, which structures the centres
+        in lists according to which plane they come from.
 
-    @property
-    def light_profile_centres_of_planes(self):
-        return [
-            plane.light_profile_centres
-            for plane in self.planes
-            if plane.has_light_profile
-        ]
+        Fo example, if the tracer has two planes, the first with one light profile and second with two light profiles
+        this returns:
+
+        [[(y0, x0)], [(y0, x0), (y1, x1)]]
+
+        This is used for visualization, for example plotting the centres of all light profiles colored by their galaxy.
+
+        The centres of light-sheets are filtered out, as their centres are not relevant to lensing calculations
+
+        """
+        return grids.Coordinates(
+            [
+                plane.light_profile_centres.in_list_1d
+                for plane in self.planes
+                if plane.has_light_profile
+            ]
+        )
 
     @property
     def mass_profiles(self):
@@ -131,19 +138,26 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
     @property
     def mass_profile_centres(self):
-        return [
-            item
-            for mass_profile_centres in self.mass_profile_centres_of_planes
-            for item in mass_profile_centres
-        ]
+        """Returns the mass profile centres of the tracer as a *Coordinates* object, which structures the centres
+        in lists according to which plane they come from.
 
-    @property
-    def mass_profile_centres_of_planes(self):
-        return [
-            plane.mass_profile_centres
-            for plane in self.planes
-            if plane.has_mass_profile
-        ]
+        Fo example, if the tracer has two planes, the first with one mass profile and second with two mass profiles
+        this returns:
+
+        [[(y0, x0)], [(y0, x0), (y1, x1)]]
+
+        This is used for visualization, for example plotting the centres of all mass profiles colored by their galaxy.
+
+        The centres of mass-sheets are filtered out, as their centres are not relevant to lensing calculations
+
+        """
+        return grids.Coordinates(
+            [
+                plane.mass_profile_centres.in_list_1d
+                for plane in self.planes
+                if plane.has_mass_profile
+            ]
+        )
 
     @property
     def plane_indexes_with_pixelizations(self):
@@ -431,9 +445,9 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
     def image_plane_multiple_image_positions_of_galaxies(self, grid):
         return [
             self.image_plane_multiple_image_positions(
-                grid=grid, source_plane_coordinate=light_profile_centre[0]
+                grid=grid, source_plane_coordinate=light_profile_centre
             )
-            for light_profile_centre in self.light_profile_centres_of_planes
+            for light_profile_centre in self.light_profile_centres.in_list[-1]
         ]
 
     def image_plane_multiple_image_positions(self, grid, source_plane_coordinate):

@@ -121,21 +121,23 @@ class AbstractPlane(lensing.LensingObject):
 
     @property
     def light_profile_centres(self):
+        """Returns the light profile centres of the plane as a *Coordinates* object, which structures the centres
+        in lists according to which galaxy they come from.
+
+        Fo example, if a plane has two galaxies, the first with one light profile and second with two light profiles
+        this  returns:
+
+        [[(y0, x0)], [(y0, x0), (y1, x1)]]
+        
+        This is used for visualization, for example plotting the centres of all light profiles colored by their galaxy.
+        """
         return grids.Coordinates(
             [
-                item
-                for light_profile_centres in self.light_profile_centres_of_galaxies
-                for item in light_profile_centres
+                galaxy.light_profile_centres.in_list_1d
+                for galaxy in self.galaxies
+                if galaxy.has_light_profile
             ]
         )
-
-    @property
-    def light_profile_centres_of_galaxies(self):
-        return [
-            galaxy.light_profile_centres
-            for galaxy in self.galaxies
-            if galaxy.has_light_profile
-        ]
 
     @property
     def mass_profiles(self):
@@ -153,36 +155,67 @@ class AbstractPlane(lensing.LensingObject):
 
     @property
     def mass_profile_centres(self):
-        return [
-            item
-            for mass_profile_centres in self.mass_profile_centres_of_galaxies
-            for item in mass_profile_centres
-        ]
+        """Returns the mass profile centres of the plane as a *Coordinates* object, which structures the centres
+        in lists according to which galaxy they come from.
+
+        Fo example, if a plane has two galaxies, the first with one mass profile and second with two mass profiles
+        this  returns:
+
+        [[(y0, x0)], [(y0, x0), (y1, x1)]]
+
+        This is used for visualization, for example plotting the centres of all mass profiles colored by their galaxy.
+
+        The centres of mass-sheets are filtered out, as their centres are not relevant to lensing calculations.
+        """
+        return grids.Coordinates(
+            [
+                galaxy.mass_profile_centres.in_list_1d
+                for galaxy in self.galaxies
+                if galaxy.has_mass_profile and not galaxy.has_only_mass_sheets
+            ]
+        )
 
     @property
-    def mass_profile_centres_of_galaxies(self):
-        centres = [
-            galaxy.mass_profile_centres
-            for galaxy in self.galaxies
-            if galaxy.has_mass_profile
-        ]
-        return list(filter(None, centres))
+    def mass_profile_axis_ratios(self):
+        """Returns the mass profile axis-ratios of the plane as a *Coordinates* object, which structures the axis-ratios
+        in lists according to which galaxy they come from.
+
+        Fo example, if a plane has two galaxies, the first with one mass profile and second with two mass profiles
+        this  returns:
+
+        [[axis_ratio_0], [axis_ratio_0, axis_ratio_1]]
+
+        This is used for visualization, for example plotting ellipses of axis-ratios of all mass profiles colored by 
+        their galaxy.
+        """
+        return arrays.Values(
+            [
+                galaxy.mass_profile_axis_ratios.in_list_1d
+                for galaxy in self.galaxies
+                if galaxy.has_mass_profile
+            ]
+        )
 
     @property
-    def mass_profile_axis_ratios_of_galaxies(self):
-        return [
-            galaxy.mass_profile_axis_ratios
-            for galaxy in self.galaxies
-            if galaxy.has_mass_profile
-        ]
+    def mass_profile_phis(self):
+        """Returns the mass profile phis of the plane as a *Coordinates* object, which structures the phis
+        in lists according to which galaxy they come from.
 
-    @property
-    def mass_profile_phis_of_galaxies(self):
-        return [
-            galaxy.mass_profile_phis
-            for galaxy in self.galaxies
-            if galaxy.has_mass_profile
-        ]
+        Fo example, if a plane has two galaxies, the first with one mass profile and second with two mass profiles
+        this  returns:
+
+        [[phi_0], [phi_0, phi_1]]
+
+        This is used for visualization, for example plotting ellipses of phis of all mass profiles colored by 
+        their galaxy.
+        """
+        return arrays.Values(
+            [
+                galaxy.mass_profile_phis.in_list_1d
+                for galaxy in self.galaxies
+                if galaxy.has_mass_profile
+            ]
+        )
 
     def new_object_with_units_converted(
         self,
