@@ -538,7 +538,7 @@ class TestAbstractTracer:
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.light_profile_centres_of_planes == []
+            assert tracer.light_profile_centres == []
             assert tracer.light_profile_centres == []
 
             plane_0 = al.Plane(galaxies=[g0], redshift=None)
@@ -546,26 +546,16 @@ class TestAbstractTracer:
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.light_profile_centres_of_planes == [
-                [(1.0, 1.0)],
-                [(2.0, 2.0)],
-            ]
-            assert tracer.light_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
+            assert tracer.light_profile_centres.in_list == [[(1.0, 1.0)], [(2.0, 2.0)]]
 
             plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
             plane_1 = al.Plane(galaxies=[g2], redshift=None)
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.light_profile_centres_of_planes == [
+            assert tracer.light_profile_centres.in_list == [
                 [(1.0, 1.0), (2.0, 2.0)],
                 [(3.0, 3.0), (4.0, 4.0)],
-            ]
-            assert tracer.light_profile_centres == [
-                (1.0, 1.0),
-                (2.0, 2.0),
-                (3.0, 3.0),
-                (4.0, 4.0),
             ]
 
     class TestMassProfileQuantities:
@@ -629,7 +619,6 @@ class TestAbstractTracer:
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.mass_profile_centres_of_planes == []
             assert tracer.mass_profile_centres == []
 
             plane_0 = al.Plane(galaxies=[g0], redshift=None)
@@ -637,23 +626,16 @@ class TestAbstractTracer:
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.mass_profile_centres_of_planes == [[(1.0, 1.0)], [(2.0, 2.0)]]
-            assert tracer.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
+            assert tracer.mass_profile_centres.in_list == [[(1.0, 1.0)], [(2.0, 2.0)]]
 
             plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
             plane_1 = al.Plane(galaxies=[g2], redshift=None)
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.mass_profile_centres_of_planes == [
+            assert tracer.mass_profile_centres.in_list == [
                 [(1.0, 1.0), (2.0, 2.0)],
                 [(3.0, 3.0), (4.0, 4.0)],
-            ]
-            assert tracer.mass_profile_centres == [
-                (1.0, 1.0),
-                (2.0, 2.0),
-                (3.0, 3.0),
-                (4.0, 4.0),
             ]
 
             g1 = al.Galaxy(
@@ -673,15 +655,9 @@ class TestAbstractTracer:
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.mass_profile_centres_of_planes == [
+            assert tracer.mass_profile_centres.in_list == [
                 [(1.0, 1.0), (2.0, 2.0)],
                 [(3.0, 3.0), (4.0, 4.0)],
-            ]
-            assert tracer.mass_profile_centres == [
-                (1.0, 1.0),
-                (2.0, 2.0),
-                (3.0, 3.0),
-                (4.0, 4.0),
             ]
 
     class TestUnits:
@@ -2609,32 +2585,33 @@ class TestAbstractTracerLensing:
 
             g0 = al.Galaxy(
                 redshift=0.5,
-                light=al.lp.SphericalGaussian(centre=(0.0, 0.0)),
                 mass=al.mp.EllipticalIsothermal(
                     centre=(0.0, 0.0), einstein_radius=1.0, axis_ratio=0.9
                 ),
             )
 
             g1 = al.Galaxy(
-                redshift=1.0, light=al.lp.SphericalGaussian(centre=(0.1, 0.1))
+                redshift=1.0,
+                light=al.lp.SphericalGaussian(centre=(0.0, 0.0)),
+                light0=al.lp.SphericalGaussian(centre=(0.1, 0.1)),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            coordinates_manual_g0 = tracer.image_plane_multiple_image_positions(
+            coordinates_manual_0 = tracer.image_plane_multiple_image_positions(
                 grid=grid, source_plane_coordinate=(0.0, 0.0)
             )
 
-            coordinates_manual_g1 = tracer.image_plane_multiple_image_positions(
-                grid=grid, source_plane_coordinate=(2.0, 2.0)
+            coordinates_manual_1 = tracer.image_plane_multiple_image_positions(
+                grid=grid, source_plane_coordinate=(0.1, 0.1)
             )
 
             positions_of_galaxies = tracer.image_plane_multiple_image_positions_of_galaxies(
                 grid=grid
             )
 
-            assert coordinates_manual_g0 == positions_of_galaxies[0]
-            assert coordinates_manual_g1 == positions_of_galaxies[1]
+            assert coordinates_manual_0 == positions_of_galaxies[0]
+            assert coordinates_manual_1 == positions_of_galaxies[1]
 
     class TestContributionMap:
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
