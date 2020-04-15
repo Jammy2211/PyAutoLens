@@ -38,7 +38,7 @@ class TestSetup:
             results=mock_pipeline.MockResults(),
         )
 
-        assert analysis.masked_dataset.positions == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
 
         # Auto positioning is ON, but there are no previous results, so use input positions.
 
@@ -52,7 +52,7 @@ class TestSetup:
             results=mock_pipeline.MockResults(),
         )
 
-        assert analysis.masked_dataset.positions == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
 
         # Auto positioning is ON, there are previous results so use their new positions and threshold (which is
         # multiplied by the auto_positions_factor). However, only one set of positions is computed from the previous
@@ -73,7 +73,7 @@ class TestSetup:
             results=results,
         )
 
-        assert analysis.masked_dataset.positions == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
 
         # Auto positioning is ON, there are previous results so use their new positions and threshold (which is
         # multiplied by the auto_positions_factor). Multiple positions are available so these are now used.
@@ -93,7 +93,7 @@ class TestSetup:
             results=results,
         )
 
-        assert analysis.masked_dataset.positions == [[(2.0, 2.0), (3.0, 3.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(2.0, 2.0), (3.0, 3.0)]]
 
         # Auto positioning is Off, but there are previous results with updated positions relative to the input
         # positions, so use those with their positions threshold.
@@ -111,7 +111,7 @@ class TestSetup:
             ),
         )
 
-        assert analysis.masked_dataset.positions == [[(3.0, 3.0), (4.0, 4.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(3.0, 3.0), (4.0, 4.0)]]
 
         # Test function is called for phase_inteferometer
 
@@ -128,7 +128,7 @@ class TestSetup:
             ),
         )
 
-        assert analysis.masked_dataset.positions == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
 
     def test__auto_positions_update_threshold__uses_auto_update_factor(
         self,

@@ -39,14 +39,7 @@ class PhaseDataset(abstract.AbstractPhase):
 
         self.is_hyper_phase = False
 
-    def run(
-        self,
-        dataset: Dataset,
-        mask,
-        results=None,
-        positions=None,
-        info=None,
-    ):
+    def run(self, dataset: Dataset, mask, results=None, positions=None, info=None):
         """
         Run this phase.
 

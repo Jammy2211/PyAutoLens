@@ -1,13 +1,9 @@
-import os
 from os import path
 
-import numpy as np
 import pytest
-from astropy import cosmology as cosmo
 
 import autofit as af
 import autolens as al
-from autolens.fit.fit import FitImaging
 from test_autolens.mock import mock_pipeline
 
 directory = path.dirname(path.realpath(__file__))
@@ -83,4 +79,3 @@ def test__fit_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
 
     for fit_imaging in fit_imaging_gen:
         assert (fit_imaging.masked_imaging.imaging.image == imaging_7x7.image).all()
-        assert fit_imaging.likelihood == pytest.approx(-1517.01, 1.0e-2)

@@ -1,4 +1,5 @@
 import autolens as al
+import autolens.plot as aplt
 
 grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=4)
 
@@ -9,8 +10,7 @@ sis_mass_profile = al.mp.EllipticalIsothermal(
 aplt.MassProfile.convergence(
     mass_profile=sis_mass_profile,
     grid=grid,
-    include_critical_curves=False,
-    include_caustics=False,
+    include=aplt.Include(critical_curves=True, caustics=True),
 )
 
 # galaxy = al.Galaxy(mass=sis_mass_profile, redshift=1)
