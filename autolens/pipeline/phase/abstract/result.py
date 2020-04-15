@@ -38,10 +38,7 @@ class Result(af.Result):
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions."""
-        try:
-            return self.most_likely_tracer.source_plane.light_profile_centres
-        except:
-            pass
+        return self.most_likely_tracer.source_plane.light_profile_centres
 
     @property
     def source_plane_inversion_centres(self) -> grids.Coordinates:
@@ -53,7 +50,7 @@ class Result(af.Result):
         try:
             return self.most_likely_fit.inversion.brightest_reconstruction_pixel_centre
         except AttributeError:
-            pass
+            return []
 
     @property
     def source_plane_centres(self) -> grids.Coordinates:
@@ -63,13 +60,10 @@ class Result(af.Result):
         These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
         (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
 
-        centres = []
-
-        if self.source_plane_light_profile_centres is not None:
-            centres = centres + self.source_plane_light_profile_centres.in_list
-
-        if self.source_plane_inversion_centres is not None:
-            centres = centres + self.source_plane_inversion_centres.in_list
+        centres = (
+            self.source_plane_light_profile_centres.in_list_1d
+            + self.source_plane_inversion_centres.in_list_1d
+        )
 
         return grids.Coordinates(coordinates=centres)
 
