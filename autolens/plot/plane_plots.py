@@ -11,12 +11,8 @@ def profile_image(plane, grid, positions=None, include=None, plotter=None):
         mask=include.mask_from_grid(grid=grid),
         positions=positions,
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
+        light_profile_centres=include.light_profile_centres_from_obj(obj=plane),
+        mass_profile_centres=include.mass_profile_centres_from_obj(obj=plane),
         include_origin=include.origin,
     )
 
@@ -30,12 +26,8 @@ def plane_image(plane, grid, positions=None, caustics=None, include=None, plotte
         positions=positions,
         caustics=caustics,
         grid=include.grid_from_grid(grid=grid),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
+        light_profile_centres=include.light_profile_centres_from_obj(obj=plane),
+        mass_profile_centres=include.mass_profile_centres_from_obj(obj=plane),
         include_origin=include.origin,
     )
 
@@ -48,12 +40,8 @@ def convergence(plane, grid, include=None, plotter=None):
         array=plane.convergence_from_grid(grid=grid),
         mask=include.mask_from_grid(grid=grid),
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
+        light_profile_centres=include.light_profile_centres_from_obj(obj=plane),
+        mass_profile_centres=include.mass_profile_centres_from_obj(obj=plane),
         include_origin=include.origin,
     )
 
@@ -66,12 +54,8 @@ def potential(plane, grid, include=None, plotter=None):
         array=plane.potential_from_grid(grid=grid),
         mask=include.mask_from_grid(grid=grid),
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
+        light_profile_centres=include.light_profile_centres_from_obj(obj=plane),
+        mass_profile_centres=include.mass_profile_centres_from_obj(obj=plane),
         include_origin=include.origin,
     )
 
@@ -89,12 +73,8 @@ def deflections_y(plane, grid, include=None, plotter=None):
         array=deflections_y,
         mask=include.mask_from_grid(grid=grid),
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
+        light_profile_centres=include.light_profile_centres_from_obj(obj=plane),
+        mass_profile_centres=include.mass_profile_centres_from_obj(obj=plane),
         include_origin=include.origin,
     )
 
@@ -112,12 +92,8 @@ def deflections_x(plane, grid, include=None, plotter=None):
         array=deflections_x,
         mask=include.mask_from_grid(grid=grid),
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
+        light_profile_centres=include.light_profile_centres_from_obj(obj=plane),
+        mass_profile_centres=include.mass_profile_centres_from_obj(obj=plane),
         include_origin=include.origin,
     )
 
@@ -130,12 +106,8 @@ def magnification(plane, grid, include=None, plotter=None):
         array=plane.magnification_from_grid(grid=grid),
         mask=include.mask_from_grid(grid=grid),
         critical_curves=include.critical_curves_from_obj(obj=plane),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
+        light_profile_centres=include.light_profile_centres_from_obj(obj=plane),
+        mass_profile_centres=include.mass_profile_centres_from_obj(obj=plane),
         include_origin=include.origin,
     )
 
@@ -210,12 +182,8 @@ def plane_grid(
         indexes=indexes,
         critical_curves=critical_curves,
         caustics=caustics,
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
+        light_profile_centres=include.light_profile_centres_from_obj(obj=plane),
+        mass_profile_centres=include.mass_profile_centres_from_obj(obj=plane),
         include_origin=include.origin,
         include_border=include.border,
     )
@@ -229,12 +197,8 @@ def contribution_map(plane, mask=None, positions=None, include=None, plotter=Non
         array=plane.contribution_map,
         mask=mask,
         positions=positions,
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
-            obj=plane
-        ),
+        light_profile_centres=include.light_profile_centres_from_obj(obj=plane),
+        mass_profile_centres=include.mass_profile_centres_from_obj(obj=plane),
         critical_curves=include.critical_curves_from_obj(obj=plane),
         include_origin=include.origin,
         include_border=include.border,
