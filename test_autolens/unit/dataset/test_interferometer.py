@@ -108,7 +108,7 @@ class TestMaskedInterferometer:
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
             primary_beam_shape_2d=(5, 5),
-            positions=[al.GridIrregular.manual_1d([[1.0, 1.0]])],
+            positions=[al.Coordinates([[(1.0, 1.0)]])],
             positions_threshold=1.0,
         )
 
@@ -123,7 +123,9 @@ class TestMaskedInterferometer:
         ).all()
         assert masked_interferometer.primary_beam_shape_2d == (5, 5)
 
-        assert (masked_interferometer.positions[0] == np.array([[1.0, 1.0]])).all()
+        assert (
+            masked_interferometer.positions.in_list[0] == np.array([[1.0, 1.0]])
+        ).all()
         assert masked_interferometer.positions_threshold == 1.0
 
     def test__modified_noise_map(
