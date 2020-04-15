@@ -133,7 +133,7 @@ class AbstractPlane(lensing.LensingObject):
         """
         return grids.Coordinates(
             [
-                galaxy.light_profile_centres.in_list_1d
+                list(galaxy.light_profile_centres)
                 for galaxy in self.galaxies
                 if galaxy.has_light_profile
             ]
@@ -169,7 +169,7 @@ class AbstractPlane(lensing.LensingObject):
         """
         return grids.Coordinates(
             [
-                galaxy.mass_profile_centres.in_list_1d
+                list(galaxy.mass_profile_centres)
                 for galaxy in self.galaxies
                 if galaxy.has_mass_profile and not galaxy.has_only_mass_sheets
             ]
@@ -190,7 +190,7 @@ class AbstractPlane(lensing.LensingObject):
         """
         return arrays.Values(
             [
-                galaxy.mass_profile_axis_ratios.in_list_1d
+                list(galaxy.mass_profile_axis_ratios)
                 for galaxy in self.galaxies
                 if galaxy.has_mass_profile
             ]
@@ -211,7 +211,7 @@ class AbstractPlane(lensing.LensingObject):
         """
         return arrays.Values(
             [
-                galaxy.mass_profile_phis.in_list_1d
+                list(galaxy.mass_profile_phis)
                 for galaxy in self.galaxies
                 if galaxy.has_mass_profile
             ]
