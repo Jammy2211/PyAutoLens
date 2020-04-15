@@ -60,9 +60,8 @@ class Result(af.Result):
         These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
         (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
 
-        centres = (
-            self.source_plane_light_profile_centres.in_list_1d
-            + self.source_plane_inversion_centres.in_list_1d
+        centres = list(self.source_plane_light_profile_centres) + list(
+            self.source_plane_inversion_centres
         )
 
         return grids.Coordinates(coordinates=centres)

@@ -118,7 +118,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
         """
         return grids.Coordinates(
             [
-                plane.light_profile_centres.in_list_1d
+                list(plane.light_profile_centres)
                 for plane in self.planes
                 if plane.has_light_profile
             ]
@@ -153,7 +153,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
         """
         return grids.Coordinates(
             [
-                plane.mass_profile_centres.in_list_1d
+                list(plane.mass_profile_centres)
                 for plane in self.planes
                 if plane.has_mass_profile
             ]
