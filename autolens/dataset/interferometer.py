@@ -26,16 +26,16 @@ class MaskedInterferometer(
         preload_sparse_grids_of_planes=None,
     ):
         """
-        The lens dataset is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
+        The lens dataset is the collection of data_type (image, noise map, primary_beam), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+        Whilst the image, noise map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
         for lens calculations.
 
         Parameters
         ----------
         imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise-map, primary_beam, etc.)
+            The imaging data_type all in 2D (the image, noise map, primary_beam, etc.)
         real_space_mask: msk.Mask
             The 2D mask that is applied to the image.
         sub_size : int
@@ -74,7 +74,7 @@ class MaskedInterferometer(
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
 
-    def modify_noise_map(self, noise_map):
+    def modify_image_and_noise_map(self, noise_map):
 
         masked_interferometer = copy.deepcopy(self)
 

@@ -3,7 +3,7 @@ from autolens.pipeline.phase import abstract
 
 class Result(abstract.result.Result):
     @property
-    def most_likely_fit(self):
+    def max_log_likelihood_fit(self):
 
         hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
             instance=self.instance
@@ -21,20 +21,20 @@ class Result(abstract.result.Result):
 
     @property
     def mask(self):
-        return self.most_likely_fit.mask
+        return self.max_log_likelihood_fit.mask
 
     @property
     def positions(self):
-        return self.most_likely_fit.masked_dataset.positions
+        return self.max_log_likelihood_fit.masked_dataset.positions
 
     @property
     def pixelization(self):
-        for galaxy in self.most_likely_fit.tracer.galaxies:
+        for galaxy in self.max_log_likelihood_fit.tracer.galaxies:
             if galaxy.pixelization is not None:
                 return galaxy.pixelization
 
     @property
     def most_likely_pixelization_grids_of_planes(self):
         return self.most_likely_tracer.sparse_image_plane_grids_of_planes_from_grid(
-            grid=self.most_likely_fit.grid
+            grid=self.max_log_likelihood_fit.grid
         )

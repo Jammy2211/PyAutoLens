@@ -19,11 +19,30 @@ class GalaxiesMockAnalysis:
         return 1
 
 
+class MockSamples:
+    def __init__(self, max_log_likelihood_instance=None):
+
+        self._max_log_likelihood_instance = max_log_likelihood_instance
+
+    @property
+    def max_log_likelihood_instance(self):
+
+        if self._max_log_likelihood_instance is not None:
+            return self._max_log_likelihood_instance
+
+        self.galaxies = [
+            al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(centre=(0.0, 1.0))),
+            al.Galaxy(redshift=1.0, light=al.lp.EllipticalSersic()),
+        ]
+
+        return self
+
+
 class MockResult:
     def __init__(
         self,
+        samples=None,
         instance=None,
-        likelihood=None,
         model=None,
         analysis=None,
         optimizer=None,
@@ -39,9 +58,11 @@ class MockResult:
         updated_positions_threshold=None,
         use_as_hyper_dataset=False,
     ):
-        self.instance = instance
-        self.likelihood = likelihood
-        self.model = model
+
+        self.instance = instance or af.ModelInstance()
+        self.model = model or af.ModelMapper()
+        self.samples = samples or MockSamples(max_log_likelihood_instance=self.instance)
+
         self.previous_model = model
         self.gaussian_tuples = None
         self.mask_2d = None
@@ -53,8 +74,6 @@ class MockResult:
         self.hyper_model_visibilities = hyper_model_visibilities
         self.model_image = model_image
         self.unmasked_model_image = model_image
-        self.instance = instance or af.ModelInstance()
-        self.model = af.ModelMapper()
         self.analysis = analysis
         self.optimizer = optimizer
         self.pixelization = pixelization
@@ -81,11 +100,11 @@ class MockResult:
 class MockResults(af.ResultsCollection):
     def __init__(
         self,
+        samples=None,
         instance=None,
-        likelihood=None,
+        model=None,
         analysis=None,
         optimizer=None,
-        model=None,
         mask=None,
         model_image=None,
         hyper_galaxy_image_path_dict=None,
@@ -106,11 +125,11 @@ class MockResults(af.ResultsCollection):
         super().__init__()
 
         result = MockResult(
+            samples=samples,
             instance=instance,
-            likelihood=likelihood,
+            model=model,
             analysis=analysis,
             optimizer=optimizer,
-            model=model,
             mask=mask,
             model_image=model_image,
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
@@ -178,30 +197,16 @@ class MockNLO(af.NonLinearOptimizer):
             def __call__(self, vector):
                 instance = self.instance_from_vector(vector)
 
-                likelihood = analysis.fit(instance)
-                self.result = MockResult(instance, likelihood)
+                log_likelihood = analysis.fit(instance)
+                self.result = MockResult(instance=instance)
 
                 # Return Chi squared
-                return -2 * likelihood
+                return -2 * log_likelihood
 
         fitness_function = Fitness(model.instance_from_vector)
         fitness_function(model.prior_count * [0.8])
 
         return fitness_function.result
 
-    def output_from_model(self, model, paths):
-        return MockOutput()
-
-
-class MockOutput:
-    def __init__(self):
-        pass
-
-    @property
-    def most_likely_instance(self):
-        self.galaxies = [
-            al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(centre=(0.0, 1.0))),
-            al.Galaxy(redshift=1.0, light=al.lp.EllipticalSersic()),
-        ]
-
-        return self
+    def samples_from_model(self, model):
+        return MockSamples()

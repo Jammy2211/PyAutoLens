@@ -20,7 +20,7 @@ A description of the general.ini visualization config.
 
     visualize_interval : int
 
-        The number of new best-fit (e.g. highest likelihood) models that must be sampled for PyAutoLens to output the 
+        The number of new best-fit (e.g. highest log likelihood) models that must be sampled for PyAutoLens to output the
         best-fit as a new set of figure / subplot visualization during a non-linear fit (e.g. on-the-fly).
 
         The figures are output according to the 'plots.ini' config file.

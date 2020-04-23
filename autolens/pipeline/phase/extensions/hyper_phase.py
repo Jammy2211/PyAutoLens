@@ -50,26 +50,28 @@ class HyperPhase:
             remove_phase_tag=True,
         )
 
-        phase.optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
-            "MultiNest", "extension_combined_const_efficiency_mode", bool
+        multinest_config = af.conf.instance.non_linear.config_for("MultiNest")
+
+        phase.optimizer.const_efficiency_mode = multinest_config.get(
+            "general", "extension_combined_const_efficiency_mode", bool
         )
-        phase.optimizer.sampling_efficiency = af.conf.instance.non_linear.get(
-            "MultiNest", "extension_combined_sampling_efficiency", float
+        phase.optimizer.sampling_efficiency = multinest_config.get(
+            "general", "extension_combined_sampling_efficiency", float
         )
-        phase.optimizer.n_live_points = af.conf.instance.non_linear.get(
-            "MultiNest", "extension_combined_n_live_points", int
+        phase.optimizer.n_live_points = multinest_config.get(
+            "general", "extension_combined_n_live_points", int
         )
-        phase.optimizer.multimodal = af.conf.instance.non_linear.get(
-            "MultiNest", "extension_combined_multimodal", bool
+        phase.optimizer.multimodal = multinest_config.get(
+            "general", "extension_combined_multimodal", bool
         )
-        phase.optimizer.evidence_tolerance = af.conf.instance.non_linear.get(
-            "MultiNest", "extension_combined_evidence_tolerance", float
+        phase.optimizer.evidence_tolerance = multinest_config.get(
+            "general", "extension_combined_evidence_tolerance", float
         )
-        phase.optimizer.terminate_at_acceptance_ratio = af.conf.instance.non_linear.get(
-            "MultiNest", "extension_combined_terminate_at_acceptance_ratio", bool
+        phase.optimizer.terminate_at_acceptance_ratio = multinest_config.get(
+            "general", "extension_combined_terminate_at_acceptance_ratio", bool
         )
-        phase.optimizer.acceptance_ratio_threshold = af.conf.instance.non_linear.get(
-            "MultiNest", "extension_combined_acceptance_ratio_threshold", float
+        phase.optimizer.acceptance_ratio_threshold = multinest_config.get(
+            "general", "extension_combined_acceptance_ratio_threshold", float
         )
 
         phase.is_hyper_phase = True

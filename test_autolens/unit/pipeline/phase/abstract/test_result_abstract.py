@@ -153,7 +153,7 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
-        assert result.most_likely_fit.inversion.reconstruction == pytest.approx(
+        assert result.max_log_likelihood_fit.inversion.reconstruction == pytest.approx(
             np.array(
                 [
                     0.80707817,

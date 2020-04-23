@@ -31,7 +31,7 @@ global maxima.
 
 evidence_tolerance:
 
-The evidence tolerance is MultiNest's stopping criteria - the higher the evidence tolerance, the sooner MultiNest will
+The log evidence tolerance is MultiNest's stopping criteria - the higher the log evidence tolerance, the sooner MultiNest will
 stop running. A higher tolerance will provide more accurate errors, but take longer to run.
 
 *Recommended values*
@@ -70,5 +70,5 @@ Importance nested sampling mode uses information from the rejected points to imp
 
 In my experience, this can slow down the analysis, therefore I would recommend keeping it turned off.
 
-It is useful if  want to use instance_efficiency_mode and retain a robust estimate of the Bayesian evidence. I've
+It is useful if  want to use instance_efficiency_mode and retain a robust estimate of the Bayesian log evidence. I've
 not found that it leads to any change in parameter estimates.
