@@ -5,24 +5,12 @@ from autoastro.galaxy import galaxy as g
 
 class Result(af.Result):
     def __init__(
-        self,
-        instance,
-        likelihood,
-        previous_model,
-        gaussian_tuples,
-        analysis,
-        optimizer,
-        use_as_hyper_dataset=False,
+        self, samples, previous_model, analysis, optimizer, use_as_hyper_dataset=False
     ):
         """
         The result of a phase
         """
-        super().__init__(
-            instance=instance,
-            likelihood=likelihood,
-            previous_model=previous_model,
-            gaussian_tuples=gaussian_tuples,
-        )
+        super().__init__(samples=samples, previous_model=previous_model)
 
         self.analysis = analysis
         self.optimizer = optimizer
@@ -48,7 +36,9 @@ class Result(af.Result):
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions."""
         try:
-            return self.most_likely_fit.inversion.brightest_reconstruction_pixel_centre
+            return (
+                self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre
+            )
         except AttributeError:
             return []
 

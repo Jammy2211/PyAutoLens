@@ -164,7 +164,7 @@ class FitInterferometer(aa_fit.FitInterferometer):
 
         if hyper_background_noise is not None:
 
-            masked_interferometer = masked_interferometer.modify_noise_map(
+            masked_interferometer = masked_interferometer.modify_image_and_noise_map(
                 noise_map=noise_map
             )
 
@@ -283,14 +283,14 @@ class FitInterferometer(aa_fit.FitInterferometer):
 class FitPositions:
     def __init__(self, positions, tracer, noise_map):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
-        their maximum separation, such that points which tracer closer to one another have a higher likelihood.
+        their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
 
         Parameters
         -----------
         positions : [[]]
-            The (y,x) arc-second coordinates of positions which the maximum distance and likelihood is computed using.
+            The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_map : ndarray | float
-            The noise-value assumed when computing the likelihood.
+            The noise-value assumed when computing the log likelihood.
         """
         self.positions = positions
         self.source_plane_positions = tracer.traced_grids_of_planes_from_grid(

@@ -1,12 +1,19 @@
 from os import path
-
+import numpy as np
 import pytest
 
 import autofit as af
 import autolens as al
 from test_autolens.mock import mock_pipeline
 
+import os
+
 directory = path.dirname(path.realpath(__file__))
+
+
+@pytest.fixture(name="path")
+def make_path():
+    return "{}/files/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
@@ -79,3 +86,12 @@ def test__fit_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
 
     for fit_imaging in fit_imaging_gen:
         assert (fit_imaging.masked_imaging.imaging.image == imaging_7x7.image).all()
+
+
+def test__results_array_from_results_file(path):
+
+    array = al.agg.results_array_from_grid_phase_results(file_results=f"{path}results")
+
+    assert (array.in_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
+    assert array.pixel_scale == 2.0
+    assert list(array.extent_of_zoomed_array(buffer=0)) == [-2.0, 2.0, -2.0, 2.0]

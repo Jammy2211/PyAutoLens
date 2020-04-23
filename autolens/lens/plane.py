@@ -578,7 +578,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
         return sum(hyper_noise_maps)
 
     def hyper_noise_maps_of_galaxies_from_noise_map(self, noise_map):
-        """For a contribution map and noise-map, use the model hyper_galaxy galaxies to compute a hyper noise-map.
+        """For a contribution map and noise map, use the model hyper_galaxy galaxies to compute a hyper noise map.
 
         Parameters
         -----------

@@ -15,8 +15,8 @@ class MostLikelyFit:
 
 
 class MockResult:
-    def __init__(self, most_likely_fit=None):
-        self.most_likely_fit = most_likely_fit
+    def __init__(self, max_log_likelihood_fit=None):
+        self.max_log_likelihood_fit = max_log_likelihood_fit
         self.analysis = MockAnalysis()
         self.path_galaxy_tuples = []
         self.model = af.ModelMapper()
@@ -288,7 +288,7 @@ class TestHyperGalaxyPhase:
             hyper_background_noise=hyper_background_noise,
         )
 
-        assert fit_hyper.likelihood == fit.likelihood
+        assert fit_hyper.log_likelihood == fit.log_likelihood
 
         fit_hyper = analysis.fit_for_hyper_galaxy(
             hyper_galaxy=al.HyperGalaxy(noise_factor=1.0),
@@ -296,10 +296,10 @@ class TestHyperGalaxyPhase:
             hyper_background_noise=hyper_background_noise,
         )
 
-        assert fit_hyper.likelihood != fit.likelihood
+        assert fit_hyper.log_likelihood != fit.log_likelihood
 
         instance.hyper_galaxy = al.HyperGalaxy(noise_factor=0.0)
 
-        likelihood = analysis.fit(instance=instance)
+        log_likelihood = analysis.fit(instance=instance)
 
-        assert likelihood == fit.likelihood
+        assert log_likelihood == fit.log_likelihood

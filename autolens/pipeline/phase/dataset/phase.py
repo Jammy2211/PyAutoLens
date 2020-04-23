@@ -6,8 +6,6 @@ from autolens.pipeline.phase import abstract
 from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.dataset.result import Result
 
-import pickle
-
 
 class PhaseDataset(abstract.AbstractPhase):
     galaxies = af.PhaseProperty("galaxies")
@@ -36,7 +34,7 @@ class PhaseDataset(abstract.AbstractPhase):
         super().__init__(paths, non_linear_class=non_linear_class)
         self.galaxies = galaxies or []
         self.cosmology = cosmology
-
+        self.use_as_hyper_dataset = False
         self.is_hyper_phase = False
 
     def run(self, dataset: Dataset, mask, results=None, positions=None, info=None):
@@ -58,6 +56,7 @@ class PhaseDataset(abstract.AbstractPhase):
         result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper_galaxies.
         """
+        self.save_model_info()
         self.save_metadata(dataset=dataset)
         self.save_dataset(dataset=dataset)
         self.save_mask(mask)
@@ -82,9 +81,7 @@ class PhaseDataset(abstract.AbstractPhase):
 
         return self.make_result(result=result, analysis=analysis)
 
-    def make_analysis(
-        self, dataset, mask, results=af.ResultsCollection(), positions=None
-    ):
+    def make_analysis(self, dataset, mask, results=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.

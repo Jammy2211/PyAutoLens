@@ -1,5 +1,8 @@
 import autolens as al
 
+import numpy as np
+import os
+
 
 def tracer_generator_from_aggregator(aggregator):
     return aggregator.map(func=tracer_from_agg_obj)
@@ -9,7 +12,7 @@ def tracer_from_agg_obj(agg_obj):
 
     output = agg_obj.output
     phase_attributes = agg_obj.phase_attributes
-    most_likely_instance = output.most_likely_instance
+    most_likely_instance = output.max_log_likelihood_instance
     galaxies = most_likely_instance.galaxies
 
     if phase_attributes.hyper_galaxy_image_path_dict is not None:
@@ -53,3 +56,25 @@ def fit_imaging_from_agg_obj(agg_obj):
     tracer = tracer_from_agg_obj(agg_obj=agg_obj)
 
     return al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+
+
+def results_array_from_grid_phase_results(file_results):
+
+    print(file_results)
+
+    try:
+        y, x, evidence = np.loadtxt(
+            file_results, delimiter=",", skiprows=1, unpack=True
+        )
+    except:
+        raise FileNotFoundError
+
+    print(evidence)
+
+    pixel_scale = np.abs(x[0] - x[1])
+
+    shape_2d = (int(np.sqrt(evidence.shape)), int(np.sqrt(evidence.shape)))
+
+    return al.Array.manual_1d(
+        array=evidence, pixel_scales=(pixel_scale, pixel_scale), shape_2d=shape_2d
+    )

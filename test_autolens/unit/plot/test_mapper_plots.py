@@ -1,6 +1,7 @@
 from os import path
 
 import autofit as af
+import autolens as al
 import autolens.plot as aplt
 import os
 
@@ -25,8 +26,8 @@ def test__image_and_mapper_subplot_is_output_for_all_mappers(
     imaging_7x7, rectangular_mapper_7x7_3x3, voronoi_mapper_9_3x3, plot_path, plot_patch
 ):
 
-    critical_curves = [(0.0, 0.0), (0.1, 0.1)]
-    caustics = [(0.0, 0.0), (0.1, 0.1)]
+    critical_curves = al.Coordinates([(0.0, 0.0), (0.1, 0.1)])
+    caustics = al.Coordinates([(0.0, 0.0), (0.1, 0.1)])
 
     aplt.Mapper.subplot_image_and_mapper(
         image=imaging_7x7.image,

@@ -8,7 +8,7 @@ from autolens.pipeline.phase import dataset
 
 class Result(dataset.Result):
     @property
-    def most_likely_fit(self):
+    def max_log_likelihood_fit(self):
 
         hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
             instance=self.instance
@@ -26,15 +26,15 @@ class Result(dataset.Result):
 
     @property
     def unmasked_model_image(self):
-        return self.most_likely_fit.unmasked_blurred_profile_image
+        return self.max_log_likelihood_fit.unmasked_blurred_profile_image
 
     @property
     def unmasked_model_image_of_planes(self):
-        return self.most_likely_fit.unmasked_blurred_profile_image_of_planes
+        return self.max_log_likelihood_fit.unmasked_blurred_profile_image_of_planes
 
     @property
     def unmasked_model_image_of_planes_and_galaxies(self):
-        fit = self.most_likely_fit
+        fit = self.max_log_likelihood_fit
         return fit.unmasked_blurred_profile_image_of_planes_and_galaxies
 
     def image_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
@@ -49,7 +49,7 @@ class Result(dataset.Result):
         ndarray or None
             A numpy arrays giving the model image of that galaxy
         """
-        return self.most_likely_fit.galaxy_model_image_dict[galaxy]
+        return self.max_log_likelihood_fit.galaxy_model_image_dict[galaxy]
 
     @property
     def image_galaxy_dict(self) -> {str: g.Galaxy}:

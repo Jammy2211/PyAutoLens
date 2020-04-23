@@ -73,6 +73,10 @@ class MetaDataset:
         3) If auto positioning is on or off and there is no previous phase, use the input positions.
         """
 
+        if results.last is not None:
+            if not hasattr(results.last, "positions"):
+                return positions
+
         if self.auto_positions_factor is not None and results.last is not None:
 
             updated_positions = (

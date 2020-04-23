@@ -46,14 +46,12 @@ class AbstractPhase(af.AbstractPhase):
 
     def make_result(self, result, analysis):
         return self.Result(
-            instance=result.instance,
-            likelihood=result.likelihood,
+            samples=result.samples,
             previous_model=result.previous_model,
-            gaussian_tuples=result.gaussian_tuples,
             analysis=analysis,
             optimizer=self.optimizer,
             use_as_hyper_dataset=self.use_as_hyper_dataset,
         )
 
-    def run(self, dataset, mask, results=af.ResultsCollection(), positions=None):
+    def run(self, dataset, mask, results=None, positions=None):
         raise NotImplementedError()

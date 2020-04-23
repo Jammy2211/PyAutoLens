@@ -206,20 +206,22 @@ class HyperGalaxyPhase(HyperPhase):
 
             optimizer = phase.optimizer.copy_with_name_extension(extension=path[-1])
 
-            optimizer.const_efficiency_mode = af.conf.instance.non_linear.get(
-                "MultiNest", "extension_hyper_galaxy_const_efficiency_mode", bool
+            multinest_config = af.conf.instance.non_linear.config_for("MultiNest")
+
+            optimizer.const_efficiency_mode = multinest_config.get(
+                "general", "extension_hyper_galaxy_const_efficiency_mode", bool
             )
-            optimizer.sampling_efficiency = af.conf.instance.non_linear.get(
-                "MultiNest", "extension_hyper_galaxy_sampling_efficiency", float
+            optimizer.sampling_efficiency = multinest_config.get(
+                "general", "extension_hyper_galaxy_sampling_efficiency", float
             )
-            optimizer.n_live_points = af.conf.instance.non_linear.get(
-                "MultiNest", "extension_hyper_galaxy_n_live_points", int
+            optimizer.n_live_points = multinest_config.get(
+                "general", "extension_hyper_galaxy_n_live_points", int
             )
-            optimizer.multimodal = af.conf.instance.non_linear.get(
-                "MultiNest", "extension_hyper_galaxy_multimodal", bool
+            optimizer.multimodal = multinest_config.get(
+                "general", "extension_hyper_galaxy_multimodal", bool
             )
-            optimizer.evidence_tolerance = af.conf.instance.non_linear.get(
-                "MultiNest", "extension_hyper_galaxy_evidence_tolerance", float
+            optimizer.evidence_tolerance = multinest_config.get(
+                "general", "extension_hyper_galaxy_evidence_tolerance", float
             )
 
             model = copy.deepcopy(phase.model)

@@ -21,7 +21,7 @@ fit imaging data of a strong lens, which we begin by loading from .fits files:
     aplt.Imaging.noise_map(imaging=imaging)
     aplt.Imaging.psf(imaging=imaging)
 
-Here's what our image, noise-map and point-spread function look like:
+Here's what our image, noise map and point-spread function look like:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/image.png
   :width: 400

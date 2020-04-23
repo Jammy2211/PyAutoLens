@@ -58,7 +58,7 @@ With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. 
 
     # We pass the imaging data and mask to the phase, thereby fitting it with the lens model above & plot the resulting fit.
     result = phase.run(data=imaging, mask=mask)
-    al.plot.FitImaging.subplot_fit_imaging(fit=result.most_likely_fit)
+    al.plot.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 Features
 --------
