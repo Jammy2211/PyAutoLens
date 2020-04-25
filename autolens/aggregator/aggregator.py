@@ -10,16 +10,17 @@ def tracer_generator_from_aggregator(aggregator):
 
 def tracer_from_agg_obj(agg_obj):
 
-    output = agg_obj.output
+    samples = agg_obj.samples
     phase_attributes = agg_obj.phase_attributes
-    most_likely_instance = output.max_log_likelihood_instance
-    galaxies = most_likely_instance.galaxies
+    max_log_likelihood_instance = samples.max_log_likelihood_instance
+    galaxies = max_log_likelihood_instance.galaxies
 
     if phase_attributes.hyper_galaxy_image_path_dict is not None:
 
-        for galaxy_path, galaxy in most_likely_instance.path_instance_tuples_for_class(
-            al.Galaxy
-        ):
+        for (
+            galaxy_path,
+            galaxy,
+        ) in max_log_likelihood_instance.path_instance_tuples_for_class(al.Galaxy):
             if galaxy_path in phase_attributes.hyper_galaxy_image_path_dict:
                 galaxy.hyper_model_image = phase_attributes.hyper_model_image
                 galaxy.hyper_galaxy_image = phase_attributes.hyper_galaxy_image_path_dict[
@@ -60,16 +61,12 @@ def fit_imaging_from_agg_obj(agg_obj):
 
 def results_array_from_grid_phase_results(file_results):
 
-    print(file_results)
-
     try:
         y, x, evidence = np.loadtxt(
             file_results, delimiter=",", skiprows=1, unpack=True
         )
     except:
         raise FileNotFoundError
-
-    print(evidence)
 
     pixel_scale = np.abs(x[0] - x[1])
 

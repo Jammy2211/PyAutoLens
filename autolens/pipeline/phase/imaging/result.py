@@ -19,7 +19,7 @@ class Result(dataset.Result):
         )
 
         return self.analysis.masked_imaging_fit_for_tracer(
-            tracer=self.most_likely_tracer,
+            tracer=self.max_log_likelihood_tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )

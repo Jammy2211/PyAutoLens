@@ -17,7 +17,7 @@ class Result(af.Result):
         self.use_as_hyper_dataset = use_as_hyper_dataset
 
     @property
-    def most_likely_tracer(self):
+    def max_log_likelihood_tracer(self):
         return self.analysis.tracer_for_instance(instance=self.instance)
 
     @property
@@ -26,7 +26,7 @@ class Result(af.Result):
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions."""
-        return self.most_likely_tracer.source_plane.light_profile_centres
+        return self.max_log_likelihood_tracer.source_plane.light_profile_centres
 
     @property
     def source_plane_inversion_centres(self) -> grids.Coordinates:
@@ -77,7 +77,7 @@ class Result(af.Result):
         for centre_list in self.source_plane_centres.in_list:
             for centre in centre_list:
 
-                positions_list = self.most_likely_tracer.image_plane_multiple_image_positions(
+                positions_list = self.max_log_likelihood_tracer.image_plane_multiple_image_positions(
                     grid=grid, source_plane_coordinate=centre
                 )
 

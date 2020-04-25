@@ -43,7 +43,9 @@ class TestGeneric:
 
 
 class TestTracer:
-    def test__most_likely_tracer_available_as_result(self, imaging_7x7, mask_7x7):
+    def test__max_log_likelihood_tracer_available_as_result(
+        self, imaging_7x7, mask_7x7
+    ):
 
         phase_dataset_7x7 = al.PhaseImaging(
             non_linear_class=mock_pipeline.MockNLO,
@@ -62,11 +64,11 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
-        assert isinstance(result.most_likely_tracer, al.Tracer)
-        assert result.most_likely_tracer.galaxies[0].light.intensity == 1.0
-        assert result.most_likely_tracer.galaxies[1].light.intensity == 2.0
+        assert isinstance(result.max_log_likelihood_tracer, al.Tracer)
+        assert result.max_log_likelihood_tracer.galaxies[0].light.intensity == 1.0
+        assert result.max_log_likelihood_tracer.galaxies[1].light.intensity == 2.0
 
-    def test__most_likely_tracer_source_light_profile_centres_correct(
+    def test__max_log_likelihood_tracer_source_light_profile_centres_correct(
         self, imaging_7x7, mask_7x7
     ):
 
@@ -130,7 +132,7 @@ class TestTracer:
 
         assert result.source_plane_light_profile_centres == []
 
-    def test__most_likely_tracer_source_inversion_centres_correct(
+    def test__max_log_likelihood_tracer_source_inversion_centres_correct(
         self, imaging_7x7, mask_7x7
     ):
 
@@ -189,7 +191,9 @@ class TestTracer:
 
         assert result.source_plane_inversion_centres == []
 
-    def test__most_likely_tracer_source_centres_correct(self, imaging_7x7, mask_7x7):
+    def test__max_log_likelihood_tracer_source_centres_correct(
+        self, imaging_7x7, mask_7x7
+    ):
 
         phase_dataset_7x7 = al.PhaseImaging(
             non_linear_class=mock_pipeline.MockNLO,
@@ -213,7 +217,7 @@ class TestTracer:
 
         assert result.source_plane_centres.in_list == [[(9.0, 8.0), (0.0, 0.0)]]
 
-    def test__most_likely_tracer__multiple_image_positions_of_source_plane_centres_and_separations(
+    def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_centres_and_separations(
         self, imaging_7x7, mask_7x7
     ):
 

@@ -19,10 +19,28 @@ class GalaxiesMockAnalysis:
         return 1
 
 
-class MockSamples:
-    def __init__(self, max_log_likelihood_instance=None):
+class MockSamples(af.AbstractSamples):
+    def __init__(
+        self,
+        max_log_likelihood_instance=None,
+        log_likelihoods=None,
+        gaussian_tuples=None,
+    ):
+
+        super().__init__(
+            model=None, parameters=[], log_likelihoods=[], log_priors=[], weights=[]
+        )
 
         self._max_log_likelihood_instance = max_log_likelihood_instance
+        self.log_likelihoods = log_likelihoods
+        self.gaussian_tuples = gaussian_tuples
+
+    @property
+    def max_log_likelihood_instance(self) -> int:
+        return self._max_log_likelihood_instance
+
+    def gaussian_priors_at_sigma(self, sigma=None):
+        return self.gaussian_tuples
 
     @property
     def max_log_likelihood_instance(self):
@@ -84,7 +102,7 @@ class MockResult:
             updated_positions if updated_positions is not None else []
         )
         self.updated_positions_threshold = updated_positions_threshold
-        self.most_likely_tracer = al.Tracer.from_galaxies(
+        self.max_log_likelihood_tracer = al.Tracer.from_galaxies(
             galaxies=[al.Galaxy(redshift=0.5)]
         )
 
@@ -179,7 +197,7 @@ class MockHyperCombinedPhase:
         pass
 
     @property
-    def most_likely_pixelization_grids_of_planes(self):
+    def max_log_likelihood_pixelization_grids_of_planes(self):
         return 1
 
 
