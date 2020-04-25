@@ -158,7 +158,7 @@ class TestResult:
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
-        assert result.most_likely_pixelization_grids_of_planes == [None]
+        assert result.max_log_likelihood_pixelization_grids_of_planes == [None]
 
         phase_imaging_7x7 = al.PhaseImaging(
             non_linear_class=mock_pipeline.MockNLO,
@@ -182,4 +182,7 @@ class TestResult:
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
-        assert result.most_likely_pixelization_grids_of_planes[-1].shape == (6, 2)
+        assert result.max_log_likelihood_pixelization_grids_of_planes[-1].shape == (
+            6,
+            2,
+        )

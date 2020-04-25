@@ -45,6 +45,24 @@ class AbstractPhase(af.AbstractPhase):
         return self.optimizer.path
 
     def make_result(self, result, analysis):
+
+        if isinstance(result, af.GridSearchResult):
+
+            self.save_grid_search_result(grid_search_result=result)
+
+            print(result.lists)
+            print(result.best_result)
+            print(max(result.best_result.samples.log_likelihoods))
+
+            print()
+            print(result.results[0].samples)
+            print(result.results[0].instance)
+            print()
+            print(result.best_model)
+            print()
+            print(result.all_models)
+            print(result.likelihood_merit_array)
+
         return self.Result(
             samples=result.samples,
             previous_model=result.previous_model,

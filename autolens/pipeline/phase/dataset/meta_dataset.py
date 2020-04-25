@@ -112,7 +112,7 @@ class MetaDataset:
 
             positions_fits = fit.FitPositions(
                 positions=aa.Coordinates(coordinates=positions),
-                tracer=results.last.most_likely_tracer,
+                tracer=results.last.max_log_likelihood_tracer,
                 noise_map=1.0,
             )
 
@@ -178,8 +178,8 @@ class MetaDataset:
             if self.pixelization.__class__ is results.last.pixelization.__class__:
                 if hasattr(results.last, "hyper_combined"):
                     return (
-                        results.last.hyper_combined.most_likely_pixelization_grids_of_planes
+                        results.last.hyper_combined.max_log_likelihood_pixelization_grids_of_planes
                     )
                 else:
-                    return results.last.most_likely_pixelization_grids_of_planes
+                    return results.last.max_log_likelihood_pixelization_grids_of_planes
         return None

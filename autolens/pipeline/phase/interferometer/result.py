@@ -15,7 +15,7 @@ class Result(dataset.Result):
         )
 
         return self.analysis.masked_interferometer_fit_for_tracer(
-            tracer=self.most_likely_tracer,
+            tracer=self.max_log_likelihood_tracer,
             hyper_background_noise=hyper_background_noise,
         )
 

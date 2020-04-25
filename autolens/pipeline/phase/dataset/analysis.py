@@ -32,15 +32,11 @@ class Analysis(af.Analysis):
 
         if hasattr(instance, "hyper_image_sky"):
             return instance.hyper_image_sky
-        else:
-            return None
 
     def hyper_background_noise_for_instance(self, instance):
 
         if hasattr(instance, "hyper_background_noise"):
             return instance.hyper_background_noise
-        else:
-            return None
 
     def tracer_for_instance(self, instance):
         return ray_tracing.Tracer.from_galaxies(

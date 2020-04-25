@@ -14,7 +14,7 @@ class Result(abstract.result.Result):
         )
 
         return self.analysis.masked_imaging_fit_for_tracer(
-            tracer=self.most_likely_tracer,
+            tracer=self.max_log_likelihood_tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
@@ -34,7 +34,7 @@ class Result(abstract.result.Result):
                 return galaxy.pixelization
 
     @property
-    def most_likely_pixelization_grids_of_planes(self):
-        return self.most_likely_tracer.sparse_image_plane_grids_of_planes_from_grid(
+    def max_log_likelihood_pixelization_grids_of_planes(self):
+        return self.max_log_likelihood_tracer.sparse_image_plane_grids_of_planes_from_grid(
             grid=self.max_log_likelihood_fit.grid
         )
