@@ -670,7 +670,7 @@ class Plane(AbstractPlaneData):
         prefix_plane = ""
 
         summary += [
-            af.text_util.label_and_value_string(
+            af.formatter.label_and_value_string(
                 label=prefix_plane + "redshift",
                 value=self.redshift,
                 whitespace=whitespace,
@@ -679,7 +679,7 @@ class Plane(AbstractPlaneData):
         ]
 
         summary += [
-            af.text_util.label_and_value_string(
+            af.formatter.label_and_value_string(
                 label=prefix_plane + "kpc_per_arcsec",
                 value=self.kpc_per_arcsec,
                 whitespace=whitespace,
@@ -692,7 +692,7 @@ class Plane(AbstractPlaneData):
         )
 
         summary += [
-            af.text_util.label_and_value_string(
+            af.formatter.label_and_value_string(
                 label=prefix_plane + "angular_diameter_distance_to_earth",
                 value=angular_diameter_distance_to_earth,
                 whitespace=whitespace,
