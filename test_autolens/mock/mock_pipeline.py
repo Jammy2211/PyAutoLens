@@ -27,12 +27,14 @@ class MockSamples(af.AbstractSamples):
         gaussian_tuples=None,
     ):
 
+        if log_likelihoods is None:
+            log_likelihoods = [1.0, 2.0, 3.0]
+
         super().__init__(
-            model=None, parameters=[], log_likelihoods=[], log_priors=[], weights=[]
+            model=None, parameters=[], log_likelihoods=log_likelihoods, log_priors=[], weights=[]
         )
 
         self._max_log_likelihood_instance = max_log_likelihood_instance
-        self.log_likelihoods = log_likelihoods
         self.gaussian_tuples = gaussian_tuples
 
     @property
