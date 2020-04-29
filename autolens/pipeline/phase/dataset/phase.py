@@ -14,11 +14,11 @@ class PhaseDataset(abstract.AbstractPhase):
 
     @af.convert_paths
     def __init__(
-        self,
-        paths,
-        galaxies=None,
-        non_linear_class=af.MultiNest,
-        cosmology=cosmo.Planck15,
+            self,
+            paths,
+            galaxies=None,
+            non_linear_class=af.MultiNest,
+            cosmology=cosmo.Planck15,
     ):
         """
 
@@ -61,9 +61,9 @@ class PhaseDataset(abstract.AbstractPhase):
         self.save_dataset(dataset=dataset)
         self.save_mask(mask)
         self.save_meta_dataset(meta_dataset=self.meta_dataset)
-        self.save_info(info=info)
 
         self.model = self.model.populate(results)
+        self.save_info(info=info)
 
         results = results or af.ResultsCollection()
 
@@ -107,12 +107,12 @@ class PhaseDataset(abstract.AbstractPhase):
         return extensions.InversionPhase(phase=self)
 
     def extend_with_multiple_hyper_phases(
-        self,
-        hyper_galaxy=False,
-        inversion=False,
-        include_background_sky=False,
-        include_background_noise=False,
-        hyper_galaxy_phase_first=False,
+            self,
+            hyper_galaxy=False,
+            inversion=False,
+            include_background_sky=False,
+            include_background_noise=False,
+            hyper_galaxy_phase_first=False,
     ):
 
         self.use_as_hyper_dataset = True
