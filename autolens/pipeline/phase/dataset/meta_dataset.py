@@ -8,29 +8,15 @@ from autoarray.operators.inversion import pixelizations as pix
 import numpy as np
 
 
-class MetaDataset(ag.MetaDataset):
+class MetaLens:
     def __init__(
         self,
-        model,
-        sub_size=2,
-        signal_to_noise_limit=None,
         auto_positions_factor=None,
         positions_threshold=None,
         pixel_scale_interpolation_grid=None,
         inversion_uses_border=True,
-        inversion_pixel_limit=None,
-        is_hyper_phase=False,
     ):
 
-        super().__init__(
-            model=model,
-            sub_size=sub_size,
-            signal_to_noise_limit=signal_to_noise_limit,
-            inversion_pixel_limit=inversion_pixel_limit,
-        )
-
-        self.is_hyper_phase = is_hyper_phase
-        self.model = model
         self.auto_positions_factor = auto_positions_factor
         self.positions_threshold = positions_threshold
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid

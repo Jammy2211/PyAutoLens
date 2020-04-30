@@ -1,14 +1,15 @@
 from autoarray.exc import InversionException, GridException
 from autofit.exc import FitException
+from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
 from autolens.fit import fit
 from autolens.pipeline import visualizer
 from autolens.pipeline.phase.dataset import analysis as analysis_dataset
 
 
-class Analysis(analysis_dataset.Analysis):
+class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     def __init__(self, masked_imaging, cosmology, image_path=None, results=None):
 
-        super(Analysis, self).__init__(cosmology=cosmology, results=results)
+        super().__init__(cosmology=cosmology, results=results)
 
         self.visualizer = visualizer.PhaseImagingVisualizer(
             masked_dataset=masked_imaging, image_path=image_path, results=results

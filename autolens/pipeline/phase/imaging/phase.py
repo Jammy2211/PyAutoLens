@@ -2,13 +2,14 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens.pipeline import tagging
-from autolens.pipeline.phase import dataset
+from autogalaxy.pipeline.phase import dataset
 from autolens.pipeline.phase.imaging.analysis import Analysis
 from autolens.pipeline.phase.imaging.meta_imaging import MetaImaging
 from autolens.pipeline.phase.imaging.result import Result
 
 
 class PhaseImaging(dataset.PhaseDataset):
+
     galaxies = af.PhaseProperty("galaxies")
     hyper_image_sky = af.PhaseProperty("hyper_image_sky")
     hyper_background_noise = af.PhaseProperty("hyper_background_noise")

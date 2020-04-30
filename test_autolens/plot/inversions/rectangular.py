@@ -32,17 +32,17 @@ masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_of_galaxy(
+aplt.FitImaging.subplot_of_plane(
     fit=fit,
-    galaxy_index=1,
+    plane_index=1,
     plot_in_kpc=True,
     include_image_plane_pix=True,
     include_caustics=True,
 )
 
-aplt.FitImaging.subplot_of_galaxy(
+aplt.FitImaging.subplot_of_plane(
     fit=fit,
-    galaxy_index=1,
+    plane_index=1,
     plot_in_kpc=False,
     include_image_plane_pix=True,
     include_caustics=True,
