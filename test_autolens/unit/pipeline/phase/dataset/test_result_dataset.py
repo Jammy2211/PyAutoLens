@@ -81,11 +81,10 @@ class TestResult:
             phase_name="test_phase_2",
         )
 
+        imaging_7x7.positions = al.Coordinates([[(1.0, 1.0)]])
+
         result = phase_imaging_7x7.run(
-            dataset=imaging_7x7,
-            mask=mask_7x7,
-            positions=[[(1.0, 1.0)]],
-            results=mock_pipeline.MockResults(),
+            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
         assert (result.positions[0] == np.array([1.0, 1.0])).all()

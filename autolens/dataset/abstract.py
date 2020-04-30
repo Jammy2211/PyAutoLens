@@ -4,12 +4,7 @@ from autolens import exc
 
 
 class AbstractLensMasked:
-    def __init__(self, positions, positions_threshold, preload_sparse_grids_of_planes):
-
-        if positions is not None:
-            self.positions = grids.Coordinates(coordinates=positions)
-        else:
-            self.positions = None
+    def __init__(self, positions_threshold, preload_sparse_grids_of_planes):
 
         self.positions_threshold = positions_threshold
 

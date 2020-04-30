@@ -93,7 +93,7 @@ class PhaseImaging(dataset.PhaseDataset):
             hyper_galaxy_image_path_dict=analysis.hyper_galaxy_image_path_dict,
         )
 
-    def make_analysis(self, dataset, mask, results=None, positions=None):
+    def make_analysis(self, dataset, mask, results=None):
         """
         Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -116,7 +116,7 @@ class PhaseImaging(dataset.PhaseDataset):
         self.meta_dataset.model = self.model
 
         masked_imaging = self.meta_dataset.masked_dataset_from(
-            dataset=dataset, mask=mask, positions=positions, results=results
+            dataset=dataset, mask=mask, results=results
         )
 
         self.output_phase_info()

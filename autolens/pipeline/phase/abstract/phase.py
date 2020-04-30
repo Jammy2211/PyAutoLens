@@ -1,12 +1,13 @@
-import autofit as af
-from autogalaxy.pipeline.phase.abstract import phase
+import autogalaxy as ag
+
 from autolens.pipeline.phase.abstract.result import Result
 
 
 # noinspection PyAbstractClass
 
 
-class AbstractPhase(phase.AbstractPhase):
+class AbstractPhase(ag.AbstractPhase):
+
     Result = Result
 
     def make_result(self, result, analysis):

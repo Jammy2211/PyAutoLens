@@ -1,7 +1,8 @@
-from autolens.pipeline.phase import abstract
+from autogalaxy.pipeline.phase.dataset import result as ag_result
+from autolens.pipeline.phase.abstract import result
 
 
-class Result(abstract.result.Result):
+class Result(result.Result, ag_result.Result):
     @property
     def max_log_likelihood_fit(self):
 

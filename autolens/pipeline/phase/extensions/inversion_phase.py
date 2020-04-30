@@ -58,12 +58,7 @@ class ModelFixingHyperPhase(HyperPhase):
         phase = self.make_hyper_phase()
         phase.model = self.make_model(results.last.instance)
 
-        return phase.run(
-            dataset,
-            mask=results.last.mask,
-            results=results,
-            positions=results.last.positions,
-        )
+        return phase.run(dataset, mask=results.last.mask, results=results)
 
 
 class InversionPhase(ModelFixingHyperPhase):
