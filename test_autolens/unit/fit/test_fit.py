@@ -4,7 +4,7 @@ from autoarray.operators.inversion import inversions
 import numpy as np
 import pytest
 
-from test_autoastro.mock.mock_profiles import MockLightProfile
+from test_autogalaxy.mock.mock_profiles import MockLightProfile
 
 
 class TestFitImaging:
@@ -1660,6 +1660,7 @@ class TestFitInterferometer:
             )
 
             profile_image = g0.profile_image_from_grid(grid=masked_interferometer.grid)
+
             model_visibilities_manual = transformer.visibilities_from_image(
                 image=profile_image
             )

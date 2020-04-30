@@ -6,8 +6,8 @@ import numpy as np
 
 import autofit as af
 from autoarray.fit import fit as aa_fit
-from autoastro.galaxy import galaxy as g
-from autoastro.hyper import hyper_data as hd
+from autogalaxy.galaxy import galaxy as g
+from autogalaxy.hyper import hyper_data as hd
 from autolens.dataset import imaging
 from autolens.fit import fit
 from autolens.pipeline import visualizer
@@ -128,7 +128,7 @@ class Analysis(af.Analysis):
 
         noise_map = noise_map + hyper_noise_map
 
-        masked_imaging = self.masked_imaging.modify_image_and_noise_map(
+        masked_imaging = self.masked_imaging.modify_noise_map(
             image=image, noise_map=noise_map
         )
 

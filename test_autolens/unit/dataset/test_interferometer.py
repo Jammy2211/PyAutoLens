@@ -141,7 +141,7 @@ class TestMaskedInterferometer:
 
         noise_map_7x2[0, 0] = 10.0
 
-        masked_interferometer_7 = masked_interferometer_7.modify_image_and_noise_map(
+        masked_interferometer_7 = masked_interferometer_7.modify_noise_map(
             noise_map=noise_map_7x2
         )
 

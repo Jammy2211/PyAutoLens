@@ -1,44 +1,9 @@
 from autoarray.plot import plotters
-from autoastro.plot import lensing_plotters
-from autolens.plot import plane_plots, inversion_plots
+from autogalaxy.plot import lensing_plotters
+from autogalaxy.plot.fit_imaging_plots import *
+import autogalaxy as ag
 
 import numpy as np
-
-
-@lensing_plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
-def subplot_fit_imaging(fit, include=None, sub_plotter=None):
-    number_subplots = 6
-
-    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
-
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-
-    image(fit=fit, include=include, plotter=sub_plotter)
-
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
-
-    signal_to_noise_map(fit=fit, include=include, plotter=sub_plotter)
-
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
-
-    model_image(fit=fit, include=include, plotter=sub_plotter)
-
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
-
-    residual_map(fit=fit, include=include, plotter=sub_plotter)
-
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
-
-    normalized_residual_map(fit=fit, include=include, plotter=sub_plotter)
-
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
-
-    chi_squared_map(fit=fit, include=include, plotter=sub_plotter)
-
-    sub_plotter.output.subplot_to_figure()
-
-    sub_plotter.figure.close()
 
 
 def subplots_of_all_planes(fit, include=None, sub_plotter=None):
@@ -50,9 +15,9 @@ def subplots_of_all_planes(fit, include=None, sub_plotter=None):
             or fit.tracer.planes[plane_index].has_pixelization
         ):
 
-            subplot_of_plane(
+            subplot_of_galaxy(
                 fit=fit,
-                plane_index=plane_index,
+                galaxy_index=plane_index,
                 include=include,
                 sub_plotter=sub_plotter,
             )
@@ -88,18 +53,18 @@ def subplot_of_plane(fit, plane_index, include=None, sub_plotter=None):
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    image(fit=fit, include=include, plotter=sub_plotter)
+    ag.plot.FitImaging.image(fit=fit, include=include, plotter=sub_plotter)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-    subtracted_image_of_plane(
-        fit=fit, plane_index=plane_index, include=include, plotter=sub_plotter
+    subtracted_image_of_galaxy(
+        fit=fit, galaxy_index=plane_index, include=include, plotter=sub_plotter
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-    model_image_of_plane(
-        fit=fit, plane_index=plane_index, include=include, plotter=sub_plotter
+    model_image_of_galaxy(
+        fit=fit, galaxy_index=plane_index, include=include, plotter=sub_plotter
     )
 
     if not fit.tracer.planes[plane_index].has_pixelization:
@@ -108,7 +73,7 @@ def subplot_of_plane(fit, plane_index, include=None, sub_plotter=None):
 
         traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
-        plane_plots.plane_image(
+        ag.plot.Plane.plane_image(
             plane=fit.tracer.planes[plane_index],
             grid=traced_grids[plane_index],
             positions=include.positions_of_plane_from_fit_and_plane_index(
@@ -143,7 +108,7 @@ def subplot_of_plane(fit, plane_index, include=None, sub_plotter=None):
             number_subplots=number_subplots, subplot_index=4, aspect=float(aspect_inv)
         )
 
-        inversion_plots.reconstruction(
+        ag.plot.Inversion.reconstruction(
             inversion=fit.inversion,
             source_positions=include.positions_of_plane_from_fit_and_plane_index(
                 fit=fit, plane_index=plane_index
@@ -190,46 +155,50 @@ def individuals(
 
     if plot_image:
 
-        image(fit=fit, include=include, plotter=plotter)
+        ag.plot.FitImaging.image(fit=fit, include=include, plotter=plotter)
 
     if plot_noise_map:
 
-        noise_map(fit=fit, include=include, plotter=plotter)
+        ag.plot.FitImaging.noise_map(fit=fit, include=include, plotter=plotter)
 
     if plot_signal_to_noise_map:
 
-        signal_to_noise_map(fit=fit, include=include, plotter=plotter)
+        ag.plot.FitImaging.signal_to_noise_map(
+            fit=fit, include=include, plotter=plotter
+        )
 
     if plot_model_image:
 
-        model_image(fit=fit, include=include, plotter=plotter)
+        ag.plot.FitImaging.model_image(fit=fit, include=include, plotter=plotter)
 
     if plot_residual_map:
 
-        residual_map(fit=fit, include=include, plotter=plotter)
+        ag.plot.FitImaging.residual_map(fit=fit, include=include, plotter=plotter)
 
     if plot_normalized_residual_map:
 
-        normalized_residual_map(fit=fit, include=include, plotter=plotter)
+        ag.plot.FitImaging.normalized_residual_map(
+            fit=fit, include=include, plotter=plotter
+        )
 
     if plot_chi_squared_map:
 
-        chi_squared_map(fit=fit, include=include, plotter=plotter)
+        ag.plot.FitImaging.chi_squared_map(fit=fit, include=include, plotter=plotter)
 
     if plot_subtracted_images_of_planes:
 
         for plane_index in range(fit.tracer.total_planes):
 
-            subtracted_image_of_plane(
-                fit=fit, plane_index=plane_index, include=include, plotter=plotter
+            subtracted_image_of_galaxy(
+                fit=fit, galaxy_index=plane_index, include=include, plotter=plotter
             )
 
     if plot_model_images_of_planes:
 
         for plane_index in range(fit.tracer.total_planes):
 
-            model_image_of_plane(
-                fit=fit, plane_index=plane_index, include=include, plotter=plotter
+            model_image_of_galaxy(
+                fit=fit, galaxy_index=plane_index, include=include, plotter=plotter
             )
 
     if plot_plane_images_of_planes:
@@ -242,7 +211,7 @@ def individuals(
 
             if fit.tracer.planes[plane_index].has_light_profile:
 
-                plane_plots.plane_image(
+                ag.plot.Plane.plane_image(
                     plane=fit.tracer.planes[plane_index],
                     grid=include.traced_grid_of_plane_from_fit_and_plane_index(
                         fit=fit, plane_index=plane_index
@@ -257,7 +226,7 @@ def individuals(
 
             elif fit.tracer.planes[plane_index].has_pixelization:
 
-                inversion_plots.reconstruction(
+                ag.plot.Inversion.reconstruction(
                     inversion=fit.inversion,
                     source_positions=include.positions_of_plane_from_fit_and_plane_index(
                         fit=fit, plane_index=plane_index
@@ -355,203 +324,4 @@ def model_image_of_plane(fit, plane_index, include=None, plotter=None):
         mass_profile_centres=include.mass_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
-    )
-
-
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
-def image(fit, include=None, plotter=None):
-    """Plot the image of a lens fit.
-
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
-
-    Parameters
-    -----------
-    image : datas.imaging.datas.Imaging
-        The datas-datas, which include the observed datas, noise_map, PSF, signal-to-noise_map, etc.
-    origin : True
-        If true, the origin of the datas's coordinate system is plotted as a 'x'.
-    """
-    plotter.plot_array(
-        array=fit.data,
-        mask=include.mask_from_fit(fit=fit),
-        grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
-        positions=include.positions_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        include_origin=include.origin,
-    )
-
-
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
-def noise_map(fit, include=None, plotter=None):
-    """Plot the noise map of a lens fit.
-
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
-
-    Parameters
-    -----------
-    image : datas.imaging.datas.Imaging
-        The datas-datas, which include the observed datas, noise_map, PSF, signal-to-noise_map, etc.
-    origin : True
-        If true, the origin of the datas's coordinate system is plotted as a 'x'.
-    """
-    plotter.plot_array(
-        array=fit.noise_map,
-        mask=include.mask_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        include_origin=include.origin,
-    )
-
-
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
-def signal_to_noise_map(fit, include=None, plotter=None):
-    """Plot the noise map of a lens fit.
-
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
-
-    Parameters
-    -----------
-    image : datas.imaging.datas.Imaging
-    The datas-datas, which include the observed datas, signal_to_noise_map, PSF, signal-to-signal_to_noise_map, etc.
-    origin : True
-    If true, the origin of the datas's coordinate system is plotted as a 'x'.
-    """
-    plotter.plot_array(
-        array=fit.signal_to_noise_map,
-        mask=include.mask_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        include_origin=include.origin,
-    )
-
-
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
-def model_image(fit, include=None, plotter=None):
-    """Plot the model image of a fit.
-
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
-
-    Parameters
-    -----------
-    fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which include a list of every model image, residual_map, chi-squareds, etc.
-    image_index : int
-        The index of the datas in the datas-set of which the model image is plotted.
-    """
-    plotter.plot_array(
-        array=fit.model_data,
-        mask=include.mask_from_fit(fit=fit),
-        positions=include.positions_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        include_origin=include.origin,
-    )
-
-
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
-def residual_map(fit, include=None, plotter=None):
-    """Plot the residual-map of a lens fit.
-
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
-
-    Parameters
-    -----------
-    fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which include a list of every model image, residual_map, chi-squareds, etc.
-    image_index : int
-        The index of the datas in the datas-set of which the residual_map are plotted.
-    """
-    plotter.plot_array(
-        array=fit.residual_map,
-        mask=include.mask_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        include_origin=include.origin,
-    )
-
-
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
-def normalized_residual_map(fit, include=None, plotter=None):
-    """Plot the residual-map of a lens fit.
-
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
-
-    Parameters
-    -----------
-    fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which include a list of every model image, normalized_residual_map, chi-squareds, etc.
-    image_index : int
-        The index of the datas in the datas-set of which the normalized_residual_map are plotted.
-    """
-    plotter.plot_array(
-        array=fit.normalized_residual_map,
-        mask=include.mask_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        include_origin=include.origin,
-    )
-
-
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
-def chi_squared_map(fit, include=None, plotter=None):
-    """Plot the chi-squared map of a lens fit.
-
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
-
-    Parameters
-    -----------
-    fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which include a list of every model image, residual_map, chi-squareds, etc.
-    image_index : int
-        The index of the datas in the datas-set of which the chi-squareds are plotted.
-    """
-    plotter.plot_array(
-        array=fit.chi_squared_map,
-        mask=include.mask_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        mass_profile_centres=include.mass_profile_centres_from_obj(
-            obj=fit.tracer.image_plane
-        ),
-        critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        include_origin=include.origin,
     )

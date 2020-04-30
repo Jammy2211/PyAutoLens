@@ -1,5 +1,5 @@
 import autofit as af
-from autoastro.hyper import hyper_data as hd
+from autogalaxy.hyper import hyper_data as hd
 from autoarray.operators.inversion import pixelizations as pix
 from autoarray.operators.inversion import regularization as reg
 from autolens.pipeline.phase import abstract

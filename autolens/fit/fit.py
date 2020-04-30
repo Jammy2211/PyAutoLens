@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray.fit import fit as aa_fit
-from autoastro.galaxy import galaxy as g
+from autogalaxy.galaxy import galaxy as g
 
 
 class FitImaging(aa_fit.FitImaging):
@@ -164,7 +164,7 @@ class FitInterferometer(aa_fit.FitInterferometer):
 
         if hyper_background_noise is not None:
 
-            masked_interferometer = masked_interferometer.modify_image_and_noise_map(
+            masked_interferometer = masked_interferometer.modify_noise_map(
                 noise_map=noise_map
             )
 

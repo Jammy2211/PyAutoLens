@@ -1,15 +1,9 @@
 import autoarray as aa
 import autofit as af
 from autoarray.plot import mat_objs
-from autoastro.plot import lensing_plotters
-from autoastro.plot import fit_galaxy_plots
-from autolens.plot import (
-    ray_tracing_plots,
-    hyper_plots,
-    fit_imaging_plots,
-    fit_interferometer_plots,
-    inversion_plots,
-)
+from autogalaxy.plot import lensing_plotters
+from autogalaxy.plot import fit_galaxy_plots, hyper_plots, inversion_plots
+from autolens.plot import ray_tracing_plots, fit_imaging_plots, fit_interferometer_plots
 import copy
 
 
@@ -353,7 +347,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
             )
 
         if self.plot_subplots_of_all_planes_fits:
-            fit_imaging_plots.subplots_of_all_planes(
+            fit_imaging_plots.subplots_of_all_galaxies(
                 fit=fit, include=self.include, sub_plotter=self.sub_plotter
             )
 
@@ -366,9 +360,9 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
             plot_residual_map=self.plot_fit_residual_map,
             plot_chi_squared_map=self.plot_fit_chi_squared_map,
             plot_normalized_residual_map=self.plot_fit_normalized_residual_map,
-            plot_subtracted_images_of_planes=self.plot_fit_subtracted_images_of_planes,
-            plot_model_images_of_planes=self.plot_fit_model_images_of_planes,
-            plot_plane_images_of_planes=self.plot_fit_plane_images_of_planes,
+            plot_subtracted_images_of_galaxies=self.plot_fit_subtracted_images_of_planes,
+            plot_model_images_of_galaxies=self.plot_fit_model_images_of_planes,
+            plot_plane_images_of_galaxies=self.plot_fit_plane_images_of_planes,
             include=self.include,
             plotter=plotter,
         )
@@ -443,9 +437,9 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                     plot_residual_map=True,
                     plot_normalized_residual_map=True,
                     plot_chi_squared_map=True,
-                    plot_subtracted_images_of_planes=True,
-                    plot_model_images_of_planes=True,
-                    plot_plane_images_of_planes=True,
+                    plot_subtracted_images_of_galaxies=True,
+                    plot_model_images_of_galaxies=True,
+                    plot_plane_images_of_galaxies=True,
                     include=self.include,
                     plotter=plotter,
                 )
@@ -502,9 +496,9 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
             plot_residual_map=True,
             plot_normalized_residual_map=True,
             plot_chi_squared_map=True,
-            plot_subtracted_images_of_planes=True,
-            plot_model_images_of_planes=True,
-            plot_plane_images_of_planes=True,
+            plot_subtracted_images_of_galaxies=True,
+            plot_model_images_of_galaxies=True,
+            plot_plane_images_of_galaxies=True,
             include=self.include,
             plotter=fits_plotter,
         )

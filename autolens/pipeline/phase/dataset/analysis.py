@@ -1,5 +1,5 @@
 import autofit as af
-from autoastro.galaxy import galaxy as g
+from autogalaxy.galaxy import galaxy as g
 from autolens.lens import ray_tracing
 
 
