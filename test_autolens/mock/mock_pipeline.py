@@ -31,7 +31,11 @@ class MockSamples(af.AbstractSamples):
             log_likelihoods = [1.0, 2.0, 3.0]
 
         super().__init__(
-            model=None, parameters=[], log_likelihoods=log_likelihoods, log_priors=[], weights=[]
+            model=None,
+            parameters=[],
+            log_likelihoods=log_likelihoods,
+            log_priors=[],
+            weights=[],
         )
 
         self._max_log_likelihood_instance = max_log_likelihood_instance

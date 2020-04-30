@@ -74,14 +74,6 @@ class MaskedInterferometer(
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
 
-    def modify_image_and_noise_map(self, noise_map):
-
-        masked_interferometer = copy.deepcopy(self)
-
-        masked_interferometer.noise_map = noise_map
-
-        return masked_interferometer
-
 
 class SimulatorInterferometer(interferometer.SimulatorInterferometer):
     def __init__(

@@ -1,6 +1,6 @@
 import autofit as af
 from autoarray.structures import grids
-from autoastro.galaxy import galaxy as g
+from autogalaxy.galaxy import galaxy as g
 
 
 class Result(af.Result):

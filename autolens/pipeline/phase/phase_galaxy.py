@@ -1,8 +1,8 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autoastro.galaxy import fit_galaxy
-from autoastro.galaxy import masked_galaxy_data
+from autogalaxy.galaxy import fit_galaxy
+from autogalaxy.galaxy import masked_galaxy_data
 from autolens.pipeline.phase import abstract
 from autolens.pipeline import visualizer
 

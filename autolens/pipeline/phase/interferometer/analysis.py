@@ -1,6 +1,6 @@
 import autofit as af
 from autoarray.exc import InversionException
-from autoastro.galaxy import galaxy as g
+from autogalaxy.galaxy import galaxy as g
 from autofit.exc import FitException
 from autolens.fit import fit
 from autolens.pipeline import visualizer

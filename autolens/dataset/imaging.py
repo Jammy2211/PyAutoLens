@@ -1,5 +1,5 @@
-from autoarray.dataset import imaging
 from autoarray.structures import grids
+from autoarray.dataset import imaging
 from autolens.dataset import abstract
 from autolens.lens import ray_tracing
 
@@ -67,15 +67,6 @@ class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
             positions_threshold=positions_threshold,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
-
-    def modify_image_and_noise_map(self, image, noise_map):
-
-        masked_imaging = copy.deepcopy(self)
-
-        masked_imaging.image = image
-        masked_imaging.noise_map = noise_map
-
-        return masked_imaging
 
 
 class SimulatorImaging(imaging.SimulatorImaging):
