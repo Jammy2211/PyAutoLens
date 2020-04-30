@@ -1,5 +1,6 @@
 import autofit as af
 import autoarray as aa
+import autogalaxy as ag
 from autolens import exc
 from autolens.fit import fit
 from autoarray.operators.inversion import pixelizations as pix
@@ -7,21 +8,7 @@ from autoarray.operators.inversion import pixelizations as pix
 import numpy as np
 
 
-def isprior(obj):
-    if isinstance(obj, af.PriorModel):
-        return True
-    return False
-
-
-def isinstance_or_prior(obj, cls):
-    if isinstance(obj, cls):
-        return True
-    if isinstance(obj, af.PriorModel) and obj.cls == cls:
-        return True
-    return False
-
-
-class MetaDataset:
+class MetaDataset(ag.MetaDataset):
     def __init__(
         self,
         model,
@@ -34,32 +21,20 @@ class MetaDataset:
         inversion_pixel_limit=None,
         is_hyper_phase=False,
     ):
+
+        super().__init__(
+            model=model,
+            sub_size=sub_size,
+            signal_to_noise_limit=signal_to_noise_limit,
+            inversion_pixel_limit=inversion_pixel_limit,
+        )
+
         self.is_hyper_phase = is_hyper_phase
         self.model = model
-        self.sub_size = sub_size
-        self.signal_to_noise_limit = signal_to_noise_limit
         self.auto_positions_factor = auto_positions_factor
         self.positions_threshold = positions_threshold
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
         self.inversion_uses_border = inversion_uses_border
-        self.inversion_pixel_limit = (
-            inversion_pixel_limit
-            or af.conf.instance.general.get(
-                "inversion", "inversion_pixel_limit_overall", int
-            )
-        )
-
-    def mask_with_phase_sub_size_from_mask(self, mask):
-
-        if mask.sub_size != self.sub_size:
-            mask = aa.Mask.manual(
-                mask_2d=mask,
-                pixel_scales=mask.pixel_scales,
-                sub_size=self.sub_size,
-                origin=mask.origin,
-            )
-
-        return mask
 
     def updated_positions_from_positions_and_results(self, positions, results):
         """If automatic position updating is on, update the phase's positions using the results of the previous phase's
@@ -131,39 +106,6 @@ class MetaDataset:
                 "You have specified for a phase to use positions, but not input positions to the "
                 "pipeline when you ran it."
             )
-
-    @property
-    def pixelization(self):
-        for galaxy in self.model.galaxies:
-            if hasattr(galaxy, "pixelization"):
-                if galaxy.pixelization is not None:
-                    if isinstance(galaxy.pixelization, af.PriorModel):
-                        return galaxy.pixelization.cls
-                    else:
-                        return galaxy.pixelization
-
-    @property
-    def has_pixelization(self):
-        if self.pixelization is not None:
-            return True
-        else:
-            return False
-
-    @property
-    def uses_cluster_inversion(self):
-        if self.model.galaxies:
-            for galaxy in self.model.galaxies:
-                if isinstance_or_prior(galaxy.pixelization, pix.VoronoiBrightnessImage):
-                    return True
-        return False
-
-    @property
-    def pixelizaition_is_model(self):
-        if self.model.galaxies:
-            for galaxy in self.model.galaxies:
-                if isprior(galaxy.pixelization):
-                    return True
-        return False
 
     def preload_pixelization_grids_of_planes_from_results(self, results):
 

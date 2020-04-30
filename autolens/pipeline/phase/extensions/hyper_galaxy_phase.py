@@ -174,7 +174,6 @@ class HyperGalaxyPhase(HyperPhase):
             imaging=dataset,
             mask=results.last.mask,
             psf_shape_2d=dataset.psf.shape_2d,
-            positions=results.last.positions,
             positions_threshold=cast(
                 PhaseImaging, phase
             ).meta_dataset.positions_threshold,

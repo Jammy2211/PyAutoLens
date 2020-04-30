@@ -59,7 +59,6 @@ class MetaInterferometer(meta_dataset.MetaDataset):
             real_space_mask=real_space_mask,
             transformer_class=self.transformer_class,
             primary_beam_shape_2d=self.primary_beam_shape_2d,
-            positions=positions,
             positions_threshold=self.positions_threshold,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,

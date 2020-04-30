@@ -32,12 +32,12 @@ class MetaImaging(meta_dataset.MetaDataset):
         self.psf_shape_2d = psf_shape_2d
         self.bin_up_factor = bin_up_factor
 
-    def masked_dataset_from(self, dataset, mask, positions, results):
+    def masked_dataset_from(self, dataset, mask, results):
 
         mask = self.mask_with_phase_sub_size_from_mask(mask=mask)
 
         positions = self.updated_positions_from_positions_and_results(
-            positions=positions, results=results
+            positions=dataset.positions, results=results
         )
 
         self.positions_threshold = self.updated_positions_threshold_from_positions(
@@ -69,7 +69,6 @@ class MetaImaging(meta_dataset.MetaDataset):
             imaging=dataset,
             mask=mask,
             psf_shape_2d=self.psf_shape_2d,
-            positions=positions,
             positions_threshold=self.positions_threshold,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,
