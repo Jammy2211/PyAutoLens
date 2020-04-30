@@ -104,27 +104,27 @@ def test__subtracted_image_of_plane_is_output(
     plot_patch,
 ):
 
-    aplt.FitImaging.subtracted_image_of_galaxy(
+    aplt.FitImaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
-        galaxy_index=0,
+        plane_index=0,
         include=include_all,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert plot_path + "subtracted_image_of_plane_0.png" in plot_patch.paths
 
-    aplt.FitImaging.subtracted_image_of_galaxy(
+    aplt.FitImaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
-        galaxy_index=0,
+        plane_index=0,
         include=include_all,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert plot_path + "subtracted_image_of_plane_0.png" in plot_patch.paths
 
-    aplt.FitImaging.subtracted_image_of_galaxy(
+    aplt.FitImaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
-        galaxy_index=1,
+        plane_index=1,
         include=include_all,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
@@ -140,27 +140,27 @@ def test__model_image_of_plane_is_output(
     plot_patch,
 ):
 
-    aplt.FitImaging.model_image_of_galaxy(
+    aplt.FitImaging.model_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
-        galaxy_index=0,
+        plane_index=0,
         include=include_all,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert plot_path + "model_image_of_plane_0.png" in plot_patch.paths
 
-    aplt.FitImaging.model_image_of_galaxy(
+    aplt.FitImaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
-        galaxy_index=0,
+        plane_index=0,
         include=include_all,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert plot_path + "model_image_of_plane_0.png" in plot_patch.paths
 
-    aplt.FitImaging.model_image_of_galaxy(
+    aplt.FitImaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
-        galaxy_index=1,
+        plane_index=1,
         include=include_all,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
@@ -189,34 +189,34 @@ def test__subplot_of_plane(
     plot_patch,
 ):
 
-    aplt.FitImaging.subplot_of_galaxy(
+    aplt.FitImaging.subplot_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
-        galaxy_index=0,
+        plane_index=0,
         include=include_all,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert plot_path + "subplot_of_plane_0.png" in plot_patch.paths
 
-    aplt.FitImaging.subplot_of_galaxy(
+    aplt.FitImaging.subplot_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
-        galaxy_index=0,
+        plane_index=0,
         include=include_all,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert plot_path + "subplot_of_plane_0.png" in plot_patch.paths
 
-    aplt.FitImaging.subplot_of_galaxy(
+    aplt.FitImaging.subplot_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
-        galaxy_index=1,
+        plane_index=1,
         include=include_all,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert plot_path + "subplot_of_plane_1.png" in plot_patch.paths
 
-    aplt.FitImaging.subplots_of_all_galaxies(
+    aplt.FitImaging.subplots_of_all_planes(
         fit=masked_imaging_fit_x1_plane_7x7,
         include=include_all,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
@@ -224,7 +224,7 @@ def test__subplot_of_plane(
 
     assert plot_path + "subplot_of_plane_0.png" in plot_patch.paths
 
-    aplt.FitImaging.subplots_of_all_galaxies(
+    aplt.FitImaging.subplots_of_all_planes(
         fit=masked_imaging_fit_x2_plane_7x7,
         include=include_all,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
@@ -249,9 +249,9 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plot_signal_to_noise_map=False,
         plot_model_image=True,
         plot_chi_squared_map=True,
-        plot_subtracted_images_of_galaxies=True,
-        plot_model_images_of_galaxies=True,
-        plot_plane_images_of_galaxies=True,
+        plot_subtracted_images_of_planes=True,
+        plot_model_images_of_planes=True,
+        plot_plane_images_of_planes=True,
         include=include_all,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
@@ -283,9 +283,9 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plot_signal_to_noise_map=False,
         plot_model_image=True,
         plot_chi_squared_map=True,
-        plot_subtracted_images_of_galaxies=True,
-        plot_model_images_of_galaxies=True,
-        plot_plane_images_of_galaxies=True,
+        plot_subtracted_images_of_planes=True,
+        plot_model_images_of_planes=True,
+        plot_plane_images_of_planes=True,
         include=include_all,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )

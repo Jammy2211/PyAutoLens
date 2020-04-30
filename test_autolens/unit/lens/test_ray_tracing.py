@@ -324,7 +324,7 @@ class TestAbstractTracer:
 
             assert tracer.upper_plane_index_with_light_profile == 2
 
-        def test__hyper_model_image_of_galaxy_with_pixelization(self, sub_grid_7x7):
+        def test__hyper_model_image_of_plane_with_pixelization(self, sub_grid_7x7):
 
             gal = al.Galaxy(redshift=0.5)
             gal_pix = al.Galaxy(

@@ -2,8 +2,8 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autoarray.operators import transformer
+from autogalaxy.pipeline.phase import dataset
 from autolens.pipeline import tagging
-from autolens.pipeline.phase import dataset
 from autolens.pipeline.phase.interferometer.analysis import Analysis
 from autolens.pipeline.phase.interferometer.meta_interferometer import (
     MetaInterferometer,
