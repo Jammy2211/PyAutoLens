@@ -14,7 +14,7 @@ def subplot_tracer(tracer, grid, positions=None, include=None, sub_plotter=None)
     Parameters
     -----------
     tracer : autolens.imaging.tracer.Imaging
-        Class containing the _tracer,  noise_map-mappers and PSF that are to be plotted.
+        Class containing the _tracer,  noise_mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
         The path where the _tracer is output if the output_type is a file format (e.g. png, fits)
@@ -94,7 +94,7 @@ def individual(
     Parameters
     -----------
     tracer : autolens.imaging.tracer.Imaging
-        Class containing the _tracer, noise_map-mappers and PSF that are to be plotted.
+        Class containing the _tracer, noise_mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
         The path where the _tracer is output if the output_type is a file format (e.g. png, fits)

@@ -2,17 +2,17 @@ import autofit as af
 
 
 class PipelineDataset(af.Pipeline):
-    def __init__(self, pipeline_name, pipeline_tag, *phases):
-
-        super(PipelineDataset, self).__init__(pipeline_name, pipeline_tag, *phases)
-
-    def run(self, dataset, mask, positions=None, data_name=None):
+    def run(self, dataset, mask, positions=None, info=None):
         def runner(phase, results):
             return phase.run(
-                dataset=dataset, results=results, mask=mask, positions=positions
+                dataset=dataset,
+                results=results,
+                mask=mask,
+                positions=positions,
+                info=info,
             )
 
-        return self.run_function(runner, data_name)
+        return self.run_function(runner)
 
 
 class PipelinePositions(af.Pipeline):

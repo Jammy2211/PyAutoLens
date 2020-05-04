@@ -256,6 +256,36 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
             plotter=fits_plotter,
         )
 
+    def visualize_hyper_images(self, hyper_galaxy_image_path_dict, hyper_model_image):
+
+        plotter = self.plotter.plotter_with_new_output(
+            path=self.plotter.output.path + "hyper/"
+        )
+
+        sub_plotter = self.sub_plotter.plotter_with_new_output(
+            path=self.plotter.output.path + "hyper/"
+        )
+
+        if self.plot_hyper_model_image:
+            hyper_plots.hyper_model_image(
+                hyper_model_image=hyper_model_image,
+                mask=self.include.mask_from_masked_dataset(
+                    masked_dataset=self.masked_dataset
+                ),
+                include=self.include,
+                plotter=plotter,
+            )
+
+        if self.plot_hyper_galaxy_images:
+            hyper_plots.subplot_hyper_galaxy_images(
+                hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+                mask=self.include.mask_from_masked_dataset(
+                    masked_dataset=self.masked_dataset
+                ),
+                include=self.include,
+                sub_plotter=sub_plotter,
+            )
+
 
 class PhaseImagingVisualizer(PhaseDatasetVisualizer):
     def __init__(self, masked_dataset, image_path, results=None):
@@ -270,12 +300,6 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
 
         self.visualize_imaging()
 
-        if results is not None and results.last is not None:
-
-            if hasattr(results.last, "hyper_model_image"):
-
-                self.visualize_hyper_images(last_results=results.last)
-
     @property
     def masked_imaging(self):
         return self.masked_dataset
@@ -287,7 +311,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
         )
 
         if self.plot_subplot_dataset:
-            aa.plot.imaging.subplot_imaging(
+            aa.plot.Imaging.subplot_imaging(
                 imaging=self.masked_imaging.imaging,
                 mask=self.include.mask_from_masked_dataset(
                     masked_dataset=self.masked_dataset
@@ -299,7 +323,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                 sub_plotter=self.sub_plotter,
             )
 
-        aa.plot.imaging.individual(
+        aa.plot.Imaging.individual(
             imaging=self.masked_imaging.imaging,
             mask=self.include.mask_from_masked_dataset(
                 masked_dataset=self.masked_dataset
@@ -500,37 +524,6 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
                 plotter=fits_plotter,
             )
 
-    def visualize_hyper_images(self, last_results):
-
-        if last_results is not None:
-            plotter = self.plotter.plotter_with_new_output(
-                path=self.plotter.output.path + "hyper/"
-            )
-
-            sub_plotter = self.sub_plotter.plotter_with_new_output(
-                path=self.plotter.output.path + "hyper/"
-            )
-
-            if self.plot_hyper_model_image:
-                hyper_plots.hyper_model_image(
-                    hyper_model_image=last_results.hyper_model_image,
-                    mask=self.include.mask_from_masked_dataset(
-                        masked_dataset=self.masked_dataset
-                    ),
-                    include=self.include,
-                    plotter=plotter,
-                )
-
-            if self.plot_hyper_galaxy_images:
-                hyper_plots.subplot_hyper_galaxy_images(
-                    hyper_galaxy_image_path_dict=last_results.hyper_galaxy_image_path_dict,
-                    mask=self.include.mask_from_masked_dataset(
-                        masked_dataset=self.masked_dataset
-                    ),
-                    include=self.include,
-                    sub_plotter=sub_plotter,
-                )
-
 
 class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
     def __init__(self, masked_dataset, image_path):
@@ -557,13 +550,13 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
         )
 
         if self.plot_subplot_dataset:
-            aa.plot.interferometer.subplot_interferometer(
+            aa.plot.Interferometer.subplot_interferometer(
                 interferometer=self.masked_dataset.interferometer,
                 include=self.include,
                 sub_plotter=self.sub_plotter,
             )
 
-        aa.plot.interferometer.individual(
+        aa.plot.Interferometer.individual(
             interferometer=self.masked_dataset.interferometer,
             plot_visibilities=self.plot_dataset_data,
             plot_u_wavelengths=self.plot_dataset_uv_wavelengths,

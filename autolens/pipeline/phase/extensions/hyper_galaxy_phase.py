@@ -1,16 +1,17 @@
 import copy
+import pickle
+from typing import cast
 
 import numpy as np
-from typing import cast
 
 import autofit as af
 from autoarray.fit import fit as aa_fit
-from autolens.fit import fit
-from autolens.masked import masked_dataset
 from autoastro.galaxy import galaxy as g
 from autoastro.hyper import hyper_data as hd
-from autolens.pipeline.phase import imaging
+from autolens.dataset import imaging
+from autolens.fit import fit
 from autolens.pipeline import visualizer
+from autolens.pipeline.phase.imaging import PhaseImaging
 from .hyper_phase import HyperPhase
 
 
@@ -51,11 +52,8 @@ class Analysis(af.Analysis):
                 hyper_galaxy_image=self.hyper_galaxy_image,
             )
 
-            fit_normal = aa_fit.ImagingFit(
-                image=self.masked_imaging.image,
-                noise_map=self.masked_imaging.noise_map,
-                mask=self.masked_imaging.mask,
-                model_image=self.hyper_model_image,
+            fit_normal = aa_fit.FitImaging(
+                masked_imaging=self.masked_imaging, model_image=self.hyper_model_image
             )
 
             fit_hyper = self.fit_for_hyper_galaxy(
@@ -130,11 +128,12 @@ class Analysis(af.Analysis):
 
         noise_map = noise_map + hyper_noise_map
 
-        return aa_fit.ImagingFit(
-            image=image,
-            noise_map=noise_map,
-            mask=self.masked_imaging.mask,
-            model_image=self.hyper_model_image,
+        masked_imaging = self.masked_imaging.modify_image_and_noise_map(
+            image=image, noise_map=noise_map
+        )
+
+        return aa_fit.FitImaging(
+            masked_imaging=masked_imaging, model_image=self.hyper_model_image
         )
 
     @classmethod
@@ -153,7 +152,7 @@ class HyperGalaxyPhase(HyperPhase):
         self.include_sky_background = False
         self.include_noise_background = False
 
-    def run_hyper(self, dataset, results=None):
+    def run_hyper(self, dataset, info=None, results=None):
         """
         Run a fit for each galaxy from the previous phase.
         Parameters
@@ -169,23 +168,23 @@ class HyperGalaxyPhase(HyperPhase):
 
         phase = self.make_hyper_phase()
 
-        masked_imaging = masked_dataset.MaskedImaging(
+        masked_imaging = imaging.MaskedImaging(
             imaging=dataset,
             mask=results.last.mask,
             psf_shape_2d=dataset.psf.shape_2d,
             positions=results.last.positions,
             positions_threshold=cast(
-                imaging.PhaseImaging, phase
-            ).meta_imaging_fit.positions_threshold,
+                PhaseImaging, phase
+            ).meta_dataset.positions_threshold,
             pixel_scale_interpolation_grid=cast(
-                imaging.PhaseImaging, phase
-            ).meta_imaging_fit.pixel_scale_interpolation_grid,
+                PhaseImaging, phase
+            ).meta_dataset.pixel_scale_interpolation_grid,
             inversion_pixel_limit=cast(
-                imaging.PhaseImaging, phase
-            ).meta_imaging_fit.inversion_pixel_limit,
+                PhaseImaging, phase
+            ).meta_dataset.inversion_pixel_limit,
             inversion_uses_border=cast(
-                imaging.PhaseImaging, phase
-            ).meta_imaging_fit.inversion_uses_border,
+                PhaseImaging, phase
+            ).meta_dataset.inversion_uses_border,
             preload_sparse_grids_of_planes=None,
         )
 
@@ -240,10 +239,11 @@ class HyperGalaxyPhase(HyperPhase):
             if not np.all(
                 hyper_result.analysis.hyper_galaxy_image_path_dict[path] == 0
             ):
+                hyper_model_image = hyper_result.analysis.hyper_model_image
 
                 analysis = self.Analysis(
                     masked_imaging=masked_imaging,
-                    hyper_model_image=hyper_result.analysis.hyper_model_image,
+                    hyper_model_image=hyper_model_image,
                     hyper_galaxy_image=hyper_result.analysis.hyper_galaxy_image_path_dict[
                         path
                     ],

@@ -8,7 +8,7 @@ data_type = "lens_x2_light"
 data_resolution = "lsst"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
     class LensPlanex2GalPhase(al.PhaseImaging):
         def customize_priors(self, results):
 
@@ -24,7 +24,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             lens_0=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
             lens_1=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True

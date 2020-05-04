@@ -1,7 +1,7 @@
 import numpy as np
 
-import autofit as af
 import autoarray as aa
+import autofit as af
 from autoastro.galaxy import galaxy as g
 from autolens.pipeline.phase import dataset
 
@@ -88,7 +88,7 @@ class Result(dataset.Result):
     @property
     def hyper_model_image(self):
 
-        hyper_model_image = aa.masked.array.zeros(mask=self.mask.mask_sub_1)
+        hyper_model_image = aa.MaskedArray.zeros(mask=self.mask.mask_sub_1)
 
         for path, galaxy in self.path_galaxy_tuples:
             hyper_model_image += self.hyper_galaxy_image_path_dict[path]

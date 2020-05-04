@@ -33,13 +33,19 @@ class ModelFixingHyperPhase(HyperPhase):
         phase.optimizer.evidence_tolerance = af.conf.instance.non_linear.get(
             "MultiNest", "extension_inversion_evidence_tolerance", float
         )
+        phase.optimizer.terminate_at_acceptance_ratio = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_inversion_terminate_at_acceptance_ratio", bool
+        )
+        phase.optimizer.acceptance_ratio_threshold = af.conf.instance.non_linear.get(
+            "MultiNest", "extension_inversion_acceptance_ratio_threshold", float
+        )
 
         return phase
 
     def make_model(self, instance):
         return instance.as_model(self.model_classes)
 
-    def run_hyper(self, dataset, results=None, **kwargs):
+    def run_hyper(self, dataset, info=None, results=af.ResultsCollection(), **kwargs):
         """
         Run the phase, overriding the optimizer's model instance with one created to
         only fit pixelization hyperparameters.

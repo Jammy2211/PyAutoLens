@@ -7,7 +7,7 @@ from autoastro import lensing
 from autoarray.util import array_util, grid_util
 from autoarray.mask import mask as msk
 from autoarray.structures import grids
-from autoarray.masked.masked_structures import MaskedArray
+from autoarray.structures.arrays import MaskedArray
 from autoarray.operators.inversion import inversions as inv
 from autoastro.galaxy import galaxy as g
 from autoastro.util import cosmology_util
@@ -684,10 +684,10 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         self, grid, transformer
     ):
 
-        profile_images_1d_of_planes = self.profile_images_of_planes_from_grid(grid=grid)
+        profile_images_of_planes = self.profile_images_of_planes_from_grid(grid=grid)
         return [
-            transformer.visibilities_from_image(image=profile_image_1d)
-            for profile_image_1d in profile_images_1d_of_planes
+            transformer.visibilities_from_image(image=profile_image)
+            for profile_image in profile_images_of_planes
         ]
 
     def sparse_image_plane_grids_of_planes_from_grid(self, grid):

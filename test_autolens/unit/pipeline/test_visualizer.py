@@ -11,7 +11,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="plot_path")
 def make_visualizer_plotter_setup():
-    return "{}/../test_files/plotting/visualizer/".format(
+    return "{}/files/plot/visualizer/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 
@@ -19,7 +19,7 @@ def make_visualizer_plotter_setup():
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
-        path.join(directory, "../test_files/plot"), path.join(directory, "output")
+        path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 
 
@@ -225,18 +225,10 @@ class TestPhaseImagingVisualizer:
             preloaded_caustics=include_all.preloaded_caustics,
         )
 
-        class MockLastResults:
-            def __init__(self, hyper_model_image, hyper_galaxy_image_path_dict):
-
-                self.hyper_model_image = hyper_model_image
-                self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
-
-        last_results = MockLastResults(
-            hyper_model_image=hyper_model_image_7x7,
+        visualizer.visualize_hyper_images(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict_7x7,
+            hyper_model_image=hyper_model_image_7x7,
         )
-
-        visualizer.visualize_hyper_images(last_results=last_results)
 
         assert plot_path + "hyper/hyper_model_image.png" in plot_patch.paths
         assert plot_path + "hyper/subplot_hyper_galaxy_images.png" in plot_patch.paths

@@ -10,7 +10,7 @@ from test_autolens.simulate.imaging import simulate_util
 imaging = simulate_util.load_test_imaging(
     data_type="lens_sis__source_smooth", data_resolution="hst"
 )
-mask = al.mask.circular(
+mask = al.Mask.circular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     radius=3.0,
@@ -27,12 +27,12 @@ source_galaxy = al.Galaxy(
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
-masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
+masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
-fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
+fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.fit_imaging.subplot_of_plane(
+aplt.FitImaging.subplot_of_plane(
     fit=fit,
     plane_index=1,
     plot_in_kpc=True,
@@ -40,7 +40,7 @@ aplt.fit_imaging.subplot_of_plane(
     include_caustics=True,
 )
 
-aplt.fit_imaging.subplot_of_plane(
+aplt.FitImaging.subplot_of_plane(
     fit=fit,
     plane_index=1,
     plot_in_kpc=False,
@@ -49,4 +49,4 @@ aplt.fit_imaging.subplot_of_plane(
 )
 
 
-aplt.inversion.subplot_imaging(inversion=fit.inversion)
+aplt.Inversion.subplot_imaging(inversion=fit.inversion)

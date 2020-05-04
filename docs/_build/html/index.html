@@ -1,0 +1,338 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PyAutoLens &mdash; PyAutoLens</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> PyAutoLens
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workspace.html">Workspace Tour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howtolens.html">HowToLens Lectures</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Involved:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="papers.html">Papers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">PyAutoLens</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>PyAutoLens</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pyautolens">
+<h1>PyAutoLens<a class="headerlink" href="#pyautolens" title="Permalink to this headline">¶</a></h1>
+<p>When two or more galaxies are aligned perfectly down our line-of-sight, the background galaxy appears multiple times. This is called strong gravitational lensing, &amp; <strong>PyAutoLens</strong> makes it simple to model strong gravitational lenses, like this one:</p>
+<a class="reference internal image-reference" href="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/gitimage.png"><img alt="Alternative text" src="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/gitimage.png" style="width: 400px;" /></a>
+<p><strong>PyAutoLens</strong> is based on the following papers:</p>
+<p><a class="reference external" href="https://arxiv.org/abs/1412.7436">Adaptive Semi-linear Inversion of Strong Gravitational Lens Imaging</a></p>
+<p><a class="reference external" href="https://arxiv.org/abs/1708.07377">AutoLens: Automated Modeling of a Strong Lens’s Light, Mass &amp; Source</a></p>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>With <strong>PyAutoLens</strong>, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple analysis which fits the foreground lens galaxy’s mass &amp; the background source galaxy’s light.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">autofit</span> <span class="kn">as</span> <span class="nn">af</span>
+<span class="kn">import</span> <span class="nn">autolens</span> <span class="kn">as</span> <span class="nn">al</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># In this example, we&#39;ll fit a simple lens galaxy + source galaxy system.</span>
+<span class="n">dataset_path</span> <span class="o">=</span> <span class="s1">&#39;{}/../data/&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+
+<span class="n">lens_name</span> <span class="o">=</span> <span class="s1">&#39;example_lens&#39;</span>
+
+<span class="c1"># Get the relative path to the data in our workspace &amp; load the imaging data.</span>
+<span class="n">imaging</span> <span class="o">=</span> <span class="n">al</span><span class="o">.</span><span class="n">imaging</span><span class="o">.</span><span class="n">from_fits</span><span class="p">(</span>
+    <span class="n">image_path</span><span class="o">=</span><span class="n">dataset_path</span> <span class="o">+</span> <span class="n">lens_name</span> <span class="o">+</span> <span class="s1">&#39;/image.fits&#39;</span><span class="p">,</span>
+    <span class="n">psf_path</span><span class="o">=</span><span class="n">dataset_path</span><span class="o">+</span><span class="n">lens_name</span><span class="o">+</span><span class="s1">&#39;/psf.fits&#39;</span><span class="p">,</span>
+    <span class="n">noise_map_path</span><span class="o">=</span><span class="n">dataset_path</span><span class="o">+</span><span class="n">lens_name</span><span class="o">+</span><span class="s1">&#39;/noise_map.fits&#39;</span><span class="p">,</span>
+    <span class="n">pixel_scales</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c1"># Create a mask for the data, which we setup as a 3.0&quot; circle.</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">al</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">circular</span><span class="p">(</span><span class="n">shape_2d</span><span class="o">=</span><span class="n">imaging</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pixel_scales</span><span class="o">=</span><span class="n">imaging</span><span class="o">.</span><span class="n">pixel_scales</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+
+<span class="c1"># We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) &amp; our source galaxy</span>
+<span class="c1"># a light profile (an elliptical Sersic).</span>
+<span class="n">lens_mass_profile</span> <span class="o">=</span> <span class="n">al</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">EllipticalIsothermal</span>
+<span class="n">source_light_profile</span> <span class="o">=</span> <span class="n">al</span><span class="o">.</span><span class="n">lp</span><span class="o">.</span><span class="n">EllipticalSersic</span>
+
+<span class="c1"># To setup our model galaxies, we use the GalaxyModel class, which represents a galaxy whose parameters</span>
+<span class="c1"># are model &amp; fitted for by PyAutoLens. The galaxies are also assigned redshifts.</span>
+<span class="n">lens_galaxy_model</span> <span class="o">=</span> <span class="n">al</span><span class="o">.</span><span class="n">GalaxyModel</span><span class="p">(</span><span class="n">redshift</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span><span class="n">lens_mass_profile</span><span class="p">)</span>
+<span class="n">source_galaxy_model</span> <span class="o">=</span> <span class="n">al</span><span class="o">.</span><span class="n">GalaxyModel</span><span class="p">(</span><span class="n">redshift</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">light</span><span class="o">=</span><span class="n">source_light_profile</span><span class="p">)</span>
+
+<span class="c1"># To perform the analysis we set up a phase, which takes our galaxy models &amp; fits their parameters using a non-linear</span>
+<span class="c1"># search (in this case, MultiNest).</span>
+<span class="n">phase</span> <span class="o">=</span> <span class="n">al</span><span class="o">.</span><span class="n">PhaseImaging</span><span class="p">(</span>
+    <span class="n">galaxies</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">lens</span><span class="o">=</span><span class="n">lens_galaxy_model</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source_galaxy_model</span><span class="p">),</span>
+    <span class="n">phase_name</span><span class="o">=</span><span class="s1">&#39;example/phase_example&#39;</span><span class="p">,</span> <span class="n">non_linear_class</span><span class="o">=</span><span class="n">af</span><span class="o">.</span><span class="n">MultiNest</span><span class="p">)</span>
+
+<span class="c1"># We pass the imaging data and mask to the phase, thereby fitting it with the lens model above &amp; plot the resulting fit.</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">imaging</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+<span class="n">al</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">fit_imaging</span><span class="o">.</span><span class="n">subplot_fit_imaging</span><span class="p">(</span><span class="n">fit</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">most_likely_fit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<p><strong>PyAutoLens’s</strong> advanced modeling features include:</p>
+<ul class="simple">
+<li><p><strong>Galaxies</strong> - Use light &amp; mass profiles to make galaxies &amp; perform lensing calculations.</p></li>
+<li><p><strong>Pipelines</strong> - Write automated analysis pipelines to fit complex lens models to large samples of strong lenses.</p></li>
+<li><p><strong>Extended Sources</strong> - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.</p></li>
+<li><p><strong>Adaption</strong> - Adapt the lensing analysis to the features of the observed strong lens imaging.</p></li>
+<li><p><strong>Multi-Plane</strong> - Perform multi-plane ray-tracing &amp; model multi-plane lens systems.</p></li>
+<li><p><strong>Visualization</strong> - Custom visualization libraries for plotting physical lensing quantities &amp; modeling results.</p></li>
+</ul>
+</div>
+<div class="section" id="howtolens">
+<h2>HowToLens<a class="headerlink" href="#howtolens" title="Permalink to this headline">¶</a></h2>
+<p>Included with <strong>PyAutoLens</strong> is the <strong>HowToLens</strong> lecture series, which provides an introduction to strong gravitational lens modeling with <strong>PyAutoLens</strong>. It can be found in the workspace &amp; consists of 5 chapters:</p>
+<ul class="simple">
+<li><p><strong>Introduction</strong> - An introduction to strong gravitational lensing &amp; <strong>PyAutolens</strong>.</p></li>
+<li><p><strong>Lens Modeling</strong> - How to model strong lenses, including a primer on Bayesian non-linear analysis.</p></li>
+<li><p><strong>Pipelines</strong> - How to build pipelines &amp; tailor them to your own science case.</p></li>
+<li><p><strong>Inversions</strong> - How to perform pixelized reconstructions of the source-galaxy.</p></li>
+<li><p><strong>Hyper-Mode</strong> - How to use <strong>PyAutoLens</strong> advanced modeling features that adapt the model to the strong lens being analysed.</p></li>
+</ul>
+</div>
+<div class="section" id="workspace">
+<h2>Workspace<a class="headerlink" href="#workspace" title="Permalink to this headline">¶</a></h2>
+<p><strong>PyAutoLens</strong> comes with a workspace, which can be found <a class="reference external" href="https://github.com/Jammy2211/autolens_workspace">here</a> &amp; which includes:</p>
+<ul class="simple">
+<li><p><strong>Aggregator</strong> - Manipulate large suites of modeling results via Jupyter notebooks, using <strong>PyAutoFit</strong>’s in-built results database.</p></li>
+<li><p><strong>Config</strong> - Configuration files which customize <strong>PyAutoLens</strong>’s behaviour.</p></li>
+<li><p><strong>Dataset</strong> - Where data is stored, including example datasets distributed with <strong>PyAutoLens</strong>.</p></li>
+<li><p><strong>HowToLens</strong> - The <strong>HowToLens</strong> lecture series.</p></li>
+<li><p><strong>Output</strong> - Where the <strong>PyAutoLens</strong> analysis and visualization are output.</p></li>
+<li><p><strong>Pipelines</strong> - Example pipelines for modeling strong lenses.</p></li>
+<li><p><strong>Plot</strong> - Example scripts for customizing figures and images.</p></li>
+<li><p><strong>Preprocessing</strong> - Tools for preprocessing data before an analysis (e.g. creating a mask).</p></li>
+<li><p><strong>Quick Start</strong> - A quick start guide, so you can begin modeling your lenses within hours.</p></li>
+<li><p><strong>Runners</strong> - Scripts for running a <strong>PyAutoLens</strong> pipeline.</p></li>
+<li><p><strong>Simulators</strong> - Scripts for simulating strong lens datasets with <strong>PyAutoLens</strong>.</p></li>
+<li><p><strong>Tools</strong> - Extra tools for using many other <strong>PyAutoLens</strong> features.</p></li>
+</ul>
+</div>
+<div class="section" id="slack">
+<h2>Slack<a class="headerlink" href="#slack" title="Permalink to this headline">¶</a></h2>
+<p>We’re building a <strong>PyAutoLens</strong> community on Slack, so you should contact us on our <a class="reference external" href="https://pyautolens.slack.com/">Slack channel</a> before getting started. Here, I will give you the latest updates on the software &amp; discuss how best to use <strong>PyAutoLens</strong> for your science case.</p>
+<p>Unfortunately, Slack is invitation-only, so first send me an <a class="reference external" href="https://github.com/Jammy2211">email</a> requesting an invite.</p>
+</div>
+<div class="section" id="documentation-installation">
+<h2>Documentation &amp; Installation<a class="headerlink" href="#documentation-installation" title="Permalink to this headline">¶</a></h2>
+<p>The PyAutoLens documentation can be found at our <a class="reference external" href="https://pyautolens.readthedocs.io/en/latest">readthedocs</a>, including instructions on <a class="reference external" href="https://pyautolens.readthedocs.io/en/latest/installation.html">installation</a>.</p>
+</div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<p>If you have any suggestions or would like to contribute please get in touch.</p>
+</div>
+<div class="section" id="papers">
+<h2>Papers<a class="headerlink" href="#papers" title="Permalink to this headline">¶</a></h2>
+<p>A list of published articles using <strong>PyAutoLens</strong> can be found <a class="reference external" href="https://pyautolens.readthedocs.io/en/latest/papers.html">here</a> .</p>
+</div>
+<div class="section" id="credits">
+<h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
+<p><strong>Developers</strong>:</p>
+<p><a class="reference external" href="https://github.com/Jammy2211">James Nightingale</a> - Lead developer &amp; PyAutoLens guru.</p>
+<p><a class="reference external" href="https://github.com/rhayes777">Richard Hayes</a> - Lead developer &amp; <a class="reference external" href="https://github.com/rhayes777/PyAutoFit">PyAutoFit</a> guru.</p>
+<p><a class="reference external" href="https://github.com/AshKelly">Ashley Kelly</a> - Developer of <a class="reference external" href="https://github.com/AshKelly/pyquad">pyquad</a> for fast deflections computations.</p>
+<p><a class="reference external" href="https://github.com/amyetherington">Amy Etherington</a> - Magnification, Critical Curves and Caustic Calculations.</p>
+<p><a class="reference external" href="https://github.com/caoxiaoyue">Xiaoyue Cao</a> - Analytic Ellipitcal Power-Law Deflection Angle Calculations.</p>
+<p>Qiuhan He  - NFW Profile Lensing Calculations.</p>
+<p><a class="reference external" href="https://github.com/linan7788626">Nan Li</a> - Docker integration &amp; support.</p>
+<p><strong>Code Donors</strong>:</p>
+<p><a class="reference external" href="https://github.com/Andrew-Robertson">Andrew Robertson</a> - Critical curve &amp; caustic calculations.</p>
+<p>Mattia Negrello - Visibility models in the uv-plane via direct Fourier transforms.</p>
+<p><a class="reference external" href="https://github.com/AndreaEnia">Andrea Enia</a> - Voronoi source-plane plotting tools.</p>
+<p><a class="reference external" href="https://github.com/Sketos">Aristeidis Amvrosiadis</a> - ALMA imaging data loading.</p>
+<p>Conor O’Riordan  - Broken Power-Law mass profile.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, James Nightingale, Richard Hayes
+      <span class="lastupdated">
+        Last updated on Mar 22, 2020.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

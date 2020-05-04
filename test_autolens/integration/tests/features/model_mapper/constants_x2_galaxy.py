@@ -8,7 +8,7 @@ data_type = "lens_light_dev_vaucouleurs"
 data_resolution = "lsst"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
     class MMPhase(al.PhaseImaging):
         def customize_priors(self, results):
             self.galaxies.lens_0.light.axis_ratio = 0.2
@@ -27,7 +27,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             lens_0=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
             lens_1=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True

@@ -1,0 +1,101 @@
+{
+    "GeometryProfile": {
+        "centre_0": {
+            "type": "Gaussian",
+            "lower_limit": "-inf",
+            "upper_limit": "inf",
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "mean": 0.0,
+            "sigma": 0.3
+        },
+        "centre_1": {
+            "type": "Gaussian",
+            "lower_limit": "-inf",
+            "upper_limit": "inf",
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "mean": 0.0,
+            "sigma": 0.3
+        },
+        "unit_label": {}
+    },
+    "SphericalProfile": {
+        "centre_0": {
+            "type": "Gaussian",
+            "lower_limit": "-inf",
+            "upper_limit": "inf",
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "mean": 0.0,
+            "sigma": 0.3
+        },
+        "centre_1": {
+            "type": "Gaussian",
+            "lower_limit": "-inf",
+            "upper_limit": "inf",
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "mean": 0.0,
+            "sigma": 0.3
+        }
+    },
+    "EllipticalProfile": {
+        "centre_0": {
+            "type": "Gaussian",
+            "lower_limit": "-inf",
+            "upper_limit": "inf",
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "mean": 0.0,
+            "sigma": 0.3
+        },
+        "centre_1": {
+            "type": "Gaussian",
+            "lower_limit": "-inf",
+            "upper_limit": "inf",
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "mean": 0.0,
+            "sigma": 0.3
+        },
+        "axis_ratio": {
+            "type": "Uniform",
+            "lower_limit": 0.2,
+            "upper_limit": 1.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.2
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": 1.0
+            }
+        },
+        "phi": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 180.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 20.0
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": 180.0
+            }
+        }
+    }
+}

@@ -13,7 +13,7 @@ def make_pipeline(
     phase_folders,
     real_space_shape_2d=(100, 100),
     real_space_pixel_scales=(0.1, 0.1),
-    optimizer_class=af.MultiNest,
+    non_linear_class=af.MultiNest,
 ):
     phase1 = al.PhaseInterferometer(
         phase_name="phase_1",
@@ -21,7 +21,7 @@ def make_pipeline(
         galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)),
         real_space_shape_2d=real_space_shape_2d,
         real_space_pixel_scales=real_space_pixel_scales,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase1.optimizer.const_efficiency_mode = True

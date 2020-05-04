@@ -8,7 +8,7 @@ data_type = "lens_light__source_smooth"
 data_resolution = "lsst"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
@@ -21,11 +21,16 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             ),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
+    phase1.optimizer.const_efficiency_mode = True
+    phase1.optimizer.n_live_points = 40
+    phase1.optimizer.sampling_efficiency = 0.8
+    phase1.optimizer.evidence_tolerance = 10.0
+
     phase2 = al.PhaseImaging(
-        phase_name="phase_2_weighted_regularization",
+        phase_name="phase_2",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=phase1.result.instance.galaxies.lens,
@@ -36,52 +41,31 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             ),
         ),
         inversion_pixel_limit=50,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase2.optimizer.const_efficiency_mode = True
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
+    phase2.optimizer.evidence_tolerance = 1000.0
 
     phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
 
-    class InversionPhase(al.PhaseImaging):
-        def customize_priors(self, results):
-
-            ## Lens Mass, SIE -> SIE, Shear -> Shear ###
-
-            self.galaxies.lens = results.from_phase("phase_1").model.galaxies.lens
-
-            self.galaxies.source.pixelization = (
-                results.last.inversion.instance.galaxies.source.pixelization
-            )
-            self.galaxies.source.regularization = (
-                results.last.inversion.instance.galaxies.source.regularization
-            )
-
-    phase3 = InversionPhase(
+    phase3 = al.PhaseImaging(
         phase_name="phase_3",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(
-                redshift=0.5,
-                light=al.lp.EllipticalSersic,
-                mass=al.mp.EllipticalIsothermal,
-                shear=al.mp.ExternalShear,
-            ),
-            source=al.GalaxyModel(
-                redshift=1.0,
-                pixelization=al.pix.VoronoiBrightnessImage,
-                regularization=al.reg.AdaptiveBrightness,
-            ),
+            lens=phase1.result.model.galaxies.lens,
+            source=phase2.result.instance.galaxies.source,
         ),
         inversion_pixel_limit=50,
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase3.optimizer.const_efficiency_mode = True
     phase3.optimizer.n_live_points = 40
     phase3.optimizer.sampling_efficiency = 0.8
+    phase3.optimizer.evidence_tolerance = 1000.0
 
     phase3 = phase3.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
 

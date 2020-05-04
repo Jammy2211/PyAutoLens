@@ -9,7 +9,7 @@ from autofit.optimize.non_linear.mock_nlo import MockNLO
 def run(
     module,
     test_name=None,
-    optimizer_class=af.MultiNest,
+    non_linear_class=af.MultiNest,
     config_folder="config",
     positions=None,
 ):
@@ -24,10 +24,10 @@ def run(
         data_type=module.data_type, data_resolution=module.data_resolution
     )
 
-    module.make_pipeline(
+    module.make_pipeline_no_lens_light(
         name=test_name,
         phase_folders=[module.test_type, test_name],
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     ).run(dataset=interferometer, positions=positions)
 
 
@@ -36,7 +36,7 @@ def run_a_mock(module):
     run(
         module,
         test_name=f"{module.test_name}_mock",
-        optimizer_class=MockNLO,
+        non_linear_class=MockNLO,
         config_folder="config_mock",
     )
 
@@ -46,6 +46,6 @@ def run_with_multi_nest(module):
     run(
         module,
         test_name=f"{module.test_name}_nest",
-        optimizer_class=af.MultiNest,
+        non_linear_class=af.MultiNest,
         config_folder="config_mock",
     )

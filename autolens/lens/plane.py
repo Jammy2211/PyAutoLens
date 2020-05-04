@@ -3,8 +3,7 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autoastro import lensing
-from autoarray.structures import grids, visibilities as vis
-from autoarray.masked import masked_structures
+from autoarray.structures import arrays, grids, visibilities as vis
 from autoastro.util import cosmology_util
 from autolens import exc
 from autoastro import dimensions as dim
@@ -577,7 +576,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
         Parameters
         -----------
         noise_map : imaging.NoiseMap or ndarray
-            An arrays describing the RMS standard deviation error in each pixel, preferably in unit_label of electrons per
+            An arrays describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         """
         hyper_noise_maps = []
@@ -595,9 +594,7 @@ class AbstractPlaneData(AbstractPlaneLensing):
 
             else:
 
-                hyper_noise_maps.append(
-                    masked_structures.MaskedArray.zeros(mask=noise_map.mask)
-                )
+                hyper_noise_maps.append(arrays.MaskedArray.zeros(mask=noise_map.mask))
 
         return hyper_noise_maps
 

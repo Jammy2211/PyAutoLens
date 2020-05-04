@@ -182,7 +182,7 @@ def critical_curve_via_magnification_from_plane_and_grid(plane, grid):
             grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
         )
 
-        critical_curve = al.grid_irregular.manual_1d(grid=critical_curve)
+        critical_curve = al.GridIrregular.manual_1d(grid=critical_curve)
 
         critical_curves.append(critical_curve)
 
@@ -885,7 +885,7 @@ class TestAbstractPlaneLensing:
 
         def test__same_as_above__grid_is_positions(self):
             # Overwrite one value so intensity in each pixel is different
-            positions = al.coordinates(coordinates=[[(2.0, 2.0)], [(3.0, 3.0)]])
+            positions = al.Coordinates(coordinates=[[(2.0, 2.0)], [(3.0, 3.0)]])
 
             g0 = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
@@ -1878,9 +1878,9 @@ class TestAbstractPlaneData:
             # -1.6, -0.8, 0.0, 0.8, 1.6. The origin -1.6, -1.6 of the model_galaxy means its brighest pixel should be
             # index 0 of the 1D grid and (0,0) of the 2d plane datas_.
 
-            mask = al.mask.unmasked(shape_2d=(5, 5), pixel_scales=1.0, sub_size=1)
+            mask = al.Mask.unmasked(shape_2d=(5, 5), pixel_scales=1.0, sub_size=1)
 
-            grid = al.masked.grid.from_mask(mask=mask)
+            grid = al.MaskedGrid.from_mask(mask=mask)
 
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -1942,10 +1942,10 @@ class TestAbstractPlaneData:
                 contribution_factor=1.0, noise_factor=0.0, noise_power=1.0
             )
 
-            hyper_model_image = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
+            hyper_model_image = al.Array.manual_2d(array=[[0.5, 1.0, 1.5]])
 
-            hyper_galaxy_image_0 = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
-            hyper_galaxy_image_1 = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
+            hyper_galaxy_image_0 = al.Array.manual_2d(array=[[0.5, 1.0, 1.5]])
+            hyper_galaxy_image_1 = al.Array.manual_2d(array=[[0.5, 1.0, 1.5]])
 
             galaxy_0 = al.Galaxy(
                 redshift=0.5,
@@ -1973,8 +1973,8 @@ class TestAbstractPlaneData:
             ).all()
 
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
-            hyper_model_image = al.array.manual_2d([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = al.array.manual_2d([[1.0, 5.0, 8.0]])
+            hyper_model_image = al.Array.manual_2d([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = al.Array.manual_2d([[1.0, 5.0, 8.0]])
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
@@ -2025,8 +2025,8 @@ class TestAbstractPlaneData:
             ).all()
 
         def test__contriution_maps_are_none_for_galaxy_without_hyper_galaxy(self):
-            hyper_model_image = al.array.manual_2d([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = al.array.manual_2d([[1.0, 5.0, 8.0]])
+            hyper_model_image = al.Array.manual_2d([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = al.Array.manual_2d([[1.0, 5.0, 8.0]])
 
             hyper_galaxy = al.HyperGalaxy(contribution_factor=5.0)
 
@@ -2063,10 +2063,10 @@ class TestAbstractPlaneData:
                 contribution_factor=1.0, noise_factor=0.0, noise_power=1.0
             )
 
-            hyper_model_image = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
+            hyper_model_image = al.Array.manual_2d(array=[[0.5, 1.0, 1.5]])
 
-            hyper_galaxy_image_0 = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
-            hyper_galaxy_image_1 = al.array.manual_2d(array=[[0.5, 1.0, 1.5]])
+            hyper_galaxy_image_0 = al.Array.manual_2d(array=[[0.5, 1.0, 1.5]])
+            hyper_galaxy_image_1 = al.Array.manual_2d(array=[[0.5, 1.0, 1.5]])
 
             galaxy_0 = al.Galaxy(
                 redshift=0.5,
@@ -2104,7 +2104,7 @@ class TestAbstractPlaneData:
         def test__x2_hyper_galaxy__use_numerical_values_of_hyper_noise_map_scaling(
             self
         ):
-            noise_map = al.array.manual_2d([[1.0, 2.0, 3.0]])
+            noise_map = al.Array.manual_2d([[1.0, 2.0, 3.0]])
 
             hyper_galaxy_0 = al.HyperGalaxy(
                 contribution_factor=0.0, noise_factor=1.0, noise_power=1.0
@@ -2113,10 +2113,10 @@ class TestAbstractPlaneData:
                 contribution_factor=3.0, noise_factor=1.0, noise_power=2.0
             )
 
-            hyper_model_image = al.array.manual_2d([[0.5, 1.0, 1.5]])
+            hyper_model_image = al.Array.manual_2d([[0.5, 1.0, 1.5]])
 
-            hyper_galaxy_image_0 = al.array.manual_2d([[0.0, 1.0, 1.5]])
-            hyper_galaxy_image_1 = al.array.manual_2d([[1.0, 1.0, 1.5]])
+            hyper_galaxy_image_0 = al.Array.manual_2d([[0.0, 1.0, 1.5]])
+            hyper_galaxy_image_1 = al.Array.manual_2d([[1.0, 1.0, 1.5]])
 
             galaxy_0 = al.Galaxy(
                 redshift=0.5,
@@ -2144,10 +2144,10 @@ class TestAbstractPlaneData:
             )
 
         def test__hyper_noise_maps_are_same_as_hyper_galaxy_calculation(self):
-            noise_map = al.array.manual_2d([[5.0, 3.0, 1.0]])
+            noise_map = al.Array.manual_2d([[5.0, 3.0, 1.0]])
 
-            hyper_model_image = al.array.manual_2d([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = al.array.manual_2d([[1.0, 5.0, 8.0]])
+            hyper_model_image = al.Array.manual_2d([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = al.Array.manual_2d([[1.0, 5.0, 8.0]])
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
@@ -2207,10 +2207,10 @@ class TestAbstractPlaneData:
             assert (hyper_noise_maps[1].in_1d == hyper_noise_map_0).all()
 
         def test__hyper_noise_maps_are_none_for_galaxy_without_hyper_galaxy(self):
-            noise_map = al.array.manual_2d([[5.0, 3.0, 1.0]])
+            noise_map = al.Array.manual_2d([[5.0, 3.0, 1.0]])
 
-            hyper_model_image = al.array.manual_2d([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = al.array.manual_2d([[1.0, 5.0, 8.0]])
+            hyper_model_image = al.Array.manual_2d([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = al.Array.manual_2d([[1.0, 5.0, 8.0]])
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
@@ -2284,10 +2284,10 @@ class TestAbstractPlaneData:
         def test__hyper_noise_map_from_noise_map__is_sum_of_galaxy_hyper_noise_maps__filters_nones(
             self
         ):
-            noise_map = al.array.manual_2d([[5.0, 3.0, 1.0]])
+            noise_map = al.Array.manual_2d([[5.0, 3.0, 1.0]])
 
-            hyper_model_image = al.array.manual_2d([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = al.array.manual_2d([[1.0, 5.0, 8.0]])
+            hyper_model_image = al.Array.manual_2d([[2.0, 4.0, 10.0]])
+            hyper_galaxy_image = al.Array.manual_2d([[1.0, 5.0, 8.0]])
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
@@ -2359,7 +2359,7 @@ class TestAbstractPlaneData:
         def test__plane_has_no_hyper_galaxies__hyper_noise_map_function_returns_none(
             self
         ):
-            noise_map = al.array.manual_2d([[5.0, 3.0, 1.0]])
+            noise_map = al.Array.manual_2d([[5.0, 3.0, 1.0]])
 
             plane = al.Plane(redshift=0.5, galaxies=[al.Galaxy(redshift=0.5)])
             hyper_noise_map = plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
@@ -2416,7 +2416,7 @@ class TestPlane:
             self, gal_x1_mp
         ):
 
-            positions = al.coordinates(coordinates=[[(1.0, 1.0), (1.0, 0.0)]])
+            positions = al.Coordinates(coordinates=[[(1.0, 1.0), (1.0, 0.0)]])
 
             plane = al.Plane(galaxies=[gal_x1_mp, gal_x1_mp], redshift=None)
 
@@ -2474,7 +2474,7 @@ class TestPlane:
     class TestSummarize:
         def test__plane_x2_galaxies__summarize_is_correct(self):
 
-            test_path = "{}/../test_files/summary".format(
+            test_path = "{}/files/summary".format(
                 os.path.dirname(os.path.realpath(__file__))
             )
             af.conf.instance = af.conf.Config(config_path=test_path)
@@ -2740,21 +2740,21 @@ class TestPlane:
 class TestPlaneImage:
     def test__compute_xticks_from_grid_correctly(self):
 
-        array = al.array.ones(shape_2d=(3, 3), pixel_scales=(5.0, 1.0))
+        array = al.Array.ones(shape_2d=(3, 3), pixel_scales=(5.0, 1.0))
 
         plane_image = plane.PlaneImage(array=array, grid=None)
         assert plane_image.xticks == pytest.approx(
             np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3
         )
 
-        array = al.array.ones(shape_2d=(3, 3), pixel_scales=(5.0, 0.5))
+        array = al.Array.ones(shape_2d=(3, 3), pixel_scales=(5.0, 0.5))
 
         plane_image = plane.PlaneImage(array=array, grid=None)
         assert plane_image.xticks == pytest.approx(
             np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3
         )
 
-        array = al.array.ones(shape_2d=(1, 6), pixel_scales=(5.0, 1.0))
+        array = al.Array.ones(shape_2d=(1, 6), pixel_scales=(5.0, 1.0))
 
         plane_image = plane.PlaneImage(array=array, grid=None)
         assert plane_image.xticks == pytest.approx(
@@ -2763,21 +2763,21 @@ class TestPlaneImage:
 
     def test__compute_yticks_from_grid_correctly(self):
 
-        array = al.array.ones(shape_2d=(3, 3), pixel_scales=(1.0, 5.0))
+        array = al.Array.ones(shape_2d=(3, 3), pixel_scales=(1.0, 5.0))
 
         plane_image = plane.PlaneImage(array=array, grid=None)
         assert plane_image.yticks == pytest.approx(
             np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3
         )
 
-        array = al.array.ones(shape_2d=(3, 3), pixel_scales=(0.5, 5.0))
+        array = al.Array.ones(shape_2d=(3, 3), pixel_scales=(0.5, 5.0))
 
         plane_image = plane.PlaneImage(array=array, grid=None)
         assert plane_image.yticks == pytest.approx(
             np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3
         )
 
-        array = al.array.ones(shape_2d=(6, 1), pixel_scales=(1.0, 5.0))
+        array = al.Array.ones(shape_2d=(6, 1), pixel_scales=(1.0, 5.0))
 
         plane_image = plane.PlaneImage(array=array, grid=None)
         assert plane_image.yticks == pytest.approx(

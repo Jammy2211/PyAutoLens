@@ -1,11 +1,11 @@
 import builtins
+
 import numpy as np
 import pytest
 
 import autofit as af
 import autolens as al
 from autofit import Paths
-from autolens import exc
 
 
 class MockAnalysis:
@@ -42,7 +42,8 @@ class DummyPhaseImaging(af.AbstractPhase):
 
         self.optimizer = Optimizer(phase_name)
 
-    def run(self, dataset, results, mask=None, positions=None):
+    def run(self, dataset, results, mask=None, positions=None, info=None):
+        self.save_metadata(dataset)
         self.dataset = dataset
         self.results = results
         self.mask = mask
@@ -51,8 +52,17 @@ class DummyPhaseImaging(af.AbstractPhase):
         return af.Result(af.ModelInstance(), 1)
 
 
-class MockImagingData:
-    pass
+class MockImagingData(af.Dataset):
+    def __init__(self, metadata=None):
+        self._metadata = metadata or dict()
+
+    @property
+    def metadata(self) -> dict:
+        return self._metadata
+
+    @property
+    def name(self) -> str:
+        return "data_name"
 
 
 class MockFile:
@@ -90,14 +100,14 @@ class TestMetaData:
         pipeline = al.PipelineDataset(
             "pipeline_name", DummyPhaseImaging(phase_name="phase_name")
         )
-        pipeline.run(dataset=MockImagingData(), mask=MockMask(), data_name="data_name")
+        pipeline.run(dataset=MockImagingData(), mask=MockMask())
 
         assert (
-            mock_files[1].text
-            == "pipeline=pipeline_name\nphase=phase_name\ndataset_name=data_name\nphase_tag=\npipeline_tag=None"
+            mock_files[2].text
+            == "phase=phase_name\nphase_tag=\npipeline=pipeline_name\npipeline_tag=\ndataset_name=data_name"
         )
 
-        assert "phase_name///optimizer.pickle" in mock_files[2].filename
+        assert "phase_name///optimizer.pickle" in mock_files[3].filename
 
 
 class TestPassMask:
@@ -158,6 +168,7 @@ class DummyPhasePositions(af.AbstractPhase):
         self.optimizer = Optimizer(phase_name)
 
     def run(self, positions, pixel_scales, results):
+        self.save_metadata(MockImagingData())
         self.positions = positions
         self.pixel_scales = pixel_scales
         self.results = results

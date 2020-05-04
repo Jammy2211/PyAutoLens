@@ -1,5 +1,5 @@
 import autofit as af
-from autolens.pipeline.phase import imaging
+from autolens.pipeline.phase.imaging import PhaseImaging
 from .hyper_galaxy_phase import HyperGalaxyPhase
 from .hyper_phase import HyperPhase
 from .inversion_phase import InversionBackgroundBothPhase
@@ -10,16 +10,14 @@ from .inversion_phase import ModelFixingHyperPhase
 
 
 class CombinedHyperPhase(HyperPhase):
-    def __init__(
-        self, phase: imaging.PhaseImaging, hyper_phase_classes: (type,) = tuple()
-    ):
+    def __init__(self, phase: PhaseImaging, hyper_phase_classes: (type,) = tuple()):
         """
         A hyper_combined hyper_galaxies phase that can run zero or more other hyper_galaxies phases after the initial phase is
         run.
 
         Parameters
         ----------
-        phase : phase_imaging.PhaseImaging
+        phase : phase_PhaseImaging
             The phase wrapped by this hyper_galaxies phase
         hyper_phase_classes
             The classes of hyper_galaxies phases to be run following the initial phase
@@ -40,6 +38,7 @@ class CombinedHyperPhase(HyperPhase):
         mask,
         results: af.ResultsCollection = None,
         positions=None,
+        info=None,
         **kwargs
     ) -> af.Result:
         """
@@ -65,12 +64,19 @@ class CombinedHyperPhase(HyperPhase):
         """
         results = results.copy() if results is not None else af.ResultsCollection()
         result = self.phase.run(
-            dataset=dataset, mask=mask, results=results, positions=positions, **kwargs
+            dataset=dataset,
+            mask=mask,
+            results=results,
+            positions=positions,
+            info=info,
+            **kwargs
         )
         results.add(self.phase.paths.phase_name, result)
 
         for phase in self.hyper_phases:
-            hyper_result = phase.run_hyper(dataset=dataset, results=results, **kwargs)
+            hyper_result = phase.run_hyper(
+                dataset=dataset, results=results, info=info, **kwargs
+            )
             setattr(result, phase.hyper_name, hyper_result)
 
         setattr(
@@ -100,7 +106,7 @@ class CombinedHyperPhase(HyperPhase):
             model += getattr(result, name).model
         return model
 
-    def run_hyper(self, dataset, results, **kwargs) -> af.Result:
+    def run_hyper(self, dataset, results, info=None, **kwargs) -> af.Result:
 
         phase = self.make_hyper_phase()
         phase.model = self.combine_models(results.last)
@@ -110,4 +116,5 @@ class CombinedHyperPhase(HyperPhase):
             mask=results.last.mask,
             results=results,
             positions=results.last.positions,
+            info=info,
         )

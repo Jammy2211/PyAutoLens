@@ -1,0 +1,153 @@
+A description of the general.ini visualization config.
+
+[general]
+
+    backend : str
+
+        The matploblib backend used for visualization (see
+        https://gist.github.com/CMCDragonkai/4e9464d9f32f5893d837f3de2c43daa4 for a description of backends).
+
+        If you use an invalid backend for your computer, PyAutoLens may crash without an error or reset your machine.
+        There may be no better way to find the right backend than simple trial and error. The following backends have
+        worked for PyAutoLens users:
+
+        TKAgg (default)
+        Qt5Agg (works on new MACS)
+        Qt4Agg
+        WXAgg
+        WX
+        Agg (outputs to .fits / .png but doesn't'display figures during a run on your computer screen)
+
+    visualize_interval : int
+
+        The number of new best-fit (e.g. highest likelihood) models that must be sampled for PyAutoLens to output the 
+        best-fit as a new set of figure / subplot visualization during a non-linear fit (e.g. on-the-fly).
+
+        The figures are output according to the 'plots.ini' config file.
+
+        A visualization_interval of -1 turns off on-the-fly visualization.
+
+[units]
+
+    int_kpc : bool
+
+    If True, figures are output in units of kpc, using the lens & source redshifts to convert from arc seconds. If
+    False, figures are output in arc-seconds.
+
+[include]
+
+    origin : bool
+
+        If True, the origin of the coordinate system (e.g. 0.0", 0.0") is plotted on every figure. 
+        
+        The origin's appearance is specified by the [origin] section of the 'figures.ini' and 'subplots.ini' configs.
+
+    mask : bool
+
+        If True, the mask used when fitting an image is plotted on every figure. 
+        
+        The mask's appearance is specified by the [mask] section of the 'figures.ini' and 'subplots.ini' configs.
+        
+    grid : bool
+
+        If True, image-plane grids (e.g. the centres of image pixels) and source-plane grids (e.g. traced pixels) are
+        plotted on every figure 
+       
+        The grid's appearance is specified by the [grid] section of the 'figures.ini' and 'subplots.ini' configs.
+        
+    border : bool
+
+        If True, the border of a masked image (defined as the outer edges of its mask) is plotted on every figure 
+        
+        The border's appearance is specified by the [border] section of the 'figures.ini' and 'subplots.ini' configs.
+        
+    critical_curves : bool
+
+        If True, critical curves are plotted on all image-plane figures which have have mass profile(s) available, such 
+        as the images of galaxies, planes, tracers and fits.
+
+        The critical curve's appearances are specified by the [critical_curves] section of the 'figures.ini' and
+        'subplots.ini' configs.
+
+        If there are multiple critical curves (e.g radial, tangential) each will be colored differently according to
+        the 'colors' specified in the configs above. By default, this color wheel matches the caustics so that
+        critical curves that map to caustics are the same color.
+
+    caustics : bool
+
+        If True, casutics are plotted on all image-plane figures which have have mass profile(s) available, such as
+        images of galaxies, planes, tracers and fits.
+        
+        Tthe caustics's appearance are specified by the [casutics] section of the 'figures.ini' and 'subplots.ini'
+        configs.
+
+        If there are multiple caustics (e.g radial, tangential) each will be colored differently according to
+        the 'colors' specified in the configs above. By default, this color wheel matches the critical curves so that
+        critical curves that map to caustics are the same color.
+        
+    multiple_images : bool
+
+        If True, the multiple images of the mass model are plotted on all image-plane figures which have a tracer
+        available, namely images of tracers and fits.
+        
+        The multiple_images appearance is specified by the [multiple_images] section of the 'figures.ini' and
+        'subplots.ini' configs.
+        
+    light_profile_centres : bool
+
+        If True, the centre of all light profiles are plotted on figures which have have light profile(s) available, 
+        such as the images of galaxies, planes, tracers and fits.
+        
+        The light_profile_centres appearance is specified by the [light_profile_centres] section of the 
+        'figures.ini' and 'subplots.ini' configs.
+
+        If there are multiple galaxies with light profiles in a plane or tracer, light profile centres of the same
+        galaxy are colored the same according to the 'colors' specified in the configs above. By default, this color
+        wheel matches the mass profile centres so that light and mass profile centres of the same galaxies are colored
+        the same.
+        
+    mass_profile_centres : bool
+
+        If True, the centre of all mass profiles are plotted on figures which have have mass profile(s) available, 
+        such as the images of galaxies, planes, tracers and fits.
+        
+        The mass_profile_centres appearance is specified by the [mass_profile_centres] section of the 
+        'figures.ini' and 'subplots.ini' configs.
+
+        If there are multiple galaxies with mass profiles in a plane or tracer, mass profile centres of the same
+        galaxy are colored the same according to the 'colors' specified in the configs above. By default, this color
+        wheel matches the light profile centres so that light and mass profile centres of the same galaxies are colored
+        the same.
+        
+    inversion_pixelization_grid : bool
+
+        If True, the inversion's pixelization grid (e.g. the centre of every pixel of the pixelization) is plotted
+        on figures of the inversion's reconstructed source.
+       
+        The inversion_pixelization_grid appearance is specified by the [inversion_pixelization_grid] section of 
+        the 'figures.ini' and 'subplots.ini' configs.
+        
+    inversion_grid : bool
+
+        If True, the inversion's grid (e.g. the ray-traced grid of image pixels) is plotted on figures of the inversion's 
+        reconstructed source.
+       
+        The inversion_grid appearance is specified by the [inversion_grid] section of 
+        the 'figures.ini' and 'subplots.ini' configs.
+        
+    inversion_border : bool
+
+        If True, inversion's border (e.g. the ray-traced image pixels of all pixels on the edge of the mask in the 
+        image-plane) is plotted on figures of the inversion's reconstructed source. Image-pixels which trace outside 
+        this border may be relocated here before the inversion.
+       
+        The inversion_border appearance is specified by the [inversion_border] section of 
+        the 'figures.ini' and 'subplots.ini' configs.
+        
+    inversion_image_pixelization_grid : bool
+
+        If True, inversion's pixelizaion grid in the image-plane (e.g. the pixels which are traced to form the centre
+        of every pixel of the pixelization) is plotted on fit_imaging figures of the image.
+       
+        The inversion_pixelization_grid appearance is specified by the [inversion_pixelization_grid] section of 
+        the 'figures.ini' and 'subplots.ini' configs.

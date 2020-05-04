@@ -10,7 +10,7 @@ from autofit.optimize.non_linear.mock_nlo import MockNLO
 def run(
     module,
     test_name=None,
-    optimizer_class=af.MultiNest,
+    non_linear_class=af.MultiNest,
     config_folder="config",
     mask=None,
     positions=None,
@@ -23,18 +23,21 @@ def run(
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
     imaging = simulate_util.load_test_imaging(
-        data_type=module.data_type, data_resolution=module.data_resolution
+        data_type=module.data_type,
+        data_resolution=module.data_resolution,
+        name="test_dataset",
+        metadata={"test": 2},
     )
 
     if mask is None:
-        mask = aa.mask.circular(
+        mask = aa.Mask.circular(
             shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
         )
 
     module.make_pipeline(
         name=test_name,
         phase_folders=[module.test_type, test_name],
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     ).run(dataset=imaging, mask=mask, positions=positions)
 
 
@@ -43,7 +46,7 @@ def run_a_mock(module):
     run(
         module,
         test_name=f"{module.test_name}_mock",
-        optimizer_class=MockNLO,
+        non_linear_class=MockNLO,
         config_folder="config_mock",
     )
 
@@ -53,6 +56,6 @@ def run_with_multi_nest(module):
     run(
         module,
         test_name=f"{module.test_name}_nest",
-        optimizer_class=af.MultiNest,
+        non_linear_class=af.MultiNest,
         config_folder="config_mock",
     )

@@ -8,7 +8,7 @@ data_type = "lens_sie__source_smooth"
 data_resolution = "lsst"
 
 
-def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
+def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
@@ -17,7 +17,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase2 = al.PhaseImaging(
@@ -31,7 +31,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 regularization=al.reg.AdaptiveBrightness,
             ),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
     )
 
     phase2.optimizer.const_efficiency_mode = True
@@ -50,9 +50,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 self.model.galaxies.subhalo.mass.centre_1,
             ]
 
-    subhalo = al.GalaxyModel(
-        redshift=0.5, mass=al.mp.SphericalTruncatedNFWMassToConcentration
-    )
+    subhalo = al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalTruncatedNFWMCRLudlow)
 
     subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
 
@@ -74,7 +72,7 @@ def make_pipeline(name, phase_folders, optimizer_class=af.MultiNest):
                 regularization=phase2.result.instance.galaxies.source.regularization,
             ),
         ),
-        optimizer_class=optimizer_class,
+        non_linear_class=non_linear_class,
         number_of_steps=2,
     )
 

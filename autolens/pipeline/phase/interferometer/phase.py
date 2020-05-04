@@ -1,13 +1,14 @@
 from astropy import cosmology as cosmo
 
 import autofit as af
-from autolens.pipeline import phase_tagging
+from autoarray.operators import transformer
+from autolens.pipeline import tagging
 from autolens.pipeline.phase import dataset
-from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.interferometer.analysis import Analysis
-from autolens.pipeline.phase.interferometer.meta_interferometer_fit import (
-    MetaInterferometerFit,
+from autolens.pipeline.phase.interferometer.meta_interferometer import (
+    MetaInterferometer,
 )
+
 from autolens.pipeline.phase.interferometer.result import Result
 
 
@@ -24,12 +25,14 @@ class PhaseInterferometer(dataset.PhaseDataset):
         paths,
         *,
         real_space_mask,
+        transformer_class=transformer.TransformerNUFFT,
         galaxies=None,
         hyper_background_noise=None,
-        optimizer_class=af.MultiNest,
+        non_linear_class=af.MultiNest,
         cosmology=cosmo.Planck15,
         sub_size=2,
         primary_beam_shape_2d=None,
+        auto_positions_factor=None,
         positions_threshold=None,
         pixel_scale_interpolation_grid=None,
         inversion_uses_border=True,
@@ -43,17 +46,18 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         Parameters
         ----------
-        optimizer_class: class
+        non_linear_class: class
             The class of a non_linear optimizer
         sub_size: int
             The side length of the subgrid
         """
 
-        paths.phase_tag = phase_tagging.phase_tag_from_phase_settings(
+        paths.phase_tag = tagging.phase_tag_from_phase_settings(
             sub_size=sub_size,
             real_space_shape_2d=real_space_mask.shape_2d,
             real_space_pixel_scales=real_space_mask.pixel_scales,
             primary_beam_shape_2d=primary_beam_shape_2d,
+            auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
         )
@@ -61,7 +65,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         super().__init__(
             paths,
             galaxies=galaxies,
-            optimizer_class=optimizer_class,
+            non_linear_class=non_linear_class,
             cosmology=cosmology,
         )
 
@@ -69,11 +73,13 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         self.is_hyper_phase = False
 
-        self.meta_interferometer_fit = MetaInterferometerFit(
+        self.meta_dataset = MetaInterferometer(
             model=self.model,
             sub_size=sub_size,
             real_space_mask=real_space_mask,
+            transformer_class=transformer_class,
             primary_beam_shape_2d=primary_beam_shape_2d,
+            auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_uses_border=inversion_uses_border,
@@ -99,7 +105,9 @@ class PhaseInterferometer(dataset.PhaseDataset):
         """
         return visibilities
 
-    def make_analysis(self, dataset, mask, results=None, positions=None):
+    def make_analysis(
+        self, dataset, mask, results=af.ResultsCollection(), positions=None
+    ):
         """
         Create an lens object. Also calls the prior passing and masked_interferometer modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -119,12 +127,12 @@ class PhaseInterferometer(dataset.PhaseDataset):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        self.meta_interferometer_fit.model = self.model
+        self.meta_dataset.model = self.model
         modified_visibilities = self.modify_visibilities(
             visibilities=dataset.visibilities, results=results
         )
 
-        masked_interferometer = self.meta_interferometer_fit.masked_dataset_from(
+        masked_interferometer = self.meta_dataset.masked_dataset_from(
             dataset=dataset,
             mask=mask,
             positions=positions,
@@ -143,6 +151,9 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         return analysis
 
+    def make_phase_attributes(self, analysis):
+        return PhaseAttributes(cosmology=self.cosmology)
+
     def output_phase_info(self):
 
         file_phase_info = "{}/{}".format(
@@ -151,63 +162,23 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.optimizer).__name__))
-            phase_info.write(
-                "Sub-grid size = {} \n".format(self.meta_interferometer_fit.sub_size)
-            )
+            phase_info.write("Sub-grid size = {} \n".format(self.meta_dataset.sub_size))
             phase_info.write(
                 "Primary Beam shape = {} \n".format(
-                    self.meta_interferometer_fit.primary_beam_shape_2d
+                    self.meta_dataset.primary_beam_shape_2d
                 )
             )
             phase_info.write(
                 "Positions Threshold = {} \n".format(
-                    self.meta_interferometer_fit.positions_threshold
+                    self.meta_dataset.positions_threshold
                 )
             )
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
 
             phase_info.close()
 
-    def extend_with_multiple_hyper_phases(
-        self,
-        hyper_galaxy=False,
-        inversion=False,
-        include_background_sky=False,
-        include_background_noise=False,
-    ):
-        hyper_phase_classes = []
 
-        if hyper_galaxy:
-            if not include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(
-                    extensions.hyper_galaxy_phase.HyperGalaxyPhase
-                )
-            elif include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(
-                    extensions.hyper_galaxy_phase.HyperGalaxyBackgroundSkyPhase
-                )
-            elif not include_background_sky and include_background_noise:
-                hyper_phase_classes.append(
-                    extensions.hyper_galaxy_phase.HyperGalaxyBackgroundNoisePhase
-                )
-            else:
-                hyper_phase_classes.append(
-                    extensions.hyper_galaxy_phase.HyperGalaxyBackgroundBothPhase
-                )
+class PhaseAttributes:
+    def __init__(self, cosmology):
 
-        if inversion:
-            if not include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(extensions.InversionPhase)
-            elif include_background_sky and not include_background_noise:
-                hyper_phase_classes.append(extensions.InversionBackgroundSkyPhase)
-            elif not include_background_sky and include_background_noise:
-                hyper_phase_classes.append(extensions.InversionBackgroundNoisePhase)
-            else:
-                hyper_phase_classes.append(extensions.InversionBackgroundBothPhase)
-
-        if len(hyper_phase_classes) == 0:
-            return self
-        else:
-            return extensions.CombinedHyperPhase(
-                phase=self, hyper_phase_classes=hyper_phase_classes
-            )
+        self.cosmology = cosmology

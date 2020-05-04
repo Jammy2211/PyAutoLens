@@ -14,6 +14,11 @@ class Analysis(analysis_dataset.Analysis):
             masked_dataset=masked_imaging, image_path=image_path, results=results
         )
 
+        self.visualizer.visualize_hyper_images(
+            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
+            hyper_model_image=self.hyper_model_image,
+        )
+
         self.masked_dataset = masked_imaging
 
     @property
@@ -67,7 +72,7 @@ class Analysis(analysis_dataset.Analysis):
         self, tracer, hyper_image_sky, hyper_background_noise
     ):
 
-        return fit.ImagingFit(
+        return fit.FitImaging(
             masked_imaging=self.masked_dataset,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
