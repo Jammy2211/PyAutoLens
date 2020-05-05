@@ -42,8 +42,6 @@ from autolens.lens.ray_tracing import Tracer
 from autolens.fit.fit import FitImaging, FitInterferometer
 from autolens.fit.fit import FitPositions
 from autolens.pipeline import tagging
-from autolens.pipeline.phase.abstract import phase
-from autolens.pipeline.phase.abstract.phase import AbstractPhase
 from autolens.pipeline.phase.extensions import CombinedHyperPhase
 from autolens.pipeline.phase.extensions import HyperGalaxyPhase
 from autolens.pipeline.phase.extensions.hyper_galaxy_phase import HyperGalaxyPhase
@@ -55,7 +53,6 @@ from autolens.pipeline.phase.extensions.inversion_phase import (
     InversionPhase,
     ModelFixingHyperPhase,
 )
-from autolens.pipeline.phase.abstract.phase import AbstractPhase
 from autolens.pipeline.phase.imaging.phase import PhaseImaging
 from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy

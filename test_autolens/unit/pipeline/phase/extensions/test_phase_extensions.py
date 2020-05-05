@@ -34,13 +34,13 @@ class MockOptimizer(af.NonLinearOptimizer):
     def __init__(self, paths):
         super().__init__(paths=paths)
 
-    def _simple_fit(self, analysis, fitness_function):
+    def _fit(self, analysis, fitness_function):
         # noinspection PyTypeChecker
-        return af.Result(None, analysis.fit(None), None)
+        return af.Result(None, analysis.log_likelihood_function(None), None)
 
-    def _fit(self, analysis, model):
+    def _full_fit(self, model, analysis):
         # noinspection PyTypeChecker
-        return af.Result(None, analysis.fit(None), None)
+        return af.Result(None, analysis.log_likelihood_function(None), None)
 
 
 class MockPhase:
@@ -300,6 +300,6 @@ class TestHyperGalaxyPhase:
 
         instance.hyper_galaxy = al.HyperGalaxy(noise_factor=0.0)
 
-        log_likelihood = analysis.fit(instance=instance)
+        log_likelihood = analysis.log_likelihood_function(instance=instance)
 
         assert log_likelihood == fit.log_likelihood

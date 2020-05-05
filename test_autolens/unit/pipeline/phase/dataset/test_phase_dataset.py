@@ -216,7 +216,7 @@ class TestMakeAnalysis:
             analysis.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
                 tracer=tracer
             )
-            analysis.fit(instance=instance)
+            analysis.log_likelihood_function(instance=instance)
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -264,7 +264,7 @@ class TestMakeAnalysis:
             analysis.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
                 tracer=tracer
             )
-            analysis.fit(instance=instance)
+            analysis.log_likelihood_function(instance=instance)
 
     def test__pixel_scale_interpolation_grid_is_input__interp_grid_used_in_analysis(
         self, phase_imaging_7x7, imaging_7x7, mask_7x7
@@ -279,3 +279,62 @@ class TestMakeAnalysis:
         assert analysis.masked_imaging.pixel_scale_interpolation_grid == 0.1
         assert hasattr(analysis.masked_imaging.grid, "interpolator")
         assert hasattr(analysis.masked_imaging.blurring_grid, "interpolator")
+
+
+class TestExtensions:
+    def test__extend_with_hyper_and_pixelizations(self):
+
+        phase_no_pixelization = al.PhaseImaging(
+            non_linear_class=mock_pipeline.MockNLO, phase_name="test_phase"
+        )
+
+        phase_extended = phase_no_pixelization.extend_with_multiple_hyper_phases(
+            hyper_galaxy=False, inversion=False
+        )
+        assert phase_extended == phase_no_pixelization
+
+        # This phase does not have a pixelization, so even though inversion=True it will not be extended
+
+        phase_extended = phase_no_pixelization.extend_with_multiple_hyper_phases(
+            inversion=True
+        )
+        assert phase_extended == phase_no_pixelization
+
+        phase_with_pixelization = al.PhaseImaging(
+            galaxies=dict(
+                source=al.GalaxyModel(
+                    redshift=0.5,
+                    pixelization=al.pix.Rectangular,
+                    regularization=al.reg.Constant,
+                )
+            ),
+            non_linear_class=mock_pipeline.MockNLO,
+            phase_name="test_phase",
+        )
+
+        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
+            inversion=True
+        )
+        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
+
+        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
+            hyper_galaxy=True, inversion=False
+        )
+        assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
+
+        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
+            hyper_galaxy=False, inversion=True
+        )
+        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
+
+        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
+            hyper_galaxy=True, inversion=True
+        )
+        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
+        assert type(phase_extended.hyper_phases[1]) == al.HyperGalaxyPhase
+
+        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
+            hyper_galaxy=True, inversion=True, hyper_galaxy_phase_first=True
+        )
+        assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
+        assert type(phase_extended.hyper_phases[1]) == al.InversionPhase

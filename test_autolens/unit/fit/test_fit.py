@@ -1557,7 +1557,7 @@ class TestFitInterferometer:
 
             uv_wavelengths = np.array([[0.0, 0.0]])
 
-            interferometer = al.Interferometer.manual(
+            interferometer = al.Interferometer(
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(1,)),
                 noise_map=al.Visibilities.ones(shape_1d=(1,)),
                 uv_wavelengths=uv_wavelengths,
@@ -1618,7 +1618,7 @@ class TestFitInterferometer:
 
             uv_wavelengths = np.array([[1.0, 0.0], [1.0, 1.0], [2.0, 2.0]])
 
-            interferometer = al.Interferometer.manual(
+            interferometer = al.Interferometer(
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(3,)),
                 noise_map=al.Visibilities.full(fill_value=2.0, shape_1d=(3,)),
                 uv_wavelengths=uv_wavelengths,
@@ -1728,7 +1728,7 @@ class TestFitInterferometer:
 
             uv_wavelengths = np.array([[1.0, 0.0], [1.0, 1.0], [2.0, 2.0]])
 
-            interferometer = al.Interferometer.manual(
+            interferometer = al.Interferometer(
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(3,)),
                 noise_map=al.Visibilities.full(fill_value=2.0, shape_1d=(3,)),
                 uv_wavelengths=uv_wavelengths,

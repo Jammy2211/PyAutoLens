@@ -110,7 +110,8 @@ Unfortunately, Slack is invitation-only, so first send me an `email <https://git
 Documentation & Installation
 ----------------------------
 
-The PyAutoLens documentation can be found at our `readthedocs  <https://pyautolens.readthedocs.io/en/master>`_, including instructions on `installation <https://pyautolens.readthedocs.io/en/master/installation.html>`_.
+The PyAutoLens documentation can be found at our `readthedocs  <https://pyautolens.readthedocs.io/en/master>`_,
+including instructions on `installation <https://pyautolens.readthedocs.io/en/master/installation.html>`_.
 
 Contributing
 ------------

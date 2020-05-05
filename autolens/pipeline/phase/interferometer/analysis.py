@@ -43,7 +43,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     def masked_interferometer(self):
         return self.masked_dataset
 
-    def fit(self, instance):
+    def log_likelihood_function(self, instance):
         """
         Determine the fit of a lens galaxy and source galaxy to the masked_interferometer in this lens.
 
