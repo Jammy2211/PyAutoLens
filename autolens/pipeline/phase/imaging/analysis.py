@@ -81,6 +81,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         )
 
     def visualize(self, instance, during_analysis):
+
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
         hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)

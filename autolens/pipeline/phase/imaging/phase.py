@@ -4,7 +4,6 @@ import autofit as af
 from autolens.pipeline import tagging
 from autogalaxy.pipeline.phase import dataset
 from autogalaxy.pipeline.phase.imaging.phase import PhaseAttributes as AgPhaseAttributes
-from autolens.pipeline.phase import extensions
 from autolens.pipeline.phase.imaging.analysis import Analysis
 from autolens.pipeline.phase.imaging.meta_imaging import MetaImaging
 from autolens.pipeline.phase.imaging.result import Result
@@ -18,7 +17,6 @@ class PhaseImaging(dataset.PhaseDataset):
 
     Analysis = Analysis
     Result = Result
-    extensions = extensions
 
     @af.convert_paths
     def __init__(

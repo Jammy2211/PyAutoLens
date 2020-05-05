@@ -6,7 +6,6 @@ from autogalaxy.pipeline.phase import dataset
 from autogalaxy.pipeline.phase.interferometer.phase import (
     PhaseAttributes as AgPhaseAttributes,
 )
-from autolens.pipeline.phase import extensions
 from autolens.pipeline import tagging
 from autolens.pipeline.phase.interferometer.analysis import Analysis
 from autolens.pipeline.phase.interferometer.meta_interferometer import (
@@ -22,8 +21,6 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
     Analysis = Analysis
     Result = Result
-
-    extensions = extensions
 
     @af.convert_paths
     def __init__(

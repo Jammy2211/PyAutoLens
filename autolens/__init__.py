@@ -30,6 +30,17 @@ from autogalaxy.galaxy.fit_galaxy import FitGalaxy
 from autogalaxy.galaxy.galaxy_model import GalaxyModel
 from autogalaxy.plane.plane import Plane
 from autogalaxy.hyper import hyper_data
+from autogalaxy.pipeline.phase.extensions import CombinedHyperPhase
+from autogalaxy.pipeline.phase.extensions import HyperGalaxyPhase
+from autogalaxy.pipeline.phase.extensions.hyper_phase import HyperPhase
+from autogalaxy.pipeline.phase.extensions.inversion_phase import (
+    InversionBackgroundBothPhase,
+    InversionBackgroundNoisePhase,
+    InversionBackgroundSkyPhase,
+    InversionPhase,
+    ModelFixingHyperPhase,
+)
+from autogalaxy.pipeline.phase.extensions.hyper_galaxy_phase import HyperGalaxyPhase
 
 from autolens import aggregator as agg
 from autolens.dataset.imaging import MaskedImaging, SimulatorImaging
@@ -42,17 +53,6 @@ from autolens.lens.ray_tracing import Tracer
 from autolens.fit.fit import FitImaging, FitInterferometer
 from autolens.fit.fit import FitPositions
 from autolens.pipeline import tagging
-from autolens.pipeline.phase.extensions import CombinedHyperPhase
-from autolens.pipeline.phase.extensions import HyperGalaxyPhase
-from autolens.pipeline.phase.extensions.hyper_galaxy_phase import HyperGalaxyPhase
-from autolens.pipeline.phase.extensions.hyper_phase import HyperPhase
-from autolens.pipeline.phase.extensions.inversion_phase import (
-    InversionBackgroundBothPhase,
-    InversionBackgroundNoisePhase,
-    InversionBackgroundSkyPhase,
-    InversionPhase,
-    ModelFixingHyperPhase,
-)
 from autolens.pipeline.phase.imaging.phase import PhaseImaging
 from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
