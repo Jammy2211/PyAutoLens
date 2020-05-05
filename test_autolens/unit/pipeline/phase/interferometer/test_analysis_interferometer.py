@@ -59,7 +59,7 @@ class TestFit:
             results=mock_pipeline.MockResults(),
         )
         instance = phase_interferometer_7.model.instance_from_unit_vector([])
-        fit_figure_of_merit = analysis.fit(instance=instance)
+        fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
 
         real_space_mask = phase_interferometer_7.meta_dataset.mask_with_phase_sub_size_from_mask(
             mask=mask_7x7
@@ -101,7 +101,7 @@ class TestFit:
             results=mock_pipeline.MockResults(),
         )
         instance = phase_interferometer_7.model.instance_from_unit_vector([])
-        fit_figure_of_merit = analysis.fit(instance=instance)
+        fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
 
         real_space_mask = phase_interferometer_7.meta_dataset.mask_with_phase_sub_size_from_mask(
             mask=mask_7x7

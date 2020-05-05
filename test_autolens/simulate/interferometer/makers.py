@@ -49,7 +49,7 @@ def simulate_interferometer_from_galaxies_and_output_to_fits(
 
     interferometer.output_to_fits(
         visibilities_path=dataset_path + "visibilities.fits",
-        noise_map_path=dataset_path + "noise_map.fits",
+        noise_map_path=f"{dataset_path}/noise_map.fits",
         uv_wavelengths_path=dataset_path + "uv_wavelengths.fits",
         overwrite=True,
     )

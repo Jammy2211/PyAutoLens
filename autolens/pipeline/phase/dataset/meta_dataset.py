@@ -1,9 +1,6 @@
-import autofit as af
 import autoarray as aa
-import autogalaxy as ag
 from autolens import exc
 from autolens.fit import fit
-from autoarray.operators.inversion import pixelizations as pix
 
 import numpy as np
 

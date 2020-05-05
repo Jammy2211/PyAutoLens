@@ -2,7 +2,7 @@ import copy
 
 import autofit as af
 from autofit.tools.phase import Dataset
-from autolens.pipeline.phase import abstract
+from autogalaxy.pipeline.phase import abstract
 
 
 class HyperPhase:
