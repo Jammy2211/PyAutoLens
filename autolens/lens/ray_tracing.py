@@ -304,7 +304,6 @@ class AbstractTracerCosmology(AbstractTracer, ABC):
 
 
 class AbstractTracerLensing(AbstractTracerCosmology, ABC):
-    @grids.grid_like_to_numpy
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
         grid_calc = grid.copy()  # TODO looks unnecessary? Probably pretty expensive too

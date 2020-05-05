@@ -6,6 +6,7 @@ class Analysis:
         raise NotImplementedError()
 
     def tracer_for_instance(self, instance):
+
         return ray_tracing.Tracer.from_galaxies(
             galaxies=instance.galaxies, cosmology=self.cosmology
         )

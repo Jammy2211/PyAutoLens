@@ -4,7 +4,6 @@ import autofit as af
 import autoarray as aa
 from test_autolens.integration import integration_util
 from test_autolens.simulate.imaging import simulate_util
-from autofit.optimize.non_linear.mock_nlo import MockNLO
 
 
 def run(
@@ -46,7 +45,7 @@ def run_a_mock(module):
     run(
         module,
         test_name=f"{module.test_name}_mock",
-        non_linear_class=MockNLO,
+        non_linear_class=af.MockNLO,
         config_folder="config_mock",
     )
 

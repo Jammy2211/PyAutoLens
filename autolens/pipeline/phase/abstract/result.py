@@ -12,7 +12,10 @@ class Result(result.Result):
 
     @property
     def max_log_likelihood_tracer(self):
-        return self.analysis.tracer_for_instance(instance=self.instance)
+
+        instance = self.analysis.associate_hyper_images(instance=self.instance)
+
+        return self.analysis.tracer_for_instance(instance=instance)
 
     @property
     def source_plane_light_profile_centres(self) -> grids.Coordinates:
