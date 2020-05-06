@@ -4,7 +4,6 @@ import autofit as af
 import autoarray as aa
 from test_autolens.integration import integration_util
 from test_autolens.simulate.imaging import simulate_util
-from autofit.optimize.non_linear.mock_nlo import MockNLO
 
 
 def run(
@@ -15,10 +14,11 @@ def run(
     mask=None,
     positions=None,
 ):
+
     test_name = test_name or module.test_name
-    test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
-    output_path = test_path + "output/imaging/"
-    config_path = test_path + config_folder
+    test_path = "{}/../..".format(os.path.dirname(os.path.realpath(__file__)))
+    output_path = f"{test_path}.output/imaging"
+    config_path = f"{test_path}/{config_folder}"
     af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
@@ -38,7 +38,7 @@ def run(
         name=test_name,
         phase_folders=[module.test_type, test_name],
         non_linear_class=non_linear_class,
-    ).run(dataset=imaging, mask=mask, positions=positions)
+    ).run(dataset=imaging, mask=mask)
 
 
 def run_a_mock(module):
@@ -46,7 +46,7 @@ def run_a_mock(module):
     run(
         module,
         test_name=f"{module.test_name}_mock",
-        non_linear_class=MockNLO,
+        non_linear_class=af.MockNLO,
         config_folder="config_mock",
     )
 

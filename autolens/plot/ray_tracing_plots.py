@@ -1,7 +1,6 @@
 from autoarray.plot import plotters
-from autoarray.plot import mat_objs
-from autoastro.plot import lensing_plotters
-from autolens.plot import plane_plots
+from autogalaxy.plot import lensing_plotters
+import autogalaxy as ag
 
 
 @lensing_plotters.set_include_and_sub_plotter
@@ -51,7 +50,7 @@ def subplot_tracer(tracer, grid, positions=None, include=None, sub_plotter=None)
 
     source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-    plane_plots.plane_image(
+    ag.plot.Plane.plane_image(
         plane=tracer.source_plane,
         grid=source_plane_grid,
         caustics=include.caustics_from_obj(obj=tracer),
@@ -128,7 +127,7 @@ def individual(
 
         source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
-        plane_plots.plane_image(
+        ag.plot.Plane.plane_image(
             plane=tracer.source_plane,
             grid=source_plane_grid,
             caustics=include.caustics_from_obj(obj=tracer),

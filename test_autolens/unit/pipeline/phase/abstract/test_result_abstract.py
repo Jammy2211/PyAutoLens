@@ -6,6 +6,7 @@ import pytest
 
 import autofit as af
 import autolens as al
+from autolens.pipeline.phase.abstract.result import Result
 from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
@@ -22,24 +23,6 @@ def do_something():
     print("{}/config/".format(directory))
 
     af.conf.instance = af.conf.Config("{}/config/".format(directory))
-
-
-class TestGeneric:
-    def test__results_of_phase_are_available_as_properties(self, imaging_7x7, mask_7x7):
-
-        phase_dataset_7x7 = al.PhaseImaging(
-            non_linear_class=mock_pipeline.MockNLO,
-            galaxies=[
-                al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
-            ],
-            phase_name="test_phase_2",
-        )
-
-        result = phase_dataset_7x7.run(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
-        )
-
-        assert isinstance(result, al.AbstractPhase.Result)
 
 
 class TestTracer:

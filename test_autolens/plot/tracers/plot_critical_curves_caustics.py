@@ -1,5 +1,5 @@
 import autolens as al
-from autoastro.plot import lensing_plotters
+from autogalaxy.plot import lensing_plotters
 
 plotter = aplt.Plotter()
 sub_plotter = aplt.SubPlotter()

@@ -1,5 +1,5 @@
 from autolens.fit.plotters import masked_imaging_fit_plotters
-from test import simulate_util
+from test_autolens.simulate.imaging import simulate_util
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use
 # uniform grid of rectangular pixels, but instead uses ir'Voronoi' pixels. So, why would we want to do that?
@@ -10,7 +10,7 @@ imaging = simulate_util.load_test_imaging(
     data_type="lens_light_dev_vaucouleurs", data_resolution="lsst"
 )
 mask = al.Mask.elliptical(
-    shape=imaging.shape,
+    shape=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius=3.0,
     axis_ratio=0.5,
@@ -49,16 +49,16 @@ masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt_array.fit_imaging.subplot_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, mask=True, include_image_plane_pix=True, aspect="auto"
 )
 
 stop
 
-aplt_array.fit_imaging.subplot_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, mask=True, include_image_plane_pix=True, aspect="equal"
 )
 
-aplt_array.fit_imaging.subplot_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, mask=True, include_image_plane_pix=True, aspect="square"
 )

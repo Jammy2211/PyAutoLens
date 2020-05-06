@@ -3,16 +3,16 @@ from abc import ABC
 import numpy as np
 from astropy import cosmology as cosmo
 
-from autoastro import lensing
+from autogalaxy import lensing
 from autoarray.util import array_util, grid_util
 from autoarray.mask import mask as msk
 from autoarray.structures import grids
 from autoarray.structures.arrays import MaskedArray
 from autoarray.operators.inversion import inversions as inv
-from autoastro.galaxy import galaxy as g
-from autoastro.util import cosmology_util
-from autolens.lens import plane as pl
-from autolens.util import lens_util
+from autogalaxy.galaxy import galaxy as g
+from autogalaxy.util import cosmology_util
+from autogalaxy.plane import plane as pl
+from autogalaxy.util import plane_util
 
 
 class AbstractTracer(lensing.LensingObject, ABC):
@@ -304,7 +304,6 @@ class AbstractTracerCosmology(AbstractTracer, ABC):
 
 
 class AbstractTracerLensing(AbstractTracerCosmology, ABC):
-    @grids.grid_like_to_numpy
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
         grid_calc = grid.copy()  # TODO looks unnecessary? Probably pretty expensive too
@@ -683,6 +682,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
     def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
         profile_image = self.profile_image_from_grid(grid=grid)
+
         return transformer.visibilities_from_image(image=profile_image)
 
     def profile_visibilities_of_planes_from_grid_and_transformer(
@@ -893,11 +893,11 @@ class Tracer(AbstractTracerData):
     @classmethod
     def from_galaxies(cls, galaxies, cosmology=cosmo.Planck15):
 
-        plane_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(
+        plane_redshifts = plane_util.ordered_plane_redshifts_from_galaxies(
             galaxies=galaxies
         )
 
-        galaxies_in_planes = lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+        galaxies_in_planes = plane_util.galaxies_in_redshift_ordered_planes_from_galaxies(
             galaxies=galaxies, plane_redshifts=plane_redshifts
         )
 
@@ -947,17 +947,17 @@ class Tracer(AbstractTracerData):
             The cosmology of the ray-tracing calculation.
         """
 
-        lens_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(
+        lens_redshifts = plane_util.ordered_plane_redshifts_from_galaxies(
             galaxies=lens_galaxies
         )
 
-        plane_redshifts = lens_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
+        plane_redshifts = plane_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
             lens_redshifts=lens_redshifts,
             planes_between_lenses=planes_between_lenses,
             source_plane_redshift=source_galaxies[0].redshift,
         )
 
-        galaxies_in_planes = lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+        galaxies_in_planes = plane_util.galaxies_in_redshift_ordered_planes_from_galaxies(
             galaxies=lens_galaxies + line_of_sight_galaxies,
             plane_redshifts=plane_redshifts,
         )

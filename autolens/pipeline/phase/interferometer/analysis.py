@@ -1,13 +1,14 @@
 import autofit as af
 from autoarray.exc import InversionException
-from autoastro.galaxy import galaxy as g
+from autogalaxy.galaxy import galaxy as g
+from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
 from autofit.exc import FitException
 from autolens.fit import fit
 from autolens.pipeline import visualizer
-from autolens.pipeline.phase.dataset import analysis as analysis_data
+from autolens.pipeline.phase.dataset import analysis as analysis_dataset
 
 
-class Analysis(analysis_data.Analysis):
+class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     def __init__(self, masked_interferometer, cosmology, image_path=None, results=None):
 
         super(Analysis, self).__init__(cosmology=cosmology, results=results)
@@ -23,7 +24,7 @@ class Analysis(analysis_data.Analysis):
 
         self.masked_dataset = masked_interferometer
 
-        result = analysis_data.last_result_with_use_as_hyper_dataset(results=results)
+        result = ag_analysis.last_result_with_use_as_hyper_dataset(results=results)
 
         if result is not None:
 
@@ -42,7 +43,7 @@ class Analysis(analysis_data.Analysis):
     def masked_interferometer(self):
         return self.masked_dataset
 
-    def fit(self, instance):
+    def log_likelihood_function(self, instance):
         """
         Determine the fit of a lens galaxy and source galaxy to the masked_interferometer in this lens.
 
