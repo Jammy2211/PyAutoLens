@@ -102,6 +102,9 @@ class TestPhaseImagingVisualizer:
         self, masked_imaging_7x7, include_all, plot_path, plot_patch
     ):
 
+        if os.path.exists(plot_path):
+            shutil.rmtree(plot_path)
+
         visualizer = vis.PhaseImagingVisualizer(
             masked_dataset=masked_imaging_7x7, image_path=plot_path
         )

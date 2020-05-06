@@ -30,7 +30,7 @@ With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. 
 
     lens_name = 'example_lens'
 
-    # Get the relative path to the data in our workspace & load the imaging data.
+    # Use the relative path to the dataset to load the imaging data.
     imaging = al.Imaging.from_fits(
         image_path=dataset_path + lens_name + '/image.fits',
         psf_path=dataset_path+lens_name+'/psf.fits',
@@ -46,19 +46,22 @@ With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. 
     source_light_profile = al.lp.EllipticalSersic
 
     # To setup our model galaxies, we use the GalaxyModel class, which represents a galaxy whose parameters
-    # are model & fitted for by PyAutoLens. The galaxies are also assigned redshifts.
+    # are free & fitted for by PyAutoLens. The galaxies are also assigned redshifts.
     lens_galaxy_model = al.GalaxyModel(redshift=0.5, mass=lens_mass_profile)
     source_galaxy_model = al.GalaxyModel(redshift=1.0, light=source_light_profile)
 
     # To perform the analysis we set up a phase, which takes our galaxy models & fits their parameters using a non-linear
     # search (in this case, MultiNest).
     phase = al.PhaseImaging(
-        galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
-        phase_name='example/phase_example', non_linear_class=af.MultiNest)
+        galaxies=dict(lens=lens_galaxy_model,
+        source=source_galaxy_model),
+        phase_name='example/phase_example',
+        non_linear_class=af.MultiNest
+        )
 
-    # We pass the imaging data and mask to the phase, thereby fitting it with the lens model above & plot the resulting fit.
+    # We pass the imaging data and mask to the phase, thereby fitting it with the lens model & plot the resulting fit.
     result = phase.run(data=imaging, mask=mask)
-    al.plot.FitImaging.subplot_fit_imaging(fit=result.most_likely_fit)
+    al.plot.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 Features
 --------
@@ -67,10 +70,13 @@ Features
 
 - **Galaxies** - Use light & mass profiles to make galaxies & perform lensing calculations.
 - **Pipelines** - Write automated analysis pipelines to fit complex lens models to large samples of strong lenses.
-- **Extended Sources** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
+- **Pixelizations** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
 - **Adaption** - Adapt the lensing analysis to the features of the observed strong lens imaging.
 - **Multi-Plane** - Perform multi-plane ray-tracing & model multi-plane lens systems.
+- **Interferometry** - Model radio / sub-mm interferometer data directly in the uv-plane.
 - **Visualization** - Custom visualization libraries for plotting physical lensing quantities & modeling results.
+- **PyAutoFit** - Perform fits using many non-linear searches (MCMC, Nested Sampling) and manipulate large result outputs
+                  via the probablistic programming language `PyAutoFit <https://github.com/rhayes777/PyAutoFit>`_
 
 HowToLens
 ---------
@@ -79,7 +85,7 @@ Included with **PyAutoLens** is the **HowToLens** lecture series, which provides
 
 - **Introduction** - An introduction to strong gravitational lensing & **PyAutolens**.
 - **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
-- **Pipelines** - How to build pipelines & tailor them to your own science case.
+- **Pipelines** - How to build model-fitting pipelines & tailor them to your own science case.
 - **Inversions** - How to perform pixelized reconstructions of the source-galaxy.
 - **Hyper-Mode** - How to use **PyAutoLens** advanced modeling features that adapt the model to the strong lens being analysed.
 
@@ -89,15 +95,15 @@ Workspace
 **PyAutoLens** comes with a workspace, which can be found `here <https://github.com/Jammy2211/autolens_workspace>`_ & which includes:
 
 - **Aggregator** - Manipulate large suites of modeling results via Jupyter notebooks, using **PyAutoFit**'s in-built results database.
-- **API** - Illustrative scripts of the **PyAutoLens** interface, for examples on how to make plots, peform lensing calculations, etc.
+- **API** - Illustrative scripts of the **PyAutoLens** interface, for examples on how to make plots, perform lensing calculations, etc.
 - **Config** - Configuration files which customize **PyAutoLens**'s behaviour.
 - **Dataset** - Where data is stored, including example datasets distributed with **PyAutoLens**.
 - **HowToLens** - The **HowToLens** lecture series.
 - **Output** - Where the **PyAutoLens** analysis and visualization are output.
 - **Pipelines** - Example pipelines for modeling strong lenses.
 - **Preprocess** - Tools to preprocess data before an analysis (e.g. convert units, create masks).
-- **Quick Start** - A quick start guide, so you can begin modeling your lenses within hours.
-- **Runners** - Scripts for running a **PyAutoLens** pipeline.
+- **Quick Start** - A quick start guide, so you can begin modeling lenses within hours.
+- **Runners** - Scripts for running **PyAutoLens** pipelines.
 - **Simulators** - Scripts for simulating strong lens datasets with **PyAutoLens**.
 
 Slack
@@ -110,7 +116,8 @@ Unfortunately, Slack is invitation-only, so first send me an `email <https://git
 Documentation & Installation
 ----------------------------
 
-The PyAutoLens documentation can be found at our `readthedocs  <https://pyautolens.readthedocs.io/en/master>`_, including instructions on `installation <https://pyautolens.readthedocs.io/en/master/installation.html>`_.
+The PyAutoLens documentation can be found at our `readthedocs  <https://pyautolens.readthedocs.io/en/master>`_,
+including instructions on `installation <https://pyautolens.readthedocs.io/en/master/installation.html>`_.
 
 Contributing
 ------------

@@ -1,8 +1,9 @@
 from autolens.dataset import imaging
+from autogalaxy.pipeline.phase.imaging import meta_imaging as ag_meta_imaging
 from autolens.pipeline.phase.dataset import meta_dataset
 
 
-class MetaImaging(meta_dataset.MetaDataset):
+class MetaImaging(ag_meta_imaging.MetaImaging, meta_dataset.MetaLens):
     def __init__(
         self,
         model,
@@ -23,21 +24,26 @@ class MetaImaging(meta_dataset.MetaDataset):
             sub_size=sub_size,
             is_hyper_phase=is_hyper_phase,
             signal_to_noise_limit=signal_to_noise_limit,
+            inversion_pixel_limit=inversion_pixel_limit,
+        )
+
+        meta_dataset.MetaLens.__init__(
+            self=self,
             auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_uses_border=inversion_uses_border,
-            inversion_pixel_limit=inversion_pixel_limit,
         )
+
         self.psf_shape_2d = psf_shape_2d
         self.bin_up_factor = bin_up_factor
 
-    def masked_dataset_from(self, dataset, mask, positions, results):
+    def masked_dataset_from(self, dataset, mask, results):
 
         mask = self.mask_with_phase_sub_size_from_mask(mask=mask)
 
         positions = self.updated_positions_from_positions_and_results(
-            positions=positions, results=results
+            positions=dataset.positions, results=results
         )
 
         self.positions_threshold = self.updated_positions_threshold_from_positions(
@@ -45,6 +51,8 @@ class MetaImaging(meta_dataset.MetaDataset):
         )
 
         self.check_positions(positions=positions)
+
+        dataset.positions = positions
 
         preload_sparse_grids_of_planes = self.preload_pixelization_grids_of_planes_from_results(
             results=results
@@ -69,7 +77,6 @@ class MetaImaging(meta_dataset.MetaDataset):
             imaging=dataset,
             mask=mask,
             psf_shape_2d=self.psf_shape_2d,
-            positions=positions,
             positions_threshold=self.positions_threshold,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,

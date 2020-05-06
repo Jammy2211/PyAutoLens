@@ -9,12 +9,12 @@ import autolens.plot as aplt
 plot_path = "{}/../images/interferometry/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
-dataset_path = "{}/dataset/".format(os.path.dirname(os.path.realpath(__file__)))
+dataset_path = "{}/dataset".format(os.path.dirname(os.path.realpath(__file__)))
 
 # This loads the interferometer dataset,.
 interferometer = al.Interferometer.from_fits(
     visibilities_path=dataset_path + "visibilities.fits",
-    noise_map_path=dataset_path + "noise_map.fits",
+    noise_map_path=f"{dataset_path}/noise_map.fits",
     uv_wavelengths_path=dataset_path + "uv_wavelengths.fits",
 )
 

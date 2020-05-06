@@ -55,9 +55,9 @@ def simulate_imaging_from_galaxies_and_output_to_fits(
     )
 
     imaging.output_to_fits(
-        image_path=dataset_path + "image.fits",
-        psf_path=dataset_path + "psf.fits",
-        noise_map_path=dataset_path + "noise_map.fits",
+        image_path=f"{dataset_path}/image.fits",
+        psf_path=f"{dataset_path}/psf.fits",
+        noise_map_path=f"{dataset_path}/noise_map.fits",
         overwrite=True,
     )
 

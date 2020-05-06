@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray.fit import fit as aa_fit
-from autoastro.galaxy import galaxy as g
+from autogalaxy.galaxy import galaxy as g
 
 
 class FitImaging(aa_fit.FitImaging):
@@ -283,14 +283,14 @@ class FitInterferometer(aa_fit.FitInterferometer):
 class FitPositions:
     def __init__(self, positions, tracer, noise_map):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
-        their maximum separation, such that points which tracer closer to one another have a higher likelihood.
+        their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
 
         Parameters
         -----------
         positions : [[]]
-            The (y,x) arc-second coordinates of positions which the maximum distance and likelihood is computed using.
+            The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_map : ndarray | float
-            The noise-value assumed when computing the likelihood.
+            The noise-value assumed when computing the log likelihood.
         """
         self.positions = positions
         self.source_plane_positions = tracer.traced_grids_of_planes_from_grid(
@@ -304,14 +304,14 @@ class FitPositions:
     @property
     def maximum_separations(self):
         return [
-            self.max_separation_of_grid(grid=position_list)
-            for position_list in self.source_plane_positions.list_in_1d
+            self.max_separation_of_grid(grid=np.asarray(positions))
+            for positions in self.source_plane_positions.in_list
         ]
 
     @staticmethod
     def max_separation_of_grid(grid):
-        rdist_max = np.zeros((grid.sub_shape_1d))
-        for i in range(grid.sub_shape_1d):
+        rdist_max = np.zeros((grid.shape[0]))
+        for i in range(grid.shape[0]):
             xdists = np.square(np.subtract(grid[i, 0], grid[:, 0]))
             ydists = np.square(np.subtract(grid[i, 1], grid[:, 1]))
             rdist_max[i] = np.max(np.add(xdists, ydists))

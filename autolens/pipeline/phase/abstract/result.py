@@ -1,36 +1,21 @@
 import autofit as af
+
 from autoarray.structures import grids
-from autoastro.galaxy import galaxy as g
+from autogalaxy.pipeline.phase.abstract import result
+from autogalaxy.galaxy import galaxy as g
 
 
-class Result(af.Result):
-    def __init__(
-        self,
-        instance,
-        likelihood,
-        previous_model,
-        gaussian_tuples,
-        analysis,
-        optimizer,
-        use_as_hyper_dataset=False,
-    ):
-        """
-        The result of a phase
-        """
-        super().__init__(
-            instance=instance,
-            likelihood=likelihood,
-            previous_model=previous_model,
-            gaussian_tuples=gaussian_tuples,
-        )
-
-        self.analysis = analysis
-        self.optimizer = optimizer
-        self.use_as_hyper_dataset = use_as_hyper_dataset
+class Result(result.Result):
+    @property
+    def max_log_likelihood_plane(self):
+        raise NotImplementedError()
 
     @property
-    def most_likely_tracer(self):
-        return self.analysis.tracer_for_instance(instance=self.instance)
+    def max_log_likelihood_tracer(self):
+
+        instance = self.analysis.associate_hyper_images(instance=self.instance)
+
+        return self.analysis.tracer_for_instance(instance=instance)
 
     @property
     def source_plane_light_profile_centres(self) -> grids.Coordinates:
@@ -38,7 +23,7 @@ class Result(af.Result):
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions."""
-        return self.most_likely_tracer.source_plane.light_profile_centres
+        return self.max_log_likelihood_tracer.source_plane.light_profile_centres
 
     @property
     def source_plane_inversion_centres(self) -> grids.Coordinates:
@@ -48,9 +33,11 @@ class Result(af.Result):
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions."""
         try:
-            return self.most_likely_fit.inversion.brightest_reconstruction_pixel_centre
+            return (
+                self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre
+            )
         except AttributeError:
-            return grids.Coordinates(coordinates=[])
+            return []
 
     @property
     def source_plane_centres(self) -> grids.Coordinates:
@@ -59,10 +46,11 @@ class Result(af.Result):
 
         These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
         (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
-        centres = (
-            self.source_plane_light_profile_centres
-            + self.source_plane_inversion_centres
+
+        centres = list(self.source_plane_light_profile_centres) + list(
+            self.source_plane_inversion_centres
         )
+
         return grids.Coordinates(coordinates=centres)
 
     @property
@@ -81,16 +69,16 @@ class Result(af.Result):
 
         # TODO: Tracer method will ultimately return Coordinates, need to determine best way to implement method.
 
-        positions = list(
-            map(
-                lambda centre: self.most_likely_tracer.image_plane_multiple_image_positions(
+        positions = []
+
+        for centre_list in self.source_plane_centres.in_list:
+            for centre in centre_list:
+
+                positions_list = self.max_log_likelihood_tracer.image_plane_multiple_image_positions(
                     grid=grid, source_plane_coordinate=centre
-                )[
-                    0
-                ],
-                self.source_plane_centres,
-            )
-        )
+                )
+
+                positions.append(positions_list)
 
         return grids.Coordinates(coordinates=positions)
 

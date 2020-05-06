@@ -28,36 +28,33 @@ class TestSetup:
 
         # Auto positioning is OFF, so use input positions + threshold.
 
+        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.1
         phase_imaging_7x7.meta_dataset.auto_positions_factor = None
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7,
-            mask=mask_7x7,
-            positions=al.Coordinates(coordinates=[[(1.0, 1.0)]]),
-            results=mock_pipeline.MockResults(),
+            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
-        assert analysis.masked_dataset.positions == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
 
         # Auto positioning is ON, but there are no previous results, so use input positions.
 
+        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 1.0
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7,
-            mask=mask_7x7,
-            positions=al.Coordinates(coordinates=[[(1.0, 1.0)]]),
-            results=mock_pipeline.MockResults(),
+            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
-        assert analysis.masked_dataset.positions == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
 
         # Auto positioning is ON, there are previous results so use their new positions and threshold (which is
         # multiplied by the auto_positions_factor). However, only one set of positions is computed from the previous
         # result, to use input positions.
 
+        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 2.0
 
@@ -67,17 +64,15 @@ class TestSetup:
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7,
-            mask=mask_7x7,
-            positions=al.Coordinates(coordinates=[[(1.0, 1.0)]]),
-            results=results,
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
-        assert analysis.masked_dataset.positions == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
 
         # Auto positioning is ON, there are previous results so use their new positions and threshold (which is
         # multiplied by the auto_positions_factor). Multiple positions are available so these are now used.
 
+        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 2.0
 
@@ -87,48 +82,45 @@ class TestSetup:
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7,
-            mask=mask_7x7,
-            positions=al.Coordinates(coordinates=[[(1.0, 1.0)]]),
-            results=results,
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
-        assert analysis.masked_dataset.positions == [[(2.0, 2.0), (3.0, 3.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(2.0, 2.0), (3.0, 3.0)]]
 
         # Auto positioning is Off, but there are previous results with updated positions relative to the input
         # positions, so use those with their positions threshold.
 
+        imaging_7x7.positions = al.Coordinates(coordinates=[[(2.0, 2.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.1
         phase_imaging_7x7.meta_dataset.auto_positions_factor = None
 
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7,
             mask=mask_7x7,
-            positions=al.Coordinates(coordinates=[[(2.0, 2.0)]]),
             results=mock_pipeline.MockResults(
                 positions=al.Coordinates(coordinates=[[(3.0, 3.0), (4.0, 4.0)]]),
                 updated_positions_threshold=0.3,
             ),
         )
 
-        assert analysis.masked_dataset.positions == [[(3.0, 3.0), (4.0, 4.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(3.0, 3.0), (4.0, 4.0)]]
 
         # Test function is called for phase_inteferometer
 
+        interferometer_7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
         phase_interferometer_7.meta_dataset.positions_threshold = None
         phase_interferometer_7.meta_dataset.auto_positions_factor = 2.0
 
         analysis = phase_interferometer_7.make_analysis(
             dataset=interferometer_7,
             mask=mask_7x7,
-            positions=al.Coordinates(coordinates=[[(1.0, 1.0)]]),
             results=mock_pipeline.MockResults(
                 updated_positions=al.Coordinates(coordinates=[[(1.0, 1.0)]]),
                 updated_positions_threshold=0.3,
             ),
         )
 
-        assert analysis.masked_dataset.positions == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
 
     def test__auto_positions_update_threshold__uses_auto_update_factor(
         self,
@@ -141,38 +133,34 @@ class TestSetup:
 
         # Auto positioning is OFF, so use input positions + threshold.
 
+        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.1
         phase_imaging_7x7.meta_dataset.auto_positions_factor = None
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7,
-            mask=mask_7x7,
-            positions=al.Coordinates(coordinates=[[(1.0, 1.0)]]),
-            results=mock_pipeline.MockResults(),
+            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
         assert analysis.masked_dataset.positions_threshold == 0.1
 
         # Auto positioning is ON, but there are no previous results, so use input positions.
 
+        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 0.0), (-1.0, 0.0)]])
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 1.0
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7,
-            mask=mask_7x7,
-            positions=al.Coordinates(coordinates=[[(1.0, 0.0), (-1.0, 0.0)]]),
-            results=mock_pipeline.MockResults(),
+            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
         assert analysis.masked_dataset.positions_threshold == 2.0
 
+        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 0.0), (-1.0, 0.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 3.0
 
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7,
             mask=mask_7x7,
-            positions=al.Coordinates(coordinates=[[(1.0, 0.0), (-1.0, 0.0)]]),
             results=mock_pipeline.MockResults(updated_positions_threshold=0.2),
         )
 
@@ -180,6 +168,7 @@ class TestSetup:
 
         # Auto positioning is ON, but positionos are None so no update.
 
+        imaging_7x7.positions = None
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 1.0
         phase_imaging_7x7.positions_threshold = None
 
@@ -188,122 +177,6 @@ class TestSetup:
         )
 
         assert analysis.masked_dataset.positions_threshold == None
-
-    def test__pixelization_property_extracts_pixelization(self, imaging_7x7, mask_7x7):
-        source_galaxy = al.Galaxy(redshift=0.5)
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=[source_galaxy], cosmology=cosmo.FLRW, phase_name="test_phase"
-        )
-
-        assert phase_imaging_7x7.meta_dataset.pixelization is None
-        assert phase_imaging_7x7.meta_dataset.has_pixelization is False
-        assert phase_imaging_7x7.meta_dataset.pixelizaition_is_model == False
-
-        source_galaxy = al.Galaxy(
-            redshift=0.5,
-            pixelization=al.pix.Rectangular(),
-            regularization=al.reg.Constant(),
-        )
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=[source_galaxy], cosmology=cosmo.FLRW, phase_name="test_phase"
-        )
-
-        assert isinstance(
-            phase_imaging_7x7.meta_dataset.pixelization, al.pix.Rectangular
-        )
-        assert phase_imaging_7x7.meta_dataset.has_pixelization is True
-        assert phase_imaging_7x7.meta_dataset.pixelizaition_is_model == False
-
-        source_galaxy = al.GalaxyModel(
-            redshift=0.5,
-            pixelization=al.pix.Rectangular,
-            regularization=al.reg.Constant,
-        )
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=[source_galaxy], cosmology=cosmo.FLRW, phase_name="test_phase"
-        )
-
-        assert type(phase_imaging_7x7.meta_dataset.pixelization) == type(
-            al.pix.Rectangular
-        )
-        assert phase_imaging_7x7.meta_dataset.has_pixelization is True
-        assert phase_imaging_7x7.meta_dataset.pixelizaition_is_model == True
-
-    def test__check_if_phase_uses_cluster_inversion(self):
-        phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            galaxies=dict(
-                lens=al.GalaxyModel(redshift=0.5), source=al.GalaxyModel(redshift=1.0)
-            ),
-        )
-
-        assert phase_imaging_7x7.meta_dataset.uses_cluster_inversion is False
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            galaxies=dict(
-                lens=al.GalaxyModel(
-                    redshift=0.5,
-                    pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
-                ),
-                source=al.GalaxyModel(redshift=1.0),
-            ),
-        )
-        assert phase_imaging_7x7.meta_dataset.uses_cluster_inversion is False
-
-        source = al.GalaxyModel(
-            redshift=1.0,
-            pixelization=al.pix.VoronoiBrightnessImage,
-            regularization=al.reg.Constant,
-        )
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            galaxies=dict(lens=al.GalaxyModel(redshift=0.5), source=source),
-        )
-
-        assert phase_imaging_7x7.meta_dataset.uses_cluster_inversion is True
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            galaxies=dict(
-                lens=al.GalaxyModel(redshift=0.5), source=al.GalaxyModel(redshift=1.0)
-            ),
-        )
-
-        assert phase_imaging_7x7.meta_dataset.uses_cluster_inversion is False
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            galaxies=dict(
-                lens=al.GalaxyModel(
-                    redshift=0.5,
-                    pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
-                ),
-                source=al.GalaxyModel(redshift=1.0),
-            ),
-        )
-
-        assert phase_imaging_7x7.meta_dataset.uses_cluster_inversion is False
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            galaxies=dict(
-                lens=al.GalaxyModel(redshift=0.5),
-                source=al.GalaxyModel(
-                    redshift=1.0,
-                    pixelization=al.pix.VoronoiBrightnessImage,
-                    regularization=al.reg.Constant,
-                ),
-            ),
-        )
-
-        assert phase_imaging_7x7.meta_dataset.uses_cluster_inversion is True
 
     def test__use_border__determines_if_border_pixel_relocation_is_used(
         self, imaging_7x7, mask_7x7

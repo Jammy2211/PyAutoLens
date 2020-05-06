@@ -2,13 +2,15 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 from autolens.pipeline import tagging
-from autolens.pipeline.phase import dataset
+from autogalaxy.pipeline.phase import dataset
+from autogalaxy.pipeline.phase.imaging.phase import PhaseAttributes as AgPhaseAttributes
 from autolens.pipeline.phase.imaging.analysis import Analysis
 from autolens.pipeline.phase.imaging.meta_imaging import MetaImaging
 from autolens.pipeline.phase.imaging.result import Result
 
 
 class PhaseImaging(dataset.PhaseDataset):
+
     galaxies = af.PhaseProperty("galaxies")
     hyper_image_sky = af.PhaseProperty("hyper_image_sky")
     hyper_background_noise = af.PhaseProperty("hyper_background_noise")
@@ -89,13 +91,12 @@ class PhaseImaging(dataset.PhaseDataset):
     def make_phase_attributes(self, analysis):
         return PhaseAttributes(
             cosmology=self.cosmology,
+            positions=analysis.masked_dataset.positions,
             hyper_model_image=analysis.hyper_model_image,
             hyper_galaxy_image_path_dict=analysis.hyper_galaxy_image_path_dict,
         )
 
-    def make_analysis(
-        self, dataset, mask, results=af.ResultsCollection(), positions=None
-    ):
+    def make_analysis(self, dataset, mask, results=None):
         """
         Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -118,7 +119,7 @@ class PhaseImaging(dataset.PhaseDataset):
         self.meta_dataset.model = self.model
 
         masked_imaging = self.meta_dataset.masked_dataset_from(
-            dataset=dataset, mask=mask, positions=positions, results=results
+            dataset=dataset, mask=mask, results=results
         )
 
         self.output_phase_info()
@@ -152,9 +153,14 @@ class PhaseImaging(dataset.PhaseDataset):
             phase_info.close()
 
 
-class PhaseAttributes:
-    def __init__(self, cosmology, hyper_model_image, hyper_galaxy_image_path_dict):
+class PhaseAttributes(AgPhaseAttributes):
+    def __init__(
+        self, cosmology, positions, hyper_model_image, hyper_galaxy_image_path_dict
+    ):
+        super().__init__(
+            cosmology=cosmology,
+            hyper_model_image=hyper_model_image,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+        )
 
-        self.cosmology = cosmology
-        self.hyper_model_image = hyper_model_image
-        self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
+        self.positions = positions

@@ -7,13 +7,13 @@ workspace_path = "{}/../../../../../autolens_workspace/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 plot_path = "{}/../images/fitting/".format(os.path.dirname(os.path.realpath(__file__)))
-dataset_path = "{}/dataset/".format(os.path.dirname(os.path.realpath(__file__)))
+dataset_path = "{}/dataset".format(os.path.dirname(os.path.realpath(__file__)))
 
-# Using the dataset path, load the data (image, noise-map, PSF) as an imaging object from .fits files.
+# Using the dataset path, load the data (image, noise map, PSF) as an imaging object from .fits files.
 imaging = al.Imaging.from_fits(
-    image_path=dataset_path + "image.fits",
-    psf_path=dataset_path + "psf.fits",
-    noise_map_path=dataset_path + "noise_map.fits",
+    image_path=f"{dataset_path}/image.fits",
+    psf_path=f"{dataset_path}/psf.fits",
+    noise_map_path=f"{dataset_path}/noise_map.fits",
     pixel_scales=0.05,
 )
 

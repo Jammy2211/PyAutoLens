@@ -104,10 +104,10 @@ class TestMetaData:
 
         assert (
             mock_files[2].text
-            == "phase=phase_name\nphase_tag=\npipeline=pipeline_name\npipeline_tag=\ndataset_name=data_name"
+            == "phase=phase_name\nphase_tag=\npipeline=pipeline_name\npipeline_tag=\nnon_linear_search=optimizer\ndataset_name=data_name"
         )
 
-        assert "phase_name///optimizer.pickle" in mock_files[3].filename
+        assert "phase_name////non_linear.pickle" in mock_files[3].filename
 
 
 class TestPassMask:

@@ -1,39 +1,19 @@
-import os
 from os import path
-
 import numpy as np
 import pytest
-from astropy import cosmology as cosmo
 
 import autofit as af
 import autolens as al
-from autolens.fit.fit import FitImaging
 from test_autolens.mock import mock_pipeline
+
+import os
 
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
-
-    phase_imaging_7x7 = al.PhaseImaging(
-        non_linear_class=mock_pipeline.MockNLO,
-        galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
-            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
-        ),
-        phase_name="test_phase_aggregator",
-    )
-
-    phase_imaging_7x7.run(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
-    )
-
-    agg = af.Aggregator(directory=phase_imaging_7x7.paths.phase_output_path)
-
-    masked_imaging_gen = al.agg.MaskedImaging(aggregator=agg)
-
-    for masked_imaging in masked_imaging_gen:
-        assert (masked_imaging.imaging.image == imaging_7x7.image).all()
+@pytest.fixture(name="path")
+def make_path():
+    return "{}/files/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def test__tracer_generator_from_aggregator(imaging_7x7, mask_7x7):
@@ -62,6 +42,29 @@ def test__tracer_generator_from_aggregator(imaging_7x7, mask_7x7):
         assert tracer.galaxies[1].redshift == 1.0
 
 
+def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
+
+    phase_imaging_7x7 = al.PhaseImaging(
+        non_linear_class=mock_pipeline.MockNLO,
+        galaxies=dict(
+            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+        ),
+        phase_name="test_phase_aggregator",
+    )
+
+    phase_imaging_7x7.run(
+        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+    )
+
+    agg = af.Aggregator(directory=phase_imaging_7x7.paths.phase_output_path)
+
+    masked_imaging_gen = al.agg.MaskedImaging(aggregator=agg)
+
+    for masked_imaging in masked_imaging_gen:
+        assert (masked_imaging.imaging.image == imaging_7x7.image).all()
+
+
 def test__fit_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
 
     phase_imaging_7x7 = al.PhaseImaging(
@@ -83,4 +86,106 @@ def test__fit_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
 
     for fit_imaging in fit_imaging_gen:
         assert (fit_imaging.masked_imaging.imaging.image == imaging_7x7.image).all()
-        assert fit_imaging.likelihood == pytest.approx(-1517.01, 1.0e-2)
+
+
+def test__masked_interferometer_generator_from_aggregator(interferometer_7, mask_7x7):
+
+    phase_interferometer_7x7 = al.PhaseInterferometer(
+        non_linear_class=mock_pipeline.MockNLO,
+        galaxies=dict(
+            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+        ),
+        real_space_mask=mask_7x7,
+        phase_name="test_phase_aggregator",
+    )
+
+    phase_interferometer_7x7.run(
+        dataset=interferometer_7, mask=mask_7x7, results=mock_pipeline.MockResults()
+    )
+
+    agg = af.Aggregator(directory=phase_interferometer_7x7.paths.phase_output_path)
+
+    masked_interferometer_gen = al.agg.MaskedInterferometer(aggregator=agg)
+
+    for masked_interferometer in masked_interferometer_gen:
+        assert (
+            masked_interferometer.interferometer.visibilities
+            == interferometer_7.visibilities
+        ).all()
+        assert (masked_interferometer.real_space_mask == mask_7x7).all()
+
+
+def test__fit_interferometer_generator_from_aggregator(interferometer_7, mask_7x7):
+
+    phase_interferometer_7x7 = al.PhaseInterferometer(
+        non_linear_class=mock_pipeline.MockNLO,
+        galaxies=dict(
+            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+        ),
+        phase_name="test_phase_aggregator",
+        real_space_mask=mask_7x7,
+    )
+
+    phase_interferometer_7x7.run(
+        dataset=interferometer_7, mask=mask_7x7, results=mock_pipeline.MockResults()
+    )
+
+    agg = af.Aggregator(directory=phase_interferometer_7x7.paths.phase_output_path)
+
+    fit_interferometer_gen = al.agg.FitInterferometer(aggregator=agg)
+
+    for fit_interferometer in fit_interferometer_gen:
+        assert (
+            fit_interferometer.masked_interferometer.interferometer.visibilities
+            == interferometer_7.visibilities
+        ).all()
+        assert (
+            fit_interferometer.masked_interferometer.real_space_mask == mask_7x7
+        ).all()
+
+
+class MockResult:
+    def __init__(self, log_likelihood):
+        self.log_likelihood = log_likelihood
+        self.model = log_likelihood
+
+
+class MockAggregator:
+    def __init__(self, grid_search_result):
+
+        self.grid_search_result = grid_search_result
+
+    @property
+    def grid_search_results(self):
+        return iter([self.grid_search_result])
+
+    def values(self, str):
+        return self.grid_search_results
+
+
+def test__results_array_from_results_file(path):
+
+    results = [
+        MockResult(log_likelihood=1.0),
+        MockResult(log_likelihood=(2.0)),
+        MockResult(log_likelihood=3.0),
+        MockResult(log_likelihood=4.0),
+    ]
+
+    lower_limit_lists = [[0.0, 0.0], [0.0, 0.5], [0.5, 0.0], [0.5, 0.5]]
+    physical_lower_limits_lists = [[-1.0, -1.0], [-1.0, 0.0], [0.0, -1.0], [0.0, 0.0]]
+
+    grid_search_result = af.GridSearchResult(
+        results=results,
+        physical_lower_limits_lists=physical_lower_limits_lists,
+        lower_limit_lists=lower_limit_lists,
+    )
+
+    aggregator = MockAggregator(grid_search_result=grid_search_result)
+
+    array = al.agg.grid_search_result_as_array(aggregator=aggregator)
+
+    assert array.in_2d == pytest.approx(np.array([[3.0, 2.0], [1.0, 4.0]]), 1.0e4)
+    assert array.pixel_scales == (1.0, 1.0)

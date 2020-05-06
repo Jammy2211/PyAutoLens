@@ -3,11 +3,9 @@ from os import path
 
 import numpy as np
 import pytest
-from astropy import cosmology as cosmo
 
 import autofit as af
 import autolens as al
-from autolens.fit.fit import FitInterferometer
 from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
