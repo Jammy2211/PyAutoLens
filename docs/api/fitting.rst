@@ -11,9 +11,9 @@ fit imaging data of a strong lens, which we begin by loading from .fits files:
     dataset_path = "/path/to/dataset/folder"
 
     imaging = al.Imaging.from_fits(
-        image_path=dataset_path + "image.fits",
-        psf_path=dataset_path + "psf.fits",
-        noise_map_path=dataset_path + "noise_map.fits",
+        image_path=f"{dataset_path}/image.fits",
+        psf_path=f"{dataset_path}/psf.fits",
+        noise_map_path=f"{dataset_path}/noise_map.fits",
         pixel_scales=0.1,
     )
 

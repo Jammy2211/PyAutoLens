@@ -1,6 +1,5 @@
 from autoarray.plot import plotters
-from autoastro.plot import lensing_plotters
-from autolens.plot import plane_plots, inversion_plots
+from autogalaxy.plot import lensing_plotters, plane_plots, inversion_plots
 
 import numpy as np
 
@@ -372,6 +371,7 @@ def image(fit, include=None, plotter=None):
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
+
     plotter.plot_array(
         array=fit.data,
         mask=include.mask_from_fit(fit=fit),

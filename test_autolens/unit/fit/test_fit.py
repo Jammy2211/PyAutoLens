@@ -4,7 +4,7 @@ from autoarray.operators.inversion import inversions
 import numpy as np
 import pytest
 
-from test_autoastro.mock.mock_profiles import MockLightProfile
+from test_autogalaxy.mock.mock_profiles import MockLightProfile
 
 
 class TestFitImaging:
@@ -1557,7 +1557,7 @@ class TestFitInterferometer:
 
             uv_wavelengths = np.array([[0.0, 0.0]])
 
-            interferometer = al.Interferometer.manual(
+            interferometer = al.Interferometer(
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(1,)),
                 noise_map=al.Visibilities.ones(shape_1d=(1,)),
                 uv_wavelengths=uv_wavelengths,
@@ -1618,7 +1618,7 @@ class TestFitInterferometer:
 
             uv_wavelengths = np.array([[1.0, 0.0], [1.0, 1.0], [2.0, 2.0]])
 
-            interferometer = al.Interferometer.manual(
+            interferometer = al.Interferometer(
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(3,)),
                 noise_map=al.Visibilities.full(fill_value=2.0, shape_1d=(3,)),
                 uv_wavelengths=uv_wavelengths,
@@ -1660,6 +1660,7 @@ class TestFitInterferometer:
             )
 
             profile_image = g0.profile_image_from_grid(grid=masked_interferometer.grid)
+
             model_visibilities_manual = transformer.visibilities_from_image(
                 image=profile_image
             )
@@ -1727,7 +1728,7 @@ class TestFitInterferometer:
 
             uv_wavelengths = np.array([[1.0, 0.0], [1.0, 1.0], [2.0, 2.0]])
 
-            interferometer = al.Interferometer.manual(
+            interferometer = al.Interferometer(
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(3,)),
                 noise_map=al.Visibilities.full(fill_value=2.0, shape_1d=(3,)),
                 uv_wavelengths=uv_wavelengths,

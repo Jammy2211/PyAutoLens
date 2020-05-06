@@ -1,24 +1,21 @@
 import autofit as af
+
 from autoarray.structures import grids
-from autoastro.galaxy import galaxy as g
+from autogalaxy.pipeline.phase.abstract import result
+from autogalaxy.galaxy import galaxy as g
 
 
-class Result(af.Result):
-    def __init__(
-        self, samples, previous_model, analysis, optimizer, use_as_hyper_dataset=False
-    ):
-        """
-        The result of a phase
-        """
-        super().__init__(samples=samples, previous_model=previous_model)
-
-        self.analysis = analysis
-        self.optimizer = optimizer
-        self.use_as_hyper_dataset = use_as_hyper_dataset
+class Result(result.Result):
+    @property
+    def max_log_likelihood_plane(self):
+        raise NotImplementedError()
 
     @property
     def max_log_likelihood_tracer(self):
-        return self.analysis.tracer_for_instance(instance=self.instance)
+
+        instance = self.analysis.associate_hyper_images(instance=self.instance)
+
+        return self.analysis.tracer_for_instance(instance=instance)
 
     @property
     def source_plane_light_profile_centres(self) -> grids.Coordinates:
