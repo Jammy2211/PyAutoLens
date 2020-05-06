@@ -59,7 +59,7 @@ class TestFit:
             results=mock_pipeline.MockResults(),
         )
         instance = phase_interferometer_7.model.instance_from_unit_vector([])
-        fit_figure_of_merit = analysis.fit(instance=instance)
+        fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
 
         real_space_mask = phase_interferometer_7.meta_dataset.mask_with_phase_sub_size_from_mask(
             mask=mask_7x7
@@ -75,7 +75,7 @@ class TestFit:
             masked_interferometer=masked_interferometer, tracer=tracer
         )
 
-        assert fit.likelihood == fit_figure_of_merit
+        assert fit.log_likelihood == fit_figure_of_merit
 
     def test__fit_figure_of_merit__includes_hyper_image_and_noise__matches_fit(
         self, interferometer_7, mask_7x7, visibilities_mask_7x2
@@ -101,7 +101,7 @@ class TestFit:
             results=mock_pipeline.MockResults(),
         )
         instance = phase_interferometer_7.model.instance_from_unit_vector([])
-        fit_figure_of_merit = analysis.fit(instance=instance)
+        fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
 
         real_space_mask = phase_interferometer_7.meta_dataset.mask_with_phase_sub_size_from_mask(
             mask=mask_7x7
@@ -120,4 +120,4 @@ class TestFit:
             hyper_background_noise=hyper_background_noise,
         )
 
-        assert fit.likelihood == fit_figure_of_merit
+        assert fit.log_likelihood == fit_figure_of_merit

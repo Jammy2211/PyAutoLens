@@ -48,5 +48,4 @@ def load_test_imaging(
         noise_map_path=dataset_path + "/noise_map.fits",
         pixel_scales=pixel_scales,
         name=name,
-        metadata=metadata,
     )

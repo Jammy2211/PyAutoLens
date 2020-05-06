@@ -1,5 +1,5 @@
-from autoarray.dataset import imaging
 from autoarray.structures import grids
+from autoarray.dataset import imaging
 from autolens.dataset import abstract
 from autolens.lens import ray_tracing
 
@@ -16,22 +16,21 @@ class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
-        positions=None,
         positions_threshold=None,
         renormalize_psf=True,
         preload_sparse_grids_of_planes=None,
     ):
         """
-        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        The lens dataset is the collection of data_type (image, noise map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+        Whilst the image, noise map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
         for lens calculations.
 
         Parameters
         ----------
         imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
+            The imaging data_type all in 2D (the image, noise map, PSF, etc.)
         mask: msk.Mask
             The 2D mask that is applied to the image.
         sub_size : int
@@ -63,19 +62,9 @@ class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
 
         abstract.AbstractLensMasked.__init__(
             self=self,
-            positions=positions,
             positions_threshold=positions_threshold,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
-
-    def modify_image_and_noise_map(self, image, noise_map):
-
-        masked_imaging = copy.deepcopy(self)
-
-        masked_imaging.image = image
-        masked_imaging.noise_map = noise_map
-
-        return masked_imaging
 
 
 class SimulatorImaging(imaging.SimulatorImaging):

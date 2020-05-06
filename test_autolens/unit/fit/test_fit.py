@@ -4,7 +4,7 @@ from autoarray.operators.inversion import inversions
 import numpy as np
 import pytest
 
-from test_autoastro.mock.mock_profiles import MockLightProfile
+from test_autogalaxy.mock.mock_profiles import MockLightProfile
 
 
 class TestFitImaging:
@@ -156,7 +156,7 @@ class TestFitImaging:
             assert fit.chi_squared == 25.0
             assert fit.reduced_chi_squared == 25.0 / 2.0
             assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
-            assert fit.likelihood == -0.5 * (
+            assert fit.log_likelihood == -0.5 * (
                 25.0 + 2.0 * np.log(2 * np.pi * 1.0 ** 2.0)
             )
 
@@ -261,7 +261,7 @@ class TestFitImaging:
             assert fit.chi_squared == 16.0
             assert fit.reduced_chi_squared == 16.0 / 2.0
             assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
-            assert fit.likelihood == -0.5 * (
+            assert fit.log_likelihood == -0.5 * (
                 16.0 + 2.0 * np.log(2 * np.pi * 1.0 ** 2.0)
             )
 
@@ -377,7 +377,9 @@ class TestFitImaging:
             assert fit.chi_squared == 4.0
             assert fit.reduced_chi_squared == 4.0 / 2.0
             assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 2.0 ** 2.0))
-            assert fit.likelihood == -0.5 * (4.0 + 2.0 * np.log(2 * np.pi * 2.0 ** 2.0))
+            assert fit.log_likelihood == -0.5 * (
+                4.0 + 2.0 * np.log(2 * np.pi * 2.0 ** 2.0)
+            )
 
         def test__hyper_image_changes_background_sky__reflected_in_likelihood(self):
 
@@ -478,7 +480,7 @@ class TestFitImaging:
             assert fit.chi_squared == 41.0
             assert fit.reduced_chi_squared == 41.0 / 2.0
             assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
-            assert fit.likelihood == -0.5 * (
+            assert fit.log_likelihood == -0.5 * (
                 41.0 + 2.0 * np.log(2 * np.pi * 1.0 ** 2.0)
             )
 
@@ -583,7 +585,7 @@ class TestFitImaging:
             assert fit.chi_squared == 6.25
             assert fit.reduced_chi_squared == 6.25 / 2.0
             assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 2.0 ** 2.0))
-            assert fit.likelihood == -0.5 * (
+            assert fit.log_likelihood == -0.5 * (
                 6.25 + 2.0 * np.log(2 * np.pi * 2.0 ** 2.0)
             )
 
@@ -644,12 +646,12 @@ class TestFitImaging:
                 noise_map=masked_imaging_7x7.noise_map
             )
 
-            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            log_likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
-            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
-            assert likelihood == fit.figure_of_merit
+            assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
+            assert log_likelihood == fit.figure_of_merit
 
         def test___lens_fit_galaxy_model_image_dict__corresponds_to_blurred_galaxy_images(
             self, masked_imaging_7x7
@@ -791,12 +793,12 @@ class TestFitImaging:
                 noise_map=hyper_noise_map
             )
 
-            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            log_likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
-            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
-            assert likelihood == fit.figure_of_merit
+            assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
+            assert log_likelihood == fit.figure_of_merit
 
         def test___blurred_and_model_images_of_planes_and_unmasked_blurred_profile_image_properties(
             self, masked_imaging_7x7
@@ -922,23 +924,23 @@ class TestFitImaging:
                 noise_map=masked_imaging_7x7.noise_map
             )
 
-            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            log_likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
-            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
+            assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
+            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
             )
 
-            assert likelihood_with_regularization == pytest.approx(
-                fit.likelihood_with_regularization, 1e-4
+            assert log_likelihood_with_regularization == pytest.approx(
+                fit.log_likelihood_with_regularization, 1e-4
             )
 
-            evidence = al.util.fit.evidence_from_inversion_terms(
+            log_evidence = al.util.fit.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -946,8 +948,8 @@ class TestFitImaging:
                 noise_normalization=noise_normalization,
             )
 
-            assert evidence == fit.evidence
-            assert evidence == fit.figure_of_merit
+            assert log_evidence == fit.log_evidence
+            assert log_evidence == fit.figure_of_merit
 
         def test___lens_fit_galaxy_model_image_dict__has_inversion_mapped_reconstructed_image(
             self, masked_imaging_7x7
@@ -1074,23 +1076,23 @@ class TestFitImaging:
                 noise_map=hyper_noise_map
             )
 
-            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            log_likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
-            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
+            assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
+            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
             )
 
-            assert likelihood_with_regularization == pytest.approx(
-                fit.likelihood_with_regularization, 1e-4
+            assert log_likelihood_with_regularization == pytest.approx(
+                fit.log_likelihood_with_regularization, 1e-4
             )
 
-            evidence = al.util.fit.evidence_from_inversion_terms(
+            log_evidence = al.util.fit.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1098,8 +1100,8 @@ class TestFitImaging:
                 noise_normalization=noise_normalization,
             )
 
-            assert evidence == fit.evidence
-            assert evidence == fit.figure_of_merit
+            assert log_evidence == fit.log_evidence
+            assert log_evidence == fit.figure_of_merit
 
         def test___blurred_and_model_images_of_planes_and_unmasked_blurred_profile_image_properties(
             self, masked_imaging_7x7
@@ -1205,23 +1207,23 @@ class TestFitImaging:
                 noise_map=masked_imaging_7x7.noise_map
             )
 
-            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            log_likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
-            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
+            assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
+            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
             )
 
-            assert likelihood_with_regularization == pytest.approx(
-                fit.likelihood_with_regularization, 1e-4
+            assert log_likelihood_with_regularization == pytest.approx(
+                fit.log_likelihood_with_regularization, 1e-4
             )
 
-            evidence = al.util.fit.evidence_from_inversion_terms(
+            log_evidence = al.util.fit.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1229,8 +1231,8 @@ class TestFitImaging:
                 noise_normalization=noise_normalization,
             )
 
-            assert evidence == fit.evidence
-            assert evidence == fit.figure_of_merit
+            assert log_evidence == fit.log_evidence
+            assert log_evidence == fit.figure_of_merit
 
         def test___lens_fit_galaxy_model_image_dict__has_blurred_profile_images_and_inversion_mapped_reconstructed_image(
             self, masked_imaging_7x7
@@ -1420,23 +1422,23 @@ class TestFitImaging:
                 noise_map=hyper_noise_map
             )
 
-            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            log_likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
-            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
+            assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
+            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
             )
 
-            assert likelihood_with_regularization == pytest.approx(
-                fit.likelihood_with_regularization, 1e-4
+            assert log_likelihood_with_regularization == pytest.approx(
+                fit.log_likelihood_with_regularization, 1e-4
             )
 
-            evidence = al.util.fit.evidence_from_inversion_terms(
+            log_evidence = al.util.fit.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -1444,8 +1446,8 @@ class TestFitImaging:
                 noise_normalization=noise_normalization,
             )
 
-            assert evidence == fit.evidence
-            assert evidence == fit.figure_of_merit
+            assert log_evidence == fit.log_evidence
+            assert log_evidence == fit.figure_of_merit
 
         def test___blurred_and_model_images_of_planes_and_unmasked_blurred_profile_image_properties(
             self, masked_imaging_7x7
@@ -1555,7 +1557,7 @@ class TestFitInterferometer:
 
             uv_wavelengths = np.array([[0.0, 0.0]])
 
-            interferometer = al.Interferometer.manual(
+            interferometer = al.Interferometer(
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(1,)),
                 noise_map=al.Visibilities.ones(shape_1d=(1,)),
                 uv_wavelengths=uv_wavelengths,
@@ -1608,7 +1610,7 @@ class TestFitInterferometer:
             assert fit.chi_squared == 25.0
             assert fit.reduced_chi_squared == 25.0 / 2.0
             assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
-            assert fit.likelihood == -0.5 * (
+            assert fit.log_likelihood == -0.5 * (
                 25.0 + 2.0 * np.log(2 * np.pi * 1.0 ** 2.0)
             )
 
@@ -1616,7 +1618,7 @@ class TestFitInterferometer:
 
             uv_wavelengths = np.array([[1.0, 0.0], [1.0, 1.0], [2.0, 2.0]])
 
-            interferometer = al.Interferometer.manual(
+            interferometer = al.Interferometer(
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(3,)),
                 noise_map=al.Visibilities.full(fill_value=2.0, shape_1d=(3,)),
                 uv_wavelengths=uv_wavelengths,
@@ -1658,6 +1660,7 @@ class TestFitInterferometer:
             )
 
             profile_image = g0.profile_image_from_grid(grid=masked_interferometer.grid)
+
             model_visibilities_manual = transformer.visibilities_from_image(
                 image=profile_image
             )
@@ -1715,7 +1718,7 @@ class TestFitInterferometer:
             assert fit.noise_normalization == pytest.approx(
                 (6.0 * np.log(2 * np.pi * 2.0 ** 2.0)), 1.0e-4
             )
-            assert fit.likelihood == pytest.approx(
+            assert fit.log_likelihood == pytest.approx(
                 -0.5 * (25.73579 + 6.0 * np.log(2 * np.pi * 2.0 ** 2.0)), 1.0e-4
             )
 
@@ -1725,7 +1728,7 @@ class TestFitInterferometer:
 
             uv_wavelengths = np.array([[1.0, 0.0], [1.0, 1.0], [2.0, 2.0]])
 
-            interferometer = al.Interferometer.manual(
+            interferometer = al.Interferometer(
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(3,)),
                 noise_map=al.Visibilities.full(fill_value=2.0, shape_1d=(3,)),
                 uv_wavelengths=uv_wavelengths,
@@ -1830,12 +1833,12 @@ class TestFitInterferometer:
                 noise_map=masked_interferometer_7.noise_map
             )
 
-            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            log_likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
-            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
-            assert likelihood == fit.figure_of_merit
+            assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
+            assert log_likelihood == fit.figure_of_merit
 
         def test___lens_fit_galaxy_model_image_dict__corresponds_to_profile_galaxy_images(
             self, masked_interferometer_7
@@ -2017,23 +2020,23 @@ class TestFitInterferometer:
                 noise_map=masked_interferometer_7.noise_map
             )
 
-            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            log_likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
-            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
+            assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
+            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
             )
 
-            assert likelihood_with_regularization == pytest.approx(
-                fit.likelihood_with_regularization, 1e-4
+            assert log_likelihood_with_regularization == pytest.approx(
+                fit.log_likelihood_with_regularization, 1e-4
             )
 
-            evidence = al.util.fit.evidence_from_inversion_terms(
+            log_evidence = al.util.fit.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -2041,8 +2044,8 @@ class TestFitInterferometer:
                 noise_normalization=noise_normalization,
             )
 
-            assert evidence == fit.evidence
-            assert evidence == fit.figure_of_merit
+            assert log_evidence == fit.log_evidence
+            assert log_evidence == fit.figure_of_merit
 
             mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
                 mapping_matrix=fit.inversion.mapper.mapping_matrix,
@@ -2236,23 +2239,23 @@ class TestFitInterferometer:
                 noise_map=masked_interferometer_7.noise_map
             )
 
-            likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+            log_likelihood = al.util.fit.likelihood_from_chi_squared_and_noise_normalization(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
-            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
+            assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
+            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
             )
 
-            assert likelihood_with_regularization == pytest.approx(
-                fit.likelihood_with_regularization, 1e-4
+            assert log_likelihood_with_regularization == pytest.approx(
+                fit.log_likelihood_with_regularization, 1e-4
             )
 
-            evidence = al.util.fit.evidence_from_inversion_terms(
+            log_evidence = al.util.fit.evidence_from_inversion_terms(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
@@ -2260,8 +2263,8 @@ class TestFitInterferometer:
                 noise_normalization=noise_normalization,
             )
 
-            assert evidence == fit.evidence
-            assert evidence == fit.figure_of_merit
+            assert log_evidence == fit.log_evidence
+            assert log_evidence == fit.figure_of_merit
 
             mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
                 mapping_matrix=fit.inversion.mapper.mapping_matrix,
@@ -2454,7 +2457,7 @@ class MockTracerPositions:
         return [self.positions]
 
 
-class TestPositionsFit:
+class TestFitPositions:
     def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
 
         positions = al.Coordinates(coordinates=[[(0.0, 0.0), (0.0, 1.0)]])

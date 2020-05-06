@@ -2,10 +2,9 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 import autolens as al
-from autolens.fit.fit import FitImaging, FitInterferometer
 
 from test_autolens.mock import mock_pipeline
-from test_autoastro.unit.conftest import *
+from test_autogalaxy.unit.conftest import *
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -18,10 +17,10 @@ def set_config_path():
 
 
 ############
-# LENS #
+# AutoLens #
 ############
 
-# Lens Data #
+# Lens Datasets #
 
 
 @pytest.fixture(name="masked_imaging_7x7")
@@ -82,19 +81,19 @@ def make_tracer_x2_plane_inversion_7x7(lp_0, gal_x1_lp, gal_x1_mp):
 
 @pytest.fixture(name="masked_imaging_fit_x1_plane_7x7")
 def make_masked_imaging_fit_x1_plane_7x7(masked_imaging_7x7, tracer_x1_plane_7x7):
-    return FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer_x1_plane_7x7)
+    return al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer_x1_plane_7x7)
 
 
 @pytest.fixture(name="masked_imaging_fit_x2_plane_7x7")
 def make_masked_imaging_fit_x2_plane_7x7(masked_imaging_7x7, tracer_x2_plane_7x7):
-    return FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer_x2_plane_7x7)
+    return al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer_x2_plane_7x7)
 
 
 @pytest.fixture(name="masked_imaging_fit_x2_plane_inversion_7x7")
 def make_masked_imaging_fit_x2_plane_inversion_7x7(
     masked_imaging_7x7, tracer_x2_plane_inversion_7x7
 ):
-    return FitImaging(
+    return al.FitImaging(
         masked_imaging=masked_imaging_7x7, tracer=tracer_x2_plane_inversion_7x7
     )
 
@@ -103,7 +102,7 @@ def make_masked_imaging_fit_x2_plane_inversion_7x7(
 def make_masked_interferometer_fit_x1_plane_7x7(
     masked_interferometer_7, tracer_x1_plane_7x7
 ):
-    return FitInterferometer(
+    return al.FitInterferometer(
         masked_interferometer=masked_interferometer_7, tracer=tracer_x1_plane_7x7
     )
 
@@ -112,7 +111,7 @@ def make_masked_interferometer_fit_x1_plane_7x7(
 def make_masked_interferometer_fit_x2_plane_7x7(
     masked_interferometer_7, tracer_x2_plane_7x7
 ):
-    return FitInterferometer(
+    return al.FitInterferometer(
         masked_interferometer=masked_interferometer_7, tracer=tracer_x2_plane_7x7
     )
 
@@ -121,7 +120,7 @@ def make_masked_interferometer_fit_x2_plane_7x7(
 def make_masked_interferometer_fit_x2_plane_inversion_7x7(
     masked_interferometer_7, tracer_x2_plane_inversion_7x7
 ):
-    return FitInterferometer(
+    return al.FitInterferometer(
         masked_interferometer=masked_interferometer_7,
         tracer=tracer_x2_plane_inversion_7x7,
     )
@@ -167,51 +166,3 @@ def make_phase_interferometer_7(mask_7x7):
         real_space_mask=mask_7x7,
         phase_name="test_phase",
     )
-
-
-@pytest.fixture(name="hyper_model_image_7x7")
-def make_hyper_model_image_7x7(mask_7x7):
-    return al.MaskedArray.full(fill_value=5.0, mask=mask_7x7)
-
-
-@pytest.fixture(name="hyper_galaxy_image_0_7x7")
-def make_hyper_galaxy_image_0_7x7(mask_7x7):
-    return al.MaskedArray.full(fill_value=2.0, mask=mask_7x7)
-
-
-@pytest.fixture(name="hyper_galaxy_image_1_7x7")
-def make_hyper_galaxy_image_1_7x7(mask_7x7):
-    return al.MaskedArray.full(fill_value=3.0, mask=mask_7x7)
-
-
-@pytest.fixture(name="hyper_galaxy_image_path_dict_7x7")
-def make_hyper_galaxy_image_path_dict_7x7(
-    hyper_galaxy_image_0_7x7, hyper_galaxy_image_1_7x7
-):
-    hyper_galaxy_image_path_dict = {}
-
-    hyper_galaxy_image_path_dict[("g0",)] = hyper_galaxy_image_0_7x7
-    hyper_galaxy_image_path_dict[("g1",)] = hyper_galaxy_image_1_7x7
-
-    return hyper_galaxy_image_path_dict
-
-
-@pytest.fixture(name="contribution_map_7x7")
-def make_contribution_map_7x7(
-    hyper_model_image_7x7, hyper_galaxy_image_0_7x7, hyper_galaxy
-):
-    return hyper_galaxy.contribution_map_from_hyper_images(
-        hyper_model_image=hyper_model_image_7x7,
-        hyper_galaxy_image=hyper_galaxy_image_0_7x7,
-    )
-
-
-@pytest.fixture(name="hyper_noise_map_7x7")
-def make_hyper_noise_map_7x7(
-    masked_imaging_fit_x2_plane_7x7, contribution_map_7x7, hyper_galaxy
-):
-    hyper_noise = hyper_galaxy.hyper_noise_map_from_contribution_map(
-        noise_map=masked_imaging_fit_x2_plane_7x7.noise_map,
-        contribution_map=contribution_map_7x7,
-    )
-    return masked_imaging_fit_x2_plane_7x7.noise_map + hyper_noise

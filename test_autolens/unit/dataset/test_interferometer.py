@@ -89,7 +89,7 @@ class TestMaskedInterferometer:
     def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
         self
     ):
-        interferometer = al.Interferometer.manual(
+        interferometer = al.Interferometer(
             visibilities=al.Visibilities.ones(shape_1d=(19,)),
             primary_beam=al.Kernel.ones(shape_2d=(7, 7), pixel_scales=1.0),
             noise_map=al.Visibilities.full(fill_value=2.0, shape_1d=(19,)),
@@ -108,7 +108,6 @@ class TestMaskedInterferometer:
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
             primary_beam_shape_2d=(5, 5),
-            positions=[al.GridIrregular.manual_1d([[1.0, 1.0]])],
             positions_threshold=1.0,
         )
 
@@ -122,9 +121,6 @@ class TestMaskedInterferometer:
             masked_interferometer.primary_beam.in_2d == (1.0 / 25.0) * np.ones((5, 5))
         ).all()
         assert masked_interferometer.primary_beam_shape_2d == (5, 5)
-
-        assert (masked_interferometer.positions[0] == np.array([[1.0, 1.0]])).all()
-        assert masked_interferometer.positions_threshold == 1.0
 
     def test__modified_noise_map(
         self, noise_map_7x2, interferometer_7, sub_mask_7x7, visibilities_mask_7x2

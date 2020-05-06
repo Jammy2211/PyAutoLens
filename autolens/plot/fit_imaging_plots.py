@@ -1,6 +1,5 @@
 from autoarray.plot import plotters
-from autoastro.plot import lensing_plotters
-from autolens.plot import plane_plots, inversion_plots
+from autogalaxy.plot import lensing_plotters, plane_plots, inversion_plots
 
 import numpy as np
 
@@ -315,10 +314,10 @@ def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
         grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
         positions=include.positions_from_fit(fit=fit),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+        light_profile_centres=include.light_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+        mass_profile_centres=include.mass_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
     )
@@ -349,10 +348,10 @@ def model_image_of_plane(fit, plane_index, include=None, plotter=None):
         mask=include.mask_from_fit(fit=fit),
         positions=include.positions_from_fit(fit=fit),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+        light_profile_centres=include.light_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+        mass_profile_centres=include.mass_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
     )
@@ -372,15 +371,16 @@ def image(fit, include=None, plotter=None):
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
+
     plotter.plot_array(
         array=fit.data,
         mask=include.mask_from_fit(fit=fit),
         grid=include.inversion_image_pixelization_grid_from_fit(fit=fit),
         positions=include.positions_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+        light_profile_centres=include.light_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+        mass_profile_centres=include.mass_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
@@ -391,7 +391,7 @@ def image(fit, include=None, plotter=None):
 @lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def noise_map(fit, include=None, plotter=None):
-    """Plot the noise-map of a lens fit.
+    """Plot the noise map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
 
@@ -405,10 +405,10 @@ def noise_map(fit, include=None, plotter=None):
     plotter.plot_array(
         array=fit.noise_map,
         mask=include.mask_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+        light_profile_centres=include.light_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+        mass_profile_centres=include.mass_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
@@ -419,7 +419,7 @@ def noise_map(fit, include=None, plotter=None):
 @lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def signal_to_noise_map(fit, include=None, plotter=None):
-    """Plot the noise-map of a lens fit.
+    """Plot the noise map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
 
@@ -433,10 +433,10 @@ def signal_to_noise_map(fit, include=None, plotter=None):
     plotter.plot_array(
         array=fit.signal_to_noise_map,
         mask=include.mask_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+        light_profile_centres=include.light_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+        mass_profile_centres=include.mass_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
@@ -462,10 +462,10 @@ def model_image(fit, include=None, plotter=None):
         array=fit.model_data,
         mask=include.mask_from_fit(fit=fit),
         positions=include.positions_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+        light_profile_centres=include.light_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+        mass_profile_centres=include.mass_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
@@ -490,10 +490,10 @@ def residual_map(fit, include=None, plotter=None):
     plotter.plot_array(
         array=fit.residual_map,
         mask=include.mask_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+        light_profile_centres=include.light_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+        mass_profile_centres=include.mass_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
@@ -518,10 +518,10 @@ def normalized_residual_map(fit, include=None, plotter=None):
     plotter.plot_array(
         array=fit.normalized_residual_map,
         mask=include.mask_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+        light_profile_centres=include.light_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+        mass_profile_centres=include.mass_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
@@ -546,10 +546,10 @@ def chi_squared_map(fit, include=None, plotter=None):
     plotter.plot_array(
         array=fit.chi_squared_map,
         mask=include.mask_from_fit(fit=fit),
-        light_profile_centres=include.light_profile_centres_of_galaxies_from_obj(
+        light_profile_centres=include.light_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
-        mass_profile_centres=include.mass_profile_centres_of_galaxies_from_obj(
+        mass_profile_centres=include.mass_profile_centres_from_obj(
             obj=fit.tracer.image_plane
         ),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),

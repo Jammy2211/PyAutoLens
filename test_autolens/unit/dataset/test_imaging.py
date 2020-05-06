@@ -70,24 +70,6 @@ class TestMaskedImaging:
             == new_blurring_grid.interpolator.wts
         ).all()
 
-    def test__modified_image_and_noise_map(
-        self, image_7x7, noise_map_7x7, imaging_7x7, sub_mask_7x7
-    ):
-
-        masked_imaging_7x7 = al.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
-
-        image_7x7[0] = 10.0
-        noise_map_7x7[0] = 11.0
-
-        masked_imaging_7x7 = masked_imaging_7x7.modify_image_and_noise_map(
-            image=image_7x7, noise_map=noise_map_7x7
-        )
-
-        assert masked_imaging_7x7.image.in_1d[0] == 10.0
-        assert masked_imaging_7x7.image.in_2d[0, 0] == 10.0
-        assert masked_imaging_7x7.noise_map.in_1d[0] == 11.0
-        assert masked_imaging_7x7.noise_map.in_2d[0, 0] == 11.0
-
 
 class TestSimulatorImaging:
     def test__from_tracer_and_grid__same_as_tracer_image(self):

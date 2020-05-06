@@ -1,13 +1,9 @@
-import os
 from os import path
 
 import numpy as np
 import pytest
-from astropy import cosmology as cosmo
 
-import autofit as af
 import autolens as al
-from autolens import exc
 from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
@@ -20,22 +16,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 class TestResult:
-    def test__results_of_phase_are_available_as_properties(self, imaging_7x7, mask_7x7):
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            non_linear_class=mock_pipeline.MockNLO,
-            galaxies=[
-                al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
-            ],
-            phase_name="test_phase_2",
-        )
-
-        result = phase_imaging_7x7.run(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
-        )
-
-        assert isinstance(result, al.AbstractPhase.Result)
-
     def test__results_of_phase_include_mask__available_as_property(
         self, imaging_7x7, mask_7x7
     ):
@@ -85,11 +65,10 @@ class TestResult:
             phase_name="test_phase_2",
         )
 
+        imaging_7x7.positions = al.Coordinates([[(1.0, 1.0)]])
+
         result = phase_imaging_7x7.run(
-            dataset=imaging_7x7,
-            mask=mask_7x7,
-            positions=[[(1.0, 1.0)]],
-            results=mock_pipeline.MockResults(),
+            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
         assert (result.positions[0] == np.array([1.0, 1.0])).all()
@@ -162,7 +141,7 @@ class TestResult:
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
-        assert result.most_likely_pixelization_grids_of_planes == [None]
+        assert result.max_log_likelihood_pixelization_grids_of_planes == [None]
 
         phase_imaging_7x7 = al.PhaseImaging(
             non_linear_class=mock_pipeline.MockNLO,
@@ -186,4 +165,7 @@ class TestResult:
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
 
-        assert result.most_likely_pixelization_grids_of_planes[-1].shape == (6, 2)
+        assert result.max_log_likelihood_pixelization_grids_of_planes[-1].shape == (
+            6,
+            2,
+        )

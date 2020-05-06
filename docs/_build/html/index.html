@@ -200,7 +200,7 @@
 
 <span class="c1"># We pass the imaging data and mask to the phase, thereby fitting it with the lens model above &amp; plot the resulting fit.</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">imaging</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
-<span class="n">al</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">fit_imaging</span><span class="o">.</span><span class="n">subplot_fit_imaging</span><span class="p">(</span><span class="n">fit</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">most_likely_fit</span><span class="p">)</span>
+<span class="n">al</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">fit_imaging</span><span class="o">.</span><span class="n">subplot_fit_imaging</span><span class="p">(</span><span class="n">fit</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">max_log_likelihood_fit</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

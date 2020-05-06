@@ -19,3 +19,7 @@ class PixelizationException(af.exc.FitException):
 
 class SettingsException(Exception):
     pass
+
+
+class AggregatorException(Exception):
+    pass
