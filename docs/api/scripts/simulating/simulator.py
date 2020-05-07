@@ -26,7 +26,7 @@ dataset_path = af.path_util.make_and_return_path_from_path_and_folder_names(
     path=plot_path, folder_names=[dataset_name]
 )
 
-# The grid use to create the image.
+# The grid used to simulate the image.
 grid = al.Grid.uniform(shape_2d=(170, 170), pixel_scales=0.05, sub_size=4)
 
 # Simulate a simple Gaussian PSF for the image.
