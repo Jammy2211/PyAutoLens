@@ -1,8 +1,7 @@
 import autofit as af
-
 from autoarray.structures import grids
-from autogalaxy.pipeline.phase.abstract import result
 from autogalaxy.galaxy import galaxy as g
+from autogalaxy.pipeline.phase.abstract import result
 
 
 class Result(result.Result):
@@ -18,7 +17,7 @@ class Result(result.Result):
         return self.analysis.tracer_for_instance(instance=instance)
 
     @property
-    def source_plane_light_profile_centres(self) -> grids.Coordinates:
+    def source_plane_light_profile_centres(self) -> grids.GridCoordinates:
         """Return a list of all light profiles centres of all galaxies in the most-likely tracer's source-plane.
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
@@ -26,7 +25,7 @@ class Result(result.Result):
         return self.max_log_likelihood_tracer.source_plane.light_profile_centres
 
     @property
-    def source_plane_inversion_centres(self) -> grids.Coordinates:
+    def source_plane_inversion_centres(self) -> grids.GridCoordinates:
         """Return a list of all centres of a pixelized source reconstruction in the source-plane of the most likely fit.
         The brightest source pixel(s) are used to determine these centres.
 
@@ -40,7 +39,7 @@ class Result(result.Result):
             return []
 
     @property
-    def source_plane_centres(self) -> grids.Coordinates:
+    def source_plane_centres(self) -> grids.GridCoordinates:
         """Combine the source-plane light profile and inversion centres (see above) into a single list of source-plane
         centres.
 
@@ -51,12 +50,12 @@ class Result(result.Result):
             self.source_plane_inversion_centres
         )
 
-        return grids.Coordinates(coordinates=centres)
+        return grids.GridCoordinates(coordinates=centres)
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(
         self
-    ) -> grids.Coordinates:
+    ) -> grids.GridCoordinates:
         """Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
         the multiple image position of the source(s) in the image-plane..
 
@@ -67,7 +66,7 @@ class Result(result.Result):
 
         grid = self.analysis.masked_dataset.mask.geometry.unmasked_grid
 
-        # TODO: Tracer method will ultimately return Coordinates, need to determine best way to implement method.
+        # TODO: Tracer method will ultimately return GridCoordinates, need to determine best way to implement method.
 
         positions = []
 
@@ -80,7 +79,7 @@ class Result(result.Result):
 
                 positions.append(positions_list)
 
-        return grids.Coordinates(coordinates=positions)
+        return grids.GridCoordinates(coordinates=positions)
 
     @property
     def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:

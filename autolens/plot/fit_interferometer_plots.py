@@ -1,5 +1,5 @@
-from autogalaxy.plot.fit_interferometer_plots import *
 import autogalaxy as ag
+from autogalaxy.plot.fit_interferometer_plots import *
 from autolens.plot import ray_tracing_plots
 
 

@@ -1,5 +1,5 @@
-from autolens.dataset import imaging
 from autogalaxy.pipeline.phase.imaging import meta_imaging as ag_meta_imaging
+from autolens.dataset import imaging
 from autolens.pipeline.phase.dataset import meta_dataset
 
 

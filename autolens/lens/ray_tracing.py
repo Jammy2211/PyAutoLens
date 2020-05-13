@@ -2,16 +2,15 @@ from abc import ABC
 
 import numpy as np
 from astropy import cosmology as cosmo
-
-from autogalaxy import lensing
-from autoarray.util import array_util, grid_util
 from autoarray.mask import mask as msk
+from autoarray.operators.inversion import inversions as inv
 from autoarray.structures import grids
 from autoarray.structures.arrays import MaskedArray
-from autoarray.operators.inversion import inversions as inv
+from autoarray.util import array_util, grid_util
+from autogalaxy import lensing
 from autogalaxy.galaxy import galaxy as g
-from autogalaxy.util import cosmology_util
 from autogalaxy.plane import plane as pl
+from autogalaxy.util import cosmology_util
 from autogalaxy.util import plane_util
 
 
@@ -103,7 +102,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
     @property
     def light_profile_centres(self):
-        """Returns the light profile centres of the tracer as a *Coordinates* object, which structures the centres
+        """Returns the light profile centres of the tracer as a *GridCoordinates* object, which structures the centres
         in lists according to which plane they come from.
 
         Fo example, if the tracer has two planes, the first with one light profile and second with two light profiles
@@ -116,7 +115,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
         The centres of light-sheets are filtered out, as their centres are not relevant to lensing calculations
 
         """
-        return grids.Coordinates(
+        return grids.GridCoordinates(
             [
                 list(plane.light_profile_centres)
                 for plane in self.planes
@@ -138,7 +137,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
     @property
     def mass_profile_centres(self):
-        """Returns the mass profile centres of the tracer as a *Coordinates* object, which structures the centres
+        """Returns the mass profile centres of the tracer as a *GridCoordinates* object, which structures the centres
         in lists according to which plane they come from.
 
         Fo example, if the tracer has two planes, the first with one mass profile and second with two mass profiles
@@ -151,7 +150,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
         The centres of mass-sheets are filtered out, as their centres are not relevant to lensing calculations
 
         """
-        return grids.Coordinates(
+        return grids.GridCoordinates(
             [
                 list(plane.mass_profile_centres)
                 for plane in self.planes
@@ -340,18 +339,18 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
         return traced_grids
 
-    @grids.grid_like_to_numpy
+    @grids.grid_like_to_structure
     def deflections_between_planes_from_grid(self, grid, plane_i=0, plane_j=-1):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    @grids.grid_like_to_numpy
+    @grids.grid_like_to_structure
     def profile_image_from_grid(self, grid):
         return sum(self.profile_images_of_planes_from_grid(grid=grid))
 
-    @grids.grid_like_to_numpy
+    @grids.grid_like_to_structure
     def profile_images_of_planes_from_grid(self, grid):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
@@ -380,19 +379,19 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
         return self.profile_image_from_grid(grid=padded_grid)
 
-    @grids.grid_like_to_numpy
+    @grids.grid_like_to_structure
     def convergence_from_grid(self, grid):
         return sum([plane.convergence_from_grid(grid=grid) for plane in self.planes])
 
-    @grids.grid_like_to_numpy
+    @grids.grid_like_to_structure
     def potential_from_grid(self, grid):
         return sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
 
-    @grids.grid_like_to_numpy
+    @grids.grid_like_to_structure
     def deflections_from_grid(self, grid):
         return self.deflections_between_planes_from_grid(grid=grid)
 
-    @grids.grid_like_to_numpy
+    @grids.grid_like_to_structure
     def deflections_of_planes_summed_from_grid(self, grid):
         return sum([plane.deflections_from_grid(grid=grid) for plane in self.planes])
 

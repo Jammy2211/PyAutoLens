@@ -1,7 +1,6 @@
-import numpy as np
-
 import autofit as af
 import autolens as al
+import numpy as np
 
 
 class GalaxiesMockAnalysis:
@@ -72,6 +71,7 @@ class MockResult:
         optimizer=None,
         mask=None,
         model_image=None,
+        max_log_likelihood_tracer=None,
         hyper_galaxy_image_path_dict=None,
         hyper_model_image=None,
         hyper_galaxy_visibilities_path_dict=None,
@@ -98,6 +98,7 @@ class MockResult:
         self.hyper_model_visibilities = hyper_model_visibilities
         self.model_image = model_image
         self.unmasked_model_image = model_image
+        self.max_log_likelihood_tracer = max_log_likelihood_tracer
         self.analysis = analysis
         self.optimizer = optimizer
         self.pixelization = pixelization
@@ -108,9 +109,6 @@ class MockResult:
             updated_positions if updated_positions is not None else []
         )
         self.updated_positions_threshold = updated_positions_threshold
-        self.max_log_likelihood_tracer = al.Tracer.from_galaxies(
-            galaxies=[al.Galaxy(redshift=0.5)]
-        )
 
     @property
     def last(self):
@@ -131,6 +129,7 @@ class MockResults(af.ResultsCollection):
         optimizer=None,
         mask=None,
         model_image=None,
+        max_log_likelihood_tracer=None,
         hyper_galaxy_image_path_dict=None,
         hyper_model_image=None,
         hyper_galaxy_visibilities_path_dict=None,
@@ -156,6 +155,7 @@ class MockResults(af.ResultsCollection):
             optimizer=optimizer,
             mask=mask,
             model_image=model_image,
+            max_log_likelihood_tracer=max_log_likelihood_tracer,
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=hyper_model_image,
             hyper_galaxy_visibilities_path_dict=hyper_galaxy_visibilities_path_dict,

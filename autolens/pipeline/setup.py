@@ -1,7 +1,7 @@
-import autofit as af
-from autolens import exc
+from autoconf import conf
 from autoarray.operators.inversion import pixelizations as pix
 from autoarray.operators.inversion import regularization as reg
+from autolens import exc
 
 
 class Setup:
@@ -179,7 +179,7 @@ class Source:
         if self.pixelization is None:
             return ""
         else:
-            return "pix_" + af.conf.instance.label.get(
+            return "pix_" + conf.instance.label.get(
                 "tag", self.pixelization().__class__.__name__, str
             )
 
@@ -189,7 +189,7 @@ class Source:
         if self.regularization is None:
             return ""
         else:
-            return "__reg_" + af.conf.instance.label.get(
+            return "__reg_" + conf.instance.label.get(
                 "tag", self.regularization().__class__.__name__, str
             )
 

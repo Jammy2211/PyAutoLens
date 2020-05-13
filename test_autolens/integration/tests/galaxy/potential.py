@@ -1,9 +1,9 @@
 import os
-import numpy as np
+from test import integration_util
 
 import autofit as af
 import autolens as al
-from test import integration_util
+import numpy as np
 
 test_type = "galaxy_fit"
 test_name = "potential"

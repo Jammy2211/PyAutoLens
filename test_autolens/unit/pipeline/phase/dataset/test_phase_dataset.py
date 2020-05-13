@@ -1,10 +1,9 @@
 from os import path
 
+import autolens as al
 import numpy as np
 import pytest
 from astropy import cosmology as cosmo
-
-import autolens as al
 from autolens import exc
 from test_autolens.mock import mock_pipeline
 
@@ -23,7 +22,7 @@ class TestMakeAnalysis:
     ):
         # If position threshold is input (not None) and positions are input, make the positions part of the lens dataset.
 
-        imaging_7x7.positions = al.Coordinates([[(1.0, 1.0), (2.0, 2.0)]])
+        imaging_7x7.positions = al.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -59,7 +58,7 @@ class TestMakeAnalysis:
         self, phase_imaging_7x7, imaging_7x7, mask_7x7
     ):
 
-        imaging_7x7.positions = al.Coordinates([[(1.0, 1.0), (2.0, 2.0)]])
+        imaging_7x7.positions = al.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)]])
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(source=al.Galaxy(redshift=0.5)),
@@ -85,7 +84,7 @@ class TestMakeAnalysis:
             phase_name="test_phase",
         )
 
-        imaging_7x7.positions = al.Coordinates([[(1.0, 1.0), (2.0, 2.0)]])
+        imaging_7x7.positions = al.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)]])
 
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
@@ -105,7 +104,7 @@ class TestMakeAnalysis:
             phase_name="test_phase",
         )
 
-        imaging_7x7.positions = al.Coordinates([[(1.0, 0.0), (-1.0, 0.0)]])
+        imaging_7x7.positions = al.GridCoordinates([[(1.0, 0.0), (-1.0, 0.0)]])
 
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
@@ -137,7 +136,7 @@ class TestMakeAnalysis:
                 tracer=tracer
             )
 
-        imaging_7x7.positions = al.Coordinates(
+        imaging_7x7.positions = al.GridCoordinates(
             [[(0.0, 0.0), (0.0, 0.0)], [(0.0, 0.0), (0.0, 0.0)]]
         )
 
@@ -151,7 +150,7 @@ class TestMakeAnalysis:
             tracer=tracer
         )
 
-        imaging_7x7.positions = al.Coordinates(
+        imaging_7x7.positions = al.GridCoordinates(
             [[(0.0, 0.0), (0.0, 0.0)], [(100.0, 0.0), (0.0, 0.0)]]
         )
 

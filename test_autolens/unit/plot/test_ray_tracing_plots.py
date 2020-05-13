@@ -1,14 +1,11 @@
-import autolens as al
-import autolens.plot as aplt
 import os
 
+import autolens as al
+import autolens.plot as aplt
 import pytest
+from autoconf import conf
 
-from os import path
-
-from autofit import conf
-
-directory = path.dirname(path.realpath(__file__))
+directory = os.path.dirname(os.path.realpath(__file__))
 
 
 @pytest.fixture(name="ray_tracing_plotter_path")
@@ -21,7 +18,7 @@ def make_ray_tracing_plotter_setup():
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
-        path.join(directory, "files/plotter"), path.join(directory, "output")
+        os.path.join(directory, "files/plotter"), os.path.join(directory, "output")
     )
 
 

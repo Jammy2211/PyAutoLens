@@ -1,10 +1,11 @@
+import os
+import shutil
+from os import path
+
+import pytest
+from autoconf import conf
 import autolens as al
 from autolens.pipeline import visualizer as vis
-import os
-import pytest
-from os import path
-import shutil
-from autofit import conf
 
 directory = path.dirname(path.realpath(__file__))
 

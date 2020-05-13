@@ -1,9 +1,9 @@
 import os
-import numpy as np
 
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
+import numpy as np
 
 # Setup the path to the autolens_workspace, using a relative directory name.
 plot_path = "{}/../images/interferometry/".format(

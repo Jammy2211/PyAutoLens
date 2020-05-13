@@ -1,10 +1,9 @@
 import builtins
 
-import numpy as np
-import pytest
-
 import autofit as af
 import autolens as al
+import numpy as np
+import pytest
 from autofit import Paths
 
 

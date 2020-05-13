@@ -1,5 +1,4 @@
 import os
-
 import shutil
 
 import autofit as af
@@ -9,9 +8,7 @@ from autolens.model.galaxy import galaxy
 from test.integration import integration_util
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
-af.conf.instance = af.conf.Config(
-    "{}/config".format(dirpath), "{}/output/".format(dirpath)
-)
+conf.instance = conf.Config("{}/config".format(dirpath), "{}/output/".format(dirpath))
 
 dirpath = os.path.dirname(dirpath)
 output_path = "{}/output".format(dirpath)

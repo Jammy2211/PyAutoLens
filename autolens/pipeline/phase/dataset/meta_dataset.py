@@ -1,8 +1,7 @@
 import autoarray as aa
+import numpy as np
 from autolens import exc
 from autolens.fit import fit
-
-import numpy as np
 
 
 class MetaLens:
@@ -28,12 +27,19 @@ class MetaLens:
         1) If auto positioning is off (self.auto_positions_factor is None), use the previous phase's positions.
         2) If auto positioning is on (self.auto_positions_factor not None) use positions based on the previous phase's
            best-fit tracer. However, if this tracer gives 1 or less positions, use the previous positions.
-        3) If auto positioning is on or off and there is no previous phase, use the input positions.
+        3) If this previous tracer is composed of only 1 plane (e.g. you are light profile fitting the image-plane
+           only), use the previous positions.
+        4) If auto positioning is on or off and there is no previous phase, use the input positions.
         """
 
         if results.last is not None:
             if not hasattr(results.last, "positions"):
                 return positions
+            try:
+                if len(results.last.max_log_likelihood_tracer.planes) <= 1:
+                    return positions
+            except AttributeError:
+                pass
 
         if self.auto_positions_factor is not None and results.last is not None:
 
@@ -43,7 +49,7 @@ class MetaLens:
 
             # TODO : Coorrdinates refascotr will sort out index call here
 
-            if isinstance(updated_positions, aa.Coordinates):
+            if isinstance(updated_positions, aa.GridCoordinates):
                 if updated_positions.in_list:
                     if len(updated_positions.in_list[0]) > 1:
                         return updated_positions
@@ -69,7 +75,7 @@ class MetaLens:
                 return None
 
             positions_fits = fit.FitPositions(
-                positions=aa.Coordinates(coordinates=positions),
+                positions=aa.GridCoordinates(coordinates=positions),
                 tracer=results.last.max_log_likelihood_tracer,
                 noise_map=1.0,
             )

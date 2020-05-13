@@ -1,13 +1,10 @@
-import pytest
 import os
 
 import autolens.plot as aplt
+import pytest
+from autoconf import conf
 
-from os import path
-
-from autofit import conf
-
-directory = path.dirname(path.realpath(__file__))
+directory = os.path.dirname(os.path.realpath(__file__))
 
 
 @pytest.fixture(name="plot_path")
@@ -18,7 +15,7 @@ def make_fit_imaging_plotter_setup():
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
-        path.join(directory, "files/plotter"), path.join(directory, "output")
+        os.path.join(directory, "files/plotter"), os.path.join(directory, "output")
     )
 
 

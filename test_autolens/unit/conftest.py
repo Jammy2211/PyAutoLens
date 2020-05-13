@@ -1,17 +1,14 @@
-from astropy import cosmology as cosmo
-
-import autofit as af
+from autoconf import conf
 import autolens as al
-
-from test_autolens.mock import mock_pipeline
 from test_autogalaxy.unit.conftest import *
+from test_autolens.mock import mock_pipeline
 
 directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(autouse=True)
 def set_config_path():
-    af.conf.instance = af.conf.Config(
+    conf.instance = conf.Config(
         path.join(directory, "config"), path.join(directory, "pipeline/output")
     )
 

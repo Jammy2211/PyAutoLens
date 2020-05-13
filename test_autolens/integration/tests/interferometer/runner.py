@@ -1,9 +1,9 @@
 import os
 
 import autofit as af
+from autofit.optimize.non_linear.mock_nlo import MockNLO
 from test_autolens.integration import integration_util
 from test_autolens.simulate.interferometer import simulate_util
-from autofit.optimize.non_linear.mock_nlo import MockNLO
 
 
 def run(
@@ -17,7 +17,7 @@ def run(
     test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
     output_path = test_path + "output/interferometer/"
     config_path = test_path + config_folder
-    af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
+    conf.instance = conf.Config(config_path=config_path, output_path=output_path)
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
     interferometer = simulate_util.load_test_interferometer(

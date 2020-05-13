@@ -1,9 +1,8 @@
-from astropy import cosmology as cosmo
-
 import autofit as af
-from autolens.pipeline import tagging
+from astropy import cosmology as cosmo
 from autogalaxy.pipeline.phase import dataset
 from autogalaxy.pipeline.phase.imaging.phase import PhaseAttributes as AgPhaseAttributes
+from autolens.pipeline import tagging
 from autolens.pipeline.phase.imaging.analysis import Analysis
 from autolens.pipeline.phase.imaging.meta_imaging import MetaImaging
 from autolens.pipeline.phase.imaging.result import Result

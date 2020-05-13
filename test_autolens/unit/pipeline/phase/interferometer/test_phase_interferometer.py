@@ -1,11 +1,9 @@
 import os
-from os import path
-
-import numpy as np
-import pytest
 
 import autofit as af
 import autolens as al
+import numpy as np
+import pytest
 from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
@@ -14,17 +12,7 @@ pytestmark = pytest.mark.filterwarnings(
     "either in an error or a different result."
 )
 
-directory = path.dirname(path.realpath(__file__))
-
-
-def clean_images():
-    try:
-        os.remove("{}/source_lens_phase/source_image_0.fits".format(directory))
-        os.remove("{}/source_lens_phase/lens_image_0.fits".format(directory))
-        os.remove("{}/source_lens_phase/model_image_0.fits".format(directory))
-    except FileNotFoundError:
-        pass
-    af.conf.instance.dataset_path = directory
+directory = os.path.dirname(os.path.realpath(__file__))
 
 
 class TestMakeAnalysis:

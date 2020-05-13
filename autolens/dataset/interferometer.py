@@ -1,10 +1,10 @@
+import copy
+
 from autoarray.dataset import interferometer
 from autoarray.operators import transformer
 from autoarray.structures import grids
 from autolens.dataset import abstract
 from autolens.lens import ray_tracing
-
-import copy
 
 
 class MaskedInterferometer(

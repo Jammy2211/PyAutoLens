@@ -1,6 +1,5 @@
-from astropy import cosmology as cosmo
-
 import autofit as af
+from astropy import cosmology as cosmo
 from autoarray.operators import transformer
 from autogalaxy.pipeline.phase import dataset
 from autogalaxy.pipeline.phase.interferometer.phase import (
@@ -11,7 +10,6 @@ from autolens.pipeline.phase.interferometer.analysis import Analysis
 from autolens.pipeline.phase.interferometer.meta_interferometer import (
     MetaInterferometer,
 )
-
 from autolens.pipeline.phase.interferometer.result import Result
 
 

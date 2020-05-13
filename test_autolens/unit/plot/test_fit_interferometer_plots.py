@@ -1,7 +1,7 @@
-import pytest
 import os
 
 import autolens.plot as aplt
+import pytest
 
 
 @pytest.fixture(name="plot_path")

@@ -1,7 +1,7 @@
-from autolens.dataset import interferometer
 from autogalaxy.pipeline.phase.interferometer import (
     meta_interferometer as ag_meta_interferometer,
 )
+from autolens.dataset import interferometer
 from autolens.pipeline.phase.dataset import meta_dataset
 
 
