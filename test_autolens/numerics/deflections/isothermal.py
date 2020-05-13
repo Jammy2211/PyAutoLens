@@ -1,7 +1,7 @@
+import os
+
 import autofit as af
 import autolens as al
-
-import os
 
 # The pixel scale of the image to be simulated
 pixel_scales = 0.1

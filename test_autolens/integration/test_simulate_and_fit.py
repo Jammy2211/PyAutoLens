@@ -1,10 +1,9 @@
 import os
-
-import numpy as np
-import pytest
 import shutil
 
 import autolens as al
+import numpy as np
+import pytest
 
 
 def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__noise_normalization_correct():

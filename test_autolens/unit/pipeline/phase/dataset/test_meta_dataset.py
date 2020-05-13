@@ -1,10 +1,9 @@
 from os import path
 
+import autolens as al
 import numpy as np
 import pytest
 from astropy import cosmology as cosmo
-
-import autolens as al
 from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
@@ -26,26 +25,32 @@ class TestSetup:
         mask_7x7,
     ):
 
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
+        )
+
         # Auto positioning is OFF, so use input positions + threshold.
 
-        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
+        imaging_7x7.positions = al.GridCoordinates(coordinates=[[(1.0, 1.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.1
         phase_imaging_7x7.meta_dataset.auto_positions_factor = None
 
+        results = mock_pipeline.MockResults(max_log_likelihood_tracer=tracer)
+
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
         assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
 
         # Auto positioning is ON, but there are no previous results, so use input positions.
 
-        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
+        imaging_7x7.positions = al.GridCoordinates(coordinates=[[(1.0, 1.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 1.0
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
         assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
@@ -54,12 +59,35 @@ class TestSetup:
         # multiplied by the auto_positions_factor). However, only one set of positions is computed from the previous
         # result, to use input positions.
 
-        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
+        imaging_7x7.positions = al.GridCoordinates(coordinates=[[(1.0, 1.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 2.0
 
         results = mock_pipeline.MockResults(
-            updated_positions=al.Coordinates(coordinates=[[(2.0, 2.0)]]),
+            max_log_likelihood_tracer=tracer,
+            updated_positions=al.GridCoordinates(coordinates=[[(2.0, 2.0)]]),
+            updated_positions_threshold=0.3,
+        )
+
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7, mask=mask_7x7, results=results
+        )
+
+        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
+
+        # Auto positioning is ON, but the tracer only has a single plane and thus no lensing, so use input positions.
+
+        tracer_x1_plane = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5)])
+
+        imaging_7x7.positions = al.GridCoordinates(coordinates=[[(1.0, 1.0)]])
+        phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
+        phase_imaging_7x7.meta_dataset.auto_positions_factor = 1.0
+
+        results = mock_pipeline.MockResults(
+            max_log_likelihood_tracer=tracer_x1_plane,
+            updated_positions=al.GridCoordinates(
+                coordinates=[[(2.0, 2.0), (3.0, 3.0)]]
+            ),
             updated_positions_threshold=0.3,
         )
 
@@ -72,12 +100,15 @@ class TestSetup:
         # Auto positioning is ON, there are previous results so use their new positions and threshold (which is
         # multiplied by the auto_positions_factor). Multiple positions are available so these are now used.
 
-        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
+        imaging_7x7.positions = al.GridCoordinates(coordinates=[[(1.0, 1.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 2.0
 
         results = mock_pipeline.MockResults(
-            updated_positions=al.Coordinates(coordinates=[[(2.0, 2.0), (3.0, 3.0)]]),
+            max_log_likelihood_tracer=tracer,
+            updated_positions=al.GridCoordinates(
+                coordinates=[[(2.0, 2.0), (3.0, 3.0)]]
+            ),
             updated_positions_threshold=0.3,
         )
 
@@ -90,7 +121,7 @@ class TestSetup:
         # Auto positioning is Off, but there are previous results with updated positions relative to the input
         # positions, so use those with their positions threshold.
 
-        imaging_7x7.positions = al.Coordinates(coordinates=[[(2.0, 2.0)]])
+        imaging_7x7.positions = al.GridCoordinates(coordinates=[[(2.0, 2.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.1
         phase_imaging_7x7.meta_dataset.auto_positions_factor = None
 
@@ -98,7 +129,8 @@ class TestSetup:
             dataset=imaging_7x7,
             mask=mask_7x7,
             results=mock_pipeline.MockResults(
-                positions=al.Coordinates(coordinates=[[(3.0, 3.0), (4.0, 4.0)]]),
+                max_log_likelihood_tracer=tracer,
+                positions=al.GridCoordinates(coordinates=[[(3.0, 3.0), (4.0, 4.0)]]),
                 updated_positions_threshold=0.3,
             ),
         )
@@ -107,17 +139,18 @@ class TestSetup:
 
         # Test function is called for phase_inteferometer
 
-        interferometer_7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
+        interferometer_7.positions = al.GridCoordinates(coordinates=[[(1.0, 1.0)]])
         phase_interferometer_7.meta_dataset.positions_threshold = None
         phase_interferometer_7.meta_dataset.auto_positions_factor = 2.0
 
+        results = mock_pipeline.MockResults(
+            max_log_likelihood_tracer=tracer,
+            updated_positions=al.GridCoordinates(coordinates=[[(1.0, 1.0)]]),
+            updated_positions_threshold=0.3,
+        )
+
         analysis = phase_interferometer_7.make_analysis(
-            dataset=interferometer_7,
-            mask=mask_7x7,
-            results=mock_pipeline.MockResults(
-                updated_positions=al.Coordinates(coordinates=[[(1.0, 1.0)]]),
-                updated_positions_threshold=0.3,
-            ),
+            dataset=interferometer_7, mask=mask_7x7, results=results
         )
 
         assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
@@ -131,49 +164,67 @@ class TestSetup:
         mask_7x7,
     ):
 
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
+        )
+
         # Auto positioning is OFF, so use input positions + threshold.
 
-        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 1.0)]])
+        imaging_7x7.positions = al.GridCoordinates(coordinates=[[(1.0, 1.0)]])
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.1
         phase_imaging_7x7.meta_dataset.auto_positions_factor = None
 
+        results = mock_pipeline.MockResults(max_log_likelihood_tracer=tracer)
+
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
         assert analysis.masked_dataset.positions_threshold == 0.1
 
-        # Auto positioning is ON, but there are no previous results, so use input positions.
+        # Auto positioning is ON, but there are no previous results, so use separate of postiions x positions factor..
 
-        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 0.0), (-1.0, 0.0)]])
+        imaging_7x7.positions = al.GridCoordinates(
+            coordinates=[[(1.0, 0.0), (-1.0, 0.0)]]
+        )
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 1.0
 
+        results = mock_pipeline.MockResults(max_log_likelihood_tracer=tracer)
+
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
         assert analysis.masked_dataset.positions_threshold == 2.0
 
-        imaging_7x7.positions = al.Coordinates(coordinates=[[(1.0, 0.0), (-1.0, 0.0)]])
+        # Auto position is ON, and same as above but with a factor of 3.0 which increases the threshold.
+
+        imaging_7x7.positions = al.GridCoordinates(
+            coordinates=[[(1.0, 0.0), (-1.0, 0.0)]]
+        )
         phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 3.0
 
+        results = mock_pipeline.MockResults(
+            max_log_likelihood_tracer=tracer, updated_positions_threshold=0.2
+        )
+
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7,
-            mask=mask_7x7,
-            results=mock_pipeline.MockResults(updated_positions_threshold=0.2),
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
         assert analysis.masked_dataset.positions_threshold == 6.0
 
-        # Auto positioning is ON, but positionos are None so no update.
+        # Auto positioning is ON, but positions are None and it cannot find new psitions so no threshold.
 
         imaging_7x7.positions = None
         phase_imaging_7x7.meta_dataset.auto_positions_factor = 1.0
         phase_imaging_7x7.positions_threshold = None
 
+        results = mock_pipeline.MockResults(max_log_likelihood_tracer=tracer)
+
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
         assert analysis.masked_dataset.positions_threshold == None

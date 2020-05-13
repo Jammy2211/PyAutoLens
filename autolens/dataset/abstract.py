@@ -1,6 +1,6 @@
 from autoarray.structures import grids
-from autolens.fit import fit
 from autolens import exc
+from autolens.fit import fit
 
 
 class AbstractLensMasked:

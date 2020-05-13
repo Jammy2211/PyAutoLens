@@ -1,8 +1,4 @@
 import autolens as al
-from autolens import exc
-
-import numpy as np
-import os
 
 
 def tracer_generator_from_aggregator(aggregator):
@@ -90,45 +86,4 @@ def fit_interferometer_from_agg_obj(agg_obj):
 
     return al.FitInterferometer(
         masked_interferometer=masked_interferometer, tracer=tracer
-    )
-
-
-def grid_search_result_as_array(aggregator, use_max_log_likelihoods=True):
-
-    grid_search_result_gen = aggregator.values("grid_search_result")
-
-    grid_search_results = list(filter(None, list(grid_search_result_gen)))
-
-    if len(grid_search_results) != 1:
-        raise exc.AggregatorException(
-            "There is more than one grid search result in the aggregator - please filter the"
-            "aggregator."
-        )
-
-    grid_search_result = grid_search_results[0]
-
-    if grid_search_result.no_dimensions != 2:
-        raise exc.AggregatorException(
-            "The GridSearchResult is not dimensions 2, meaning a 2D array cannot be made."
-        )
-
-    if use_max_log_likelihoods:
-        values = [
-            value
-            for values in grid_search_result.max_log_likelihood_values
-            for value in values
-        ]
-    else:
-        values = [
-            value
-            for values in grid_search_result.log_evidence_values
-            for value in values
-        ]
-
-    return al.Array.manual_yx_and_values(
-        y=[centre[0] for centre in grid_search_result.physical_centres_lists],
-        x=[centre[1] for centre in grid_search_result.physical_centres_lists],
-        values=values,
-        pixel_scales=grid_search_result.physical_step_sizes,
-        shape_2d=grid_search_result.shape,
     )

@@ -1,14 +1,15 @@
-import autoarray as aa
-import autofit as af
-from autoarray.plot import mat_objs
-from autogalaxy.plot import lensing_plotters
-from autogalaxy.plot import fit_galaxy_plots, hyper_plots, inversion_plots
-from autolens.plot import ray_tracing_plots, fit_imaging_plots, fit_interferometer_plots
 import copy
+
+from autoconf import conf
+import autoarray as aa
+from autoarray.plot import mat_objs
+from autogalaxy.plot import fit_galaxy_plots, hyper_plots, inversion_plots
+from autogalaxy.plot import lensing_plotters
+from autolens.plot import ray_tracing_plots, fit_imaging_plots, fit_interferometer_plots
 
 
 def setting(section, name):
-    return af.conf.instance.visualize_plots.get(section, name, bool)
+    return conf.instance.visualize_plots.get(section, name, bool)
 
 
 def plot_setting(section, name):

@@ -1,7 +1,6 @@
-import numpy as np
-
+from autoconf import conf
 import autoarray as aa
-import autofit as af
+import numpy as np
 from autogalaxy.galaxy import galaxy as g
 from autolens.pipeline.phase import dataset
 
@@ -67,7 +66,7 @@ class Result(dataset.Result):
         A dictionary associating 1D hyper_galaxies galaxy images with their names.
         """
 
-        hyper_minimum_percent = af.conf.instance.general.get(
+        hyper_minimum_percent = conf.instance.general.get(
             "hyper", "hyper_minimum_percent", float
         )
 

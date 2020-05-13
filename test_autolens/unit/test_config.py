@@ -1,9 +1,9 @@
-import autolens as al
 from os import path
 
-import pytest
+from autoconf import conf
 import autofit as af
-
+import autolens as al
+import pytest
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -14,7 +14,7 @@ class MockClass:
 
 @pytest.fixture(name="label_config")
 def make_label_config():
-    return af.conf.instance.label
+    return conf.instance.label
 
 
 class TestLabel:

@@ -1,6 +1,7 @@
+import os
+
 import autolens as al
 import autolens.plot as aplt
-import os
 
 # Setup the path to the autolens_workspace, using a relative directory name.
 plot_path = "{}/../images/fitting/".format(os.path.dirname(os.path.realpath(__file__)))

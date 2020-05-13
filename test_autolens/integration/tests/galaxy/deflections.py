@@ -1,9 +1,10 @@
 import os
-import numpy as np
+from test import integration_util
 
+from autoconf import conf
 import autofit as af
 import autolens as al
-from test import integration_util
+import numpy as np
 
 test_type = "galaxy_fit"
 test_name = "deflections"
@@ -11,7 +12,7 @@ test_name = "deflections"
 test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + "output/"
 config_path = test_path + "config"
-af.conf.instance = af.conf.Config(config_path=config_path, output_path=output_path)
+conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 
 def galaxy_fit_phase():

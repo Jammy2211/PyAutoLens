@@ -1,4 +1,5 @@
 from test import positions__offset_centre
+
 from test_autolens.integration.tests.imaging.runner import run_a_mock
 
 

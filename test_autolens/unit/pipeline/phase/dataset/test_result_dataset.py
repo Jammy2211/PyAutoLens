@@ -1,9 +1,8 @@
 from os import path
 
+import autolens as al
 import numpy as np
 import pytest
-
-import autolens as al
 from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
@@ -65,7 +64,7 @@ class TestResult:
             phase_name="test_phase_2",
         )
 
-        imaging_7x7.positions = al.Coordinates([[(1.0, 1.0)]])
+        imaging_7x7.positions = al.GridCoordinates([[(1.0, 1.0)]])
 
         result = phase_imaging_7x7.run(
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()

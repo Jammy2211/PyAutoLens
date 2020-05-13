@@ -1,6 +1,7 @@
+import os
+
 import autolens as al
 import autolens.plot as aplt
-import os
 
 plot_path = "{}/../images/lensing/".format(os.path.dirname(os.path.realpath(__file__)))
 

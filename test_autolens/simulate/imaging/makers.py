@@ -1,8 +1,7 @@
+import os
+
 import autofit as af
 import autolens as al
-
-
-import os
 
 
 def simulator_from_data_resolution(data_resolution, sub_size):

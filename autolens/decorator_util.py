@@ -1,6 +1,5 @@
+from autoconf import conf
 import numba
-
-import autofit as af
 
 """
 Depending on if we're using a super computer, we want two different numba decorators:
@@ -15,9 +14,9 @@ If on super computer:
 """
 
 try:
-    nopython = af.conf.instance.general.get("numba", "nopython", bool)
-    cache = af.conf.instance.general.get("numba", "cache", bool)
-    parallel = af.conf.instance.general.get("numba", "parallel", bool)
+    nopython = conf.instance.general.get("numba", "nopython", bool)
+    cache = conf.instance.general.get("numba", "cache", bool)
+    parallel = conf.instance.general.get("numba", "parallel", bool)
 except Exception:
     nopython = True
     cache = True

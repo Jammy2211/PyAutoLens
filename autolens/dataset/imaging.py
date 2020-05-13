@@ -1,10 +1,9 @@
-from autoarray.structures import grids
+import copy
+
 from autoarray.dataset import imaging
+from autoarray.structures import grids
 from autolens.dataset import abstract
 from autolens.lens import ray_tracing
-
-
-import copy
 
 
 class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):

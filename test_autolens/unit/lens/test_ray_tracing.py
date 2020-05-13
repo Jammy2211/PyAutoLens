@@ -1,8 +1,8 @@
 import autolens as al
-from skimage import measure
 import numpy as np
 import pytest
 from astropy import cosmology as cosmo
+from skimage import measure
 from test_autoarray.mock import mock_inversion as mock_inv
 
 
@@ -1365,7 +1365,7 @@ class TestAbstractTracerLensing:
             )
 
             traced_positions_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=al.Coordinates([[(1.0, 1.0), (1.0, 1.0)], [(1.0, 1.0)]])
+                grid=al.GridCoordinates([[(1.0, 1.0), (1.0, 1.0)], [(1.0, 1.0)]])
             )
 
             # From unit test_autoarray below:
@@ -1492,7 +1492,7 @@ class TestAbstractTracerLensing:
             )
 
             traced_positions_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=al.Coordinates([[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
+                grid=al.GridCoordinates([[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
             )
 
             assert traced_positions_of_planes[0].in_list[0][0] == tuple(

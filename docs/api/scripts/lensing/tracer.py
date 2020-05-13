@@ -1,8 +1,8 @@
-import autolens as al
-import autolens.plot as aplt
 import os
 
 import astropy.cosmology as cosmo
+import autolens as al
+import autolens.plot as aplt
 
 plot_path = "{}/../images/lensing/".format(os.path.dirname(os.path.realpath(__file__)))
 

@@ -1,8 +1,8 @@
+import os
+
 import autofit as af
 import autolens as al
 from test_autolens.integration.tests.imaging import runner
-
-import os
 
 test_type = "features"
 test_name = "agg_phase_attributes"

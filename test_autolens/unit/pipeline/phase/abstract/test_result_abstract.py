@@ -1,12 +1,8 @@
 import os
-from os import path
-import numpy as np
-
-import pytest
-
-import autofit as af
+from autoconf import conf
 import autolens as al
-from autolens.pipeline.phase.abstract.result import Result
+import numpy as np
+import pytest
 from test_autolens.mock import mock_pipeline
 
 pytestmark = pytest.mark.filterwarnings(
@@ -15,14 +11,14 @@ pytestmark = pytest.mark.filterwarnings(
     "either in an error or a different result."
 )
 
-directory = path.dirname(path.realpath(__file__))
+directory = os.path.dirname(os.path.realpath(__file__))
 
 
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
     print("{}/config/".format(directory))
 
-    af.conf.instance = af.conf.Config("{}/config/".format(directory))
+    conf.instance = conf.Config("{}/config/".format(directory))
 
 
 class TestTracer:

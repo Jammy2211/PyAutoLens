@@ -1,7 +1,8 @@
+import os
+
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
-import os
 
 # This tool allows one to make simulated datasets of strong lenses, which can be used to test example pipelines and
 # investigate strong lens modeling where the 'true' answer is known.
