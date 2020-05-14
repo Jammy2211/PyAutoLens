@@ -4,8 +4,8 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "lens_only"
 test_name = "lens_x2_light__hyper"
-data_type = "lens_x2_light"
-data_resolution = "lsst"
+data_label = "lens_x2_light"
+instrument = "vro"
 
 
 def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):

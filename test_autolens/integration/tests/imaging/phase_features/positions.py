@@ -4,8 +4,8 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "phase_features"
 test_name = "positions"
-data_type = "lens_sis__source_smooth"
-data_resolution = "lsst"
+data_label = "lens_sis__source_smooth"
+instrument = "vro"
 
 
 def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):

@@ -4,8 +4,8 @@ from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens_only"
 test_name = "lens_light__hyper"
-data_type = "lens_bulge_disk"
-data_resolution = "sma"
+data_label = "lens_bulge_disk"
+instrument = "sma"
 
 
 def make_pipeline(

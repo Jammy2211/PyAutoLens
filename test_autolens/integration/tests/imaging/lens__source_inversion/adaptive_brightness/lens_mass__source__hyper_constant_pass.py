@@ -4,8 +4,8 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_adaptive_brightness__hyper_instance_pass"
-data_type = "lens_sie__source_smooth"
-data_resolution = "lsst"
+data_label = "lens_sie__source_smooth"
+instrument = "vro"
 
 
 def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):

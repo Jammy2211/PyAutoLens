@@ -12,9 +12,9 @@ observatories. Here, the dataset is fitted directly in the uv-plane, circumventi
     dataset_path = "/path/to/dataset/folder"
 
     interferometer = al.Interferometer.from_fits(
-        visibilities_path=dataset_path + "visibilities.fits",
+        visibilities_path=f"{dataset_path}/visibilities.fits",
         noise_map_path=f"{dataset_path}/noise_map.fits",
-        uv_wavelengths_path=dataset_path + "uv_wavelengths.fits",
+        uv_wavelengths_path=f"{dataset_path}/uv_wavelengths.fits",
     )
 
     aplt.Interferometer.visibilities(interferometer=interferometer)

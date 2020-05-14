@@ -4,8 +4,8 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "grid_search"
 test_name = "multinest_grid__subhalo"
-data_type = "lens_sie__source_smooth"
-data_resolution = "lsst"
+data_label = "lens_sie__source_smooth"
+instrument = "vro"
 
 
 def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
@@ -54,6 +54,8 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
     subhalo.mass.centre_0 = af.UniformPrior(lower_limit=-2.0, upper_limit=2.0)
 
     subhalo.mass.centre_1 = af.UniformPrior(lower_limit=-2.0, upper_limit=2.0)
+
+    non_linear_class = af.MultiNest(const_efficiency_mode=True)
 
     phase2 = GridPhase(
         phase_name="phase_2",

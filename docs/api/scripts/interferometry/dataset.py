@@ -13,9 +13,9 @@ dataset_path = "{}/dataset".format(os.path.dirname(os.path.realpath(__file__)))
 
 # This loads the interferometer dataset,.
 interferometer = al.Interferometer.from_fits(
-    visibilities_path=dataset_path + "visibilities.fits",
+    visibilities_path=f"{dataset_path}/visibilities.fits",
     noise_map_path=f"{dataset_path}/noise_map.fits",
-    uv_wavelengths_path=dataset_path + "uv_wavelengths.fits",
+    uv_wavelengths_path=f"{dataset_path}/uv_wavelengths.fits",
 )
 
 plotter = aplt.Plotter(
