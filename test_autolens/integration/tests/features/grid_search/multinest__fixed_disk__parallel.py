@@ -4,8 +4,8 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "grid_search"
 test_name = "multinest__fixed_disk__parallel"
-data_type = "lens_light_dev_vaucouleurs"
-data_resolution = "euclid"
+data_label = "lens_light_dev_vaucouleurs"
+instrument = "euclid"
 
 
 def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):

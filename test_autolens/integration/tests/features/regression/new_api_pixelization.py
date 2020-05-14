@@ -4,8 +4,8 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "regression"
 test_name = "new_api_pixelization"
-data_type = "lens_sie__source_smooth"
-data_resolution = "lsst"
+data_label = "lens_sie__source_smooth"
+instrument = "vro"
 
 
 def make_pipeline(

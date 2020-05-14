@@ -6,8 +6,8 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "features"
 test_name = "agg_mask"
-data_type = "lens_light_dev_vaucouleurs"
-data_resolution = "lsst"
+data_label = "lens_light_dev_vaucouleurs"
+instrument = "vro"
 
 
 def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):

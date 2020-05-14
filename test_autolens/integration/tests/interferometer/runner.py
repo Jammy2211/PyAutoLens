@@ -21,7 +21,7 @@ def run(
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
     interferometer = simulate_util.load_test_interferometer(
-        data_type=module.data_type, data_resolution=module.data_resolution
+        data_label=module.data_label, instrument=module.instrument
     )
 
     module.make_pipeline_no_lens_light(

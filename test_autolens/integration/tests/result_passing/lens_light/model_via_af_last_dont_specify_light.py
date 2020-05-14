@@ -4,8 +4,8 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "reult_passing"
 test_name = "lens_light_model_via_af_last_dont_specify_light"
-data_type = "lens_sie__source_smooth"
-data_resolution = "lsst"
+data_label = "lens_sie__source_smooth"
+instrument = "vro"
 
 
 def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
@@ -33,7 +33,9 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
 
     # It doesn't work - the parameter space has N = 7 meaning the lens light AND mass are not being passed.
 
-    lens = af.last.instance.galaxies.lens
+    #  af.PriorModel.from_instance(af.last.instance.galaxies.lens)
+
+    lens = af.PriorModel.from_instance(af.last.instance.galaxies.lens)
     lens.mass = af.last.model.galaxies.lens.mass
 
     phase2 = al.PhaseImaging(

@@ -16,14 +16,14 @@ def run(
 
     test_name = test_name or module.test_name
     test_path = "{}/../..".format(os.path.dirname(os.path.realpath(__file__)))
-    output_path = f"{test_path}.output/imaging"
+    output_path = f"{test_path}/output/imaging"
     config_path = f"{test_path}/{config_folder}"
     conf.instance = conf.Config(config_path=config_path, output_path=output_path)
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
     imaging = simulate_util.load_test_imaging(
-        data_type=module.data_type,
-        data_resolution=module.data_resolution,
+        data_label=module.data_label,
+        instrument=module.instrument,
         name="test_dataset",
         metadata={"test": 2},
     )

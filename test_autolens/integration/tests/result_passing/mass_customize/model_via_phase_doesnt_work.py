@@ -4,8 +4,8 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "reult_passing"
 test_name = "mass_customize_model_via_phase_doesnt_work"
-data_type = "lens_sie__source_smooth"
-data_resolution = "lsst"
+data_label = "lens_sie__source_smooth"
+instrument = "vro"
 
 
 def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
@@ -33,7 +33,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
 
     # We now want to create a lens galaxy whose mass model centres are free parameters, increaisng N to 12.
 
-    # It doesn't work - N stays at 10 and the centres so not take on the priors specified.
+    # It doesn't work - N stays at 10 and the centres do not take on the priors specified.
 
     lens = phase1.result.model.galaxies.lens
     lens.mass.centre.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.05)

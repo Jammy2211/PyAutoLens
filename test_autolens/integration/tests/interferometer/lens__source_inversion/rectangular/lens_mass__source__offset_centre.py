@@ -4,8 +4,8 @@ from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_rectangular__offset_centre"
-data_type = "lens_sie__source_smooth__offset_centre"
-data_resolution = "sma"
+data_label = "lens_sie__source_smooth__offset_centre"
+instrument = "sma"
 
 
 def make_pipeline(

@@ -7,7 +7,7 @@ from test_autolens.simulate.imaging import simulate_util
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
 imaging = simulate_util.load_test_imaging(
-    data_type="lens_light_dev_vaucouleurs", data_resolution="lsst"
+    data_label="lens_light_dev_vaucouleurs", instrument="vro"
 )
 array = imaging.image
 
@@ -22,7 +22,7 @@ mask = al.Mask.elliptical(
 aplt.Array(array=array, mask=mask, positions=[[(1.0, 1.0)]], centres=[[(0.0, 0.0)]])
 
 imaging = simulate_util.load_test_imaging(
-    data_type="lens_sis__source_smooth__offset_centre", data_resolution="lsst"
+    data_label="lens_sis__source_smooth__offset_centre", instrument="vro"
 )
 array = imaging.image
 

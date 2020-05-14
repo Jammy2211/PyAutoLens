@@ -4,8 +4,8 @@ from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens_only"
 test_name = "lens_x2_light__separate"
-data_type = "lens_x2_light"
-data_resolution = "sma"
+data_label = "lens_x2_light"
+instrument = "sma"
 
 
 def make_pipeline(
