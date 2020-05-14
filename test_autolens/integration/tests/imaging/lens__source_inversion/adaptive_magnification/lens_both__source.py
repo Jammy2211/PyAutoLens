@@ -9,28 +9,27 @@ instrument = "vro"
 
 
 def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
-    class SourcePix(al.PhaseImaging):
-        def customize_priors(self, results):
 
-            self.galaxies.lens.mass.centre.centre_0 = 0.0
-            self.galaxies.lens.mass.centre.centre_1 = 0.0
-            self.galaxies.lens.mass.einstein_radius = 1.6
-            self.galaxies.source.pixelization.shape_0 = 20.0
-            self.galaxies.source.pixelization.shape_1 = 20.0
+    mass = af.PriorModel(al.mp.EllipticalIsothermal)
 
-    phase1 = SourcePix(
+    mass.centre.centre_0 = 0.0
+    mass.centre.centre_1 = 0.0
+    mass.einstein_radius = 1.6
+
+    pixelization = af.PriorModel(al.pix.VoronoiMagnification)
+
+    pixelization.shape_0 = 20.0
+    pixelization.shape_1 = 20.0
+
+    phase1 = al.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5,
-                light=al.lp.SphericalDevVaucouleurs,
-                mass=al.mp.EllipticalIsothermal,
+                redshift=0.5, bulge=al.lp.SphericalDevVaucouleurs, mass=mass
             ),
             source=al.GalaxyModel(
-                redshift=1.0,
-                pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.Constant,
+                redshift=1.0, pixelization=pixelization, regularization=al.reg.Constant
             ),
         ),
         non_linear_class=non_linear_class,

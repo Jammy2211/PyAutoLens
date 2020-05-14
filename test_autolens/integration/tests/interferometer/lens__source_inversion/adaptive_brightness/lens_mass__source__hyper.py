@@ -8,27 +8,21 @@ data_label = "lens_sie__source_smooth"
 instrument = "sma"
 
 
-def make_pipeline(
-    name,
-    phase_folders,
-    real_space_shape_2d=(100, 100),
-    real_space_pixel_scales=(0.1, 0.1),
-    non_linear_class=af.MultiNest,
-):
+def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.MultiNest):
     class Phase1(al.PhaseInterferometer):
         def customize_priors(self, results):
-
             self.galaxies.source.light.sersic_index = af.UniformPrior(3.9, 4.1)
 
     phase1 = Phase1(
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
+            lens=al.GalaxyModel(
+                redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
+            ),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        real_space_shape_2d=real_space_shape_2d,
-        real_space_pixel_scales=real_space_pixel_scales,
+        real_space_mask=real_space_mask,
         non_linear_class=non_linear_class,
     )
 
@@ -36,8 +30,9 @@ def make_pipeline(
     phase1.optimizer.n_live_points = 50
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1 = phase1.extend_with_multiple_hyper_phases(hyper_galaxy=True)
-
+    phase1 = phase1.extend_with_multiple_hyper_phases(
+        hyper_galaxy=True, include_background_sky=True, include_background_noise=True
+    )
     phase2 = al.PhaseInterferometer(
         phase_name="phase_2_weighted_regularization",
         phase_folders=phase_folders,
@@ -45,6 +40,7 @@ def make_pipeline(
             lens=al.GalaxyModel(
                 redshift=0.5,
                 mass=phase1.result.instance.galaxies.lens.mass,
+                shear=phase1.result.instance.galaxies.lens.shear,
                 hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
@@ -54,8 +50,7 @@ def make_pipeline(
                 hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
             ),
         ),
-        real_space_shape_2d=real_space_shape_2d,
-        real_space_pixel_scales=real_space_pixel_scales,
+        real_space_mask=real_space_mask,
         non_linear_class=non_linear_class,
     )
 
@@ -63,7 +58,12 @@ def make_pipeline(
     phase2.optimizer.n_live_points = 30
     phase2.optimizer.sampling_efficiency = 0.8
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+    phase2 = phase2.extend_with_multiple_hyper_phases(
+        hyper_galaxy=True,
+        include_background_sky=True,
+        include_background_noise=True,
+        inversion=True,
+    )
 
     phase3 = al.PhaseInterferometer(
         phase_name="phase_3",
@@ -82,8 +82,7 @@ def make_pipeline(
                 hyper_galaxy=phase2.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
             ),
         ),
-        real_space_shape_2d=real_space_shape_2d,
-        real_space_pixel_scales=real_space_pixel_scales,
+        real_space_mask=real_space_mask,
         non_linear_class=non_linear_class,
     )
 
@@ -91,7 +90,12 @@ def make_pipeline(
     phase3.optimizer.n_live_points = 40
     phase3.optimizer.sampling_efficiency = 0.8
 
-    phase3 = phase3.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+    phase3 = phase3.extend_with_multiple_hyper_phases(
+        hyper_galaxy=True,
+        include_background_sky=True,
+        include_background_noise=True,
+        inversion=True,
+    )
 
     return al.PipelineDataset(name, phase1, phase2, phase3)
 

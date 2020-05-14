@@ -1,9 +1,13 @@
 import os
-
+import numpy as np
+import autolens as al
 import autofit as af
+import autoconf as conf
 from autofit.optimize.non_linear.mock_nlo import MockNLO
-from test_autolens.integration import integration_util
-from test_autolens.simulate.interferometer import simulate_util
+from test_autogalaxy.simulators.interferometer import (
+    instrument_util as ag_instrument_util,
+)
+from test_autolens.simulators.interferometer import instrument_util
 
 
 def run(
@@ -15,20 +19,33 @@ def run(
 ):
     test_name = test_name or module.test_name
     test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
-    output_path = test_path + "output/interferometer/"
+    output_path = f"{test_path}/output/interferometer/"
     config_path = test_path + config_folder
     conf.instance = conf.Config(config_path=config_path, output_path=output_path)
-    integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    interferometer = simulate_util.load_test_interferometer(
+    interferometer = instrument_util.load_test_interferometer(
         data_label=module.data_label, instrument=module.instrument
     )
 
-    module.make_pipeline_no_lens_light(
+    pixel_scales = ag_instrument_util.pixel_scale_from_instrument(
+        instrument=module.instrument
+    )
+    grid = ag_instrument_util.grid_from_instrument(instrument=module.instrument)
+
+    real_space_mask = al.Mask.circular(
+        shape_2d=grid.shape_2d, pixel_scales=pixel_scales, radius=2.0
+    )
+
+    visibilities_mask = np.full(
+        fill_value=False, shape=interferometer.visibilities.shape
+    )
+
+    module.make_pipeline(
         name=test_name,
         phase_folders=[module.test_type, test_name],
+        real_space_mask=real_space_mask,
         non_linear_class=non_linear_class,
-    ).run(dataset=interferometer, positions=positions)
+    ).run(dataset=interferometer, mask=visibilities_mask)
 
 
 def run_a_mock(module):

@@ -20,7 +20,7 @@ class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
         preload_sparse_grids_of_planes=None,
     ):
         """
-        The lens dataset is the collection of data_type (image, noise map, PSF), a mask, grid, convolver \
+        The lens dataset is the collection of data (image, noise map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
         Whilst the image, noise map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
@@ -29,7 +29,7 @@ class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
         Parameters
         ----------
         imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise map, PSF, etc.)
+            The imaging data all in 2D (the image, noise map, PSF, etc.)
         mask: msk.Mask
             The 2D mask that is applied to the image.
         sub_size : int
@@ -90,9 +90,9 @@ class SimulatorImaging(imaging.SimulatorImaging):
         psf : PSF
             An arrays describing the PSF kernel of the image.
         exposure_time_map : float
-            The exposure time of an observation using this data_type.
+            The exposure time of an observation using this data.
         background_sky_map : float
-            The level of the background sky of an observationg using this data_type.
+            The level of the background sky of an observationg using this data.
         """
 
         super(SimulatorImaging, self).__init__(
@@ -153,7 +153,7 @@ class SimulatorImaging(imaging.SimulatorImaging):
         return simulator.from_image(image=image.in_1d_binned, name=name)
 
     def from_galaxies_and_grid(self, galaxies, grid, name=None):
-        """Simulate imaging data for this data_type, as follows:
+        """Simulate imaging data for this data, as follows:
 
         1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
 
@@ -166,7 +166,7 @@ class SimulatorImaging(imaging.SimulatorImaging):
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
 
         5) Output the dataset to .fits format if a dataset_path and data_name are specified. Otherwise, return the simulated \
-           imaging data_type instance."""
+           imaging data instance."""
 
         tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
 
