@@ -8,13 +8,7 @@ data_label = "lens_sie__source_smooth"
 instrument = "sma"
 
 
-def make_pipeline(
-    name,
-    phase_folders,
-    real_space_shape_2d=(100, 100),
-    real_space_pixel_scales=(0.1, 0.1),
-    non_linear_class=af.MultiNest,
-):
+def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.MultiNest):
 
     phase1 = al.PhaseInterferometer(
         phase_name="phase_1",
@@ -23,8 +17,7 @@ def make_pipeline(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        real_space_shape_2d=real_space_shape_2d,
-        real_space_pixel_scales=real_space_pixel_scales,
+        real_space_mask=real_space_mask,
         non_linear_class=non_linear_class,
     )
 
@@ -43,8 +36,7 @@ def make_pipeline(
                 regularization=al.reg.AdaptiveBrightness,
             ),
         ),
-        real_space_shape_2d=real_space_shape_2d,
-        real_space_pixel_scales=real_space_pixel_scales,
+        real_space_mask=real_space_mask,
         non_linear_class=non_linear_class,
     )
 
@@ -67,8 +59,7 @@ def make_pipeline(
                 regularization=phase2.result.instance.galaxies.source.regularization,
             ),
         ),
-        real_space_shape_2d=real_space_shape_2d,
-        real_space_pixel_scales=real_space_pixel_scales,
+        real_space_mask=real_space_mask,
         non_linear_class=non_linear_class,
     )
 
@@ -91,8 +82,7 @@ def make_pipeline(
                 regularization=phase2.model.galaxies.source.pixelization,
             ),
         ),
-        real_space_shape_2d=real_space_shape_2d,
-        real_space_pixel_scales=real_space_pixel_scales,
+        real_space_mask=real_space_mask,
         non_linear_class=non_linear_class,
     )
 

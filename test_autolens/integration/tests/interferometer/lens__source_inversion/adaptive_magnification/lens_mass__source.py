@@ -8,33 +8,26 @@ data_label = "lens_sie__source_smooth"
 instrument = "sma"
 
 
-def make_pipeline(
-    name,
-    phase_folders,
-    real_space_shape_2d=(100, 100),
-    real_space_pixel_scales=(0.1, 0.1),
-    non_linear_class=af.MultiNest,
-):
-    class SourcePix(al.PhaseInterferometer):
-        def customize_priors(self, results):
+def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.MultiNest):
 
-            self.galaxies.lens.mass.centre.centre_0 = 0.0
-            self.galaxies.lens.mass.centre.centre_1 = 0.0
-            self.galaxies.lens.mass.einstein_radius = 1.6
+    mass = af.PriorModel(al.mp.EllipticalIsothermal)
 
-    phase1 = SourcePix(
+    mass.centre.centre_0 = 0.0
+    mass.centre.centre_1 = 0.0
+    mass.einstein_radius = 1.6
+
+    phase1 = al.PhaseInterferometer(
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
+            lens=al.GalaxyModel(redshift=0.5, mass=mass),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification,
                 regularization=al.reg.Constant,
             ),
         ),
-        real_space_shape_2d=real_space_shape_2d,
-        real_space_pixel_scales=real_space_pixel_scales,
+        real_space_mask=real_space_mask,
         non_linear_class=non_linear_class,
     )
 
@@ -57,8 +50,7 @@ def make_pipeline(
                 regularization=phase1.result.inversion.instance.galaxies.source.regularization,
             ),
         ),
-        real_space_shape_2d=real_space_shape_2d,
-        real_space_pixel_scales=real_space_pixel_scales,
+        real_space_mask=real_space_mask,
         non_linear_class=non_linear_class,
     )
 

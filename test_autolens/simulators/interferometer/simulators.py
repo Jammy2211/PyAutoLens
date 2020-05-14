@@ -3,105 +3,7 @@ import autolens as al
 from test_autolens.simulators.interferometer import instrument_util
 
 
-def simulate_lens_light_dev_vaucouleurs(instruments):
-
-    data_label = "lens_light_dev_vaucouleurs"
-
-    # This lens-only system has a Dev Vaucouleurs spheroid / bulge.
-
-    lens_galaxy = al.Galaxy(
-        redshift=0.5,
-        bulge=al.lp.EllipticalDevVaucouleurs(
-            centre=(0.0, 0.0),
-            axis_ratio=0.9,
-            phi=45.0,
-            intensity=0.1,
-            effective_radius=1.0,
-        ),
-    )
-
-    for instrument in instruments:
-
-        instrument_util.simulate_interferometer_from_instrument(
-            instrument=instrument,
-            data_label=data_label,
-            galaxies=[lens_galaxy, al.Galaxy(redshift=1.0)],
-        )
-
-
-def simulate_lens_bulge_disk(instruments):
-
-    data_label = "lens_bulge_disk"
-
-    # This source-only system has a Dev Vaucouleurs spheroid / bulge and surrounding Exponential envelope
-
-    lens_galaxy = al.Galaxy(
-        redshift=0.5,
-        bulge=al.lp.EllipticalDevVaucouleurs(
-            centre=(0.0, 0.0),
-            axis_ratio=0.9,
-            phi=45.0,
-            intensity=0.1,
-            effective_radius=1.0,
-        ),
-        envelope=al.lp.EllipticalExponential(
-            centre=(0.0, 0.0),
-            axis_ratio=0.7,
-            phi=60.0,
-            intensity=1.0,
-            effective_radius=2.0,
-        ),
-    )
-
-    for instrument in instruments:
-
-        instrument_util.simulate_interferometer_from_instrument(
-            instrument=instrument,
-            data_label=data_label,
-            galaxies=[lens_galaxy, al.Galaxy(redshift=1.0)],
-        )
-
-
-def simulate_lens_x2_light(instruments):
-
-    data_label = "lens_x2_light"
-
-    # This source-only system has two Sersic bulges separated by 2.0"
-
-    lens_galaxy_0 = al.Galaxy(
-        redshift=0.5,
-        bulge=al.lp.EllipticalSersic(
-            centre=(-1.0, -1.0),
-            axis_ratio=0.8,
-            phi=0.0,
-            intensity=1.0,
-            effective_radius=1.0,
-            sersic_index=3.0,
-        ),
-    )
-
-    lens_galaxy_1 = al.Galaxy(
-        redshift=0.5,
-        bulge=al.lp.EllipticalSersic(
-            centre=(1.0, 1.0),
-            axis_ratio=0.8,
-            phi=0.0,
-            intensity=1.0,
-            effective_radius=1.0,
-            sersic_index=3.0,
-        ),
-    )
-
-    for instrument in instruments:
-
-        instrument_util.simulate_interferometer_from_instrument(
-            instrument=instrument,
-            data_label=data_label,
-            galaxies=[lens_galaxy_0, lens_galaxy_1, al.Galaxy(redshift=1.0)],
-        )
-
-
-def simulate_lens_sie__source_smooth(instruments):
+def simulate__lens_sie__source_smooth(instrument):
 
     data_label = "lens_sie__source_smooth"
 
@@ -126,16 +28,14 @@ def simulate_lens_sie__source_smooth(instruments):
         ),
     )
 
-    for instrument in instruments:
-
-        instrument_util.simulate_interferometer_from_instrument(
-            instrument=instrument,
-            data_label=data_label,
-            galaxies=[lens_galaxy, source_galaxy],
-        )
+    instrument_util.simulate_interferometer_from_instrument(
+        instrument=instrument,
+        data_label=data_label,
+        galaxies=[lens_galaxy, source_galaxy],
+    )
 
 
-def simulate_lens_sie__source_cuspy(instruments):
+def simulate__lens_sie__source_cuspy(instrument):
 
     data_label = "lens_sie__source_cuspy"
 
@@ -160,16 +60,14 @@ def simulate_lens_sie__source_cuspy(instruments):
         ),
     )
 
-    for instrument in instruments:
-
-        instrument_util.simulate_interferometer_from_instrument(
-            instrument=instrument,
-            data_label=data_label,
-            galaxies=[lens_galaxy, source_galaxy],
-        )
+    instrument_util.simulate_interferometer_from_instrument(
+        instrument=instrument,
+        data_label=data_label,
+        galaxies=[lens_galaxy, source_galaxy],
+    )
 
 
-def simulate_lens_sis__source_smooth(instruments):
+def simulate__lens_sis__source_smooth(instrument):
 
     data_label = "lens_sis__source_smooth"
 
@@ -192,16 +90,14 @@ def simulate_lens_sis__source_smooth(instruments):
         ),
     )
 
-    for instrument in instruments:
-
-        instrument_util.simulate_interferometer_from_instrument(
-            instrument=instrument,
-            data_label=data_label,
-            galaxies=[lens_galaxy, source_galaxy],
-        )
+    instrument_util.simulate_interferometer_from_instrument(
+        instrument=instrument,
+        data_label=data_label,
+        galaxies=[lens_galaxy, source_galaxy],
+    )
 
 
-def simulate_lens_sie__source_smooth__offset_centre(instruments):
+def simulate__lens_sie__source_smooth__offset_centre(instrument):
 
     data_label = "lens_sie__source_smooth__offset_centre"
 
@@ -224,16 +120,14 @@ def simulate_lens_sie__source_smooth__offset_centre(instruments):
         ),
     )
 
-    for instrument in instruments:
-
-        instrument_util.simulate_interferometer_from_instrument(
-            instrument=instrument,
-            data_label=data_label,
-            galaxies=[lens_galaxy, source_galaxy],
-        )
+    instrument_util.simulate_interferometer_from_instrument(
+        instrument=instrument,
+        data_label=data_label,
+        galaxies=[lens_galaxy, source_galaxy],
+    )
 
 
-def simulate_lens_light__source_smooth(instruments):
+def simulate__lens_light__source_smooth(instrument):
 
     data_label = "lens_light__source_smooth"
 
@@ -266,16 +160,14 @@ def simulate_lens_light__source_smooth(instruments):
         ),
     )
 
-    for instrument in instruments:
-
-        instrument_util.simulate_interferometer_from_instrument(
-            instrument=instrument,
-            data_label=data_label,
-            galaxies=[lens_galaxy, source_galaxy],
-        )
+    instrument_util.simulate_interferometer_from_instrument(
+        instrument=instrument,
+        data_label=data_label,
+        galaxies=[lens_galaxy, source_galaxy],
+    )
 
 
-def simulate_lens_light__source_cuspy(instruments):
+def simulate__lens_light__source_cuspy(instrument):
 
     data_label = "lens_light__source_cuspy"
 
@@ -308,10 +200,8 @@ def simulate_lens_light__source_cuspy(instruments):
         ),
     )
 
-    for instrument in instruments:
-
-        instrument_util.simulate_interferometer_from_instrument(
-            instrument=instrument,
-            data_label=data_label,
-            galaxies=[lens_galaxy, source_galaxy],
-        )
+    instrument_util.simulate_interferometer_from_instrument(
+        instrument=instrument,
+        data_label=data_label,
+        galaxies=[lens_galaxy, source_galaxy],
+    )

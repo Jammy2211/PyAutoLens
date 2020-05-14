@@ -52,15 +52,15 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
         os.makedirs(path)
 
     imaging.output_to_fits(
-        image_path=path + "/image.fits",
-        noise_map_path=path + "/noise_map.fits",
-        psf_path=path + "/psf.fits",
+        image_path=f"{path}/image.fits",
+        noise_map_path=f"{path}/noise_map.fits",
+        psf_path=f"{path}/psf.fits",
     )
 
     imaging = al.Imaging.from_fits(
-        image_path=path + "/image.fits",
-        noise_map_path=path + "/noise_map.fits",
-        psf_path=path + "/psf.fits",
+        image_path=f"{path}/image.fits",
+        noise_map_path=f"{path}/noise_map.fits",
+        psf_path=f"{path}/psf.fits",
         pixel_scales=0.2,
     )
 
@@ -126,15 +126,15 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
         os.makedirs(path)
 
     imaging.output_to_fits(
-        image_path=path + "/image.fits",
-        noise_map_path=path + "/noise_map.fits",
-        psf_path=path + "/psf.fits",
+        image_path=f"{path}/image.fits",
+        noise_map_path=f"{path}/noise_map.fits",
+        psf_path=f"{path}/psf.fits",
     )
 
     simulator = al.Imaging.from_fits(
-        image_path=path + "/image.fits",
-        noise_map_path=path + "/noise_map.fits",
-        psf_path=path + "/psf.fits",
+        image_path=f"{path}/image.fits",
+        noise_map_path=f"{path}/noise_map.fits",
+        psf_path=f"{path}/psf.fits",
         pixel_scales=0.2,
     )
 
@@ -200,13 +200,13 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
 
     interferometer.output_to_fits(
         visibilities_path=path + "/visibilities.fits",
-        noise_map_path=path + "/noise_map.fits",
+        noise_map_path=f"{path}/noise_map.fits",
         uv_wavelengths_path=path + "/uv_wavelengths.fits",
     )
 
     interferometer = al.Interferometer.from_fits(
         visibilities_path=path + "/visibilities.fits",
-        noise_map_path=path + "/noise_map.fits",
+        noise_map_path=f"{path}/noise_map.fits",
         uv_wavelengths_path=path + "/uv_wavelengths.fits",
     )
 

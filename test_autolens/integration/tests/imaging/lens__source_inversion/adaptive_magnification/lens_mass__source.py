@@ -52,7 +52,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
 
     phase2 = phase2.extend_with_inversion_phase()
 
-    return al.PipelineDataset(name, phase1)  # , phase2)
+    return al.PipelineDataset(name, phase1, phase2)
 
 
 if __name__ == "__main__":

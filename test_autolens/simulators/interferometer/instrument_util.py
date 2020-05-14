@@ -4,65 +4,9 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
+from test_autogalaxy.simulators.interferometer import instrument_util
+
 test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
-
-
-def pixel_scale_from_instrument(instrument):
-    """Determine the pixel scale from an instrument based on real observations.
-
-    These options are representative of SMA interferometry.
-
-    Parameters
-    ----------
-    instrument : str
-        A string giving the resolution of the desired instrument (SMA).
-    """
-    if instrument in "sma":
-        return (0.05, 0.05)
-    else:
-        raise ValueError("An invalid data_label resolution was entered - ", instrument)
-
-
-def grid_from_instrument(instrument):
-    """Determine the grid from an instrument based on real observations.
-
-    These options are representative of SMA interferometry.
-
-    Parameters
-    ----------
-    instrument : str
-        A string giving the resolution of the desired instrument (SMA).
-    """
-
-    pixel_scales = pixel_scale_from_instrument(instrument=instrument)
-
-    if instrument in "sma":
-        return al.Grid.uniform(shape_2d=(151, 151), pixel_scales=pixel_scales)
-    else:
-        raise ValueError("An invalid data_label resolution was entered - ", instrument)
-
-
-def uv_wavelengths_from_instrument(instrument):
-    """Determine the uv wavelengths from an instrument based on real observations.
-
-    These options are representative of SMA interferometry.
-
-    Parameters
-    ----------
-    instrument : str
-        A string giving the resolution of the desired instrument (SMA).
-    """
-
-    uv_wavelengths_path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
-
-    if instrument in "sma":
-        uv_wavelengths_path += "/sma"
-    else:
-        raise ValueError("An invalid data_label resolution was entered - ", instrument)
-
-    return al.util.array.numpy_array_1d_from_fits(
-        file_path=uv_wavelengths_path + "/uv_wavelengths.fits", hdu=0
-    )
 
 
 def simulator_from_instrument(instrument):
@@ -76,8 +20,10 @@ def simulator_from_instrument(instrument):
         A string giving the resolution of the desired instrument (VRO | Euclid | HST | HST_Up | AO).
     """
 
-    uv_wavelengths = uv_wavelengths_from_instrument(instrument=instrument)
-    grid = grid_from_instrument(instrument=instrument)
+    uv_wavelengths = instrument_util.uv_wavelengths_from_instrument(
+        instrument=instrument
+    )
+    grid = instrument_util.grid_from_instrument(instrument=instrument)
 
     if instrument in "sma":
         return al.SimulatorInterferometer(
@@ -95,7 +41,7 @@ def simulate_interferometer_from_instrument(instrument, data_label, galaxies):
     # Simulate the imaging data, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.al. the PSF convolution).
 
-    grid = grid_from_instrument(instrument=instrument)
+    grid = instrument_util.grid_from_instrument(instrument=instrument)
 
     simulator = simulator_from_instrument(instrument=instrument)
 
@@ -152,7 +98,7 @@ def load_test_interferometer(data_label, instrument):
     )
 
     return al.Interferometer.from_fits(
-        visibilities_path=dataset_path + "/visibilities.fits",
-        noise_map_path=dataset_path + "/noise_map.fits",
-        uv_wavelengths_path=dataset_path + "/uv_wavelengths.fits",
+        visibilities_path=f"{dataset_path}/visibilities.fits",
+        noise_map_path=f"{dataset_path}/noise_map.fits",
+        uv_wavelengths_path=f"{dataset_path}/uv_wavelengths.fits",
     )
