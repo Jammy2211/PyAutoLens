@@ -79,7 +79,10 @@ class Result(result.Result):
 
                 positions.append(positions_list)
 
-        return grids.GridCoordinates(coordinates=positions)
+        try:
+            return grids.GridCoordinates(coordinates=positions)
+        except IndexError:
+            return None
 
     @property
     def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:

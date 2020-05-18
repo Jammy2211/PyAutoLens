@@ -4108,3 +4108,64 @@ class TestTacerFixedSlices:
                 np.array([-2.5355, -2.5355]), 1e-4
             )
             assert traced_grids[3][1] == pytest.approx(np.array([2.0, 0.0]), 1e-4)
+
+
+class TestDecorators:
+    def test__grid_iterator_in__iterates_grid_correctly(self, gal_x1_lp):
+
+        mask = al.Mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, True, True, True, True],
+            ],
+            pixel_scales=(1.0, 1.0),
+            origin=(0.001, 0.001),
+        )
+
+        grid = al.GridIterator.from_mask(
+            mask=mask, fractional_accuracy=1.0, sub_steps=[2]
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_lp])
+
+        profile_image = tracer.profile_image_from_grid(grid=grid)
+
+        mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        grid_sub_2 = al.Grid.from_mask(mask=mask_sub_2)
+        profile_image_sub_2 = tracer.profile_image_from_grid(
+            grid=grid_sub_2
+        ).in_1d_binned
+
+        assert (profile_image == profile_image_sub_2).all()
+
+        grid = al.GridIterator.from_mask(
+            mask=mask, fractional_accuracy=0.95, sub_steps=[2, 4, 8]
+        )
+
+        galaxy = al.Galaxy(
+            redshift=0.5,
+            light=al.lp.EllipticalSersic(centre=(0.08, 0.08), intensity=1.0),
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy])
+
+        profile_image = tracer.profile_image_from_grid(grid=grid)
+
+        mask_sub_4 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
+        grid_sub_4 = al.Grid.from_mask(mask=mask_sub_4)
+        profile_image_sub_4 = tracer.profile_image_from_grid(
+            grid=grid_sub_4
+        ).in_1d_binned
+
+        assert profile_image[0] == profile_image_sub_4[0]
+
+        mask_sub_8 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=8)
+        grid_sub_8 = al.Grid.from_mask(mask=mask_sub_8)
+        profile_image_sub_8 = tracer.profile_image_from_grid(
+            grid=grid_sub_8
+        ).in_1d_binned
+
+        assert profile_image[4] == profile_image_sub_8[4]

@@ -242,7 +242,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
 class AbstractTracerCosmology(AbstractTracer, ABC):
     def arcsec_per_kpc_proper_of_plane(self, i):
-        return cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(
+        return cosmology_util.arcsec_per_kpc_from(
             redshift=self.plane_redshifts[i], cosmology=self.cosmology
         )
 
@@ -252,7 +252,7 @@ class AbstractTracerCosmology(AbstractTracer, ABC):
     def angular_diameter_distance_of_plane_to_earth_in_units(
         self, i, unit_length="arcsec"
     ):
-        return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+        return cosmology_util.angular_diameter_distance_to_earth_from(
             redshift=self.plane_redshifts[i],
             cosmology=self.cosmology,
             unit_length=unit_length,
@@ -261,7 +261,7 @@ class AbstractTracerCosmology(AbstractTracer, ABC):
     def angular_diameter_distance_between_planes_in_units(
         self, i, j, unit_length="arcsec"
     ):
-        return cosmology_util.angular_diameter_distance_between_redshifts_from_redshifts_and_cosmlology(
+        return cosmology_util.angular_diameter_distance_between_redshifts_from(
             redshift_0=self.plane_redshifts[i],
             redshift_1=self.plane_redshifts[j],
             cosmology=self.cosmology,
@@ -269,7 +269,7 @@ class AbstractTracerCosmology(AbstractTracer, ABC):
         )
 
     def angular_diameter_distance_to_source_plane_in_units(self, unit_length="arcsec"):
-        return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+        return cosmology_util.angular_diameter_distance_to_earth_from(
             redshift=self.plane_redshifts[-1],
             cosmology=self.cosmology,
             unit_length=unit_length,
@@ -278,7 +278,7 @@ class AbstractTracerCosmology(AbstractTracer, ABC):
     def critical_surface_density_between_planes_in_units(
         self, i, j, unit_length="arcsec", unit_mass="solMass"
     ):
-        return cosmology_util.critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
+        return cosmology_util.critical_surface_density_between_redshifts_from(
             redshift_0=self.plane_redshifts[i],
             redshift_1=self.plane_redshifts[j],
             cosmology=self.cosmology,
@@ -287,7 +287,7 @@ class AbstractTracerCosmology(AbstractTracer, ABC):
         )
 
     def scaling_factor_between_planes(self, i, j):
-        return cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+        return cosmology_util.scaling_factor_between_redshifts_from(
             redshift_0=self.plane_redshifts[i],
             redshift_1=self.plane_redshifts[j],
             redshift_final=self.plane_redshifts[-1],
@@ -316,7 +316,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from(
                         redshift_0=self.plane_redshifts[previous_plane_index],
                         redshift_1=plane.redshift,
                         redshift_final=self.plane_redshifts[-1],
@@ -461,7 +461,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
             coordinate=source_plane_coordinate
         )
 
-        trough_pixels = array_util.trough_pixels_from_array_2d(
+        trough_pixels = array_util.trough_pixels_from(
             array_2d=source_plane_squared_distances.in_2d, mask_2d=grid.mask
         )
 
@@ -474,7 +474,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
             buffer=1,
         )
 
-        multiple_image_pixels = grid_util.positions_at_coordinate_from_grid_2d(
+        multiple_image_pixels = grid_util.positions_at_coordinate_from(
             grid_2d=source_plane_grid.in_2d,
             coordinate=source_plane_coordinate,
             mask_2d=trough_mask,
@@ -892,11 +892,9 @@ class Tracer(AbstractTracerData):
     @classmethod
     def from_galaxies(cls, galaxies, cosmology=cosmo.Planck15):
 
-        plane_redshifts = plane_util.ordered_plane_redshifts_from_galaxies(
-            galaxies=galaxies
-        )
+        plane_redshifts = plane_util.ordered_plane_redshifts_from(galaxies=galaxies)
 
-        galaxies_in_planes = plane_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+        galaxies_in_planes = plane_util.galaxies_in_redshift_ordered_planes_from(
             galaxies=galaxies, plane_redshifts=plane_redshifts
         )
 
@@ -946,17 +944,15 @@ class Tracer(AbstractTracerData):
             The cosmology of the ray-tracing calculation.
         """
 
-        lens_redshifts = plane_util.ordered_plane_redshifts_from_galaxies(
-            galaxies=lens_galaxies
-        )
+        lens_redshifts = plane_util.ordered_plane_redshifts_from(galaxies=lens_galaxies)
 
-        plane_redshifts = plane_util.ordered_plane_redshifts_from_lens_source_plane_redshifts_and_slice_sizes(
+        plane_redshifts = plane_util.ordered_plane_redshifts_with_slicing_from(
             lens_redshifts=lens_redshifts,
             planes_between_lenses=planes_between_lenses,
             source_plane_redshift=source_galaxies[0].redshift,
         )
 
-        galaxies_in_planes = plane_util.galaxies_in_redshift_ordered_planes_from_galaxies(
+        galaxies_in_planes = plane_util.galaxies_in_redshift_ordered_planes_from(
             galaxies=lens_galaxies + line_of_sight_galaxies,
             plane_redshifts=plane_redshifts,
         )

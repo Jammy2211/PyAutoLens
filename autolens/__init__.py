@@ -14,9 +14,10 @@ from autoarray.structures.arrays import Array, Values
 from autoarray.structures.arrays import MaskedArray
 from autoarray.structures.grids import (
     Grid,
+    GridIterator,
+    GridCoordinates,
     GridRectangular,
     GridVoronoi,
-    GridCoordinates,
 )
 from autoarray.structures.grids import MaskedGrid
 from autoarray.structures.kernel import Kernel
