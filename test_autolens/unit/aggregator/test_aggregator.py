@@ -30,7 +30,7 @@ def test__tracer_generator_from_aggregator(imaging_7x7, mask_7x7):
         dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
     )
 
-    agg = af.Aggregator(directory=phase_imaging_7x7.paths.phase_output_path)
+    agg = af.Aggregator(directory=phase_imaging_7x7.paths.output_path)
 
     tracer_gen = al.agg.Tracer(aggregator=agg)
 
@@ -56,7 +56,7 @@ def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
         dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
     )
 
-    agg = af.Aggregator(directory=phase_imaging_7x7.paths.phase_output_path)
+    agg = af.Aggregator(directory=phase_imaging_7x7.paths.output_path)
 
     masked_imaging_gen = al.agg.MaskedImaging(aggregator=agg)
 
@@ -79,7 +79,7 @@ def test__fit_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
         dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
     )
 
-    agg = af.Aggregator(directory=phase_imaging_7x7.paths.phase_output_path)
+    agg = af.Aggregator(directory=phase_imaging_7x7.paths.output_path)
 
     fit_imaging_gen = al.agg.FitImaging(aggregator=agg)
 
@@ -103,7 +103,7 @@ def test__masked_interferometer_generator_from_aggregator(interferometer_7, mask
         dataset=interferometer_7, mask=mask_7x7, results=mock_pipeline.MockResults()
     )
 
-    agg = af.Aggregator(directory=phase_interferometer_7x7.paths.phase_output_path)
+    agg = af.Aggregator(directory=phase_interferometer_7x7.paths.output_path)
 
     masked_interferometer_gen = al.agg.MaskedInterferometer(aggregator=agg)
 
@@ -131,7 +131,7 @@ def test__fit_interferometer_generator_from_aggregator(interferometer_7, mask_7x
         dataset=interferometer_7, mask=mask_7x7, results=mock_pipeline.MockResults()
     )
 
-    agg = af.Aggregator(directory=phase_interferometer_7x7.paths.phase_output_path)
+    agg = af.Aggregator(directory=phase_interferometer_7x7.paths.output_path)
 
     fit_interferometer_gen = al.agg.FitInterferometer(aggregator=agg)
 

@@ -212,7 +212,7 @@ class MockNLO(af.NonLinearOptimizer):
         # noinspection PyTypeChecker
         return af.Result(None, analysis.log_likelihood_function(None), None)
 
-    def _full_fit(self, model, analysis):
+    def _fit(self, model, analysis):
         class Fitness:
             def __init__(self, instance_from_vector):
                 self.result = None

@@ -167,7 +167,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         self.sub_size = sub_size
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
 
-    def run(self, galaxy_data, mask, results=None):
+    def run(self, galaxy_data, mask, info=None, results=None):
         """
         Run this phase.
 
@@ -192,9 +192,8 @@ class PhaseGalaxy(abstract.AbstractPhase):
         self.save_metadata(galaxy_data.name)
         self.model = self.model.populate(results)
         self.customize_priors(results)
-        self.assert_and_save_pickle()
 
-        result = self.run_analysis(analysis)
+        result = self.run_analysis(analysis=analysis, info=info)
 
         return self.make_result(result, analysis)
 

@@ -350,7 +350,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
     def profile_image_from_grid(self, grid):
         return sum(self.profile_images_of_planes_from_grid(grid=grid))
 
-    @grids.grid_like_to_structure
+    @grids.grid_like_to_structure_list
     def profile_images_of_planes_from_grid(self, grid):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
