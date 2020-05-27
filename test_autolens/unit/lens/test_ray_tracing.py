@@ -1912,7 +1912,7 @@ class TestAbstractTracerLensing:
                 tracer_profile_image_of_planes[2].in_2d_binned == np.zeros((7, 7))
             ).all()
 
-        def test__x1_plane__padded_image__compare_to_galaxy_images_using_padded_grid_stack(
+        def test__x1_plane__padded_image__compare_to_galaxy_images_using_padded_grids(
             self, sub_grid_7x7
         ):
             padded_grid = sub_grid_7x7.padded_grid_from_kernel_shape(
@@ -1981,6 +1981,44 @@ class TestAbstractTracerLensing:
             assert padded_tracer_profile_image == pytest.approx(
                 padded_g0_image + padded_g1_image + padded_g2_image, 1.0e-4
             )
+
+        def test__x1_plane__padded_image__compare_to_galaxy_images_using_padded_grids_and_grid_iterato(
+            self, grid_iterator_7x7
+        ):
+            padded_grid = grid_iterator_7x7.padded_grid_from_kernel_shape(
+                kernel_shape_2d=(3, 3)
+            )
+
+            g0 = al.Galaxy(
+                redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
+            )
+            g1 = al.Galaxy(
+                redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=2.0)
+            )
+            g2 = al.Galaxy(
+                redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=3.0)
+            )
+
+            padded_g0_image = g0.profile_image_from_grid(grid=padded_grid)
+
+            padded_g1_image = g1.profile_image_from_grid(grid=padded_grid)
+
+            padded_g2_image = g2.profile_image_from_grid(grid=padded_grid)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+            padded_tracer_profile_image = tracer.padded_profile_image_from_grid_and_psf_shape(
+                grid=grid_iterator_7x7, psf_shape_2d=(3, 3)
+            )
+
+            assert padded_tracer_profile_image.shape_2d == (9, 9)
+            assert padded_tracer_profile_image == pytest.approx(
+                padded_g0_image + padded_g1_image + padded_g2_image, 1.0e-4
+            )
+
+            profile_image = tracer.profile_image_from_grid(grid=grid_iterator_7x7)
+
+            assert padded_tracer_profile_image.in_2d[4, 4] == profile_image.in_2d[3, 3]
 
         def test__galaxy_image_dict_from_grid(self, sub_grid_7x7):
 
@@ -4111,7 +4149,7 @@ class TestTacerFixedSlices:
 
 
 class TestDecorators:
-    def test__grid_iterator_in__iterates_grid_correctly(self, gal_x1_lp):
+    def test__grid_iterator_in__iterates_array_result_correctly(self, gal_x1_lp):
 
         mask = al.Mask.manual(
             mask_2d=[
@@ -4169,3 +4207,113 @@ class TestDecorators:
         ).in_1d_binned
 
         assert profile_image[4] == profile_image_sub_8[4]
+
+    def test__grid_iterator_in__method_returns_array_list__uses_highest_sub_size_of_iterator(
+        self, gal_x1_lp
+    ):
+
+        mask = al.Mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, True, True, True, True],
+            ],
+            pixel_scales=(1.0, 1.0),
+            origin=(0.001, 0.001),
+        )
+
+        grid = al.GridIterator.from_mask(
+            mask=mask, fractional_accuracy=1.0, sub_steps=[2]
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_lp])
+
+        profile_images = tracer.profile_images_of_planes_from_grid(grid=grid)
+
+        mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        grid_sub_2 = al.Grid.from_mask(mask=mask_sub_2)
+        profile_image_sub_2 = tracer.profile_image_from_grid(
+            grid=grid_sub_2
+        ).in_1d_binned
+
+        assert (profile_images[0] == profile_image_sub_2).all()
+
+        grid = al.GridIterator.from_mask(
+            mask=mask, fractional_accuracy=0.95, sub_steps=[2, 4, 8]
+        )
+
+        galaxy = al.Galaxy(
+            redshift=0.5,
+            light=al.lp.EllipticalSersic(centre=(0.08, 0.08), intensity=1.0),
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy])
+
+        profile_images = tracer.profile_images_of_planes_from_grid(grid=grid)
+
+        mask_sub_8 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=8)
+        grid_sub_8 = al.Grid.from_mask(mask=mask_sub_8)
+        profile_image_sub_8 = tracer.profile_image_from_grid(
+            grid=grid_sub_8
+        ).in_1d_binned
+
+        assert profile_images[0][4] == profile_image_sub_8[4]
+
+    def test__grid_iterator_in__iterates_grid_result_correctly(self, gal_x1_mp):
+
+        mask = al.Mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, True, True, True, True],
+            ],
+            pixel_scales=(1.0, 1.0),
+        )
+
+        grid = al.GridIterator.from_mask(
+            mask=mask, fractional_accuracy=1.0, sub_steps=[2]
+        )
+
+        galaxy = al.Galaxy(
+            redshift=0.5,
+            mass=al.mp.EllipticalIsothermal(centre=(0.08, 0.08), einstein_radius=1.0),
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
+
+        deflections = tracer.deflections_from_grid(grid=grid)
+
+        mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        grid_sub_2 = al.Grid.from_mask(mask=mask_sub_2)
+        deflections_sub_2 = tracer.deflections_from_grid(grid=grid_sub_2).in_1d_binned
+
+        assert (deflections == deflections_sub_2).all()
+
+        grid = al.GridIterator.from_mask(
+            mask=mask, fractional_accuracy=0.99, sub_steps=[2, 4, 8]
+        )
+
+        galaxy = al.Galaxy(
+            redshift=0.5,
+            mass=al.mp.EllipticalIsothermal(centre=(0.08, 0.08), einstein_radius=1.0),
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
+
+        deflections = tracer.deflections_from_grid(grid=grid)
+
+        mask_sub_4 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
+        grid_sub_4 = al.Grid.from_mask(mask=mask_sub_4)
+        deflections_sub_4 = tracer.deflections_from_grid(grid=grid_sub_4).in_1d_binned
+
+        assert deflections[0, 0] == deflections_sub_4[0, 0]
+
+        mask_sub_8 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=8)
+        grid_sub_8 = al.Grid.from_mask(mask=mask_sub_8)
+        deflections_sub_8 = galaxy.deflections_from_grid(grid=grid_sub_8).in_1d_binned
+
+        assert deflections[4, 0] == deflections_sub_8[4, 0]

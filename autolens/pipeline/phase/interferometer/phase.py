@@ -53,7 +53,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
             The side length of the subgrid
         """
 
-        paths.phase_tag = tagging.phase_tag_from_phase_settings(
+        paths.tag = tagging.phase_tag_from_phase_settings(
             sub_size=sub_size,
             real_space_shape_2d=real_space_mask.shape_2d,
             real_space_pixel_scales=real_space_mask.pixel_scales,
@@ -159,9 +159,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
     def output_phase_info(self):
 
-        file_phase_info = "{}/{}".format(
-            self.optimizer.paths.phase_output_path, "phase.info"
-        )
+        file_phase_info = "{}/{}".format(self.optimizer.paths.output_path, "phase.info")
 
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.optimizer).__name__))
