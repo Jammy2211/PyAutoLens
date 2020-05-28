@@ -303,6 +303,7 @@ class AbstractTracerCosmology(AbstractTracer, ABC):
 
 
 class AbstractTracerLensing(AbstractTracerCosmology, ABC):
+    @grids.grid_like_to_structure_list
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
         grid_calc = grid.copy()  # TODO looks unnecessary? Probably pretty expensive too
@@ -557,6 +558,11 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         traced_blurring_grids_of_planes = self.traced_grids_of_planes_from_grid(
             grid=blurring_grid
         )
+
+        #      print(traced_grids_of_planes)
+        #      print(traced_grids_of_planes[0])
+        #      print(traced_grids_of_planes[0].shape_2d)
+        #      print(traced_grids_of_planes[0].sub_size)
 
         return [
             plane.blurred_profile_image_from_grid_and_psf(

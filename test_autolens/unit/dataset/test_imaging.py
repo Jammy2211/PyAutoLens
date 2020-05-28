@@ -32,7 +32,7 @@ class TestMaskedImaging:
         masked_imaging_7x7 = al.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
-            pixel_scale_interpolation_grid=1.0,
+            grid_class=al.Grid,
             psf_shape_2d=(3, 3),
             inversion_pixel_limit=20.0,
             inversion_uses_border=False,
@@ -44,31 +44,13 @@ class TestMaskedImaging:
         assert masked_imaging_7x7.preload_sparse_grids_of_planes == 1
 
         grid = al.MaskedGrid.from_mask(mask=sub_mask_7x7)
-        new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
-        assert (masked_imaging_7x7.grid == new_grid).all()
-        assert (
-            masked_imaging_7x7.grid.interpolator.vtx == new_grid.interpolator.vtx
-        ).all()
-        assert (
-            masked_imaging_7x7.grid.interpolator.wts == new_grid.interpolator.wts
-        ).all()
+        assert (masked_imaging_7x7.grid == grid).all()
 
         blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
-        new_blurring_grid = blurring_grid.new_grid_with_interpolator(
-            pixel_scale_interpolation_grid=1.0
-        )
 
         assert (masked_imaging_7x7.blurring_grid.in_1d == blurring_grid_7x7).all()
-        assert (masked_imaging_7x7.blurring_grid == new_blurring_grid).all()
-        assert (
-            masked_imaging_7x7.blurring_grid.interpolator.vtx
-            == new_blurring_grid.interpolator.vtx
-        ).all()
-        assert (
-            masked_imaging_7x7.blurring_grid.interpolator.wts
-            == new_blurring_grid.interpolator.wts
-        ).all()
+        assert (masked_imaging_7x7.blurring_grid == blurring_grid).all()
 
 
 class TestSimulatorImaging:

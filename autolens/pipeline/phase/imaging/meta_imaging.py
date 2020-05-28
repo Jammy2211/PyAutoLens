@@ -12,7 +12,7 @@ class MetaImaging(ag_meta_imaging.MetaImaging, meta_dataset.MetaLens):
         signal_to_noise_limit=None,
         auto_positions_factor=None,
         positions_threshold=None,
-        pixel_scale_interpolation_grid=None,
+        interpolation_pixel_scale=None,
         inversion_uses_border=True,
         inversion_pixel_limit=None,
         psf_shape_2d=None,
@@ -31,7 +31,7 @@ class MetaImaging(ag_meta_imaging.MetaImaging, meta_dataset.MetaLens):
             self=self,
             auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
-            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            interpolation_pixel_scale=interpolation_pixel_scale,
             inversion_uses_border=inversion_uses_border,
         )
 
@@ -78,7 +78,7 @@ class MetaImaging(ag_meta_imaging.MetaImaging, meta_dataset.MetaLens):
             mask=mask,
             psf_shape_2d=self.psf_shape_2d,
             positions_threshold=self.positions_threshold,
-            pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
+            grid_interpolate_pixel_scale=self.interpolation_pixel_scale,
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,

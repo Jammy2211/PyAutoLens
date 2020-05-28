@@ -2,7 +2,7 @@ import autofit as af
 from astropy import cosmology as cosmo
 from autogalaxy.pipeline.phase import dataset
 from autogalaxy.pipeline.phase.imaging.phase import PhaseAttributes as AgPhaseAttributes
-from autolens.pipeline import tagging
+from autolens.pipeline.phase.settings import PhaseSettingsImaging
 from autolens.pipeline.phase.imaging.analysis import Analysis
 from autolens.pipeline.phase.imaging.meta_imaging import MetaImaging
 from autolens.pipeline.phase.imaging.result import Result
@@ -33,7 +33,7 @@ class PhaseImaging(dataset.PhaseDataset):
         psf_shape_2d=None,
         auto_positions_factor=None,
         positions_threshold=None,
-        pixel_scale_interpolation_grid=None,
+        interpolation_pixel_scale=None,
         inversion_uses_border=True,
         inversion_pixel_limit=None,
     ):
@@ -58,7 +58,7 @@ class PhaseImaging(dataset.PhaseDataset):
             psf_shape_2d=psf_shape_2d,
             auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
-            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            interpolation_pixel_scale=interpolation_pixel_scale,
         )
         paths.tag = phase_tag
 
@@ -82,7 +82,7 @@ class PhaseImaging(dataset.PhaseDataset):
             signal_to_noise_limit=signal_to_noise_limit,
             auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
-            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            interpolation_pixel_scale=interpolation_pixel_scale,
             inversion_uses_border=inversion_uses_border,
             inversion_pixel_limit=inversion_pixel_limit,
         )

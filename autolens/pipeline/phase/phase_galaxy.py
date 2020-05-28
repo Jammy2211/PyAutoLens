@@ -138,7 +138,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         use_deflections=False,
         non_linear_class=af.MultiNest,
         sub_size=2,
-        pixel_scale_interpolation_grid=None,
+        interpolation_pixel_scale=None,
         cosmology=cosmo.Planck15,
     ):
         """
@@ -165,7 +165,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         self.use_deflections = use_deflections
         self.galaxies = galaxies
         self.sub_size = sub_size
-        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
+        self.interpolation_pixel_scale = interpolation_pixel_scale
 
     def run(self, galaxy_data, mask, info=None, results=None):
         """
@@ -222,7 +222,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
             galaxy_data = masked_galaxy_data.MaskedGalaxyDataset(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
-                pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
+                interpolation_pixel_scale=self.interpolation_pixel_scale,
                 use_image=self.use_image,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,
@@ -242,7 +242,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
             galaxy_data_y = masked_galaxy_data.MaskedGalaxyDataset(
                 galaxy_data=galaxy_data[0],
                 mask=mask,
-                pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
+                interpolation_pixel_scale=self.interpolation_pixel_scale,
                 use_image=self.use_image,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,
@@ -253,7 +253,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
             galaxy_data_x = masked_galaxy_data.MaskedGalaxyDataset(
                 galaxy_data=galaxy_data[1],
                 mask=mask,
-                pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
+                interpolation_pixel_scale=self.interpolation_pixel_scale,
                 use_image=self.use_image,
                 use_convergence=self.use_convergence,
                 use_potential=self.use_potential,
