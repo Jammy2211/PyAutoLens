@@ -265,17 +265,17 @@ class TestMakeAnalysis:
             )
             analysis.log_likelihood_function(instance=instance)
 
-    def test__pixel_scale_interpolation_grid_is_input__interp_grid_used_in_analysis(
+    def test__interpolation_pixel_scale_is_input__interp_grid_used_in_analysis(
         self, phase_imaging_7x7, imaging_7x7, mask_7x7
     ):
         # If use positions is true and positions are input, make the positions part of the lens dataset.
 
-        phase_imaging_7x7.meta_dataset.pixel_scale_interpolation_grid = 0.1
+        phase_imaging_7x7.meta_dataset.interpolation_pixel_scale = 0.1
 
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
         )
-        assert analysis.masked_imaging.pixel_scale_interpolation_grid == 0.1
+        assert analysis.masked_imaging.interpolation_pixel_scale == 0.1
         assert hasattr(analysis.masked_imaging.grid, "interpolator")
         assert hasattr(analysis.masked_imaging.blurring_grid, "interpolator")
 

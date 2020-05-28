@@ -57,7 +57,8 @@ from autolens.fit.fit import FitImaging, FitInterferometer
 from autolens.fit.fit import FitPositions
 from autolens.lens.ray_tracing import Tracer
 from autolens.pipeline import setup
-from autolens.pipeline import tagging
+from autolens.pipeline.phase.settings import PhaseSettingsImaging
+from autolens.pipeline.phase.settings import PhaseSettingsInterferometer
 from autolens.pipeline.phase.imaging.phase import PhaseImaging
 from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy

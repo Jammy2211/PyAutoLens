@@ -61,7 +61,7 @@ class TestMaskedInterferometer:
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=sub_mask_7x7,
-            pixel_scale_interpolation_grid=1.0,
+            grid_class=al.Grid,
             primary_beam_shape_2d=(3, 3),
             inversion_pixel_limit=20.0,
             inversion_uses_border=False,
@@ -76,15 +76,8 @@ class TestMaskedInterferometer:
         assert masked_interferometer_7.preload_sparse_grids_of_planes == 1
 
         grid = al.MaskedGrid.from_mask(mask=sub_mask_7x7)
-        new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
-        assert (masked_interferometer_7.grid == new_grid).all()
-        assert (
-            masked_interferometer_7.grid.interpolator.vtx == new_grid.interpolator.vtx
-        ).all()
-        assert (
-            masked_interferometer_7.grid.interpolator.wts == new_grid.interpolator.wts
-        ).all()
+        assert (masked_interferometer_7.grid == grid).all()
 
     def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
         self

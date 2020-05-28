@@ -9,13 +9,13 @@ class MetaLens:
         self,
         auto_positions_factor=None,
         positions_threshold=None,
-        pixel_scale_interpolation_grid=None,
+        interpolation_pixel_scale=None,
         inversion_uses_border=True,
     ):
 
         self.auto_positions_factor = auto_positions_factor
         self.positions_threshold = positions_threshold
-        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
+        self.interpolation_pixel_scale = interpolation_pixel_scale
         self.inversion_uses_border = inversion_uses_border
 
     def updated_positions_from_positions_and_results(self, positions, results):

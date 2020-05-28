@@ -57,7 +57,7 @@ class FitImaging(aa_fit.FitImaging):
         else:
 
             inversion = tracer.inversion_imaging_from_grid_and_data(
-                grid=masked_imaging.grid,
+                grid=masked_imaging.grid_inversion,
                 image=self.profile_subtracted_image,
                 noise_map=noise_map,
                 convolver=masked_imaging.convolver,
@@ -187,7 +187,7 @@ class FitInterferometer(aa_fit.FitInterferometer):
         else:
 
             inversion = tracer.inversion_interferometer_from_grid_and_data(
-                grid=masked_interferometer.grid,
+                grid=masked_interferometer.grid_inversion,
                 visibilities=self.profile_subtracted_visibilities,
                 noise_map=noise_map,
                 transformer=masked_interferometer.transformer,
