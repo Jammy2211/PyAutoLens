@@ -3,11 +3,11 @@ import os
 import autolens as al
 import autolens.plot as aplt
 
-# Setup the path to the autolens_workspace, using a relative directory name.
+"""Setup the path to the autolens_workspace, using a relative directory name."""
 plot_path = "{}/../images/fitting/".format(os.path.dirname(os.path.realpath(__file__)))
 dataset_path = "{}/dataset".format(os.path.dirname(os.path.realpath(__file__)))
 
-# Using the dataset path, load the data (image, noise map, PSF) as an imaging object from .fits files.
+"""Using the dataset path, load the data (image, noise map, PSF) as an imaging object from .fits files."""
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
     psf_path=f"{dataset_path}/psf.fits",

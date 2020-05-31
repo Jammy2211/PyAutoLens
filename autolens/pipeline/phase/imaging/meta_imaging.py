@@ -4,39 +4,13 @@ from autolens.pipeline.phase.dataset import meta_dataset
 
 
 class MetaImaging(ag_meta_imaging.MetaImaging, meta_dataset.MetaLens):
-    def __init__(
-        self,
-        model,
-        sub_size=2,
-        is_hyper_phase=False,
-        signal_to_noise_limit=None,
-        auto_positions_factor=None,
-        positions_threshold=None,
-        interpolation_pixel_scale=None,
-        inversion_uses_border=True,
-        inversion_pixel_limit=None,
-        psf_shape_2d=None,
-        bin_up_factor=None,
-    ):
+    def __init__(self, settings, model, is_hyper_phase=False):
 
-        super().__init__(
-            model=model,
-            sub_size=sub_size,
-            is_hyper_phase=is_hyper_phase,
-            signal_to_noise_limit=signal_to_noise_limit,
-            inversion_pixel_limit=inversion_pixel_limit,
-        )
+        super().__init__(settings=settings, model=model, is_hyper_phase=is_hyper_phase)
 
         meta_dataset.MetaLens.__init__(
-            self=self,
-            auto_positions_factor=auto_positions_factor,
-            positions_threshold=positions_threshold,
-            interpolation_pixel_scale=interpolation_pixel_scale,
-            inversion_uses_border=inversion_uses_border,
+            self=self, settings=settings, is_hyper_phase=is_hyper_phase
         )
-
-        self.psf_shape_2d = psf_shape_2d
-        self.bin_up_factor = bin_up_factor
 
     def masked_dataset_from(self, dataset, mask, results):
 
@@ -46,7 +20,7 @@ class MetaImaging(ag_meta_imaging.MetaImaging, meta_dataset.MetaLens):
             positions=dataset.positions, results=results
         )
 
-        self.positions_threshold = self.updated_positions_threshold_from_positions(
+        self.settings.positions_threshold = self.updated_positions_threshold_from_positions(
             positions=positions, results=results
         )
 
@@ -58,29 +32,33 @@ class MetaImaging(ag_meta_imaging.MetaImaging, meta_dataset.MetaLens):
             results=results
         )
 
-        if self.bin_up_factor is not None:
+        if self.settings.bin_up_factor is not None:
 
             dataset = dataset.binned_from_bin_up_factor(
-                bin_up_factor=self.bin_up_factor
+                bin_up_factor=self.settings.bin_up_factor
             )
 
-            mask = mask.mapping.binned_mask_from_bin_up_factor(
-                bin_up_factor=self.bin_up_factor
+            mask = mask.binned_mask_from_bin_up_factor(
+                bin_up_factor=self.settings.bin_up_factor
             )
 
-        if self.signal_to_noise_limit is not None:
+        if self.settings.signal_to_noise_limit is not None:
             dataset = dataset.signal_to_noise_limited_from_signal_to_noise_limit(
-                signal_to_noise_limit=self.signal_to_noise_limit
+                signal_to_noise_limit=self.settings.signal_to_noise_limit
             )
 
         masked_imaging = imaging.MaskedImaging(
             imaging=dataset,
             mask=mask,
-            psf_shape_2d=self.psf_shape_2d,
-            positions_threshold=self.positions_threshold,
-            grid_interpolate_pixel_scale=self.interpolation_pixel_scale,
-            inversion_pixel_limit=self.inversion_pixel_limit,
-            inversion_uses_border=self.inversion_uses_border,
+            grid_class=self.settings.grid_class,
+            grid_inversion_class=self.settings.grid_inversion_class,
+            fractional_accuracy=self.settings.fractional_accuracy,
+            sub_steps=self.settings.sub_steps,
+            psf_shape_2d=self.settings.psf_shape_2d,
+            interpolate_pixel_scale=self.settings.interpolation_pixel_scale,
+            inversion_pixel_limit=self.settings.inversion_pixel_limit,
+            positions_threshold=self.settings.positions_threshold,
+            inversion_uses_border=self.settings.inversion_uses_border,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
 

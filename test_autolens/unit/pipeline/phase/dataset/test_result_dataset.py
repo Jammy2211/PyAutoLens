@@ -24,7 +24,7 @@ class TestResult:
             galaxies=[
                 al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
             ],
-            sub_size=2,
+            settings=al.PhaseSettingsImaging(sub_size=2),
             phase_name="test_phase_2",
         )
 
@@ -60,7 +60,7 @@ class TestResult:
                 ),
                 source=al.Galaxy(redshift=1.0),
             ),
-            positions_threshold=1.0,
+            settings=al.PhaseSettingsImaging(positions_threshold=1.0),
             phase_name="test_phase_2",
         )
 
@@ -88,7 +88,7 @@ class TestResult:
                     regularization=al.reg.Constant(),
                 ),
             ),
-            inversion_pixel_limit=6,
+            settings=al.PhaseSettingsImaging(inversion_pixel_limit=6),
             phase_name="test_phase_2",
         )
 
@@ -111,7 +111,7 @@ class TestResult:
                     regularization=al.reg.Constant(),
                 ),
             ),
-            inversion_pixel_limit=6,
+            settings=al.PhaseSettingsImaging(inversion_pixel_limit=6),
             phase_name="test_phase_2",
         )
 
@@ -154,7 +154,7 @@ class TestResult:
                     regularization=al.reg.Constant(),
                 ),
             ),
-            inversion_pixel_limit=6,
+            settings=al.PhaseSettingsImaging(inversion_pixel_limit=6),
             phase_name="test_phase_2",
         )
 

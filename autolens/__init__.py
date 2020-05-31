@@ -15,6 +15,7 @@ from autoarray.structures.arrays import MaskedArray
 from autoarray.structures.grids import (
     Grid,
     GridIterator,
+    GridInterpolate,
     GridCoordinates,
     GridRectangular,
     GridVoronoi,
@@ -56,7 +57,8 @@ from autolens.dataset.interferometer import (
 from autolens.fit.fit import FitImaging, FitInterferometer
 from autolens.fit.fit import FitPositions
 from autolens.lens.ray_tracing import Tracer
-from autolens.pipeline import setup
+from autolens.pipeline.setup import PipelineSetup
+from autolens.pipeline import slam
 from autolens.pipeline.phase.settings import PhaseSettingsImaging
 from autolens.pipeline.phase.settings import PhaseSettingsInterferometer
 from autolens.pipeline.phase.imaging.phase import PhaseImaging

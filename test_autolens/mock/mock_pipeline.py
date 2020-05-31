@@ -89,9 +89,9 @@ class MockResult:
 
         self.previous_model = model
         self.gaussian_tuples = None
-        self.mask_2d = None
+        self.mask = None
         self.positions = None
-        self.mask_2d = mask
+        self.mask = mask
         self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
         self.hyper_model_image = hyper_model_image
         self.hyper_galaxy_visibilities_path_dict = hyper_galaxy_visibilities_path_dict

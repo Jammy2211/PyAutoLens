@@ -43,7 +43,7 @@ class TestMaskedImaging:
         assert masked_imaging_7x7.inversion_uses_border == False
         assert masked_imaging_7x7.preload_sparse_grids_of_planes == 1
 
-        grid = al.MaskedGrid.from_mask(mask=sub_mask_7x7)
+        grid = al.Grid.from_mask(mask=sub_mask_7x7)
 
         assert (masked_imaging_7x7.grid == grid).all()
 

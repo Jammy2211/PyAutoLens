@@ -33,7 +33,7 @@ source_galaxy = al.Galaxy(
 )
 
 
-# Use these galaxies to setup a tracer, which will generate the image for the simulated imaging dataset.
+"""Use these galaxies to setup a tracer, which will generate the image for the simulated imaging dataset."""
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 deflections = tracer.deflections_from_grid(grid=grid)

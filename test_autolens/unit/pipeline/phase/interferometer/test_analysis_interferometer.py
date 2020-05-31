@@ -48,7 +48,7 @@ class TestFit:
             real_space_mask=mask_7x7,
             galaxies=[lens_galaxy],
             cosmology=cosmo.FLRW,
-            sub_size=2,
+            settings=al.PhaseSettingsInterferometer(sub_size=2),
             phase_name="test_phase",
         )
 
@@ -90,7 +90,7 @@ class TestFit:
             galaxies=[lens_galaxy],
             hyper_background_noise=hyper_background_noise,
             cosmology=cosmo.FLRW,
-            sub_size=4,
+            settings=al.PhaseSettingsInterferometer(sub_size=4),
             phase_name="test_phase",
         )
 

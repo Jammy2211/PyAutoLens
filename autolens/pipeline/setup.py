@@ -1,434 +1,99 @@
-from autoconf import conf
-from autoarray.operators.inversion import pixelizations as pix
-from autoarray.operators.inversion import regularization as reg
+from autogalaxy.pipeline import setup
 from autolens import exc
 
 
-class Setup:
-    def __init__(self, general=None, source=None, light=None, mass=None):
-
-        self.general = general
-        self.source = source
-        self.light = light
-        self.mass = mass
-
-    def set_source_type(self, source_type):
-
-        self.source.type_tag = source_type
-
-    def set_light_type(self, light_type):
-
-        self.light.type_tag = light_type
-
-    def set_mass_type(self, mass_type):
-
-        self.mass.type_tag = mass_type
-
-
-class General:
+class PipelineSetup(setup.PipelineSetup):
     def __init__(
         self,
-        hyper_galaxies=False,
-        hyper_image_sky=False,
-        hyper_background_noise=False,
-        hyper_fixed_after_source=False,
-    ):
-
-        self.hyper_galaxies = hyper_galaxies
-        self.hyper_image_sky = hyper_image_sky
-        self.hyper_background_noise = hyper_background_noise
-        self.hyper_fixed_after_source = hyper_fixed_after_source
-
-    @property
-    def tag(self):
-        return "general" + self.hyper_tag + self.hyper_fixed_after_source_tag
-
-    @property
-    def source_tag(self):
-        return "general" + self.hyper_tag
-
-    @property
-    def hyper_tag(self):
-
-        if not any(
-            [self.hyper_galaxies, self.hyper_image_sky, self.hyper_background_noise]
-        ):
-            return ""
-
-        return (
-            "__hyper"
-            + self.hyper_galaxies_tag
-            + self.hyper_image_sky_tag
-            + self.hyper_background_noise_tag
-        )
-
-    @property
-    def hyper_galaxies_tag(self):
-        """Generate a tag for if hyper-galaxies are used in a hyper_galaxies pipeline to customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___hyper_galaxies
-        """
-        if not self.hyper_galaxies:
-            return ""
-        elif self.hyper_galaxies:
-            return "_galaxies"
-
-    @property
-    def hyper_image_sky_tag(self):
-        """Generate a tag for if the sky-background is hyper as a hyper_galaxies-parameter in a hyper_galaxies pipeline to
-        customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___hyper_bg_sky
-        """
-        if not self.hyper_image_sky:
-            return ""
-        elif self.hyper_image_sky:
-            return "_bg_sky"
-
-    @property
-    def hyper_background_noise_tag(self):
-        """Generate a tag for if the background noise is hyper as a hyper_galaxies-parameter in a hyper_galaxies pipeline to
-        customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___hyper_bg_noise
-        """
-        if not self.hyper_background_noise:
-            return ""
-        elif self.hyper_background_noise:
-            return "_bg_noise"
-
-    @property
-    def hyper_fixed_after_source_tag(self):
-        """Generate a tag for if the background noise is hyper as a hyper_galaxies-parameter in a hyper_galaxies pipeline to
-        customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___hyper_bg_noise
-        """
-        if not self.hyper_fixed_after_source:
-            return ""
-        elif self.hyper_fixed_after_source:
-            return "_fixed"
-
-
-class Source:
-    def __init__(
-        self,
-        pixelization=pix.VoronoiBrightnessImage,
-        regularization=reg.AdaptiveBrightness,
-        no_shear=False,
+        pixelization=None,
+        regularization=None,
         lens_light_centre=None,
-        lens_mass_centre=None,
         align_light_mass_centre=False,
-        lens_light_bulge_only=False,
-        number_of_gaussians=None,
-        fix_lens_light=False,
-    ):
-
-        self.pixelization = pixelization
-        self.regularization = regularization
-        self.no_shear = no_shear
-        self.lens_light_centre = lens_light_centre
-        self.lens_mass_centre = lens_mass_centre
-        self.align_light_mass_centre = align_light_mass_centre
-        self.lens_light_bulge_only = lens_light_bulge_only
-        self.number_of_gaussians = number_of_gaussians
-        self.fix_lens_light = fix_lens_light
-        self.type_tag = None
-
-    @property
-    def tag(self):
-        return (
-            "source__"
-            + self.type_tag
-            + self.number_of_gaussians_tag
-            + self.no_shear_tag
-            + self.lens_light_centre_tag
-            + self.lens_mass_centre_tag
-            + self.align_light_mass_centre_tag
-            + self.lens_light_bulge_only_tag
-            + self.fix_lens_light_tag
-        )
-
-    @property
-    def tag_beginner(self):
-        return "source__" + self.inversion_tag
-
-    @property
-    def tag_beginner_no_inversion(self):
-        return "source"
-
-    @property
-    def inversion_tag(self):
-        return self.pixelization_tag + self.regularization_tag
-
-    @property
-    def pixelization_tag(self):
-
-        if self.pixelization is None:
-            return ""
-        else:
-            return "pix_" + conf.instance.label.get(
-                "tag", self.pixelization().__class__.__name__, str
-            )
-
-    @property
-    def regularization_tag(self):
-
-        if self.regularization is None:
-            return ""
-        else:
-            return "__reg_" + conf.instance.label.get(
-                "tag", self.regularization().__class__.__name__, str
-            )
-
-    @property
-    def no_shear_tag(self):
-        """Generate a tag for if an external shear is included in the mass model of the pipeline and / or phase are fixed
-        to a previous estimate, or varied during he analysis, to customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___with_shear
-        """
-        if not self.no_shear:
-            return "__with_shear"
-        elif self.no_shear:
-            return "__no_shear"
-
-    @property
-    def lens_light_centre_tag(self):
-        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
-         during he analysis, to customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___fix_lens_light
-        """
-        if self.lens_light_centre is None:
-            return ""
-        else:
-            y = "{0:.2f}".format(self.lens_light_centre[0])
-            x = "{0:.2f}".format(self.lens_light_centre[1])
-            return "__lens_light_centre_(" + y + "," + x + ")"
-
-    @property
-    def lens_mass_centre_tag(self):
-        """Generate a tag for if the lens mass of the pipeline and / or phase are fixed to a previous estimate, or varied \
-         during he analysis, to customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_mass = False -> pipeline_name__
-        fix_lens_mass = True -> pipeline_name___fix_lens_mass
-        """
-        if self.lens_mass_centre is None:
-            return ""
-        else:
-            y = "{0:.2f}".format(self.lens_mass_centre[0])
-            x = "{0:.2f}".format(self.lens_mass_centre[1])
-            return "__lens_mass_centre_(" + y + "," + x + ")"
-
-    @property
-    def align_light_mass_centre_tag(self):
-        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
-         during he analysis, to customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___fix_lens_light
-        """
-        if self.lens_light_centre is not None and self.lens_mass_centre is not None:
-            return ""
-
-        if not self.align_light_mass_centre:
-            return ""
-        elif self.align_light_mass_centre:
-            return "__align_light_mass_centre"
-
-    @property
-    def lens_light_bulge_only_tag(self):
-        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
-         during he analysis, to customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___fix_lens_light
-        """
-        if not self.lens_light_bulge_only:
-            return ""
-        elif self.lens_light_bulge_only:
-            return "__bulge_only"
-
-    @property
-    def fix_lens_light_tag(self):
-        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
-         during he analysis, to customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___fix_lens_light
-        """
-        if not self.fix_lens_light:
-            return ""
-        elif self.fix_lens_light:
-            return "__fix_lens_light"
-
-    @property
-    def number_of_gaussians_tag(self):
-        if self.number_of_gaussians is None:
-            return ""
-        else:
-            return "__gaussians_x" + str(self.number_of_gaussians)
-
-
-class Light:
-    def __init__(
-        self,
         align_bulge_disk_centre=False,
         align_bulge_disk_phi=False,
         align_bulge_disk_axis_ratio=False,
         disk_as_sersic=False,
         number_of_gaussians=None,
-    ):
-
-        self.align_bulge_disk_centre = align_bulge_disk_centre
-        self.align_bulge_disk_phi = align_bulge_disk_phi
-        self.align_bulge_disk_axis_ratio = align_bulge_disk_axis_ratio
-        self.disk_as_sersic = disk_as_sersic
-        self.number_of_gaussians = number_of_gaussians
-        self.type_tag = None
-
-    @property
-    def tag(self):
-        if self.number_of_gaussians is None:
-            return (
-                "light__"
-                + self.type_tag
-                + self.align_bulge_disk_tag
-                + self.disk_as_sersic_tag
-            )
-        else:
-            return "light__" + self.type_tag + self.number_of_gaussians_tag
-
-    @property
-    def tag_beginner(self):
-        if self.number_of_gaussians is None:
-            return "light" + self.align_bulge_disk_tag + self.disk_as_sersic_tag
-        else:
-            return "light" + self.number_of_gaussians_tag
-
-    @property
-    def align_bulge_disk_centre_tag(self):
-        """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
-        based on the bulge-disk model. This changee the phase name 'pipeline_name__' as follows:
-
-        bd_align_centres = False -> pipeline_name__
-        bd_align_centres = True -> pipeline_name___bd_align_centres
-        """
-        if not self.align_bulge_disk_centre:
-            return ""
-        elif self.align_bulge_disk_centre:
-            return "_centre"
-
-    @property
-    def align_bulge_disk_axis_ratio_tag(self):
-        """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
-        based on the bulge-disk model. This changes the phase name 'pipeline_name__' as follows:
-
-        bd_align_axis_ratio = False -> pipeline_name__
-        bd_align_axis_ratio = True -> pipeline_name___bd_align_axis_ratio
-        """
-        if not self.align_bulge_disk_axis_ratio:
-            return ""
-        elif self.align_bulge_disk_axis_ratio:
-            return "_axis_ratio"
-
-    @property
-    def align_bulge_disk_phi_tag(self):
-        """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
-        based on the bulge-disk model. This changes the phase name 'pipeline_name__' as follows:
-
-        bd_align_phi = False -> pipeline_name__
-        bd_align_phi = True -> pipeline_name___bd_align_phi
-        """
-        if not self.align_bulge_disk_phi:
-            return ""
-        elif self.align_bulge_disk_phi:
-            return "_phi"
-
-    @property
-    def align_bulge_disk_tag(self):
-        """Generate a tag for the alignment of the geometry of the bulge and disk of a bulge-disk system, to customize \
-        phase names based on the bulge-disk model. This adds together the bulge_disk tags generated in the 3 functions
-        above
-        """
-
-        if not any(
-            [
-                self.align_bulge_disk_centre,
-                self.align_bulge_disk_axis_ratio,
-                self.align_bulge_disk_phi,
-            ]
-        ):
-            return ""
-
-        return (
-            "__align_bulge_disk"
-            + self.align_bulge_disk_centre_tag
-            + self.align_bulge_disk_axis_ratio_tag
-            + self.align_bulge_disk_phi_tag
-        )
-
-    @property
-    def disk_as_sersic_tag(self):
-        """Generate a tag for if the disk component of a bulge-disk light profile fit of the pipeline is modeled as a \
-        Sersic or the default profile of an Exponential.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        disk_as_sersic = False -> pipeline_name__
-        disk_as_sersic = True -> pipeline_name___disk_as_sersic
-        """
-        if not self.disk_as_sersic:
-            return "__disk_exp"
-        elif self.disk_as_sersic:
-            return "__disk_sersic"
-
-    @property
-    def number_of_gaussians_tag(self):
-        if self.number_of_gaussians is None:
-            return ""
-        else:
-            return "__gaussians_x" + str(self.number_of_gaussians)
-
-
-class Mass:
-    def __init__(
-        self,
         no_shear=False,
+        lens_mass_centre=None,
         align_light_dark_centre=False,
         align_bulge_dark_centre=False,
-        fix_lens_light=False,
+        hyper_galaxies=False,
+        hyper_image_sky=False,
+        hyper_background_noise=False,
     ):
+        """The setup of a pipeline, which controls how PyAutoLens template pipelines runs, for example controlling
+        assumptions about the lens's light profile bulge-disk model or if shear is included in the mass model.
+
+        Users can write their own pipelines which do not use or require the *PipelineSetup* class.
+
+        This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
+        scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
+        different models to a dataset in a structured path format.
+
+        Parameters
+        ----------
+        pixelization : ag.pix.Pixelization
+           If the pipeline uses an *Inversion* to reconstruct the galaxy's light, this determines the
+           *Pixelization* used.
+        regularization : ag.reg.Regularization
+           If the pipeline uses an *Inversion* to reconstruct the galaxy's light, this determines the
+           *Regularization* scheme used.
+        lens_light_centre : (float, float)
+           If input, a fixed (y,x) centre of the lens galaxy is used for the light profile model which is not treated 
+           as a free parameter by the non-linear search.
+        align_bulge_disk_centre : bool
+            If a bulge + disk light model (e.g. EllipticalSersic + EllipticalExponential) is used to fit the galaxy,
+            *True* will align the centre of the bulge and disk components and not fit them separately.
+        align_bulge_disk_phi : bool
+            If a bulge + disk light model (e.g. EllipticalSersic + EllipticalExponential) is used to fit the galaxy,
+            *True* will align the rotation angles phi of the bulge and disk components and not fit them separately.
+        align_bulge_disk_axis_ratio : bool
+            If a bulge + disk light model (e.g. EllipticalSersic + EllipticalExponential) is used to fit the galaxy,
+            *True* will align the axis-ratios of the bulge and disk components and not fit them separately.
+        disk_as_sersic : bool
+            If a bulge + disk light model (e.g. EllipticalSersic + EllipticalExponential) is used to fit the galaxy,
+            *True* will use an EllipticalSersic for the disk instead of an EllipticalExponential.
+        number_of_gaussians : int
+            If a multi-Gaussian light model is used to fit the galaxy, this determines the number of Gaussians.
+        no_shear : bool
+            If True, shear is omitted from the mass model, if False it is included.
+        lens_light_centre : (float, float)
+           If input, a fixed (y,x) centre of the lens galaxy is used for the mass profile model which is not treated 
+           as a free parameter by the non-linear search.
+        align_light_mass_centre : bool
+            If True, and the mass model is a decomposed single light and dark matter model (e.g. EllipticalSersic +
+            SphericalNFW), the centre of the light and dark matter profiles are aligned.
+        align_light_mass_centre : bool
+            If True, and the mass model is a decomposed bulge, diskand dark matter model (e.g. EllipticalSersic +
+            EllipticalExponential + SphericalNFW), the centre of the bulge and dark matter profiles are aligned.
+        hyper_galaxies : bool
+            If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used to scale the
+            noise-map of the dataset throughout the fitting.
+        hyper_image_sky : bool
+            If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used include the
+            image's background sky component in the model.
+        hyper_background_noise : bool
+            If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used include the
+            noise-map's background component in the model.
+        """
+        super().__init__(
+            pixelization=pixelization,
+            regularization=regularization,
+            align_bulge_disk_centre=align_bulge_disk_centre,
+            align_bulge_disk_phi=align_bulge_disk_phi,
+            align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
+            disk_as_sersic=disk_as_sersic,
+            number_of_gaussians=number_of_gaussians,
+            hyper_galaxies=hyper_galaxies,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+        )
 
         self.no_shear = no_shear
+        self.lens_light_centre = lens_light_centre
+        self.lens_mass_centre = lens_mass_centre
+        self.align_light_mass_centre = align_light_mass_centre
 
         if align_light_dark_centre and align_bulge_dark_centre:
             raise exc.SettingsException(
@@ -439,39 +104,34 @@ class Mass:
         self.align_light_dark_centre = align_light_dark_centre
         self.align_bulge_dark_centre = align_bulge_dark_centre
 
-        self.fix_lens_light = fix_lens_light
-        self.type_tag = None
-
     @property
     def tag(self):
+        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
+        """
         return (
-            "mass__"
-            + self.type_tag
+            "setup"
+            + self.hyper_tag
+            + self.inversion_tag
+            + self.align_light_mass_centre_tag
+            + self.lens_light_centre_tag
+            + self.align_bulge_disk_tag
+            + self.disk_as_sersic_tag
+            + self.number_of_gaussians_tag
             + self.no_shear_tag
+            + self.lens_mass_centre_tag
             + self.align_light_dark_centre_tag
             + self.align_bulge_dark_centre_tag
-            + self.fix_lens_light_tag
-        )
-
-    @property
-    def tag_beginner(self):
-        return (
-            "mass"
-            + self.no_shear_tag
-            + self.align_light_dark_centre_tag
-            + self.align_bulge_dark_centre_tag
-            + self.fix_lens_light_tag
         )
 
     @property
     def no_shear_tag(self):
-        """Generate a tag for if an external shear is included in the mass model of the pipeline and / or phase are fixed
-        to a previous estimate, or varied during he analysis, to customize phase names.
+        """Generate a tag if an external shear is included in the mass model of the pipeline  are 
+        fixedto a previous estimate, or varied during the analysis, to customize pipeline output paths..
 
-        This changes the phase name 'pipeline_name__' as follows:
+        This changes the setup folder as follows:
 
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___with_shear
+        no_shear = False -> setup__with_shear
+        no_shear = True -> setup___no_shear
         """
         if not self.no_shear:
             return "__with_shear"
@@ -479,12 +139,66 @@ class Mass:
             return "__no_shear"
 
     @property
-    def align_light_dark_centre_tag(self):
-        """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
-        based on the bulge-disk model. This changee the phase name 'pipeline_name__' as follows:
+    def lens_light_centre_tag(self):
+        """Generate a tag if the lens light of the pipeline are fixed to a previous estimate or varied during the 
+        analysis to customize pipeline output paths.
 
-        bd_align_centres = False -> pipeline_name__
-        bd_align_centres = True -> pipeline_name___bd_align_centres
+        This changes the setup folder as follows:
+
+        lens_light_centre = None -> setup
+        lens_light_centre = (1.0, 1.0) -> setup___lens_light_centre_(1.0, 1.0)
+        lens_light_centre = (3.0, -2.0) -> setup___lens_light_centre_(3.0, -2.0)
+        """
+        if self.lens_light_centre is None:
+            return ""
+        else:
+            y = "{0:.2f}".format(self.lens_light_centre[0])
+            x = "{0:.2f}".format(self.lens_light_centre[1])
+            return "__lens_light_centre_(" + y + "," + x + ")"
+
+    @property
+    def lens_mass_centre_tag(self):
+        """Generate a tag if the lens mass of the pipeline are fixed to a previous estimate or varied during the 
+        analysis to customize pipeline output paths.
+
+        This changes the setup folder as follows:
+
+        lens_mass_centre = None -> setup
+        lens_mass_centre = (1.0, 1.0) -> setup___lens_mass_centre_(1.0, 1.0)
+        lens_mass_centre = (3.0, -2.0) -> setup___lens_mass_centre_(3.0, -2.0)
+        """
+        if self.lens_mass_centre is None:
+            return ""
+        else:
+            y = "{0:.2f}".format(self.lens_mass_centre[0])
+            x = "{0:.2f}".format(self.lens_mass_centre[1])
+            return "__lens_mass_centre_(" + y + "," + x + ")"
+
+    @property
+    def align_light_mass_centre_tag(self):
+        """Generate a tag if the lens mass model is centre is aligned with that of its light profile.
+
+        This changes the setup folder as follows:
+
+        align_light_mass_centre = False -> setup
+        align_light_mass_centre = True -> setup___align_light_mass_centre
+        """
+        if self.lens_light_centre is not None and self.lens_mass_centre is not None:
+            return ""
+
+        if not self.align_light_mass_centre:
+            return ""
+        elif self.align_light_mass_centre:
+            return "__align_light_mass_centre"
+
+    @property
+    def align_light_dark_centre_tag(self):
+        """Generate a tag if the lens mass model is a decomposed light + dark matter model if their centres are aligned.
+
+        This changes the setup folder as follows:
+
+        align_light_dark_centre = False -> setup
+        align_light_dark_centre = True -> setup___align_light_dark_centre
         """
         if not self.align_light_dark_centre:
             return ""
@@ -493,28 +207,15 @@ class Mass:
 
     @property
     def align_bulge_dark_centre_tag(self):
-        """Generate a tag for if the bulge and dark of a bulge-dark system are aligned or not, to customize phase names \
-        based on the bulge-dark model. This changee the phase name 'pipeline_name__' as follows:
+        """Generate a tag if the lens mass model is a decomposed bulge + disk + dark matter model if the bulge centre
+        is aligned with the dark matter centre.
 
-        bd_align_centres = False -> pipeline_name__
-        bd_align_centres = True -> pipeline_name___bd_align_centres
+        This changes the setup folder as follows:
+
+        align_bulge_dark_centre = False -> setup
+        align_bulge_dark_centre = True -> setup___align_bulge_dark_centre
         """
         if not self.align_bulge_dark_centre:
             return ""
         elif self.align_bulge_dark_centre:
             return "__align_bulge_dark_centre"
-
-    @property
-    def fix_lens_light_tag(self):
-        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
-         during he analysis, to customize phase names.
-
-        This changes the phase name 'pipeline_name__' as follows:
-
-        fix_lens_light = False -> pipeline_name__
-        fix_lens_light = True -> pipeline_name___fix_lens_light
-        """
-        if not self.fix_lens_light:
-            return ""
-        elif self.fix_lens_light:
-            return "__fix_lens_light"
