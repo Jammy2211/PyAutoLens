@@ -75,7 +75,7 @@ class TestMaskedInterferometer:
         assert masked_interferometer_7.inversion_uses_border == False
         assert masked_interferometer_7.preload_sparse_grids_of_planes == 1
 
-        grid = al.MaskedGrid.from_mask(mask=sub_mask_7x7)
+        grid = al.Grid.from_mask(mask=sub_mask_7x7)
 
         assert (masked_interferometer_7.grid == grid).all()
 

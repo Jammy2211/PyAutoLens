@@ -127,6 +127,9 @@ class TestTracer:
                     regularization=al.reg.Constant(coefficient=1.0),
                 ),
             ),
+            settings=al.PhaseSettingsImaging(
+                grid_class=al.Grid, grid_inversion_class=al.Grid
+            ),
             phase_name="test_phase_2",
         )
 

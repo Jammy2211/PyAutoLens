@@ -33,15 +33,10 @@ class TestPhaseTag:
         settings = al.PhaseSettingsInterferometer(
             sub_size=1,
             transformer_class=al.TransformerDFT,
-            real_space_shape_2d=(3, 3),
-            real_space_pixel_scales=(1.0, 2.0),
             primary_beam_shape_2d=(2, 2),
         )
 
-        assert (
-            settings.phase_tag
-            == "phase_tag__dft__rs_shape_3x3__rs_pix_1.00x2.00__sub_1__pb_2x2"
-        )
+        assert settings.phase_tag == "phase_tag__dft__sub_1__pb_2x2"
 
 
 class TestPhaseTaggers:
@@ -73,3 +68,168 @@ class TestPhaseTaggers:
         assert settings.interpolation_pixel_scale_tag == "__interp_0.250"
         settings = al.PhaseSettingsImaging(interpolation_pixel_scale=0.234)
         assert settings.interpolation_pixel_scale_tag == "__interp_0.234"
+
+
+class TestEdit:
+    def test__imaging__edit__changes_settings_if_input(self):
+
+        settings = al.PhaseSettingsImaging(
+            grid_class=al.Grid,
+            grid_inversion_class=al.Grid,
+            sub_size=2,
+            fractional_accuracy=0.5,
+            sub_steps=[2],
+            signal_to_noise_limit=2,
+            bin_up_factor=3,
+            inversion_pixel_limit=100,
+            psf_shape_2d=(3, 3),
+            interpolation_pixel_scale=0.1,
+            auto_positions_factor=2,
+            positions_threshold=0.2,
+            inversion_uses_border=False,
+        )
+
+        assert settings.grid_class is al.Grid
+        assert settings.grid_inversion_class is al.Grid
+        assert settings.sub_size == 2
+        assert settings.fractional_accuracy == 0.5
+        assert settings.sub_steps == [2]
+        assert settings.signal_to_noise_limit == 2
+        assert settings.bin_up_factor == 3
+        assert settings.inversion_pixel_limit == 100
+        assert settings.psf_shape_2d == (3, 3)
+        assert settings.interpolation_pixel_scale == 0.1
+        assert settings.auto_positions_factor == 2
+        assert settings.positions_threshold == 0.2
+        assert settings.inversion_uses_border == False
+
+        settings = settings.edit(
+            grid_class=al.GridIterator,
+            grid_inversion_class=al.GridInterpolate,
+            sub_steps=[5],
+            inversion_pixel_limit=200,
+            interpolation_pixel_scale=0.2,
+            auto_positions_factor=3,
+        )
+
+        assert settings.grid_class is al.GridIterator
+        assert settings.grid_inversion_class is al.GridInterpolate
+        assert settings.sub_size == 2
+        assert settings.fractional_accuracy == 0.5
+        assert settings.sub_steps == [5]
+        assert settings.signal_to_noise_limit == 2
+        assert settings.bin_up_factor == 3
+        assert settings.inversion_pixel_limit == 200
+        assert settings.psf_shape_2d == (3, 3)
+        assert settings.interpolation_pixel_scale == 0.2
+        assert settings.auto_positions_factor == 3
+        assert settings.positions_threshold == 0.2
+        assert settings.inversion_uses_border == False
+
+        settings = settings.edit(
+            sub_size=3,
+            fractional_accuracy=0.7,
+            signal_to_noise_limit=4,
+            bin_up_factor=5,
+            psf_shape_2d=(5, 5),
+            positions_threshold=0.4,
+            inversion_uses_border=True,
+        )
+
+        assert settings.grid_class is al.GridIterator
+        assert settings.grid_inversion_class is al.GridInterpolate
+        assert settings.sub_size == 3
+        assert settings.fractional_accuracy == 0.7
+        assert settings.sub_steps == [5]
+        assert settings.signal_to_noise_limit == 4
+        assert settings.bin_up_factor == 5
+        assert settings.inversion_pixel_limit == 200
+        assert settings.psf_shape_2d == (5, 5)
+        assert settings.interpolation_pixel_scale == 0.2
+        assert settings.auto_positions_factor == 3
+        assert settings.positions_threshold == 0.4
+        assert settings.inversion_uses_border == True
+
+    def test__interferometer__edit__changes_settings_if_input(self):
+
+        settings = al.PhaseSettingsInterferometer(
+            grid_class=al.Grid,
+            grid_inversion_class=al.Grid,
+            sub_size=2,
+            fractional_accuracy=0.5,
+            sub_steps=[2],
+            signal_to_noise_limit=2,
+            bin_up_factor=3,
+            inversion_pixel_limit=100,
+            transformer_class=al.TransformerDFT,
+            primary_beam_shape_2d=(3, 3),
+            interpolation_pixel_scale=0.1,
+            auto_positions_factor=2,
+            positions_threshold=0.2,
+            inversion_uses_border=False,
+        )
+
+        assert settings.grid_class is al.Grid
+        assert settings.grid_inversion_class is al.Grid
+        assert settings.sub_size == 2
+        assert settings.fractional_accuracy == 0.5
+        assert settings.sub_steps == [2]
+        assert settings.signal_to_noise_limit == 2
+        assert settings.bin_up_factor == 3
+        assert settings.inversion_pixel_limit == 100
+        assert settings.transformer_class is al.TransformerDFT
+        assert settings.primary_beam_shape_2d == (3, 3)
+        assert settings.interpolation_pixel_scale == 0.1
+        assert settings.auto_positions_factor == 2
+        assert settings.positions_threshold == 0.2
+        assert settings.inversion_uses_border == False
+
+        settings = settings.edit(
+            grid_class=al.GridIterator,
+            grid_inversion_class=al.GridInterpolate,
+            sub_steps=[5],
+            inversion_pixel_limit=200,
+            transformer_class=al.TransformerFFT,
+            interpolation_pixel_scale=0.2,
+            auto_positions_factor=3,
+        )
+
+        assert settings.grid_class is al.GridIterator
+        assert settings.grid_inversion_class is al.GridInterpolate
+        assert settings.sub_size == 2
+        assert settings.fractional_accuracy == 0.5
+        assert settings.sub_steps == [5]
+        assert settings.signal_to_noise_limit == 2
+        assert settings.bin_up_factor == 3
+        assert settings.inversion_pixel_limit == 200
+        assert settings.transformer_class is al.TransformerFFT
+        assert settings.primary_beam_shape_2d == (3, 3)
+        assert settings.interpolation_pixel_scale == 0.2
+        assert settings.auto_positions_factor == 3
+        assert settings.positions_threshold == 0.2
+        assert settings.inversion_uses_border == False
+
+        settings = settings.edit(
+            sub_size=3,
+            fractional_accuracy=0.7,
+            signal_to_noise_limit=4,
+            bin_up_factor=5,
+            primary_beam_shape_2d=(5, 5),
+            positions_threshold=0.4,
+            inversion_uses_border=True,
+        )
+
+        assert settings.grid_class is al.GridIterator
+        assert settings.grid_inversion_class is al.GridInterpolate
+        assert settings.sub_size == 3
+        assert settings.fractional_accuracy == 0.7
+        assert settings.sub_steps == [5]
+        assert settings.signal_to_noise_limit == 4
+        assert settings.bin_up_factor == 5
+        assert settings.inversion_pixel_limit == 200
+        assert settings.transformer_class is al.TransformerFFT
+        assert settings.primary_beam_shape_2d == (5, 5)
+        assert settings.interpolation_pixel_scale == 0.2
+        assert settings.auto_positions_factor == 3
+        assert settings.positions_threshold == 0.4
+        assert settings.inversion_uses_border == True

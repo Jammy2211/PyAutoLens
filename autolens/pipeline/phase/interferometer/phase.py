@@ -26,18 +26,11 @@ class PhaseInterferometer(dataset.PhaseDataset):
         paths,
         *,
         real_space_mask,
-        transformer_class=transformer.TransformerNUFFT,
         galaxies=None,
         hyper_background_noise=None,
+        settings=PhaseSettingsInterferometer(),
         non_linear_class=af.MultiNest,
         cosmology=cosmo.Planck15,
-        sub_size=2,
-        primary_beam_shape_2d=None,
-        auto_positions_factor=None,
-        positions_threshold=None,
-        interpolation_pixel_scale=None,
-        inversion_uses_border=True,
-        inversion_pixel_limit=None,
     ):
 
         """
@@ -53,15 +46,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
             The side length of the subgrid
         """
 
-        paths.tag = tagging.phase_tag_from_phase_settings(
-            sub_size=sub_size,
-            real_space_shape_2d=real_space_mask.shape_2d,
-            real_space_pixel_scales=real_space_mask.pixel_scales,
-            primary_beam_shape_2d=primary_beam_shape_2d,
-            auto_positions_factor=auto_positions_factor,
-            positions_threshold=positions_threshold,
-            interpolation_pixel_scale=interpolation_pixel_scale,
-        )
+        paths.tag = settings.phase_tag
 
         super().__init__(
             paths,
@@ -75,16 +60,10 @@ class PhaseInterferometer(dataset.PhaseDataset):
         self.is_hyper_phase = False
 
         self.meta_dataset = MetaInterferometer(
+            settings=settings,
             model=self.model,
-            sub_size=sub_size,
             real_space_mask=real_space_mask,
-            transformer_class=transformer_class,
-            primary_beam_shape_2d=primary_beam_shape_2d,
-            auto_positions_factor=auto_positions_factor,
-            positions_threshold=positions_threshold,
-            interpolation_pixel_scale=interpolation_pixel_scale,
-            inversion_uses_border=inversion_uses_border,
-            inversion_pixel_limit=inversion_pixel_limit,
+            is_hyper_phase=False,
         )
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
@@ -163,15 +142,17 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.optimizer).__name__))
-            phase_info.write("Sub-grid size = {} \n".format(self.meta_dataset.sub_size))
+            phase_info.write(
+                "Sub-grid size = {} \n".format(self.meta_dataset.settings.sub_size)
+            )
             phase_info.write(
                 "Primary Beam shape = {} \n".format(
-                    self.meta_dataset.primary_beam_shape_2d
+                    self.meta_dataset.settings.primary_beam_shape_2d
                 )
             )
             phase_info.write(
                 "Positions Threshold = {} \n".format(
-                    self.meta_dataset.positions_threshold
+                    self.meta_dataset.settings.positions_threshold
                 )
             )
             phase_info.write("Cosmology = {} \n".format(self.cosmology))

@@ -80,11 +80,11 @@ def masked_imaging_from_agg_obj(agg_obj):
     return al.MaskedImaging(
         imaging=agg_obj.dataset,
         mask=agg_obj.mask,
-        psf_shape_2d=agg_obj.meta_dataset.psf_shape_2d,
-        grid_interpolate_pixel_scale=agg_obj.meta_dataset.interpolation_pixel_scale,
-        inversion_pixel_limit=agg_obj.meta_dataset.inversion_pixel_limit,
-        inversion_uses_border=agg_obj.meta_dataset.inversion_uses_border,
-        positions_threshold=agg_obj.meta_dataset.positions_threshold,
+        psf_shape_2d=agg_obj.meta_dataset.settings.psf_shape_2d,
+        interpolate_pixel_scale=agg_obj.meta_dataset.settings.interpolation_pixel_scale,
+        inversion_pixel_limit=agg_obj.meta_dataset.settings.inversion_pixel_limit,
+        inversion_uses_border=agg_obj.meta_dataset.settings.inversion_uses_border,
+        positions_threshold=agg_obj.meta_dataset.settings.positions_threshold,
     )
 
 
@@ -154,12 +154,12 @@ def masked_interferometer_from_agg_obj(agg_obj):
         interferometer=agg_obj.dataset,
         visibilities_mask=agg_obj.mask,
         real_space_mask=agg_obj.meta_dataset.real_space_mask,
-        transformer_class=agg_obj.meta_dataset.transformer_class,
-        primary_beam_shape_2d=agg_obj.meta_dataset.primary_beam_shape_2d,
-        grid_interpolate_pixel_scale=agg_obj.meta_dataset.interpolation_pixel_scale,
-        inversion_pixel_limit=agg_obj.meta_dataset.inversion_pixel_limit,
-        inversion_uses_border=agg_obj.meta_dataset.inversion_uses_border,
-        positions_threshold=agg_obj.meta_dataset.positions_threshold,
+        transformer_class=agg_obj.meta_dataset.settings.transformer_class,
+        primary_beam_shape_2d=agg_obj.meta_dataset.settings.primary_beam_shape_2d,
+        interpolate_pixel_scale=agg_obj.meta_dataset.settings.interpolation_pixel_scale,
+        inversion_pixel_limit=agg_obj.meta_dataset.settings.inversion_pixel_limit,
+        inversion_uses_border=agg_obj.meta_dataset.settings.inversion_uses_border,
+        positions_threshold=agg_obj.meta_dataset.settings.positions_threshold,
     )
 
 

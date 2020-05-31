@@ -23,7 +23,7 @@ class TestMakeAnalysis:
         # If position threshold is input (not None) and positions are input, make the positions part of the lens dataset.
 
         imaging_7x7.positions = al.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)]])
-        phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
+        phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.2
 
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
@@ -42,13 +42,13 @@ class TestMakeAnalysis:
         with pytest.raises(exc.PhaseException):
 
             imaging_7x7.positions = None
-            phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
+            phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.2
 
             phase_imaging_7x7.make_analysis(
                 dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
             )
 
-            phase_imaging_7x7.meta_dataset.positions_threshold = 0.2
+            phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.2
 
             phase_imaging_7x7.make_analysis(
                 dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
@@ -62,7 +62,7 @@ class TestMakeAnalysis:
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(source=al.Galaxy(redshift=0.5)),
-            positions_threshold=50.0,
+            settings=al.PhaseSettingsImaging(positions_threshold=50.0),
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
@@ -79,7 +79,7 @@ class TestMakeAnalysis:
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(source=al.Galaxy(redshift=0.5)),
-            positions_threshold=0.0,
+            settings=al.PhaseSettingsImaging(positions_threshold=0.0),
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
@@ -99,7 +99,7 @@ class TestMakeAnalysis:
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(source=al.Galaxy(redshift=0.5)),
-            positions_threshold=0.5,
+            settings=al.PhaseSettingsImaging(positions_threshold=0.5),
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
@@ -176,7 +176,7 @@ class TestMakeAnalysis:
                     regularization=al.reg.Constant(),
                 )
             ),
-            inversion_pixel_limit=10,
+            settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
@@ -200,7 +200,7 @@ class TestMakeAnalysis:
                     regularization=al.reg.Constant(),
                 )
             ),
-            inversion_pixel_limit=10,
+            settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
@@ -225,7 +225,7 @@ class TestMakeAnalysis:
                     regularization=al.reg.Constant(),
                 )
             ),
-            inversion_pixel_limit=10,
+            settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
@@ -248,7 +248,7 @@ class TestMakeAnalysis:
                     regularization=al.reg.Constant(),
                 )
             ),
-            inversion_pixel_limit=10,
+            settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
             cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
@@ -268,9 +268,11 @@ class TestMakeAnalysis:
     def test__interpolation_pixel_scale_is_input__interp_grid_used_in_analysis(
         self, phase_imaging_7x7, imaging_7x7, mask_7x7
     ):
+
         # If use positions is true and positions are input, make the positions part of the lens dataset.
 
-        phase_imaging_7x7.meta_dataset.interpolation_pixel_scale = 0.1
+        phase_imaging_7x7.meta_dataset.settings.positions_threshold = None
+        phase_imaging_7x7.meta_dataset.settings.interpolation_pixel_scale = 0.1
 
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()

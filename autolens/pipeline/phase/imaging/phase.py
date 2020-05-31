@@ -25,17 +25,9 @@ class PhaseImaging(dataset.PhaseDataset):
         galaxies=None,
         hyper_image_sky=None,
         hyper_background_noise=None,
+        settings=PhaseSettingsImaging(),
         non_linear_class=af.MultiNest,
         cosmology=cosmo.Planck15,
-        sub_size=2,
-        signal_to_noise_limit=None,
-        bin_up_factor=None,
-        psf_shape_2d=None,
-        auto_positions_factor=None,
-        positions_threshold=None,
-        interpolation_pixel_scale=None,
-        inversion_uses_border=True,
-        inversion_pixel_limit=None,
     ):
 
         """
@@ -50,17 +42,7 @@ class PhaseImaging(dataset.PhaseDataset):
         sub_size: int
             The side length of the subgrid
         """
-
-        phase_tag = tagging.phase_tag_from_phase_settings(
-            sub_size=sub_size,
-            signal_to_noise_limit=signal_to_noise_limit,
-            bin_up_factor=bin_up_factor,
-            psf_shape_2d=psf_shape_2d,
-            auto_positions_factor=auto_positions_factor,
-            positions_threshold=positions_threshold,
-            interpolation_pixel_scale=interpolation_pixel_scale,
-        )
-        paths.tag = phase_tag
+        paths.tag = settings.phase_tag
 
         super().__init__(
             paths,
@@ -75,16 +57,7 @@ class PhaseImaging(dataset.PhaseDataset):
         self.is_hyper_phase = False
 
         self.meta_dataset = MetaImaging(
-            model=self.model,
-            bin_up_factor=bin_up_factor,
-            psf_shape_2d=psf_shape_2d,
-            sub_size=sub_size,
-            signal_to_noise_limit=signal_to_noise_limit,
-            auto_positions_factor=auto_positions_factor,
-            positions_threshold=positions_threshold,
-            interpolation_pixel_scale=interpolation_pixel_scale,
-            inversion_uses_border=inversion_uses_border,
-            inversion_pixel_limit=inversion_pixel_limit,
+            settings=settings, model=self.model, is_hyper_phase=False
         )
 
     def make_phase_attributes(self, analysis):
@@ -138,11 +111,15 @@ class PhaseImaging(dataset.PhaseDataset):
 
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.optimizer).__name__))
-            phase_info.write("Sub-grid size = {} \n".format(self.meta_dataset.sub_size))
-            phase_info.write("PSF shape = {} \n".format(self.meta_dataset.psf_shape_2d))
+            phase_info.write(
+                "Sub-grid size = {} \n".format(self.meta_dataset.settings.sub_size)
+            )
+            phase_info.write(
+                "PSF shape = {} \n".format(self.meta_dataset.settings.psf_shape_2d)
+            )
             phase_info.write(
                 "Positions Threshold = {} \n".format(
-                    self.meta_dataset.positions_threshold
+                    self.meta_dataset.settings.positions_threshold
                 )
             )
             phase_info.write("Cosmology = {} \n".format(self.cosmology))

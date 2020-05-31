@@ -2,6 +2,8 @@ from autoarray.structures import grids
 from autoarray.operators import transformer
 from autogalaxy.pipeline.phase import settings
 
+import copy
+
 
 class PhaseSettingsLens:
     def __init__(
@@ -16,6 +18,42 @@ class PhaseSettingsLens:
         self.auto_positions_factor = auto_positions_factor
         self.positions_threshold = positions_threshold
         self.inversion_uses_border = inversion_uses_border
+
+    def edit(
+        self,
+        interpolation_pixel_scale=None,
+        auto_positions_factor=None,
+        positions_threshold=None,
+        inversion_uses_border=None,
+    ):
+
+        settings = copy.copy(self)
+
+        settings.interpolation_pixel_scale = (
+            self.interpolation_pixel_scale
+            if interpolation_pixel_scale is None
+            else interpolation_pixel_scale
+        )
+
+        settings.auto_positions_factor = (
+            self.auto_positions_factor
+            if auto_positions_factor is None
+            else auto_positions_factor
+        )
+
+        settings.positions_threshold = (
+            self.positions_threshold
+            if positions_threshold is None
+            else positions_threshold
+        )
+
+        settings.inversion_uses_border = (
+            self.inversion_uses_border
+            if inversion_uses_border is None
+            else inversion_uses_border
+        )
+
+        return settings
 
     @property
     def auto_positions_factor_tag(self):
@@ -66,16 +104,16 @@ class PhaseSettingsLens:
 class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
     def __init__(
         self,
-        grid_class=grids.GridIterator,
+        grid_class=grids.Grid,
         grid_inversion_class=grids.Grid,
         sub_size=2,
         fractional_accuracy=0.9999,
         sub_steps=None,
-        interpolation_pixel_scale=None,
         signal_to_noise_limit=None,
         bin_up_factor=None,
         inversion_pixel_limit=None,
         psf_shape_2d=None,
+        interpolation_pixel_scale=None,
         auto_positions_factor=None,
         positions_threshold=None,
         inversion_uses_border=True,
@@ -100,6 +138,45 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
             positions_threshold=positions_threshold,
             inversion_uses_border=inversion_uses_border,
         )
+
+    def edit(
+        self,
+        grid_class=None,
+        grid_inversion_class=None,
+        sub_size=None,
+        fractional_accuracy=None,
+        sub_steps=None,
+        signal_to_noise_limit=None,
+        bin_up_factor=None,
+        inversion_pixel_limit=None,
+        psf_shape_2d=None,
+        interpolation_pixel_scale=None,
+        auto_positions_factor=None,
+        positions_threshold=None,
+        inversion_uses_border=None,
+    ):
+
+        settings = super().edit(
+            grid_class=grid_class,
+            grid_inversion_class=grid_inversion_class,
+            sub_size=sub_size,
+            fractional_accuracy=fractional_accuracy,
+            sub_steps=sub_steps,
+            signal_to_noise_limit=signal_to_noise_limit,
+            bin_up_factor=bin_up_factor,
+            inversion_pixel_limit=inversion_pixel_limit,
+            psf_shape_2d=psf_shape_2d,
+        )
+
+        settings = PhaseSettingsLens.edit(
+            self=settings,
+            interpolation_pixel_scale=interpolation_pixel_scale,
+            auto_positions_factor=auto_positions_factor,
+            positions_threshold=positions_threshold,
+            inversion_uses_border=inversion_uses_border,
+        )
+
+        return settings
 
     @property
     def phase_tag(self):
@@ -130,8 +207,6 @@ class PhaseSettingsInterferometer(
         bin_up_factor=None,
         inversion_pixel_limit=None,
         transformer_class=transformer.TransformerNUFFT,
-        real_space_shape_2d=None,
-        real_space_pixel_scales=None,
         primary_beam_shape_2d=None,
         auto_positions_factor=None,
         positions_threshold=None,
@@ -148,8 +223,6 @@ class PhaseSettingsInterferometer(
             bin_up_factor=bin_up_factor,
             inversion_pixel_limit=inversion_pixel_limit,
             transformer_class=transformer_class,
-            real_space_shape_2d=real_space_shape_2d,
-            real_space_pixel_scales=real_space_pixel_scales,
             primary_beam_shape_2d=primary_beam_shape_2d,
         )
 
@@ -161,14 +234,53 @@ class PhaseSettingsInterferometer(
             inversion_uses_border=inversion_uses_border,
         )
 
+    def edit(
+        self,
+        grid_class=None,
+        grid_inversion_class=None,
+        sub_size=None,
+        fractional_accuracy=None,
+        sub_steps=None,
+        signal_to_noise_limit=None,
+        bin_up_factor=None,
+        inversion_pixel_limit=None,
+        transformer_class=None,
+        primary_beam_shape_2d=None,
+        interpolation_pixel_scale=None,
+        auto_positions_factor=None,
+        positions_threshold=None,
+        inversion_uses_border=None,
+    ):
+
+        settings = super().edit(
+            grid_class=grid_class,
+            grid_inversion_class=grid_inversion_class,
+            sub_size=sub_size,
+            fractional_accuracy=fractional_accuracy,
+            sub_steps=sub_steps,
+            signal_to_noise_limit=signal_to_noise_limit,
+            bin_up_factor=bin_up_factor,
+            inversion_pixel_limit=inversion_pixel_limit,
+            transformer_class=transformer_class,
+            primary_beam_shape_2d=primary_beam_shape_2d,
+        )
+
+        settings = PhaseSettingsLens.edit(
+            self=settings,
+            interpolation_pixel_scale=interpolation_pixel_scale,
+            auto_positions_factor=auto_positions_factor,
+            positions_threshold=positions_threshold,
+            inversion_uses_border=inversion_uses_border,
+        )
+
+        return settings
+
     @property
     def phase_tag(self):
 
         return (
             "phase_tag"
             + self.transformer_tag
-            + self.real_space_shape_2d_tag
-            + self.real_space_pixel_scales_tag
             + self.sub_size_tag
             + self.interpolation_pixel_scale_tag
             + self.signal_to_noise_limit_tag

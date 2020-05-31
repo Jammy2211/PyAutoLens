@@ -5,18 +5,10 @@ from autolens.fit import fit
 
 
 class MetaLens:
-    def __init__(
-        self,
-        auto_positions_factor=None,
-        positions_threshold=None,
-        interpolation_pixel_scale=None,
-        inversion_uses_border=True,
-    ):
+    def __init__(self, settings, is_hyper_phase):
 
-        self.auto_positions_factor = auto_positions_factor
-        self.positions_threshold = positions_threshold
-        self.interpolation_pixel_scale = interpolation_pixel_scale
-        self.inversion_uses_border = inversion_uses_border
+        self.settings = settings
+        self.is_hyper_phase = is_hyper_phase
 
     def updated_positions_from_positions_and_results(self, positions, results):
         """If automatic position updating is on, update the phase's positions using the results of the previous phase's
@@ -41,7 +33,7 @@ class MetaLens:
             except AttributeError:
                 pass
 
-        if self.auto_positions_factor is not None and results.last is not None:
+        if self.settings.auto_positions_factor is not None and results.last is not None:
 
             updated_positions = (
                 results.last.image_plane_multiple_image_positions_of_source_plane_centres
@@ -69,7 +61,7 @@ class MetaLens:
         determine how far apart they are separated. This gives us their source-plane sepration, which is multiplied by
         self.auto_positions_factor to set the threshold."""
 
-        if self.auto_positions_factor and results.last is not None:
+        if self.settings.auto_positions_factor and results.last is not None:
 
             if positions is None:
                 return None
@@ -80,17 +72,17 @@ class MetaLens:
                 noise_map=1.0,
             )
 
-            return self.auto_positions_factor * np.max(
+            return self.settings.auto_positions_factor * np.max(
                 positions_fits.maximum_separations
             )
 
         else:
 
-            return self.positions_threshold
+            return self.settings.positions_threshold
 
     def check_positions(self, positions):
 
-        if self.positions_threshold is not None and positions is None:
+        if self.settings.positions_threshold is not None and positions is None:
             raise exc.PhaseException(
                 "You have specified for a phase to use positions, but not input positions to the "
                 "pipeline when you ran it."

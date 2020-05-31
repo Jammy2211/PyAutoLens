@@ -4,7 +4,7 @@ import autolens as al
 import autolens.plot as aplt
 import numpy as np
 
-# Setup the path to the autolens_workspace, using a relative directory name.
+"""Setup the path to the autolens_workspace, using a relative directory name."""
 workspace_path = "{}/../../../../../autolens_workspace/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
@@ -54,7 +54,7 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-# Use these galaxies to setup a tracer, which will generate the image for the simulated interferometer dataset.
+"""Use these galaxies to setup a tracer, which will generate the image for the simulated interferometer dataset."""
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 plotter = aplt.Plotter(

@@ -463,7 +463,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
         )
 
         trough_pixels = array_util.trough_pixels_from(
-            array_2d=source_plane_squared_distances.in_2d, mask_2d=grid.mask
+            array_2d=source_plane_squared_distances.in_2d, mask=grid.mask
         )
 
         trough_mask = msk.Mask.from_pixel_coordinates(
@@ -478,7 +478,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
         multiple_image_pixels = grid_util.positions_at_coordinate_from(
             grid_2d=source_plane_grid.in_2d,
             coordinate=source_plane_coordinate,
-            mask_2d=trough_mask,
+            mask=trough_mask,
         )
 
         return list(
@@ -629,7 +629,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         padded_image = self.profile_image_from_grid(grid=padded_grid)
 
-        return padded_grid.mapping.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
+        return padded_grid.mask.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
             padded_array=padded_image, psf=psf, image_shape=grid.mask.shape
         )
 
@@ -644,7 +644,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         for plane, traced_padded_grid in zip(self.planes, traced_padded_grids):
             padded_image_1d = plane.profile_image_from_grid(grid=traced_padded_grid)
 
-            unmasked_blurred_array_2d = padded_grid.mapping.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
+            unmasked_blurred_array_2d = padded_grid.mask.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
                 padded_array=padded_image_1d, psf=psf, image_shape=grid.mask.shape
             )
 
@@ -669,7 +669,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
             unmasked_blurred_array_2d_of_galaxies = list(
                 map(
-                    lambda padded_image_1d_of_galaxy: padded_grid.mapping.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
+                    lambda padded_image_1d_of_galaxy: padded_grid.mask.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
                         padded_array=padded_image_1d_of_galaxy,
                         psf=psf,
                         image_shape=grid.mask.shape,

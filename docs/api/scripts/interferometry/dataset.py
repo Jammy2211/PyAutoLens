@@ -5,7 +5,7 @@ import autolens as al
 import autolens.plot as aplt
 import numpy as np
 
-# Setup the path to the autolens_workspace, using a relative directory name.
+"""Setup the path to the autolens_workspace, using a relative directory name."""
 plot_path = "{}/../images/interferometry/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
