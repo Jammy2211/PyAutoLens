@@ -1983,9 +1983,9 @@ class TestAbstractTracerLensing:
             )
 
         def test__x1_plane__padded_image__compare_to_galaxy_images_using_padded_grids_and_grid_iterato(
-            self, grid_iterator_7x7
+            self, grid_iterate_7x7
         ):
-            padded_grid = grid_iterator_7x7.padded_grid_from_kernel_shape(
+            padded_grid = grid_iterate_7x7.padded_grid_from_kernel_shape(
                 kernel_shape_2d=(3, 3)
             )
 
@@ -2008,7 +2008,7 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             padded_tracer_profile_image = tracer.padded_profile_image_from_grid_and_psf_shape(
-                grid=grid_iterator_7x7, psf_shape_2d=(3, 3)
+                grid=grid_iterate_7x7, psf_shape_2d=(3, 3)
             )
 
             assert padded_tracer_profile_image.shape_2d == (9, 9)
@@ -2016,7 +2016,7 @@ class TestAbstractTracerLensing:
                 padded_g0_image + padded_g1_image + padded_g2_image, 1.0e-4
             )
 
-            profile_image = tracer.profile_image_from_grid(grid=grid_iterator_7x7)
+            profile_image = tracer.profile_image_from_grid(grid=grid_iterate_7x7)
 
             assert padded_tracer_profile_image.in_2d[4, 4] == profile_image.in_2d[3, 3]
 
@@ -4149,7 +4149,7 @@ class TestTacerFixedSlices:
 
 
 class TestDecorators:
-    def test__grid_iterator_in__iterates_array_result_correctly(self, gal_x1_lp):
+    def test__grid_iterate_in__iterates_array_result_correctly(self, gal_x1_lp):
 
         mask = al.Mask.manual(
             mask=[
@@ -4163,7 +4163,7 @@ class TestDecorators:
             origin=(0.001, 0.001),
         )
 
-        grid = al.GridIterator.from_mask(
+        grid = al.GridIterate.from_mask(
             mask=mask, fractional_accuracy=1.0, sub_steps=[2]
         )
 
@@ -4179,7 +4179,7 @@ class TestDecorators:
 
         assert (profile_image == profile_image_sub_2).all()
 
-        grid = al.GridIterator.from_mask(
+        grid = al.GridIterate.from_mask(
             mask=mask, fractional_accuracy=0.95, sub_steps=[2, 4, 8]
         )
 
@@ -4208,7 +4208,7 @@ class TestDecorators:
 
         assert profile_image[4] == profile_image_sub_8[4]
 
-    def test__grid_iterator_in__method_returns_array_list__uses_highest_sub_size_of_iterator(
+    def test__grid_iterate_in__method_returns_array_list__uses_highest_sub_size_of_iterate(
         self, gal_x1_lp
     ):
 
@@ -4224,7 +4224,7 @@ class TestDecorators:
             origin=(0.001, 0.001),
         )
 
-        grid = al.GridIterator.from_mask(
+        grid = al.GridIterate.from_mask(
             mask=mask, fractional_accuracy=1.0, sub_steps=[2]
         )
 
@@ -4240,7 +4240,7 @@ class TestDecorators:
 
         assert (profile_images[0] == profile_image_sub_2).all()
 
-        grid = al.GridIterator.from_mask(
+        grid = al.GridIterate.from_mask(
             mask=mask, fractional_accuracy=0.95, sub_steps=[2, 4, 8]
         )
 
@@ -4261,7 +4261,7 @@ class TestDecorators:
 
         assert profile_images[0][4] == profile_image_sub_8[4]
 
-    def test__grid_iterator_in__iterates_grid_result_correctly(self, gal_x1_mp):
+    def test__grid_iterate_in__iterates_grid_result_correctly(self, gal_x1_mp):
 
         mask = al.Mask.manual(
             mask=[
@@ -4274,7 +4274,7 @@ class TestDecorators:
             pixel_scales=(1.0, 1.0),
         )
 
-        grid = al.GridIterator.from_mask(
+        grid = al.GridIterate.from_mask(
             mask=mask, fractional_accuracy=1.0, sub_steps=[2]
         )
 
@@ -4293,7 +4293,7 @@ class TestDecorators:
 
         assert (deflections == deflections_sub_2).all()
 
-        grid = al.GridIterator.from_mask(
+        grid = al.GridIterate.from_mask(
             mask=mask, fractional_accuracy=0.99, sub_steps=[2, 4, 8]
         )
 
@@ -4317,3 +4317,108 @@ class TestDecorators:
         deflections_sub_8 = galaxy.deflections_from_grid(grid=grid_sub_8).in_1d_binned
 
         assert deflections[4, 0] == deflections_sub_8[4, 0]
+
+    def test__grid_interp_in__interps_based_on_intepolate_config(self):
+        # False in interpolate.ini
+
+        mask = al.Mask.manual(
+            mask=[
+                [True, True, True, True, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, True, True, True, True],
+            ],
+            pixel_scales=(1.0, 1.0),
+        )
+
+        grid = al.Grid.from_mask(mask=mask)
+
+        grid_interp = al.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
+
+        light_profile = al.lp.EllipticalSersic(intensity=1.0)
+        light_profile_interp = al.lp.SphericalSersic(intensity=1.0)
+
+        profile_image_no_interp = light_profile.profile_image_from_grid(grid=grid)
+
+        array_interp = light_profile.profile_image_from_grid(
+            grid=grid_interp.grid_interp
+        )
+        profile_image_interp = grid_interp.interpolated_array_from_array_interp(
+            array_interp=array_interp
+        )
+
+        galaxy = al.Galaxy(
+            redshift=0.5, light=light_profile_interp, light_0=light_profile
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
+
+        profile_image = tracer.profile_image_from_grid(grid=grid_interp)
+
+        assert (profile_image == profile_image_no_interp + profile_image_interp).all()
+
+        mass_profile = al.mp.EllipticalIsothermal(einstein_radius=1.0)
+        mass_profile_interp = al.mp.SphericalIsothermal(einstein_radius=1.0)
+
+        convergence_no_interp = mass_profile.convergence_from_grid(grid=grid)
+
+        array_interp = mass_profile_interp.convergence_from_grid(
+            grid=grid_interp.grid_interp
+        )
+        convergence_interp = grid_interp.interpolated_array_from_array_interp(
+            array_interp=array_interp
+        )
+
+        galaxy = al.Galaxy(redshift=0.5, mass=mass_profile_interp, mass_0=mass_profile)
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
+
+        convergence = tracer.convergence_from_grid(grid=grid_interp)
+
+        assert (convergence == convergence_no_interp + convergence_interp).all()
+
+        potential_no_interp = mass_profile.potential_from_grid(grid=grid)
+
+        array_interp = mass_profile_interp.potential_from_grid(
+            grid=grid_interp.grid_interp
+        )
+        potential_interp = grid_interp.interpolated_array_from_array_interp(
+            array_interp=array_interp
+        )
+
+        galaxy = al.Galaxy(redshift=0.5, mass=mass_profile_interp, mass_0=mass_profile)
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
+
+        potential = tracer.potential_from_grid(grid=grid_interp)
+
+        assert (potential == potential_no_interp + potential_interp).all()
+
+        deflections_no_interp = mass_profile.deflections_from_grid(grid=grid)
+
+        grid_interp_0 = mass_profile_interp.deflections_from_grid(
+            grid=grid_interp.grid_interp
+        )
+        deflections_interp = grid_interp.interpolated_grid_from_grid_interp(
+            grid_interp=grid_interp_0
+        )
+
+        galaxy = al.Galaxy(redshift=0.5, mass=mass_profile_interp, mass_0=mass_profile)
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
+
+        deflections = tracer.deflections_from_grid(grid=grid_interp)
+
+        assert isinstance(deflections, al.Grid)
+        assert (deflections == deflections_no_interp + deflections_interp).all()
+
+        traced_grids = tracer.traced_grids_of_planes_from_grid(grid=grid_interp)
+
+        assert isinstance(traced_grids[0], al.Grid)
+        assert (traced_grids[0] == grid_interp).all()
+        source_plane_grid = traced_grids[0] - deflections
+        assert (traced_grids[1] == source_plane_grid).all()
+
+        traced_grids_no_interp = tracer.traced_grids_of_planes_from_grid(grid=grid)
+        assert (traced_grids[1][0, 0] != traced_grids_no_interp[1][0, 0]).all()

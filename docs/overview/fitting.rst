@@ -62,7 +62,7 @@ to create the model image we fit the data with, such as blurring the tracer's im
 
     fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-    aplt.FitImaging.model_imagefit=fit)
+    aplt.FitImaging.model_image(fit=fit)
     aplt.FitImaging.residual_map(fit=fit)
     aplt.FitImaging.chi_squared_map(fit=fit)
 
@@ -136,8 +136,8 @@ combinations of light profiles, mass profiles and perhaps even modeling the syst
     lens_galaxy_model.mass.axis_ratio > lens_galaxy_model.light.axis_ratio
 
 There is a lot more to lens modeling with **PyAutoLens** than shown here. For example, to fit complex lens models we
-use *Pipeline* objects, that chain together a series of the phase fits shown above. The pipeline changes the lens model
-between phases, using the fits of earlier phases to guide the non-linear search in later phases.
+can use *Pipeline* objects, that chain together a series of the phase fits shown above. The pipeline changes the lens
+model between phases, using the fits of earlier phases to guide the non-linear search in later phases.
 
 You can learn more about advanced lens modeling in **PyAutoens** in chapters 2 and 3 of the **HowToLens** lecture series.
 
@@ -145,7 +145,7 @@ You can learn more about advanced lens modeling in **PyAutoens** in chapters 2 a
 modeling real galaxies, whose appear are typically irregular with non-symmetric features such spiral arms and clumps of
 star formation.
 
-Using pixelized sources is simply, we simply input them into our *Galaxy* or *GalaxyModel* objects:
+Using pixelized sources is simple, we simply input them into our *Galaxy* or *GalaxyModel* objects:
 
 .. code-block:: bash
 

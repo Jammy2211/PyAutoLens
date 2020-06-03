@@ -15,6 +15,52 @@ pytestmark = pytest.mark.filterwarnings(
 directory = path.dirname(path.realpath(__file__))
 
 
+def test__grid_classes_input__used_in_masked_imaging(
+    phase_imaging_7x7, imaging_7x7, mask_7x7
+):
+
+    phase_imaging_7x7.meta_dataset.settings = al.PhaseSettingsImaging(
+        grid_class=al.Grid, grid_inversion_class=al.Grid
+    )
+
+    analysis = phase_imaging_7x7.make_analysis(
+        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+    )
+    assert isinstance(analysis.masked_imaging.grid, al.Grid)
+    assert isinstance(analysis.masked_imaging.grid_inversion, al.Grid)
+
+    phase_imaging_7x7.meta_dataset.settings = al.PhaseSettingsImaging(
+        grid_class=al.GridIterate,
+        grid_inversion_class=al.GridIterate,
+        fractional_accuracy=0.2,
+        sub_steps=[2, 3],
+    )
+
+    analysis = phase_imaging_7x7.make_analysis(
+        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+    )
+    assert isinstance(analysis.masked_imaging.grid, al.GridIterate)
+    assert analysis.masked_imaging.grid.fractional_accuracy == 0.2
+    assert analysis.masked_imaging.grid.sub_steps == [2, 3]
+    assert isinstance(analysis.masked_imaging.grid_inversion, al.GridIterate)
+    assert analysis.masked_imaging.grid_inversion.fractional_accuracy == 0.2
+    assert analysis.masked_imaging.grid_inversion.sub_steps == [2, 3]
+
+    phase_imaging_7x7.meta_dataset.settings = al.PhaseSettingsImaging(
+        grid_class=al.GridInterpolate,
+        grid_inversion_class=al.GridInterpolate,
+        pixel_scales_interp=0.1,
+    )
+
+    analysis = phase_imaging_7x7.make_analysis(
+        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+    )
+    assert isinstance(analysis.masked_imaging.grid, al.GridInterpolate)
+    assert analysis.masked_imaging.grid.pixel_scales_interp == (0.1, 0.1)
+    assert isinstance(analysis.masked_imaging.grid_inversion, al.GridInterpolate)
+    assert analysis.masked_imaging.grid_inversion.pixel_scales_interp == (0.1, 0.1)
+
+
 def test__auto_positions_update__updates_correct_using_factor(
     phase_imaging_7x7, phase_interferometer_7, imaging_7x7, interferometer_7, mask_7x7
 ):

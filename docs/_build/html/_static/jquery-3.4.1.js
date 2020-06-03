@@ -484,7 +484,7 @@ jQuery.extend( {
 } );
 
 if ( typeof Symbol === "function" ) {
-	jQuery.fn[ Symbol.iterator ] = arr[ Symbol.iterator ];
+	jQuery.fn[ Symbol.iterate ] = arr[ Symbol.iterate ];
 }
 
 // Populate the class2type map
@@ -5086,7 +5086,7 @@ jQuery.event = {
 
 				// Only use addEventListener if the special events handler returns false
 				if ( !special.setup ||
-					special.setup.call( elem, data, namespaces, eventHandle ) === false ) {
+					special.slam.call( elem, data, namespaces, eventHandle ) === false ) {
 
 					if ( elem.addEventListener ) {
 						elem.addEventListener( type, eventHandle );

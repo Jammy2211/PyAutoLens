@@ -54,7 +54,7 @@ class MetaInterferometer(
             sub_steps=self.settings.sub_steps,
             transformer_class=self.settings.transformer_class,
             primary_beam_shape_2d=self.settings.primary_beam_shape_2d,
-            interpolate_pixel_scale=self.settings.interpolation_pixel_scale,
+            pixel_scales_interp=self.settings.pixel_scales_interp,
             inversion_pixel_limit=self.settings.inversion_pixel_limit,
             positions_threshold=self.settings.positions_threshold,
             inversion_uses_border=self.settings.inversion_uses_border,

@@ -1,4 +1,3 @@
-from autoarray.structures import grids
 from autolens import exc
 from autolens.fit import fit
 
@@ -11,6 +10,9 @@ class AbstractLensMasked:
         self.preload_sparse_grids_of_planes = preload_sparse_grids_of_planes
 
     def check_positions_trace_within_threshold_via_tracer(self, tracer):
+
+        if not tracer.has_mass_profile or len(tracer.planes) == 1:
+            return
 
         if self.positions is not None and self.positions_threshold is not None:
 
