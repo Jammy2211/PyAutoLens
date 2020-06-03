@@ -5,7 +5,6 @@ from astropy import cosmology as cosmo
 from autoarray.mask import mask as msk
 from autoarray.operators.inversion import inversions as inv
 from autoarray.structures import grids
-from autoarray.structures.arrays import MaskedArray
 from autoarray.util import array_util, grid_util
 from autogalaxy import lensing
 from autogalaxy.galaxy import galaxy as g
@@ -306,14 +305,12 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
     @grids.grid_like_to_structure_list
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
-        grid_calc = grid.copy()  # TODO looks unnecessary? Probably pretty expensive too
-
         traced_grids = []
         traced_deflections = []
 
         for (plane_index, plane) in enumerate(self.planes):
 
-            scaled_grid = grid_calc.copy()
+            scaled_grid = grid.copy()
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
@@ -327,6 +324,8 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
                     scaled_deflections = (
                         scaling_factor * traced_deflections[previous_plane_index]
                     )
+
+                    # TODO : Setup as GridInterpolate
 
                     scaled_grid -= scaled_deflections
 
@@ -353,6 +352,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
     @grids.grid_like_to_structure_list
     def profile_images_of_planes_from_grid(self, grid):
+
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
         )
@@ -558,12 +558,6 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         traced_blurring_grids_of_planes = self.traced_grids_of_planes_from_grid(
             grid=blurring_grid
         )
-
-        #      print(traced_grids_of_planes)
-        #      print(traced_grids_of_planes[0])
-        #      print(traced_grids_of_planes[0].shape_2d)
-        #      print(traced_grids_of_planes[0].sub_size)
-
         return [
             plane.blurred_profile_image_from_grid_and_psf(
                 grid=traced_grids_of_planes[plane_index],

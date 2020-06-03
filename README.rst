@@ -16,7 +16,59 @@ When two or more galaxies are aligned perfectly down our line-of-sight, the back
 Example
 -------
 
-With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple analysis which fits the foreground lens galaxy's mass & the background source galaxy's light.
+Lensing calculations are performed in **PyAutoLens** by building a *Tracer* object from *LightProfile*, *MassProfiles
+and *Galaxy* objects. Below, we build a simple strong lens system where a redshift 0.5 lens galaxy with an isothermal
+mass profile lenses a background source at redshift 1.0 with an Exponential light profile.
+
+.. code-block:: python
+
+    import autolens as al
+    import autolens.plot as aplt
+
+    # To describe the deflection of light grids are used which are two-dimensional Cartesian grids of (y,x) coordinates
+    # which are deflected by mass profiles.
+
+    grid = al.Grid.uniform(
+        shape_2d=(50, 50),
+        pixel_scales=0.05 # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+    )
+
+    # The lens galaxy is at redshift 0.5, and its mass is represented using an elliptical Isothermal.
+
+    sie = al.mp.EllipticalIsothermal(
+            centre=(0.0, 0.0),
+            axis_ratio=0.8,
+            phi=120.0,
+            einstein_radius=1.6
+        )
+
+    lens_galaxy = al.Galaxy(redshift=0.5, mass=sie)
+
+    # The source galaxy is at redshift 1.0, and its mass is represented using an elliptical Exponential.
+
+    exponential = al.lp.EllipticalExponential(
+        centre=(0.3, 0.2),
+        axis_ratio=0.6,
+        phi=60.0,
+        intensity=0.05,
+        effective_radius=0.5,
+    )
+
+    source_galaxy = al.Galaxy(redshift=1.0, light=exponential)
+
+    # We create the strong lens system by performing ray-tracing via a Tracer object, which uses the galaxies above,
+    # their redshifts and an input cosmology to determine how light is deflected on its path to Earth.
+
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
+    )
+
+    # We can use the tracer to perform many lensing calculations, for example plotting the image of the lensed source.
+
+    aplt.Tracer.profile_image(tracer=tracer, grid=grid)
+
+With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple
+analysis which fits the foreground lens galaxy's mass & the background source galaxy's light.
 
 .. code-block:: python
 
@@ -57,7 +109,7 @@ With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. 
         source=source_galaxy_model),
         phase_name='example/phase_example',
         non_linear_class=af.MultiNest
-        )
+    )
 
     # We pass the imaging data and mask to the phase, thereby fitting it with the lens model & plot the resulting fit.
     result = phase.run(data=imaging, mask=mask)

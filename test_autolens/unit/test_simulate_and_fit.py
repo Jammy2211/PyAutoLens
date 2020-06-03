@@ -8,7 +8,7 @@ import pytest
 
 def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
-    grid = al.GridIterator.uniform(shape_2d=(11, 11), pixel_scales=0.2)
+    grid = al.GridIterate.uniform(shape_2d=(11, 11), pixel_scales=0.2)
 
     psf = al.Kernel.manual_2d(
         array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),

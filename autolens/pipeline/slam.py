@@ -67,6 +67,14 @@ class Hyper(setup.PipelineSetup):
         self.hyper_fixed_after_source = hyper_fixed_after_source
 
     @property
+    def tag(self):
+        return "general" + self.hyper_tag + self.hyper_fixed_after_source_tag
+
+    @property
+    def source_tag(self):
+        return "general" + self.hyper_tag
+
+    @property
     def hyper_tag(self):
         """Tag ithe hyper pipeline features used in a hyper pipeline to customize pipeline output paths.
         """
@@ -109,7 +117,6 @@ class Source(setup.PipelineSetup):
         align_light_mass_centre=False,
         lens_light_bulge_only=False,
         number_of_gaussians=None,
-        fix_lens_light=False,
     ):
 
         super().__init__(
@@ -123,7 +130,6 @@ class Source(setup.PipelineSetup):
         )
 
         self.lens_light_bulge_only = lens_light_bulge_only
-        self.fix_lens_light = fix_lens_light
         self.type_tag = None
 
     @property
@@ -137,7 +143,6 @@ class Source(setup.PipelineSetup):
             + self.lens_mass_centre_tag
             + self.align_light_mass_centre_tag
             + self.lens_light_bulge_only_tag
-            + self.fix_lens_light_tag
         )
 
     @property
@@ -154,21 +159,6 @@ class Source(setup.PipelineSetup):
             return ""
         elif self.lens_light_bulge_only:
             return "__bulge_only"
-
-    @property
-    def fix_lens_light_tag(self):
-        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
-         during he analysis, to customize phase names.
-
-        This changes the setup folder as follows:
-
-        fix_lens_light = False -> setup__
-        fix_lens_light = True -> setup___fix_lens_light
-        """
-        if not self.fix_lens_light:
-            return ""
-        elif self.fix_lens_light:
-            return "__fix_lens_light"
 
 
 class Light(setup.PipelineSetup):

@@ -10,7 +10,7 @@ class TestPhaseTag:
             bin_up_factor=None,
             psf_shape_2d=None,
             positions_threshold=2.0,
-            interpolation_pixel_scale=None,
+            pixel_scales_interp=None,
         )
 
         assert settings.phase_tag == "phase_tag__sub_2__snr_2__pos_2.00"
@@ -22,7 +22,7 @@ class TestPhaseTag:
             psf_shape_2d=(2, 2),
             auto_positions_factor=0.5,
             positions_threshold=None,
-            interpolation_pixel_scale=0.2,
+            pixel_scales_interp=0.2,
         )
 
         assert (
@@ -58,16 +58,16 @@ class TestPhaseTaggers:
         settings = al.PhaseSettingsImaging(positions_threshold=2.56)
         assert settings.positions_threshold_tag == "__pos_2.56"
 
-    def test__interpolation_pixel_scale_tagger(self):
+    def test__pixel_scales_interp_tagger(self):
 
-        settings = al.PhaseSettingsImaging(interpolation_pixel_scale=None)
-        assert settings.interpolation_pixel_scale_tag == ""
-        settings = al.PhaseSettingsImaging(interpolation_pixel_scale=0.5)
-        assert settings.interpolation_pixel_scale_tag == "__interp_0.500"
-        settings = al.PhaseSettingsImaging(interpolation_pixel_scale=0.25)
-        assert settings.interpolation_pixel_scale_tag == "__interp_0.250"
-        settings = al.PhaseSettingsImaging(interpolation_pixel_scale=0.234)
-        assert settings.interpolation_pixel_scale_tag == "__interp_0.234"
+        settings = al.PhaseSettingsImaging(pixel_scales_interp=None)
+        assert settings.pixel_scales_interp_tag == ""
+        settings = al.PhaseSettingsImaging(pixel_scales_interp=0.5)
+        assert settings.pixel_scales_interp_tag == "__interp_0.500"
+        settings = al.PhaseSettingsImaging(pixel_scales_interp=0.25)
+        assert settings.pixel_scales_interp_tag == "__interp_0.250"
+        settings = al.PhaseSettingsImaging(pixel_scales_interp=0.234)
+        assert settings.pixel_scales_interp_tag == "__interp_0.234"
 
 
 class TestEdit:
@@ -83,7 +83,7 @@ class TestEdit:
             bin_up_factor=3,
             inversion_pixel_limit=100,
             psf_shape_2d=(3, 3),
-            interpolation_pixel_scale=0.1,
+            pixel_scales_interp=0.1,
             auto_positions_factor=2,
             positions_threshold=0.2,
             inversion_uses_border=False,
@@ -98,21 +98,21 @@ class TestEdit:
         assert settings.bin_up_factor == 3
         assert settings.inversion_pixel_limit == 100
         assert settings.psf_shape_2d == (3, 3)
-        assert settings.interpolation_pixel_scale == 0.1
+        assert settings.pixel_scales_interp == 0.1
         assert settings.auto_positions_factor == 2
         assert settings.positions_threshold == 0.2
         assert settings.inversion_uses_border == False
 
         settings = settings.edit(
-            grid_class=al.GridIterator,
+            grid_class=al.GridIterate,
             grid_inversion_class=al.GridInterpolate,
             sub_steps=[5],
             inversion_pixel_limit=200,
-            interpolation_pixel_scale=0.2,
+            pixel_scales_interp=0.2,
             auto_positions_factor=3,
         )
 
-        assert settings.grid_class is al.GridIterator
+        assert settings.grid_class is al.GridIterate
         assert settings.grid_inversion_class is al.GridInterpolate
         assert settings.sub_size == 2
         assert settings.fractional_accuracy == 0.5
@@ -121,7 +121,7 @@ class TestEdit:
         assert settings.bin_up_factor == 3
         assert settings.inversion_pixel_limit == 200
         assert settings.psf_shape_2d == (3, 3)
-        assert settings.interpolation_pixel_scale == 0.2
+        assert settings.pixel_scales_interp == 0.2
         assert settings.auto_positions_factor == 3
         assert settings.positions_threshold == 0.2
         assert settings.inversion_uses_border == False
@@ -136,7 +136,7 @@ class TestEdit:
             inversion_uses_border=True,
         )
 
-        assert settings.grid_class is al.GridIterator
+        assert settings.grid_class is al.GridIterate
         assert settings.grid_inversion_class is al.GridInterpolate
         assert settings.sub_size == 3
         assert settings.fractional_accuracy == 0.7
@@ -145,7 +145,7 @@ class TestEdit:
         assert settings.bin_up_factor == 5
         assert settings.inversion_pixel_limit == 200
         assert settings.psf_shape_2d == (5, 5)
-        assert settings.interpolation_pixel_scale == 0.2
+        assert settings.pixel_scales_interp == 0.2
         assert settings.auto_positions_factor == 3
         assert settings.positions_threshold == 0.4
         assert settings.inversion_uses_border == True
@@ -163,7 +163,7 @@ class TestEdit:
             inversion_pixel_limit=100,
             transformer_class=al.TransformerDFT,
             primary_beam_shape_2d=(3, 3),
-            interpolation_pixel_scale=0.1,
+            pixel_scales_interp=0.1,
             auto_positions_factor=2,
             positions_threshold=0.2,
             inversion_uses_border=False,
@@ -179,22 +179,22 @@ class TestEdit:
         assert settings.inversion_pixel_limit == 100
         assert settings.transformer_class is al.TransformerDFT
         assert settings.primary_beam_shape_2d == (3, 3)
-        assert settings.interpolation_pixel_scale == 0.1
+        assert settings.pixel_scales_interp == 0.1
         assert settings.auto_positions_factor == 2
         assert settings.positions_threshold == 0.2
         assert settings.inversion_uses_border == False
 
         settings = settings.edit(
-            grid_class=al.GridIterator,
+            grid_class=al.GridIterate,
             grid_inversion_class=al.GridInterpolate,
             sub_steps=[5],
             inversion_pixel_limit=200,
             transformer_class=al.TransformerFFT,
-            interpolation_pixel_scale=0.2,
+            pixel_scales_interp=0.2,
             auto_positions_factor=3,
         )
 
-        assert settings.grid_class is al.GridIterator
+        assert settings.grid_class is al.GridIterate
         assert settings.grid_inversion_class is al.GridInterpolate
         assert settings.sub_size == 2
         assert settings.fractional_accuracy == 0.5
@@ -204,7 +204,7 @@ class TestEdit:
         assert settings.inversion_pixel_limit == 200
         assert settings.transformer_class is al.TransformerFFT
         assert settings.primary_beam_shape_2d == (3, 3)
-        assert settings.interpolation_pixel_scale == 0.2
+        assert settings.pixel_scales_interp == 0.2
         assert settings.auto_positions_factor == 3
         assert settings.positions_threshold == 0.2
         assert settings.inversion_uses_border == False
@@ -219,7 +219,7 @@ class TestEdit:
             inversion_uses_border=True,
         )
 
-        assert settings.grid_class is al.GridIterator
+        assert settings.grid_class is al.GridIterate
         assert settings.grid_inversion_class is al.GridInterpolate
         assert settings.sub_size == 3
         assert settings.fractional_accuracy == 0.7
@@ -229,7 +229,7 @@ class TestEdit:
         assert settings.inversion_pixel_limit == 200
         assert settings.transformer_class is al.TransformerFFT
         assert settings.primary_beam_shape_2d == (5, 5)
-        assert settings.interpolation_pixel_scale == 0.2
+        assert settings.pixel_scales_interp == 0.2
         assert settings.auto_positions_factor == 3
         assert settings.positions_threshold == 0.4
         assert settings.inversion_uses_border == True

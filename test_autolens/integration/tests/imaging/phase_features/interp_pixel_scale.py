@@ -3,7 +3,7 @@ import autolens as al
 from test_autolens.integration.tests.imaging import runner
 
 test_type = "phase_features"
-test_name = "interpolation_pixel_scale"
+test_name = "pixel_scales_interp"
 data_label = "lens_sie__source_smooth"
 instrument = "vro"
 
@@ -17,7 +17,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalPowerLaw),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        interpolation_pixel_scale=0.3,
+        pixel_scales_interp=0.3,
         non_linear_class=non_linear_class,
     )
 

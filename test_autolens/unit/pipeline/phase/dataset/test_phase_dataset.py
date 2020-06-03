@@ -61,9 +61,11 @@ class TestMakeAnalysis:
         imaging_7x7.positions = al.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)]])
 
         phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=dict(source=al.Galaxy(redshift=0.5)),
+            galaxies=dict(
+                lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal),
+                source=al.Galaxy(redshift=1.0),
+            ),
             settings=al.PhaseSettingsImaging(positions_threshold=50.0),
-            cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
 
@@ -78,9 +80,11 @@ class TestMakeAnalysis:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=dict(source=al.Galaxy(redshift=0.5)),
+            galaxies=dict(
+                lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
+                source=al.Galaxy(redshift=1.0),
+            ),
             settings=al.PhaseSettingsImaging(positions_threshold=0.0),
-            cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
 
@@ -98,9 +102,11 @@ class TestMakeAnalysis:
             )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=dict(source=al.Galaxy(redshift=0.5)),
+            galaxies=dict(
+                lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
+                source=al.Galaxy(redshift=1.0),
+            ),
             settings=al.PhaseSettingsImaging(positions_threshold=0.5),
-            cosmology=cosmo.FLRW,
             phase_name="test_phase",
         )
 
@@ -264,22 +270,6 @@ class TestMakeAnalysis:
                 tracer=tracer
             )
             analysis.log_likelihood_function(instance=instance)
-
-    def test__interpolation_pixel_scale_is_input__interp_grid_used_in_analysis(
-        self, phase_imaging_7x7, imaging_7x7, mask_7x7
-    ):
-
-        # If use positions is true and positions are input, make the positions part of the lens dataset.
-
-        phase_imaging_7x7.meta_dataset.settings.positions_threshold = None
-        phase_imaging_7x7.meta_dataset.settings.interpolation_pixel_scale = 0.1
-
-        analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
-        )
-        assert analysis.masked_imaging.interpolation_pixel_scale == 0.1
-        assert hasattr(analysis.masked_imaging.grid, "interpolator")
-        assert hasattr(analysis.masked_imaging.blurring_grid, "interpolator")
 
 
 class TestExtensions:

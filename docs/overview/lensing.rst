@@ -62,11 +62,11 @@ of the light profile:
 
     image = sersic_light_profile.profile_image_from_grid(grid=grid)
 
-The plot module provides convinience methods for plotting properties of objects, like the image of a *LightProfile*:
+The plot module provides convenience methods for plotting properties of objects, like the image of a *LightProfile*:
 
 .. code-block:: bash
 
-    aplt.LightProfile(light_profile=sersic_light_profile)
+    aplt.LightProfile.profile_image(light_profile=sersic_light_profile, grid=grid)
 
 Heres the image of the light profile:
 
@@ -91,9 +91,9 @@ potential and deflection angles on our Cartesian grid:
     potential = isothermal_mass_profile.potential_from_grid(grid=grid)
     deflections = isothermal_mass_profile.deflections_from_grid(grid=grid)
 
-    aplt.MassProfile.convergence(mass_profile=isothermal_mass_profile)
-    aplt.MassProfile.potential(mass_profile=isothermal_mass_profile)
-    aplt.MassProfile.deflections(mass_profile=isothermal_mass_profile)
+    aplt.MassProfile.convergence(mass_profile=isothermal_mass_profile, grid=grid)
+    aplt.MassProfile.potential(mass_profile=isothermal_mass_profile, grid=grid)
+    aplt.MassProfile.deflections(mass_profile=isothermal_mass_profile, grid=grid)
 
 Heres how the convergence, potential and deflection angles look:
 
@@ -136,7 +136,7 @@ lens system.
 .. code-block:: bash
 
     tracer = al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.LambdaCDM
+        galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
     )
 
     image = tracer.profile_image_from_grid(grid=grid)

@@ -70,31 +70,31 @@
   // The cornerstone, an `each` implementation, aka `forEach`.
   // Handles objects with the built-in `forEach`, arrays, and raw objects.
   // Delegates to **ECMAScript 5**'s native `forEach` if available.
-  var each = _.each = _.forEach = function(obj, iterator, context) {
+  var each = _.each = _.forEach = function(obj, iterate, context) {
     if (obj == null) return;
     if (nativeForEach && obj.forEach === nativeForEach) {
-      obj.forEach(iterator, context);
+      obj.forEach(iterate, context);
     } else if (obj.length === +obj.length) {
       for (var i = 0, l = obj.length; i < l; i++) {
-        if (i in obj && iterator.call(context, obj[i], i, obj) === breaker) return;
+        if (i in obj && iterate.call(context, obj[i], i, obj) === breaker) return;
       }
     } else {
       for (var key in obj) {
         if (_.has(obj, key)) {
-          if (iterator.call(context, obj[key], key, obj) === breaker) return;
+          if (iterate.call(context, obj[key], key, obj) === breaker) return;
         }
       }
     }
   };
 
-  // Return the results of applying the iterator to each element.
+  // Return the results of applying the iterate to each element.
   // Delegates to **ECMAScript 5**'s native `map` if available.
-  _.map = _.collect = function(obj, iterator, context) {
+  _.map = _.collect = function(obj, iterate, context) {
     var results = [];
     if (obj == null) return results;
-    if (nativeMap && obj.map === nativeMap) return obj.map(iterator, context);
+    if (nativeMap && obj.map === nativeMap) return obj.map(iterate, context);
     each(obj, function(value, index, list) {
-      results[results.length] = iterator.call(context, value, index, list);
+      results[results.length] = iterate.call(context, value, index, list);
     });
     if (obj.length === +obj.length) results.length = obj.length;
     return results;
@@ -102,19 +102,19 @@
 
   // **Reduce** builds up a single result from a list of values, aka `inject`,
   // or `foldl`. Delegates to **ECMAScript 5**'s native `reduce` if available.
-  _.reduce = _.foldl = _.inject = function(obj, iterator, memo, context) {
+  _.reduce = _.foldl = _.inject = function(obj, iterate, memo, context) {
     var initial = arguments.length > 2;
     if (obj == null) obj = [];
     if (nativeReduce && obj.reduce === nativeReduce) {
-      if (context) iterator = _.bind(iterator, context);
-      return initial ? obj.reduce(iterator, memo) : obj.reduce(iterator);
+      if (context) iterate = _.bind(iterate, context);
+      return initial ? obj.reduce(iterate, memo) : obj.reduce(iterate);
     }
     each(obj, function(value, index, list) {
       if (!initial) {
         memo = value;
         initial = true;
       } else {
-        memo = iterator.call(context, memo, value, index, list);
+        memo = iterate.call(context, memo, value, index, list);
       }
     });
     if (!initial) throw new TypeError('Reduce of empty array with no initial value');
@@ -123,23 +123,23 @@
 
   // The right-associative version of reduce, also known as `foldr`.
   // Delegates to **ECMAScript 5**'s native `reduceRight` if available.
-  _.reduceRight = _.foldr = function(obj, iterator, memo, context) {
+  _.reduceRight = _.foldr = function(obj, iterate, memo, context) {
     var initial = arguments.length > 2;
     if (obj == null) obj = [];
     if (nativeReduceRight && obj.reduceRight === nativeReduceRight) {
-      if (context) iterator = _.bind(iterator, context);
-      return initial ? obj.reduceRight(iterator, memo) : obj.reduceRight(iterator);
+      if (context) iterate = _.bind(iterate, context);
+      return initial ? obj.reduceRight(iterate, memo) : obj.reduceRight(iterate);
     }
     var reversed = _.toArray(obj).reverse();
-    if (context && !initial) iterator = _.bind(iterator, context);
-    return initial ? _.reduce(reversed, iterator, memo, context) : _.reduce(reversed, iterator);
+    if (context && !initial) iterate = _.bind(iterate, context);
+    return initial ? _.reduce(reversed, iterate, memo, context) : _.reduce(reversed, iterate);
   };
 
   // Return the first value which passes a truth test. Aliased as `detect`.
-  _.find = _.detect = function(obj, iterator, context) {
+  _.find = _.detect = function(obj, iterate, context) {
     var result;
     any(obj, function(value, index, list) {
-      if (iterator.call(context, value, index, list)) {
+      if (iterate.call(context, value, index, list)) {
         result = value;
         return true;
       }
@@ -150,22 +150,22 @@
   // Return all the elements that pass a truth test.
   // Delegates to **ECMAScript 5**'s native `filter` if available.
   // Aliased as `select`.
-  _.filter = _.select = function(obj, iterator, context) {
+  _.filter = _.select = function(obj, iterate, context) {
     var results = [];
     if (obj == null) return results;
-    if (nativeFilter && obj.filter === nativeFilter) return obj.filter(iterator, context);
+    if (nativeFilter && obj.filter === nativeFilter) return obj.filter(iterate, context);
     each(obj, function(value, index, list) {
-      if (iterator.call(context, value, index, list)) results[results.length] = value;
+      if (iterate.call(context, value, index, list)) results[results.length] = value;
     });
     return results;
   };
 
   // Return all the elements for which a truth test fails.
-  _.reject = function(obj, iterator, context) {
+  _.reject = function(obj, iterate, context) {
     var results = [];
     if (obj == null) return results;
     each(obj, function(value, index, list) {
-      if (!iterator.call(context, value, index, list)) results[results.length] = value;
+      if (!iterate.call(context, value, index, list)) results[results.length] = value;
     });
     return results;
   };
@@ -173,12 +173,12 @@
   // Determine whether all of the elements match a truth test.
   // Delegates to **ECMAScript 5**'s native `every` if available.
   // Aliased as `all`.
-  _.every = _.all = function(obj, iterator, context) {
+  _.every = _.all = function(obj, iterate, context) {
     var result = true;
     if (obj == null) return result;
-    if (nativeEvery && obj.every === nativeEvery) return obj.every(iterator, context);
+    if (nativeEvery && obj.every === nativeEvery) return obj.every(iterate, context);
     each(obj, function(value, index, list) {
-      if (!(result = result && iterator.call(context, value, index, list))) return breaker;
+      if (!(result = result && iterate.call(context, value, index, list))) return breaker;
     });
     return result;
   };
@@ -186,13 +186,13 @@
   // Determine if at least one element in the object matches a truth test.
   // Delegates to **ECMAScript 5**'s native `some` if available.
   // Aliased as `any`.
-  var any = _.some = _.any = function(obj, iterator, context) {
-    iterator || (iterator = _.identity);
+  var any = _.some = _.any = function(obj, iterate, context) {
+    iterate || (iterate = _.identity);
     var result = false;
     if (obj == null) return result;
-    if (nativeSome && obj.some === nativeSome) return obj.some(iterator, context);
+    if (nativeSome && obj.some === nativeSome) return obj.some(iterate, context);
     each(obj, function(value, index, list) {
-      if (result || (result = iterator.call(context, value, index, list))) return breaker;
+      if (result || (result = iterate.call(context, value, index, list))) return breaker;
     });
     return !!result;
   };
@@ -223,24 +223,24 @@
   };
 
   // Return the maximum element or (element-based computation).
-  _.max = function(obj, iterator, context) {
-    if (!iterator && _.isArray(obj)) return Math.max.apply(Math, obj);
-    if (!iterator && _.isEmpty(obj)) return -Infinity;
+  _.max = function(obj, iterate, context) {
+    if (!iterate && _.isArray(obj)) return Math.max.apply(Math, obj);
+    if (!iterate && _.isEmpty(obj)) return -Infinity;
     var result = {computed : -Infinity};
     each(obj, function(value, index, list) {
-      var computed = iterator ? iterator.call(context, value, index, list) : value;
+      var computed = iterate ? iterate.call(context, value, index, list) : value;
       computed >= result.computed && (result = {value : value, computed : computed});
     });
     return result.value;
   };
 
   // Return the minimum element (or element-based computation).
-  _.min = function(obj, iterator, context) {
-    if (!iterator && _.isArray(obj)) return Math.min.apply(Math, obj);
-    if (!iterator && _.isEmpty(obj)) return Infinity;
+  _.min = function(obj, iterate, context) {
+    if (!iterate && _.isArray(obj)) return Math.min.apply(Math, obj);
+    if (!iterate && _.isEmpty(obj)) return Infinity;
     var result = {computed : Infinity};
     each(obj, function(value, index, list) {
-      var computed = iterator ? iterator.call(context, value, index, list) : value;
+      var computed = iterate ? iterate.call(context, value, index, list) : value;
       computed < result.computed && (result = {value : value, computed : computed});
     });
     return result.value;
@@ -261,12 +261,12 @@
     return shuffled;
   };
 
-  // Sort the object's values by a criterion produced by an iterator.
-  _.sortBy = function(obj, iterator, context) {
+  // Sort the object's values by a criterion produced by an iterate.
+  _.sortBy = function(obj, iterate, context) {
     return _.pluck(_.map(obj, function(value, index, list) {
       return {
         value : value,
-        criteria : iterator.call(context, value, index, list)
+        criteria : iterate.call(context, value, index, list)
       };
     }).sort(function(left, right) {
       var a = left.criteria, b = right.criteria;
@@ -278,9 +278,9 @@
   // to group by, or a function that returns the criterion.
   _.groupBy = function(obj, val) {
     var result = {};
-    var iterator = _.isFunction(val) ? val : function(obj) { return obj[val]; };
+    var iterate = _.isFunction(val) ? val : function(obj) { return obj[val]; };
     each(obj, function(value, index) {
-      var key = iterator(value, index);
+      var key = iterate(value, index);
       (result[key] || (result[key] = [])).push(value);
     });
     return result;
@@ -288,12 +288,12 @@
 
   // Use a comparator function to figure out at what index an object should
   // be inserted so as to maintain order. Uses binary search.
-  _.sortedIndex = function(array, obj, iterator) {
-    iterator || (iterator = _.identity);
+  _.sortedIndex = function(array, obj, iterate) {
+    iterate || (iterate = _.identity);
     var low = 0, high = array.length;
     while (low < high) {
       var mid = (low + high) >> 1;
-      iterator(array[mid]) < iterator(obj) ? low = mid + 1 : high = mid;
+      iterate(array[mid]) < iterate(obj) ? low = mid + 1 : high = mid;
     }
     return low;
   };
@@ -370,8 +370,8 @@
   // Produce a duplicate-free version of the array. If the array has already
   // been sorted, you have the option of using a faster algorithm.
   // Aliased as `unique`.
-  _.uniq = _.unique = function(array, isSorted, iterator) {
-    var initial = iterator ? _.map(array, iterator) : array;
+  _.uniq = _.unique = function(array, isSorted, iterate) {
+    var initial = iterate ? _.map(array, iterate) : array;
     var result = [];
     _.reduce(initial, function(memo, el, i) {
       if (0 == i || (isSorted === true ? _.last(memo) != el : !_.include(memo, el))) {
@@ -853,14 +853,14 @@
     return this;
   };
 
-  // Keep the identity function around for default iterators.
+  // Keep the identity function around for default iterates.
   _.identity = function(value) {
     return value;
   };
 
   // Run a function **n** times.
-  _.times = function (n, iterator, context) {
-    for (var i = 0; i < n; i++) iterator.call(context, i);
+  _.times = function (n, iterate, context) {
+    for (var i = 0; i < n; i++) iterate.call(context, i);
   };
 
   // Escape a string for HTML interpolation.

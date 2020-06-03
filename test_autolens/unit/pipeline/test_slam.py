@@ -40,12 +40,6 @@ class TestSource:
         source = al.slam.Source(lens_light_bulge_only=True)
         assert source.lens_light_bulge_only_tag == "__bulge_only"
 
-    def test__fix_lens_light_tag(self):
-        source = al.slam.Source(fix_lens_light=False)
-        assert source.fix_lens_light_tag == ""
-        source = al.slam.Source(fix_lens_light=True)
-        assert source.fix_lens_light_tag == "__fix_lens_light"
-
     def test__tag(self):
 
         source = al.slam.Source(
@@ -55,14 +49,13 @@ class TestSource:
             lens_mass_centre=(3.0, 4.0),
             align_light_mass_centre=False,
             no_shear=True,
-            fix_lens_light=True,
         )
 
         source.type_tag = source.inversion_tag
 
         assert (
             source.tag
-            == "source____pix_rect__reg_const__no_shear__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)__fix_lens_light"
+            == "source____pix_rect__reg_const__no_shear__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)"
         )
 
         source = al.slam.Source(
@@ -70,7 +63,6 @@ class TestSource:
             regularization=al.reg.Constant,
             align_light_mass_centre=True,
             number_of_gaussians=1,
-            fix_lens_light=True,
             lens_light_bulge_only=True,
         )
 
@@ -78,7 +70,7 @@ class TestSource:
 
         assert (
             source.tag
-            == "source__test__gaussians_x1__with_shear__align_light_mass_centre__bulge_only__fix_lens_light"
+            == "source__test__gaussians_x1__with_shear__align_light_mass_centre__bulge_only"
         )
 
 
@@ -97,8 +89,6 @@ class TestLight:
         )
 
         light.type_tag = "lol"
-
-        print(light.align_bulge_disk_tag)
 
         assert (
             light.tag == "light__lol__align_bulge_disk_centre_axis_ratio__disk_sersic"
