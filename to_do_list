@@ -1,0 +1,36 @@
+Read the Docs:
+
+    Overview:
+
+        - Mention example scripts for customization.
+        - May split fitting and modeling?
+        - Inversions.
+
+    Tutorials:
+
+        - HowToLens
+
+    Preprocess:
+
+         - Data descrition.
+
+    API:
+
+        - Sphinx
+
+    Advanced:
+
+        - Aggregator.
+        - Pipelines.
+        - Hyper mode.
+        - SLAM.
+
+- Hack kmeans for speed via removing nearest neighbor.
+- Unit tests for FitGalaxy Visualizer.
+- Make all unit calcs return the same value in certain units and perform all calculations with a .to method? To via tracer method to use its redshiftS?
+- Self calibration.
+- Caustic grid refinement.
+- Positional modeling & updating during pipelines.
+- Summarize model.
+- Simulated lensed image from discrete image grid.
+- classmethods using realistic lens units.
