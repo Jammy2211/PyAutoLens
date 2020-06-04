@@ -1,10 +1,7 @@
-from autoarray.operators.inversion import pixelizations as pix
-from autoarray.operators.inversion import regularization as reg
 from autolens.pipeline import setup
-from autolens import exc
 
 
-class SLAM:
+class SLaM:
     def __init__(self, hyper=None, source=None, light=None, mass=None):
 
         self.hyper = hyper
@@ -109,8 +106,8 @@ class Hyper(setup.PipelineSetup):
 class Source(setup.PipelineSetup):
     def __init__(
         self,
-        pixelization=pix.VoronoiBrightnessImage,
-        regularization=reg.AdaptiveBrightness,
+        pixelization=None,
+        regularization=None,
         no_shear=False,
         lens_light_centre=None,
         lens_mass_centre=None,

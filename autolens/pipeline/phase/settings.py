@@ -8,52 +8,14 @@ import copy
 class PhaseSettingsLens:
     def __init__(
         self,
-        pixel_scales_interp=None,
         auto_positions_factor=None,
         positions_threshold=None,
         inversion_uses_border=True,
     ):
 
-        self.pixel_scales_interp = pixel_scales_interp
         self.auto_positions_factor = auto_positions_factor
         self.positions_threshold = positions_threshold
         self.inversion_uses_border = inversion_uses_border
-
-    def edit(
-        self,
-        pixel_scales_interp=None,
-        auto_positions_factor=None,
-        positions_threshold=None,
-        inversion_uses_border=None,
-    ):
-
-        settings = copy.copy(self)
-
-        settings.pixel_scales_interp = (
-            self.pixel_scales_interp
-            if pixel_scales_interp is None
-            else pixel_scales_interp
-        )
-
-        settings.auto_positions_factor = (
-            self.auto_positions_factor
-            if auto_positions_factor is None
-            else auto_positions_factor
-        )
-
-        settings.positions_threshold = (
-            self.positions_threshold
-            if positions_threshold is None
-            else positions_threshold
-        )
-
-        settings.inversion_uses_border = (
-            self.inversion_uses_border
-            if inversion_uses_border is None
-            else inversion_uses_border
-        )
-
-        return settings
 
     @property
     def auto_positions_factor_tag(self):
@@ -85,21 +47,6 @@ class PhaseSettingsLens:
             return ""
         return "__pos_{0:.2f}".format(self.positions_threshold)
 
-    @property
-    def pixel_scales_interp_tag(self):
-        """Generate an interpolation pixel scale tag, to customize phase names based on the resolution of the interpolation \
-        grid that deflection angles are computed on before interpolating to the and sub aa.
-
-        This changes the phase name 'phase_name' as follows:
-
-        pixel_scales_interp = 1 -> phase_name
-        pixel_scales_interp = 2 -> phase_name_pixel_scales_interp_2
-        pixel_scales_interp = 2 -> phase_name_pixel_scales_interp_2
-        """
-        if self.pixel_scales_interp is None:
-            return ""
-        return "__interp_{0:.3f}".format(self.pixel_scales_interp)
-
 
 class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
     def __init__(
@@ -125,6 +72,7 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
             sub_size=sub_size,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
+            pixel_scales_interp=pixel_scales_interp,
             signal_to_noise_limit=signal_to_noise_limit,
             bin_up_factor=bin_up_factor,
             inversion_pixel_limit=inversion_pixel_limit,
@@ -133,57 +81,28 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
 
         PhaseSettingsLens.__init__(
             self=self,
-            pixel_scales_interp=pixel_scales_interp,
             auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
             inversion_uses_border=inversion_uses_border,
         )
-
-    def edit(
-        self,
-        grid_class=None,
-        grid_inversion_class=None,
-        sub_size=None,
-        fractional_accuracy=None,
-        sub_steps=None,
-        signal_to_noise_limit=None,
-        bin_up_factor=None,
-        inversion_pixel_limit=None,
-        psf_shape_2d=None,
-        pixel_scales_interp=None,
-        auto_positions_factor=None,
-        positions_threshold=None,
-        inversion_uses_border=None,
-    ):
-
-        settings = super().edit(
-            grid_class=grid_class,
-            grid_inversion_class=grid_inversion_class,
-            sub_size=sub_size,
-            fractional_accuracy=fractional_accuracy,
-            sub_steps=sub_steps,
-            signal_to_noise_limit=signal_to_noise_limit,
-            bin_up_factor=bin_up_factor,
-            inversion_pixel_limit=inversion_pixel_limit,
-            psf_shape_2d=psf_shape_2d,
-        )
-
-        settings = PhaseSettingsLens.edit(
-            self=settings,
-            pixel_scales_interp=pixel_scales_interp,
-            auto_positions_factor=auto_positions_factor,
-            positions_threshold=positions_threshold,
-            inversion_uses_border=inversion_uses_border,
-        )
-
-        return settings
 
     @property
-    def phase_tag(self):
+    def phase_no_inversion_tag(self):
         return (
-            "phase_tag"
-            + self.sub_size_tag
-            + self.pixel_scales_interp_tag
+            "settings"
+            + self.grid_no_inversion_tag
+            + self.signal_to_noise_limit_tag
+            + self.bin_up_factor_tag
+            + self.psf_shape_tag
+            + self.auto_positions_factor_tag
+            + self.positions_threshold_tag
+        )
+
+    @property
+    def phase_with_inversion_tag(self):
+        return (
+            "settings"
+            + self.grid_with_inversion_tag
             + self.signal_to_noise_limit_tag
             + self.bin_up_factor_tag
             + self.psf_shape_tag
@@ -219,6 +138,7 @@ class PhaseSettingsInterferometer(
             sub_size=sub_size,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
+            pixel_scales_interp=pixel_scales_interp,
             signal_to_noise_limit=signal_to_noise_limit,
             bin_up_factor=bin_up_factor,
             inversion_pixel_limit=inversion_pixel_limit,
@@ -228,61 +148,30 @@ class PhaseSettingsInterferometer(
 
         PhaseSettingsLens.__init__(
             self=self,
-            pixel_scales_interp=pixel_scales_interp,
             auto_positions_factor=auto_positions_factor,
             positions_threshold=positions_threshold,
             inversion_uses_border=inversion_uses_border,
         )
-
-    def edit(
-        self,
-        grid_class=None,
-        grid_inversion_class=None,
-        sub_size=None,
-        fractional_accuracy=None,
-        sub_steps=None,
-        signal_to_noise_limit=None,
-        bin_up_factor=None,
-        inversion_pixel_limit=None,
-        transformer_class=None,
-        primary_beam_shape_2d=None,
-        pixel_scales_interp=None,
-        auto_positions_factor=None,
-        positions_threshold=None,
-        inversion_uses_border=None,
-    ):
-
-        settings = super().edit(
-            grid_class=grid_class,
-            grid_inversion_class=grid_inversion_class,
-            sub_size=sub_size,
-            fractional_accuracy=fractional_accuracy,
-            sub_steps=sub_steps,
-            signal_to_noise_limit=signal_to_noise_limit,
-            bin_up_factor=bin_up_factor,
-            inversion_pixel_limit=inversion_pixel_limit,
-            transformer_class=transformer_class,
-            primary_beam_shape_2d=primary_beam_shape_2d,
-        )
-
-        settings = PhaseSettingsLens.edit(
-            self=settings,
-            pixel_scales_interp=pixel_scales_interp,
-            auto_positions_factor=auto_positions_factor,
-            positions_threshold=positions_threshold,
-            inversion_uses_border=inversion_uses_border,
-        )
-
-        return settings
 
     @property
-    def phase_tag(self):
-
+    def phase_no_inversion_tag(self):
         return (
-            "phase_tag"
+            "settings"
+            + self.grid_no_inversion_tag
             + self.transformer_tag
-            + self.sub_size_tag
-            + self.pixel_scales_interp_tag
+            + self.signal_to_noise_limit_tag
+            + self.bin_up_factor_tag
+            + self.primary_beam_shape_tag
+            + self.auto_positions_factor_tag
+            + self.positions_threshold_tag
+        )
+
+    @property
+    def phase_with_inversion_tag(self):
+        return (
+            "settings"
+            + self.grid_with_inversion_tag
+            + self.transformer_tag
             + self.signal_to_noise_limit_tag
             + self.bin_up_factor_tag
             + self.primary_beam_shape_tag
