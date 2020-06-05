@@ -2,8 +2,7 @@ import os
 from autoconf import conf
 import autofit as af
 import autolens as al
-from test_autolens.integration import integration_util
-from test_autolens.simulate.imaging import simulate_util
+from test_autolens.simulators.imaging import instrument_util
 
 
 def run(
@@ -19,13 +18,9 @@ def run(
     output_path = f"{test_path}/output/imaging"
     config_path = f"{test_path}/{config_folder}"
     conf.instance = conf.Config(config_path=config_path, output_path=output_path)
-    integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
-    imaging = simulate_util.load_test_imaging(
-        data_label=module.data_label,
-        instrument=module.instrument,
-        name="test_dataset",
-        metadata={"test": 2},
+    imaging = instrument_util.load_test_imaging(
+        data_label=module.data_label, instrument=module.instrument
     )
 
     if mask is None:

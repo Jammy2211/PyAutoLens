@@ -36,11 +36,13 @@ class TestMaskedImaging:
             psf_shape_2d=(3, 3),
             inversion_pixel_limit=20.0,
             inversion_uses_border=False,
+            inversion_stochastic=True,
             preload_sparse_grids_of_planes=1,
         )
 
         assert masked_imaging_7x7.inversion_pixel_limit == 20.0
         assert masked_imaging_7x7.inversion_uses_border == False
+        assert masked_imaging_7x7.inversion_stochastic == True
         assert masked_imaging_7x7.preload_sparse_grids_of_planes == 1
 
         grid = al.Grid.from_mask(mask=sub_mask_7x7)

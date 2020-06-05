@@ -20,6 +20,20 @@ class TestTags:
         settings = al.PhaseSettingsImaging(positions_threshold=2.56)
         assert settings.positions_threshold_tag == "__pos_2.56"
 
+    def test__inversion_uses_border_tag(self):
+
+        settings = al.PhaseSettingsImaging(inversion_uses_border=True)
+        assert settings.inversion_uses_border_tag == ""
+        settings = al.PhaseSettingsImaging(inversion_uses_border=False)
+        assert settings.inversion_uses_border_tag == "__no_border"
+
+    def test__inversion_stochastic_tag(self):
+
+        settings = al.PhaseSettingsImaging(inversion_stochastic=True)
+        assert settings.inversion_stochastic_tag == "__stochastic"
+        settings = al.PhaseSettingsImaging(inversion_stochastic=False)
+        assert settings.inversion_stochastic_tag == ""
+
     def test__tag__mixture_of_values(self):
 
         settings = al.PhaseSettingsImaging(
@@ -51,15 +65,18 @@ class TestTags:
             psf_shape_2d=(2, 2),
             auto_positions_factor=0.5,
             positions_threshold=None,
+            inversion_uses_border=False,
+            inversion_stochastic=True,
+            log_likelihood_cap=200.01,
         )
 
         assert (
             settings.phase_no_inversion_tag
-            == "settings__grid_facc_0.5__bin_3__psf_2x2__auto_pos_x0.50"
+            == "settings__grid_facc_0.5__bin_3__psf_2x2__auto_pos_x0.50__no_border__stochastic__lh_cap_200.0"
         )
         assert (
             settings.phase_with_inversion_tag
-            == "settings__grid_facc_0.5_inv_interp_0.300__bin_3__psf_2x2__auto_pos_x0.50"
+            == "settings__grid_facc_0.5_inv_interp_0.300__bin_3__psf_2x2__auto_pos_x0.50__no_border__stochastic__lh_cap_200.0"
         )
 
         settings = al.PhaseSettingsInterferometer(
@@ -69,10 +86,16 @@ class TestTags:
             pixel_scales_interp=0.3,
             transformer_class=al.TransformerDFT,
             primary_beam_shape_2d=(2, 2),
+            inversion_uses_border=False,
+            inversion_stochastic=True,
+            log_likelihood_cap=100.01,
         )
 
-        assert settings.phase_no_inversion_tag == "settings__grid_facc_0.5__dft__pb_2x2"
+        assert (
+            settings.phase_no_inversion_tag
+            == "settings__grid_facc_0.5__dft__pb_2x2__no_border__stochastic__lh_cap_100.0"
+        )
         assert (
             settings.phase_with_inversion_tag
-            == "settings__grid_facc_0.5_inv_interp_0.300__dft__pb_2x2"
+            == "settings__grid_facc_0.5_inv_interp_0.300__dft__pb_2x2__no_border__stochastic__lh_cap_100.0"
         )

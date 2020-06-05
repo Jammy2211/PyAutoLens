@@ -694,24 +694,28 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             for profile_image in profile_images_of_planes
         ]
 
-    def sparse_image_plane_grids_of_planes_from_grid(self, grid):
+    def sparse_image_plane_grids_of_planes_from_grid(
+        self, grid, inversion_stochastic=False
+    ):
 
         sparse_image_plane_grids_of_planes = []
 
         for plane in self.planes:
-            sparse_image_plane_grid = plane.sparse_image_plane_grid_from_grid(grid=grid)
+            sparse_image_plane_grid = plane.sparse_image_plane_grid_from_grid(
+                grid=grid, inversion_stochastic=inversion_stochastic
+            )
             sparse_image_plane_grids_of_planes.append(sparse_image_plane_grid)
 
         return sparse_image_plane_grids_of_planes
 
     def traced_sparse_grids_of_planes_from_grid(
-        self, grid, preload_sparse_grids_of_planes=None
+        self, grid, preload_sparse_grids_of_planes=None, inversion_stochastic=False
     ):
 
-        if preload_sparse_grids_of_planes is None:
+        if preload_sparse_grids_of_planes is None or inversion_stochastic:
 
             sparse_image_plane_grids_of_planes = self.sparse_image_plane_grids_of_planes_from_grid(
-                grid=grid
+                grid=grid, inversion_stochastic=inversion_stochastic
             )
 
         else:
@@ -733,7 +737,11 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         return traced_sparse_grids_of_planes
 
     def mappers_of_planes_from_grid(
-        self, grid, inversion_uses_border=False, preload_sparse_grids_of_planes=None
+        self,
+        grid,
+        inversion_uses_border=False,
+        preload_sparse_grids_of_planes=None,
+        inversion_stochastic=False,
     ):
 
         mappers_of_planes = []
@@ -741,7 +749,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         traced_sparse_grids_of_planes = self.traced_sparse_grids_of_planes_from_grid(
-            grid=grid, preload_sparse_grids_of_planes=preload_sparse_grids_of_planes
+            grid=grid,
+            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
+            inversion_stochastic=inversion_stochastic,
         )
 
         for (plane_index, plane) in enumerate(self.planes):
@@ -766,12 +776,14 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         convolver,
         inversion_uses_border=False,
         preload_sparse_grids_of_planes=None,
+        inversion_stochastic=False,
     ):
 
         mappers_of_planes = self.mappers_of_planes_from_grid(
             grid=grid,
             inversion_uses_border=inversion_uses_border,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
+            inversion_stochastic=inversion_stochastic,
         )
 
         return inv.InversionImaging.from_data_mapper_and_regularization(
@@ -790,11 +802,13 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         transformer,
         inversion_uses_border=False,
         preload_sparse_grids_of_planes=None,
+        inversion_stochastic=False,
     ):
         mappers_of_planes = self.mappers_of_planes_from_grid(
             grid=grid,
             inversion_uses_border=inversion_uses_border,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
+            inversion_stochastic=inversion_stochastic,
         )
 
         return inv.InversionInterferometer.from_data_mapper_and_regularization(

@@ -25,6 +25,7 @@ Read the Docs:
         - Hyper mode.
         - SLAM.
 
+- Move some of MaskedDataset options to a FitOptions class.
 - Hack kmeans for speed via removing nearest neighbor.
 - Unit tests for FitGalaxy Visualizer.
 - Make all unit calcs return the same value in certain units and perform all calculations with a .to method? To via tracer method to use its redshiftS?

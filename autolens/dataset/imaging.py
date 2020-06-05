@@ -19,6 +19,7 @@ class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
         psf_shape_2d=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
+        inversion_stochastic=False,
         positions_threshold=None,
         renormalize_psf=True,
         preload_sparse_grids_of_planes=None,
@@ -69,6 +70,7 @@ class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
 
         abstract.AbstractLensMasked.__init__(
             self=self,
+            inversion_stochastic=inversion_stochastic,
             positions_threshold=positions_threshold,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )

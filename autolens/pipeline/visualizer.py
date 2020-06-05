@@ -1,4 +1,6 @@
 import copy
+from scipy.stats import norm
+import matplotlib.pyplot as plt
 
 from autoconf import conf
 import autoarray as aa
@@ -176,6 +178,8 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
         self.plot_hyper_model_image = plot_setting("hyper_galaxy", "model_image")
         self.plot_hyper_galaxy_images = plot_setting("hyper_galaxy", "images")
 
+        self.plot_stochastic_histogram = plot_setting("other", "stochastic_histogram")
+
     def visualize_ray_tracing(self, tracer, during_analysis):
 
         plotter = self.plotter.plotter_with_new_output(
@@ -279,6 +283,34 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
                 ),
                 include=self.include,
                 sub_plotter=sub_plotter,
+            )
+
+    def visualize_stochastic_histogram(
+        self, log_evidences, max_log_evidence, during_analysis
+    ):
+
+        if log_evidences is None:
+            return
+
+        plotter = self.plotter.plotter_with_new_output(
+            path=self.plotter.output.path + "other/"
+        )
+
+        if self.plot_stochastic_histogram and not during_analysis:
+
+            bins = conf.instance.general.get(
+                "inversion", "stochastic_histogram_bins", int
+            )
+
+            (mu, sigma) = norm.fit(log_evidences)
+            n, bins, patches = plt.hist(x=log_evidences, bins=bins, density=1)
+            y = norm.pdf(bins, mu, sigma)
+            plt.plot(bins, y, "--")
+            plt.xlabel("log evidence")
+            plt.title("Stochastic Log Evidence Histogram")
+            plt.axvline(max_log_evidence, color="r")
+            plt.savefig(
+                f"{plotter.output.path}stochastic_histogram.png", bbox_inches="tight"
             )
 
 
