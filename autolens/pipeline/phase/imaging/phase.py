@@ -101,6 +101,7 @@ class PhaseImaging(dataset.PhaseDataset):
             cosmology=self.cosmology,
             image_path=self.optimizer.paths.image_path,
             results=results,
+            log_likelihood_cap=self.settings.log_likelihood_cap,
         )
 
         return analysis

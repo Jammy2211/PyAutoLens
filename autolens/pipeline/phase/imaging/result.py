@@ -93,3 +93,9 @@ class Result(dataset.Result):
             hyper_model_image += self.hyper_galaxy_image_path_dict[path]
 
         return hyper_model_image
+
+    @property
+    def stochastic_log_evidences(self):
+        return self.analysis.stochastic_log_evidences_for_instance(
+            instance=self.instance
+        )

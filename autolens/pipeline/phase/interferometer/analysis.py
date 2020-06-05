@@ -9,9 +9,18 @@ from autolens.pipeline.phase.dataset import analysis as analysis_dataset
 
 
 class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
-    def __init__(self, masked_interferometer, cosmology, image_path=None, results=None):
+    def __init__(
+        self,
+        masked_interferometer,
+        cosmology,
+        image_path=None,
+        results=None,
+        log_likelihood_cap=None,
+    ):
 
-        super(Analysis, self).__init__(cosmology=cosmology, results=results)
+        super(Analysis, self).__init__(
+            cosmology=cosmology, results=results, log_likelihood_cap=log_likelihood_cap
+        )
 
         self.visualizer = visualizer.PhaseInterferometerVisualizer(
             masked_dataset=masked_interferometer, image_path=image_path

@@ -97,6 +97,28 @@ class TestPhaseDataSetVisualizer:
 
         assert convergence.shape == (5, 5)
 
+    def test__visualize_stochastic_histogram(
+        self, masked_imaging_7x7, plot_path, plot_patch
+    ):
+
+        visualizer = vis.PhaseDatasetVisualizer(
+            masked_dataset=masked_imaging_7x7, image_path=plot_path
+        )
+
+        visualizer.visualize_stochastic_histogram(
+            log_evidences=[1.0, 2.0, 1.0, 2.0, 3.0, 2.5],
+            max_log_evidence=3.0,
+            during_analysis=True,
+        )
+        assert plot_path + "other/stochastic_histogram.png" not in plot_patch.paths
+
+        visualizer.visualize_stochastic_histogram(
+            log_evidences=[1.0, 2.0, 1.0, 2.0, 3.0, 2.5],
+            max_log_evidence=3.0,
+            during_analysis=False,
+        )
+        assert plot_path + "other/stochastic_histogram.png" in plot_patch.paths
+
 
 class TestPhaseImagingVisualizer:
     def test__visualizes_imaging_using_configs(

@@ -32,6 +32,7 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
             primary_beam_shape_2d=(3, 3),
             positions_threshold=0.3,
             inversion_uses_border=False,
+            inversion_stochastic=True,
         ),
     )
 
@@ -42,6 +43,7 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
     assert phase_interferometer_7.meta_dataset.settings.primary_beam_shape_2d == (3, 3)
     assert phase_interferometer_7.meta_dataset.settings.positions_threshold == 0.3
     assert phase_interferometer_7.meta_dataset.settings.inversion_uses_border == False
+    assert phase_interferometer_7.meta_dataset.settings.inversion_stochastic == True
 
     analysis = phase_interferometer_7.make_analysis(
         dataset=interferometer_7, mask=mask_7x7, results=mock_pipeline.MockResults()
@@ -52,6 +54,7 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
     assert isinstance(analysis.masked_dataset.transformer, al.TransformerNUFFT)
     assert analysis.masked_dataset.positions_threshold == 0.3
     assert analysis.masked_dataset.inversion_uses_border == False
+    assert analysis.masked_dataset.inversion_stochastic == True
 
     phase_interferometer_7 = al.PhaseInterferometer(
         phase_name="phase_interferometer_7",

@@ -63,6 +63,7 @@ class FitImaging(aa_fit.FitImaging):
                 convolver=masked_imaging.convolver,
                 inversion_uses_border=masked_imaging.inversion_uses_border,
                 preload_sparse_grids_of_planes=masked_imaging.preload_sparse_grids_of_planes,
+                inversion_stochastic=masked_imaging.inversion_stochastic,
             )
 
             model_image = (
@@ -193,6 +194,7 @@ class FitInterferometer(aa_fit.FitInterferometer):
                 transformer=masked_interferometer.transformer,
                 inversion_uses_border=masked_interferometer.inversion_uses_border,
                 preload_sparse_grids_of_planes=masked_interferometer.preload_sparse_grids_of_planes,
+                inversion_stochastic=masked_interferometer.inversion_stochastic,
             )
 
             model_visibilities = (

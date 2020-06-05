@@ -5,7 +5,7 @@ from test_autolens.integration.tests.imaging import runner
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_adaptive_brightness"
 data_label = "lens_sie__source_smooth"
-instrument = "vro"
+instrument = "hst"
 
 
 def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
@@ -24,6 +24,10 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
     phase1.optimizer.evidence_tolerance = 10.0
+
+    phase1 = phase1.extend_with_multiple_hyper_phases(
+        hyper_galaxy=False, include_background_sky=False, include_background_noise=False
+    )
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2",

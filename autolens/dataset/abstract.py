@@ -3,8 +3,11 @@ from autolens.fit import fit
 
 
 class AbstractLensMasked:
-    def __init__(self, positions_threshold, preload_sparse_grids_of_planes):
+    def __init__(
+        self, inversion_stochastic, positions_threshold, preload_sparse_grids_of_planes
+    ):
 
+        self.inversion_stochastic = inversion_stochastic
         self.positions_threshold = positions_threshold
 
         self.preload_sparse_grids_of_planes = preload_sparse_grids_of_planes

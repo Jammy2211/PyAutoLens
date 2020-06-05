@@ -1132,6 +1132,40 @@ class TestFitImaging:
                 fit.model_images_of_planes[1].in_2d, 1.0e-4
             )
 
+        def test___stochastic_mode_gives_different_log_likelihoods(
+            self, masked_imaging_7x7
+        ):
+
+            # Ensures the inversion grid is used, as this would cause the test to fail.
+            masked_imaging_7x7.grid[0, 0] = -100.0
+
+            pix = al.pix.VoronoiBrightnessImage(pixels=9)
+            reg = al.reg.Constant(coefficient=1.0)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                pixelization=pix,
+                regularization=reg,
+                hyper_model_image=al.Array.ones(shape_2d=(3, 3)),
+                hyper_galaxy_image=al.Array.ones(shape_2d=(3, 3)),
+            )
+
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+
+            masked_imaging_7x7.inversion_stochastic = False
+
+            fit_0 = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit_1 = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
+
+            assert fit_0.log_evidence == fit_1.log_evidence
+
+            masked_imaging_7x7.inversion_stochastic = True
+
+            fit_0 = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
+            fit_1 = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
+
+            assert fit_0.log_evidence != fit_1.log_evidence
+
     class TestCompareToManualProfilesAndInversion:
         def test___all_lens_fit_quantities__no_hyper_methods(self, masked_imaging_7x7):
             galaxy_light = al.Galaxy(
@@ -2158,6 +2192,48 @@ class TestFitInterferometer:
             )
 
             assert hyper_noise_map.in_1d == pytest.approx(fit.noise_map.in_1d)
+
+        def test___stochastic_mode_gives_different_log_likelihoods(
+            self, masked_interferometer_7
+        ):
+
+            # Ensures the inversion grid is used, as this would cause the test to fail.
+            masked_interferometer_7.grid[0, 0] = -100.0
+
+            pix = al.pix.VoronoiBrightnessImage(pixels=9)
+            reg = al.reg.Constant(coefficient=1.0)
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                pixelization=pix,
+                regularization=reg,
+                hyper_model_image=al.Array.ones(shape_2d=(3, 3)),
+                hyper_galaxy_image=al.Array.ones(shape_2d=(3, 3)),
+            )
+
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+
+            masked_interferometer_7.inversion_stochastic = False
+
+            fit_0 = al.FitInterferometer(
+                masked_interferometer=masked_interferometer_7, tracer=tracer
+            )
+            fit_1 = al.FitInterferometer(
+                masked_interferometer=masked_interferometer_7, tracer=tracer
+            )
+
+            assert fit_0.log_evidence == fit_1.log_evidence
+
+            masked_interferometer_7.inversion_stochastic = True
+
+            fit_0 = al.FitInterferometer(
+                masked_interferometer=masked_interferometer_7, tracer=tracer
+            )
+            fit_1 = al.FitInterferometer(
+                masked_interferometer=masked_interferometer_7, tracer=tracer
+            )
+
+            assert fit_0.log_evidence != fit_1.log_evidence
 
     class TestCompareToManualProfilesAndInversion:
         def test___all_lens_fit_quantities__no_hyper_methods(
