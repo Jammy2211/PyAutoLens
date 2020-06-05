@@ -1,3 +1,4 @@
+from autoconf import conf
 from autolens.pipeline import setup
 
 
@@ -65,11 +66,15 @@ class Hyper(setup.PipelineSetup):
 
     @property
     def tag(self):
-        return "general" + self.hyper_tag + self.hyper_fixed_after_source_tag
+        return (
+            conf.instance.tag.get("pipeline", "pipeline", str)
+            + self.hyper_tag
+            + self.hyper_fixed_after_source_tag
+        )
 
     @property
     def source_tag(self):
-        return "general" + self.hyper_tag
+        return conf.instance.tag.get("pipeline", "pipeline", str) + self.hyper_tag
 
     @property
     def hyper_tag(self):
@@ -81,7 +86,8 @@ class Hyper(setup.PipelineSetup):
             return ""
 
         return (
-            "__hyper"
+            "__"
+            + conf.instance.tag.get("pipeline", "hyper", str)
             + self.hyper_galaxies_tag
             + self.hyper_image_sky_tag
             + self.hyper_background_noise_tag
@@ -100,7 +106,9 @@ class Hyper(setup.PipelineSetup):
         if not self.hyper_fixed_after_source:
             return ""
         elif self.hyper_fixed_after_source:
-            return "_fixed"
+            return "_" + conf.instance.tag.get(
+                "pipeline", "hyper_fixed_after_source", str
+            )
 
 
 class Source(setup.PipelineSetup):
@@ -132,7 +140,8 @@ class Source(setup.PipelineSetup):
     @property
     def tag(self):
         return (
-            "source__"
+            conf.instance.tag.get("pipeline", "source", str)
+            + "__"
             + self.type_tag
             + self.number_of_gaussians_tag
             + self.no_shear_tag
@@ -155,7 +164,7 @@ class Source(setup.PipelineSetup):
         if not self.lens_light_bulge_only:
             return ""
         elif self.lens_light_bulge_only:
-            return "__bulge_only"
+            return "__" + conf.instance.tag.get("pipeline", "bulge_only", str)
 
 
 class Light(setup.PipelineSetup):
@@ -182,13 +191,19 @@ class Light(setup.PipelineSetup):
     def tag(self):
         if self.number_of_gaussians is None:
             return (
-                "light__"
+                conf.instance.tag.get("pipeline", "light", str)
+                + "__"
                 + self.type_tag
                 + self.align_bulge_disk_tag
                 + self.disk_as_sersic_tag
             )
         else:
-            return "light__" + self.type_tag + self.number_of_gaussians_tag
+            return (
+                conf.instance.tag.get("pipeline", "light", str)
+                + "__"
+                + self.type_tag
+                + self.number_of_gaussians_tag
+            )
 
 
 class Mass(setup.PipelineSetup):
@@ -212,7 +227,8 @@ class Mass(setup.PipelineSetup):
     @property
     def tag(self):
         return (
-            "mass__"
+            conf.instance.tag.get("pipeline", "mass", str)
+            + "__"
             + self.type_tag
             + self.no_shear_tag
             + self.align_light_dark_centre_tag
@@ -233,4 +249,4 @@ class Mass(setup.PipelineSetup):
         if not self.fix_lens_light:
             return ""
         elif self.fix_lens_light:
-            return "__fix_lens_light"
+            return "__" + conf.instance.tag.get("pipeline", "fix_lens_light", str)
