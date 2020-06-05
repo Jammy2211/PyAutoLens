@@ -51,6 +51,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         super().__init__(
             paths,
             galaxies=galaxies,
+            settings=settings,
             non_linear_class=non_linear_class,
             cosmology=cosmology,
         )

@@ -1,8 +1,7 @@
+from autoconf import conf
 from autoarray.structures import grids
 from autoarray.operators import transformer
 from autogalaxy.pipeline.phase import settings
-
-import copy
 
 
 class PhaseSettingsLens:
@@ -30,7 +29,11 @@ class PhaseSettingsLens:
         """
         if self.auto_positions_factor is None:
             return ""
-        return "__auto_pos_x{0:.2f}".format(self.auto_positions_factor)
+        return (
+            "__"
+            + conf.instance.tag.get("phase", "auto_positions_factor", str)
+            + "_x{0:.2f}".format(self.auto_positions_factor)
+        )
 
     @property
     def positions_threshold_tag(self):
@@ -45,7 +48,11 @@ class PhaseSettingsLens:
         """
         if self.positions_threshold is None:
             return ""
-        return "__pos_{0:.2f}".format(self.positions_threshold)
+        return (
+            "__"
+            + conf.instance.tag.get("phase", "positions_threshold", str)
+            + "_{0:.2f}".format(self.positions_threshold)
+        )
 
 
 class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
@@ -89,7 +96,7 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
     @property
     def phase_no_inversion_tag(self):
         return (
-            "settings"
+            conf.instance.tag.get("phase", "phase", str)
             + self.grid_no_inversion_tag
             + self.signal_to_noise_limit_tag
             + self.bin_up_factor_tag
@@ -101,7 +108,7 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
     @property
     def phase_with_inversion_tag(self):
         return (
-            "settings"
+            conf.instance.tag.get("phase", "phase", str)
             + self.grid_with_inversion_tag
             + self.signal_to_noise_limit_tag
             + self.bin_up_factor_tag
@@ -156,7 +163,7 @@ class PhaseSettingsInterferometer(
     @property
     def phase_no_inversion_tag(self):
         return (
-            "settings"
+            conf.instance.tag.get("phase", "phase", str)
             + self.grid_no_inversion_tag
             + self.transformer_tag
             + self.signal_to_noise_limit_tag
@@ -169,7 +176,7 @@ class PhaseSettingsInterferometer(
     @property
     def phase_with_inversion_tag(self):
         return (
-            "settings"
+            conf.instance.tag.get("phase", "phase", str)
             + self.grid_with_inversion_tag
             + self.transformer_tag
             + self.signal_to_noise_limit_tag

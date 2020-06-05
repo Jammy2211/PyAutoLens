@@ -1,3 +1,4 @@
+from autoconf import conf
 from autogalaxy.pipeline import setup
 from autolens import exc
 
@@ -109,7 +110,7 @@ class PipelineSetup(setup.PipelineSetup):
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
         return (
-            "setup"
+            conf.instance.tag.get("pipeline", "pipeline", str)
             + self.hyper_tag
             + self.inversion_tag
             + self.align_light_mass_centre_tag
@@ -134,9 +135,9 @@ class PipelineSetup(setup.PipelineSetup):
         no_shear = True -> setup___no_shear
         """
         if not self.no_shear:
-            return "__with_shear"
+            return "__" + conf.instance.tag.get("pipeline", "with_shear", str)
         elif self.no_shear:
-            return "__no_shear"
+            return "__" + conf.instance.tag.get("pipeline", "no_shear", str)
 
     @property
     def lens_light_centre_tag(self):
@@ -154,7 +155,15 @@ class PipelineSetup(setup.PipelineSetup):
         else:
             y = "{0:.2f}".format(self.lens_light_centre[0])
             x = "{0:.2f}".format(self.lens_light_centre[1])
-            return "__lens_light_centre_(" + y + "," + x + ")"
+            return (
+                "__"
+                + conf.instance.tag.get("pipeline", "lens_light_centre", str)
+                + "_("
+                + y
+                + ","
+                + x
+                + ")"
+            )
 
     @property
     def lens_mass_centre_tag(self):
@@ -172,7 +181,15 @@ class PipelineSetup(setup.PipelineSetup):
         else:
             y = "{0:.2f}".format(self.lens_mass_centre[0])
             x = "{0:.2f}".format(self.lens_mass_centre[1])
-            return "__lens_mass_centre_(" + y + "," + x + ")"
+            return (
+                "__"
+                + conf.instance.tag.get("pipeline", "lens_mass_centre", str)
+                + "_("
+                + y
+                + ","
+                + x
+                + ")"
+            )
 
     @property
     def align_light_mass_centre_tag(self):
@@ -189,7 +206,9 @@ class PipelineSetup(setup.PipelineSetup):
         if not self.align_light_mass_centre:
             return ""
         elif self.align_light_mass_centre:
-            return "__align_light_mass_centre"
+            return "__" + conf.instance.tag.get(
+                "pipeline", "align_light_mass_centre", str
+            )
 
     @property
     def align_light_dark_centre_tag(self):
@@ -203,7 +222,9 @@ class PipelineSetup(setup.PipelineSetup):
         if not self.align_light_dark_centre:
             return ""
         elif self.align_light_dark_centre:
-            return "__align_light_dark_centre"
+            return "__" + conf.instance.tag.get(
+                "pipeline", "align_light_dark_centre", str
+            )
 
     @property
     def align_bulge_dark_centre_tag(self):
@@ -218,4 +239,6 @@ class PipelineSetup(setup.PipelineSetup):
         if not self.align_bulge_dark_centre:
             return ""
         elif self.align_bulge_dark_centre:
-            return "__align_bulge_dark_centre"
+            return "__" + conf.instance.tag.get(
+                "pipeline", "align_bulge_dark_centre", str
+            )
