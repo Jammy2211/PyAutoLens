@@ -6,7 +6,11 @@
    :hidden:
 
    installation
-   api/lensing
+   overview/lensing
+   overview/fitting
+   overview/simulate
+   overview/pixelizations
+   overview/interferometry
    workspace
    howtolens
 

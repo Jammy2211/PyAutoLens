@@ -142,13 +142,13 @@ class PhaseGalaxy(abstract.AbstractPhase):
         cosmology=cosmo.Planck15,
     ):
         """
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit
+        A phase in an lens pipeline. Uses the set non_linear search to try to fit
         models and hyper_galaxies passed to it.
 
         Parameters
         ----------
         non_linear_class: class
-            The class of a non_linear optimizer
+            The class of a non_linear search
         sub_size: int
             The side length of the subgrid
         """
@@ -213,7 +213,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         Returns
         -------
         lens: Analysis
-            An lens object that the non-linear optimizer calls to determine the fit of a
+            An lens object that the non-linear search calls to determine the fit of a
              set of values
         """
 
@@ -233,7 +233,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
             return AnalysisSingle(
                 galaxy_data=galaxy_data,
                 cosmology=self.cosmology,
-                image_path=self.optimizer.paths.image_path,
+                image_path=self.search.paths.image_path,
                 results=results,
             )
 
@@ -265,7 +265,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
                 galaxy_data_y=galaxy_data_y,
                 galaxy_data_x=galaxy_data_x,
                 cosmology=self.cosmology,
-                image_path=self.optimizer.paths.image_path,
+                image_path=self.search.paths.image_path,
                 results=results,
             )
 

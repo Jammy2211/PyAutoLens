@@ -18,7 +18,7 @@ A description of the general.ini visualization config.
         WX
         Agg (outputs to .fits / .png but doesn't'display figures during a run on your computer screen)
 
-    visualize_interval : int
+    visualize_every_update : int
 
         The number of new best-fit (e.g. highest log likelihood) models that must be sampled for PyAutoLens to output the
         best-fit as a new set of figure / subplot visualization during a non-linear fit (e.g. on-the-fly).

@@ -32,13 +32,13 @@ class PhaseImaging(dataset.PhaseDataset):
 
         """
 
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper_galaxies
+        A phase in an lens pipeline. Uses the set non_linear search to try to fit models and hyper_galaxies
         passed to it.
 
         Parameters
         ----------
         non_linear_class: class
-            The class of a non_linear optimizer
+            The class of a non_linear search
         sub_size: int
             The side length of the subgrid
         """
@@ -86,7 +86,7 @@ class PhaseImaging(dataset.PhaseDataset):
         Returns
         -------
         lens : Analysis
-            An lens object that the non-linear optimizer calls to determine the fit of a set of values
+            An lens object that the non-linear search calls to determine the fit of a set of values
         """
         self.meta_dataset.model = self.model
 
@@ -99,7 +99,7 @@ class PhaseImaging(dataset.PhaseDataset):
         analysis = self.Analysis(
             masked_imaging=masked_imaging,
             cosmology=self.cosmology,
-            image_path=self.optimizer.paths.image_path,
+            image_path=self.search.paths.image_path,
             results=results,
             log_likelihood_cap=self.settings.log_likelihood_cap,
         )
@@ -108,10 +108,10 @@ class PhaseImaging(dataset.PhaseDataset):
 
     def output_phase_info(self):
 
-        file_phase_info = "{}/{}".format(self.optimizer.paths.output_path, "phase.info")
+        file_phase_info = "{}/{}".format(self.search.paths.output_path, "phase.info")
 
         with open(file_phase_info, "w") as phase_info:
-            phase_info.write("Optimizer = {} \n".format(type(self.optimizer).__name__))
+            phase_info.write("Optimizer = {} \n".format(type(self.search).__name__))
             phase_info.write(
                 "Sub-grid size = {} \n".format(self.meta_dataset.settings.sub_size)
             )

@@ -3,7 +3,6 @@ from os import path
 
 import autofit as af
 import autolens as al
-import numpy as np
 import pytest
 from test_autolens.mock import mock_pipeline
 

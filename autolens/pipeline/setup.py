@@ -6,6 +6,9 @@ from autolens import exc
 class PipelineSetup(setup.PipelineSetup):
     def __init__(
         self,
+        hyper_galaxies=False,
+        hyper_image_sky=False,
+        hyper_background_noise=False,
         pixelization=None,
         regularization=None,
         lens_light_centre=None,
@@ -19,9 +22,7 @@ class PipelineSetup(setup.PipelineSetup):
         lens_mass_centre=None,
         align_light_dark_centre=False,
         align_bulge_dark_centre=False,
-        hyper_galaxies=False,
-        hyper_image_sky=False,
-        hyper_background_noise=False,
+        subhalo_instance=None,
     ):
         """The setup of a pipeline, which controls how PyAutoLens template pipelines runs, for example controlling
         assumptions about the lens's light profile bulge-disk model or if shear is included in the mass model.
@@ -79,6 +80,9 @@ class PipelineSetup(setup.PipelineSetup):
             noise-map's background component in the model.
         """
         super().__init__(
+            hyper_galaxies=hyper_galaxies,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
             pixelization=pixelization,
             regularization=regularization,
             align_bulge_disk_centre=align_bulge_disk_centre,
@@ -86,9 +90,6 @@ class PipelineSetup(setup.PipelineSetup):
             align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
             disk_as_sersic=disk_as_sersic,
             number_of_gaussians=number_of_gaussians,
-            hyper_galaxies=hyper_galaxies,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
         )
 
         self.no_shear = no_shear
@@ -104,6 +105,8 @@ class PipelineSetup(setup.PipelineSetup):
 
         self.align_light_dark_centre = align_light_dark_centre
         self.align_bulge_dark_centre = align_bulge_dark_centre
+
+        self.subhalo_instance = subhalo_instance
 
     @property
     def tag(self):
@@ -122,6 +125,8 @@ class PipelineSetup(setup.PipelineSetup):
             + self.lens_mass_centre_tag
             + self.align_light_dark_centre_tag
             + self.align_bulge_dark_centre_tag
+            + self.subhalo_centre_tag
+            + self.subhalo_mass_at_200_tag
         )
 
     @property
@@ -141,8 +146,8 @@ class PipelineSetup(setup.PipelineSetup):
 
     @property
     def lens_light_centre_tag(self):
-        """Generate a tag if the lens light of the pipeline are fixed to a previous estimate or varied during the 
-        analysis to customize pipeline output paths.
+        """Generate a tag if the lens light model centre of the pipeline is fixed to an input value, to customize 
+        pipeline output paths.
 
         This changes the setup folder as follows:
 
@@ -167,8 +172,8 @@ class PipelineSetup(setup.PipelineSetup):
 
     @property
     def lens_mass_centre_tag(self):
-        """Generate a tag if the lens mass of the pipeline are fixed to a previous estimate or varied during the 
-        analysis to customize pipeline output paths.
+        """Generate a tag if the lens mass model centre of the pipeline is fixed to an input value, to customize 
+        pipeline output paths.
 
         This changes the setup folder as follows:
 
@@ -241,4 +246,52 @@ class PipelineSetup(setup.PipelineSetup):
         elif self.align_bulge_dark_centre:
             return "__" + conf.instance.tag.get(
                 "pipeline", "align_bulge_dark_centre", str
+            )
+
+    @property
+    def subhalo_centre_tag(self):
+        """Generate a tag if the subhalo mass model centre of the pipeline is fixed to an input value, to customize 
+        pipeline output paths.
+
+        This changes the setup folder as follows:
+
+        subhalo_centre = None -> setup
+        subhalo_centre = (1.0, 1.0) -> setup___sub_centre_(1.0, 1.0)
+        subhalo_centre = (3.0, -2.0) -> setup___sub_centre_(3.0, -2.0)
+        """
+        if self.subhalo_instance is None:
+            return ""
+        else:
+            y = "{0:.2f}".format(self.subhalo_instance.centre[0])
+            x = "{0:.2f}".format(self.subhalo_instance.centre[1])
+            return (
+                "__"
+                + conf.instance.tag.get("pipeline", "subhalo_centre", str)
+                + "_("
+                + y
+                + ","
+                + x
+                + ")"
+            )
+        
+    @property
+    def subhalo_mass_at_200_tag(self):
+        """Generate a tag if the subhalo mass model mass_at_200 of the pipeline is fixed to an input value, to
+        customize pipeline output paths.
+
+        This changes the setup folder as follows:
+
+        subhalo_mass_at_200 = None -> setup
+        subhalo_mass_at_200 = 1e8 -> setup___sub_mass_1.0e+08
+        subhalo_mass_at_200 = 1e9 -> setup___sub_mass_1.0e+09
+        """
+        if self.subhalo_instance is None:
+            return ""
+        else:
+
+            return (
+                "__"
+                + conf.instance.tag.get("pipeline", "subhalo_mass_at_200", str)
+                + "_"
+                + "{0:.1e}".format(self.subhalo_instance.mass_at_200_input)
             )

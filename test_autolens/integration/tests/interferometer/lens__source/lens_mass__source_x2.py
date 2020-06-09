@@ -21,9 +21,9 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
         non_linear_class=non_linear_class,
     )
 
-    phase1.optimizer.const_efficiency_mode = True
-    phase1.optimizer.n_live_points = 60
-    phase1.optimizer.sampling_efficiency = 0.7
+    phase1.search.const_efficiency_mode = True
+    phase1.search.n_live_points = 60
+    phase1.search.sampling_efficiency = 0.7
 
     phase2 = al.PhaseInterferometer(
         phase_name="phase_2",
@@ -41,9 +41,9 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
         non_linear_class=non_linear_class,
     )
 
-    phase2.optimizer.const_efficiency_mode = True
-    phase2.optimizer.n_live_points = 60
-    phase2.optimizer.sampling_efficiency = 0.7
+    phase2.search.const_efficiency_mode = True
+    phase2.search.n_live_points = 60
+    phase2.search.sampling_efficiency = 0.7
 
     return al.PipelineDataset(name, phase1, phase2)
 

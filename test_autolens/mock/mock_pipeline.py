@@ -1,3 +1,4 @@
+from autoconf import conf
 import autofit as af
 import autolens as al
 import numpy as np
@@ -18,7 +19,7 @@ class GalaxiesMockAnalysis:
         return 1
 
 
-class MockSamples(af.AbstractSamples):
+class MockSamples(af.PosteriorSamples):
     def __init__(
         self,
         max_log_likelihood_instance=None,
@@ -68,7 +69,7 @@ class MockResult:
         instance=None,
         model=None,
         analysis=None,
-        optimizer=None,
+        search=None,
         mask=None,
         model_image=None,
         max_log_likelihood_tracer=None,
@@ -100,7 +101,7 @@ class MockResult:
         self.unmasked_model_image = model_image
         self.max_log_likelihood_tracer = max_log_likelihood_tracer
         self.analysis = analysis
-        self.optimizer = optimizer
+        self.search = search
         self.pixelization = pixelization
         self.hyper_combined = MockHyperCombinedPhase()
         self.use_as_hyper_dataset = use_as_hyper_dataset
@@ -126,7 +127,7 @@ class MockResults(af.ResultsCollection):
         instance=None,
         model=None,
         analysis=None,
-        optimizer=None,
+        search=None,
         mask=None,
         model_image=None,
         max_log_likelihood_tracer=None,
@@ -152,7 +153,7 @@ class MockResults(af.ResultsCollection):
             instance=instance,
             model=model,
             analysis=analysis,
-            optimizer=optimizer,
+            search=search,
             mask=mask,
             model_image=model_image,
             max_log_likelihood_tracer=max_log_likelihood_tracer,
@@ -207,10 +208,7 @@ class MockHyperCombinedPhase:
         return 1
 
 
-class MockNLO(af.NonLinearOptimizer):
-    def _fit(self, analysis, fitness_function):
-        # noinspection PyTypeChecker
-        return af.Result(None, analysis.log_likelihood_function(None), None)
+class MockNLO(af.NonLinearSearch):
 
     def _fit(self, model, analysis):
         class Fitness:
@@ -231,6 +229,14 @@ class MockNLO(af.NonLinearOptimizer):
         fitness_function(model.prior_count * [0.8])
 
         return fitness_function.result
+
+    @property
+    def config_type(self):
+        return conf.instance.mock
+
+    @property
+    def tag(self):
+        return "mock"
 
     def samples_from_model(self, model):
         return MockSamples()

@@ -1,7 +1,7 @@
 .. _api:
 
-API - Fitting
--------------
+Fitting
+-------
 
 **PyAutoLens** can create *Tracer* objects to represent a strong lensing system. Now, we're going use these objects to
 fit imaging data of a strong lens, which we begin by loading from .fits files:
@@ -23,15 +23,15 @@ fit imaging data of a strong lens, which we begin by loading from .fits files:
 
 Here's what our image, noise map and point-spread function look like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/noise_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/noise_map.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/psf.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/psf.png
   :width: 400
   :alt: Alternative text
 
@@ -50,7 +50,7 @@ We now need to mask the data, so that regions where there is no signal (e.g. the
 Here is what our image looks like with the mask applied, where PyAutoLens has automatically zoomed around the mask
 to make the lensed source appear bigger:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/masked_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/masked_image.png
   :width: 400
   :alt: Alternative text
 
@@ -69,21 +69,21 @@ to create the model image we fit the data with, such as blurring the tracer's im
 For a good lens model where the model image and tracer are representative of the strong lens system the
 residuals and chi-squared values minimized:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/residual_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/residual_map.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/chi_squared_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/chi_squared_map.png
   :width: 400
   :alt: Alternative text
 
 In contrast, a bad lens model will show features in the residual-map and chi-squareds:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/bad_residual_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/bad_residual_map.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/fitting/bad_chi_squared_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/bad_chi_squared_map.png
   :width: 400
   :alt: Alternative text
 
@@ -141,17 +141,4 @@ model between phases, using the fits of earlier phases to guide the non-linear s
 
 You can learn more about advanced lens modeling in **PyAutoens** in chapters 2 and 3 of the **HowToLens** lecture series.
 
-**PyAutoLens** also allows on to reconstruct the lensed source galaxy's light on a pixel-grid. This is important for
-modeling real galaxies, whose appear are typically irregular with non-symmetric features such spiral arms and clumps of
-star formation.
-
-Using pixelized sources is simple, we simply input them into our *Galaxy* or *GalaxyModel* objects:
-
-.. code-block:: bash
-
-    source_galaxy_model = al.GalaxyModel(redshift=1.0,
-                                         pixelization=al.pix.VoronoiMagnification,
-                                         regularization=al.reg.Constant)
-
-Heres how a real strong lens's reconstructed source appears on a Voronoi pixel-grid:
 

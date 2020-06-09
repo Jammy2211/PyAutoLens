@@ -25,9 +25,9 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
         non_linear_class=non_linear_class,
     )
 
-    phase1.optimizer.const_efficiency_mode = True
-    phase1.optimizer.n_live_points = 60
-    phase1.optimizer.sampling_efficiency = 0.8
+    phase1.search.const_efficiency_mode = True
+    phase1.search.n_live_points = 60
+    phase1.search.sampling_efficiency = 0.8
 
     # This is an example of how we currently pass the lens light model, which works.
 

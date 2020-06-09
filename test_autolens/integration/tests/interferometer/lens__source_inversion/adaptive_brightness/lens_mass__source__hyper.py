@@ -26,9 +26,9 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
         non_linear_class=non_linear_class,
     )
 
-    phase1.optimizer.const_efficiency_mode = True
-    phase1.optimizer.n_live_points = 50
-    phase1.optimizer.sampling_efficiency = 0.8
+    phase1.search.const_efficiency_mode = True
+    phase1.search.n_live_points = 50
+    phase1.search.sampling_efficiency = 0.8
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
         hyper_galaxy=True, include_background_sky=True, include_background_noise=True
@@ -54,9 +54,9 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
         non_linear_class=non_linear_class,
     )
 
-    phase2.optimizer.const_efficiency_mode = True
-    phase2.optimizer.n_live_points = 30
-    phase2.optimizer.sampling_efficiency = 0.8
+    phase2.search.const_efficiency_mode = True
+    phase2.search.n_live_points = 30
+    phase2.search.sampling_efficiency = 0.8
 
     phase2 = phase2.extend_with_multiple_hyper_phases(
         hyper_galaxy=True,
@@ -86,9 +86,9 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
         non_linear_class=non_linear_class,
     )
 
-    phase3.optimizer.const_efficiency_mode = True
-    phase3.optimizer.n_live_points = 40
-    phase3.optimizer.sampling_efficiency = 0.8
+    phase3.search.const_efficiency_mode = True
+    phase3.search.n_live_points = 40
+    phase3.search.sampling_efficiency = 0.8
 
     phase3 = phase3.extend_with_multiple_hyper_phases(
         hyper_galaxy=True,
