@@ -1,14 +1,14 @@
 .. _api:
 
-API - Lensing
--------------
+Lensing
+-------
 
 When two galaxies are aligned perfectly down the line-of-sight to Earth, the background galaxy's light is bent by the
 intervening mass of the foreground galaxy. Its light can be fully bent around the foreground galaxy, traversing multiple
 paths to the Earth, meaning that the background galaxy is observed multiple times. This by-chance alignment of two
 galaxies is called a strong gravitational lens and a two-dimensional scheme of such a system is pictured below.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/lensing/schematic.jpg
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/schematic.jpg
   :width: 400
   :alt: Alternative text
 
@@ -36,7 +36,7 @@ Cartesian grids of (y,x) coordinates. Below, we make and plot a uniform Cartesia
 
 This is what our grid looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/lensing/grid.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/grid.png
   :width: 400
   :alt: Alternative text
 
@@ -70,7 +70,7 @@ The plot module provides convenience methods for plotting properties of objects,
 
 Heres the image of the light profile:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/lensing/sersic_light_profile.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/sersic_light_profile.png
   :width: 400
   :alt: Alternative text
 
@@ -97,19 +97,19 @@ potential and deflection angles on our Cartesian grid:
 
 Heres how the convergence, potential and deflection angles look:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/lensing/isothermal_mass_profile_convergence.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/isothermal_mass_profile_convergence.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/lensing/isothermal_mass_profile_potential.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/isothermal_mass_profile_potential.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/lensing/isothermal_mass_profile_deflections_y.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/isothermal_mass_profile_deflections_y.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/lensing/isothermal_mass_profile_deflections_x.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/isothermal_mass_profile_deflections_x.png
   :width: 400
   :alt: Alternative text
 
@@ -147,7 +147,7 @@ When computing the image from the tracer above, the tracer performs all ray-trac
 This includes using the lens galaxy's mass profile to deflect the light-rays that are traced to the source galaxy.
 This makes the image below, where the source's light appears as a multiply imaged and strongly lensed Einstein ring.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/lensing/tracer_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/tracer_image.png
   :width: 400
   :alt: Alternative text
 
@@ -211,6 +211,6 @@ rings!
 
 This is what the lens looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/lensing/complex_lens.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/complex_lens.png
   :width: 400
   :alt: Alternative text

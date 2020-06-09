@@ -1,4 +1,23 @@
+import autofit as af
 import autolens as al
+
+
+class TestSlam:
+
+    def test__lens_light_tag_for_source_pipeline(self):
+
+        hyper = al.slam.Hyper()
+        source = al.slam.Source()
+        light = al.slam.Light()
+        mass = al.slam.Mass()
+
+        slam = al.slam.SLaM(hyper=hyper, source=source, light=light, mass=mass)
+
+        assert slam.lens_light_tag_for_source_pipeline == ""
+
+        slam.set_light_type(light_type="sersic")
+
+        assert slam.lens_light_tag_for_source_pipeline == "__light_sersic"
 
 
 class TestHyper:
@@ -73,6 +92,102 @@ class TestSource:
             == "source__test__gaussians_x1__with_shear__align_light_mass_centre__bulge_only"
         )
 
+    def test__shear(self):
+
+        source = al.slam.Source(no_shear=False)
+        assert source.shear is al.mp.ExternalShear
+        source = al.slam.Source(no_shear=True)
+        assert source.shear == None
+
+    def test__align_centre_of_mass_to_light(self):
+
+        mass_profile = af.PriorModel(al.mp.SphericalIsothermal)
+
+        source = al.slam.Source(align_light_mass_centre=False)
+
+        mass_profile = source.align_centre_of_mass_to_light(mass_profile=mass_profile, light_profile_centre=(1.0, 2.0))
+
+        assert mass_profile.centre.centre_0.mean == 1.0
+        assert mass_profile.centre.centre_0.sigma == 0.1
+        assert mass_profile.centre.centre_0.mean == 1.0
+        assert mass_profile.centre.centre_0.sigma == 0.1
+
+        source = al.slam.Source(align_light_mass_centre=True)
+
+        mass_profile = source.align_centre_of_mass_to_light(mass_profile=mass_profile, light_profile_centre=(1.0, 2.0))
+
+        assert mass_profile.centre == (1.0, 2.0)
+
+    def test__align_centre_to_lens_light_centre(self):
+
+        light = af.PriorModel(al.mp.SphericalIsothermal)
+
+        source = al.slam.Source(lens_light_centre=(1.0, 2.0))
+
+        light = source.align_centre_to_lens_light_centre(light_profile=light)
+
+        assert light.centre == (1.0, 2.0)
+
+    def test__align_centre_to_lens_mass_centre(self):
+
+        mass = af.PriorModel(al.mp.SphericalIsothermal)
+
+        source = al.slam.Source(lens_mass_centre=(1.0, 2.0))
+
+        mass = source.align_centre_to_lens_mass_centre(mass=mass)
+
+        assert mass.centre == (1.0, 2.0)
+
+    def test__remove_disk_from_lens_galaxy(self):
+
+        lens = al.GalaxyModel(
+            redshift=0.5,
+            bulge=al.lp.EllipticalSersic,
+            disk=al.lp.EllipticalExponential,
+        )
+
+        source = al.slam.Source(lens_light_bulge_only=False)
+
+        lens = source.remove_disk_from_lens_galaxy(lens=lens)
+
+        assert type(lens.disk) is af.PriorModel
+
+        source = al.slam.Source(lens_light_bulge_only=True)
+
+        lens = source.remove_disk_from_lens_galaxy(lens=lens)
+
+        assert lens.disk is None
+
+    def test__is_inversion(self):
+
+        source = al.slam.Source()
+
+        source.type_tag = "sersic"
+        assert  source.is_inversion == False
+
+        source.type_tag = "anything_else"
+        assert  source.is_inversion == True
+
+    def test__unfix_lens_mass_centre(self):
+
+        mass = af.PriorModel(al.mp.SphericalIsothermal)
+        mass.centre = (1.0, 2.0)
+
+        source = al.slam.Source()
+
+        mass = source.unfix_lens_mass_centre(mass=mass)
+
+        assert mass.centre == (1.0, 2.0)
+
+        mass = af.PriorModel(al.mp.SphericalIsothermal)
+        source = al.slam.Source(lens_mass_centre=(5.0, 6.0))
+
+        mass = source.unfix_lens_mass_centre(mass=mass)
+
+        assert mass.centre.centre_0.mean == 5.0
+        assert mass.centre.centre_0.sigma == 0.05
+        assert mass.centre.centre_1.mean == 6.0
+        assert mass.centre.centre_1.sigma == 0.05
 
 class TestLight:
     def test__tag(self):
@@ -126,3 +241,13 @@ class TestMass:
         mass.type_tag = "test"
 
         assert mass.tag == "mass__test__with_shear__align_bulge_dark_centre"
+
+    def test__shear_from_previous_pipeline(self):
+
+        mass = al.slam.Mass(no_shear=True)
+
+        assert mass.shear_from_previous_pipeline == None
+
+        mass = al.slam.Mass(no_shear=False)
+
+        assert isinstance(mass.shear_from_previous_pipeline, af.AbstractPromise)

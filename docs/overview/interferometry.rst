@@ -1,7 +1,7 @@
 .. _api:
 
-API - Interferometry
---------------------
+Interferometry
+--------------
 
 Alongside CCD imaging data, **PyAutoLens** supports the modeling of interferometer data from submm and radio
 observatories. Here, the dataset is fitted directly in the uv-plane, circumventing issues that arise when fitting a
@@ -23,11 +23,11 @@ observatories. Here, the dataset is fitted directly in the uv-plane, circumventi
 Here is what the interferometer visibilities and uv wavelength (which represent the interferometer's baselines) looks
 like (these are representative of a Square Mile Array dataset):
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/interferometry/visibilities.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/visibilities.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/interferometry/uv_wavelengths.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/uv_wavelengths.png
   :width: 400
   :alt: Alternative text
 
@@ -72,31 +72,31 @@ The masked interferometer can now be used with a *FitInterferometer* object to f
 
 Here is what the image of the tracer looks like before it is Fourier transformed to the uv-plane:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/interferometry/image_pre_ft.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/image_pre_ft.png
   :width: 400
   :alt: Alternative text
 
 And here is what the Fourier transformed model visibilities look like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/interferometry/model_visibilities.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/model_visibilities.png
   :width: 400
   :alt: Alternative text
 
 To show the fit to the real and imaginary visibilities, we plot the residuals and chi-squared values as a function uv-distance:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/interferometry/residual_map_real.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/residual_map_real.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/interferometry/residual_map_imag.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/residual_map_imag.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/interferometry/chi_squared_real.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/chi_squared_real.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/api/images/interferometry/chi_squared_imag.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/chi_squared_imag.png
   :width: 400
   :alt: Alternative text
 

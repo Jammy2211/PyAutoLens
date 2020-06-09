@@ -49,7 +49,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
         number_of_steps=2,
     )
 
-    phase1.optimizer.const_efficiency_mode = True
+    phase1.search.const_efficiency_mode = True
 
     return al.PipelineDataset(name, phase1)
 
