@@ -4,7 +4,7 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "reult_passing"
 test_name = "source_choice_inversion_via_phase"
-data_label = "lens_sie__source_smooth"
+data_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
@@ -40,7 +40,7 @@ def source_with_previous_model_or_instance(phase):
         )
 
 
-def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
@@ -54,7 +54,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
             ),
         ),
         sub_size=1,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase1.search.const_efficiency_mode = True
@@ -76,7 +76,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
         phase_folders=phase_folders,
         galaxies=dict(lens=phase1.result.model.galaxies.lens, source=source),
         sub_size=1,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     return al.PipelineDataset(name, phase1, phase2)

@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "grid_search"
 test_name = "multinest_grid__subhalo"
-data_label = "lens_sie__source_smooth"
+data_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
-def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
 
@@ -32,7 +32,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(lens=lens, source=source),
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase1.search.const_efficiency_mode = True
@@ -55,7 +55,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
 
     subhalo.mass.centre_1 = af.UniformPrior(lower_limit=-2.0, upper_limit=2.0)
 
-    non_linear_class = af.MultiNest(const_efficiency_mode=True)
+    search = af.PySwarmsGlobal()(const_efficiency_mode=True)
 
     phase2 = GridPhase(
         phase_name="phase_2",
@@ -65,7 +65,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
             subhalo=subhalo,
             source=af.last.instance.galaxies.source,
         ),
-        non_linear_class=non_linear_class,
+        search=search,
         number_of_steps=2,
     )
 
@@ -79,7 +79,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
             subhalo=phase2.result.model.galaxies.subhalo,
             source=af.last[-1].instance.galaxies.source,
         ),
-        non_linear_class=af.MultiNest,
+        search=af.PySwarmsGlobal(),
     )
 
     phase3.search.const_efficiency_mode = True

@@ -4,11 +4,11 @@ from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_rectangular__offset_centre"
-data_label = "lens_sie__source_smooth__offset_centre"
+data_name = "lens_sie__source_smooth__offset_centre"
 instrument = "sma"
 
 
-def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal()):
 
     mass = af.PriorModel(al.mp.EllipticalIsothermal)
 
@@ -31,7 +31,7 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
             ),
         ),
         real_space_mask=real_space_mask,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase1.search.const_efficiency_mode = True

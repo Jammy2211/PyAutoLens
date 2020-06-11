@@ -130,13 +130,13 @@ class PhaseGalaxy(abstract.AbstractPhase):
     def __init__(
         self,
         phase_name,
+        search,
         phase_folders=tuple(),
         galaxies=None,
         use_image=False,
         use_convergence=False,
         use_potential=False,
         use_deflections=False,
-        non_linear_class=af.MultiNest,
         sub_size=2,
         pixel_scales_interp=None,
         cosmology=cosmo.Planck15,
@@ -147,16 +147,14 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
         Parameters
         ----------
-        non_linear_class: class
+        search: class
             The class of a non_linear search
         sub_size: int
             The side length of the subgrid
         """
 
         super(PhaseGalaxy, self).__init__(
-            phase_name=phase_name,
-            phase_folders=phase_folders,
-            non_linear_class=non_linear_class,
+            phase_name=phase_name, phase_folders=phase_folders, search=search
         )
         self.cosmology = cosmology
         self.use_image = use_image

@@ -19,7 +19,7 @@ class GalaxiesMockAnalysis:
         return 1
 
 
-class MockSamples(af.PosteriorSamples):
+class MockSamples(af.PDFSamples):
     def __init__(
         self,
         max_log_likelihood_instance=None,
@@ -208,8 +208,7 @@ class MockHyperCombinedPhase:
         return 1
 
 
-class MockNLO(af.NonLinearSearch):
-
+class MockSearch(af.NonLinearSearch):
     def _fit(self, model, analysis):
         class Fitness:
             def __init__(self, instance_from_vector):

@@ -4,11 +4,11 @@ from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_adaptive_brightness__hyper"
-data_label = "lens_sie__source_smooth"
+data_name = "lens_sie__source_smooth"
 instrument = "sma"
 
 
-def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal()):
     class Phase1(al.PhaseInterferometer):
         def customize_priors(self, results):
             self.galaxies.source.light.sersic_index = af.UniformPrior(3.9, 4.1)
@@ -23,7 +23,7 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
         real_space_mask=real_space_mask,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase1.search.const_efficiency_mode = True
@@ -51,7 +51,7 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
             ),
         ),
         real_space_mask=real_space_mask,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase2.search.const_efficiency_mode = True
@@ -83,7 +83,7 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
             ),
         ),
         real_space_mask=real_space_mask,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase3.search.const_efficiency_mode = True

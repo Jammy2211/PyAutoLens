@@ -80,11 +80,17 @@ class SLaM:
             The index (counting backwards from this phase) of the phase result used to setup the source.
         """
         if self.source.type_tag in "sersic":
-            return self.source_from_previous_pipeline_model_or_instance(source_as_model=True, index=0)
+            return self.source_from_previous_pipeline_model_or_instance(
+                source_as_model=True, index=0
+            )
         else:
-            return self.source_from_previous_pipeline_model_or_instance(source_as_model=False, index=0)
+            return self.source_from_previous_pipeline_model_or_instance(
+                source_as_model=False, index=0
+            )
 
-    def source_from_previous_pipeline_model_or_instance(self, source_as_model=False, index=0):
+    def source_from_previous_pipeline_model_or_instance(
+        self, source_as_model=False, index=0
+    ):
         """Setup the source model using the previous pipeline and phase results.
 
         The source light model is not specified by the pipeline light and mass pipelines (e.g. the previous pipelines
@@ -360,25 +366,25 @@ class Source(setup.PipelineSetup):
         else:
             return True
 
-    def align_centre_of_mass_to_light(self, mass_profile, light_profile_centre):
+    def align_centre_of_mass_to_light(self, mass, light_centre):
         """Align the centre of a mass profile to the centre of a light profile, if the align_light_mass_centre
         SLaM setting is True.
         
         Parameters
         ----------
-        mass_profile : ag.mp.MassProfile    
+        mass : ag.mp.MassProfile
             The mass profile whose centre may be aligned with the lens_light_centre attribute.
-        light_profile_centre : (float, float)
+        light : (float, float)
             The centre of the light profile the mass profile is aligned with.
         """
         if self.align_light_mass_centre:
-            mass_profile.centre = light_profile_centre
+            mass.centre = light_centre
         else:
-            mass_profile.centre.centre_0 = af.GaussianPrior(mean=light_profile_centre[0], sigma=0.1)
-            mass_profile.centre.centre_1 = af.GaussianPrior(mean=light_profile_centre[1], sigma=0.1)
-        return mass_profile
+            mass.centre.centre_0 = af.GaussianPrior(mean=light_centre[0], sigma=0.1)
+            mass.centre.centre_1 = af.GaussianPrior(mean=light_centre[1], sigma=0.1)
+        return mass
 
-    def align_centre_to_lens_light_centre(self, light_profile):
+    def align_centre_to_lens_light_centre(self, light):
         """
         Align the centre of an input light profile to the lens_light_centre of this instance of the SLaM Source
         class, make the centre of the light profile fixed and thus not free parameters that are fitted for.
@@ -387,12 +393,12 @@ class Source(setup.PipelineSetup):
 
         Parameters
         ----------
-        light_profile : ag.mp.MassProfile
+        light : ag.mp.MassProfile
             The light profile whose centre may be aligned with the lens_light_centre attribute.
         """
         if self.lens_light_centre is not None:
-            light_profile.centre = self.lens_light_centre
-        return light_profile
+            light.centre = self.lens_light_centre
+        return light
 
     def align_centre_to_lens_mass_centre(self, mass):
         """
@@ -440,7 +446,7 @@ class Source(setup.PipelineSetup):
 
             mass.centre = af.last[-3].model.galaxies.lens.bulge.centre
 
-        return
+        return mass
 
 
 class Light(setup.PipelineSetup):
@@ -544,4 +550,3 @@ class Mass(setup.PipelineSetup):
                 return ag.mp.ExternalShear
         else:
             return None
-

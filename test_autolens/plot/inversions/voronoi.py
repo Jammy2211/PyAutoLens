@@ -9,7 +9,7 @@ from test_autolens.simulators.imaging import instrument_util
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
 imaging = instrument_util.load_test_imaging(
-    data_label="lens_sie__source_cuspy", instrument="hst"
+    data_name="lens_sie__source_cuspy", instrument="hst"
 )
 mask = al.Mask.circular(
     shape_2d=imaging.shape_2d,

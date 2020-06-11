@@ -55,7 +55,7 @@ class TestMakeAnalysis:
 
         phase_info.close()
 
-        assert search == "Optimizer = MockNLO \n"
+        assert search == "Optimizer = MockSearch \n"
         assert sub_size == "Sub-grid size = 2 \n"
         assert primary_beam_shape_2d == "Primary Beam shape = None \n"
         assert positions_threshold == "Positions Threshold = None \n"
@@ -66,15 +66,16 @@ class TestMakeAnalysis:
         )
 
     def test__phase_can_receive_hyper_image_and_noise_maps(self, mask_7x7):
+
         phase_interferometer_7 = al.PhaseInterferometer(
+            phase_name="test_phase",
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=al.Redshift),
                 lens1=al.GalaxyModel(redshift=al.Redshift),
             ),
-            real_space_mask=mask_7x7,
             hyper_background_noise=al.hyper_data.HyperBackgroundNoise,
-            non_linear_class=af.MultiNest,
-            phase_name="test_phase",
+            search=mock_pipeline.MockSearch(),
+            real_space_mask=mask_7x7,
         )
 
         instance = phase_interferometer_7.model.instance_from_vector([0.1, 0.2, 0.3])
@@ -90,12 +91,13 @@ class TestMakeAnalysis:
         )
 
         phase_imaging_7x7 = al.PhaseInterferometer(
-            galaxies=[lens_galaxy],
-            real_space_mask=mask_7x7,
+            phase_name="test_phase",
+            galaxies=dict(lens=lens_galaxy),
             settings=al.PhaseSettingsInterferometer(
                 grid_class=al.Grid, sub_size=1, log_likelihood_cap=100.0
             ),
-            phase_name="test_phase",
+            search=mock_pipeline.MockSearch(),
+            real_space_mask=mask_7x7,
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -141,12 +143,12 @@ class TestHyperMethods:
         )
 
         phase_interferometer_7 = al.PhaseInterferometer(
+            phase_name="test_phase",
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
             ),
+            search=mock_pipeline.MockSearch(),
             real_space_mask=mask_7x7,
-            non_linear_class=mock_pipeline.MockNLO,
-            phase_name="test_phase",
         )
 
         phase_interferometer_7.extend_with_multiple_hyper_phases()

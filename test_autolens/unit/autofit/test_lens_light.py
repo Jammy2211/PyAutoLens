@@ -77,7 +77,7 @@
 #     lens.bulge.centre = lens.disk.centre
 #
 #     return al.PhaseImaging(
-#         phase_name="phase_1", galaxies=dict(lens=lens), non_linear_class=af.MultiNest
+#         phase_name="phase_1", galaxies=dict(lens=lens), search=af.DynestyStatic()
 #     )
 #
 #
@@ -108,7 +108,7 @@
 #         ),
 #         hyper_image_sky=phase1.result.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=phase1.result.hyper_combined.instance.optional.hyper_background_noise,
-#         non_linear_class=af.MultiNest,
+#         search=af.DynestyStatic(),
 #     )
 #
 #
@@ -143,7 +143,7 @@
 #         ),
 #         hyper_image_sky=phase2.result.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=phase2.result.hyper_combined.instance.optional.hyper_background_noise,
-#         non_linear_class=af.MultiNest,
+#         search=af.DynestyStatic(),
 #     )
 #
 #
@@ -173,7 +173,7 @@
 #         ),
 #         hyper_image_sky=phase3.result.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=phase3.result.hyper_combined.instance.optional.hyper_background_noise,
-#         non_linear_class=af.MultiNest,
+#         search=af.DynestyStatic(),
 #     )
 #
 #
@@ -204,7 +204,7 @@
 #         ),
 #         hyper_image_sky=af.last.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=af.last.hyper_combined.instance.optional.hyper_background_noise,
-#         non_linear_class=af.MultiNest,
+#         search=af.DynestyStatic(),
 #     )
 #
 # def test_phase_5(phase5):
@@ -235,7 +235,7 @@
 #         ),
 #         hyper_image_sky=phase5.result.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=phase5.result.hyper_combined.instance.optional.hyper_background_noise,
-#         non_linear_class=af.MultiNest,
+#         search=af.DynestyStatic(),
 #     )
 #
 # def test_phase_6(phase6):
@@ -266,7 +266,7 @@
 #         ),
 #         hyper_image_sky=phase6.result.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=phase6.result.hyper_combined.instance.optional.hyper_background_noise,
-#         non_linear_class=af.MultiNest,
+#         search=af.DynestyStatic(),
 #     )
 #
 # def test_phase_7(phase7):
@@ -304,7 +304,7 @@
 #         ),
 #         hyper_image_sky=phase7.result.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=phase7.result.hyper_combined.instance.optional.hyper_background_noise,
-#         non_linear_class=af.MultiNest,
+#         search=af.DynestyStatic(),
 #     )
 #
 # def test_phase_8(phase8):

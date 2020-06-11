@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_adaptive_magnification__hyper"
-data_label = "lens_sie__source_smooth"
+data_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
-def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     mass = af.PriorModel(al.mp.EllipticalIsothermal)
 
@@ -27,7 +27,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
                 regularization=al.reg.Constant,
             ),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase1.search.const_efficiency_mode = True
@@ -50,7 +50,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
                 hyper_galaxy=phase1.result.instance.galaxies.source.hyper_galaxy,
             ),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase2.search.const_efficiency_mode = True
@@ -73,7 +73,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
                 hyper_galaxy=phase2.result.instance.galaxies.source.hyper_galaxy,
             ),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase3.search.const_efficiency_mode = True

@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_adaptive_brightness"
-data_label = "lens_sie__source_smooth"
+data_name = "lens_sie__source_smooth"
 instrument = "hst"
 
 
-def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
@@ -17,7 +17,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase1.search.const_efficiency_mode = True
@@ -42,7 +42,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
                 regularization=al.reg.AdaptiveBrightness,
             ),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase2.search.const_efficiency_mode = True
@@ -61,7 +61,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
                 regularization=phase2.result.instance.galaxies.source.regularization,
             ),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase3.search.const_efficiency_mode = True
@@ -82,7 +82,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
                 regularization=phase2.model.galaxies.source.pixelization,
             ),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase4.search.const_efficiency_mode = True

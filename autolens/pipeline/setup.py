@@ -273,7 +273,7 @@ class PipelineSetup(setup.PipelineSetup):
                 + x
                 + ")"
             )
-        
+
     @property
     def subhalo_mass_at_200_tag(self):
         """Generate a tag if the subhalo mass model mass_at_200 of the pipeline is fixed to an input value, to

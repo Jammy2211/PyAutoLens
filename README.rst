@@ -108,7 +108,7 @@ analysis which fits the foreground lens galaxy's mass & the background source ga
         galaxies=dict(lens=lens_galaxy_model,
         source=source_galaxy_model),
         phase_name='example/phase_example',
-        non_linear_class=af.MultiNest
+        search=af.DynestyStatic()
     )
 
     # We pass the imaging data and mask to the phase, thereby fitting it with the lens model & plot the resulting fit.
