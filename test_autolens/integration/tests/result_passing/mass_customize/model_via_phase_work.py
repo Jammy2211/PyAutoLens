@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "reult_passing"
 test_name = "mass_customize_model_via_phase_works"
-data_label = "lens_sie__source_smooth"
+data_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
-def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     # For this mass model, we fix the centre, making N = 10.
 
@@ -24,7 +24,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
         sub_size=1,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase1.search.const_efficiency_mode = True
@@ -48,7 +48,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
             source=phase1.result.model.galaxies.source,
         ),
         sub_size=1,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     return al.PipelineDataset(name, phase1, phase2)

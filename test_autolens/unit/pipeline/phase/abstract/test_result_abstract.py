@@ -27,7 +27,7 @@ class TestTracer:
     ):
 
         phase_dataset_7x7 = al.PhaseImaging(
-            non_linear_class=mock_pipeline.MockNLO,
+            phase_name="test_phase_2",
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
@@ -36,7 +36,7 @@ class TestTracer:
                     redshift=1.0, light=al.lp.EllipticalCoreSersic(intensity=2.0)
                 ),
             ),
-            phase_name="test_phase_2",
+            search=mock_pipeline.MockSearch(),
         )
 
         result = phase_dataset_7x7.run(
@@ -52,7 +52,7 @@ class TestTracer:
     ):
 
         phase_dataset_7x7 = al.PhaseImaging(
-            non_linear_class=mock_pipeline.MockNLO,
+            phase_name="test_phase_2",
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
@@ -62,7 +62,7 @@ class TestTracer:
                     light=al.lp.EllipticalCoreSersic(centre=(1.0, 2.0), intensity=2.0),
                 ),
             ),
-            phase_name="test_phase_2",
+            search=mock_pipeline.MockSearch(),
         )
 
         result = phase_dataset_7x7.run(
@@ -72,7 +72,7 @@ class TestTracer:
         assert result.source_plane_light_profile_centres.in_list == [[(1.0, 2.0)]]
 
         phase_dataset_7x7 = al.PhaseImaging(
-            non_linear_class=mock_pipeline.MockNLO,
+            phase_name="test_phase_2",
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
@@ -87,7 +87,7 @@ class TestTracer:
                     light=al.lp.EllipticalCoreSersic(centre=(5.0, 6.0), intensity=2.0),
                 ),
             ),
-            phase_name="test_phase_2",
+            search=mock_pipeline.MockSearch(),
         )
 
         result = phase_dataset_7x7.run(
@@ -100,9 +100,9 @@ class TestTracer:
         ]
 
         phase_dataset_7x7 = al.PhaseImaging(
-            non_linear_class=mock_pipeline.MockNLO,
-            galaxies=dict(lens=al.Galaxy(redshift=0.5)),
             phase_name="test_phase_2",
+            galaxies=dict(lens=al.Galaxy(redshift=0.5)),
+            search=mock_pipeline.MockSearch(),
         )
 
         result = phase_dataset_7x7.run(
@@ -116,7 +116,7 @@ class TestTracer:
     ):
 
         phase_dataset_7x7 = al.PhaseImaging(
-            non_linear_class=mock_pipeline.MockNLO,
+            phase_name="test_phase_2",
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
@@ -130,7 +130,7 @@ class TestTracer:
             settings=al.PhaseSettingsImaging(
                 grid_class=al.Grid, grid_inversion_class=al.Grid
             ),
-            phase_name="test_phase_2",
+            search=mock_pipeline.MockSearch(),
         )
 
         result = phase_dataset_7x7.run(
@@ -157,14 +157,14 @@ class TestTracer:
         assert result.source_plane_inversion_centres.in_list == [[(0.0, 0.0)]]
 
         phase_dataset_7x7 = al.PhaseImaging(
-            non_linear_class=mock_pipeline.MockNLO,
+            phase_name="test_phase_2",
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
                 ),
                 source=al.Galaxy(redshift=1.0),
             ),
-            phase_name="test_phase_2",
+            search=mock_pipeline.MockSearch(),
         )
 
         result = phase_dataset_7x7.run(
@@ -178,7 +178,7 @@ class TestTracer:
     ):
 
         phase_dataset_7x7 = al.PhaseImaging(
-            non_linear_class=mock_pipeline.MockNLO,
+            phase_name="test_phase_2",
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0)
@@ -190,7 +190,7 @@ class TestTracer:
                     regularization=al.reg.Constant(coefficient=1.0),
                 ),
             ),
-            phase_name="test_phase_2",
+            search=mock_pipeline.MockSearch(),
         )
 
         result = phase_dataset_7x7.run(
@@ -204,7 +204,7 @@ class TestTracer:
     ):
 
         phase_dataset_7x7 = al.PhaseImaging(
-            non_linear_class=mock_pipeline.MockNLO,
+            phase_name="test_phase_2",
             galaxies=dict(
                 lens=al.Galaxy(
                     redshift=0.5,
@@ -220,7 +220,7 @@ class TestTracer:
                     regularization=al.reg.Constant(coefficient=1.0),
                 ),
             ),
-            phase_name="test_phase_2",
+            search=mock_pipeline.MockSearch(),
         )
 
         result = phase_dataset_7x7.run(

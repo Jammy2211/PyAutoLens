@@ -61,12 +61,13 @@ class TestMakeAnalysis:
         imaging_7x7.positions = al.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)]])
 
         phase_imaging_7x7 = al.PhaseImaging(
+            phase_name="test_phase",
             galaxies=dict(
                 lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal),
                 source=al.Galaxy(redshift=1.0),
             ),
             settings=al.PhaseSettingsImaging(positions_threshold=50.0),
-            phase_name="test_phase",
+            search=mock_pipeline.MockSearch(),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -80,12 +81,13 @@ class TestMakeAnalysis:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
+            phase_name="test_phase",
             galaxies=dict(
                 lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
                 source=al.Galaxy(redshift=1.0),
             ),
             settings=al.PhaseSettingsImaging(positions_threshold=0.0),
-            phase_name="test_phase",
+            search=mock_pipeline.MockSearch(),
         )
 
         imaging_7x7.positions = al.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)]])
@@ -102,12 +104,13 @@ class TestMakeAnalysis:
             )
 
         phase_imaging_7x7 = al.PhaseImaging(
+            phase_name="test_phase",
             galaxies=dict(
                 lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
                 source=al.Galaxy(redshift=1.0),
             ),
             settings=al.PhaseSettingsImaging(positions_threshold=0.5),
-            phase_name="test_phase",
+            search=mock_pipeline.MockSearch(),
         )
 
         imaging_7x7.positions = al.GridCoordinates([[(1.0, 0.0), (-1.0, 0.0)]])
@@ -175,6 +178,7 @@ class TestMakeAnalysis:
         self, phase_imaging_7x7, imaging_7x7, mask_7x7
     ):
         phase_imaging_7x7 = al.PhaseImaging(
+            phase_name="test_phase",
             galaxies=dict(
                 source=al.Galaxy(
                     redshift=0.5,
@@ -183,8 +187,7 @@ class TestMakeAnalysis:
                 )
             ),
             settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
-            cosmology=cosmo.FLRW,
-            phase_name="test_phase",
+            search=mock_pipeline.MockSearch(),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -207,8 +210,8 @@ class TestMakeAnalysis:
                 )
             ),
             settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
-            cosmology=cosmo.FLRW,
             phase_name="test_phase",
+            search=mock_pipeline.MockSearch(),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -232,8 +235,8 @@ class TestMakeAnalysis:
                 )
             ),
             settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
-            cosmology=cosmo.FLRW,
             phase_name="test_phase",
+            search=mock_pipeline.MockSearch(),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -255,8 +258,8 @@ class TestMakeAnalysis:
                 )
             ),
             settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
-            cosmology=cosmo.FLRW,
             phase_name="test_phase",
+            search=mock_pipeline.MockSearch(),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -276,7 +279,7 @@ class TestExtensions:
     def test__extend_with_hyper_and_pixelizations(self):
 
         phase_no_pixelization = al.PhaseImaging(
-            non_linear_class=mock_pipeline.MockNLO, phase_name="test_phase"
+            phase_name="test_phase", search=mock_pipeline.MockSearch()
         )
 
         phase_extended = phase_no_pixelization.extend_with_multiple_hyper_phases(
@@ -299,7 +302,7 @@ class TestExtensions:
                     regularization=al.reg.Constant,
                 )
             ),
-            non_linear_class=mock_pipeline.MockNLO,
+            search=mock_pipeline.MockSearch,
             phase_name="test_phase",
         )
 

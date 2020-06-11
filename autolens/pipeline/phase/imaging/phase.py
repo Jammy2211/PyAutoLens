@@ -22,11 +22,11 @@ class PhaseImaging(dataset.PhaseDataset):
         self,
         paths,
         *,
+        search,
         galaxies=None,
         hyper_image_sky=None,
         hyper_background_noise=None,
         settings=PhaseSettingsImaging(),
-        non_linear_class=af.MultiNest,
         cosmology=cosmo.Planck15,
     ):
 
@@ -37,7 +37,7 @@ class PhaseImaging(dataset.PhaseDataset):
 
         Parameters
         ----------
-        non_linear_class: class
+        search: class
             The class of a non_linear search
         sub_size: int
             The side length of the subgrid
@@ -45,9 +45,9 @@ class PhaseImaging(dataset.PhaseDataset):
 
         super().__init__(
             paths,
-            galaxies=galaxies,
+            search=search,
             settings=settings,
-            non_linear_class=non_linear_class,
+            galaxies=galaxies,
             cosmology=cosmology,
         )
 

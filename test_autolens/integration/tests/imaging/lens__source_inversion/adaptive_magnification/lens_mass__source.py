@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_adaptive_magnification"
-data_label = "lens_sie__source_smooth"
+data_name = "lens_sie__source_smooth"
 instrument = "euclid"
 
 
-def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
@@ -21,7 +21,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
                 regularization=al.reg.Constant,
             ),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase1.search.const_efficiency_mode = True
@@ -43,7 +43,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
                 regularization=phase1.result.instance.galaxies.source.regularization,
             ),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase2.search.const_efficiency_mode = True

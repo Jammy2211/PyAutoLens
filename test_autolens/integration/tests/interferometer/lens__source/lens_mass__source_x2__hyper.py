@@ -4,11 +4,11 @@ from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens__source"
 test_name = "lens_mass__source_x2__hyper"
-data_label = "lens_sie__source_smooth"
+data_name = "lens_sie__source_smooth"
 instrument = "sma"
 
 
-def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseInterferometer(
         phase_name="phase_1",
@@ -18,7 +18,7 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
             source_0=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
         real_space_mask=real_space_mask,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase1.search.const_efficiency_mode = True
@@ -38,7 +38,7 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
             source_1=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
         real_space_mask=real_space_mask,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase2.search.const_efficiency_mode = True
@@ -77,7 +77,7 @@ def make_pipeline(name, phase_folders, real_space_mask, non_linear_class=af.Mult
             ),
         ),
         real_space_mask=real_space_mask,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase3.search.const_efficiency_mode = True

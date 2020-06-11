@@ -2,7 +2,7 @@
 #
 # import autofit as af
 # import autolens as al
-# from autofit.non_linear.mock_nlo import MockNLO
+# from autofit.non_linear.mock_nlo import MockSearch
 #
 # redshift_lens = (0.5,)
 # redshift_source = (1.0,)
@@ -69,7 +69,7 @@
 #                 redshift=redshift_source, sersic=al.lp.EllipticalSersic
 #             ),
 #         ),
-#         non_linear_class=MockNLO,
+#         search=MockSearch,
 #     )
 #
 #
@@ -97,7 +97,7 @@
 #         ),
 #         hyper_image_sky=af.last.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=af.last.hyper_combined.instance.optional.hyper_background_noise,
-#         non_linear_class=MockNLO,
+#         search=MockSearch,
 #     )
 #
 #
@@ -121,7 +121,7 @@
 #                 hyper_galaxy=phase2.result.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         non_linear_class=MockNLO,
+#         search=MockSearch,
 #     )
 #
 #
@@ -147,7 +147,7 @@
 #         ),
 #         hyper_image_sky=phase3.result.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=phase3.result.hyper_combined.instance.optional.hyper_background_noise,
-#         non_linear_class=MockNLO,
+#         search=MockSearch,
 #     )
 #
 #
@@ -173,7 +173,7 @@
 #         ),
 #         hyper_image_sky=phase4.result.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=phase4.result.hyper_combined.instance.optional.hyper_background_noise,
-#         non_linear_class=MockNLO,
+#         search=MockSearch,
 #     )
 #
 #
@@ -206,7 +206,7 @@
 #         ),
 #         hyper_image_sky=af.last.hyper_combined.instance.optional.hyper_image_sky,
 #         hyper_background_noise=af.last.hyper_combined.instance.optional.hyper_background_noise,
-#         non_linear_class=MockNLO,
+#         search=MockSearch,
 #     )
 #
 #

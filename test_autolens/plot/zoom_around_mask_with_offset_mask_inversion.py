@@ -3,7 +3,7 @@ import autolens as al
 from test_autolens.simulate.imaging import simulate_util
 
 imaging = simulate_util.load_test_imaging(
-    data_label="lens_sie__source_smooth__offset_centre", instrument="vro"
+    data_name="lens_sie__source_smooth__offset_centre", instrument="vro"
 )
 
 

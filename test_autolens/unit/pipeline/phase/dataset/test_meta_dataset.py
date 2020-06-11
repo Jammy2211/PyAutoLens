@@ -273,12 +273,12 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(
     )
 
     phase_imaging_7x7 = al.PhaseImaging(
-        galaxies=[lens_galaxy, source_galaxy],
-        cosmology=cosmo.Planck15,
         phase_name="test_phase",
+        galaxies=[lens_galaxy, source_galaxy],
         settings=al.PhaseSettingsImaging(
             grid_inversion_class=al.Grid, inversion_uses_border=True
         ),
+        search=mock_pipeline.MockSearch(),
     )
 
     analysis = phase_imaging_7x7.make_analysis(
@@ -296,14 +296,14 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(
     assert fit.inversion.mapper.grid[4][1] == pytest.approx(-3.699999, 1.0e-2)
 
     phase_imaging_7x7 = al.PhaseImaging(
-        galaxies=[lens_galaxy, source_galaxy],
-        cosmology=cosmo.Planck15,
         phase_name="test_phase",
+        galaxies=[lens_galaxy, source_galaxy],
         settings=al.PhaseSettingsImaging(
             grid_class=al.Grid,
             grid_inversion_class=al.Grid,
             inversion_uses_border=False,
         ),
+        search=mock_pipeline.MockSearch(),
     )
 
     analysis = phase_imaging_7x7.make_analysis(
@@ -325,6 +325,7 @@ def test__inversion_pixel_limit_computed_via_config_or_input():
     phase_imaging_7x7 = al.PhaseImaging(
         phase_name="phase_imaging_7x7",
         settings=al.PhaseSettingsImaging(inversion_pixel_limit=None),
+        search=mock_pipeline.MockSearch(),
     )
 
     assert phase_imaging_7x7.meta_dataset.settings.inversion_pixel_limit == 3000
@@ -332,6 +333,7 @@ def test__inversion_pixel_limit_computed_via_config_or_input():
     phase_imaging_7x7 = al.PhaseImaging(
         phase_name="phase_imaging_7x7",
         settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
+        search=mock_pipeline.MockSearch(),
     )
 
     assert phase_imaging_7x7.meta_dataset.settings.inversion_pixel_limit == 10
@@ -339,6 +341,7 @@ def test__inversion_pixel_limit_computed_via_config_or_input():
     phase_imaging_7x7 = al.PhaseImaging(
         phase_name="phase_imaging_7x7",
         settings=al.PhaseSettingsImaging(inversion_pixel_limit=2000),
+        search=mock_pipeline.MockSearch(),
     )
 
     assert phase_imaging_7x7.meta_dataset.settings.inversion_pixel_limit == 2000

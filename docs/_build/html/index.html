@@ -196,7 +196,7 @@
 <span class="c1"># search (in this case, MultiNest).</span>
 <span class="n">phase</span> <span class="o">=</span> <span class="n">al</span><span class="o">.</span><span class="n">PhaseImaging</span><span class="p">(</span>
     <span class="n">galaxies</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">lens</span><span class="o">=</span><span class="n">lens_galaxy_model</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source_galaxy_model</span><span class="p">),</span>
-    <span class="n">phase_name</span><span class="o">=</span><span class="s1">&#39;example/phase_example&#39;</span><span class="p">,</span> <span class="n">non_linear_class</span><span class="o">=</span><span class="n">af</span><span class="o">.</span><span class="n">MultiNest</span><span class="p">)</span>
+    <span class="n">phase_name</span><span class="o">=</span><span class="s1">&#39;example/phase_example&#39;</span><span class="p">,</span> <span class="n">search</span><span class="o">=</span><span class="n">af</span><span class="o">.</span><span class="n">MultiNest</span><span class="p">)</span>
 
 <span class="c1"># We pass the imaging data and mask to the phase, thereby fitting it with the lens model above &amp; plot the resulting fit.</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">imaging</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>

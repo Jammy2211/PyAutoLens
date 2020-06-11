@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "phase_features"
 test_name = "positions__offset_centre"
-data_label = "lens_sis__source_smooth__offset_centre"
+data_name = "lens_sis__source_smooth__offset_centre"
 instrument = "vro"
 
 
-def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
     class LensPhase(al.PhaseImaging):
         def customize_priors(self, results):
 
@@ -25,7 +25,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
         positions_threshold=0.5,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase1.search.const_efficiency_mode = True

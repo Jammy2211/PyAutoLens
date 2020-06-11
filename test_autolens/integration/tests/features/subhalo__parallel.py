@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "grid_search"
 test_name = "multinest_grid_subhalo__parallel"
-data_label = "lens_sie__source_smooth"
+data_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
-def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
     class GridPhase(af.as_grid_search(al.PhaseImaging, parallel=True)):
         @property
         def grid_priors(self):
@@ -45,7 +45,7 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
                 regularization=al.reg.Constant,
             ),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
         number_of_steps=2,
     )
 

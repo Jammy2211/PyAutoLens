@@ -3,7 +3,6 @@ import autolens as al
 
 
 class TestSlam:
-
     def test__lens_light_tag_for_source_pipeline(self):
 
         hyper = al.slam.Hyper()
@@ -101,22 +100,22 @@ class TestSource:
 
     def test__align_centre_of_mass_to_light(self):
 
-        mass_profile = af.PriorModel(al.mp.SphericalIsothermal)
+        mass = af.PriorModel(al.mp.SphericalIsothermal)
 
         source = al.slam.Source(align_light_mass_centre=False)
 
-        mass_profile = source.align_centre_of_mass_to_light(mass_profile=mass_profile, light_profile_centre=(1.0, 2.0))
+        mass = source.align_centre_of_mass_to_light(mass=mass, light_centre=(1.0, 2.0))
 
-        assert mass_profile.centre.centre_0.mean == 1.0
-        assert mass_profile.centre.centre_0.sigma == 0.1
-        assert mass_profile.centre.centre_0.mean == 1.0
-        assert mass_profile.centre.centre_0.sigma == 0.1
+        assert mass.centre.centre_0.mean == 1.0
+        assert mass.centre.centre_0.sigma == 0.1
+        assert mass.centre.centre_0.mean == 1.0
+        assert mass.centre.centre_0.sigma == 0.1
 
         source = al.slam.Source(align_light_mass_centre=True)
 
-        mass_profile = source.align_centre_of_mass_to_light(mass_profile=mass_profile, light_profile_centre=(1.0, 2.0))
+        mass = source.align_centre_of_mass_to_light(mass=mass, light_centre=(1.0, 2.0))
 
-        assert mass_profile.centre == (1.0, 2.0)
+        assert mass.centre == (1.0, 2.0)
 
     def test__align_centre_to_lens_light_centre(self):
 
@@ -124,7 +123,7 @@ class TestSource:
 
         source = al.slam.Source(lens_light_centre=(1.0, 2.0))
 
-        light = source.align_centre_to_lens_light_centre(light_profile=light)
+        light = source.align_centre_to_lens_light_centre(light=light)
 
         assert light.centre == (1.0, 2.0)
 
@@ -141,9 +140,7 @@ class TestSource:
     def test__remove_disk_from_lens_galaxy(self):
 
         lens = al.GalaxyModel(
-            redshift=0.5,
-            bulge=al.lp.EllipticalSersic,
-            disk=al.lp.EllipticalExponential,
+            redshift=0.5, bulge=al.lp.EllipticalSersic, disk=al.lp.EllipticalExponential
         )
 
         source = al.slam.Source(lens_light_bulge_only=False)
@@ -163,10 +160,10 @@ class TestSource:
         source = al.slam.Source()
 
         source.type_tag = "sersic"
-        assert  source.is_inversion == False
+        assert source.is_inversion == False
 
         source.type_tag = "anything_else"
-        assert  source.is_inversion == True
+        assert source.is_inversion == True
 
     def test__unfix_lens_mass_centre(self):
 
@@ -188,6 +185,7 @@ class TestSource:
         assert mass.centre.centre_0.sigma == 0.05
         assert mass.centre.centre_1.mean == 6.0
         assert mass.centre.centre_1.sigma == 0.05
+
 
 class TestLight:
     def test__tag(self):

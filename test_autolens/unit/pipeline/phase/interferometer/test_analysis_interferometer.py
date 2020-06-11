@@ -20,13 +20,13 @@ class TestFit:
         self, interferometer_7, mask_7x7, visibilities_mask_7x2
     ):
         phase_interferometer_7 = al.PhaseInterferometer(
-            non_linear_class=mock_pipeline.MockNLO,
+            phase_name="test_phase",
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
                 source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
             ),
+            search=mock_pipeline.MockSearch(),
             real_space_mask=mask_7x7,
-            phase_name="test_phase_test_fit",
         )
 
         result = phase_interferometer_7.run(
@@ -45,11 +45,12 @@ class TestFit:
         )
 
         phase_interferometer_7 = al.PhaseInterferometer(
-            real_space_mask=mask_7x7,
-            galaxies=[lens_galaxy],
+            phase_name="test_phase",
+            galaxies=dict(lens=lens_galaxy),
             cosmology=cosmo.FLRW,
             settings=al.PhaseSettingsInterferometer(sub_size=2),
-            phase_name="test_phase",
+            search=mock_pipeline.MockSearch(),
+            real_space_mask=mask_7x7,
         )
 
         analysis = phase_interferometer_7.make_analysis(
@@ -86,12 +87,12 @@ class TestFit:
         )
 
         phase_interferometer_7 = al.PhaseInterferometer(
-            real_space_mask=mask_7x7,
-            galaxies=[lens_galaxy],
-            hyper_background_noise=hyper_background_noise,
-            cosmology=cosmo.FLRW,
-            settings=al.PhaseSettingsInterferometer(sub_size=4),
             phase_name="test_phase",
+            galaxies=dict(lens=lens_galaxy),
+            hyper_background_noise=hyper_background_noise,
+            settings=al.PhaseSettingsInterferometer(sub_size=4),
+            search=mock_pipeline.MockSearch(),
+            real_space_mask=mask_7x7,
         )
 
         analysis = phase_interferometer_7.make_analysis(

@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "lens__source"
 test_name = "lens_mass__source_x2"
-data_label = "lens_sie__source_smooth"
+data_name = "lens_sie__source_smooth"
 instrument = "euclid"
 
 
-def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
@@ -17,12 +17,8 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source_0=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
     )
-
-    phase1.search.const_efficiency_mode = True
-    phase1.search.n_live_points = 60
-    phase1.search.sampling_efficiency = 0.7
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2",
@@ -36,12 +32,8 @@ def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
             ),
             source_1=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        non_linear_class=non_linear_class,
+        search=search,
     )
-
-    phase2.search.const_efficiency_mode = True
-    phase2.search.n_live_points = 60
-    phase2.search.sampling_efficiency = 0.7
 
     return al.PipelineDataset(name, phase1, phase2)
 

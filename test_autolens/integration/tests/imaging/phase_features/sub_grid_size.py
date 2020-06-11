@@ -4,18 +4,18 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "phase_features"
 test_name = "sub_size"
-data_label = "lens_light_dev_vaucouleurs"
+data_name = "lens_light_dev_vaucouleurs"
 instrument = "vro"
 
 
-def make_pipeline(name, phase_folders, non_linear_class=af.MultiNest):
+def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
         phase_folders=phase_folders,
         galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)),
         sub_size=2,
-        non_linear_class=non_linear_class,
+        search=search,
     )
 
     phase1.search.const_efficiency_mode = True

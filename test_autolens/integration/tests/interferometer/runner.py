@@ -3,7 +3,7 @@ import numpy as np
 import autolens as al
 import autofit as af
 import autoconf as conf
-from autofit.non_linear.mock_nlo import MockNLO
+from autofit.non_linear.mock_nlo import MockSearch
 from test_autogalaxy.simulators.interferometer import (
     instrument_util as ag_instrument_util,
 )
@@ -13,7 +13,7 @@ from test_autolens.simulators.interferometer import instrument_util
 def run(
     module,
     test_name=None,
-    non_linear_class=af.MultiNest,
+    search=af.PySwarmsGlobal(),
     config_folder="config",
     positions=None,
 ):
@@ -24,7 +24,7 @@ def run(
     conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
     interferometer = instrument_util.load_test_interferometer(
-        data_label=module.data_label, instrument=module.instrument
+        data_name=module.data_name, instrument=module.instrument
     )
 
     pixel_scales = ag_instrument_util.pixel_scale_from_instrument(
@@ -44,7 +44,7 @@ def run(
         name=test_name,
         phase_folders=[module.test_type, test_name],
         real_space_mask=real_space_mask,
-        non_linear_class=non_linear_class,
+        search=search,
     ).run(dataset=interferometer, mask=visibilities_mask)
 
 
@@ -53,7 +53,7 @@ def run_a_mock(module):
     run(
         module,
         test_name=f"{module.test_name}_mock",
-        non_linear_class=MockNLO,
+        search=MockSearch,
         config_folder="config_mock",
     )
 
@@ -63,6 +63,6 @@ def run_with_multi_nest(module):
     run(
         module,
         test_name=f"{module.test_name}_nest",
-        non_linear_class=af.MultiNest,
+        search=af.PySwarmsGlobal(),
         config_folder="config_mock",
     )

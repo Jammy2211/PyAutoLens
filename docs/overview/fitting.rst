@@ -112,7 +112,7 @@ pass it a non-linear search class, which instructs the phase to fit the lens dat
     phase = al.PhaseImaging(
         galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
         phase_name="phase_example",
-        non_linear_class=af.MultiNest,
+        search=af.DynestyStatic(),
     )
 
     phase.run(data=imaging, mask=mask)

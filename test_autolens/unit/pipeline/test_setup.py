@@ -72,16 +72,24 @@ def test__subhalo_centre_tag():
     setup = al.PipelineSetup(subhalo_instance=al.mp.SphericalNFW(centre=(3.027, 4.033)))
     assert setup.subhalo_centre_tag == "__sub_centre_(3.03,4.03)"
 
+
 def test__subhalo_mass_at_200_tag():
 
     setup = al.PipelineSetup(subhalo_instance=None)
     assert setup.subhalo_mass_at_200_tag == ""
-    setup = al.PipelineSetup(subhalo_instance=al.mp.SphericalNFWMCRLudlow(mass_at_200=1e8))
+    setup = al.PipelineSetup(
+        subhalo_instance=al.mp.SphericalNFWMCRLudlow(mass_at_200=1e8)
+    )
     assert setup.subhalo_mass_at_200_tag == "__sub_mass_1.0e+08"
-    setup = al.PipelineSetup(subhalo_instance=al.mp.SphericalNFWMCRLudlow(mass_at_200=1e9))
+    setup = al.PipelineSetup(
+        subhalo_instance=al.mp.SphericalNFWMCRLudlow(mass_at_200=1e9)
+    )
     assert setup.subhalo_mass_at_200_tag == "__sub_mass_1.0e+09"
-    setup = al.PipelineSetup(subhalo_instance=al.mp.SphericalNFWMCRLudlow(mass_at_200=1e10))
+    setup = al.PipelineSetup(
+        subhalo_instance=al.mp.SphericalNFWMCRLudlow(mass_at_200=1e10)
+    )
     assert setup.subhalo_mass_at_200_tag == "__sub_mass_1.0e+10"
+
 
 def test__tag():
 
@@ -121,7 +129,4 @@ def test__tag():
 
     print(setup.tag)
 
-    assert (
-        setup.tag
-        == "setup__with_shear__sub_centre_(1.00,2.00)__sub_mass_1.0e+08"
-    )
+    assert setup.tag == "setup__with_shear__sub_centre_(1.00,2.00)__sub_mass_1.0e+08"

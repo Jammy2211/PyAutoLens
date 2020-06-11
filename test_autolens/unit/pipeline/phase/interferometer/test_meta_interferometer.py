@@ -21,7 +21,6 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
 
     phase_interferometer_7 = al.PhaseInterferometer(
         phase_name="phase_interferometer_7",
-        real_space_mask=mask_7x7,
         settings=al.PhaseSettingsInterferometer(
             grid_class=al.Grid,
             grid_inversion_class=al.Grid,
@@ -34,6 +33,8 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
             inversion_uses_border=False,
             inversion_stochastic=True,
         ),
+        search=mock_pipeline.MockSearch(),
+        real_space_mask=mask_7x7,
     )
 
     assert phase_interferometer_7.meta_dataset.settings.sub_size == 3
@@ -58,7 +59,6 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
 
     phase_interferometer_7 = al.PhaseInterferometer(
         phase_name="phase_interferometer_7",
-        real_space_mask=mask_7x7,
         settings=al.PhaseSettingsInterferometer(
             grid_class=al.GridIterate,
             sub_size=3,
@@ -66,6 +66,8 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
             sub_steps=[2],
             transformer_class=al.TransformerDFT,
         ),
+        search=mock_pipeline.MockSearch(),
+        real_space_mask=mask_7x7,
     )
 
     analysis = phase_interferometer_7.make_analysis(
