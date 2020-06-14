@@ -2,7 +2,7 @@ from os import path
 
 import autolens as al
 import pytest
-from test_autogalaxy.mock import mock_pipeline
+from test_autogalaxy import mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -33,7 +33,7 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
             inversion_uses_border=False,
             inversion_stochastic=True,
         ),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(),
         real_space_mask=mask_7x7,
     )
 
@@ -47,7 +47,7 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
     assert phase_interferometer_7.meta_dataset.settings.inversion_stochastic == True
 
     analysis = phase_interferometer_7.make_analysis(
-        dataset=interferometer_7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=interferometer_7, mask=mask_7x7, results=mock.MockResults()
     )
 
     assert isinstance(analysis.masked_dataset.grid, al.Grid)
@@ -66,12 +66,12 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
             sub_steps=[2],
             transformer_class=al.TransformerDFT,
         ),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(),
         real_space_mask=mask_7x7,
     )
 
     analysis = phase_interferometer_7.make_analysis(
-        dataset=interferometer_7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=interferometer_7, mask=mask_7x7, results=mock.MockResults()
     )
 
     assert isinstance(analysis.masked_dataset.grid, al.GridIterate)

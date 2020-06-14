@@ -31,7 +31,9 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase1.search.sampling_efficiency = 0.8
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
-        hyper_galaxy=True, include_background_sky=True, include_background_noise=True
+        hyper_galaxy_search=True,
+        include_background_sky=True,
+        include_background_noise=True,
     )
     phase2 = al.PhaseInterferometer(
         phase_name="phase_2_weighted_regularization",
@@ -59,10 +61,10 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase2.search.sampling_efficiency = 0.8
 
     phase2 = phase2.extend_with_multiple_hyper_phases(
-        hyper_galaxy=True,
+        hyper_galaxy_search=True,
         include_background_sky=True,
         include_background_noise=True,
-        inversion=True,
+        inversion_search=True,
     )
 
     phase3 = al.PhaseInterferometer(
@@ -91,10 +93,10 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase3.search.sampling_efficiency = 0.8
 
     phase3 = phase3.extend_with_multiple_hyper_phases(
-        hyper_galaxy=True,
+        hyper_galaxy_search=True,
         include_background_sky=True,
         include_background_noise=True,
-        inversion=True,
+        inversion_search=True,
     )
 
     return al.PipelineDataset(name, phase1, phase2, phase3)

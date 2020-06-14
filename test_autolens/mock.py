@@ -1,68 +1,10 @@
-from autoconf import conf
 import autofit as af
-import autolens as al
-import numpy as np
+
+from test_autofit import mock
+from test_autogalaxy.mock import MockSearch, MockSamples
 
 
-class GalaxiesMockAnalysis:
-    def __init__(self, number_galaxies, value):
-        self.number_galaxies = number_galaxies
-        self.value = value
-        self.hyper_model_image = None
-        self.hyper_galaxy_image_path_dict = None
-
-    # noinspection PyUnusedLocal
-    def galaxy_images_for_model(self, model):
-        return self.number_galaxies * [np.array([self.value])]
-
-    def log_likelihood_function(self, instance):
-        return 1
-
-
-class MockSamples(af.PDFSamples):
-    def __init__(
-        self,
-        max_log_likelihood_instance=None,
-        log_likelihoods=None,
-        gaussian_tuples=None,
-    ):
-
-        if log_likelihoods is None:
-            log_likelihoods = [1.0, 2.0, 3.0]
-
-        super().__init__(
-            model=None,
-            parameters=[],
-            log_likelihoods=log_likelihoods,
-            log_priors=[],
-            weights=[],
-        )
-
-        self._max_log_likelihood_instance = max_log_likelihood_instance
-        self.gaussian_tuples = gaussian_tuples
-
-    @property
-    def max_log_likelihood_instance(self) -> int:
-        return self._max_log_likelihood_instance
-
-    def gaussian_priors_at_sigma(self, sigma=None):
-        return self.gaussian_tuples
-
-    @property
-    def max_log_likelihood_instance(self):
-
-        if self._max_log_likelihood_instance is not None:
-            return self._max_log_likelihood_instance
-
-        self.galaxies = [
-            al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(centre=(0.0, 1.0))),
-            al.Galaxy(redshift=1.0, light=al.lp.EllipticalSersic()),
-        ]
-
-        return self
-
-
-class MockResult:
+class MockResult(mock.MockResult):
     def __init__(
         self,
         samples=None,
@@ -84,9 +26,13 @@ class MockResult:
         use_as_hyper_dataset=False,
     ):
 
-        self.instance = instance or af.ModelInstance()
-        self.model = model or af.ModelMapper()
-        self.samples = samples or MockSamples(max_log_likelihood_instance=self.instance)
+        super().__init__(
+            samples=samples,
+            instance=instance,
+            model=model,
+            analysis=analysis,
+            search=search,
+        )
 
         self.previous_model = model
         self.gaussian_tuples = None
@@ -100,20 +46,13 @@ class MockResult:
         self.model_image = model_image
         self.unmasked_model_image = model_image
         self.max_log_likelihood_tracer = max_log_likelihood_tracer
-        self.analysis = analysis
-        self.search = search
         self.pixelization = pixelization
-        self.hyper_combined = MockHyperCombinedPhase()
         self.use_as_hyper_dataset = use_as_hyper_dataset
         self.positions = positions
         self.updated_positions = (
             updated_positions if updated_positions is not None else []
         )
         self.updated_positions_threshold = updated_positions_threshold
-
-    @property
-    def last(self):
-        return self
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(self):
@@ -197,45 +136,3 @@ class MockResults(af.ResultsCollection):
 
     def __len__(self):
         return len(self.__result_list)
-
-
-class MockHyperCombinedPhase:
-    def __init__(self):
-        pass
-
-    @property
-    def max_log_likelihood_pixelization_grids_of_planes(self):
-        return 1
-
-
-class MockSearch(af.NonLinearSearch):
-    def _fit(self, model, analysis):
-        class Fitness:
-            def __init__(self, instance_from_vector):
-                self.result = None
-                self.instance_from_vector = instance_from_vector
-
-            def __call__(self, vector):
-                instance = self.instance_from_vector(vector)
-
-                log_likelihood = analysis.log_likelihood_function(instance)
-                self.result = MockResult(instance=instance)
-
-                # Return Chi squared
-                return -2 * log_likelihood
-
-        fitness_function = Fitness(model.instance_from_vector)
-        fitness_function(model.prior_count * [0.8])
-
-        return fitness_function.result
-
-    @property
-    def config_type(self):
-        return conf.instance.mock
-
-    @property
-    def tag(self):
-        return "mock"
-
-    def samples_from_model(self, model):
-        return MockSamples()

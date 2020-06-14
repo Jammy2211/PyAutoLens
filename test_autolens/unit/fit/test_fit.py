@@ -2,7 +2,7 @@ import autolens as al
 import numpy as np
 import pytest
 from autoarray.operators.inversion import inversions
-from test_autogalaxy.mock.mock_profiles import MockLightProfile
+from test_autogalaxy.mock import MockLightProfile
 
 
 class TestFitImaging:
