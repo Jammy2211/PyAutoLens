@@ -62,7 +62,9 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase2.search.n_live_points = 40
     phase2.search.sampling_efficiency = 0.8
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+    phase2 = phase2.extend_with_multiple_hyper_phases(
+        hyper_galaxy_search=True, inversion_search=True
+    )
 
     class InversionPhase(al.PhaseInterferometer):
         def customize_priors(self, results):
@@ -103,7 +105,9 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase3.search.n_live_points = 40
     phase3.search.sampling_efficiency = 0.8
 
-    phase3 = phase3.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+    phase3 = phase3.extend_with_multiple_hyper_phases(
+        hyper_galaxy_search=True, inversion_search=True
+    )
 
     return al.PipelineDataset(name, phase1, phase2, phase3)
 

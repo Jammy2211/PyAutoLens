@@ -1,7 +1,7 @@
 from autoconf import conf
 import autolens as al
 from test_autogalaxy.unit.conftest import *
-from test_autolens.mock import mock_pipeline
+from test_autolens import mock
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -162,18 +162,16 @@ def make_mask_7x7_1_pix():
 
 @pytest.fixture(name="phase_dataset_7x7")
 def make_phase_data(mask_7x7):
-    return al.PhaseDataset(phase_name="test_phase", search=mock_pipeline.MockSearch())
+    return al.PhaseDataset(phase_name="test_phase", search=mock.MockSearch())
 
 
 @pytest.fixture(name="phase_imaging_7x7")
 def make_phase_imaging_7x7():
-    return al.PhaseImaging(phase_name="test_phase", search=mock_pipeline.MockSearch())
+    return al.PhaseImaging(phase_name="test_phase", search=mock.MockSearch())
 
 
 @pytest.fixture(name="phase_interferometer_7")
 def make_phase_interferometer_7(mask_7x7):
     return al.PhaseInterferometer(
-        phase_name="test_phase",
-        search=mock_pipeline.MockSearch(),
-        real_space_mask=mask_7x7,
+        phase_name="test_phase", search=mock.MockSearch(), real_space_mask=mask_7x7
     )

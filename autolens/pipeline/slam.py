@@ -219,6 +219,9 @@ class Hyper(setup.PipelineSetup):
         hyper_image_sky=False,
         hyper_background_noise=False,
         hyper_fixed_after_source=False,
+        hyper_galaxies_search=None,
+        inversion_search=None,
+        hyper_combined_search=None,
     ):
         """The setup of a pipeline, which controls how PyAutoLens template pipelines runs, for example controlling
         assumptions about the lens's light profile bulge-disk model or if shear is included in the mass model.
@@ -249,6 +252,9 @@ class Hyper(setup.PipelineSetup):
             hyper_galaxies=hyper_galaxies,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
+            hyper_galaxies_search=hyper_galaxies_search,
+            inversion_search=inversion_search,
+            hyper_combined_search=hyper_combined_search,
         )
 
         self.hyper_fixed_after_source = hyper_fixed_after_source

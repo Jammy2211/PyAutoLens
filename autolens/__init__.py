@@ -35,9 +35,6 @@ from autogalaxy.pipeline.phase.extensions import HyperGalaxyPhase
 from autogalaxy.pipeline.phase.extensions.hyper_galaxy_phase import HyperGalaxyPhase
 from autogalaxy.pipeline.phase.extensions.hyper_phase import HyperPhase
 from autogalaxy.pipeline.phase.extensions.inversion_phase import (
-    InversionBackgroundBothPhase,
-    InversionBackgroundNoisePhase,
-    InversionBackgroundSkyPhase,
     InversionPhase,
     ModelFixingHyperPhase,
 )

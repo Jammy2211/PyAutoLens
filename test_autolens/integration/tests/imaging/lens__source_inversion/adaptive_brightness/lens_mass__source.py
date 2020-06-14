@@ -26,7 +26,9 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
     phase1.search.evidence_tolerance = 10.0
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
-        hyper_galaxy=False, include_background_sky=False, include_background_noise=False
+        hyper_galaxy_search=False,
+        include_background_sky=False,
+        include_background_noise=False,
     )
 
     phase2 = al.PhaseImaging(

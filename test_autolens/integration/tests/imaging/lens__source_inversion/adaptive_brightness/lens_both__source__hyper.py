@@ -49,7 +49,9 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
     phase2.search.sampling_efficiency = 0.8
     phase2.search.evidence_tolerance = 1000.0
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+    phase2 = phase2.extend_with_multiple_hyper_phases(
+        hyper_galaxy_search=True, inversion_search=True
+    )
 
     phase3 = al.PhaseImaging(
         phase_name="phase_3",
@@ -67,7 +69,9 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
     phase3.search.sampling_efficiency = 0.8
     phase3.search.evidence_tolerance = 1000.0
 
-    phase3 = phase3.extend_with_multiple_hyper_phases(hyper_galaxy=True, inversion=True)
+    phase3 = phase3.extend_with_multiple_hyper_phases(
+        hyper_galaxy_search=True, inversion_search=True
+    )
 
     return al.PipelineDataset(name, phase1, phase2, phase3)
 

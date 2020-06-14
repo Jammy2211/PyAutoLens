@@ -979,20 +979,13 @@
         }
     },
     "test_non_linear": {
-        "MockClassNLOx4": {
+        "MockClassx4": {
             "one": {},
             "two": {},
             "three": {},
             "four": {}
         },
-        "MockClassNLOx5": {
-            "one": {},
-            "two": {},
-            "three": {},
-            "four": {},
-            "five": {}
-        },
-        "MockClassNLOx6": {
+        "MockClassx6": {
             "one_0": {},
             "one_1": {},
             "two_0": {},
@@ -1002,7 +995,7 @@
         }
     },
     "test_model_mapper": {
-        "MockClassMM": {
+        "MockClassx2": {
             "one": {},
             "two": {}
         },

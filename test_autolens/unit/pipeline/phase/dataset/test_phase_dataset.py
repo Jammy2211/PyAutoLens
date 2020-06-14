@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 from autolens import exc
-from test_autolens.mock import mock_pipeline
+from test_autolens import mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -26,7 +26,7 @@ class TestMakeAnalysis:
         phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.2
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
         assert (
@@ -45,13 +45,13 @@ class TestMakeAnalysis:
             phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.2
 
             phase_imaging_7x7.make_analysis(
-                dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+                dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
             )
 
             phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.2
 
             phase_imaging_7x7.make_analysis(
-                dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+                dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
             )
 
     def test__positions_do_not_trace_within_threshold__raises_exception(
@@ -67,11 +67,11 @@ class TestMakeAnalysis:
                 source=al.Galaxy(redshift=1.0),
             ),
             settings=al.PhaseSettingsImaging(positions_threshold=50.0),
-            search=mock_pipeline.MockSearch(),
+            search=mock.MockSearch(),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -87,13 +87,13 @@ class TestMakeAnalysis:
                 source=al.Galaxy(redshift=1.0),
             ),
             settings=al.PhaseSettingsImaging(positions_threshold=0.0),
-            search=mock_pipeline.MockSearch(),
+            search=mock.MockSearch(),
         )
 
         imaging_7x7.positions = al.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)]])
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -110,13 +110,13 @@ class TestMakeAnalysis:
                 source=al.Galaxy(redshift=1.0),
             ),
             settings=al.PhaseSettingsImaging(positions_threshold=0.5),
-            search=mock_pipeline.MockSearch(),
+            search=mock.MockSearch(),
         )
 
         imaging_7x7.positions = al.GridCoordinates([[(1.0, 0.0), (-1.0, 0.0)]])
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
         tracer = al.Tracer.from_galaxies(
             galaxies=[
@@ -150,7 +150,7 @@ class TestMakeAnalysis:
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -164,7 +164,7 @@ class TestMakeAnalysis:
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -187,11 +187,11 @@ class TestMakeAnalysis:
                 )
             ),
             settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
-            search=mock_pipeline.MockSearch(),
+            search=mock.MockSearch(),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
@@ -211,11 +211,11 @@ class TestMakeAnalysis:
             ),
             settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
             phase_name="test_phase",
-            search=mock_pipeline.MockSearch(),
+            search=mock.MockSearch(),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -236,11 +236,11 @@ class TestMakeAnalysis:
             ),
             settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
             phase_name="test_phase",
-            search=mock_pipeline.MockSearch(),
+            search=mock.MockSearch(),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -259,11 +259,11 @@ class TestMakeAnalysis:
             ),
             settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
             phase_name="test_phase",
-            search=mock_pipeline.MockSearch(),
+            search=mock.MockSearch(),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
         instance = phase_imaging_7x7.model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
@@ -273,62 +273,3 @@ class TestMakeAnalysis:
                 tracer=tracer
             )
             analysis.log_likelihood_function(instance=instance)
-
-
-class TestExtensions:
-    def test__extend_with_hyper_and_pixelizations(self):
-
-        phase_no_pixelization = al.PhaseImaging(
-            phase_name="test_phase", search=mock_pipeline.MockSearch()
-        )
-
-        phase_extended = phase_no_pixelization.extend_with_multiple_hyper_phases(
-            hyper_galaxy=False, inversion=False
-        )
-        assert phase_extended == phase_no_pixelization
-
-        # This phase does not have a pixelization, so even though inversion=True it will not be extended
-
-        phase_extended = phase_no_pixelization.extend_with_multiple_hyper_phases(
-            inversion=True
-        )
-        assert phase_extended == phase_no_pixelization
-
-        phase_with_pixelization = al.PhaseImaging(
-            galaxies=dict(
-                source=al.GalaxyModel(
-                    redshift=0.5,
-                    pixelization=al.pix.Rectangular,
-                    regularization=al.reg.Constant,
-                )
-            ),
-            search=mock_pipeline.MockSearch,
-            phase_name="test_phase",
-        )
-
-        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
-            inversion=True
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
-
-        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
-            hyper_galaxy=True, inversion=False
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
-
-        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
-            hyper_galaxy=False, inversion=True
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
-
-        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
-            hyper_galaxy=True, inversion=True
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.InversionPhase
-        assert type(phase_extended.hyper_phases[1]) == al.HyperGalaxyPhase
-
-        phase_extended = phase_with_pixelization.extend_with_multiple_hyper_phases(
-            hyper_galaxy=True, inversion=True, hyper_galaxy_phase_first=True
-        )
-        assert type(phase_extended.hyper_phases[0]) == al.HyperGalaxyPhase
-        assert type(phase_extended.hyper_phases[1]) == al.InversionPhase

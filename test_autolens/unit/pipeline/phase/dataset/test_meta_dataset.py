@@ -4,7 +4,7 @@ import autolens as al
 import numpy as np
 import pytest
 from astropy import cosmology as cosmo
-from test_autolens.mock import mock_pipeline
+from test_autolens import mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -24,7 +24,7 @@ def test__grid_classes_input__used_in_masked_imaging(
     )
 
     analysis = phase_imaging_7x7.make_analysis(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
     )
     assert isinstance(analysis.masked_imaging.grid, al.Grid)
     assert isinstance(analysis.masked_imaging.grid_inversion, al.Grid)
@@ -37,7 +37,7 @@ def test__grid_classes_input__used_in_masked_imaging(
     )
 
     analysis = phase_imaging_7x7.make_analysis(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
     )
     assert isinstance(analysis.masked_imaging.grid, al.GridIterate)
     assert analysis.masked_imaging.grid.fractional_accuracy == 0.2
@@ -53,7 +53,7 @@ def test__grid_classes_input__used_in_masked_imaging(
     )
 
     analysis = phase_imaging_7x7.make_analysis(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
     )
     assert isinstance(analysis.masked_imaging.grid, al.GridInterpolate)
     assert analysis.masked_imaging.grid.pixel_scales_interp == (0.1, 0.1)
@@ -75,7 +75,7 @@ def test__auto_positions_update__updates_correct_using_factor(
     phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.1
     phase_imaging_7x7.meta_dataset.settings.auto_positions_factor = None
 
-    results = mock_pipeline.MockResults(max_log_likelihood_tracer=tracer)
+    results = mock.MockResults(max_log_likelihood_tracer=tracer)
 
     analysis = phase_imaging_7x7.make_analysis(
         dataset=imaging_7x7, mask=mask_7x7, results=results
@@ -103,7 +103,7 @@ def test__auto_positions_update__updates_correct_using_factor(
     phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.2
     phase_imaging_7x7.meta_dataset.settings.auto_positions_factor = 2.0
 
-    results = mock_pipeline.MockResults(
+    results = mock.MockResults(
         max_log_likelihood_tracer=tracer,
         updated_positions=al.GridCoordinates(coordinates=[[(2.0, 2.0)]]),
         updated_positions_threshold=0.3,
@@ -123,7 +123,7 @@ def test__auto_positions_update__updates_correct_using_factor(
     phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.2
     phase_imaging_7x7.meta_dataset.settings.auto_positions_factor = 1.0
 
-    results = mock_pipeline.MockResults(
+    results = mock.MockResults(
         max_log_likelihood_tracer=tracer_x1_plane,
         updated_positions=al.GridCoordinates(coordinates=[[(2.0, 2.0), (3.0, 3.0)]]),
         updated_positions_threshold=0.3,
@@ -142,7 +142,7 @@ def test__auto_positions_update__updates_correct_using_factor(
     phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.2
     phase_imaging_7x7.meta_dataset.settings.auto_positions_factor = 2.0
 
-    results = mock_pipeline.MockResults(
+    results = mock.MockResults(
         max_log_likelihood_tracer=tracer,
         updated_positions=al.GridCoordinates(coordinates=[[(2.0, 2.0), (3.0, 3.0)]]),
         updated_positions_threshold=0.3,
@@ -164,7 +164,7 @@ def test__auto_positions_update__updates_correct_using_factor(
     analysis = phase_imaging_7x7.make_analysis(
         dataset=imaging_7x7,
         mask=mask_7x7,
-        results=mock_pipeline.MockResults(
+        results=mock.MockResults(
             max_log_likelihood_tracer=tracer,
             positions=al.GridCoordinates(coordinates=[[(3.0, 3.0), (4.0, 4.0)]]),
             updated_positions_threshold=0.3,
@@ -179,7 +179,7 @@ def test__auto_positions_update__updates_correct_using_factor(
     phase_interferometer_7.meta_dataset.settings.positions_threshold = None
     phase_interferometer_7.meta_dataset.settings.auto_positions_factor = 2.0
 
-    results = mock_pipeline.MockResults(
+    results = mock.MockResults(
         max_log_likelihood_tracer=tracer,
         updated_positions=al.GridCoordinates(coordinates=[[(1.0, 1.0)]]),
         updated_positions_threshold=0.3,
@@ -206,7 +206,7 @@ def test__auto_positions_update_threshold__uses_auto_update_factor(
     phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.1
     phase_imaging_7x7.meta_dataset.settings.auto_positions_factor = None
 
-    results = mock_pipeline.MockResults(max_log_likelihood_tracer=tracer)
+    results = mock.MockResults(max_log_likelihood_tracer=tracer)
 
     analysis = phase_imaging_7x7.make_analysis(
         dataset=imaging_7x7, mask=mask_7x7, results=results
@@ -219,7 +219,7 @@ def test__auto_positions_update_threshold__uses_auto_update_factor(
     imaging_7x7.positions = al.GridCoordinates(coordinates=[[(1.0, 0.0), (-1.0, 0.0)]])
     phase_imaging_7x7.meta_dataset.settings.auto_positions_factor = 1.0
 
-    results = mock_pipeline.MockResults(max_log_likelihood_tracer=tracer)
+    results = mock.MockResults(max_log_likelihood_tracer=tracer)
 
     analysis = phase_imaging_7x7.make_analysis(
         dataset=imaging_7x7, mask=mask_7x7, results=results
@@ -233,7 +233,7 @@ def test__auto_positions_update_threshold__uses_auto_update_factor(
     phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.2
     phase_imaging_7x7.meta_dataset.settings.auto_positions_factor = 3.0
 
-    results = mock_pipeline.MockResults(
+    results = mock.MockResults(
         max_log_likelihood_tracer=tracer, updated_positions_threshold=0.2
     )
 
@@ -249,7 +249,7 @@ def test__auto_positions_update_threshold__uses_auto_update_factor(
     phase_imaging_7x7.meta_dataset.settings.auto_positions_factor = 1.0
     phase_imaging_7x7.positions_threshold = None
 
-    results = mock_pipeline.MockResults(max_log_likelihood_tracer=tracer)
+    results = mock.MockResults(max_log_likelihood_tracer=tracer)
 
     analysis = phase_imaging_7x7.make_analysis(
         dataset=imaging_7x7, mask=mask_7x7, results=results
@@ -278,11 +278,11 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(
         settings=al.PhaseSettingsImaging(
             grid_inversion_class=al.Grid, inversion_uses_border=True
         ),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(),
     )
 
     analysis = phase_imaging_7x7.make_analysis(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
     )
     analysis.masked_dataset.grid_inversion[4] = np.array([[500.0, 0.0]])
 
@@ -303,11 +303,11 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(
             grid_inversion_class=al.Grid,
             inversion_uses_border=False,
         ),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(),
     )
 
     analysis = phase_imaging_7x7.make_analysis(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
     )
 
     analysis.masked_dataset.grid_inversion[4] = np.array([300.0, 0.0])
@@ -325,7 +325,7 @@ def test__inversion_pixel_limit_computed_via_config_or_input():
     phase_imaging_7x7 = al.PhaseImaging(
         phase_name="phase_imaging_7x7",
         settings=al.PhaseSettingsImaging(inversion_pixel_limit=None),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(),
     )
 
     assert phase_imaging_7x7.meta_dataset.settings.inversion_pixel_limit == 3000
@@ -333,7 +333,7 @@ def test__inversion_pixel_limit_computed_via_config_or_input():
     phase_imaging_7x7 = al.PhaseImaging(
         phase_name="phase_imaging_7x7",
         settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(),
     )
 
     assert phase_imaging_7x7.meta_dataset.settings.inversion_pixel_limit == 10
@@ -341,7 +341,7 @@ def test__inversion_pixel_limit_computed_via_config_or_input():
     phase_imaging_7x7 = al.PhaseImaging(
         phase_name="phase_imaging_7x7",
         settings=al.PhaseSettingsImaging(inversion_pixel_limit=2000),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(),
     )
 
     assert phase_imaging_7x7.meta_dataset.settings.inversion_pixel_limit == 2000

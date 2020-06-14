@@ -189,7 +189,6 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
         self.save_metadata(galaxy_data.name)
         self.model = self.model.populate(results)
-        self.customize_priors(results)
 
         result = self.run_analysis(analysis=analysis, info=info)
 

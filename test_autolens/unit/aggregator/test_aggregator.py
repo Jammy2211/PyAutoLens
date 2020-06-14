@@ -4,7 +4,7 @@ from os import path
 import autofit as af
 import autolens as al
 import pytest
-from test_autolens.mock import mock_pipeline
+from test_autolens import mock
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -14,7 +14,18 @@ def make_path():
     return "{}/files/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
-def test__tracer_generator_from_aggregator(imaging_7x7, mask_7x7):
+@pytest.fixture(name="samples")
+def make_samples():
+
+    galaxy_0 = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(centre=(0.0, 1.0)))
+    galaxy_1 = al.Galaxy(redshift=1.0, light=al.lp.EllipticalSersic())
+
+    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
+
+    return mock.MockSamples(max_log_likelihood_instance=tracer)
+
+
+def test__tracer_generator_from_aggregator(imaging_7x7, mask_7x7, samples):
 
     phase_imaging_7x7 = al.PhaseImaging(
         phase_name="test_phase_aggregator",
@@ -22,11 +33,11 @@ def test__tracer_generator_from_aggregator(imaging_7x7, mask_7x7):
             lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(samples=samples),
     )
 
     phase_imaging_7x7.run(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults(samples=samples)
     )
 
     agg = af.Aggregator(directory=phase_imaging_7x7.paths.output_path)
@@ -40,7 +51,7 @@ def test__tracer_generator_from_aggregator(imaging_7x7, mask_7x7):
         assert tracer.galaxies[1].redshift == 1.0
 
 
-def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
+def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7, samples):
 
     phase_imaging_7x7 = al.PhaseImaging(
         phase_name="test_phase_aggregator",
@@ -48,11 +59,11 @@ def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
             lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(samples=samples),
     )
 
     phase_imaging_7x7.run(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults(samples=samples)
     )
 
     agg = af.Aggregator(directory=phase_imaging_7x7.paths.output_path)
@@ -63,7 +74,7 @@ def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
         assert (masked_imaging.imaging.image == imaging_7x7.image).all()
 
 
-def test__fit_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
+def test__fit_imaging_generator_from_aggregator(imaging_7x7, mask_7x7, samples):
 
     phase_imaging_7x7 = al.PhaseImaging(
         phase_name="test_phase_aggregator",
@@ -71,11 +82,11 @@ def test__fit_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
             lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(samples=samples),
     )
 
     phase_imaging_7x7.run(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults(samples=samples)
     )
 
     agg = af.Aggregator(directory=phase_imaging_7x7.paths.output_path)
@@ -86,7 +97,9 @@ def test__fit_imaging_generator_from_aggregator(imaging_7x7, mask_7x7):
         assert (fit_imaging.masked_imaging.imaging.image == imaging_7x7.image).all()
 
 
-def test__masked_interferometer_generator_from_aggregator(interferometer_7, mask_7x7):
+def test__masked_interferometer_generator_from_aggregator(
+    interferometer_7, mask_7x7, samples
+):
 
     phase_interferometer_7x7 = al.PhaseInterferometer(
         phase_name="test_phase_aggregator",
@@ -94,12 +107,14 @@ def test__masked_interferometer_generator_from_aggregator(interferometer_7, mask
             lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(samples=samples),
         real_space_mask=mask_7x7,
     )
 
     phase_interferometer_7x7.run(
-        dataset=interferometer_7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=interferometer_7,
+        mask=mask_7x7,
+        results=mock.MockResults(samples=samples),
     )
 
     agg = af.Aggregator(directory=phase_interferometer_7x7.paths.output_path)
@@ -114,7 +129,9 @@ def test__masked_interferometer_generator_from_aggregator(interferometer_7, mask
         assert (masked_interferometer.real_space_mask == mask_7x7).all()
 
 
-def test__fit_interferometer_generator_from_aggregator(interferometer_7, mask_7x7):
+def test__fit_interferometer_generator_from_aggregator(
+    interferometer_7, mask_7x7, samples
+):
 
     phase_interferometer_7x7 = al.PhaseInterferometer(
         phase_name="test_phase_aggregator",
@@ -122,12 +139,14 @@ def test__fit_interferometer_generator_from_aggregator(interferometer_7, mask_7x
             lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        search=mock_pipeline.MockSearch(),
+        search=mock.MockSearch(samples=samples),
         real_space_mask=mask_7x7,
     )
 
     phase_interferometer_7x7.run(
-        dataset=interferometer_7, mask=mask_7x7, results=mock_pipeline.MockResults()
+        dataset=interferometer_7,
+        mask=mask_7x7,
+        results=mock.MockResults(samples=samples),
     )
 
     agg = af.Aggregator(directory=phase_interferometer_7x7.paths.output_path)

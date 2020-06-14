@@ -4,7 +4,7 @@ import autofit as af
 import autolens as al
 import numpy as np
 import pytest
-from test_autolens.mock import mock_pipeline
+from test_autolens import mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -22,7 +22,7 @@ class TestMakeAnalysis:
         analysis = phase_interferometer_7.make_analysis(
             dataset=interferometer_7,
             mask=visibilities_mask_7x2,
-            results=mock_pipeline.MockResults(),
+            results=mock.MockResults(),
         )
 
         assert (
@@ -38,7 +38,7 @@ class TestMakeAnalysis:
         phase_interferometer_7.make_analysis(
             dataset=interferometer_7,
             mask=visibilities_mask_7x2,
-            results=mock_pipeline.MockResults(),
+            results=mock.MockResults(),
         )
 
         file_phase_info = "{}/{}".format(
@@ -74,7 +74,7 @@ class TestMakeAnalysis:
                 lens1=al.GalaxyModel(redshift=al.Redshift),
             ),
             hyper_background_noise=al.hyper_data.HyperBackgroundNoise,
-            search=mock_pipeline.MockSearch(),
+            search=mock.MockSearch(),
             real_space_mask=mask_7x7,
         )
 
@@ -96,12 +96,12 @@ class TestMakeAnalysis:
             settings=al.PhaseSettingsInterferometer(
                 grid_class=al.Grid, sub_size=1, log_likelihood_cap=100.0
             ),
-            search=mock_pipeline.MockSearch(),
+            search=mock.MockSearch(),
             real_space_mask=mask_7x7,
         )
 
         analysis = phase_imaging_7x7.make_analysis(
-            dataset=interferometer_7, mask=mask_7x7, results=mock_pipeline.MockResults()
+            dataset=interferometer_7, mask=mask_7x7, results=mock.MockResults()
         )
 
         assert analysis.log_likelihood_cap == 100.0
@@ -131,7 +131,7 @@ class TestHyperMethods:
             ("galaxies", "source"): al.Visibilities.full(fill_value=5.0, shape_1d=(7,)),
         }
 
-        results = mock_pipeline.MockResults(
+        results = mock.MockResults(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=al.Array.full(fill_value=3.0, shape_2d=(3, 3)),
             hyper_galaxy_visibilities_path_dict=hyper_galaxy_visibilities_path_dict,
@@ -147,7 +147,7 @@ class TestHyperMethods:
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
             ),
-            search=mock_pipeline.MockSearch(),
+            search=mock.MockSearch(),
             real_space_mask=mask_7x7,
         )
 

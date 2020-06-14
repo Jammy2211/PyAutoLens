@@ -45,7 +45,7 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase2.search.n_live_points = 60
     phase2.search.sampling_efficiency = 0.7
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy=True)
+    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy_search=True)
 
     class HyperLensSourcePlanePhase(al.PhaseInterferometer):
         def customize_priors(self, results):

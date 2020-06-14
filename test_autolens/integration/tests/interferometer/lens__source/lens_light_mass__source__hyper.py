@@ -30,7 +30,9 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase1.search.sampling_efficiency = 0.8
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
-        hyper_galaxy=True, include_background_sky=True, include_background_noise=True
+        hyper_galaxy_search=True,
+        include_background_sky=True,
+        include_background_noise=True,
     )
 
     phase2 = al.PhaseInterferometer(
@@ -60,7 +62,9 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase2.search.sampling_efficiency = 0.8
 
     phase2 = phase2.extend_with_multiple_hyper_phases(
-        hyper_galaxy=True, include_background_sky=True, include_background_noise=True
+        hyper_galaxy_search=True,
+        include_background_sky=True,
+        include_background_noise=True,
     )
 
     return al.PipelineDataset(name, phase1, phase2)

@@ -168,10 +168,14 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         )
         visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)
 
-        log_evidences = self.stochastic_log_evidences_for_instance(instance=instance)
+        if not during_analysis:
 
-        visualizer.visualize_stochastic_histogram(
-            log_evidences=log_evidences,
-            max_log_evidence=fit.log_evidence,
-            during_analysis=during_analysis,
-        )
+            log_evidences = self.stochastic_log_evidences_for_instance(
+                instance=instance
+            )
+
+            visualizer.visualize_stochastic_histogram(
+                log_evidences=log_evidences,
+                max_log_evidence=fit.log_evidence,
+                during_analysis=during_analysis,
+            )
