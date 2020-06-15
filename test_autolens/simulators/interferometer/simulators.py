@@ -12,7 +12,7 @@ def simulate__lens_sie__source_smooth(instrument):
     lens_galaxy = al.Galaxy(
         redshift=0.5,
         mass=al.mp.EllipticalIsothermal(
-            centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
+            centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
         ),
     )
 
@@ -20,8 +20,8 @@ def simulate__lens_sie__source_smooth(instrument):
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),
-            axis_ratio=0.8,
-            phi=60.0,
+            e1=-0.055555,
+            e2=0.096225,
             intensity=0.4,
             effective_radius=0.5,
             sersic_index=1.0,
@@ -44,7 +44,7 @@ def simulate__lens_sie__source_cuspy(instrument):
     lens_galaxy = al.Galaxy(
         redshift=0.5,
         mass=al.mp.EllipticalIsothermal(
-            centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
+            centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
         ),
     )
 
@@ -52,8 +52,8 @@ def simulate__lens_sie__source_cuspy(instrument):
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),
-            axis_ratio=0.8,
-            phi=60.0,
+            e1=-0.055555,
+            e2=0.096225,
             intensity=0.1,
             effective_radius=0.5,
             sersic_index=3.0,
@@ -82,8 +82,8 @@ def simulate__lens_sis__source_smooth(instrument):
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),
-            axis_ratio=0.8,
-            phi=60.0,
+            e1=-0.055555,
+            e2=0.096225,
             intensity=0.4,
             effective_radius=0.5,
             sersic_index=1.0,
@@ -112,8 +112,8 @@ def simulate__lens_sie__source_smooth__offset_centre(instrument):
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(2.0, 2.0),
-            axis_ratio=0.8,
-            phi=60.0,
+            e1=-0.055555,
+            e2=0.096225,
             intensity=0.4,
             effective_radius=0.5,
             sersic_index=1.0,
@@ -144,7 +144,7 @@ def simulate__lens_light__source_smooth(instrument):
             sersic_index=4.0,
         ),
         mass=al.mp.EllipticalIsothermal(
-            centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
+            centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
         ),
     )
 
@@ -152,8 +152,8 @@ def simulate__lens_light__source_smooth(instrument):
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),
-            axis_ratio=0.8,
-            phi=60.0,
+            e1=-0.055555,
+            e2=0.096225,
             intensity=0.4,
             effective_radius=0.5,
             sersic_index=1.0,
@@ -184,7 +184,7 @@ def simulate__lens_light__source_cuspy(instrument):
             sersic_index=4.0,
         ),
         mass=al.mp.EllipticalIsothermal(
-            centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
+            centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
         ),
     )
 
@@ -192,8 +192,8 @@ def simulate__lens_light__source_cuspy(instrument):
         redshift=1.0,
         light=al.lp.EllipticalSersic(
             centre=(0.0, 0.0),
-            axis_ratio=0.8,
-            phi=60.0,
+            e1=-0.055555,
+            e2=0.096225,
             intensity=0.1,
             effective_radius=0.5,
             sersic_index=3.0,

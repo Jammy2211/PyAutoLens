@@ -196,7 +196,9 @@ class TestTracer:
         lens = al.Galaxy(
             redshift=0.5,
             mass=al.mp.EllipticalIsothermal(
-                centre=(0.001, 0.001), einstein_radius=1.0, axis_ratio=0.8
+                centre=(0.001, 0.001),
+                einstein_radius=1.0,
+                elliptical_comps=(0.0, 0.111111),
             ),
         )
 

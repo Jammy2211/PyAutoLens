@@ -11,7 +11,7 @@ for y in y_centres:
 
     print("Normal Isothermal (centre offset = {:.8f})".format(y))
     power_law = al.EllipticalIsothermal(
-        centre=(y, 0.0), axis_ratio=0.8, phi=0.0, einstein_radius=1.0
+        centre=(y, 0.0), elliptical_comps=(0.0, 0.111111), einstein_radius=1.0
     )
     power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
 
@@ -35,7 +35,7 @@ for y in y_centres:
 
     print("Slope Low Isothermal (centre offset = {:.8f})".format(y))
     power_law = al.EllipticalIsothermal(
-        centre=(y, 0.0), axis_ratio=0.8, phi=0.0, einstein_radius=1.0
+        centre=(y, 0.0), elliptical_comps=(0.0, 0.111111), einstein_radius=1.0
     )
     power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)
 
@@ -43,6 +43,6 @@ for y in y_centres:
 
     print("Slope High Normal Isothermal (centre offset = {:.8f})".format(y))
     power_law = al.EllipticalIsothermal(
-        centre=(y, 0.0), axis_ratio=0.8, phi=0.0, einstein_radius=1.0
+        centre=(y, 0.0), elliptical_comps=(0.0, 0.111111), einstein_radius=1.0
     )
     power_law.deflections_from_grid(grid=grid, grid_radial_minimum=1.0e-8)

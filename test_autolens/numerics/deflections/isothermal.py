@@ -15,7 +15,7 @@ print(grid)
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     mass=al.mp.EllipticalIsothermal(
-        centre=(0.0, 0.0), phi=45.0, axis_ratio=0.8, einstein_radius=1.0
+        centre=(0.0, 0.0), elliptical_comps=(0.111111, 0.0), einstein_radius=1.0
     ),
     shear=al.mp.ExternalShear(magnitude=0.05, phi=90.0),
 )
