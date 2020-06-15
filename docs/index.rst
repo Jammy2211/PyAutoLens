@@ -1,23 +1,30 @@
 .. include:: ../README.rst
 
 .. toctree::
-   :caption: Getting Started:
-   :maxdepth: 2
+   :caption: General:
+   :maxdepth: 1
    :hidden:
 
-   installation
+   general/installation
+   general/workspace
+   general/howtolens
+   general/papers
+   general/credits
+
+.. toctree::
+   :caption: Overview:
+   :maxdepth: 1
+   :hidden:
+
    overview/lensing
    overview/fitting
    overview/simulate
    overview/pixelizations
    overview/interferometry
-   workspace
-   howtolens
 
 .. toctree::
-   :caption: Getting Involved:
+   :caption: API Documentation:
    :maxdepth: 1
    :hidden:
 
-   papers
-   credits
+   api/api

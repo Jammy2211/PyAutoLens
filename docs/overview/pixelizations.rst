@@ -15,11 +15,13 @@ appears, with multiple rings and clumps of light:
 
 We are going to fit this image with an *Inversion*, so we first create *Mask* and *MaskedImaging* objects:
 
-mask = al.Mask.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.6
-)
+.. code-block:: bash
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+   mask = al.Mask.circular(
+      shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.6
+    )
+
+   masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
 To reconstruct the source using a pixel-grid, we simply pass it the *Pixelization* class we want to reconstruct its
 light using. We also pass a *Regularization* scheme which describes a our prior on how much we smooth the reconstruction.
