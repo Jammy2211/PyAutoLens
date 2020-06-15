@@ -28,7 +28,7 @@ mask = al.Mask.elliptical(
 # via a tracer, setup the rectangular mapper, etc.
 lens_galaxy = al.Light(
     mass=al.mp.EllipticalIsothermal(
-        centre=(1.0, 1.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0
+        centre=(1.0, 1.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
     )
 )
 source_galaxy = al.Light(

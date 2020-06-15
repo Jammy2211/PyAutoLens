@@ -44,6 +44,8 @@ from autogalaxy.profiles import (
     mass_profiles as mp,
     light_and_mass_profiles as lmp,
 )
+from autogalaxy.util import convert
+
 from autolens import aggregator as agg
 from autolens import plot
 from autolens.dataset.imaging import MaskedImaging, SimulatorImaging

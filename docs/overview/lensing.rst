@@ -197,8 +197,8 @@ rings!
         redshift=2.0,
         light=al.lp.EllipticalSersic(
             centre=(0.2, 0.2),
-            axis_ratio=0.8,
-            phi=60.0,
+            e1=-0.055555,
+            e2=0.096225,
             intensity=2.0,
             effective_radius=0.1,
             sersic_index=1.5,

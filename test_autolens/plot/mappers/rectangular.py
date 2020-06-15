@@ -11,7 +11,7 @@ grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     mass=al.mp.EllipticalIsothermal(
-        centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.6
+        centre=(0.0, 0.0), elliptical_comps=(0.0, -0.111111), einstein_radius=1.6
     ),
 )
 
