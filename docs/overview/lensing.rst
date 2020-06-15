@@ -24,12 +24,13 @@ module.
    import autolens.plot as aplt
 
 To describe the deflection of light, **PyAutoLens** uses *grid* data structures, which are two-dimensional
-Cartesian grids of (y,x) coordinates. Below, we make and plot a uniform Cartesian grid:
+Cartesian grids of (y,x) coordinates. Below, we make and plot a uniform Cartesian grid (the pixel-scale describes
+the conversion from pixel units to arc-seconds):
 
 .. code-block:: bash
 
     grid = al.Grid.uniform(
-        shape_2d=(50, 50), pixel_scales=0.05 # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+        shape_2d=(50, 50), pixel_scales=0.05
     )
 
     aplt.Grid(grid=grid)

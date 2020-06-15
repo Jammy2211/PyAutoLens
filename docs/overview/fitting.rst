@@ -124,16 +124,23 @@ combinations of light profiles, mass profiles and perhaps even modeling the syst
 
 .. code-block:: bash
 
-    # This aligns the light and mass profile centres in the model, reducing the number of free parameter fitted for by
-    # MultiNest by 2.
+    """
+    This aligns the light and mass profile centres in the model, reducing the
+    number of free parameter fitted for by Dynesty by 2.
+    """
+
     lens_galaxy_model.light.centre = lens_galaxy_model.mass.centre
 
-    # This fixes the lens galaxy light profile's rotation angle phi to a value of 45.0 degrees, removing another
-    # free parameter.
-    lens_galaxy_model.light.phi = 45.0
+    """
+    This fixes the lens galaxy light profile's effective radius to a value of
+    0.8 arc-seconds, removing another free parameter.
+    """
 
-    # This forces the mass profile to be rounder than the light profile.
-    lens_galaxy_model.mass.axis_ratio > lens_galaxy_model.light.axis_ratio
+    lens_galaxy_model.light.effective_radius = 0.8
+
+    """This forces the mass profile's einstein radius too be above 1.0 arc-seconds."""
+
+    lens_galaxy_model.mass.einstein_radius > 1.0
 
 There is a lot more to lens modeling with **PyAutoLens** than shown here. For example, to fit complex lens models we
 can use *Pipeline* objects, that chain together a series of the phase fits shown above. The pipeline changes the lens
