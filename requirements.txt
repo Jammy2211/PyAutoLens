@@ -1,8 +1,10 @@
 autoconf==0.6.0
-autofit==0.59.1
+autofit==0.59.3
 autoarray==0.11.0
 autogalaxy==0.10.0
 astropy>=3.0.0
+nbsphinx>=0.7.0
+numpydoc>=1.0.0
 matplotlib>=3.0.3
 numba>=0.42.1
 numpy>=1.17.2
