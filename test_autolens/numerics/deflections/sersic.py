@@ -32,7 +32,7 @@ lens_galaxy = al.Galaxy(
         effective_radius=2.3339416498752623,
     ),
     dark=al.mp.SphericalNFW(kappa_s=0.2, scale_radius=30.0),
-    shear=al.mp.ExternalShear(magnitude=0.05, phi=90.0),
+    shear=al.mp.ExternalShear(elliptical_comps=(0.0, 0.05)),
 )
 
 source_galaxy = al.Galaxy(

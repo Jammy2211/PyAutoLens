@@ -117,7 +117,7 @@ class TestSimulatorImaging:
         )
 
         imaging_via_image = simulator.from_image(
-            image=tracer.profile_image_from_grid(grid=grid)
+            image=tracer.image_from_grid(grid=grid)
         )
 
         assert (imaging.image.in_2d == imaging_via_image.image.in_2d).all()
@@ -163,7 +163,7 @@ class TestSimulatorImaging:
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         imaging_via_image = simulator.from_image(
-            image=tracer.profile_image_from_grid(grid=grid)
+            image=tracer.image_from_grid(grid=grid)
         )
 
         assert (imaging.image == imaging_via_image.image).all()

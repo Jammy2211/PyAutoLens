@@ -80,7 +80,7 @@ def simulate_interferometer_from_instrument(instrument, data_name, galaxies):
     aplt.Tracer.individual(
         tracer=tracer,
         grid=grid,
-        plot_profile_image=True,
+        plot_image=True,
         plot_source_plane=True,
         plot_convergence=True,
         plot_potential=True,

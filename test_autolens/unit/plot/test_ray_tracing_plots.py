@@ -30,7 +30,7 @@ def test__all_individual_plotters(
     ray_tracing_plotter_path,
     plot_patch,
 ):
-    aplt.Tracer.profile_image(
+    aplt.Tracer.image(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         include=include_all,
@@ -39,7 +39,7 @@ def test__all_individual_plotters(
         ),
     )
 
-    assert ray_tracing_plotter_path + "profile_image.png" in plot_patch.paths
+    assert ray_tracing_plotter_path + "image.png" in plot_patch.paths
 
     aplt.Tracer.convergence(
         tracer=tracer_x2_plane_7x7,
@@ -137,7 +137,7 @@ def test__tracer_individuals__dependent_on_input(
     aplt.Tracer.individual(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        plot_profile_image=True,
+        plot_image=True,
         plot_source_plane=True,
         plot_potential=True,
         plot_magnification=True,
@@ -147,7 +147,7 @@ def test__tracer_individuals__dependent_on_input(
         ),
     )
 
-    assert ray_tracing_plotter_path + "profile_image.png" in plot_patch.paths
+    assert ray_tracing_plotter_path + "image.png" in plot_patch.paths
 
     assert ray_tracing_plotter_path + "source_plane.png" in plot_patch.paths
 

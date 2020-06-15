@@ -64,7 +64,7 @@ def subplot_fit_real_space(fit, include=None, sub_plotter=None):
 
     if fit.inversion is None:
 
-        ray_tracing_plots.profile_image(
+        ray_tracing_plots.image(
             tracer=fit.tracer,
             grid=fit.masked_interferometer.grid,
             positions=include.positions_from_fit(fit=fit),

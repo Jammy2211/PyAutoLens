@@ -459,16 +459,14 @@ class Light(setup.PipelineSetup):
     def __init__(
         self,
         align_bulge_disk_centre=False,
-        align_bulge_disk_phi=False,
-        align_bulge_disk_axis_ratio=False,
+        align_bulge_disk_elliptical_comps=False,
         disk_as_sersic=False,
         number_of_gaussians=None,
     ):
 
         super().__init__(
             align_bulge_disk_centre=align_bulge_disk_centre,
-            align_bulge_disk_phi=align_bulge_disk_phi,
-            align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio,
+            align_bulge_disk_elliptical_comps=align_bulge_disk_elliptical_comps,
             disk_as_sersic=disk_as_sersic,
             number_of_gaussians=number_of_gaussians,
         )

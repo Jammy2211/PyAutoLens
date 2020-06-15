@@ -190,26 +190,20 @@ class TestSource:
 class TestLight:
     def test__tag(self):
 
-        light = al.slam.Light(align_bulge_disk_phi=True)
+        light = al.slam.Light(align_bulge_disk_elliptical_comps=True)
         light.type_tag = ""
 
-        assert light.tag == "light____align_bulge_disk_phi"
+        assert light.tag == "light____align_bulge_disk_ell"
 
-        light = al.slam.Light(
-            align_bulge_disk_centre=True,
-            align_bulge_disk_axis_ratio=True,
-            disk_as_sersic=True,
-        )
+        light = al.slam.Light(align_bulge_disk_centre=True, disk_as_sersic=True)
 
         light.type_tag = "lol"
 
-        assert (
-            light.tag == "light__lol__align_bulge_disk_centre_axis_ratio__disk_sersic"
-        )
+        assert light.tag == "light__lol__align_bulge_disk_centre__disk_sersic"
 
         light = al.slam.Light(
             align_bulge_disk_centre=True,
-            align_bulge_disk_axis_ratio=True,
+            align_bulge_disk_elliptical_comps=True,
             disk_as_sersic=True,
             number_of_gaussians=2,
         )
