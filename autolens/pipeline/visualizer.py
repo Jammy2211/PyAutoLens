@@ -38,9 +38,7 @@ class AbstractVisualizer:
         self.plot_subplot_ray_tracing = plot_setting(
             "ray_tracing", "subplot_ray_tracing"
         )
-        self.plot_ray_tracing_profile_image = plot_setting(
-            "ray_tracing", "profile_image"
-        )
+        self.plot_ray_tracing_image = plot_setting("ray_tracing", "image")
         self.plot_ray_tracing_source_plane = plot_setting(
             "ray_tracing", "source_plane_image"
         )
@@ -204,7 +202,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
             positions=self.include.positions_from_masked_dataset(
                 masked_dataset=self.masked_dataset
             ),
-            plot_profile_image=self.plot_ray_tracing_profile_image,
+            plot_image=self.plot_ray_tracing_image,
             plot_source_plane=self.plot_ray_tracing_source_plane,
             plot_convergence=self.plot_ray_tracing_convergence,
             plot_potential=self.plot_ray_tracing_potential,
@@ -224,7 +222,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
                     positions=self.include.positions_from_masked_dataset(
                         masked_dataset=self.masked_dataset
                     ),
-                    plot_profile_image=True,
+                    plot_image=True,
                     plot_source_plane=True,
                     plot_convergence=True,
                     plot_potential=True,
@@ -246,7 +244,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
         ray_tracing_plots.individual(
             tracer=tracer,
             grid=self.masked_dataset.grid,
-            plot_profile_image=True,
+            plot_image=True,
             plot_source_plane=True,
             plot_convergence=True,
             plot_potential=True,

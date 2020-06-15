@@ -17,7 +17,7 @@ lens_galaxy = al.Galaxy(
     mass=al.mp.EllipticalIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.111111, 0.0), einstein_radius=1.0
     ),
-    shear=al.mp.ExternalShear(magnitude=0.05, phi=90.0),
+    shear=al.mp.ExternalShear(elliptical_comps=(0.0, 0.05)),
 )
 
 source_galaxy = al.Galaxy(

@@ -26,7 +26,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-aplt.Tracer.profile_image(
+aplt.Tracer.image(
     tracer=tracer,
     grid=grid,
     mask=mask,

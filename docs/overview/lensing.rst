@@ -60,13 +60,13 @@ of the light profile:
 
 .. code-block:: bash
 
-    image = sersic_light_profile.profile_image_from_grid(grid=grid)
+    image = sersic_light_profile.image_from_grid(grid=grid)
 
 The plot module provides convenience methods for plotting properties of objects, like the image of a *LightProfile*:
 
 .. code-block:: bash
 
-    aplt.LightProfile.profile_image(light_profile=sersic_light_profile, grid=grid)
+    aplt.LightProfile.image(light_profile=sersic_light_profile, grid=grid)
 
 Heres the image of the light profile:
 
@@ -139,9 +139,9 @@ lens system.
         galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
     )
 
-    image = tracer.profile_image_from_grid(grid=grid)
+    image = tracer.image_from_grid(grid=grid)
 
-    aplt.Tracer.profile_image(tracer=tracer, grid=grid)
+    aplt.Tracer.image(tracer=tracer, grid=grid)
 
 When computing the image from the tracer above, the tracer performs all ray-tracing for the given strong lens system.
 This includes using the lens galaxy's mass profile to deflect the light-rays that are traced to the source galaxy.
@@ -207,7 +207,7 @@ rings!
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
 
-    aplt.Tracer.profile_image(tracer=tracer, grid=grid)
+    aplt.Tracer.image(tracer=tracer, grid=grid)
 
 This is what the lens looks like:
 

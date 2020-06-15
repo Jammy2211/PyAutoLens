@@ -65,7 +65,7 @@ mass profile lenses a background source at redshift 1.0 with an Exponential ligh
 
     # We can use the tracer to perform many lensing calculations, for example plotting the image of the lensed source.
 
-    aplt.Tracer.profile_image(tracer=tracer, grid=grid)
+    aplt.Tracer.image(tracer=tracer, grid=grid)
 
 With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple
 analysis which fits the foreground lens galaxy's mass & the background source galaxy's light.

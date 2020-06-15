@@ -165,7 +165,7 @@ class TestSimulatorInterferometer:
         interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
         interferometer_via_image = simulator.from_image(
-            image=tracer.profile_image_from_grid(grid=grid)
+            image=tracer.image_from_grid(grid=grid)
         )
 
         assert (
@@ -204,7 +204,7 @@ class TestSimulatorInterferometer:
         )
 
         interferometer_via_image = simulator.from_image(
-            image=tracer.profile_image_from_grid(grid=grid)
+            image=tracer.image_from_grid(grid=grid)
         )
 
         assert (
@@ -254,7 +254,7 @@ class TestSimulatorInterferometer:
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         interferometer_via_image = simulator.from_image(
-            image=tracer.profile_image_from_grid(grid=grid)
+            image=tracer.image_from_grid(grid=grid)
         )
 
         assert interferometer.visibilities == pytest.approx(

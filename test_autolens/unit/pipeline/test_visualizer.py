@@ -83,7 +83,7 @@ class TestPhaseDataSetVisualizer:
         )
 
         assert plot_path + "subplots/subplot_tracer.png" in plot_patch.paths
-        assert plot_path + "ray_tracing/profile_image.png" in plot_patch.paths
+        assert plot_path + "ray_tracing/image.png" in plot_patch.paths
         assert plot_path + "ray_tracing/source_plane.png" in plot_patch.paths
         assert plot_path + "ray_tracing/convergence.png" in plot_patch.paths
         assert plot_path + "ray_tracing/potential.png" not in plot_patch.paths

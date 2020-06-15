@@ -154,10 +154,16 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
 
         if tracer.has_mass_profile:
 
-            visualizer = self.visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-                preloaded_critical_curves=tracer.critical_curves,
-                preloaded_caustics=tracer.caustics,
-            )
+            try:
+
+                visualizer = self.visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+                    preloaded_critical_curves=tracer.critical_curves,
+                    preloaded_caustics=tracer.caustics,
+                )
+
+            except IndexError:
+
+                visualizer = self.visualizer
 
         else:
 

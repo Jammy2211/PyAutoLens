@@ -29,7 +29,7 @@ def subplot_tracer(tracer, grid, positions=None, include=None, sub_plotter=None)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    profile_image(
+    image(
         tracer=tracer,
         grid=grid,
         positions=positions,
@@ -78,7 +78,7 @@ def individual(
     tracer,
     grid,
     positions=None,
-    plot_profile_image=False,
+    plot_image=False,
     plot_source_plane=False,
     plot_convergence=False,
     plot_potential=False,
@@ -106,9 +106,9 @@ def individual(
     if include is None:
         include = lensing_plotters.Include()
 
-    if plot_profile_image:
+    if plot_image:
 
-        profile_image(
+        image(
             tracer=tracer,
             grid=grid,
             positions=positions,
@@ -150,10 +150,10 @@ def individual(
 
 @lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def profile_image(tracer, grid, positions=None, include=None, plotter=None):
+def image(tracer, grid, positions=None, include=None, plotter=None):
 
     plotter.plot_array(
-        array=tracer.profile_image_from_grid(grid=grid),
+        array=tracer.image_from_grid(grid=grid),
         mask=include.mask_from_grid(grid=grid),
         positions=positions,
         critical_curves=include.critical_curves_from_obj(obj=tracer),
