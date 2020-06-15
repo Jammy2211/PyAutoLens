@@ -56,3 +56,10 @@ test_autolens/integration/data_temp/
 test_autolens/dataset/
 .eggs/
 __MACOSX/
+
+#docs
+docs/_build
+docs/_static
+docs/_templates
+docs/generated
+docs/api/generated
