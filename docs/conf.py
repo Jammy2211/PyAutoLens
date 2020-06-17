@@ -35,22 +35,22 @@ master_doc = "index"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.extlinks',
-    'numpydoc',
-    'nbsphinx',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.extlinks",
+    "numpydoc",
+    "nbsphinx",
 ]
 
 ## Generate autodoc stubs with summaries from code
 autosummary_generate = True
 
 ## Include Python objects as they appear in source files
-autodoc_member_order = 'bysource'
+autodoc_member_order = "bysource"
 
 ## Default flags used by autodoc directives
-autodoc_default_flags = ['members']
+autodoc_default_flags = ["members"]
 
 numpydoc_show_class_members = False
 numpydoc_show_inherited_class_members = False
