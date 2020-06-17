@@ -212,6 +212,6 @@ rings!
 
 This is what the lens looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/complex_lens.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/complex_source.png
   :width: 400
   :alt: Alternative text
