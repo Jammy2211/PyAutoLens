@@ -5,8 +5,9 @@ from autolens.pipeline import setup
 
 
 class SLaM:
-    def __init__(self, hyper=None, source=None, light=None, mass=None):
+    def __init__(self, folders=None, hyper=None, source=None, light=None, mass=None):
 
+        self.folders = folders
         self.hyper = hyper
         self.source = source
         self.light = light
@@ -174,7 +175,7 @@ class SLaM:
                 )
 
     def lens_from_previous_pipeline(self, redshift_lens, mass, shear):
-        """For the SLaM mass pipeline, return the lens *GalaxyModel*, where:
+        """For the SLaM mass pipeline, return the lens _GalaxyModel_, where:
 
         1) The lens light model uses the light model of the Light pipeline.
         2) The lens light is returned as a model if *fix_lens_light* is *False, an instance if *True*.

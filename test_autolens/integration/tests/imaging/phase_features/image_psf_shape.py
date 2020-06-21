@@ -8,11 +8,11 @@ data_name = "lens_light_dev_vaucouleurs"
 instrument = "vro"
 
 
-def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)),
         psf_shape_2d=(3, 3),
         search=search,

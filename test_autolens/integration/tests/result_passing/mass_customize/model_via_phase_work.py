@@ -8,7 +8,7 @@ data_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
-def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
 
     # For this mass model, we fix the centre, making N = 10.
 
@@ -18,7 +18,7 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=mass),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
@@ -42,7 +42,7 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=mass),
             source=phase1.result.model.galaxies.source,

@@ -6,6 +6,7 @@ from autolens import exc
 class PipelineSetup(setup.PipelineSetup):
     def __init__(
         self,
+        folders=None,
         hyper_galaxies=False,
         hyper_image_sky=False,
         hyper_background_noise=False,
@@ -82,6 +83,7 @@ class PipelineSetup(setup.PipelineSetup):
             noise-map's background component in the model.
         """
         super().__init__(
+            folders=folders,
             hyper_galaxies=hyper_galaxies,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,

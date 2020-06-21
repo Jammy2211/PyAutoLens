@@ -8,7 +8,7 @@ data_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
-def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
 
     mass = af.PriorModel(al.mp.EllipticalIsothermal)
 
@@ -18,7 +18,7 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=mass),
             source=al.GalaxyModel(
@@ -35,12 +35,12 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
     phase1.search.sampling_efficiency = 0.8
 
     phase1.extend_with_multiple_hyper_phases(
-        hyper_galaxy_search=True, inversion_search=True
+        hyper_galaxies_search=True, inversion_search=True
     )
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
@@ -60,12 +60,12 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
     phase2.search.sampling_efficiency = 0.8
 
     phase2.extend_with_multiple_hyper_phases(
-        hyper_galaxy_search=True, inversion_search=True
+        hyper_galaxies_search=True, inversion_search=True
     )
 
     phase3 = al.PhaseImaging(
         phase_name="phase_3",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=af.last[-1].model.galaxies.lens.mass
@@ -85,7 +85,7 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
     phase3.search.sampling_efficiency = 0.8
 
     phase3.extend_with_multiple_hyper_phases(
-        hyper_galaxy_search=True, inversion_search=True
+        hyper_galaxies_search=True, inversion_search=True
     )
 
     return al.PipelineDataset(name, phase1, phase2, phase3)
