@@ -54,7 +54,7 @@ to make the lensed source appear bigger:
   :width: 400
   :alt: Alternative text
 
-Following the lensing API guide, we can make a tracer from a collection of *LightProfile*, *MassProfile* and *Galaxy*
+Following the lensing API guide, we can make a tracer from a collection of _LightProfile_, _MassProfile_ and *Galaxy*
 objects. We can then use the *FitImaging* object to fit this tracer to the dataset, performing all necessary tasks
 to create the model image we fit the data with, such as blurring the tracer's image with the imaging PSF:
 
@@ -92,7 +92,7 @@ combination of light profiles, mass profiles and galaxies) that minimize the res
 
 This requires lens modeling, which uses a non-linear search algorithm to fit many different tracers to the data.
 This model-fitting is handled by our project **PyAutoFit**, a probablistic programming language for non-linear model
-fitting. Below, we setup our model as *GalaxyModel* objects, which repesent the galaxies we fit to our data:
+fitting. Below, we setup our model as _GalaxyModel_ objects, which repesent the galaxies we fit to our data:
 
 .. code-block:: bash
 
@@ -102,7 +102,7 @@ fitting. Below, we setup our model as *GalaxyModel* objects, which repesent the 
     source_galaxy_model = al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalExponential)
 
 This means we will fit our data with two galaxies, a lens and source galaxy, with the light and mass profiles input
-into the *GalaxyModel* objects.
+into the _GalaxyModel_ objects.
 
 To perform the fit, we create a *PhaseImaging* object and 'run' the phase by passing it the dataset and mask. We also
 pass it a non-linear search class, which instructs the phase to fit the lens data using the algorithm **PyMultiNest**.
@@ -117,7 +117,7 @@ pass it a non-linear search class, which instructs the phase to fit the lens dat
 
     phase.run(data=imaging, mask=mask)
 
-By changing the *GalaxyModel* objects it is simple to parameterize and fit many different lens models using different
+By changing the _GalaxyModel_ objects it is simple to parameterize and fit many different lens models using different
 combinations of light profiles, mass profiles and perhaps even modeling the system with different numbers of galaxies!
 
 **PyAutoFit** provides us with many ways to customize our model fit.

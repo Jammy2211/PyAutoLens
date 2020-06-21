@@ -131,7 +131,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         self,
         phase_name,
         search,
-        phase_folders=tuple(),
+        folders=tuple(),
         galaxies=None,
         use_image=False,
         use_convergence=False,
@@ -154,7 +154,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         """
 
         super(PhaseGalaxy, self).__init__(
-            phase_name=phase_name, phase_folders=phase_folders, search=search
+            phase_name=phase_name, folders=folders, search=search
         )
         self.cosmology = cosmology
         self.use_image = use_image

@@ -21,6 +21,7 @@ class TestResult:
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase",
+            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
             settings=al.PhaseSettingsImaging(sub_size=2),
             search=mock.MockSearch(samples=samples_with_result),
         )
@@ -47,6 +48,7 @@ class TestResult:
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase",
+            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
             settings=al.PhaseSettingsImaging(positions_threshold=1.0),
             search=mock.MockSearch(samples=samples_with_result),
         )
@@ -122,7 +124,9 @@ class TestResult:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+            phase_name="test_phase_2",
+            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
+            search=mock.MockSearch(samples=samples),
         )
 
         result = phase_imaging_7x7.run(
@@ -146,6 +150,7 @@ class TestResult:
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase_2",
+            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
             settings=al.PhaseSettingsImaging(inversion_pixel_limit=6),
             search=mock.MockSearch(samples=samples),
         )

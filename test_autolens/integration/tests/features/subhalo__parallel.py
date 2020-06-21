@@ -8,7 +8,7 @@ data_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
-def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
     class GridPhase(af.as_grid_search(al.PhaseImaging, parallel=True)):
         @property
         def grid_priors(self):
@@ -33,7 +33,7 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase1 = GridPhase(
         phase_name="phase_1",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             subhalo=al.GalaxyModel(

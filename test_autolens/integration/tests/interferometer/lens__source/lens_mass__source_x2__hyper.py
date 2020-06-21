@@ -8,11 +8,11 @@ data_name = "lens_sie__source_smooth"
 instrument = "sma"
 
 
-def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, real_space_mask, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseInterferometer(
         phase_name="phase_1",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source_0=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
@@ -27,7 +27,7 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
 
     phase2 = al.PhaseInterferometer(
         phase_name="phase_2",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
@@ -45,7 +45,7 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase2.search.n_live_points = 60
     phase2.search.sampling_efficiency = 0.7
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxy_search=True)
+    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxies_search=True)
 
     class HyperLensSourcePlanePhase(al.PhaseInterferometer):
         def customize_priors(self, results):
@@ -60,7 +60,7 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
 
     phase3 = HyperLensSourcePlanePhase(
         phase_name="phase_3",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase2.result.model.galaxies.lens.mass

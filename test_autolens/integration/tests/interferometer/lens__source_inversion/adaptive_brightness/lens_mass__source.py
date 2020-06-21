@@ -8,11 +8,11 @@ data_name = "lens_sie__source_smooth"
 instrument = "sma"
 
 
-def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, real_space_mask, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseInterferometer(
         phase_name="phase_1",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
@@ -23,7 +23,7 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
 
     phase2 = al.PhaseInterferometer(
         phase_name="phase_2_weighted_regularization",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -46,7 +46,7 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
 
     phase3 = al.PhaseInterferometer(
         phase_name="phase_3",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -69,7 +69,7 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
 
     phase4 = al.PhaseInterferometer(
         phase_name="phase_4_weighted_regularization",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,

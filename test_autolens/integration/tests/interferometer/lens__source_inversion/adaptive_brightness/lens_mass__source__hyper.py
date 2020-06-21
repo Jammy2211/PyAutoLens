@@ -8,14 +8,14 @@ data_name = "lens_sie__source_smooth"
 instrument = "sma"
 
 
-def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, real_space_mask, search=af.PySwarmsGlobal()):
     class Phase1(al.PhaseInterferometer):
         def customize_priors(self, results):
             self.galaxies.source.light.sersic_index = af.UniformPrior(3.9, 4.1)
 
     phase1 = Phase1(
         phase_name="phase_1",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=al.mp.EllipticalIsothermal, shear=al.mp.ExternalShear
@@ -31,13 +31,13 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase1.search.sampling_efficiency = 0.8
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
-        hyper_galaxy_search=True,
+        hyper_galaxies_search=True,
         include_background_sky=True,
         include_background_noise=True,
     )
     phase2 = al.PhaseInterferometer(
         phase_name="phase_2_weighted_regularization",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -61,7 +61,7 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase2.search.sampling_efficiency = 0.8
 
     phase2 = phase2.extend_with_multiple_hyper_phases(
-        hyper_galaxy_search=True,
+        hyper_galaxies_search=True,
         include_background_sky=True,
         include_background_noise=True,
         inversion_search=True,
@@ -69,7 +69,7 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
 
     phase3 = al.PhaseInterferometer(
         phase_name="phase_3",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -93,7 +93,7 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase3.search.sampling_efficiency = 0.8
 
     phase3 = phase3.extend_with_multiple_hyper_phases(
-        hyper_galaxy_search=True,
+        hyper_galaxies_search=True,
         include_background_sky=True,
         include_background_noise=True,
         inversion_search=True,
