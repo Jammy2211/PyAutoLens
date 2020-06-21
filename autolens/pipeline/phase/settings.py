@@ -97,7 +97,7 @@ class PhaseSettingsLens:
 class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
     def __init__(
         self,
-        grid_class=grids.GridIterate,
+        grid_class=grids.Grid,
         grid_inversion_class=grids.Grid,
         sub_size=2,
         fractional_accuracy=0.9999,
@@ -172,7 +172,7 @@ class PhaseSettingsInterferometer(
 ):
     def __init__(
         self,
-        grid_class=grids.GridIterate,
+        grid_class=grids.Grid,
         grid_inversion_class=grids.Grid,
         sub_size=2,
         fractional_accuracy=0.9999,

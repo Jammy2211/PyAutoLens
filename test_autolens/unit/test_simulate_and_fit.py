@@ -68,7 +68,9 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
         shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=2, radius=0.8
     )
 
-    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+    masked_imaging = al.MaskedImaging(
+        imaging=imaging, mask=mask, grid_class=al.GridIterate
+    )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
