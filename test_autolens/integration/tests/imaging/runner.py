@@ -29,7 +29,7 @@ def run(
         )
 
     module.make_pipeline(
-        name=test_name, phase_folders=[module.test_type, test_name], search=search
+        name=test_name, folders=[module.test_type, test_name], search=search
     ).run(dataset=imaging, mask=mask)
 
 

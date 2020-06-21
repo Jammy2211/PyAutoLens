@@ -11,7 +11,7 @@ class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
         self,
         imaging,
         mask,
-        grid_class=grids.GridIterate,
+        grid_class=grids.Grid,
         grid_inversion_class=grids.Grid,
         fractional_accuracy=0.9999,
         sub_steps=[2, 4, 8, 16],

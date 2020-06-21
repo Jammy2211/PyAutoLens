@@ -8,11 +8,11 @@ data_name = "lens_sie__source_smooth"
 instrument = "hst"
 
 
-def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
@@ -26,14 +26,14 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
     phase1.search.evidence_tolerance = 10.0
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
-        hyper_galaxy_search=False,
+        hyper_galaxies_search=False,
         include_background_sky=False,
         include_background_noise=False,
     )
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase1.result.instance.galaxies.lens.mass
@@ -54,7 +54,7 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase3 = al.PhaseImaging(
         phase_name="phase_3",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=phase1.model.galaxies.lens.mass),
             source=al.GalaxyModel(
@@ -73,7 +73,7 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase4 = al.PhaseImaging(
         phase_name="phase_4_weighted_regularization",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase3.result.instance.galaxies.lens.mass

@@ -43,7 +43,7 @@ This is what our grid looks like:
 
 Our aim is to ray-trace this grid's coordinates to calculate how the lens galaxy's mass deflects the source galaxy's
 light. We therefore need analytic functions representing light and mass distributions. For this, **PyAutoLens** uses
-*Profile* objects and below we use the elliptical Sersic *LightProfile* object to represent a light distribution:
+*Profile* objects and below we use the elliptical _EllipticalSersic_ _LightProfile_ object to represent a light distribution:
 
 .. code-block:: bash
 
@@ -63,7 +63,7 @@ of the light profile:
 
     image = sersic_light_profile.image_from_grid(grid=grid)
 
-The plot module provides convenience methods for plotting properties of objects, like the image of a *LightProfile*:
+The plot module provides convenience methods for plotting properties of objects, like the image of a _LightProfile_:
 
 .. code-block:: bash
 
@@ -75,8 +75,8 @@ Heres the image of the light profile:
   :width: 400
   :alt: Alternative text
 
-**PyAutoLens** uses *MassProfile* objects to represent different mass distributions and use them to perform ray-tracing
-calculations. Below we create an elliptical isothermal *MassProfile* and compute its convergence, gravitational
+**PyAutoLens** uses _MassProfile_ objects to represent different mass distributions and use them to perform ray-tracing
+calculations. Below we create an elliptical isothermal _MassProfile_ and compute its convergence, gravitational
 potential and deflection angles on our Cartesian grid:
 
 .. code-block:: bash
@@ -118,7 +118,7 @@ For anyone not familiar with gravitational lensing, don't worry about what the c
 thing to note is that the deflection angles describe how a given mass distribution deflections light-rays, which allows
 us create strong lens systems like the one shown above!
 
-In **PyAutoLens**, a *Galaxy* object is a collection of *LightProfile* and *MassProfile* objects at a given redshift.
+In **PyAutoLens**, a *Galaxy* object is a collection of _LightProfile_ and _MassProfile_ objects at a given redshift.
 The code below creates two galaxies representing the lens and source galaxies shown in the strong lensing diagram above.
 
 .. code-block:: bash

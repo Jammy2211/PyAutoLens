@@ -8,11 +8,11 @@ data_name = "lens_light__source_smooth"
 instrument = "sma"
 
 
-def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, real_space_mask, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseInterferometer(
         phase_name="phase_1",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -30,14 +30,14 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase1.search.sampling_efficiency = 0.8
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
-        hyper_galaxy_search=True,
+        hyper_galaxies_search=True,
         include_background_sky=True,
         include_background_noise=True,
     )
 
     phase2 = al.PhaseInterferometer(
         phase_name="phase_2",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -62,7 +62,7 @@ def make_pipeline(name, phase_folders, real_space_mask, search=af.PySwarmsGlobal
     phase2.search.sampling_efficiency = 0.8
 
     phase2 = phase2.extend_with_multiple_hyper_phases(
-        hyper_galaxy_search=True,
+        hyper_galaxies_search=True,
         include_background_sky=True,
         include_background_noise=True,
     )

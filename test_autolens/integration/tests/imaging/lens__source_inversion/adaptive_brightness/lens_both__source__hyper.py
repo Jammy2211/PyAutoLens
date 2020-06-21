@@ -8,11 +8,11 @@ data_name = "lens_light__source_smooth"
 instrument = "vro"
 
 
-def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -31,7 +31,7 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=phase1.result.instance.galaxies.lens,
             source=al.GalaxyModel(
@@ -50,12 +50,12 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
     phase2.search.evidence_tolerance = 1000.0
 
     phase2 = phase2.extend_with_multiple_hyper_phases(
-        hyper_galaxy_search=True, inversion_search=True
+        hyper_galaxies_search=True, inversion_search=True
     )
 
     phase3 = al.PhaseImaging(
         phase_name="phase_3",
-        phase_folders=phase_folders,
+        folders=setup.folders,
         galaxies=dict(
             lens=phase1.result.model.galaxies.lens,
             source=phase2.result.instance.galaxies.source,
@@ -70,7 +70,7 @@ def make_pipeline(name, phase_folders, search=af.PySwarmsGlobal()):
     phase3.search.evidence_tolerance = 1000.0
 
     phase3 = phase3.extend_with_multiple_hyper_phases(
-        hyper_galaxy_search=True, inversion_search=True
+        hyper_galaxies_search=True, inversion_search=True
     )
 
     return al.PipelineDataset(name, phase1, phase2, phase3)

@@ -53,7 +53,7 @@ Here is what our reconstructed source galaxy looks like:
   :alt: Alternative text
 
 Note how the source reconstruction is irregular and has multiple clumps of light - these features would be difficult
-to represent using *LightProfile*'s!
+to represent using _LightProfile_'s!
 
 The source reconstruction can be mapped back to the image-plane, to produce a reconstructed image:
 

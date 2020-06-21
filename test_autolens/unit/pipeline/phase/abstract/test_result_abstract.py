@@ -130,20 +130,7 @@ class TestTracer:
         )
 
         assert result.max_log_likelihood_fit.inversion.reconstruction == pytest.approx(
-            np.array(
-                [
-                    0.58513231,
-                    0.5868823,
-                    0.58513231,
-                    0.5868823,
-                    0.58943162,
-                    0.5868823,
-                    0.58513231,
-                    0.5868823,
-                    0.58513231,
-                ]
-            ),
-            1.0e-4,
+            np.array([0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80]), 1.0e-1
         )
 
         assert result.source_plane_inversion_centres.in_list == [[(0.0, 0.0)]]
@@ -240,5 +227,5 @@ class TestTracer:
         assert coordinates.in_list[1][1] == pytest.approx((0.025, -0.975), 1.0e-4)
         assert coordinates.in_list[1][2] == pytest.approx((0.025, 0.975), 1.0e-4)
         assert coordinates.in_list[1][3] == pytest.approx((-1.025, -0.025), 1.0e-4)
-        assert coordinates.in_list[2][0] == pytest.approx((0.025, -0.575), 1.0e-4)
-        assert coordinates.in_list[2][1] == pytest.approx((0.025, 1.375), 1.0e-4)
+        assert coordinates.in_list[2][0] == pytest.approx((0.225, -0.375), 1.0e-4)
+        assert coordinates.in_list[2][1] == pytest.approx((-1.125, 1.025), 1.0e-4)
