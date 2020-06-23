@@ -28,7 +28,7 @@ def make_pipeline(name, folders, real_space_mask, search=af.PySwarmsGlobal()):
 
     phase1.search.const_efficiency_mode = True
     phase1.search.n_live_points = 50
-    phase1.search.sampling_efficiency = 0.8
+    phase1.search.facc = 0.8
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
         hyper_galaxies_search=True,
@@ -58,13 +58,13 @@ def make_pipeline(name, folders, real_space_mask, search=af.PySwarmsGlobal()):
 
     phase2.search.const_efficiency_mode = True
     phase2.search.n_live_points = 30
-    phase2.search.sampling_efficiency = 0.8
+    phase2.search.facc = 0.8
 
     phase2 = phase2.extend_with_multiple_hyper_phases(
         hyper_galaxies_search=True,
         include_background_sky=True,
         include_background_noise=True,
-        inversion_search=True,
+        include_inversion=True,
     )
 
     phase3 = al.PhaseInterferometer(
@@ -90,13 +90,13 @@ def make_pipeline(name, folders, real_space_mask, search=af.PySwarmsGlobal()):
 
     phase3.search.const_efficiency_mode = True
     phase3.search.n_live_points = 40
-    phase3.search.sampling_efficiency = 0.8
+    phase3.search.facc = 0.8
 
     phase3 = phase3.extend_with_multiple_hyper_phases(
         hyper_galaxies_search=True,
         include_background_sky=True,
         include_background_noise=True,
-        inversion_search=True,
+        include_inversion=True,
     )
 
     return al.PipelineDataset(name, phase1, phase2, phase3)

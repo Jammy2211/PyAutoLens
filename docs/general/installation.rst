@@ -32,7 +32,7 @@ This guide installs **PyAutoLens** with the following dependencies:
 
 **matplotlib** https://matplotlib.org/
 
-**numba** https://github.com/numba/numba.
+**numba** https://github.com/numba/numba
 
 **numpy** https://numpy.org/
 
