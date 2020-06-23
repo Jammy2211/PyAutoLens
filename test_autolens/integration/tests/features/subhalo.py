@@ -37,7 +37,7 @@ def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
 
     phase1.search.const_efficiency_mode = True
     phase1.search.n_live_points = 40
-    phase1.search.sampling_efficiency = 0.8
+    phase1.search.facc = 0.8
 
     class GridPhase(af.as_grid_search(phase_class=al.PhaseImaging, parallel=False)):
         @property

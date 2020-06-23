@@ -42,7 +42,7 @@ def make_pipeline(name, folders, real_space_mask, search=af.PySwarmsGlobal()):
 
     phase2.search.const_efficiency_mode = True
     phase2.search.n_live_points = 40
-    phase2.search.sampling_efficiency = 0.8
+    phase2.search.facc = 0.8
 
     phase3 = al.PhaseInterferometer(
         phase_name="phase_3",
@@ -65,7 +65,7 @@ def make_pipeline(name, folders, real_space_mask, search=af.PySwarmsGlobal()):
 
     phase3.search.const_efficiency_mode = True
     phase3.search.n_live_points = 40
-    phase3.search.sampling_efficiency = 0.8
+    phase3.search.facc = 0.8
 
     phase4 = al.PhaseInterferometer(
         phase_name="phase_4_weighted_regularization",
@@ -88,7 +88,7 @@ def make_pipeline(name, folders, real_space_mask, search=af.PySwarmsGlobal()):
 
     phase4.search.const_efficiency_mode = True
     phase4.search.n_live_points = 40
-    phase4.search.sampling_efficiency = 0.8
+    phase4.search.facc = 0.8
 
     return al.PipelineDataset(name, phase1, phase2, phase3, phase4)
 
