@@ -7,7 +7,7 @@
 
    general/installation
    general/workspace
-   general/howtolens
+   general/configs
    general/papers
    general/credits
 
@@ -21,6 +21,20 @@
    overview/simulate
    overview/pixelizations
    overview/interferometry
+
+.. toctree::
+   :caption: Tutorials:
+   :maxdepth: 1
+   :hidden:
+
+   tutorials/howtolens
+
+.. toctree::
+   :caption: Advanced:
+   :maxdepth: 1
+   :hidden:
+
+   advanced/aggregator
 
 .. toctree::
    :caption: API Documentation:

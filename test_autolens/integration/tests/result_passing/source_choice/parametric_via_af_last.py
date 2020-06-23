@@ -55,7 +55,7 @@ def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
 
     phase1.search.const_efficiency_mode = True
     phase1.search.n_live_points = 20
-    phase1.search.sampling_efficiency = 0.8
+    phase1.search.facc = 0.8
 
     # We want to set up the source from the result, where:
 
