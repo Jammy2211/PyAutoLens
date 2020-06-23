@@ -26,7 +26,7 @@ def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
 
     phase1.search.const_efficiency_mode = True
     phase1.search.n_live_points = 60
-    phase1.search.sampling_efficiency = 0.8
+    phase1.search.facc = 0.8
 
     phase1 = phase1.extend_with_inversion_phase()
 
@@ -48,7 +48,7 @@ def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
 
     phase2.search.const_efficiency_mode = True
     phase2.search.n_live_points = 60
-    phase2.search.sampling_efficiency = 0.8
+    phase2.search.facc = 0.8
 
     phase2 = phase2.extend_with_inversion_phase()
 
