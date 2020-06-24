@@ -25,7 +25,7 @@
         "intensity": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 10.0,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -38,7 +38,7 @@
         "effective_radius": {
             "type": "Uniform",
             "lower_limit": 0.0,
-            "upper_limit": 4.0,
+            "upper_limit": 30.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 2.0
@@ -114,7 +114,7 @@
         "intensity": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 10.0,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -127,7 +127,7 @@
         "effective_radius": {
             "type": "Uniform",
             "lower_limit": 0.0,
-            "upper_limit": 4.0,
+            "upper_limit": 30.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 2.0
@@ -177,7 +177,7 @@
         "intensity": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 10.0,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -253,7 +253,7 @@
         "intensity": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 10.0,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -303,7 +303,7 @@
         "intensity": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 10.0,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -379,7 +379,7 @@
         "intensity": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 10.0,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -429,7 +429,7 @@
         "intensity": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 10.0,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -442,7 +442,7 @@
         "effective_radius": {
             "type": "Uniform",
             "lower_limit": 0.0,
-            "upper_limit": 4.0,
+            "upper_limit": 30.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 2.0
@@ -570,7 +570,7 @@
         "intensity": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 10.0,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -583,7 +583,7 @@
         "effective_radius": {
             "type": "Uniform",
             "lower_limit": 0.0,
-            "upper_limit": 4.0,
+            "upper_limit": 30.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 2.0
@@ -685,7 +685,7 @@
         "intensity": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 10.0,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -761,7 +761,7 @@
         "intensity": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 10.0,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5

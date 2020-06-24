@@ -6,11 +6,7 @@ from test_autolens.simulators.imaging import instrument_util
 
 
 def run(
-    module,
-    test_name=None,
-    search=af.PySwarmsGlobal(),
-    config_folder="config",
-    mask=None,
+    module, test_name=None, search=af.DynestyStatic(), config_folder="config", mask=None
 ):
 
     test_name = test_name or module.test_name
@@ -48,6 +44,6 @@ def run_with_multi_nest(module):
     run(
         module,
         test_name=f"{module.test_name}_nest",
-        search=af.PySwarmsGlobal(),
+        search=af.DynestyStatic(),
         config_folder="config_mock",
     )

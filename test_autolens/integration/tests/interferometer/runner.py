@@ -13,7 +13,7 @@ from test_autolens.simulators.interferometer import instrument_util
 def run(
     module,
     test_name=None,
-    search=af.PySwarmsGlobal(),
+    search=af.DynestyStatic(),
     config_folder="config",
     positions=None,
 ):
@@ -63,6 +63,6 @@ def run_with_multi_nest(module):
     run(
         module,
         test_name=f"{module.test_name}_nest",
-        search=af.PySwarmsGlobal(),
+        search=af.DynestyStatic(),
         config_folder="config_mock",
     )
