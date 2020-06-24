@@ -40,11 +40,11 @@ def source_with_previous_model_or_instance():
         )
 
 
-def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, search=af.DynestyStatic()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
-        folders=setup.folders,
+        folders=folders,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
@@ -68,7 +68,7 @@ def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2",
-        folders=setup.folders,
+        folders=folders,
         galaxies=dict(lens=phase1.result.model.galaxies.lens, source=source),
         sub_size=1,
         search=search,

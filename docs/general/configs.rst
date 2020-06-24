@@ -282,3 +282,31 @@ procedure is set up.
 
 Tags are self-explanatory and named after the input value of the class they are paired with. For a description of the
 settings themselves checkout the `API Documentation <https://pyautolens.readthedocs.io/en/latest/api/api.html>`_.
+
+grids
+-----
+
+**interpolate.ini**
+
+The *GridInterpolate* class speeds up the calculation of lensing quantities such as the potential or deflection angles
+by computing them on a grid of reduced resolution and interpolating the results to a grid at the native resolution of
+the data. This is important for certain mass profiles, where the calculations require computationally expensive
+numerical integration.
+
+The *interpolate.ini* specifies for every *LightProfile* and *MassProfile* in **PyAutoLens** whether, when a
+*GridInterpolate* object is passed into a from grid method (e.g deflections_from_grid) the calculation should be
+performed using interpolation or by computing every value on the grid explicitly at native resolution.
+
+The default *interpolate.ini* config file supplied with the **PyAutoLens** workspace specifies *False* for every
+profile that does not require numerical integration (and therefore is fast to compute) and *True* for every profile
+which does (and therefore can see the calculation sped ups by factors of > x10).
+
+**radial_minimum.ini**
+
+The calculation of many quantities from *LightProfile*'s and *MassProfile's*, for example their image, convergence
+or deflection angles are ill-defined at (y,x) coordinates (0.0, 0.0). This can lead **PyAutoLens** to crash if not
+handled carefully.
+
+The *radial_minimum.ini* config file defines, for every profile, the values coordinates at (0.0, 0.0) are rounded to
+to prevent these numerical issues. For example, if the value of a profile is 1e-8, than input coordinates of (0.0, 0.0)
+will be rounded to values (1e-8, 0.0).
