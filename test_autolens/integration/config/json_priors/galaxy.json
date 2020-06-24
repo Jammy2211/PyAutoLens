@@ -24,7 +24,7 @@
                 "value": 0.5
             },
             "gaussian_limits": {
-                "lower": "-inf",
+                "lower": 0.0,
                 "upper": "inf"
             }
         },

@@ -21,8 +21,7 @@
             },
             "mean": 0.0,
             "sigma": 0.3
-        },
-        "unit_label": {}
+        }
     },
     "SphericalProfile": {
         "centre_0": {
@@ -71,30 +70,30 @@
             "mean": 0.0,
             "sigma": 0.3
         },
-        "axis_ratio": {
+        "e1": {
             "type": "Uniform",
-            "lower_limit": 0.2,
+            "lower_limit": -1.0,
             "upper_limit": 1.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 0.2
             },
             "gaussian_limits": {
-                "lower": 0.0,
+                "lower": -1.0,
                 "upper": 1.0
             }
         },
-        "phi": {
+        "e2": {
             "type": "Uniform",
-            "lower_limit": 0.0,
-            "upper_limit": 180.0,
+            "lower_limit": -1.0,
+            "upper_limit": 1.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 20.0
             },
             "gaussian_limits": {
-                "lower": 0.0,
-                "upper": 180.0
+                "lower": "-1.0",
+                "upper": "1.0"
             }
         }
     }

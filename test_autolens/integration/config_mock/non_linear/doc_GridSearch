@@ -1,0 +1,24 @@
+the GridSearch non-linear search allows one to set off a grid-search of non-linear searches, whereby one or more
+parameters are sampled in 'sliced' uniform prioros with all other model parameters treated as free parameters. Thus,
+one could view it as a classic grid search's approach to non-linear sampling, but using many non-linear search to do
+this.
+
+For every parameter on the GridSearch's grid, a step size is input describing steps in UniformPriors taken over
+sampling that parameter on the grid. For example, if a parameter has UniformPriors between -0.0 and 10.0, a step size of
+0.1 means the GridSearch will perform 10 non-linear searches where this parameters UniformPriors are in steps of
+0.0 to 1.0, 1.0 to 2.0, 2.0 to 3.0, etc.
+
+The *GridSearch* supports parallelization, whereby a GridSearch can be set off for every available CPU on your
+hard-disk. This follows a farmer-worker design, requiring 1 'master CPU' to farm out jobs to the other CPUs available.
+
+*GridSearch* use requires use of the phase API and is not yet fully documented (it will be a part of HowToFit chapter
+2). Therefore users who wish to use this feature now should directly contain us on SLACK for support.
+
+[general]
+    number_of_cores -> int
+        The number of cores over which a parallel *GridSearch* is performed is parallel functionality is turned on.
+        This figure includes 1 CPU which is used as the farmer to send out tasks to other CPUs.
+    step_size -> float
+        The step size between every grid-search parameter in unit values of a UniformPrior. For example, if a parameter
+        has Uniform priors between -0.0 and 10.0, a step size of 0.1 means the GridSearch will perform 10 non-linear
+        searches where this parameters UniformPriors are in steps of 0.0 to 1.0, 1.0 to 2.0, 2.0 to 3.0, etc.
