@@ -8,11 +8,11 @@ data_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
-def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
+def make_pipeline(name, folders, search=af.DynestyStatic()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
-        folders=setup.folders,
+        folders=folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -40,7 +40,7 @@ def make_pipeline(name, folders, search=af.PySwarmsGlobal()):
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2",
-        folders=setup.folders,
+        folders=folders,
         galaxies=dict(lens=lens, source=phase1.result.model.galaxies.source),
         sub_size=1,
         search=search,

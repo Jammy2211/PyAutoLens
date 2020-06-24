@@ -58,8 +58,8 @@
     "VoronoiBrightnessImage": {
         "pixels": {
             "type": "Uniform",
-            "lower_limit": 690.0,
-            "upper_limit": 710.0,
+            "lower_limit": 50.0,
+            "upper_limit": 2500.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 100.0
@@ -71,11 +71,11 @@
         },
         "weight_floor": {
             "type": "Uniform",
-            "lower_limit": 0.0078,
-            "upper_limit": 0.0079,
+            "lower_limit": 0.0,
+            "upper_limit": 1.0,
             "width_modifier": {
                 "type": "Absolute",
-                "value": 1.0
+                "value": 0.1
             },
             "gaussian_limits": {
                 "lower": 0.0,
@@ -84,11 +84,11 @@
         },
         "weight_power": {
             "type": "Uniform",
-            "lower_limit": 9.7,
-            "upper_limit": 9.9,
+            "lower_limit": 0.0,
+            "upper_limit": 20.0,
             "width_modifier": {
                 "type": "Absolute",
-                "value": 2.0
+                "value": 5.0
             },
             "gaussian_limits": {
                 "lower": 0.0,

@@ -1,0 +1,71 @@
+[search]
+    n_live_points -> int
+        The number of live points used to sample non-linear parameter space. More points provides a more thorough
+        sampling of parameter space, at the expense of taking longer to run. The number of live points required for
+        accurate sampling depends on the complexity of parameter space, below is a rough guideline of how many to use.
+
+        for ~5 non-linear parameters -> 20-40 live points
+        for ~10 non-linear parameters -> 30-50 live points
+        for ~20 non-linear parameters -> 50-100 live points
+        for 25+ non-linear parameters -> 75+ live points
+    sampling_efficiency -> float
+        The ratio of accepted to total samples MultiNest targets. A higher efficiency will converges on the high
+        log_likelihood regions of parameter space faster at the risk of missing the global maxima solution. By default we
+        recommend a value of 0.8 (without constant efficiency mode) and 0.3 (with constant efficiency mode). Reduce
+        to lower values if the inferred solution does not look accurate.
+    const_efficiency_mode -> bool
+        The sampling efficiency determines the acceptance rate MultiNest targets. However, if MultiNest cannot map out
+        parameter-space accurately it reduce the acceptance rate. Constant efficiency mode forces MultiNest to maintain
+        the sampling efficiency acceptance rate. This can dramatically reduce run-times but increases the risk of missing
+        the global maximum log likelihood solution.
+    evidence_tolerance -> float
+        MultiNest will stop sampling when it estimates that continuing sampling will not increase the log evidence more than
+        the evidence_tolerance value. Thus, the higher the evidence_tolerance the sooner MultiNest will stop running. Higher
+        tolerances provide more accurate parameter errors.
+    multimodal -> bool
+        Whether MultiNest uses multi-modal sampling, whereby the parameter space search will 'split' into multiple modes
+        if it detects there are multiple peaks in log_likelihood space.
+    importance_nested_sampling -> bool
+        Importance nested sampling mode uses information from the rejected points to improve the non-linear search.
+    max_modes -> int
+        If multimodal sampling is True, the maximum number of models MultiNest can split into.
+    mode_tolerance -> float
+        MultiNest can find multiple modes & also specify which samples belong to which mode. It might be desirable
+        to have separate samples & mode statistics for modes with local log-evidence value greater than a
+        particular value in which case Ztol should be set to that value. If there isn’t any particularly
+        interesting Ztol value, then Ztol should be set to a very large negative number (e.g. -1e90).
+    max_iter -> int
+        maximum number of iterations. 0 is unlimited.
+[settings]
+    n_iter_before_update -> int
+        Number of accepted samples (times 10) per MultiNest output to hard disk.
+    null_log_evidence -> float
+        If multimodal is True, MultiNest can find multiple modes & also specify which samples belong to which mode.
+        It might be desirable to have separate samples & mode statistics for modes with local log-evidence value
+        greater than a particular value in which case nullZ should be set to that value. If there isn’t any
+        particulrly interesting nullZ value, then nullZ should be set to a very large negative number (e.g. -1.d90).
+    seed -> int
+        The random number generator seed of MultiNest, enabling reproducible results.
+    verbose -> bool
+        Whether MultiNest prints messages.
+    resume -> bool
+        If True and existing results are found at the output path, MultiNest will resume that run. If False,
+        MultiNest will start a new run.
+    context -> None
+        Not used by PyAutoFit.
+    write_output -> bool
+        Whether the results are written to the hard-disk as text files (allowing the run to be resumed).
+    log_zero -> float
+        points with loglike < logZero will be ignored by MultiNest.
+    init_MPI -> None
+        MPI not supported by PyAutoFit for MultiNest.
+
+Nest.ini
+
+[settings]
+    terminate_at_acceptance_ratio -> bool
+        If *True*, the sampler will automatically terminate when the acceptance ratio falls behind an input
+        threshold value (see *Nest* for a full description of this feature).
+    acceptance_ratio_threshold -> float
+        The acceptance ratio threshold below which sampling terminates if *terminate_at_acceptance_ratio* is
+        *True* (see *Nest* for a full description of this feature).
