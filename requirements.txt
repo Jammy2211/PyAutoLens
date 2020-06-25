@@ -1,7 +1,7 @@
 autoconf==0.6.1
 autofit==0.60.1
 autoarray==0.11.2
-autogalaxy==0.10.5
+autogalaxy==0.10.6
 astropy>=3.0.0
 nbsphinx>=0.7.0
 numpydoc>=1.0.0

@@ -187,10 +187,10 @@ rings!
     lens_galaxy_1 = al.Galaxy(
         redshift=1.0,
         light=al.lp.EllipticalExponential(
-            centre=(0.1, 0.1), axis_ratio=0.8, phi=60.0, intensity=3.0, effective_radius=0.1
+            centre=(0.1, 0.1), , elliptical_comps=(0.1, 0.1), intensity=3.0, effective_radius=0.1
         ),
         mass=al.mp.EllipticalIsothermal(
-            centre=(0.1, 0.1), axis_ratio=0.8, phi=60.0, einstein_radius=0.4
+            centre=(0.1, 0.1), , elliptical_comps=(0.1, 0.1), einstein_radius=0.4
         ),
     )
 
