@@ -240,6 +240,14 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
 
 class AbstractTracerCosmology(AbstractTracer, ABC):
+    @property
+    def arcsec_per_kpc(self):
+        return self.arcsec_per_kpc_proper_of_plane(i=0)
+
+    @property
+    def kpc_per_arcsec(self):
+        return 1.0 / self.arcsec_per_kpc
+
     def arcsec_per_kpc_proper_of_plane(self, i):
         return cosmology_util.arcsec_per_kpc_from(
             redshift=self.plane_redshifts[i], cosmology=self.cosmology
