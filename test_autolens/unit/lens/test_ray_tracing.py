@@ -4132,6 +4132,105 @@ class TestTacerFixedSlices:
             assert traced_grids[3][1] == pytest.approx(np.array([2.0, 0.0]), 1e-4)
 
 
+class TestRegression:
+    def test__centre_of_profile_in_right_place(self):
+        grid = al.Grid.uniform(shape_2d=(7, 7), pixel_scales=1.0)
+
+        galaxy = al.Galaxy(
+            redshift=0.5,
+            mass=al.mp.EllipticalIsothermal(centre=(2.0, 1.0), einstein_radius=1.0),
+            mass_0=al.mp.EllipticalIsothermal(centre=(2.0, 1.0), einstein_radius=1.0),
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
+
+        convergence = tracer.convergence_from_grid(grid=grid)
+        max_indexes = np.unravel_index(convergence.in_2d.argmax(), convergence.shape_2d)
+        assert max_indexes == (1, 4)
+
+        potential = tracer.potential_from_grid(grid=grid)
+        max_indexes = np.unravel_index(potential.in_2d.argmin(), potential.shape_2d)
+        assert max_indexes == (1, 4)
+
+        deflections = tracer.deflections_from_grid(grid=grid)
+        assert deflections.in_2d[1, 4, 0] > 0
+        assert deflections.in_2d[2, 4, 0] < 0
+        assert deflections.in_2d[1, 4, 1] > 0
+        assert deflections.in_2d[1, 3, 1] < 0
+
+        galaxy = al.Galaxy(
+            redshift=0.5,
+            mass=al.mp.SphericalIsothermal(centre=(2.0, 1.0), einstein_radius=1.0),
+            mass_0=al.mp.SphericalIsothermal(centre=(2.0, 1.0), einstein_radius=1.0),
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
+
+        convergence = tracer.convergence_from_grid(grid=grid)
+        max_indexes = np.unravel_index(convergence.in_2d.argmax(), convergence.shape_2d)
+        assert max_indexes == (1, 4)
+
+        potential = tracer.potential_from_grid(grid=grid)
+        max_indexes = np.unravel_index(potential.in_2d.argmin(), potential.shape_2d)
+        assert max_indexes == (1, 4)
+
+        deflections = tracer.deflections_from_grid(grid=grid)
+        assert deflections.in_2d[1, 4, 0] > 0
+        assert deflections.in_2d[2, 4, 0] < 0
+        assert deflections.in_2d[1, 4, 1] > 0
+        assert deflections.in_2d[1, 3, 1] < 0
+
+        grid = al.GridIterate.uniform(
+            shape_2d=(7, 7),
+            pixel_scales=1.0,
+            fractional_accuracy=0.99,
+            sub_steps=[2, 4],
+        )
+
+        galaxy = al.Galaxy(
+            redshift=0.5,
+            mass=al.mp.EllipticalIsothermal(centre=(2.0, 1.0), einstein_radius=1.0),
+            mass_0=al.mp.EllipticalIsothermal(centre=(2.0, 1.0), einstein_radius=1.0),
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
+
+        convergence = tracer.convergence_from_grid(grid=grid)
+        max_indexes = np.unravel_index(convergence.in_2d.argmax(), convergence.shape_2d)
+        assert max_indexes == (1, 4)
+
+        potential = tracer.potential_from_grid(grid=grid)
+        max_indexes = np.unravel_index(potential.in_2d.argmin(), potential.shape_2d)
+        assert max_indexes == (1, 4)
+
+        deflections = tracer.deflections_from_grid(grid=grid)
+        assert deflections.in_2d[1, 4, 0] >= 0
+        assert deflections.in_2d[2, 4, 0] <= 0
+        assert deflections.in_2d[1, 4, 1] >= 0
+        assert deflections.in_2d[1, 3, 1] <= 0
+
+        galaxy = al.Galaxy(
+            redshift=0.5,
+            mass=al.mp.SphericalIsothermal(centre=(2.0, 1.0), einstein_radius=1.0),
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
+
+        convergence = tracer.convergence_from_grid(grid=grid)
+        max_indexes = np.unravel_index(convergence.in_2d.argmax(), convergence.shape_2d)
+        assert max_indexes == (1, 4)
+
+        potential = tracer.potential_from_grid(grid=grid)
+        max_indexes = np.unravel_index(potential.in_2d.argmin(), potential.shape_2d)
+        assert max_indexes == (1, 4)
+
+        deflections = tracer.deflections_from_grid(grid=grid)
+        assert deflections.in_2d[1, 4, 0] >= -1e-8
+        assert deflections.in_2d[2, 4, 0] <= 0
+        assert deflections.in_2d[1, 4, 1] >= 0
+        assert deflections.in_2d[1, 3, 1] <= 0
+
+
 class TestDecorators:
     def test__grid_iterate_in__iterates_array_result_correctly(self, gal_x1_lp):
 
