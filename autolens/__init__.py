@@ -65,4 +65,4 @@ from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
 from autolens.pipeline.pipeline import PipelineDataset, PipelinePositions
 
-__version__ = '1.0.7'
+__version__ = '1.0.8'

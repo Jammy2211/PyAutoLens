@@ -3,7 +3,7 @@
         "coefficient": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 1e15,
+            "upper_limit": 1e6,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -18,7 +18,7 @@
         "inner_coefficient": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 1e15,
+            "upper_limit": 1e6,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -31,7 +31,7 @@
         "outer_coefficient": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 1e15,
+            "upper_limit": 1e6,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
