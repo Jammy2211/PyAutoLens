@@ -2,7 +2,7 @@
 #
 # import autofit as af
 # import autolens as al
-# from autofit.non_linear.mock_nlo import MockSearch
+# from autofit.non_linear.mock_search import MockSearch
 #
 # redshift_lens = (0.5,)
 # redshift_source = (1.0,)

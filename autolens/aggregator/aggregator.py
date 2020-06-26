@@ -80,11 +80,16 @@ def masked_imaging_from_agg_obj(agg_obj):
     return al.MaskedImaging(
         imaging=agg_obj.dataset,
         mask=agg_obj.mask,
-        psf_shape_2d=agg_obj.meta_dataset.settings.psf_shape_2d,
-        pixel_scales_interp=agg_obj.meta_dataset.settings.pixel_scales_interp,
-        inversion_pixel_limit=agg_obj.meta_dataset.settings.inversion_pixel_limit,
-        inversion_uses_border=agg_obj.meta_dataset.settings.inversion_uses_border,
-        positions_threshold=agg_obj.meta_dataset.settings.positions_threshold,
+        grid_class=agg_obj.settings.grid_class,
+        grid_inversion_class=agg_obj.settings.grid_inversion_class,
+        fractional_accuracy=agg_obj.settings.fractional_accuracy,
+        sub_steps=agg_obj.settings.sub_steps,
+        pixel_scales_interp=agg_obj.settings.pixel_scales_interp,
+        psf_shape_2d=agg_obj.settings.psf_shape_2d,
+        inversion_pixel_limit=agg_obj.settings.inversion_pixel_limit,
+        inversion_uses_border=agg_obj.settings.inversion_uses_border,
+        inversion_stochastic=agg_obj.settings.inversion_stochastic,
+        positions_threshold=agg_obj.settings.positions_threshold,
     )
 
 
@@ -154,11 +159,16 @@ def masked_interferometer_from_agg_obj(agg_obj):
         interferometer=agg_obj.dataset,
         visibilities_mask=agg_obj.mask,
         real_space_mask=agg_obj.meta_dataset.real_space_mask,
-        transformer_class=agg_obj.meta_dataset.settings.transformer_class,
-        primary_beam_shape_2d=agg_obj.meta_dataset.settings.primary_beam_shape_2d,
-        pixel_scales_interp=agg_obj.meta_dataset.settings.pixel_scales_interp,
-        inversion_pixel_limit=agg_obj.meta_dataset.settings.inversion_pixel_limit,
-        inversion_uses_border=agg_obj.meta_dataset.settings.inversion_uses_border,
+        transformer_class=agg_obj.settings.transformer_class,
+        grid_class=agg_obj.settings.grid_class,
+        grid_inversion_class=agg_obj.settings.grid_inversion_class,
+        fractional_accuracy=agg_obj.settings.fractional_accuracy,
+        sub_steps=agg_obj.settings.sub_steps,
+        primary_beam_shape_2d=agg_obj.settings.primary_beam_shape_2d,
+        pixel_scales_interp=agg_obj.settings.pixel_scales_interp,
+        inversion_pixel_limit=agg_obj.settings.inversion_pixel_limit,
+        inversion_uses_border=agg_obj.settings.inversion_uses_border,
+        inversion_stochastic=agg_obj.settings.inversion_stochastic,
         positions_threshold=agg_obj.meta_dataset.settings.positions_threshold,
     )
 
