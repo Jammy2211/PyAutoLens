@@ -18,6 +18,7 @@
 
    overview/lensing
    overview/fitting
+   overview/modeling
    overview/simulate
    overview/pixelizations
    overview/interferometry

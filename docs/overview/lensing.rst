@@ -9,23 +9,23 @@ paths to the Earth, meaning that the background galaxy is observed multiple time
 galaxies is called a strong gravitational lens and a two-dimensional scheme of such a system is pictured below.
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/schematic.jpg
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 (Image Credit: Image credit: F. Courbin, S. G. Djorgovski, G. Meylan, et al., Caltech / EPFL / WMKO,
 https://www.astro.caltech.edu/~george/qsolens/)
 
-PyAutoLens is software designed for modeling these strong lensing systems! To begin, lets import autolens and the plot
-module.
+**PyAutoLens** is software designed for modeling these strong lensing systems! To begin, lets import autolens and the
+plot module.
 
 .. code-block:: bash
 
    import autolens as al
    import autolens.plot as aplt
 
-To describe the deflection of light, **PyAutoLens** uses *grid* data structures, which are two-dimensional
-Cartesian grids of (y,x) coordinates. Below, we make and plot a uniform Cartesian grid (the pixel-scale describes
-the conversion from pixel units to arc-seconds):
+To describe the deflection of light due to the lens galaxy's mass, **PyAutoLens** uses *Grid* data structures, which
+are two-dimensional Cartesian grids of (y,x) coordinates. Below, we make and plot a uniform Cartesian *Grid* (the
+pixel-scale describes the conversion from pixel units to arc-seconds):
 
 .. code-block:: bash
 
@@ -35,29 +35,30 @@ the conversion from pixel units to arc-seconds):
 
     aplt.Grid(grid=grid)
 
-This is what our grid looks like:
+This is what our *Grid* looks like:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/grid.png
   :width: 400
   :alt: Alternative text
 
-Our aim is to ray-trace this grid's coordinates to calculate how the lens galaxy's mass deflects the source galaxy's
-light. We therefore need analytic functions representing light and mass distributions. For this, **PyAutoLens** uses
-*Profile* objects and below we use the elliptical _EllipticalSersic_ _LightProfile_ object to represent a light distribution:
+We will ray-trace this *Grid*'s coordinates to calculate how a lens galaxy's mass deflects the source galaxy's
+light.
+
+For this, we need analytic functions representing light and mass distributions. **PyAutoLens** uses *Profile* objects
+to do this, for example the *EllipticalSersic* _LightProfile_ object which represents a galaxy's light distribution:
 
 .. code-block:: bash
 
     sersic_light_profile = al.lp.EllipticalSersic(
         centre=(0.0, 0.0),
-        axis_ratio=0.9,
-        phi=60.0,
+        elliptical_comps=(0.1, 0.1),
         intensity=0.05,
         effective_radius=2.0,
         sersic_index=4.0,
     )
 
-By passing this profile a grid, we can evaluate the light at every coordinate on that grid and create an image
-of the light profile:
+By passing this *Profile* a *Grid*, we can evaluate the light at every coordinate on that *grid*, creating an image
+of the *LightProfile*:
 
 .. code-block:: bash
 
@@ -69,22 +70,21 @@ The plot module provides convenience methods for plotting properties of objects,
 
     aplt.LightProfile.image(light_profile=sersic_light_profile, grid=grid)
 
-Heres the image of the light profile:
+Here's how the image of the light profile appears:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/sersic_light_profile.png
   :width: 400
   :alt: Alternative text
 
-**PyAutoLens** uses _MassProfile_ objects to represent different mass distributions and use them to perform ray-tracing
-calculations. Below we create an elliptical isothermal _MassProfile_ and compute its convergence, gravitational
-potential and deflection angles on our Cartesian grid:
+**PyAutoLens** uses *MassProfile* objects to represent a galaxy's mass distribution, which is used to perform
+ray-tracing calculations. Below we create an *EllipticalIsothermal* _MassProfile_ and compute its convergence,
+gravitational potential and deflection angles on our Cartesian *Grid*:
 
 .. code-block:: bash
 
     isothermal_mass_profile = al.mp.EllipticalIsothermal(
         centre=(0.0, 0.0),
-        axis_ratio=0.8,
-        phi=120.0,
+        elliptical_comps=(0.1, 0.1),
         einstein_radius=1.6,
     )
 
@@ -96,7 +96,7 @@ potential and deflection angles on our Cartesian grid:
     aplt.MassProfile.potential(mass_profile=isothermal_mass_profile, grid=grid)
     aplt.MassProfile.deflections(mass_profile=isothermal_mass_profile, grid=grid)
 
-Heres how the convergence, potential and deflection angles look:
+Heres how the convergence, potential and deflection angles appear:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/isothermal_mass_profile_convergence.png
   :width: 400
@@ -114,12 +114,15 @@ Heres how the convergence, potential and deflection angles look:
   :width: 400
   :alt: Alternative text
 
-For anyone not familiar with gravitational lensing, don't worry about what the convergence and potential are. The key
-thing to note is that the deflection angles describe how a given mass distribution deflections light-rays, which allows
-us create strong lens systems like the one shown above!
+For anyone not familiar with gravitational lensing, don't worry about what the convergence and potential are for now.
+The key thing to note is that the deflection angles describe how a given mass distribution deflects light-rays as they
+travel towards us in the Universe.
 
-In **PyAutoLens**, a *Galaxy* object is a collection of _LightProfile_ and _MassProfile_ objects at a given redshift.
-The code below creates two galaxies representing the lens and source galaxies shown in the strong lensing diagram above.
+This allows us create strong lens systems like the one shown above!
+
+In **PyAutoLens**, a *Galaxy* object is a collection of *LightProfile* and *MassProfile* objects at a given redshift.
+The code below creates two *Galaxy*'s representing the lens and source galaxies shown in the strong lensing diagram
+above.
 
 .. code-block:: bash
 
@@ -144,19 +147,21 @@ lens system.
 
     aplt.Tracer.image(tracer=tracer, grid=grid)
 
-When computing the image from the tracer above, the tracer performs all ray-tracing for the given strong lens system.
-This includes using the lens galaxy's mass profile to deflect the light-rays that are traced to the source galaxy.
+When computing the image from the *Tracer* above, the *Tracer* performs all ray-tracing for the given strong lens
+system. This includes using the lens *Galaxy*'s *MassProfile* to deflect the light-rays that are traced to the source
+*Galaxy*.
+
 This makes the image below, where the source's light appears as a multiply imaged and strongly lensed Einstein ring.
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/tracer_image.png
   :width: 400
   :alt: Alternative text
 
-The PyAutoLens API has been designed such that all of the objects introduced above are extensible. *Galaxy* objects can
-take many profiles and *Tracer* objects many galaxies. If the galaxies are at different redshifts a strong lensing
-system with multiple lens planes will be created, performing complex multi-plane ray-tracing calculations.
+The **PyAutoLens** API has been designed such that all of the objects introduced above are extensible. *Galaxy* objects
+can take many *Profile*'s and *Tracer* objects many *Galaxy*'s. If the *Galaxy*'s are at different redshifts a strong
+lensing system with multiple lens planes will be created, performing complex multi-plane ray-tracing calculations.
 
-To finish, lets create a tracer using 3 galaxies at different redshifts. The mass distribution of the first lens
+To finish, lets create a tracer using 3 *Galaxy*'s at different redshifts. The *MassProfile* of the first lens
 galaxy has separate components for its stellar mass and dark matter. This forms a system with two distinct Einstein
 rings!
 
@@ -215,3 +220,8 @@ This is what the lens looks like:
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/complex_source.png
   :width: 400
   :alt: Alternative text
+
+If you are unfamilar with strong lensing and not clear what the above quantities or plots mean, fear not, in chapter 1
+of the **HowToLens** lecture series we'll take you through strong lensing theory in detail, whilst teaching
+you how to use **PyAutoLens** at the same time! Checkout the
+`tutorials <https://pyautolens.readthedocs.io/en/latest/tutorials/howtolens.html>`_ section of the readthedocs!
