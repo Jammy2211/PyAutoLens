@@ -18,8 +18,8 @@ like this one:
 API Overview
 ------------
 
-Lensing calculations are performed in **PyAutoLens** by building a *Tracer* object from _LightProfile_, _MassProfile_
-and *Galaxy* objects. Below, we create a simple strong lens system where a redshift 0.5 lens galaxy with an isothermal
+Lensing calculations are performed in **PyAutoLens** by building a *Tracer* object from *LightProfile*, *MassProfile*
+and *Galaxy* objects. Below, we create a simple strong lens system where a redshift 0.5 lens galaxy with an Isothermal
 mass profile lenses a background source at redshift 1.0 with an Exponential light profile.
 
 .. code-block:: python
@@ -135,7 +135,7 @@ analysis which fits the foreground lens galaxy's mass & the background source ga
     model & plot the resulting fit.
     """
 
-    result = phase.run(data=imaging, mask=mask)
+    result = phase.run(dataset=imaging, mask=mask)
     al.plot.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 Getting Started
