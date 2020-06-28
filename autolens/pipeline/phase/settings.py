@@ -8,12 +8,14 @@ class PhaseSettingsLens:
     def __init__(
         self,
         auto_positions_factor=None,
+        auto_positions_minimum_threshold=None,
         positions_threshold=None,
         inversion_uses_border=True,
         inversion_stochastic=False,
     ):
 
         self.auto_positions_factor = auto_positions_factor
+        self.auto_positions_minimum_threshold = auto_positions_minimum_threshold
         self.positions_threshold = positions_threshold
         self.inversion_uses_border = inversion_uses_border
         self.inversion_stochastic = inversion_stochastic
@@ -31,10 +33,16 @@ class PhaseSettingsLens:
         """
         if self.auto_positions_factor is None:
             return ""
+
+        if self.auto_positions_minimum_threshold is not None:
+            auto_positions_minimum_threshold_tag = f"_{conf.instance.tag.get('phase', 'auto_positions_minimum_threshold')}_{str(self.auto_positions_minimum_threshold)}"
+        else:
+            auto_positions_minimum_threshold_tag = ""
+
         return (
             "__"
-            + conf.instance.tag.get("phase", "auto_positions_factor", str)
-            + "_x{0:.2f}".format(self.auto_positions_factor)
+            + conf.instance.tag.get("phase", "auto_positions_factor")
+            + "_x{0:.2f}".format(self.auto_positions_factor) + auto_positions_minimum_threshold_tag
         )
 
     @property
@@ -108,6 +116,7 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
         psf_shape_2d=None,
         pixel_scales_interp=None,
         auto_positions_factor=None,
+        auto_positions_minimum_threshold=None,
         positions_threshold=None,
         inversion_uses_border=True,
         inversion_stochastic=False,
@@ -131,6 +140,7 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
         PhaseSettingsLens.__init__(
             self=self,
             auto_positions_factor=auto_positions_factor,
+            auto_positions_minimum_threshold=auto_positions_minimum_threshold,
             positions_threshold=positions_threshold,
             inversion_uses_border=inversion_uses_border,
             inversion_stochastic=inversion_stochastic,
@@ -184,6 +194,7 @@ class PhaseSettingsInterferometer(
         transformer_class=transformer.TransformerNUFFT,
         primary_beam_shape_2d=None,
         auto_positions_factor=None,
+        auto_positions_minimum_threshold=None,
         positions_threshold=None,
         inversion_uses_border=True,
         inversion_stochastic=False,
@@ -208,6 +219,7 @@ class PhaseSettingsInterferometer(
         PhaseSettingsLens.__init__(
             self=self,
             auto_positions_factor=auto_positions_factor,
+            auto_positions_minimum_threshold=auto_positions_minimum_threshold,
             positions_threshold=positions_threshold,
             inversion_uses_border=inversion_uses_border,
             inversion_stochastic=inversion_stochastic,
