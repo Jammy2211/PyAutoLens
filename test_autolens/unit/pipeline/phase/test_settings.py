@@ -4,15 +4,25 @@ import autolens as al
 class TestTags:
     def test__auto_positions_tag(self):
 
-        settings = al.PhaseSettingsImaging(auto_positions_factor=None, auto_positions_minimum_threshold=None)
+        settings = al.PhaseSettingsImaging(
+            auto_positions_factor=None, auto_positions_minimum_threshold=None
+        )
         assert settings.auto_positions_factor_tag == ""
-        settings = al.PhaseSettingsImaging(auto_positions_factor=1.0, auto_positions_minimum_threshold=None)
+        settings = al.PhaseSettingsImaging(
+            auto_positions_factor=1.0, auto_positions_minimum_threshold=None
+        )
         assert settings.auto_positions_factor_tag == "__auto_pos_x1.00"
-        settings = al.PhaseSettingsImaging(auto_positions_factor=2.56, auto_positions_minimum_threshold=None)
+        settings = al.PhaseSettingsImaging(
+            auto_positions_factor=2.56, auto_positions_minimum_threshold=None
+        )
         assert settings.auto_positions_factor_tag == "__auto_pos_x2.56"
-        settings = al.PhaseSettingsImaging(auto_positions_factor=None, auto_positions_minimum_threshold=0.5)
+        settings = al.PhaseSettingsImaging(
+            auto_positions_factor=None, auto_positions_minimum_threshold=0.5
+        )
         assert settings.auto_positions_factor_tag == ""
-        settings = al.PhaseSettingsImaging(auto_positions_factor=2.56, auto_positions_minimum_threshold=0.5)
+        settings = al.PhaseSettingsImaging(
+            auto_positions_factor=2.56, auto_positions_minimum_threshold=0.5
+        )
         assert settings.auto_positions_factor_tag == "__auto_pos_x2.56_min_0.5"
 
     def test__positions_threshold_tag(self):
