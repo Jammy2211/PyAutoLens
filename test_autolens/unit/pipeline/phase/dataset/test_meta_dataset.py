@@ -243,10 +243,28 @@ def test__auto_positions_update_threshold__uses_auto_update_factor(
 
     assert analysis.masked_dataset.positions_threshold == 6.0
 
-    # Auto positioning is ON, but positions are None and it cannot find new psitions so no threshold.
+    # Auto position is ON, and same as above but with a minimum auto positions threshold that rounds the value up.
+
+    imaging_7x7.positions = al.GridCoordinates(coordinates=[[(1.0, 0.0), (-1.0, 0.0)]])
+    phase_imaging_7x7.meta_dataset.settings.positions_threshold = 0.2
+    phase_imaging_7x7.meta_dataset.settings.auto_positions_factor = 3.0
+    phase_imaging_7x7.meta_dataset.settings.auto_positions_minimum_threshold = 10.0
+
+    results = mock.MockResults(
+        max_log_likelihood_tracer=tracer, updated_positions_threshold=0.2
+    )
+
+    analysis = phase_imaging_7x7.make_analysis(
+        dataset=imaging_7x7, mask=mask_7x7, results=results
+    )
+
+    assert analysis.masked_dataset.positions_threshold == 10.0
+
+    # Auto positioning is ON, but positions are None and it cannot find new positions so no threshold.
 
     imaging_7x7.positions = None
     phase_imaging_7x7.meta_dataset.settings.auto_positions_factor = 1.0
+    phase_imaging_7x7.meta_dataset.settings.auto_positions_minimum_threshold = None
     phase_imaging_7x7.positions_threshold = None
 
     results = mock.MockResults(max_log_likelihood_tracer=tracer)

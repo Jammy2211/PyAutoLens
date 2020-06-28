@@ -59,7 +59,9 @@ class MetaLens:
 
         First, we ray-trace forward the positions of the source-plane centres (see above) via the mass model to
         determine how far apart they are separated. This gives us their source-plane sepration, which is multiplied by
-        self.auto_positions_factor to set the threshold."""
+        self.auto_positions_factor to set the threshold.
+
+        The threshold is rounded up to the auto positions minimum threshold if that setting is included."""
 
         if self.settings.auto_positions_factor and results.last is not None:
 
@@ -72,13 +74,21 @@ class MetaLens:
                 noise_map=1.0,
             )
 
-            return self.settings.auto_positions_factor * np.max(
+            positions_threshold = self.settings.auto_positions_factor * np.max(
                 positions_fits.maximum_separations
             )
 
         else:
 
-            return self.settings.positions_threshold
+            positions_threshold = self.settings.positions_threshold
+
+        if self.settings.auto_positions_minimum_threshold is not None:
+            if (
+                positions_threshold < self.settings.auto_positions_minimum_threshold
+            ) or (positions_threshold is None):
+                positions_threshold = self.settings.auto_positions_minimum_threshold
+
+        return positions_threshold
 
     def check_positions(self, positions):
 
