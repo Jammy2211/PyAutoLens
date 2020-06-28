@@ -42,7 +42,8 @@ class PhaseSettingsLens:
         return (
             "__"
             + conf.instance.tag.get("phase", "auto_positions_factor")
-            + "_x{0:.2f}".format(self.auto_positions_factor) + auto_positions_minimum_threshold_tag
+            + "_x{0:.2f}".format(self.auto_positions_factor)
+            + auto_positions_minimum_threshold_tag
         )
 
     @property

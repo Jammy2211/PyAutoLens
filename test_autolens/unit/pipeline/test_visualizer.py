@@ -143,6 +143,7 @@ class TestPhaseImagingVisualizer:
         assert plot_path + "imaging/image.png" in plot_patch.paths
         assert plot_path + "imaging/noise_map.png" not in plot_patch.paths
         assert plot_path + "imaging/psf.png" in plot_patch.paths
+        assert plot_path + "imaging/inverse_noise_map.png" in plot_patch.paths
         assert plot_path + "imaging/signal_to_noise_map.png" not in plot_patch.paths
         assert (
             plot_path + "imaging/absolute_signal_to_noise_map.png"

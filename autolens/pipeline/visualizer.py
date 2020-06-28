@@ -110,7 +110,9 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
         self.plot_dataset_data = plot_setting("dataset", "data")
         self.plot_dataset_noise_map = plot_setting("dataset", "noise_map")
         self.plot_dataset_psf = plot_setting("dataset", "psf")
-
+        self.plot_dataset_inverse_noise_map = plot_setting(
+            "dataset", "inverse_noise_map"
+        )
         self.plot_dataset_signal_to_noise_map = plot_setting(
             "dataset", "signal_to_noise_map"
         )
@@ -359,6 +361,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
             plot_image=self.plot_dataset_data,
             plot_noise_map=self.plot_dataset_noise_map,
             plot_psf=self.plot_dataset_psf,
+            plot_inverse_noise_map=self.plot_dataset_inverse_noise_map,
             plot_signal_to_noise_map=self.plot_dataset_signal_to_noise_map,
             plot_absolute_signal_to_noise_map=self.plot_dataset_absolute_signal_to_noise_map,
             plot_potential_chi_squared_map=self.plot_dataset_potential_chi_squared_map,
