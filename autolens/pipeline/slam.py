@@ -213,7 +213,7 @@ class SLaM:
             )
 
 
-class Hyper(setup.PipelineSetup):
+class HyperSetup(setup.PipelineSetup):
     def __init__(
         self,
         hyper_galaxies=False,
@@ -303,7 +303,7 @@ class Hyper(setup.PipelineSetup):
             )
 
 
-class Source(setup.PipelineSetup):
+class SourceSetup(setup.PipelineSetup):
     def __init__(
         self,
         pixelization=None,
@@ -314,6 +314,7 @@ class Source(setup.PipelineSetup):
         align_light_mass_centre=False,
         lens_light_bulge_only=False,
         number_of_gaussians=None,
+        inversion_evidence_tolerance=None,
     ):
 
         super().__init__(
@@ -324,6 +325,7 @@ class Source(setup.PipelineSetup):
             lens_mass_centre=lens_mass_centre,
             number_of_gaussians=number_of_gaussians,
             align_light_mass_centre=align_light_mass_centre,
+            inversion_evidence_tolerance=inversion_evidence_tolerance,
         )
 
         self.lens_light_bulge_only = lens_light_bulge_only
@@ -456,7 +458,7 @@ class Source(setup.PipelineSetup):
         return mass
 
 
-class Light(setup.PipelineSetup):
+class LightSetup(setup.PipelineSetup):
     def __init__(
         self,
         align_bulge_disk_centre=False,
@@ -493,7 +495,7 @@ class Light(setup.PipelineSetup):
             )
 
 
-class Mass(setup.PipelineSetup):
+class MassSetup(setup.PipelineSetup):
     def __init__(
         self,
         no_shear=False,

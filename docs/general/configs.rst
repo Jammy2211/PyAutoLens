@@ -173,6 +173,11 @@ config/non_linear/nest/DynestyStatic.ini, config/non_linear/mcmc/Emcee.ini, etc.
         If True, the default print output of the non-linear search is silcened and not printed by the Python
         interpreter.
 
+[prior_passer]
+sigma=3.0
+use_errors=True
+use_widths=True
+
 [parallel]
     number_of_cores -> int
         For non-linear searches that support parallel procesing via the Python multiprocesing module, the number of
