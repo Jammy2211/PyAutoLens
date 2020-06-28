@@ -48,16 +48,16 @@ def test__no_shear_tag():
 
 def test__align_light_dark_tag():
 
-    setup = al.slam.Mass(align_light_dark_centre=False)
+    setup = al.slam.MassSetup(align_light_dark_centre=False)
     assert setup.align_light_dark_centre_tag == ""
-    setup = al.slam.Mass(align_light_dark_centre=True)
+    setup = al.slam.MassSetup(align_light_dark_centre=True)
     assert setup.align_light_dark_centre_tag == "__align_light_dark_centre"
 
 
 def test__align_bulge_dark_tag():
-    setup = al.slam.Mass(align_bulge_dark_centre=False)
+    setup = al.slam.MassSetup(align_bulge_dark_centre=False)
     assert setup.align_bulge_dark_centre_tag == ""
-    setup = al.slam.Mass(align_bulge_dark_centre=True)
+    setup = al.slam.MassSetup(align_bulge_dark_centre=True)
     assert setup.align_bulge_dark_centre_tag == "__align_bulge_dark_centre"
 
 
