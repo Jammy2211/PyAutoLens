@@ -174,3 +174,10 @@ config to run. Therefore, if you fork or clone the **PyAutoLens** repository, yo
 `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ with the PYTHONPATH and WORKSPACE environment
 variables set up as described on the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ repository
 or the installation instructions below.
+
+Trouble Shooting
+----------------
+
+If you have issues with installation or using **PyAutoFit** in general, please raise an issue on the
+`autolens_workspace issues page <https://github.com/Jammy2211/autolens_workspace/issues>`_ with a description of the
+problem and your system setup (operating system, Python version, etc.).
