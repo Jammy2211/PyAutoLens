@@ -38,6 +38,11 @@
     change_threshold -> float
         The threshold value by which if the change in auto_correlations is below sampling will be terminated early.
 
+[prior_passer]
+sigma=3.0
+use_errors=True
+use_widths=True
+
 [parallel]
     number_of_cores -> 1
         The number of cores Emcee sampling is performed using a Python multiprocessing Pool instance. If 1, a pool
