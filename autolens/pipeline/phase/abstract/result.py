@@ -1,4 +1,3 @@
-import autofit as af
 from autoarray.structures import grids
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.pipeline.phase.abstract import result
