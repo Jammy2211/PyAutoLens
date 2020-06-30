@@ -6,13 +6,13 @@ import numpy as np
 
 # noinspection PyAbstractClass
 class StochasticPhase(extensions.ModelFixingHyperPhase):
-    def __init__(
-        self,
-        phase: abstract.AbstractPhase,
-        search,
-        model_classes=tuple(),
-    ):
-        super().__init__(phase=phase, search=search, model_classes=model_classes, hyper_name="stochastic")
+    def __init__(self, phase: abstract.AbstractPhase, search, model_classes=tuple()):
+        super().__init__(
+            phase=phase,
+            search=search,
+            model_classes=model_classes,
+            hyper_name="stochastic",
+        )
 
     def make_model(self, instance):
         return instance.as_model(self.model_classes)
@@ -29,6 +29,7 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         phase = self.make_hyper_phase()
         phase.settings.log_likelihood_cap = np.median(log_evidences)
+        phase.use_as_hyper_dataset = False
         phase.model = self.make_model(results.last.instance)
 
         return phase.run(dataset, mask=results.last.mask, results=results)

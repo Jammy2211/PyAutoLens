@@ -1,4 +1,5 @@
 import autofit as af
+import autogalaxy as ag
 from astropy import cosmology as cosmo
 from autogalaxy.pipeline.phase import dataset
 from autogalaxy.pipeline.phase.imaging.phase import PhaseAttributes as AgPhaseAttributes
@@ -6,6 +7,7 @@ from autolens.pipeline.phase.settings import PhaseSettingsImaging
 from autolens.pipeline.phase.imaging.analysis import Analysis
 from autolens.pipeline.phase.imaging.meta_imaging import MetaImaging
 from autolens.pipeline.phase.imaging.result import Result
+from autolens.pipeline.phase.extensions.stochastic_phase import StochasticPhase
 
 
 class PhaseImaging(dataset.PhaseDataset):
@@ -105,6 +107,15 @@ class PhaseImaging(dataset.PhaseDataset):
         )
 
         return analysis
+
+    def extend_with_stochastic_phase(self, stochastic_search=None):
+
+        if stochastic_search is None:
+            stochastic_search = self.search
+
+        return StochasticPhase(
+            phase=self, search=stochastic_search, model_classes=(ag.mp.MassProfile,)
+        )
 
     def output_phase_info(self):
 
