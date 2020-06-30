@@ -118,11 +118,11 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         else:
             masked_dataset = self.masked_dataset
 
-        log_evidences = []
-
         stochastic_histogram_samples = conf.instance.general.get(
             "inversion", "stochastic_histogram_samples", int
         )
+
+        log_evidences = []
 
         for i in range(stochastic_histogram_samples):
 
