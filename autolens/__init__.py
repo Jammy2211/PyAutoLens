@@ -66,4 +66,4 @@ from autolens.pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
 from autolens.pipeline.pipeline import PipelineDataset, PipelinePositions
 
-__version__ = '1.0.14'
+__version__ = '1.0.15'
