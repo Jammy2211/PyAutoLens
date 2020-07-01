@@ -62,6 +62,7 @@ from autolens.pipeline.phase.settings import PhaseSettingsImaging
 from autolens.pipeline.phase.settings import PhaseSettingsInterferometer
 from autolens.pipeline.phase.imaging.phase import PhaseImaging
 from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
+from autolens.pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
 from autolens.pipeline.pipeline import PipelineDataset, PipelinePositions
 

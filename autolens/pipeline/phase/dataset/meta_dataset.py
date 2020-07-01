@@ -82,7 +82,10 @@ class MetaLens:
 
             positions_threshold = self.settings.positions_threshold
 
-        if self.settings.auto_positions_minimum_threshold is not None and positions_threshold is not None:
+        if (
+            self.settings.auto_positions_minimum_threshold is not None
+            and positions_threshold is not None
+        ):
             if (
                 positions_threshold < self.settings.auto_positions_minimum_threshold
             ) or (positions_threshold is None):

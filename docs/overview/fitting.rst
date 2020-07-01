@@ -109,7 +109,7 @@ In contrast, a bad lens model will show features in the residual-map and chi-squ
   :width: 400
   :alt: Alternative text
 
-Most importantly, the _FitImaging_ object also provides us with a log likelihood, a single value measure of how good
+Most importantly, the *FitImaging* object also provides us with a log likelihood, a single value measure of how good
 our *Tracer* fitted the dataset. If we can find a *Tracer* that produces a high log likelihood, we'll have a model
 which is representative of our strong lens data! This task, called lens modeling, is covered in the next API overview.
 
@@ -118,7 +118,7 @@ combination of light profiles, mass profiles and galaxies) that minimize the res
 
 This requires lens modeling, which uses a non-linear search algorithm to fit many different tracers to the data.
 This model-fitting is handled by our project **PyAutoFit**, a probablistic programming language for non-linear model
-fitting. Below, we setup our model as _GalaxyModel_ objects, which repesent the galaxies we fit to our data:
+fitting. Below, we setup our model as *GalaxyModel* objects, which repesent the galaxies we fit to our data:
 
 If you are unfamilar data and model fitting, and unsure what terms like 'residuals', 'chi-sqaured' or 'likelihood' mean,
 we'll explain all in chapter 1 of the **HowToLens** lecture series. Checkout the

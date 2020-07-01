@@ -24,7 +24,7 @@ We are going to fit this image with an *Inversion*, so we first create *Mask* an
    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
 To reconstruct the source using a pixel-grid, we simply pass it the *Pixelization* class we want to reconstruct its
-light using. We also pass a *Regularization* scheme which describes a our prior on how much we smooth the reconstruction.
+light using. We also pass a *Regularization* scheme which describes our prior on how much we smooth the reconstruction.
 
 Below, we use a *Rectangular* pixelization with resolution 40 x 40 and *Constant* regularizaton scheme:
 
@@ -53,7 +53,7 @@ Here is what our reconstructed source galaxy looks like:
   :alt: Alternative text
 
 Note how the source reconstruction is irregular and has multiple clumps of light - these features would be difficult
-to represent using _LightProfile_'s!
+to represent using *LightProfile*'s!
 
 The source reconstruction can be mapped back to the image-plane, to produce a reconstructed image:
 
@@ -75,7 +75,7 @@ By inspecting the residual-map, normalized residual-map and chi-squared map of t
 the source reconstruction accurately fits the image of the strong lens:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/pixelizations/voronoi_fit.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 This was a brief overview of *Inversions* with **PyAutoLens**. There is a lot more to using *Inversions* then presented
