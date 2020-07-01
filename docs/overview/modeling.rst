@@ -57,6 +57,13 @@ The *PhaseImaging* object above returned a 'result', or *Result* object. This co
     )
     aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
+Here's what the model-fit of the model which maximizes the log likelihood looks like, providing good residuals and
+low chi-squared values:
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/subplot_fit.png
+  :width: 600
+  :alt: Alternative text
+
 In fact, this *Result* object contains the full posterior information of our *non-linear* search, including all
 parameter samples, log likelihood values and tools to compute the errors on the lens model. The autolens_workspace
 contains a full description of all information contained in a *Result*.

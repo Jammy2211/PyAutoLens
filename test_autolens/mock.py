@@ -22,6 +22,7 @@ class MockResult(af.MockResult):
         positions=None,
         updated_positions=None,
         updated_positions_threshold=None,
+        stochastic_log_evidences=None,
         use_as_hyper_dataset=False,
     ):
 
@@ -52,6 +53,7 @@ class MockResult(af.MockResult):
             updated_positions if updated_positions is not None else []
         )
         self.updated_positions_threshold = updated_positions_threshold
+        self.stochastic_log_evidences = stochastic_log_evidences
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(self):
@@ -77,6 +79,7 @@ class MockResults(af.ResultsCollection):
         positions=None,
         updated_positions=None,
         updated_positions_threshold=None,
+        stochastic_log_evidences=None,
         use_as_hyper_dataset=False,
     ):
         """
@@ -103,6 +106,7 @@ class MockResults(af.ResultsCollection):
             positions=positions,
             updated_positions=updated_positions,
             updated_positions_threshold=updated_positions_threshold,
+            stochastic_log_evidences=stochastic_log_evidences,
             use_as_hyper_dataset=use_as_hyper_dataset,
         )
 
