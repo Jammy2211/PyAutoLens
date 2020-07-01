@@ -9,6 +9,7 @@
    general/workspace
    general/configs
    general/papers
+   general/citations
    general/credits
 
 .. toctree::

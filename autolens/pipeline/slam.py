@@ -40,45 +40,72 @@ class SLaM:
         light_tag = conf.instance.tag.get("pipeline", "light", str)
         return "__" + light_tag + "_" + self.light.type_tag
 
-    def lens_with_previous_light_and_model_mass(self):
-        """Setup the lens galaxy model using the previous results of a pipeline or phase.
+    def lens_from_light_pipeline_for_mass_pipeline(self, redshift_lens, mass, shear):
+        """Setup the lens model for a Mass pipeline using the previous pipeline and phase results.
 
-        This function is required when linking a lens light model to a pipeline where the lens light is not specified
-        in the pipeline itself. For example, when linking the source initialize parametric pipeline (which can use
-         multiple differenet lens light models) to a source inversion pipeline."""
+        The lens light model is not specified by the Mass pipeline, so the Light pipelines are used to
+        determine this. This function returns a _GalaxyModel_ for the lens, where:
 
-        lens = af.last[-1].instance.galaxies.lens
-        lens.mass = af.last[-1].model.galaxies.lens.mass
-        lens.shear = af.last[-1].model.galaxies.lens.shear
-
-        lens.hyper_galaxy = (
-            af.last.result.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy
-        )
-
-        return lens
-
-    def source_from_previous_pipeline(self):
-        """Setup the source model using the previous pipeline and phase results.
-
-        The source light model is not specified by the pipeline light and mass pipelines (e.g. the previous pipelines
-        are used to determine whether the source model is parametric or an inversion.
-
-        The source is returned as a model if it is parametric (given it must be updated to properly compute a new mass
-        model) whereas inversions are returned as an instance (as they have sufficient flexibility to typically not
-        required updating). This behaviour can be customizzed in SLaM pipelines by replacing this method with the
-        *source_from_previous_pipeline_model_or_instance* method of the SLaM class.
-
-        The pipeline tool af.last is required to locate the previous source model, which requires an index based on the
-        pipelines that have run. For example, if the source model you wish to load from is 3 phases back (perhaps
-        because there were multiple phases in a Light pipeline preivously) this index should be 2.
+        1) The lens light model uses the light model of the Light pipeline.
+        2) The lens light is returned as a model if *fix_lens_light* is *False, an instance if *True*.
 
         Parameters
         ----------
-        source_as_model : bool
-            If *True* the source is returned as a *model* where the parameters are fitted for using priors of the
-            phase result it is loaded from. If *False*, it is an instance of that phase's result.
-        index : integer
-            The index (counting backwards from this phase) of the phase result used to setup the source.
+        redshift_lens : float
+            The redshift of the lens galaxy.
+        mass : ag.MassProfile
+            The mass model of the len galaxy.
+        shear : ag.ExternalShear
+            The external shear of the lens galaxy.
+        """
+
+        if self.mass.fix_lens_light:
+
+            return ag.GalaxyModel(
+                redshift=redshift_lens,
+                bulge=af.last.instance.galaxies.lens.bulge,
+                disk=af.last.instance.galaxies.lens.disk,
+                mass=mass,
+                shear=shear,
+                hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+            )
+
+        else:
+
+            return ag.GalaxyModel(
+                redshift=redshift_lens,
+                bulge=af.last.model.galaxies.lens.bulge,
+                disk=af.last.model.galaxies.lens.disk,
+                mass=mass,
+                shear=shear,
+                hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+            )
+
+    def source_from_source_pipeline_for_light_pipeline(self):
+        """Setup the source model for a Light pipeline using the previous pipeline and phase results.
+
+        The source light model is not specified by the Light pipeline, so the Source pipelines are used to 
+        determine whether the source model is parametric or an inversion. This behaviour can be customized in SLaM 
+        pipelines by replacing this method with the *source_from_previous_pipeline_model_or_instance* method of the 
+        SLaM class.
+        
+        The source is returned as an instance for the Light pipeline, irrespective of whether it is parametric or an
+        Inversion. This is because this phase fits the lens light, and thus does not depend strongly on the source.
+        """
+        return self.source_from_previous_pipeline_model_or_instance(
+            source_as_model=False, index=0
+        )
+
+    def source_from_source_pipeline_for_mass_pipeline(self):
+        """Setup the source model for a Mass pipeline using the previous pipeline and phase results.
+
+        The source light model is not specified by the pipeline Mass pipeline (e.g. the previous pipelines are used to 
+        determine whether the source model is parametric or an inversion.
+
+        The source is returned as a model if it is parametric (given it must be updated to properly compute a new mass
+        model) whereas inversions are returned as an instance (as they have sufficient flexibility to typically not
+        required updating). This behaviour can be customized in SLaM pipelines by replacing this method with the
+        *source_from_previous_pipeline_model_or_instance* method of the SLaM class.
         """
         if self.source.type_tag in "sersic":
             return self.source_from_previous_pipeline_model_or_instance(
@@ -173,44 +200,6 @@ class SLaM:
                     ].hyper_combined.instance.galaxies.source.regularization,
                     hyper_galaxy=hyper_galaxy,
                 )
-
-    def lens_from_previous_pipeline(self, redshift_lens, mass, shear):
-        """For the SLaM mass pipeline, return the lens _GalaxyModel_, where:
-
-        1) The lens light model uses the light model of the Light pipeline.
-        2) The lens light is returned as a model if *fix_lens_light* is *False, an instance if *True*.
-
-        Parameters
-        ----------
-        redshift_lens : float
-            The redshift of the lens galaxy.
-        mass : ag.MassProfile
-            The mass model of the len galaxy.
-        shear : ag.ExternalShear
-            The external shear of the lens galaxy.
-        """
-
-        if self.mass.fix_lens_light:
-
-            return ag.GalaxyModel(
-                redshift=redshift_lens,
-                bulge=af.last.instance.galaxies.lens.bulge,
-                disk=af.last.instance.galaxies.lens.disk,
-                mass=mass,
-                shear=shear,
-                hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
-            )
-
-        else:
-
-            return ag.GalaxyModel(
-                redshift=redshift_lens,
-                bulge=af.last.model.galaxies.lens.bulge,
-                disk=af.last.model.galaxies.lens.disk,
-                mass=mass,
-                shear=shear,
-                hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
-            )
 
 
 class HyperSetup(setup.PipelineSetup):
