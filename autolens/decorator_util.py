@@ -11,7 +11,7 @@ If on laptop:
 If on super computer:
 
 @numba.jit(nopython=True, cache=False, parallel=True)
-"""
+""" 
 
 try:
     nopython = conf.instance.general.get("numba", "nopython", bool)
