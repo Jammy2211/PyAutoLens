@@ -78,7 +78,7 @@
             "upper_limit": 1.0,
             "width_modifier": {
                 "type": "Absolute",
-                "value": 0.3
+                "value": 0.2
             },
             "gaussian_limits": {
                 "lower": -1.0,
@@ -91,7 +91,7 @@
             "upper_limit": 1.0,
             "width_modifier": {
                 "type": "Absolute",
-                "value": 0.3
+                "value": 0.2
             },
             "gaussian_limits": {
                 "lower": "-1.0",
@@ -367,7 +367,7 @@
             "upper_limit": 1.0,
             "width_modifier": {
                 "type": "Absolute",
-                "value": 0.3
+                "value": 0.2
             },
             "gaussian_limits": {
                 "lower": -1.0,
@@ -380,7 +380,7 @@
             "upper_limit": 1.0,
             "width_modifier": {
                 "type": "Absolute",
-                "value": 0.3
+                "value": 0.2
             },
             "gaussian_limits": {
                 "lower": "-1.0",
