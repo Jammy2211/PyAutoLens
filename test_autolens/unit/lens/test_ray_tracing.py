@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 from skimage import measure
-from test_autoarray.mock import mock_inversion as mock_inv
+from test_autoarray import mock as mock_inv
 
 
 def critical_curve_via_magnification_from_tracer_and_grid(tracer, grid):

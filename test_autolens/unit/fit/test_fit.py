@@ -1279,6 +1279,8 @@ class TestFitImaging:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
+            masked_imaging_7x7_grid.image[0] = 3.0
+
             fit = al.FitImaging(masked_imaging=masked_imaging_7x7_grid, tracer=tracer)
 
             traced_grids = tracer.traced_grids_of_planes_from_grid(
