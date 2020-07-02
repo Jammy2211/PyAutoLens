@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from autoarray import conf
 from autoarray import preprocess
 from autoarray.dataset.imaging import Imaging
