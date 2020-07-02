@@ -2,11 +2,11 @@
 API Documentation
 =================
 
+.. currentmodule:: autolens
+
 ---------------
 Data Structures
 ---------------
-
-.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -28,8 +28,6 @@ Data Structures
 Datasets
 --------
 
-.. currentmodule:: autolens
-
 .. autosummary::
    :toctree: generated/
 
@@ -42,8 +40,6 @@ Datasets
 Simulators
 ----------
 
-.. currentmodule:: autolens
-
 .. autosummary::
    :toctree: generated/
 
@@ -54,8 +50,6 @@ Simulators
 Fitting
 -------
 
-.. currentmodule:: autolens
-
 .. autosummary::
    :toctree: generated/
 
@@ -65,8 +59,6 @@ Fitting
 --------------
 Light Profiles
 --------------
-
-.. currentmodule:: autogalaxy.profiles.light_profiles
 
 .. autosummary::
    :toctree: generated/
@@ -85,8 +77,6 @@ Light Profiles
 -------------
 Mass Profiles
 -------------
-
-.. currentmodule:: autogalaxy.profiles.mass_profiles
 
 **Total Mass Profiles:**
 
@@ -148,8 +138,6 @@ Mass Profiles
 Lensing
 -------
 
-.. currentmodule:: autolens
-
 .. autosummary::
    :toctree: generated/
 
@@ -160,8 +148,6 @@ Lensing
 ----------
 Inversions
 ----------
-
-.. currentmodule:: autoarray.operators.inversion.pixelizations
 
 **Pixelizations:**
 
@@ -174,8 +160,6 @@ Inversions
 
 **Regularizations:**
 
-.. currentmodule:: autoarray.operators.inversion.regularization
-
 .. autosummary::
    :toctree: generated/
 
@@ -183,8 +167,6 @@ Inversions
    AdaptiveBrightness
 
 **Inversions:**
-
-.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -195,8 +177,6 @@ Inversions
 -------------
 Lens Modeling
 -------------
-
-.. currentmodule:: autolens
 
 **Phases:**
 
@@ -214,22 +194,7 @@ Lens Modeling
    PhaseSettingsImaging
    PhaseSettingsInterferometer
 
-**Searches:**
-
-.. currentmodule:: autofit
-
-.. autosummary::
-   :toctree: generated/
-
-   DynestyStatic
-   DynestyDynamic
-   Emcee
-   PySwarmsGlobal
-   MultiNest
-
 **Pipelines:**
-
-.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -243,11 +208,7 @@ Lens Modeling
 
    PipelineSetup
 
-.. currentmodule:: autolens.slam
-
 **SLaM:**
-
-.. currentmodule:: autolens.slam
 
 .. autosummary::
    :toctree: generated/
@@ -257,3 +218,20 @@ Lens Modeling
    SourceSetup
    LightSetup
    MassSetup
+
+---------
+PyAutoFit
+---------
+
+**Searches:**
+
+.. currentmodule:: autofit
+
+.. autosummary::
+   :toctree: generated/
+
+   DynestyStatic
+   DynestyDynamic
+   Emcee
+   PySwarmsGlobal
+   MultiNest
