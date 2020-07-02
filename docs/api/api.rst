@@ -28,19 +28,33 @@ Data Structures
 Datasets
 --------
 
+.. currentmodule:: autolens
+
 .. autosummary::
    :toctree: generated/
 
    Imaging
    MaskedImaging
-   SimulatorImaging
    Interferometer
    MaskedInterferometer
+
+----------
+Simulators
+----------
+
+.. currentmodule:: autolens
+
+.. autosummary::
+   :toctree: generated/
+
+   SimulatorImaging
    SimulatorInterferometer
 
 -------
 Fitting
 -------
+
+.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -52,7 +66,7 @@ Fitting
 Light Profiles
 --------------
 
-.. currentmodule:: autolens.lp
+.. currentmodule:: autogalaxy.profiles.light_profiles
 
 .. autosummary::
    :toctree: generated/
@@ -72,7 +86,7 @@ Light Profiles
 Mass Profiles
 -------------
 
-.. currentmodule:: autolens.mp
+.. currentmodule:: autogalaxy.profiles.mass_profiles
 
 **Total Mass Profiles:**
 
@@ -147,7 +161,7 @@ Lensing
 Inversions
 ----------
 
-.. currentmodule:: autolens.pix
+.. currentmodule:: autoarray.operators.inversion.pixelizations
 
 **Pixelizations:**
 
@@ -158,9 +172,9 @@ Inversions
    VoronoiMagnification
    VoronoiBrightnessImage
 
-.. currentmodule:: autolens.reg
-
 **Regularizations:**
+
+.. currentmodule:: autoarray.operators.inversion.regularization
 
 .. autosummary::
    :toctree: generated/
@@ -168,9 +182,9 @@ Inversions
    Constant
    AdaptiveBrightness
 
-.. currentmodule:: autolens
-
 **Inversions:**
+
+.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -211,11 +225,11 @@ Lens Modeling
    DynestyDynamic
    Emcee
    PySwarmsGlobal
- MultiNest
-
-.. currentmodule:: autolens
+   MultiNest
 
 **Pipelines:**
+
+.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -233,11 +247,13 @@ Lens Modeling
 
 **SLaM:**
 
+.. currentmodule:: autolens.slam
+
 .. autosummary::
    :toctree: generated/
 
    SLaM
-   Hyper
-   Source
-   Light
-   Mass
+   HyperSetup
+   SourceSetup
+   LightSetup
+   MassSetup
