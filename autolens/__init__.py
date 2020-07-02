@@ -66,4 +66,4 @@ from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 from .pipeline.pipeline import PipelineDataset, PipelinePositions
 
-__version__ = '1.0.17'
+__version__ = '1.0.18'
