@@ -2,11 +2,11 @@
 API Documentation
 =================
 
-.. currentmodule:: autolens.lens
-
 ---------------
 Data Structures
 ---------------
+
+.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -28,6 +28,8 @@ Data Structures
 Datasets
 --------
 
+.. currentmodule:: autolens
+
 .. autosummary::
    :toctree: generated/
 
@@ -39,6 +41,8 @@ Datasets
 ----------
 Simulators
 ----------
+
+.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -60,6 +64,8 @@ Fitting
 Light Profiles
 --------------
 
+.. currentmodule:: autogalaxy.profiles.light_profiles
+
 .. autosummary::
    :toctree: generated/
 
@@ -77,6 +83,8 @@ Light Profiles
 -------------
 Mass Profiles
 -------------
+
+.. currentmodule:: autogalaxy.profiles.mass_profiles
 
 **Total Mass Profiles:**
 
@@ -138,6 +146,8 @@ Mass Profiles
 Lensing
 -------
 
+.. currentmodule:: autolens
+
 .. autosummary::
    :toctree: generated/
 
@@ -149,6 +159,8 @@ Lensing
 Inversions
 ----------
 
+.. currentmodule:: autoarray.operators.inversion.pixelizations
+
 **Pixelizations:**
 
 .. autosummary::
@@ -158,6 +170,8 @@ Inversions
    VoronoiMagnification
    VoronoiBrightnessImage
 
+.. currentmodule:: autoarray.operators.inversion.regularization
+
 **Regularizations:**
 
 .. autosummary::
@@ -165,6 +179,8 @@ Inversions
 
    Constant
    AdaptiveBrightness
+
+.. currentmodule:: autolens
 
 **Inversions:**
 
@@ -177,6 +193,8 @@ Inversions
 -------------
 Lens Modeling
 -------------
+
+.. currentmodule:: autolens
 
 **Phases:**
 
@@ -209,6 +227,8 @@ Lens Modeling
    PipelineSetup
 
 **SLaM:**
+
+.. currentmodule:: autolens.slam
 
 .. autosummary::
    :toctree: generated/
