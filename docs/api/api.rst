@@ -2,11 +2,11 @@
 API Documentation
 =================
 
-.. currentmodule:: autolens
-
 ---------------
 Data Structures
 ---------------
+
+.. currentmodule:: autoarray
 
 .. autosummary::
    :toctree: generated/
@@ -27,6 +27,8 @@ Data Structures
 --------
 Datasets
 --------
+
+.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
