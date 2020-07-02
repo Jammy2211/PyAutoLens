@@ -2,7 +2,7 @@
 API Documentation
 =================
 
-.. currentmodule:: autolens.lens
+.. currentmodule:: autolens
 
 ---------------
 Data Structures
