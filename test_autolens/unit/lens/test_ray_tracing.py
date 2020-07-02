@@ -4486,7 +4486,7 @@ class TestDecorators:
 
         traced_grids = tracer.traced_grids_of_planes_from_grid(grid=grid_interp)
 
-        assert isinstance(traced_grids[0], al.Grid)
+        assert isinstance(traced_grids[0], al.GridInterpolate)
         assert (traced_grids[0] == grid_interp).all()
         source_plane_grid = traced_grids[0] - deflections
         assert (traced_grids[1] == source_plane_grid).all()
