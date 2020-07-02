@@ -108,13 +108,30 @@ class PhaseImaging(dataset.PhaseDataset):
 
         return analysis
 
-    def extend_with_stochastic_phase(self, stochastic_search=None):
+    def extend_with_stochastic_phase(
+        self,
+        stochastic_search=None,
+        include_lens_light=False,
+        include_pixelization=False,
+        include_regularization=False,
+    ):
 
         if stochastic_search is None:
             stochastic_search = self.search
 
+        model_classes = [ag.mp.MassProfile]
+
+        if include_lens_light:
+            model_classes.append(ag.lp.LightProfile)
+
+        if include_pixelization:
+            model_classes.append(ag.pix.Pixelization)
+
+        if include_regularization:
+            model_classes.append(ag.reg.Regularization)
+
         return StochasticPhase(
-            phase=self, search=stochastic_search, model_classes=(ag.mp.MassProfile,)
+            phase=self, search=stochastic_search, model_classes=tuple(model_classes)
         )
 
     def output_phase_info(self):

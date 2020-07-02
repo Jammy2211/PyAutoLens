@@ -39,7 +39,7 @@ def make_stochastic():
 
 
 class TestStochasticPhase:
-    def test_stochastic_result(self, imaging_7x7, stochastic):
+    def test__stochastic_result(self, imaging_7x7, stochastic):
         result = stochastic.run(dataset=None, mask=None)
 
         assert hasattr(result, "stochastic")
