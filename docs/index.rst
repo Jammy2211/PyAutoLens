@@ -36,7 +36,10 @@
    :maxdepth: 1
    :hidden:
 
+   advanced/pipelines
    advanced/aggregator
+   advanced/hyper_mode
+   advanced/slam
 
 .. toctree::
    :caption: API Documentation:
