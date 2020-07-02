@@ -1,37 +1,48 @@
-Read the Docs:
+Features:
 
-    Overview:
+    - Stochastic mode
+    - PyLops.
+    - Sanity checks on priors, e.g. intensity and effective radius, size of PSF up to 21x21.
+    - Self calibration.
+    - GradientSolver + Caustic grid refinement.
+    - Position solver + modeling.
+    - Summarize model.
+    - Simulated lensed image from discrete image grid.
+    - classmethods using realistic lens units.
 
-        - Mention example scripts for customization.
-        - May split fitting and modeling?
-        - Inversions.
+Readthedocs:
 
-    Tutorials:
+    - Data description in General section.
+    - Advanced: - Pipelines, Aggregator, hyper mode, SLaM.
+    - nbsphinx for notebooks + make API docs work.
+    - Guide to model customization API.
+    - Mask / PSF issue when loading data (auto pad image).
 
-        - HowToLens
+Workspace:
 
-    Preprocess:
+    - AutoGalaxy Workspace.
+    - Background sky in image examples, better descriptioon of noise map.
+    - Better desciption of what a good or bad noise map and signal to noise map looks like.
+    - Gaussian pipeline API.
 
-         - Data descrition.
+Optimization:
 
-    API:
+    - Hack kmeans for speed via removing nearest neighbor.
 
-        - Sphinx
+Refactor:
 
-    Advanced:
+    - Move some of MaskedDataset options to a FitOptions class.
+    - Unit tests for FitGalaxy Visualizer + Galaxy fitting in general.
+    - Homogenize all units of autolens internally, removing types and documenting units with al.convert.
 
-        - Aggregator.
-        - Pipelines.
-        - Hyper mode.
-        - SLAM.
+Bugs:
 
-- Move some of MaskedDataset options to a FitOptions class.
-- Hack kmeans for speed via removing nearest neighbor.
-- Unit tests for FitGalaxy Visualizer.
-- Make all unit calcs return the same value in certain units and perform all calculations with a .to method? To via tracer method to use its redshiftS?
-- Self calibration.
-- Caustic grid refinement.
-- Positional modeling & updating during pipelines.
-- Summarize model.
-- Simulated lensed image from discrete image grid.
-- classmethods using realistic lens units.
+    - Check if grid from relocated grid ruins Grid API an types for multiplane.
+
+Future:
+
+    - Include output of data for a simulation (galaxies, imaging settings, etc).
+    - Population module for simulating large suites of 'realistic' lenses.
+    - Positional / Quasar modeling (time-delays, variable cosmology, PSF refinement).
+    - Multi-Imaging analysis.
+
