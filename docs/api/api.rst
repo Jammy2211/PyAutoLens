@@ -2,7 +2,7 @@
 API Documentation
 =================
 
-.. currentmodule:: autolens
+.. currentmodule:: autolens.lens.ray_tracing
 
 ---------------
 Data Structures
