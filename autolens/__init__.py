@@ -46,24 +46,24 @@ from autogalaxy.profiles import (
 )
 from autogalaxy.util import convert
 
-from autolens import aggregator as agg
-from autolens import plot
-from autolens.dataset.imaging import MaskedImaging, SimulatorImaging
-from autolens.dataset.interferometer import (
+from  .import aggregator as agg
+from  .import plot
+from .dataset.imaging import MaskedImaging, SimulatorImaging
+from .dataset.interferometer import (
     MaskedInterferometer,
     SimulatorInterferometer,
 )
-from autolens.fit.fit import FitImaging, FitInterferometer
-from autolens.fit.fit import FitPositions
-from autolens.lens.ray_tracing import Tracer
-from autolens.pipeline.setup import PipelineSetup
-from autolens.pipeline import slam
-from autolens.pipeline.phase.settings import PhaseSettingsImaging
-from autolens.pipeline.phase.settings import PhaseSettingsInterferometer
-from autolens.pipeline.phase.imaging.phase import PhaseImaging
-from autolens.pipeline.phase.interferometer.phase import PhaseInterferometer
-from autolens.pipeline.phase.extensions.stochastic_phase import StochasticPhase
-from autolens.pipeline.phase.phase_galaxy import PhaseGalaxy
-from autolens.pipeline.pipeline import PipelineDataset, PipelinePositions
+from .fit.fit import FitImaging, FitInterferometer
+from .fit.fit import FitPositions
+from .lens.ray_tracing import Tracer
+from .pipeline.setup import PipelineSetup
+from .pipeline import slam
+from .pipeline.phase.settings import PhaseSettingsImaging
+from .pipeline.phase.settings import PhaseSettingsInterferometer
+from .pipeline.phase.imaging.phase import PhaseImaging
+from .pipeline.phase.interferometer.phase import PhaseInterferometer
+from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
+from .pipeline.phase.phase_galaxy import PhaseGalaxy
+from .pipeline.pipeline import PipelineDataset, PipelinePositions
 
 __version__ = "1.0.15"

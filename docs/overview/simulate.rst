@@ -1,7 +1,7 @@
-.. _api:
+.. _simulate:
 
-Simulate
---------
+Simulating Lenses
+-----------------
 
 **PyAutoLens** provides tool for simulating strong lens data-sets, which can be used to test lens modeling pipelines
 and train neural networks to recognise and analyse images of strong lenses.
