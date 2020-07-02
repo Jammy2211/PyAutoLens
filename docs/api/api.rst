@@ -2,7 +2,7 @@
 API Documentation
 =================
 
-.. currentmodule:: autoarray
+.. currentmodule:: autolens
 
 ---------------
 Data Structures
@@ -23,8 +23,6 @@ Data Structures
    TransformerDFT
    TransformerFFT
    TransformerNUFFT
-
-.. currentmodule:: autolens
 
 --------
 Datasets
