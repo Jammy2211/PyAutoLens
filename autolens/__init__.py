@@ -46,13 +46,10 @@ from autogalaxy.profiles import (
 )
 from autogalaxy.util import convert
 
-from  .import aggregator as agg
-from  .import plot
+from . import aggregator as agg
+from . import plot
 from .dataset.imaging import MaskedImaging, SimulatorImaging
-from .dataset.interferometer import (
-    MaskedInterferometer,
-    SimulatorInterferometer,
-)
+from .dataset.interferometer import MaskedInterferometer, SimulatorInterferometer
 from .fit.fit import FitImaging, FitInterferometer
 from .fit.fit import FitPositions
 from .lens.ray_tracing import Tracer
@@ -66,4 +63,4 @@ from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 from .pipeline.pipeline import PipelineDataset, PipelinePositions
 
-__version__ = '1.0.19'
+__version__ = '1.1.0'
