@@ -112,21 +112,35 @@ first _Grid_ pixel, as follows:
 # %%
 """
 pixel 1:
+
               _________
+              
               |         |
+              
               |         |  o = (y,x) centre of
+              
  y = 2.475"   |    o    |       _Grid_ coordinate.
+ 
               |         |
+              
               |_________|
+              
               x = -2.475
+
 
 Sub-pixels 1, 2, 3 & 4:
                _________
+               
               |         |
+              
               |  o   o  |  o = (y,x) centre of sub-
+              
  y = 2.475"   |         |       _Grid_ coordinates.
+ 
               |  o   o  |
+              
               |_________|
+              
               x = -2.475
 
 The sub-pixels coordinate are spaced uniformly between the pixel's edges

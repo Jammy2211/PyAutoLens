@@ -248,17 +248,17 @@ quantities, and only the image-plane has galaxies with measureable  _MassProfile
 
 Convenience: 
 
-    You could always write 'tracer.image_plane.convergence' and 'aplt.Plane.convergence(plane=tracer.image_plane). 
-    However, code appears neater if you can just write 'tracer.convergence' and 'aplt.Tracer.convergence(tracer=tracer).
+ You could always write 'tracer.image_plane.convergence' and 'aplt.Plane.convergence(plane=tracer.image_plane). 
+ However, code appears neater if you can just write 'tracer.convergence' and 'aplt.Tracer.convergence(tracer=tracer).
 
 Multi-plane lensing:
  
-    For now, we're focused on the simplest lensing configuratio possible, an image-plane + source-plane configuration. 
-    However, there are strong lens system where there are more than 2 planes! 
+ For now, we're focused on the simplest lensing configuratio possible, an image-plane + source-plane configuration. 
+ However, there are strong lens system where there are more than 2 planes! 
 
-    In these instances, the  convergence, potential and deflections of each plane is different to the overall values 
-    given by the _Tracer_.  This is beyond the scope of this chapter, but be reassured that what you're learning now 
-    will prepare you for the advanced chapters later on!
+ In these instances, the  convergence, potential and deflections of each plane is different to the overall values 
+ given by the _Tracer_.  This is beyond the scope of this chapter, but be reassured that what you're learning now 
+ will prepare you for the advanced chapters later on!
 
 And with that, we're done. You've performed your first ray-tracing with PyAutoLens! There are no exercises for this 
 chapter, and we're going to take a deeper look at ray-tracing in the next chapter.

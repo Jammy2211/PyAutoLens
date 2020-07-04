@@ -222,8 +222,8 @@ aplt.Galaxy.deflections_x(galaxy=galaxy_with_many_profiles, grid=grid)
 """
 And we're done. Lets finished by just thinking about one question:
 
-    1) We've learnt we can group profiles into _Galaxy_'s to essentially sum the contribution of each _LightProfile_ to 
-    the galaxy image's intensity, or sum the contribution of each _MassProfile_ to the convergence, potential and 
-    deflection angles. In strong lensing, there are often multiple galaxies next to one another responsible for the 
-    lensing - how might we account for this?
+ 1) We've learnt we can group profiles into _Galaxy_'s to essentially sum the contribution of each _LightProfile_ to 
+ the galaxy image's intensity, or sum the contribution of each _MassProfile_ to the convergence, potential and 
+ deflection angles. In strong lensing, there are often multiple galaxies next to one another responsible for the 
+ lensing - how might we account for this?
 """

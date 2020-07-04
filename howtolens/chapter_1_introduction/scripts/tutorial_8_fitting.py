@@ -378,8 +378,8 @@ print(fit.log_likelihood)
 """
 Congratulations, you've fitted your first strong lens with PyAutoLens! Perform the following exercises:
 
-    1) In this example, we 'knew' the correct solution, because we simulated the lens ourselves. In the real Universe, 
-       we have no idea what the correct solution is. How would you go about finding the correct solution? Could you find a 
-       solution that fits the data reasonable through trial and error?
+ 1) In this example, we 'knew' the correct solution, because we simulated the lens ourselves. In the real Universe, 
+ we have no idea what the correct solution is. How would you go about finding the correct solution? Could you find a 
+ solution that fits the data reasonable through trial and error?
 
 """
