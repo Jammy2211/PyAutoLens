@@ -15,7 +15,9 @@ import datetime
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.append(os.path.abspath('../howtolens'))
+sys.path.insert(0, os.path.abspath('../howtolens'))
+sys.path.insert(0, os.path.abspath('../../howtolens'))
+sys.path.insert(0, os.path.abspath('../../../howtolens'))
 
 # -- Project information -----------------------------------------------------
 
@@ -41,6 +43,7 @@ extensions = [
     "sphinx.ext.extlinks",
     "numpydoc",
     "nbsphinx",
+    "nbsphinx_link",
 ]
 
 ## Generate autodoc stubs with summaries from code
