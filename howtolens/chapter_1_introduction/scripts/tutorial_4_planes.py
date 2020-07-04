@@ -292,21 +292,19 @@ its appearance can change a lot!
 
 In particular, try:
 
-1) Changing the lens galaxy's einstein radius - what happens to the source-plane's image?
+ 1) Changing the lens galaxy's einstein radius - what happens to the source-plane's image?
 
-2) Change the SphericalIsothermal _MassProfile_ to an _EllipticalIsothermal_ _MassProfile_ and set its axis_ratio to 0.8. 
-What happens to the number of source images?
+ 2) Change the SphericalIsothermal _MassProfile_ to an _EllipticalIsothermal_ _MassProfile_ and set its axis_ratio to 0.8. 
+ What happens to the number of source images?
 
-3) As discussed at the beginning, _Plane_'s can be composed of multiple galaxies. Make an the image-plane with two 
-galaxies and see how multi-galaxy lensing leads to crazy source images. Also try making a source-plane with two 
-galaxies!
+ 3) As discussed at the beginning, _Plane_'s can be composed of multiple galaxies. Make an the image-plane with two 
+ galaxies and see how multi-galaxy lensing leads to crazy source images. Also try making a source-plane with two 
+ galaxies!
 
 Finally, if you are a newcomer to strong lensing, it might be worth reading briefly about some strong lensing theory. 
 Don't worry about maths, and equations, and anything scary, but you should at least go to Wikipedia to figure out:
 
-- What a critical line is.
-
-- What a caustic is.
-
-- What determines the image multiplicity of the lensed source.
+ - What a critical line is.
+ - What a caustic is.
+ - What determines the image multiplicity of the lensed source.
 """

@@ -291,11 +291,11 @@ print(
 """
 And with that, we've completed tutorial 6. Try the following:
 
-    1) By changing the lens and source galaxy redshifts, does the image of the _Tracer_ change at all?
+ 1) By changing the lens and source galaxy redshifts, does the image of the _Tracer_ change at all?
 
-    2) What happens to the cosmological quantities as you change these redshifts? Do you remember enough of your 
+ 2) What happens to the cosmological quantities as you change these redshifts? Do you remember enough of your 
        cosmology lectures to predict how quantities like the angular diameter distance change as a function of redshift?
 
-    3) The _Tracer_ has a small delay in being computed, whereas other tracers were almost instant. What do you think 
-       is the cause of this slow-down?
+ 3) The _Tracer_ has a small delay in being computed, whereas other tracers were almost instant. What do you think 
+    is the cause of this slow-down?
 """
