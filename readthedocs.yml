@@ -9,6 +9,6 @@ sphinx:
   configuration: docs/conf.py
 
 formats:
-  epub
+  [epub]
 
 requirements_file: docs/requirements.txt
