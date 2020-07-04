@@ -30,6 +30,7 @@
    :hidden:
 
    tutorials/howtolens
+   tutorials/chapter_1_introduction/index
 
 .. toctree::
    :caption: Advanced:
