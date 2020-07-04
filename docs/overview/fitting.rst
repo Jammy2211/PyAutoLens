@@ -22,7 +22,7 @@ files as an *Imaging* object:
     aplt.Imaging.noise_map(imaging=imaging)
     aplt.Imaging.psf(imaging=imaging)
 
-Here's what our image, noise map and point-spread function look like:
+Here's what our image, noise-map and point-spread function look like:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/image.png
   :width: 400

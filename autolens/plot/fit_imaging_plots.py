@@ -390,7 +390,7 @@ def image(fit, include=None, plotter=None):
 @lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def noise_map(fit, include=None, plotter=None):
-    """Plot the noise map of a lens fit.
+    """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
 
@@ -418,7 +418,7 @@ def noise_map(fit, include=None, plotter=None):
 @lensing_plotters.set_include_and_plotter
 @plotters.set_labels
 def signal_to_noise_map(fit, include=None, plotter=None):
-    """Plot the noise map of a lens fit.
+    """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
 

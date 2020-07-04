@@ -21,8 +21,8 @@ Readthedocs:
 Workspace:
 
     - AutoGalaxy Workspace.
-    - Background sky in image examples, better descriptioon of noise map.
-    - Better desciption of what a good or bad noise map and signal to noise map looks like.
+    - Background sky in image examples, better descriptioon of noise-map.
+    - Better desciption of what a good or bad noise-map and signal to noise-map looks like.
     - Gaussian pipeline API.
 
 Optimization:
