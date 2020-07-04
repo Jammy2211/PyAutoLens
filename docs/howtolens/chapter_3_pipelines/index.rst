@@ -13,10 +13,3 @@ The chapter contains the following tutorials:
 `Tutorial 2: Pipeline Two Lens Galaxies <>`_
 
 `Tutorial 3: Pipeline Complex Source <>`_
-
-.. toctree::
-   :caption: Tutorials:
-   :maxdepth: 1
-   :hidden:
-
-   tutorial_0_visualization
