@@ -111,4 +111,4 @@ html_static_path = ["_static"]
 
 import os
 
-os.environ['WORKSPACE'] = "."
+os.environ['WORKSPACE'] = "./howtolens"
