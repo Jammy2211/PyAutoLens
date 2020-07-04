@@ -20,7 +20,7 @@ counts of the signal:
         add_noise=True,
     )
 
-Once we have a simulator, we can use it to create an imaging dataset (an image, noise map, PSF) by pasing it a tracer
+Once we have a simulator, we can use it to create an imaging dataset (an image, noise-map, PSF) by pasing it a tracer
 and grid:
 
 .. code-block:: bash
