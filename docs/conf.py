@@ -112,6 +112,8 @@ html_static_path = ["_static"]
 import os
 
 os.environ['WORKSPACE'] = "./howtolens"
-user_paths = os.environ['PYTHONPATH'].split(os.pathsep)
-print(user_paths)
+from pyprojroot import here
+
+workspace_path = here()
+print("Workspace Path: ", workspace_path)
 stop
