@@ -113,4 +113,4 @@ import os
 from pyprojroot import here
 
 workspace_path = here()
-os.environ['WORKSPACE'] = str(workspace_path)
+os.environ['WORKSPACE'] = f"../{str(workspace_path)}"
