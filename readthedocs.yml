@@ -8,4 +8,7 @@ python:
 sphinx:
   configuration: docs/conf.py
 
-requirements_file: requirements.txt
+formats:
+  epub
+
+requirements_file: docs/requirements.txt

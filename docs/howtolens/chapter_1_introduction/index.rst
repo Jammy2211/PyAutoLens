@@ -31,3 +31,12 @@ Tutorial 9: Summary
    :hidden:
 
    tutorial_0_visualization
+   tutorial_1_grids
+   tutorial_2_profiles
+   tutorial_3_galaxies
+   tutorial_4_planes
+   tutorial_5_ray_tracing
+   tutorial_6_more_ray_tracing
+   tutorial_7_data
+   tutorial_8_fitting
+   tutorial_9_summary
