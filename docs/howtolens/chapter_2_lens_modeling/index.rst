@@ -7,23 +7,23 @@ The chapter contains the following tutorials:
 
 `Tutorial 1:  <https://pyautolens.readthedocs.io/en/latest/tutorials/chapter_1_introduction/tutorial_1_visualization.html>`_
 
-Tutorial 1: Non-linear Search
+`Tutorial 1: Non-linear Search <>`_
 
-Tutorial 2: Parameter Space And Priors
+`Tutorial 2: Parameter Space And Priors <>`_
 
-Tutorial 3: Realism and Complexity
+`Tutorial 3: Realism and Complexity <>`_
 
-Tutorial 4: Dealing with Failure
+`Tutorial 4: Dealing with Failure <>`_
 
-Tutorial 5: Linking Phases
+`Tutorial 5: Linking Phases <>`_
 
-Tutorial 6: Alternative Searches
+`Tutorial 6: Alternative Searches  <>`_
 
-Tutorial 7: Masking and Positions
+`Tutorial 7: Masking and Positions <>`_
 
-Tutorial 8: Results
+`Tutorial 8: Results <>`_
 
-Tutorial 9: Need for Speed
+`Tutorial 9: Need for Speed <>`_
 
 .. toctree::
    :caption: Tutorials:

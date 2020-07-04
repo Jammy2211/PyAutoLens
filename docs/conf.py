@@ -110,10 +110,7 @@ html_context = {
 html_static_path = ["_static"]
 
 import os
-
-os.environ['WORKSPACE'] = "./howtolens"
 from pyprojroot import here
 
 workspace_path = here()
-print("Workspace Path: ", workspace_path)
-stop
+os.environ['WORKSPACE'] = workspace_path
