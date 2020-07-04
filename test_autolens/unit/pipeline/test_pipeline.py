@@ -111,30 +111,30 @@ class TestMetaData:
 class TestPassMask:
     def test_pass_mask(self):
         mask = MockMask()
-        phase_1 = DummyPhaseImaging("one")
+        phase1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = al.PipelineDataset("", phase_1, phase_2)
         pipeline.run(dataset=MockImagingData(), mask=mask)
 
-        assert phase_1.mask is mask
+        assert phase1.mask is mask
         assert phase_2.mask is mask
 
 
 class TestPassPositions:
     def test_pass_positions(self):
         positions = [[(1.0, 1.0), (2.0, 2.0)]]
-        phase_1 = DummyPhaseImaging("one")
+        phase1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = al.PipelineDataset("", phase_1, phase_2)
         pipeline.run(dataset=MockImagingData(), mask=MockMask(), positions=positions)
 
-        assert phase_1.positions == positions
+        assert phase1.positions == positions
         assert phase_2.positions == positions
 
 
 class TestPipelineImaging:
     def test_run_pipeline(self):
-        phase_1 = DummyPhaseImaging("one")
+        phase1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
 
         pipeline = al.PipelineDataset("", phase_1, phase_2)
@@ -144,7 +144,7 @@ class TestPipelineImaging:
         assert len(phase_2.results) == 2
 
     def test_addition(self):
-        phase_1 = DummyPhaseImaging("one")
+        phase1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         phase_3 = DummyPhaseImaging("three")
 
@@ -175,7 +175,7 @@ class DummyPhasePositions(af.AbstractPhase):
 
 class TestPipelinePositions:
     def test_run_pipeline(self):
-        phase_1 = DummyPhasePositions(phase_name="one")
+        phase1 = DummyPhasePositions(phase_name="one")
         phase_2 = DummyPhasePositions(phase_name="two")
         pipeline = al.PipelinePositions("", phase_1, phase_2)
 
@@ -184,7 +184,7 @@ class TestPipelinePositions:
         assert len(phase_2.results) == 2
 
     def test_addition(self):
-        phase_1 = DummyPhasePositions("one")
+        phase1 = DummyPhasePositions("one")
         phase_2 = DummyPhasePositions("two")
         phase_3 = DummyPhasePositions("three")
 
