@@ -7,23 +7,23 @@ The chapter contains the following tutorials:
 
 `Tutorial 0: Visualization <https://pyautolens.readthedocs.io/en/latest/tutorials/chapter_1_introduction/tutorial_1_visualization.html>`_
 
-Grids -
+Tutorial 1: Grids
 
-Profiles -
+Tutorial 2: Profiles
 
-Galaxies -
+Tutorial 3: Galaxies
 
-Planes -
+Tutorial 4: Planes
 
-Ray Tracing -
+Tutorial 5: Ray Tracing
 
-More Ray Tracing -
+Tutorial 6: More Ray Tracing
 
-Data -
+Tutorial 7: Data
 
-Fitting -
+Tutorial 8: Fitting
 
-Summary -
+Tutorial 9: Summary
 
 .. toctree::
    :caption: Tutorials:
