@@ -8,3 +8,4 @@ numpydoc>=1.0.0
 matplotlib>=3.0.3
 numba>=0.42.1
 numpy>=1.17.2
+pyprojroot=>0.2.0

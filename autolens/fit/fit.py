@@ -289,7 +289,7 @@ class FitPositions:
         -----------
         positions : [[]]
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
-        noise_map : ndarray | float
+        noise_map : ndarray
             The noise-value assumed when computing the log likelihood.
         """
         self.positions = positions

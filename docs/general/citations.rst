@@ -34,7 +34,6 @@ Please cite both of the **PyAutoLens** papers below:
         journal = {Monthly Notices of the Royal Astronomical Society},
         number = {4},
         pages = {4738--4784},
-        url = {https://academic.oup.com/mnras/article/478/4/4738/5001434},
         volume = {478},
     }
 

@@ -336,8 +336,8 @@ class SourceSetup(setup.PipelineSetup):
 
     @property
     def lens_light_bulge_only_tag(self):
-        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
-         during he analysis, to customize phase names.
+        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or
+        varied during he analysis, to customize phase names.
 
         This changes the setup folder as follows:
 
@@ -516,8 +516,8 @@ class MassSetup(setup.PipelineSetup):
 
     @property
     def fix_lens_light_tag(self):
-        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or varied \
-         during he analysis, to customize phase names.
+        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate,
+        or varied during he analysis, to customize phase names.
 
         This changes the setup folder as follows:
 
