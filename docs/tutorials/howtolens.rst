@@ -86,21 +86,6 @@ and real strong lenses imaging, using the scripts found in the 'autolens_workspa
 with the results and confident with your use of PyAutoLens, you can then begin to cover the advanced functionality
 covered in chapters 3, 4 & 5.
 
-Chapter 1: Strong Lensing
--------------------------
-
-In chapter 1, we'll learn about strong gravitational lensing and PyAutoLens. At the end, you'll
-be able to:
-
-1) Create uniform grid's of (x,y) Cartesian coordinates.
-2) Combine these grid's with light and mass profiles to make images, surface densities, gravitational potentials
-   and deflection angle-maps.
-3) Combine these light and mass profiles to make galaxies.
-4) Perform ray-tracing with these galaxy's whereby a grid is ray-traced through an image-plane / source-plane
-   strong lensing configuration.
-5) Simulate telescope imaging data of a strong gravitational lens.
-6) Fit strong lensing data with model images generated via ray-tracing.
-7) Find the model which provides the best-fit to strong gravitational lens imaging.
 
 Chapter 2; Lens Modeling
 ------------------------
