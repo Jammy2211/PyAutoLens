@@ -18,10 +18,3 @@ The chapter contains the following tutorials:
 `Tutorial 5: Noise Map Scaling 2 <>`_
 
 `Tutorial 6: Hyper Pipeline  <>`_
-
-.. toctree::
-   :caption: Tutorials:
-   :maxdepth: 1
-   :hidden:
-
-   tutorial_0_visualization

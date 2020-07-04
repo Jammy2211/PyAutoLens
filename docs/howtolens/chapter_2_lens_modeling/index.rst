@@ -24,10 +24,3 @@ The chapter contains the following tutorials:
 `Tutorial 8: Results <>`_
 
 `Tutorial 9: Need for Speed <>`_
-
-.. toctree::
-   :caption: Tutorials:
-   :maxdepth: 1
-   :hidden:
-
-   tutorial_0_visualization

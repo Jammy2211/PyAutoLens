@@ -22,10 +22,3 @@ The chapter contains the following tutorials:
 `Tutorial 7: Adaptive Pixelization <>`_
 
 `Tutorial 8: Pipeline Inversion <>`_
-
-.. toctree::
-   :caption: Tutorials:
-   :maxdepth: 1
-   :hidden:
-
-   tutorial_0_visualization
