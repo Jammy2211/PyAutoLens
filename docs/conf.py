@@ -114,4 +114,4 @@ from pyprojroot import here
 
 workspace_path = here()
 os.environ['WORKSPACE'] = f"{str(workspace_path)}/howtolens"
-os.environ['PYTHONPATH'] = f"{str(workspace_path)}"
+# os.environ['PYTHONPATH'] = f"{str(workspace_path)}"
