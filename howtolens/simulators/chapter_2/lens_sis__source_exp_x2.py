@@ -13,7 +13,8 @@ This dataset is used in chapter 2, tutorials 1-3.
 """
 
 """Setup the path to the autolens_workspace, using a relative directory name."""
-workspace_path = "{}/../../..".format(os.path.dirname(os.path.realpath(__file__)))
+from pyprojroot import here
+workspace_path = here()
 
 """
 The 'dataset_label' describes the type of data being simulated (in this case, _Imaging_ data) and 'dataset_name' 
