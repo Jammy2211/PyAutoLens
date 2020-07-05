@@ -133,7 +133,7 @@ aplt.Galaxy.deflections_x(
 # %%
 """
 Now, lets make two source galaxies at redshift 1.0. Lets not use the terms 'light' and 'mass' to setup the light and 
-_MassProfile_s. Instead, lets use more descriptive names of what we think each component represents ( e.g. a 'bulge' 
+_MassProfile_'s. Instead, lets use more descriptive names of what we think each component represents ( e.g. a 'bulge' 
 and 'disk').
 """
 
@@ -247,7 +247,7 @@ aplt.Plane.plane_grid(
 # %%
 """
 Lets plot the lensing quantities again. Note that, because we supplied our galaxies with redshifts and our _Tracer_ with 
-a cosmology, our unit_label have been converted to kiloparsecs! (This cell can take a bit of time to run)
+a cosmology, our units have been converted to kiloparsecs! (This cell can take a bit of time to run)
 """
 
 # %%

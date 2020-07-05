@@ -243,8 +243,8 @@ aplt.Tracer.convergence(tracer=tracer, grid=image_plane_grid)
 # %%
 """
 Before we finish, you might be wondering 'why do both the image-plane and _Tracer_ have the attributes convergence / 
-potential / deflection angles, when the two are identical'. Afterall, only _MassProfile_s contribute to these
-quantities, and only the image-plane has galaxies with measureable  _MassProfile_s! There are two reasons:
+potential / deflection angles, when the two are identical'. Afterall, only _MassProfile_'s contribute to these
+quantities, and only the image-plane has galaxies with measureable  _MassProfile_'s! There are two reasons:
 
 Convenience: 
 
