@@ -8,7 +8,7 @@ Tutorial 2: Two Lens Galaxies
 Up to now, all the images we've fitted had one lens galaxy. However, we saw in chapter 1 that our lens plane can
 consist of multiple galaxies which each contribute to the strong lensing. Multi-galaxy systems are challenging to
 model, because they add an extra 5-10 parameters to the non-linear search and, more problematically, the degeneracies
-between the _MassProfile_s of the two galaxies can be severe.
+between the _MassProfile_'s of the two galaxies can be severe.
 
 However, we can still break their analysis down using a pipeline and give ourselves a shot at getting a good lens
 model. Here, we're going to fit a double lens system, fitting as much about each individual lens galaxy before fitting
@@ -111,7 +111,7 @@ So, with this in mind, we've written a pipeline composed of 4 phases:
 
     1) Fit the _LightProfile_ of the lens galaxy on the left of the image, at coordinates (0.0", -1.0").
     2) Fit the _LightProfile_ of the lens galaxy on the right of the image, at coordinates (0.0", 1.0").
-    3) Use this lens-subtracted image to fit the source-galaxy's light. The _MassProfile_s of the two lens 
+    3) Use this lens-subtracted image to fit the source-galaxy's light. The _MassProfile_'s of the two lens 
        galaxies are fixed to (0.0", -1.0") and (0.0", 1.0").
     4) Fit all relevant parameters simultaneously, using priors from phases 1, 2 and 3.
 """

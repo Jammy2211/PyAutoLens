@@ -9,12 +9,12 @@ A general description of configs in PyAutoLens is provided here, checkout their 
 
 Default:
 
-    The default priors used on every model component in PyAutoLens (e.g. light proiles, _MassProfile_s, etc.), for
+    The default priors used on every model component in PyAutoLens (e.g. light proiles, _MassProfile_'s, etc.), for
     example if they use a UniformPrior or GausssianPrior and the range of values sampled.
 
 Limit:
 
-    The limits between which a parameter may be sampled. For example, the axis_ratio of light and _MassProfile_s has
+    The limits between which a parameter may be sampled. For example, the axis_ratio of light and _MassProfile_'s has
     limits 0.0 -> 1.0 to prevent unphysical models.
 
 Width:
@@ -63,5 +63,5 @@ Subplots:
 
 ### Radial Minimum ###
 
-    _MassProfile_s which use numerical integration to compute deflection angles can break for numerical values very near
+    _MassProfile_'s which use numerical integration to compute deflection angles can break for numerical values very near
     (0.0, 0.0). The values in radial minimum specify to what precision values of (0.0, 0.0) and adjusted to prevent this.

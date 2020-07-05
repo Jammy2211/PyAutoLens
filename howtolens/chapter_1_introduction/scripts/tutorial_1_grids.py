@@ -111,35 +111,36 @@ first _Grid_ pixel, as follows:
 
 # %%
 """
-pixel 1:
+pixel 1
 
               _________
               
-              |         |
+              I         I
               
-              |         |  o = (y,x) centre of
+              I         I  o = (y,x) centre of
               
- y = 2.475"   |    o    |       _Grid_ coordinate.
+ y = 2.475"   I    o    I       _Grid_ coordinate.
  
-              |         |
+              I         I
               
-              |_________|
+              I_________I
               
               x = -2.475
 
 
-Sub-pixels 1, 2, 3 & 4:
+Sub-pixels 1, 2, 3 & 4
+
                _________
                
-              |         |
+              I         I
               
-              |  o   o  |  o = (y,x) centre of sub-
+              I  o   o  I  o = (y,x) centre of sub
               
- y = 2.475"   |         |       _Grid_ coordinates.
+ y = 2.475"   I         I       _Grid_ coordinates.
  
-              |  o   o  |
+              I  o   o  I
               
-              |_________|
+              I_________I
               
               x = -2.475
 

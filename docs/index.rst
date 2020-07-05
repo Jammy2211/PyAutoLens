@@ -31,6 +31,7 @@
 
    howtolens/howtolens
    howtolens/chapter_1_introduction/index
+   howtolens/chapter_3_pipelines/index
 
 .. toctree::
    :caption: Advanced:
