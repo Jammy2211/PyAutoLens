@@ -7,10 +7,10 @@ which each fit a different lens model.
 The chapter contains the following tutorials:
 
 `Tutorial 1: Pipeline Lens and Source <https://pyautolens.readthedocs.io/en/latest/tutorials/chapter_3_pipelines/tutorial_1_pipeline_runner.html>`_
-Fitting the lens's light followed by its mass.
+- Fitting the lens's light followed by its mass.
 
 `Tutorial 2: Pipeline Two Lens Galaxies <https://pyautolens.readthedocs.io/en/latest/tutorials/chapter_3_pipelines/tutorial_2_pipeline_runner.html>`_
-Modeling a strong lens with two lens galaxies.
+- Modeling a strong lens with two lens galaxies.
 
 `Tutorial 3: Pipeline Complex Source <https://pyautolens.readthedocs.io/en/latest/tutorials/chapter_3_pipelines/tutorial_3_pipeline_runner.html>`_
-Using multiple light profiles to fit a complex and irregular source.
+- Using multiple light profiles to fit a complex and irregular source.
