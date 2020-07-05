@@ -19,7 +19,6 @@ workspace_path = here()
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
-# sys.path.insert(0, os.path.abspath(str(workspace_path)))
 
 os.environ['WORKSPACE'] = f"{str(workspace_path)}/howtolens"
 
