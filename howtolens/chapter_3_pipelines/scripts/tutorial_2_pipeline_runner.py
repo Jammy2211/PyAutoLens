@@ -52,9 +52,7 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_3 import (
-    lens_x2_sersic_sie__source_exp,
-)
+from howtolens.simulators.chapter_3 import lens_x2_sersic_sie__source_exp
 
 dataset_label = "chapter_3"
 dataset_name = "lens_x2_sersic_sie__source_exp"

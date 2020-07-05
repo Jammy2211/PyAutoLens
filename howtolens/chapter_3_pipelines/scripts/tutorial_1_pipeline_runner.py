@@ -53,6 +53,9 @@ conf.instance = conf.Config(
 # %%
 """ AUTOLENS + DATA SETUP """
 
+# %%
+#%matplotlib inline
+
 import autolens as al
 import autolens.plot as aplt
 
@@ -66,9 +69,7 @@ We'll use strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_3 import (
-    lens_sersic_sie__source_exp,
-)
+from howtolens.simulators.chapter_3 import lens_sersic_sie__source_exp
 
 dataset_label = "chapter_3"
 dataset_name = "lens_sersic_sie__source_exp"
