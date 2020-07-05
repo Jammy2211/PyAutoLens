@@ -112,41 +112,41 @@ class TestPassMask:
     def test_pass_mask(self):
         mask = MockMask()
         phase1 = DummyPhaseImaging("one")
-        phase_2 = DummyPhaseImaging("two")
+        phase2 = DummyPhaseImaging("two")
         pipeline = al.PipelineDataset("", phase_1, phase_2)
         pipeline.run(dataset=MockImagingData(), mask=mask)
 
         assert phase1.mask is mask
-        assert phase_2.mask is mask
+        assert phase2.mask is mask
 
 
 class TestPassPositions:
     def test_pass_positions(self):
         positions = [[(1.0, 1.0), (2.0, 2.0)]]
         phase1 = DummyPhaseImaging("one")
-        phase_2 = DummyPhaseImaging("two")
+        phase2 = DummyPhaseImaging("two")
         pipeline = al.PipelineDataset("", phase_1, phase_2)
         pipeline.run(dataset=MockImagingData(), mask=MockMask(), positions=positions)
 
         assert phase1.positions == positions
-        assert phase_2.positions == positions
+        assert phase2.positions == positions
 
 
 class TestPipelineImaging:
     def test_run_pipeline(self):
         phase1 = DummyPhaseImaging("one")
-        phase_2 = DummyPhaseImaging("two")
+        phase2 = DummyPhaseImaging("two")
 
         pipeline = al.PipelineDataset("", phase_1, phase_2)
 
         pipeline.run(dataset=MockImagingData(), mask=MockMask())
 
-        assert len(phase_2.results) == 2
+        assert len(phase2.results) == 2
 
     def test_addition(self):
         phase1 = DummyPhaseImaging("one")
-        phase_2 = DummyPhaseImaging("two")
-        phase_3 = DummyPhaseImaging("three")
+        phase2 = DummyPhaseImaging("two")
+        phase3 = DummyPhaseImaging("three")
 
         pipeline1 = al.PipelineDataset("", phase_1, phase_2)
         pipeline2 = al.PipelineDataset("", phase_3)
@@ -176,17 +176,17 @@ class DummyPhasePositions(af.AbstractPhase):
 class TestPipelinePositions:
     def test_run_pipeline(self):
         phase1 = DummyPhasePositions(phase_name="one")
-        phase_2 = DummyPhasePositions(phase_name="two")
+        phase2 = DummyPhasePositions(phase_name="two")
         pipeline = al.PipelinePositions("", phase_1, phase_2)
 
         pipeline.run(positions=None, pixel_scales=None)
 
-        assert len(phase_2.results) == 2
+        assert len(phase2.results) == 2
 
     def test_addition(self):
         phase1 = DummyPhasePositions("one")
-        phase_2 = DummyPhasePositions("two")
-        phase_3 = DummyPhasePositions("three")
+        phase2 = DummyPhasePositions("two")
+        phase3 = DummyPhasePositions("three")
 
         pipeline1 = al.PipelinePositions("", phase_1, phase_2)
         pipeline2 = al.PipelinePositions("", phase_3)
