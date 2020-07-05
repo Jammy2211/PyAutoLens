@@ -14,3 +14,12 @@ The chapter contains the following tutorials:
 
 `Tutorial 3: Pipeline Complex Source <https://pyautolens.readthedocs.io/en/latest/tutorials/chapter_3_pipelines/tutorial_3_pipeline_runner.html>`_
 - Using multiple light profiles to fit a complex and irregular source.
+
+.. toctree::
+   :caption: Tutorials:
+   :maxdepth: 1
+   :hidden:
+
+   tutorial_1_pipeline_runner
+   tutorial_2_pipeline_runner
+   tutorial_3_pipeline_runner
