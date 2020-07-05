@@ -12,12 +12,16 @@ import datetime
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+from pyprojroot import here
+
+workspace_path = here()
+
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('../howtolens'))
-sys.path.insert(0, os.path.abspath('../../howtolens'))
-sys.path.insert(0, os.path.abspath('../../../howtolens'))
+sys.path.insert(0, os.path.abspath(str(workspace_path)))
+
+os.environ['WORKSPACE'] = f"{str(workspace_path)}/howtolens"
 
 # -- Project information -----------------------------------------------------
 
@@ -108,11 +112,3 @@ html_context = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-
-import os
-from pyprojroot import here
-
-workspace_path = here()
-os.environ['WORKSPACE'] = f"{str(workspace_path)}/howtolens"
-print(os.environ['PYTHONPATH'])# = f"{str(workspace_path)}"
-stop
