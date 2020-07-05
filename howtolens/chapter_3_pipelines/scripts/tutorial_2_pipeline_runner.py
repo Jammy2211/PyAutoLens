@@ -22,6 +22,7 @@ pipeline that we can generalize to many lenses isn't currently possible with PyA
 # %%
 """ AUTOFIT + CONFIG SETUP """
 
+# %%
 from autoconf import conf
 from pyprojroot import here
 
@@ -71,6 +72,7 @@ We need to choose our mask for the analysis. Given the lens light is present in 
 of its light in the central regions of the image, so lets use a circular mask.
 """
 
+# %%
 mask = al.Mask.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
 )
@@ -184,5 +186,3 @@ It does get confusing, I won't lie. This is why we made galaxies named objects -
 'left_lens' and 'right_lens'. It still requires caution when writing the pipeline, but goes to show that if you name 
 your galaxies sensibly you should be able to avoid errors, or spot them quickly when you make them.
 """
-
-# %%

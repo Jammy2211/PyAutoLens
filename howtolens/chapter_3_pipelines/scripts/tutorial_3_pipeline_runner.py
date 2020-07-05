@@ -17,6 +17,7 @@ regime of 30-40+ parameters in our non-linear search. Even with a pipeline, that
 # %%
 """ AUTOFIT + CONFIG SETUP """
 
+# %%
 from autoconf import conf
 from pyprojroot import here
 
@@ -63,6 +64,7 @@ We need to choose our mask for the analysis. Given the lens light is present in 
 of its light in the central regions of the image, so lets use a circular mask.
 """
 
+# %%
 mask = al.Mask.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
 )

@@ -1,7 +1,5 @@
 import autofit as af
 import autolens as al
-import autolens.plot as aplt
-import os
 
 """
 This script simulates _Imaging_ of a strong lens where:
