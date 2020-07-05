@@ -64,7 +64,7 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     keywords="cli",
-    packages=find_packages(exclude=["docs"]),
+    packages=find_packages(exclude=["docs"], include=["howtolens"]),
     install_requires=requirements,
     extras_require={"test": ["coverage", "pytest", "pytest-cov"]},
     cmd_class={"test": RunTests},
