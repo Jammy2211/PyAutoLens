@@ -33,6 +33,7 @@
    howtolens/chapter_1_introduction/index
    howtolens/chapter_3_pipelines/index
    howtolens/chapter_4_inversions/index
+   howtolens/chapter_5_hyper_mode/index
 
 .. toctree::
    :caption: API Documentation:
