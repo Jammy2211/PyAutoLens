@@ -1,0 +1,80 @@
+In this chapter, we will introduce PyAutoLens's 'hyper-mode'. In hyper mode, we use previous fits to a strong lens (e.g.
+in an earlier phase of a pipeline) to adapt various aspects of our model to the strong lens image being analysed. In
+particular, we will:
+
+1) Adapt the source _Pixelization_to the reconstructed source's morphology.
+
+2) Adapt the source _Regularization_scheme to the reconstructed source's surface brightness.
+
+3) Scale the noise-map of the _Imaging_ data in regions we fit the lens and source galaxies poorly.
+
+
+To adapt these aspects of the analysis, we will introduce 'hyper-parameters' which change the _Pixelization_,
+regularization scheme and noise-map. To set these hyper-parameters, we'll perform a standard non-linear search (e.g.
+with Dynesty), like we are now used to doing to fit a lens model. However, this fit needs a well defined log_likelihood
+function that if we maximize means we have located what is objectively the 'best-fit' solution in parameter space
+to the strong lens _Imaging_ data.
+
+This is where the 'Bayesian Evidence' introduced in the previous chapter comes in. To *truly* understand how the
+Bayesian log evidence works, we need to consider it in more detail than we did in chapter 4.
+
+Below, I give a detailed  break down of exactly what the Bayesian log evidence does. I don't expect you to fully grasp
+the intricacies of this description *yet*. Rather, I anticipate that as you go through chapter 5, you will refer back
+to this description we introduce new and different apects of hyper model. So, read the text below, but don't worry if
+the concepts don't fully sink in yet!
+
+The Bayesian log evidence quantifies the following 3 apsects of a fit to strong lens _Imaging_ data:
+
+1) *The quality of the image reconstruction.* Because the source reconstruction is a linear _Inversion_ which takes as an
+   input the image-data when reconstructing it, it is in principle able to perfectly reconstruct the image regardless
+   of the image’s noise or the accuracy of the lens model (e.g. at infinite source resolution without egularization).
+   This means the problem is ‘ill-posed’ and is why _Regularization_is necessary. However, this raises the question
+   of what constitutes a ‘good’ solution? The Bayesian log evidence defines this by assuming that the image data
+   consists of independent Gaussian noise in each image pixel, defining a ‘good’ solution as one whose chi-squared
+   residuals are consistent with Gaussian noise, therefore producing a reduced chi-squared around 1.Solutions which
+   give a reduced chi squared below 1 are penalized for being overly complex and fitting the image’s noise, whereas
+   those with a reduced chi-squared above are penalized for not invoking a more complex source model when the data
+   supports it. In both circumstances, these penalties reduce the inferred Bayesian log evidence!
+
+2) *The complexity of the source reconstruction.* The log evidence estimates the number of source pixels that are used to
+   reconstruct the image, after accounting for their correlation with one another due to regularization. Solutions that
+   require fewer correlated source pixels increase the Bayesian log evidence. Thus, simpler and less complex source
+   reconstructions are favoured.
+
+3) *The signal-to-noise (S/N) of the image that is fitted.* The log evidence favours models which fit higher S/N
+   realizations of the observed _Imaging_ data (where the S/N is determined using the image-pixel variances. Up to now,
+   all PyAutoLens fits assumed fixed variances, meaning that this of the Bayeisan log evidence has had no impact on
+   modeling. However, in hyper-model we will invoke increasing the variances wherever our model fits the data poorly.
+   The premise is that whilst increasing the variances of image pixels lowers their S/N values and therefore also
+   decreases the log evidence, doing so may produce a net increase in log evidence. This occurs when the chi-squared values of
+   the image pixels whose variances are increased were initially very high (e.g. they were fit poorly by the lens model).
+   Conversely, variances cannot be reduced to arbitrarily low values, as doing so will in-flate their chi-squared
+   contribution.
+
+In summary, the log evidence is maximized for solutions which most accurately reconstruct the highest S/N realization of
+the observed image, without over-fitting its noise and using the fewest correlated source pixels. By employing this
+framework throughout, PyAutoLens objectively determines the final lens model following the principles of Bayesian
+analysis and Occam’s Razor.
+
+Clearly, it is not just the lens model that determine the Bayesian log evidence and therefore our overall goodness of
+fit, but the source and image analysis as well! The choices that we make when setting up the source and image analysis
+will ultimately determine the lens model that we infer. Thus, to determine *objectively* the most probable lens model,
+we must find the model which maximizes the log evidence including these additional aspects of the analysis. This is what
+hyper-mode aims to achieve, by changing the source _Pixelization_, _Regularization_and image variances in conjunction with
+the lens model throughout the analysis in a fully self-consistent way.
+
+I just want to emphasis this one final time. The goal of hyper-mode is to obtain a *completely objective* ranking of
+every lens model, including the mass-model, source-reconstruction and data noise-map. To truly determine the 'best-fit'
+lens models and therefore extract the maximzal amount of information from strong lens imaging, we *must* use hyper-mode!
+
+You might be thinking, didn't we do that before anyway? Our pipelines typically fitted for the source-plane resolution,
+the regularization_coefficient, and so forth, right? Well, kind of, so to begin this chapter in tutorial 1, I'll explain
+why this approach gave Bayesian Evidence values that were neither objective nor robust!
+
+At the end of this chapter, you'll be able to:
+
+1) Adapt an inversions's _Pixelization_to the morphology of the reconstructed source galaxy.
+2) Adapt the _Regularization_scheme applied to this source to its surface brightness profile.
+3) Use hyper-galaxies to scale the image's noise-map during fitting, to prevent over-fitting regions of the image.
+4) Include aspects of the data reduction in the model fitting, for example the background sky subtraction.
+5) Use these features in PyAutoLens's pipeline frame.
