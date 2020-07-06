@@ -45,6 +45,7 @@ imaging = al.Imaging.from_fits(
 Lets create an annular _Mask_ which traces the stongly lensed source ring.
 """
 
+# %%
 mask = al.Mask.circular_annular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
