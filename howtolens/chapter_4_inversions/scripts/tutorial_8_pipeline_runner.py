@@ -36,6 +36,7 @@ conf.instance = conf.Config(
 # %%
 """ AUTOLENS + DATA SETUP """
 
+# %%
 import autolens as al
 import autolens.plot as aplt
 
