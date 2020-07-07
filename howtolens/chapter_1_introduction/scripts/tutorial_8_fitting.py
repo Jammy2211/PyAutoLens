@@ -21,7 +21,7 @@ We'll need the path to the chapter in this tutorial to load the dataset from you
 # %%
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 # %%
@@ -224,7 +224,7 @@ To fit the image, we pass the _MaskedImaging_ and _Tracer_ to a _FitImaging_ obj
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
@@ -309,7 +309,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
@@ -357,7 +357,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """

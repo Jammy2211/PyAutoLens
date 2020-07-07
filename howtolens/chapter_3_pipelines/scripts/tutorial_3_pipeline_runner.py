@@ -21,7 +21,7 @@ regime of 30-40+ parameters in our non-linear search. Even with a pipeline, that
 from autoconf import conf
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 conf.instance = conf.Config(
@@ -217,9 +217,9 @@ tracer = al.Tracer.from_galaxies(
 
 true_fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=true_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=true_fit)
 
-aplt.FitImaging.subplot_of_plane(fit=true_fit, plane_index=1)
+# aplt.FitImaging.subplot_of_plane(fit=true_fit, plane_index=1)
 
 
 # %%

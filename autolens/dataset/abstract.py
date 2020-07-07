@@ -1,6 +1,7 @@
 from autolens import exc
 from autolens.fit import fit
 
+
 class AbstractLensMasked:
     def __init__(
         self, inversion_stochastic, positions_threshold, preload_sparse_grids_of_planes

@@ -191,7 +191,7 @@ fit_flat = fit_imaging_with_voronoi_magnification_pixelization(
     imaging=imaging_source_flat, mask=mask, regularization_coefficient=9.2
 )
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit_flat,
     include=aplt.Include(inversion_image_pixelization_grid=True, mask=True),
 )
@@ -215,7 +215,7 @@ fit_compact = fit_imaging_with_voronoi_magnification_pixelization(
     imaging=imaging_source_compact, mask=mask, regularization_coefficient=3.3
 )
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit_compact,
     include=aplt.Include(inversion_image_pixelization_grid=True, mask=True),
 )
@@ -244,7 +244,7 @@ fit_super_compact = fit_imaging_with_voronoi_magnification_pixelization(
     imaging=imaging_source_super_compact, mask=mask, regularization_coefficient=3.1
 )
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit_super_compact,
     include=aplt.Include(inversion_image_pixelization_grid=True, mask=True),
 )
@@ -325,7 +325,7 @@ why we might want to scale its variances. Lets look at the super-compact fit aga
 """
 
 # %%
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit_super_compact,
     include=aplt.Include(inversion_image_pixelization_grid=True, mask=True),
 )

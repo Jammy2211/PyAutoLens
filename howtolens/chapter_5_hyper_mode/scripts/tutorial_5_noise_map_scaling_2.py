@@ -20,7 +20,7 @@ import autolens as al
 import autolens.plot as aplt
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 # %%
@@ -105,7 +105,7 @@ fit = fit_masked_imaging_with_lens_and_source_galaxy(
 
 print("Evidence using baseline variances = ", fit.log_evidence)
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -215,7 +215,7 @@ fit = fit_masked_imaging_with_lens_and_source_galaxy(
     source_galaxy=source_magnification_hyper,
 )
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -274,7 +274,7 @@ al.FitImaging(
     hyper_background_noise=hyper_background_noise,
 )
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 

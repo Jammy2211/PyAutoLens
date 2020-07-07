@@ -26,7 +26,7 @@ pipeline that we can generalize to many lenses isn't currently possible with PyA
 from autoconf import conf
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 conf.instance = conf.Config(

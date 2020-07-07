@@ -14,7 +14,7 @@ import autolens as al
 import autolens.plot as aplt
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 # %%
@@ -262,7 +262,7 @@ pretty good looking residuals - we're certainly fitting the lensed source accura
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """

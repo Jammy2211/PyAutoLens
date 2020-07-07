@@ -14,7 +14,7 @@ import autolens as al
 import autolens.plot as aplt
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 # %%
