@@ -1,7 +1,6 @@
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
-import os
 
 """
 This script simulates _Imaging_ of a strong lens where:
@@ -14,17 +13,18 @@ This dataset is used in chapter 2, tutorials 1-3.
 
 """Setup the path to the autolens_workspace, using a relative directory name."""
 from pyprojroot import here
-workspace_path = here()
+
+workspace_path = str(here())
 
 """
-The 'dataset_label' describes the type of data being simulated (in this case, _Imaging_ data) and 'dataset_name' 
+The 'dataset_type' describes the type of data being simulated (in this case, _Imaging_ data) and 'dataset_name' 
 gives it a descriptive name. They define the folder the dataset is output to on your hard-disk:
 
- - The image will be output to '/autolens_workspace/dataset/dataset_label/dataset_name/image.fits'.
- - The noise-map will be output to '/autolens_workspace/dataset/dataset_label/dataset_name/lens_name/noise_map.fits'.
- - The psf will be output to '/autolens_workspace/dataset/dataset_label/dataset_name/psf.fits'.
+ - The image will be output to '/autolens_workspace/dataset/dataset_type/dataset_name/image.fits'.
+ - The noise-map will be output to '/autolens_workspace/dataset/dataset_type/dataset_name/lens_name/noise_map.fits'.
+ - The psf will be output to '/autolens_workspace/dataset/dataset_type/dataset_name/psf.fits'.
 """
-dataset_label = "chapter_3"
+dataset_type = "chapter_3"
 dataset_name = "lens_x2_sersic_sie__source_exp"
 
 """
@@ -32,7 +32,7 @@ Create the path where the dataset will be output, which in this case is:
 '/autolens_workspace/howtolens/dataset/chapter_3/lens_x2_sersic_sie__source_exp/'
 """
 dataset_path = af.util.create_path(
-    path=workspace_path, folders=["howtolens", "dataset", dataset_label, dataset_name]
+    path=workspace_path, folders=["howtolens", "dataset", dataset_type, dataset_name]
 )
 
 """

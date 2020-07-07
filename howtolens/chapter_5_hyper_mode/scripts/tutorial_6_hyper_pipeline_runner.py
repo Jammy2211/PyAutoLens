@@ -13,7 +13,7 @@ from autoconf import conf
 import autofit as af
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 # %%
@@ -30,6 +30,8 @@ conf.instance = conf.Config(
 # %%
 """ AUTOLENS + DATA SETUP """
 
+# %%
+import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
@@ -43,9 +45,7 @@ We'll use strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_5 import (
-    lens_sersic_sie__source_sersic_x4,
-)
+from howtolens.simulators.chapter_5 import lens_sersic_sie__source_sersic_x4
 
 dataset_label = "chapter_5"
 dataset_name = "lens_sersic_sie__source_sersic_x4"
@@ -94,7 +94,6 @@ _PipelineSetup-.
 """
 
 # %%
-
 hyper_galaxies_search = af.DynestyStatic(n_live_points=100, evidence_tolerance=0.8)
 inversion_search = af.DynestyStatic(n_live_points=30, evidence_tolerance=0.8)
 hyper_combined_search = af.DynestyStatic(n_live_points=50, evidence_tolerance=0.8)

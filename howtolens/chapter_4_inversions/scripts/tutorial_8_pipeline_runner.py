@@ -19,7 +19,7 @@ solutions discussed in tutorial 6. We'll then switch to an _Inversion_.
 from autoconf import conf
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 # %%
@@ -37,6 +37,7 @@ conf.instance = conf.Config(
 """ AUTOLENS + DATA SETUP """
 
 # %%
+import autofit as af
 import autolens as al
 import autolens.plot as aplt
 

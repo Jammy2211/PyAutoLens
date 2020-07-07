@@ -42,7 +42,7 @@ import os
 from autoconf import conf
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 conf.instance = conf.Config(

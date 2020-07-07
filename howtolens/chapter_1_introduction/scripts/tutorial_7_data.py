@@ -124,7 +124,7 @@ is correct on your computer!
 # %%
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 dataset_path = f"{workspace_path}/howtolens/dataset/chapter_1"
 print("Dataset Path: ", dataset_path)
 

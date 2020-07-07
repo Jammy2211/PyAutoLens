@@ -33,7 +33,7 @@ We'll need the path to the chapter in this tutorial to load the dataset from you
 # %%
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 # %%
