@@ -108,7 +108,7 @@ aplt.LightProfile.image(light_profile=sersic_light_profile, grid=grid)
 
 # %%
 """
-To perform ray-tracing, we need to create a _MassProfile__ from the 'mass_profiles' module, which we import as 'mp' for 
+To perform ray-tracing, we need to create a _MassProfile_ from the 'mass_profiles' module, which we import as 'mp' for 
 conciseness. 
 
 A _MassProfile_ is an analytic function that describes the distribution of mass in a galaxy, and therefore 
@@ -164,7 +164,7 @@ aplt.MassProfile.deflections_x(mass_profile=sis_mass_profile, grid=grid)
 
 # %%
 """
-_MassProfile_s have a range of other properties that are used for lensing calculations, a couple of which we've plotted 
+_MassProfile_'s have a range of other properties that are used for lensing calculations, a couple of which we've plotted 
 images of below:
 
    - Convergence: The surface mass density of the _MassProfile_ in dimensionless units which are convenient for 
@@ -201,7 +201,7 @@ PyAutoLens by doing the following:
 
 1) Change the _LightProfile_'s effective radius and Sersic index - how does the image's appearance change?
 2) Change the _MassProfile_'s einstein radius - what happens to the deflection angles, potential and convergence?
-3) Experiment with different _LightProfile_s and _MassProfile_s in the light_profiles and mass_profiles modules. 
+3) Experiment with different _LightProfile_'s and _MassProfile_'s in the light_profiles and mass_profiles modules. 
 In particular, use the _EllipticalIsothermal_ _Profile_ to introduce ellipticity into a _MassProfile_.
 """
 

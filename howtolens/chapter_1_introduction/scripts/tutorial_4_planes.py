@@ -3,7 +3,7 @@
 Tutorial 4: Planes
 ==================
 
-We've learnt how to make galaxy objects out of _LightProfile_'s and _MassProfile_s. Now, we'll use these galaxies to
+We've learnt how to make galaxy objects out of _LightProfile_'s and _MassProfile_'s. Now, we'll use these galaxies to
 make a strong-gravitational lens.
 
 For newcomers to lensing, a strong gravitational lens is a system where two (or more) galaxies align perfectly down our
@@ -13,21 +13,31 @@ as _LightProfile_'s) of the background source galaxy(s).
 When the alignment is just right and the lens is just massive enough, the background source galaxy appears multiple
 times. The schematic below shows a crude drawing of such a system, where two light-rays from the source are bending
 around the lens galaxy and into the observer (light should bend 'smoothly', but drawing this on a keyboard wasn't
-possible - so just pretend the diagonal lines coming from the observer and source are less jagged):
+possible - so just pretend the diagonal lines coming from the observer and source are less jagged)
 
 
 Observer                  Image-Plane               Source-Plane
+
 (z=0, Earth)               (z = 0.5)                (z = 1.0)
 
       ----------------------------------------------
+
         /                                              \ <---- This is one of the source's light-rays
+
        /                      __                       \
+
   o   /                      /  \                      __
+
   |  /                      /   \                     /  \
+
  /\  \                      \   /                     \__/
+
       \                     \__/                 Source Galaxy (s)
+
        \                Lens Galaxy(s)                /
+
          \                                           / <----- And this is its other light-ray
+
        ------------------------------------------/
 """
 
@@ -41,10 +51,10 @@ In the schematic above, we used the terms 'Image-Plane' and 'Source-Plane'. In l
 collection of galaxies at the same redshift (that is, parallel to one another down our line-of-sight). Therefore:
 
 - If two or more lens galaxies are at the same redshift in the image-plane, they deflect light in the same way. 
-This means we can sum the convergences, potentials and deflection angles of their _MassProfile_s.
+This means we can sum the convergences, potentials and deflection angles of their _MassProfile_'s.
 
 - If two or more source galaxies are at the same redshift in the source-plane, their light is ray-traced in the same 
-way. Therefore, when determining their lensed images, we can sum the lensed images of each _Galaxy_'s _LightProfile_s.
+way. Therefore, when determining their lensed images, we can sum the lensed images of each _Galaxy_'s _LightProfile_'s.
 
 So, lets do it - lets use the 'plane' module in AutoLens to create a strong lensing system like the one pictured above. 
 For simplicity, we'll assume 1 lens galaxy and 1 source galaxy.
@@ -248,7 +258,7 @@ aplt.Plane.plane_image(
 
 # %%
 """
-For _MassProfile_s, you can also plot their 'critical curve' and 'caustics', which for those unfamiliar with lensing 
+For _MassProfile_'s, you can also plot their 'critical curve' and 'caustics', which for those unfamiliar with lensing 
 are defined as follows:
 
     **Critical Curve**:
@@ -292,21 +302,19 @@ its appearance can change a lot!
 
 In particular, try:
 
-1) Changing the lens galaxy's einstein radius - what happens to the source-plane's image?
+ 1) Changing the lens galaxy's einstein radius - what happens to the source-plane's image?
 
-2) Change the SphericalIsothermal _MassProfile_ to an _EllipticalIsothermal_ _MassProfile_ and set its axis_ratio to 0.8. 
-What happens to the number of source images?
+ 2) Change the SphericalIsothermal _MassProfile_ to an _EllipticalIsothermal_ _MassProfile_ and set its axis_ratio to 0.8. 
+ What happens to the number of source images?
 
-3) As discussed at the beginning, _Plane_'s can be composed of multiple galaxies. Make an the image-plane with two 
-galaxies and see how multi-galaxy lensing leads to crazy source images. Also try making a source-plane with two 
-galaxies!
+ 3) As discussed at the beginning, _Plane_'s can be composed of multiple galaxies. Make an the image-plane with two 
+ galaxies and see how multi-galaxy lensing leads to crazy source images. Also try making a source-plane with two 
+ galaxies!
 
 Finally, if you are a newcomer to strong lensing, it might be worth reading briefly about some strong lensing theory. 
 Don't worry about maths, and equations, and anything scary, but you should at least go to Wikipedia to figure out:
 
-- What a critical line is.
-
-- What a caustic is.
-
-- What determines the image multiplicity of the lensed source.
+ - What a critical line is.
+ - What a caustic is.
+ - What determines the image multiplicity of the lensed source.
 """

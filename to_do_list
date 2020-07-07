@@ -1,3 +1,10 @@
+Model Fitting:
+
+    - We are going fully Dynesty - explain rwalk, steps setting, facc, Dynamic etc simila to MultiiNest black magic!
+      HowToLens and examples. Small bit on MCMC.
+    - Find example where rwalk becomes inefficient (N > 30?) and try to show how rslice wins in this regime. Need to do
+      no prior initialization and prior initalization cases.
+
 Features:
 
     - Stochastic mode
@@ -21,8 +28,8 @@ Readthedocs:
 Workspace:
 
     - AutoGalaxy Workspace.
-    - Background sky in image examples, better descriptioon of noise map.
-    - Better desciption of what a good or bad noise map and signal to noise map looks like.
+    - Background sky in image examples, better descriptioon of noise-map.
+    - Better desciption of what a good or bad noise-map and signal to noise-map looks like.
     - Gaussian pipeline API.
 
 Optimization:

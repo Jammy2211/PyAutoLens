@@ -31,6 +31,16 @@
 
    howtolens/howtolens
    howtolens/chapter_1_introduction/index
+   howtolens/chapter_3_pipelines/index
+   howtolens/chapter_4_inversions/index
+   howtolens/chapter_5_hyper_mode/index
+
+.. toctree::
+   :caption: API Documentation:
+   :maxdepth: 1
+   :hidden:
+
+   api/api
 
 .. toctree::
    :caption: Advanced:
@@ -41,10 +51,3 @@
    advanced/aggregator
    advanced/hyper_mode
    advanced/slam
-
-.. toctree::
-   :caption: API Documentation:
-   :maxdepth: 1
-   :hidden:
-
-   api/api

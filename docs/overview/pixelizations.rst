@@ -71,7 +71,7 @@ highly magnified regions of the source-plane.
   :width: 400
   :alt: Alternative text
 
-By inspecting the residual-map, normalized residual-map and chi-squared map of the *FitImaging* object, we can see how
+By inspecting the residual-map, normalized residual-map and chi-squared-map of the *FitImaging* object, we can see how
 the source reconstruction accurately fits the image of the strong lens:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/pixelizations/voronoi_fit.png

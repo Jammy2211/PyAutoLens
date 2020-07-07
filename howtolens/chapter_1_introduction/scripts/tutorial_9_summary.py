@@ -5,15 +5,15 @@ Tutorial 9: Summary
 
 In this chapter, you've learnt how create and fit strong lenses with PyAutoLens. In particular, you've learnt:
 
-    1) PyAutoLens uses Cartesian _Grid_'s of (y,x) coordinates to perform ray-tracing.
-    2) These _Grid_'s are combined with light and mass profiles to compute images, convergences, potentials and
-       deflection angles.
-    3) Profiles are combined to make galaxies.
-    4) Collections of galaxies (at the same redshift) form a plane.
-    5) A _Tracer_ can make an image-plane + source-plane strong lens system.
-    6) The Universe's cosmology can be input into this _Tracer_ to convert unit_label to physical values.
-    7) The tracer's image can be used to simulate strong lens _Imaging_ observed on a real telescope.
-    8) This instrument can be fitted, so to as quantify how well a model strong lens system represents the observed image.
+ 1) PyAutoLens uses Cartesian _Grid_'s of (y,x) coordinates to perform ray-tracing.
+ 2) These _Grid_'s are combined with light and mass profiles to compute images, convergences, potentials and
+ deflection angles.
+ 3) Profiles are combined to make galaxies.
+ 4) Collections of galaxies (at the same redshift) form a plane.
+ 5) A _Tracer_ can make an image-plane + source-plane strong lens system.
+ 6) The Universe's cosmology can be input into this _Tracer_ to convert unit_label to physical values.
+ 7) The tracer's image can be used to simulate strong lens _Imaging_ observed on a real telescope.
+ 8) This instrument can be fitted, so to as quantify how well a model strong lens system represents the observed image.
 
 In this summary, we'll consider how flexible the tools PyAutoLens gives you are to study every aspect of a strong lens
 system. Lets get a 'fit' to a strong lens, by setting up an image, mask, tracer, etc.
@@ -33,7 +33,7 @@ We'll need the path to the chapter in this tutorial to load the dataset from you
 # %%
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 # %%
@@ -135,7 +135,7 @@ aplt.Galaxy.image(galaxy=fit.tracer.source_plane.galaxies[0], grid=source_plane_
 # %%
 """
 As our fit and ray-tracing becomes more complex, it is useful to know how to decompose their different attributes to 
-extract different things about them. For example, we made our source-galaxy above with two _LightProfile_s, a 
+extract different things about them. For example, we made our source-galaxy above with two _LightProfile_'s, a 
 'bulge' and 'disk. We can plot the image of each component individually, if we know how to break-up the different 
 components of the fit and _Tracer_.
 """
@@ -158,7 +158,7 @@ aplt.LightProfile.image(
 And, we're done, not just with the tutorial, but the chapter!
 
 To end, I want to quickly talk about code-design and structure. Yeah, I know, as a scientist, you don't like code 
-and certaintly don't want to think about code! However, the point is, with PyAutoLens, you don't need to!
+and certainly don't want to think about code! However, the point is, with PyAutoLens, you don't need to!
 
 Think about it - throughout this chapter, we never talk about anything like it was code. We didn't refer to 
 'variables', 'parameters' and 'functions' did we? Instead, we talked about 'galaxies', 'planes' and a _Tracer_. 
