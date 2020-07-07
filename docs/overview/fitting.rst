@@ -22,7 +22,7 @@ files as an *Imaging* object:
     aplt.Imaging.noise_map(imaging=imaging)
     aplt.Imaging.psf(imaging=imaging)
 
-Here's what our image, noise map and point-spread function look like:
+Here's what our image, noise-map and point-spread function look like:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/image.png
   :width: 400
@@ -81,7 +81,7 @@ with the PSF of our dataset:
   :alt: Alternative text
 
 The *FitImaging* object does a lot more than just create the model-image, it also subtracts this image from the data to
-produce a residual-map and weight these residuals by the noise to compute a chi-squared map, both of which we can plot:
+produce a residual-map and weight these residuals by the noise to compute a chi-squared-map, both of which we can plot:
 
 .. code-block:: bash
 

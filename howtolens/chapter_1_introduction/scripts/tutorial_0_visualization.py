@@ -35,7 +35,7 @@ Throughout these tutorials, we will use this workspace_path.
 # %%
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 # %%

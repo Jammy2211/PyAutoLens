@@ -21,7 +21,7 @@ We'll need the path to the chapter in this tutorial to load the dataset from you
 # %%
 from pyprojroot import here
 
-workspace_path = here()
+workspace_path = str(here())
 print("Workspace Path: ", workspace_path)
 
 # %%
@@ -46,7 +46,7 @@ The 'imaging' is an _Imaging_ object, which is a 'package' of all components of 
 
     1) The image.
     2) The Point Spread Function (PSF).
-    3) Its noise map.
+    3) Its noise-map.
     
 Which are all stored as _Array_ objects.
 """
@@ -104,7 +104,7 @@ To fit the data we create a _MaskedImaging_ object, which is a 'package' of all 
 to fit it with a lens model:
 
     1) The imaging-data, including the image, PSF (so that when we compare a tracer's image to the image instrument we 
-       can include blurring due to the telescope optics) and noise map (so our goodness-of-fit measure accounts for 
+       can include blurring due to the telescope optics) and noise-map (so our goodness-of-fit measure accounts for 
        noise in the observations).
 
     2) The mask, so that only the regions of the image with a signal are fitted.
@@ -120,7 +120,7 @@ aplt.Imaging.image(imaging=masked_imaging.imaging)
 
 # %%
 """
-By printing its attributes, we can see that it does indeed contain the mask, masked image, masked noise map, psf and so 
+By printing its attributes, we can see that it does indeed contain the mask, masked image, masked noise-map, psf and so 
 on.
 """
 
@@ -140,7 +140,7 @@ print()
 
 # %%
 """
-The masked image and noise map are again stored in 2D and 1D. 
+The masked image and noise-map are again stored in 2D and 1D. 
 
 However, the 1D array now corresponds only to the pixels that were not masked, whereas for the 2D array, all edge 
 values are masked and are therefore zeros.
@@ -213,7 +213,7 @@ To fit the image, we pass the _MaskedImaging_ and _Tracer_ to a _FitImaging_ obj
 
     2) Computes the difference between this model_image and the observed image-data, creating the fit's 'residual_map'.
 
-    3) Divides the residual-map by the noise map, creating the fit's 'normalized_residual_map'.
+    3) Divides the residual-map by the noise-map, creating the fit's 'normalized_residual_map'.
 
     4) Squares every value in the normalized residual-map, creating the fit's 'chi_squared_map'.
 
@@ -224,7 +224,7 @@ To fit the image, we pass the _MaskedImaging_ and _Tracer_ to a _FitImaging_ obj
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
@@ -309,7 +309,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
@@ -357,7 +357,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
@@ -378,8 +378,8 @@ print(fit.log_likelihood)
 """
 Congratulations, you've fitted your first strong lens with PyAutoLens! Perform the following exercises:
 
-    1) In this example, we 'knew' the correct solution, because we simulated the lens ourselves. In the real Universe, 
-       we have no idea what the correct solution is. How would you go about finding the correct solution? Could you find a 
-       solution that fits the data reasonable through trial and error?
+ 1) In this example, we 'knew' the correct solution, because we simulated the lens ourselves. In the real Universe, 
+ we have no idea what the correct solution is. How would you go about finding the correct solution? Could you find a 
+ solution that fits the data reasonable through trial and error?
 
 """

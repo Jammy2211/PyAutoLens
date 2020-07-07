@@ -6,7 +6,7 @@ Tutorial 3: Galaxies
 In this example, we'll use 'mass_profiles' and 'light_profiles' modules introduced previously, along with the
 'galaxy' module to create _Galaxy_ objects in PyAutoLens. We'll see that:
 
-1) _Galaxy_'s can be made from multiple _LightProfile_s and _MassProfile_s.
+1) _Galaxy_'s can be made from multiple _LightProfile_'s and _MassProfile_'s.
 
 2) By taking multiple components, the summed image / deflection angle's of the profiles are computed.
 
@@ -65,7 +65,7 @@ print("etc.")
 
 # %%
 """
-A galaxy _Plotter_ allows us to the plot the image, just like the _Profile_ plotters did for a _LightProfile_.
+A galaxy _Plotter_ allows us to the plot the image, just like the _Profile_ plotters did for a _LightProfile_'s.
 """
 
 # %%
@@ -73,7 +73,7 @@ aplt.Galaxy.image(galaxy=galaxy_with_light_profile, grid=grid)
 
 # %%
 """
-We can pass galaxies as many profiles as we like. Lets create a galaxy with three _LightProfile_s.
+We can pass galaxies as many profiles as we like. Lets create a galaxy with three _LightProfile_'s.
 """
 
 # %%
@@ -116,8 +116,8 @@ aplt.Galaxy.image_subplot(galaxy=galaxy_with_3_light_profiles, grid=grid)
 
 # %%
 """
-_MassProfile_s interact with _Galaxy_ objects in the exact same way as _LightProfile_s. Lets create a galaxy with three 
-SIS _MassProfile_s. 
+_MassProfile_'s interact with _Galaxy_ objects in the exact same way as _LightProfile_'s. Lets create a galaxy with three 
+SIS _MassProfile_'s. 
 """
 
 # %%
@@ -135,7 +135,7 @@ print(galaxy_with_3_mass_profiles)
 
 # %%
 """
-We can use a galaxy _Plotter_ to plot these deflection angles. (Deflection angles of _MassProfile_s add together just 
+We can use a galaxy _Plotter_ to plot these deflection angles. (Deflection angles of _MassProfile_'s add together just 
 like the _LightProfile_ image's above)
 """
 
@@ -222,8 +222,8 @@ aplt.Galaxy.deflections_x(galaxy=galaxy_with_many_profiles, grid=grid)
 """
 And we're done. Lets finished by just thinking about one question:
 
-    1) We've learnt we can group profiles into _Galaxy_'s to essentially sum the contribution of each _LightProfile_ to 
-    the galaxy image's intensity, or sum the contribution of each _MassProfile_ to the convergence, potential and 
-    deflection angles. In strong lensing, there are often multiple galaxies next to one another responsible for the 
-    lensing - how might we account for this?
+ 1) We've learnt we can group profiles into _Galaxy_'s to essentially sum the contribution of each _LightProfile_ to 
+ the galaxy image's intensity, or sum the contribution of each _MassProfile_ to the convergence, potential and 
+ deflection angles. In strong lensing, there are often multiple galaxies next to one another responsible for the 
+ lensing - how might we account for this?
 """
