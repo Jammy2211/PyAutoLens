@@ -31,7 +31,7 @@ Lets also stop calling it the 'image_plane_grid', and just remember from now on 
 """
 
 # %%
-grid = al.Grid.uniform(shape_2d=(200, 200), pixel_scales=0.025, sub_size=4)
+grid = al.Grid.uniform(shape_2d=(200, 100), pixel_scales=0.05, sub_size=2)
 
 # %%
 """
