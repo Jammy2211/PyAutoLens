@@ -208,9 +208,9 @@ print(
     "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# results =  phase.run(dataset=imaging, mask=mask)
+# result =  phase.run(dataset=imaging, mask=mask)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=results.max_log_likelihood_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 

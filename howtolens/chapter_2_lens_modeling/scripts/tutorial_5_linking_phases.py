@@ -177,7 +177,7 @@ print(
     "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-phase1_result = phase1.run(dataset=imaging, mask=mask)
+# phase1_# result =  phase1.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -191,7 +191,7 @@ And indeed, we get a reasonably good model and fit to the data - in a much short
 
 # %%
 """
-Now all we need to do is look at the results of phase 1 and tune our priors in phase 2 to those results. Lets setup 
+Now all we need to do is look at the results of phase 1 and tune our priors in phase 2 to those result. Lets setup 
 a custom phase that does exactly that.
 
 GaussianPriors are a nice way to do this. They tell the non-linear search where to look, but leave open the 
@@ -297,7 +297,7 @@ print(
     "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-phase2_result = phase2.run(dataset=imaging, mask=mask)
+# phase2_# result =  phase2.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
