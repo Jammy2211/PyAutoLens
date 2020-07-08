@@ -88,7 +88,7 @@ fit = fit_masked_imaging_with_source_galaxy(
     masked_imaging=masked_imaging, source_galaxy=source_magnification
 )
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -158,7 +158,7 @@ _Pixelization_ simply *does not*  have sufficient resolution to resolve the sour
 """
 
 # %%
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -234,7 +234,7 @@ aplt.Inversion.regularization_weights(
     inversion=fit.inversion, include=aplt.Include(inversion_pixelization_grid=True)
 )
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 

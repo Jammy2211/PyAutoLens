@@ -86,7 +86,7 @@ Lets have a quick look to make sure it has the same residuals we saw in tutorial
 """
 
 # %%
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -131,7 +131,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy_brightness
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
