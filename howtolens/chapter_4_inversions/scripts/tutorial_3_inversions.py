@@ -29,9 +29,9 @@ We'll use the same strong lensing data as the previous tutorial, where:
 # %%
 from howtolens.simulators.chapter_4 import lens_sie__source_sersic
 
-dataset_label = "chapter_4"
+dataset_type = "chapter_4"
 dataset_name = "lens_sie__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_label}/{dataset_name}"
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -129,9 +129,9 @@ invert a really complex source!
 # %%
 from howtolens.simulators.chapter_4 import lens_sie__source_sersic_x5
 
-dataset_label = "chapter_4"
+dataset_type = "chapter_4"
 dataset_name = "lens_sie__source_sersic_x5"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_label}/{dataset_name}"
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -262,7 +262,7 @@ pretty good looking residuals - we're certainly fitting the lensed source accura
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """

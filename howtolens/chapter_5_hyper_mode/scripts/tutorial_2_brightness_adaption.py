@@ -39,9 +39,9 @@ We'll use the same strong lensing data as the previous tutorial, where:
 # %%
 from howtolens.simulators.chapter_5 import lens_sie__source_sersic
 
-dataset_label = "chapter_5"
+dataset_type = "chapter_5"
 dataset_name = "lens_sie__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_label}/{dataset_name}"
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -86,7 +86,7 @@ Lets have a quick look to make sure it has the same residuals we saw in tutorial
 """
 
 # %%
-# aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -131,7 +131,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy_brightness
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 

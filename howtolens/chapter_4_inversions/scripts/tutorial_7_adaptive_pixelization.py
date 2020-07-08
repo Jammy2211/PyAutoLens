@@ -30,9 +30,9 @@ We'll use the same strong lensing data as the previous tutorial, where:
 # %%
 from howtolens.simulators.chapter_4 import lens_sie__source_sersic
 
-dataset_label = "chapter_4"
+dataset_type = "chapter_4"
 dataset_name = "lens_sie__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_label}/{dataset_name}"
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -73,8 +73,8 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -149,7 +149,7 @@ If we look at the lens fit, we'll see that our source-plane no longer uses recta
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit,
     include=aplt.Include(
         mask=True,
@@ -157,7 +157,7 @@ fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
         inversion_pixelization_grid=True,
     ),
 )
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 

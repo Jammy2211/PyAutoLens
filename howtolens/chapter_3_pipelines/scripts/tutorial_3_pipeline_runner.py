@@ -47,9 +47,9 @@ We'll use new strong lensing data, where:
 # %%
 from howtolens.simulators.chapter_3 import lens_sie__source_sersic_x4
 
-dataset_label = "chapter_3"
+dataset_type = "chapter_3"
 dataset_name = "lens_sie__source_sersic_x4"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_label}/{dataset_name}"
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -217,9 +217,9 @@ tracer = al.Tracer.from_galaxies(
 
 true_fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=true_fit)
+aplt.FitImaging.subplot_fit_imaging(fit=true_fit)
 
-# aplt.FitImaging.subplot_of_plane(fit=true_fit, plane_index=1)
+aplt.FitImaging.subplot_of_plane(fit=true_fit, plane_index=1)
 
 
 # %%
