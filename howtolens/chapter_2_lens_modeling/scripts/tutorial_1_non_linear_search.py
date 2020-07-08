@@ -211,7 +211,7 @@ search in these tutorials not via your Juypter notebook, but instead by running 
 command on your command line or via your IDE (if you are using one).
 
 The non-linear search outputs all results to your hard-disk, thus if it runs and finishes in the script, you can then
-run the Jupyter notebook cell and immediately load the results. This is how we recommend all non-linear searches are 
+run the Jupyter notebook cell and immediately load the result. This is how we recommend all non-linear searches are 
 performed in PyAutoLens and is therefore a good habit to get into. In these tutorials, we have commented the 
 'phase.run' command below in every cell to remind you that you should go to the tutorial script in the 
 'chapter_2_lens_modeling/scripts' folder, uncomment the line and run the entire script!
@@ -224,7 +224,7 @@ print(
     "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# results =  phase.run(dataset=imaging, mask=mask)
+# result =  phase.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -234,7 +234,7 @@ Now this is running you should checkout the 'autolens_workspace/output' folder.
 
 This is where the results of the phase are written to your hard-disk (in the '1_non_linear_search' folder). When its 
 completed, images and output will also appear in this folder, meaning that you don't need to keep running Python 
-code to see the results.
+code to see the result.
 
 In fact, even when a phase is running, it outputs the the current maximum log likelihood results of the lens model 
 to your hard-disk, on-the-fly. If you navigate to the output/howtolens folder, even before the phase has finished, 
@@ -254,7 +254,7 @@ The best-fit solution (i.e. the maximum log likelihood) is stored in the 'result
 """
 
 # %%
-# aplt.FitImaging.subplot_fit_imaging(fit=results.max_log_likelihood_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 # %%
 """

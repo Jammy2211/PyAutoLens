@@ -154,7 +154,7 @@ Lets check that we get a good model and fit to the data.
 We can use the result to tell us how many iterations Dynesty took to convergence on the solution.
 """
 print("Total Dynesty Iterations (If you skip running the phase, this is ~ 500000):")
-# print(result_slow.samples.total_samples)
+# # print(result_slow.samples.total_samples)
 
 # %%
 """
@@ -200,7 +200,7 @@ And now lets confirm it uses significantly fewer iterations.
 
 print("Total Dynesty Iterations:")
 print("Slow settings: ~500000")
-# print(result_slow.samples.total_samples)
+# # print(result_slow.samples.total_samples)
 # print("Fast settings: ", result_fast.samples.total_samples)
 
 # %%

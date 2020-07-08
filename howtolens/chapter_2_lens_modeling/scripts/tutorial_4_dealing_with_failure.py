@@ -217,7 +217,7 @@ print(
     "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# results_custom_priors = phase.run(dataset=imaging, mask=mask)
+# result_custom_priors = phase.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -228,7 +228,7 @@ and informing it of where to sample parameter space, we can increase the odds th
 """
 
 # %%
-# aplt.FitImaging.subplot_fit_imaging(fit=results_custom_priors.max_log_likelihood_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=result_custom_priors.max_log_likelihood_fit)
 
 # %%
 """
@@ -305,11 +305,11 @@ print(
     "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# results_light_trace_mass = phase_light_traces_mass.run(dataset=imaging, mask=mask)
+# result_light_trace_mass = phase_light_traces_mass.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
-# aplt.FitImaging.subplot_fit_imaging(fit=results_light_trace_mass.max_log_likelihood_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=result_light_trace_mass.max_log_likelihood_fit)
 
 # %%
 """

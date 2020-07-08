@@ -62,19 +62,19 @@ phase = al.PhaseImaging(
     search=af.DynestyStatic(n_live_points=40),
 )
 
-# results =  phase.run(dataset=imaging, mask=mask)
+# result =  phase.run(dataset=imaging, mask=mask)
 
 # %%
 """
 In the previous tutorials, we saw that this result contains the maximum log likelihood tracer and fit, which provide
-a fast way to visualize the results.
+a fast way to visualize the result.
 
 (Uncomment the line below to pllot the tracer).
 """
 # aplt.Tracer.subplot_tracer(
-#    tracer=results.max_log_likelihood_tracer, grid=mask.geometry.unmasked_grid
+#    tracer=result.max_log_likelihood_tracer, grid=mask.geometry.unmasked_grid
 # )
-# aplt.FitImaging.subplot_fit_imaging(fit=results.max_log_likelihood_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 # %%
 """
@@ -82,9 +82,9 @@ The result contains a lot more information about the model-fit. For example, its
 set of non-linear search samples, for example every set of parameters evaluated, their log likelihoods and so on,
 which are used for computing information about the model-fit such as the error on every parameter.
 """
-# print(results.samples)
-# print(results.samples.parameters)
-# print(results.samples.log_likelihoods)
+# print(result.samples)
+# print(result.samples.parameters)
+# print(result.samples.log_likelihoods)
 
 # %%
 """
@@ -92,7 +92,7 @@ However, we are not going into any more detail on the result variable in this tu
 
 A comprehensive description of the results can be found at the following script:
 
-    'autolens_workspace/examples/model/results.py'
+    'autolens_workspace/examples/model/result.py'
 
 """
 
