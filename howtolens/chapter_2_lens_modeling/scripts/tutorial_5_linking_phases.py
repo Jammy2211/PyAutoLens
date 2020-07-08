@@ -325,15 +325,15 @@ code below sets up phase2 with priors fully linked, but without specifying each 
 """
 
 # %%
-phase_2_pass = al.PhaseImaging(
-    phase_name="phase_t5_linking_phases_2_pass",
-    settings=settings,
-    galaxies=dict(
-        lens=phase1_result.model.galaxies.lens,
-        source=phase1_result.model.galaxies.source,
-    ),
-    search=af.DynestyStatic(n_live_points=40),
-)
+# phase_2_pass = al.PhaseImaging(
+#     phase_name="phase_t5_linking_phases_2_pass",
+#     settings=settings,
+#     galaxies=dict(
+#         lens=phase1_result.model.galaxies.lens,
+#         source=phase1_result.model.galaxies.source,
+#     ),
+#     search=af.DynestyStatic(n_live_points=40),
+# )
 
 # phase_2_pass.run(dataset=imaging, mask=mask)
 
@@ -381,20 +381,20 @@ component and then passing the priors of each individual parameter.
 
 light = af.PriorModel(al.lp.EllipticalSersic)
 
-light.elliptical_comps.elliptical_comps = (
-    phase1_result.model.galaxies.lens.light.elliptical_comps
-)
-light.intensity = phase1_result.model.galaxies.lens.light.intensity
-light.effective_radius = phase1_result.model.galaxies.lens.light.effective_radius
+# light.elliptical_comps.elliptical_comps = (
+#     phase1_result.model.galaxies.lens.light.elliptical_comps
+# )
+# light.intensity = phase1_result.model.galaxies.lens.light.intensity
+# light.effective_radius = phase1_result.model.galaxies.lens.light.effective_radius
 
 """LENS MASS PRIORS"""
 
 mass = af.PriorModel(al.mp.EllipticalIsothermal)
 
-lens.mass.elliptical_comps.elliptical_comps = (
-    phase1_result.model.galaxies.lens.mass.elliptical_comps
-)
-lens.mass.einstein_radius = phase1_result.model.galaxies.lens.mass.einstein_radius
+# lens.mass.elliptical_comps.elliptical_comps = (
+#     phase1_result.model.galaxies.lens.mass.elliptical_comps
+# )
+# lens.mass.einstein_radius = phase1_result.model.galaxies.lens.mass.einstein_radius
 
 lens = al.GalaxyModel(redshift=0.5, light=light, mass=mass)
 
@@ -404,12 +404,12 @@ We now create and run the phase, using the lens __GalaxyModel__ we created above
 """
 
 # %%
-phase_2_pass = al.PhaseImaging(
-    phase_name="phase_t5_linking_phases_2_pass_individual",
-    settings=settings,
-    galaxies=dict(lens=lens, source=phase1_result.model.galaxies.source),
-    search=af.DynestyStatic(n_live_points=40),
-)
+# phase_2_pass = al.PhaseImaging(
+#     phase_name="phase_t5_linking_phases_2_pass_individual",
+#     settings=settings,
+#     galaxies=dict(lens=lens, source=phase1_result.model.galaxies.source),
+#     search=af.DynestyStatic(n_live_points=40),
+# )
 
 # phase_2_pass.run(dataset=imaging, mask=mask)
 

@@ -138,7 +138,7 @@ From here, we can inspect results as we please, for example printing the maximum
 """
 
 # %%
-print(samples[0].max_log_likelihood_vector)
+# print(samples[0].max_log_likelihood_vector)
 
 # %%
 """
