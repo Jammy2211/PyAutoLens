@@ -305,7 +305,7 @@ print(
     "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-results_light_trace_mass = phase_light_traces_mass.run(dataset=imaging, mask=mask)
+# results_light_trace_mass = phase_light_traces_mass.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 

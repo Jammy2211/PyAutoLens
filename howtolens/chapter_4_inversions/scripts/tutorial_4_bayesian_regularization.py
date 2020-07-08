@@ -92,7 +92,7 @@ source_galaxy = al.Galaxy(
 
 fit = perform_fit_with_source_galaxy(imaging=imaging, source_galaxy=source_galaxy)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=fit)
 
 # %%
 """
@@ -111,7 +111,7 @@ no_regularization_fit = perform_fit_with_source_galaxy(
     imaging=imaging, source_galaxy=source_galaxy
 )
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=no_regularization_fit, include=aplt.Include(mask=True)
 )
 
@@ -161,7 +161,7 @@ high_regularization_fit = perform_fit_with_source_galaxy(
     imaging=imaging, source_galaxy=source_galaxy
 )
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=high_regularization_fit, include=aplt.Include(mask=True)
 )
 
@@ -249,7 +249,7 @@ print(10395.370224426646)
 print("New Bayesian Evidence:")
 print(fit.log_evidence)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
