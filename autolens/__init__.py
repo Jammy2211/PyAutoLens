@@ -53,6 +53,7 @@ from .dataset.interferometer import MaskedInterferometer, SimulatorInterferomete
 from .fit.fit import FitImaging, FitInterferometer
 from .fit.fit import FitPositions
 from .lens.ray_tracing import Tracer
+from .lens.positions_solver import PositionsSolver
 from .pipeline.setup import PipelineSetup
 from .pipeline import slam
 from .pipeline.phase.settings import PhaseSettingsImaging
