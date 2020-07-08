@@ -35,13 +35,13 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import lens_sersic_sie__source_sersic
+from howtolens.simulators.chapter_2 import (
+    lens_sersic_sie__source_sersic,
+)
 
 dataset_type = "chapter_2"
 dataset_name = "lens_sersic_sie__source_sersic"
-dataset_path = (
-    f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_label}/{dataset_name}"
-)
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",

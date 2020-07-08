@@ -37,9 +37,9 @@ from howtolens.simulators.chapter_5 import (
     lens_sersic_sie__source_sersic,
 )
 
-dataset_label = "chapter_5"
+dataset_type = "chapter_5"
 dataset_name = "lens_sersic_sie__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_label}/{dataset_name}"
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -105,7 +105,7 @@ fit = fit_masked_imaging_with_lens_and_source_galaxy(
 
 print("Evidence using baseline variances = ", fit.log_evidence)
 
-# aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -215,7 +215,7 @@ fit = fit_masked_imaging_with_lens_and_source_galaxy(
     source_galaxy=source_magnification_hyper,
 )
 
-# aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -274,7 +274,7 @@ al.FitImaging(
     hyper_background_noise=hyper_background_noise,
 )
 
-# aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 

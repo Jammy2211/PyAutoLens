@@ -33,9 +33,9 @@ We'll use the same strong lensing data as the previous tutorial, where:
 # %%
 from howtolens.simulators.chapter_4 import lens_sie__source_sersic
 
-dataset_label = "chapter_4"
+dataset_type = "chapter_4"
 dataset_name = "lens_sie__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_label}/{dataset_name}"
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -92,7 +92,7 @@ source_galaxy = al.Galaxy(
 
 fit = perform_fit_with_source_galaxy(imaging=imaging, source_galaxy=source_galaxy)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit)
+aplt.FitImaging.subplot_fit_imaging(fit=fit)
 
 # %%
 """
@@ -111,7 +111,7 @@ no_regularization_fit = perform_fit_with_source_galaxy(
     imaging=imaging, source_galaxy=source_galaxy
 )
 
-# aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=no_regularization_fit, include=aplt.Include(mask=True)
 )
 
@@ -161,7 +161,7 @@ high_regularization_fit = perform_fit_with_source_galaxy(
     imaging=imaging, source_galaxy=source_galaxy
 )
 
-# aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=high_regularization_fit, include=aplt.Include(mask=True)
 )
 
@@ -249,7 +249,7 @@ print(10395.370224426646)
 print("New Bayesian Evidence:")
 print(fit.log_evidence)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """

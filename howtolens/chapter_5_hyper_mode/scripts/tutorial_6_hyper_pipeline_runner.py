@@ -45,11 +45,13 @@ We'll use strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_5 import lens_sersic_sie__source_sersic_x4
+from howtolens.simulators.chapter_5 import (
+    lens_sersic_sie__source_sersic_x4,
+)
 
-dataset_label = "chapter_5"
+dataset_type = "chapter_5"
 dataset_name = "lens_sersic_sie__source_sersic_x4"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_label}/{dataset_name}"
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -107,7 +109,7 @@ setup = al.PipelineSetup(
     hyper_combined_search=hyper_combined_search,
     pixelization=al.pix.VoronoiBrightnessImage,
     regularization=al.reg.AdaptiveBrightness,
-    folders=["howtolens", "c5_t6_hyper"],
+    folders=["c5_t6_hyper"],
 )
 # %%
 """

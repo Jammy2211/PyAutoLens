@@ -37,9 +37,9 @@ We'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-dataset_label = "chapter_4"
+dataset_type = "chapter_4"
 dataset_name = "lens_sie__source_sersic__2"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_label}/{dataset_name}"
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -102,8 +102,8 @@ fit = perform_fit_with_lens__source_galaxy(
     imaging=imaging, lens_galaxy=lens_galaxy, source_galaxy=source_galaxy
 )
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -139,8 +139,8 @@ correct_fit = perform_fit_with_lens__source_galaxy(
     imaging=imaging, lens_galaxy=lens_galaxy, source_galaxy=source_galaxy
 )
 
-# aplt.FitImaging.subplot_fit_imaging(fit=correct_fit, include=aplt.Include(mask=True))
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=correct_fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -180,9 +180,9 @@ from howtolens.simulators.chapter_4 import (
     lens_sersic_sie__source_sersic,
 )
 
-dataset_label = "chapter_4"
+dataset_type = "chapter_4"
 dataset_name = "lens_sersic_sie__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_label}/{dataset_name}"
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -196,7 +196,7 @@ mask = al.Mask.circular(
 )
 
 aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -252,8 +252,8 @@ _Inversion_. When we plot the image, a new panel on the sub-plot appears showing
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -278,8 +278,8 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 

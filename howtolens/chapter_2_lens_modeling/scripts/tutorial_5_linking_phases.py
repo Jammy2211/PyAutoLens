@@ -62,13 +62,13 @@ We'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import lens_sersic_sie__source_exp
+from howtolens.simulators.chapter_2 import (
+    lens_sersic_sie__source_exp,
+)
 
 dataset_type = "chapter_2"
 dataset_name = "lens_sersic_sie__source_exp"
-dataset_path = (
-    f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_label}/{dataset_name}"
-)
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -177,7 +177,7 @@ print(
     "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-phase1_  # results =  phase1.run(dataset=imaging, mask=mask)
+phase1_result = phase1.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -187,7 +187,7 @@ And indeed, we get a reasonably good model and fit to the data - in a much short
 """
 
 # %%
-# aplt.FitImaging.subplot_fit_imaging(fit=phase1_results.max_log_likelihood_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=phase1_result.max_log_likelihood_fit)
 
 # %%
 """
@@ -297,7 +297,7 @@ print(
     "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-phase2_  # results =  phase2.run(dataset=imaging, mask=mask)
+phase2_result = phase2.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -307,7 +307,7 @@ Look at that, the right lens model, again!
 """
 
 # %%
-# aplt.FitImaging.subplot_fit_imaging(fit=phase2_results.max_log_likelihood_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=phase2_result.max_log_likelihood_fit)
 
 # %%
 """

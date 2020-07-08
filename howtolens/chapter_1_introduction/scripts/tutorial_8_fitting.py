@@ -19,6 +19,9 @@ We'll need the path to the chapter in this tutorial to load the dataset from you
 """
 
 # %%
+"""Setup the path to the autolens workspace, using the project pyprojroot which determines it automatically."""
+
+# %%
 from pyprojroot import here
 
 workspace_path = str(here())

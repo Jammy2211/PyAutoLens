@@ -47,12 +47,13 @@ The simplest way to install **PyAutoLens** is via pip:
 
     pip install autolens
 
-Clone autolens workspace & set WORKSPACE enviroment model:
+Clone autolens workspace & set WORKSPACE enviroment model ('--depth 1' clones only the most recent branch on the
+autolens_workspace, reducing the download size):
 
 .. code-block:: bash
 
     cd /path/where/you/want/autolens_workspace
-    git clone https://github.com/Jammy2211/autolens_workspace
+    git clone https://github.com/Jammy2211/autolens_workspace --depth 1
     export WORKSPACE=/path/to/autolens_workspace/
 
 Set PYTHONPATH to include the autolens_workspace directory:
