@@ -195,16 +195,16 @@ we would see the central image.
 This is a problem for our _Pixelization_and _Mapper_, which in the source-plane fits these demagnified pixels like 
 any other pixels. This has two negative consequences:
 
-    1) The _Rectangular_ _Pixelization_ we 'overlay' over the source-plane is much larger than for the annular _Mask_ 
-       because it has to expand to include the demagnified image-pixels. As a result, large source-pixels are used to 
-       reconstruct the central regions of the source-plane (where the source galaxy is actually located), meaning we 
-       reconstruct the source-galaxy at a lower effective resolution.
+ 1) The _Rectangular_ _Pixelization_ we 'overlay' over the source-plane is much larger than for the annular _Mask_ 
+ because it has to expand to include the demagnified image-pixels. As a result, large source-pixels are used to 
+ reconstruct the central regions of the source-plane (where the source galaxy is actually located), meaning we 
+ reconstruct the source-galaxy at a lower effective resolution.
     
-    2) The _Rectangular_ _Pixelization_ reconstructs the flux of the demanigified image pixels using source-pixels 
-       which contain *only* demagnified image pixels. However, these source-pixels *should* have other image-pixels 
-       traced within them from pixels at large radii from the centre of the lens galaxy. Unfortunately, our circular 
-       _Mask_ masks these pixels out, meaning they do not make it to our source-plane and are omitted from the source 
-       reconstruction.
+ 2) The _Rectangular_ _Pixelization_ reconstructs the flux of the demanigified image pixels using source-pixels 
+ which contain *only* demagnified image pixels. However, these source-pixels *should* have other image-pixels 
+ traced within them from pixels at large radii from the centre of the lens galaxy. Unfortunately, our circular 
+ _Mask_ masks these pixels out, meaning they do not make it to our source-plane and are omitted from the source 
+ reconstruction.
 
 Lets quickly use a larger circular _Mask_ to confirm that these pixels do exist, if we don't mask them.
 """
@@ -446,7 +446,7 @@ aplt.Inversion.reconstruction(
 # %%
 """
 And with that, borders are done. In truth, borders should pretty much take care of themselves when you're using 
-PyAutoLens and you probably won't think about them much. However, as I showed above, if you don't choose a large enough 
+__PyAutoLens__ and you probably won't think about them much. However, as I showed above, if you don't choose a large enough 
 mask things can go wrong - thus, its important you know what borders are, so you can look out for this potential 
 source of systematics!
 """

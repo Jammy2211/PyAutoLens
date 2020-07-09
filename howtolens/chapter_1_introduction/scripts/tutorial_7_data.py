@@ -85,9 +85,9 @@ print(padded_image.shape)
 Now, to simulate the _Imaging_ data, we pass the _Tracer_ and _Grid_ to the _Imaging_ module's simulate function. This adds
 the following effects to the image:
 
-    1) Telescope optics: Using the Point Spread Function above.
-    2) The Background Sky: Although the image that is returned is automatically background sky subtracted.
-    3) Poisson noise: Due to the background sky, lens galaxy and source galaxy Poisson photon counts.
+ 1) Telescope optics: Using the Point Spread Function above.
+ 2) The Background Sky: Although the image that is returned is automatically background sky subtracted.
+ 3) Poisson noise: Due to the background sky, lens galaxy and source galaxy Poisson photon counts.
 """
 
 # %%

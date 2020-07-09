@@ -3,8 +3,8 @@
 Tutorial 3: Galaxies
 ====================
 
-In this example, we'll use 'mass_profiles' and 'light_profiles' modules introduced previously, along with the
-'galaxy' module to create _Galaxy_ objects in PyAutoLens. We'll see that:
+In this example, we'll use the 'mass_profiles' and 'light_profiles' modules introduced previously, along with the
+'galaxy' module to create _Galaxy_ objects in __PyAutoLens__. We'll see that:
 
 1) _Galaxy_'s can be made from multiple _LightProfile_'s and _MassProfile_'s.
 
@@ -29,7 +29,7 @@ grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
 
 # %%
 """
-Lets make a galaxy with an _EllipticalSersic_ _LightProfile_, by making an _EllipticalSersic_ _LightProfile_ and 
+Lets make a _Galaxy_ with an _EllipticalSersic_ _LightProfile_, by making an _EllipticalSersic_ _LightProfile_ and 
 passing it to a _Galaxy_ object.
 """
 
@@ -73,7 +73,7 @@ aplt.Galaxy.image(galaxy=galaxy_with_light_profile, grid=grid)
 
 # %%
 """
-We can pass galaxies as many profiles as we like. Lets create a galaxy with three _LightProfile_'s.
+We can pass galaxies as many profiles as we like. Lets create a _Galaxy_ with three _LightProfile_'s.
 """
 
 # %%
@@ -116,8 +116,8 @@ aplt.Galaxy.image_subplot(galaxy=galaxy_with_3_light_profiles, grid=grid)
 
 # %%
 """
-_MassProfile_'s interact with _Galaxy_ objects in the exact same way as _LightProfile_'s. Lets create a galaxy with three 
-SIS _MassProfile_'s. 
+_MassProfile_'s interact with _Galaxy_ objects in the exact same way as _LightProfile_'s. Lets create a _Galaxy_ with three 
+_SphericalIsothermal_ _MassProfile_'s. 
 """
 
 # %%
@@ -135,7 +135,7 @@ print(galaxy_with_3_mass_profiles)
 
 # %%
 """
-We can use a galaxy _Plotter_ to plot these deflection angles. (Deflection angles of _MassProfile_'s add together just 
+We can use a _Galaxy_ _Plotter_ to plot these deflection angles. (Deflection angles of _MassProfile_'s add together just 
 like the _LightProfile_ image's above)
 """
 
@@ -156,7 +156,7 @@ aplt.Galaxy.potential(galaxy=galaxy_with_3_mass_profiles, grid=grid)
 
 # %%
 """
-Finally, a galaxy can take both light and mass profiles, and there is no limit to how many we pass it.
+Finally, a _Galaxy_ can take both light and mass profiles, and there is no limit to how many we pass it.
 """
 
 # %%

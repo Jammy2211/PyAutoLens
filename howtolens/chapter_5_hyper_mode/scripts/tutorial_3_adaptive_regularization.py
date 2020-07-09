@@ -88,7 +88,7 @@ fit = fit_masked_imaging_with_source_galaxy(
     masked_imaging=masked_imaging, source_galaxy=source_magnification
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -158,7 +158,7 @@ _Pixelization_ simply *does not*  have sufficient resolution to resolve the sour
 """
 
 # %%
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -176,27 +176,27 @@ flux and _Regularization_will smooth over these pixels by using a high regulariz
 
 This works as follows:
 
-    1) For every source pixel, compute its pixel-signal, the summed flux of all corresponding image-pixels in the 
-       hyper-galaxy-image.
+ 1) For every source pixel, compute its pixel-signal, the summed flux of all corresponding image-pixels in the 
+ hyper-galaxy-image.
     
-    2) Divide every pixel-signal by the number of image-pixels that map directly to that source-pixel. In doing so, all 
-       pixel-signals are 'relative'. This means that source-pixels which by chance map to more image-pixels than their 
-       neighbors will not have a higher pixel-signal, and visa versa. This ensures the specific _Pixelization_
-       does impact the adaptive _Regularization_ pattern.
+ 2) Divide every pixel-signal by the number of image-pixels that map directly to that source-pixel. In doing so, all 
+ pixel-signals are 'relative'. This means that source-pixels which by chance map to more image-pixels than their 
+ neighbors will not have a higher pixel-signal, and visa versa. This ensures the specific _Pixelization_
+ does impact the adaptive _Regularization_ pattern.
     
-    3) Divide the pixel-signals by the maximum pixel signal so that they range between 0.0 and 1.0.
+ 3) Divide the pixel-signals by the maximum pixel signal so that they range between 0.0 and 1.0.
     
-    4) Raise these values to the power of the hyper-galaxy-parameter *signal_scale*. For a *signal_scale* of 0.0, all 
-       pixels will therefore have the same final pixel-scale. As the *signal_scale* increases, a sharper transition of 
-       pixel-signal values arises between regions with high and low pixel-signals.
+ 4) Raise these values to the power of the hyper-galaxy-parameter *signal_scale*. For a *signal_scale* of 0.0, all 
+ pixels will therefore have the same final pixel-scale. As the *signal_scale* increases, a sharper transition of 
+ pixel-signal values arises between regions with high and low pixel-signals.
     
-    5) Compute every source pixel's effective regularization_coefficient as:
+ 5) Compute every source pixel's effective regularization_coefficient as:
     
-       (inner_coefficient * pixel_signals + outer_coefficient * (1.0 - pixel_signals)) ** 2.0
+ (inner_coefficient * pixel_signals + outer_coefficient * (1.0 - pixel_signals)) ** 2.0
     
-       This uses two regularization_coefficients, one which is applied to pixels with high pixel-signals and one to 
-       pixels with low pixel-signals. Thus, pixels in the inner regions of the source may be given a lower level of 
-       _Regularization_than pixels further away, as desired.
+ This uses two regularization_coefficients, one which is applied to pixels with high pixel-signals and one to 
+ pixels with low pixel-signals. Thus, pixels in the inner regions of the source may be given a lower level of 
+ _Regularization_than pixels further away, as desired.
 
 Thus, we now adapt our _Regularization_ scheme to the source's surface brightness. Where its brighter (and therefore 
 has a steeper flux gradient) we apply a lower level of _Regularization_ than further out. Furthermore, in the edges of 
@@ -208,7 +208,7 @@ signal scales. I doubt you'll notice a lot change visually, but the log evidence
 manoveur with different values.
 
 You may find solutions that raise an 'InversionException'. These solutions mean that the matrix used during the 
-linear algebra calculation was ill-defined, and could not be inverted. These solutions are removed by PyAutoLens 
+linear algebra calculation was ill-defined, and could not be inverted. These solutions are removed by __PyAutoLens__ 
 during lens modeling.
 """
 
@@ -234,7 +234,7 @@ aplt.Inversion.regularization_weights(
     inversion=fit.inversion, include=aplt.Include(inversion_pixelization_grid=True)
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -250,11 +250,11 @@ in making a source reconstruction 'more simple' and 'less complex'.
 As you might of guessed, adaptive _Regularization_again increases the Bayesian log evidence by making the source 
 reconstruction simpler:
 
-    1) Reducing _Regularization_ in the source's brightest regions produces a 'simpler' solution in that we are not 
-    over-smoothing our reconstruction of its brightest regions.
+ 1) Reducing _Regularization_ in the source's brightest regions produces a 'simpler' solution in that we are not 
+ over-smoothing our reconstruction of its brightest regions.
     
-    2) Increasing _Regularization_ in the outskirts produces a simpler solution by correlating more source-pixels, 
-    effectively reducing the number of pixels used by the reconstruction.
+ 2) Increasing _Regularization_ in the outskirts produces a simpler solution by correlating more source-pixels, 
+ effectively reducing the number of pixels used by the reconstruction.
 
 Together, brightness based _Pixelization_'s and _Regularization_ allow us to find the objectively 'simplest' source 
 solution possible and therefore ensure that our Bayesian log evidence's have a well defined maximum value they are 

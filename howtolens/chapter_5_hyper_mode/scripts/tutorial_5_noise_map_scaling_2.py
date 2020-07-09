@@ -33,9 +33,7 @@ We'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_5 import (
-    lens_sersic_sie__source_sersic,
-)
+from howtolens.simulators.chapter_5 import lens_sersic_sie__source_sersic
 
 dataset_type = "chapter_5"
 dataset_name = "lens_sersic_sie__source_sersic"
@@ -105,7 +103,7 @@ fit = fit_masked_imaging_with_lens_and_source_galaxy(
 
 print("Evidence using baseline variances = ", fit.log_evidence)
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -125,7 +123,7 @@ map nowhere near the source!
 
 This is a fundamental problem when simultaneously modeling the lens galaxy's light and source galaxy. The source 
 inversion has no way to distinguish whether the flux it is reconstructing belongs to the lens or source. This is 
-why contribution maps are so valuable; by creating a contribution map for every galaxy in the image PyAutoLens has a 
+why contribution maps are so valuable; by creating a contribution map for every galaxy in the image __PyAutoLens__ has a 
 means by which to distinguish which flux belongs to each component in the image! This is further aided by the 
 _Pixelization_'s / regularizations that adapt to the source morphology, as not only are they adapting to where the 
 source __is*__ they adapt to where __it isn't__ (and therefore where the lens galaxy is).
@@ -215,7 +213,7 @@ fit = fit_masked_imaging_with_lens_and_source_galaxy(
     source_galaxy=source_magnification_hyper,
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -227,12 +225,12 @@ print("Evidence using hyper-galaxy hyper variances = ", fit.log_evidence)
 # %%
 """
 Great, and with that, we've covered hyper galaxies. You might be wondering, what happens if there are multiple lens 
-galaxies? or multiple source galaxies? Well, as you'd expect, PyAutoLens will make each a hyper-galaxy and 
+galaxies? or multiple source galaxies? Well, as you'd expect, __PyAutoLens__ will make each a hyper-galaxy and 
 therefore scale the noise-map of that individual galaxy in the image. This is what we want, as different parts of 
 the image require different levels of noise-map scaling.
 
 Finally, I want to quickly mention two more ways that we change our data during th fitting process. One scales the 
-background noise and one scales the image's background sky. To do this, we use the 'hyper_data' module in PyAutoLens.
+background noise and one scales the image's background sky. To do this, we use the 'hyper_data' module in __PyAutoLens__.
 """
 
 # %%
@@ -248,7 +246,7 @@ hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
 """
 The sky_scale is literally just a constant value we add to every pixel of the observed image before fitting it 
 therefore increasing or decreasing the background sky level in the image .This means we can account for an 
-inaccurate background sky subtraction in our data reduction during PyAutoLens model fitting.
+inaccurate background sky subtraction in our data reduction during __PyAutoLens__ model fitting.
 
 We can also scale the background noise in an analogous fashion, using the HyperBackgroundNoise class and the 
 'noise_scale' hyper-galaxy-parameter. This value is added to every pixel in the noise-map.
@@ -274,7 +272,7 @@ al.FitImaging(
     hyper_background_noise=hyper_background_noise,
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -285,7 +283,7 @@ correction? There is. Lots of pixels in an image do not contain the lensed sourc
 inversion. As we've learnt in this chapter, this isn't problematic when we have our adaptive _Regularization_ scheme 
 because the regularization_coefficient will be increased to large values.
 
-However, if you ran a full PyAutoLens analysis in hyper-galaxy-mode (which we cover in the next tutorial), you'd 
+However, if you ran a full __PyAutoLens__ analysis in hyper-galaxy-mode (which we cover in the next tutorial), you'd 
 find the method still dedicates a lot of source-pixels to fit these regions of the image, 
 __even though they have no source__. Why is this? Its because although these pixels have no source, they still 
 have a relatively high S/N values (of order 5-10) due to the lens galaxy (e.g. its flux before it is subtracted). The 
@@ -299,6 +297,6 @@ reduce the number of source pixels we use to fit the data. And what does fewer s
 run times. Yay!
 
 With that, we have introduced every feature of hyper-galaxy-mode. The only thing left for us to do is to bring it 
-all together and consider how we use all of these features in PyAutoLens pipelines. That is what we'll discuss in the 
+all together and consider how we use all of these features in __PyAutoLens__ pipelines. That is what we'll discuss in the 
 next tutorial, and then you'll be ready to perform your own hyper-galaxy-fits!
 """

@@ -212,6 +212,7 @@ class HyperSetup(setup.PipelineSetup):
         hyper_galaxies_search=None,
         inversion_search=None,
         hyper_combined_search=None,
+        evidence_tolerance=None,
     ):
         """The setup of a pipeline, which controls how PyAutoLens template pipelines runs, for example controlling
         assumptions about the lens's light profile bulge-disk model or if shear is included in the mass model.
@@ -245,6 +246,7 @@ class HyperSetup(setup.PipelineSetup):
             hyper_galaxies_search=hyper_galaxies_search,
             inversion_search=inversion_search,
             hyper_combined_search=hyper_combined_search,
+            evidence_tolerance=evidence_tolerance,
         )
 
         self.hyper_fixed_after_source = hyper_fixed_after_source
@@ -303,7 +305,6 @@ class SourceSetup(setup.PipelineSetup):
         align_light_mass_centre=False,
         lens_light_bulge_only=False,
         number_of_gaussians=None,
-        inversion_evidence_tolerance=None,
     ):
 
         super().__init__(
@@ -314,7 +315,6 @@ class SourceSetup(setup.PipelineSetup):
             lens_mass_centre=lens_mass_centre,
             number_of_gaussians=number_of_gaussians,
             align_light_mass_centre=align_light_mass_centre,
-            inversion_evidence_tolerance=inversion_evidence_tolerance,
         )
 
         self.lens_light_bulge_only = lens_light_bulge_only

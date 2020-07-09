@@ -86,7 +86,7 @@ Lets have a quick look to make sure it has the same residuals we saw in tutorial
 """
 
 # %%
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -131,7 +131,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy_brightness
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -172,20 +172,20 @@ KMeans clustering algorithm', which is a standard algorithm for partioning data 
 
 In simple terms, this algorithm works as follows:
 
-    1) Give the KMeans algorithm a set of weighted data (e.g. determined from the hyper-galaxy image).
+ 1) Give the KMeans algorithm a set of weighted data (e.g. determined from the hyper-galaxy image).
     
-    2) For a given number of K-clusters, this algorithm will find a set of (y,x) coordinates that equally partition 
-       the weighted data-set. Wherever the data has higher weighting, more clusters congregate and visa versa.
+ 2) For a given number of K-clusters, this algorithm will find a set of (y,x) coordinates that equally partition 
+ the weighted data-set. Wherever the data has higher weighting, more clusters congregate and visa versa.
     
-    3) The returned (y,x) 'clusters' then make up our source-pixel centres, where the brightest (e.g. higher weighted 
-       regions of the hyper-galaxy-image will have more clusters! Like we did for the magnification based 
-       _Pixelization_, we can then trace these coordinates to the source-plane to define our source-pixel _Pixelization_.
+ 3) The returned (y,x) 'clusters' then make up our source-pixel centres, where the brightest (e.g. higher weighted 
+ regions of the hyper-galaxy-image will have more clusters! Like we did for the magnification based 
+ _Pixelization_, we can then trace these coordinates to the source-plane to define our source-pixel _Pixelization_.
 
 This is a fairly simplistic description of a KMeans algorithm. Feel free to check out the links below for a more 
 in-depth view:
 
-    https://en.wikipedia.org/wiki/K-means_clustering
-    https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
+ https://en.wikipedia.org/wiki/K-means_clustering
+ https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
 
 
 Okay, so we now have a sense of how our VoronoiBrightnessImage _Pixelization_is computed. Now, lets look at how we 
@@ -194,16 +194,16 @@ create the weighted data the KMeans algorithm uses.
 This image, called the 'cluster_weight_map' is generated using the 'weight_floor' and 'weight_power' parameters of 
 the VoronoiBrightness _Pixelization_. The cluster weight map is generated following 4 steps:
 
-    1) Increase all values of the hyper-galaxy-image that are < 0.02 to 0.02. This is necessary because negative 
-       values and zeros break the KMeans clustering algorithm.
+ 1) Increase all values of the hyper-galaxy-image that are < 0.02 to 0.02. This is necessary because negative 
+ values and zeros break the KMeans clustering algorithm.
     
-    2) Divide all values of this image by its maximum value, such that the hyper-galaxy-image now only contains values 
-       between 0.0 and 1.0 (where the values of 1.0 were the maximum values of the hyper-galaxy-image).
+ 2) Divide all values of this image by its maximum value, such that the hyper-galaxy-image now only contains values 
+ between 0.0 and 1.0 (where the values of 1.0 were the maximum values of the hyper-galaxy-image).
     
-    3) Add the weight_floor to all values (a weight_floor of 0.0 therefore does not change the cluster weight map).
+ 3) Add the weight_floor to all values (a weight_floor of 0.0 therefore does not change the cluster weight map).
     
-    4) Raise all values to the power of weight_power (a weight_power of 1.0 therefore does not change the cluster 
-       weight map, whereas a value of 0.0 means all values 1.0 and therefore weighted equally).
+ 4) Raise all values to the power of weight_power (a weight_power of 1.0 therefore does not change the cluster 
+ weight map, whereas a value of 0.0 means all values 1.0 and therefore weighted equally).
 
 Lets look at this in action. We'll inspect 3 cluster_weight_maps, using a weight_power of 0.0, 5.0 and 10.0, 
 setting the weight_floor to 0.0 such that it does not change the cluster weight map.
@@ -341,7 +341,7 @@ uses just 300-800 pixels (depending on the source itself). Clearly, the easiest 
 is to use fewer pixels overall!
 
 This provides a second benefit. If the best solutions in our fit want to use the fewest source-pixels possible and 
-PyAutoLens can now access those solutions, this means that hyper-galaxy-mode will run much faster than the magnification 
+__PyAutoLens__ can now access those solutions, this means that hyper-galaxy-mode will run much faster than the magnification 
 based grid! Put simply, fewer source-pixels means lower computational overheads. YAY!
 
 Tutorial 2 done, next up, adaptive regularization!

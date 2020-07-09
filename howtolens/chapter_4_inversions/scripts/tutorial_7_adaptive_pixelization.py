@@ -73,8 +73,8 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# # # # aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# # # # aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -149,7 +149,7 @@ If we look at the lens fit, we'll see that our source-plane no longer uses recta
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit,
     include=aplt.Include(
         mask=True,
@@ -157,7 +157,7 @@ fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
         inversion_pixelization_grid=True,
     ),
 )
-# # # # aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -185,7 +185,7 @@ are formed.
 However, this _VoronoiMagnification_ _Pixelization_ is still far from optimal. There are lots of source-pixels 
 effectively fitting just noise. We may achieve even better solutions if the central regions of the source were 
 reconstructed using even more pixels. So, how do we improve on this? Well, you'll have to wait until chapter 5, 
-when we introduce PyAutoLens's adaptive functionality, or 'hyper-mode'.
+when we introduce __PyAutoLens__'s adaptive functionality, or 'hyper-mode'.
 
 In the mean time, you may wish to experiment with using both Rectangular and VoronoiMagnification _Grid_'s to fit 
 lenses which can be easily achieve by changing the input pixeliation given to a pipeline.

@@ -12,10 +12,10 @@ In this example, we'll start using a more realistic lens model.
 In my experience, the simplest lens model (e.g. that has the fewest parameters) that provides a good fit to real
 strong lenses is as follows:
 
-    1) An _EllipticalSersic _LightProfile_ for the lens galaxy's light.
-    2) A _EllipticalIsothermal_ (SIE) _MassProfile_ for the lens galaxy's mass.
-    3) An _EllipticalExponential_ _LightProfile_ for the source-galaxy's light (to be honest, this is too simple,
-        but lets worry about that later).
+ 1) An _EllipticalSersic _LightProfile_ for the lens galaxy's light.
+ 2) A _EllipticalIsothermal_ (SIE) _MassProfile_ for the lens galaxy's mass.
+ 3) An _EllipticalExponential_ _LightProfile_ for the source-galaxy's light (to be honest, this is too simple,
+ but lets worry about that later).
 
 This has a total of 18 non-linear parameters, which is over double the number of parameters we've fitted up to now.
 In future exercises, we'll fit even more complex models, with some 20-30+ non-linear parameters.
@@ -48,9 +48,7 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import (
-    lens_sersic_sie__source_exp,
-)
+from howtolens.simulators.chapter_2 import lens_sersic_sie__source_exp
 
 dataset_type = "chapter_2"
 dataset_name = "lens_sersic_sie__source_exp"
@@ -214,13 +212,13 @@ And with that, we're done. In the next exercise, we'll learn how to deal with fa
 can ensure our non-linear search finds the global-maximum log likelihood solution. Before that, think about 
 the following:
 
-    1) When you look at an image of a strong lens, do you get a sense of roughly what values certain lens model 
-       parameters are?
+ 1) When you look at an image of a strong lens, do you get a sense of roughly what values certain lens model 
+ parameters are?
     
-    2) The non-linear search failed because parameter space was too complex. Could we make it less complex, whilst 
-       still keeping our lens model fairly realistic?
+ 2) The non-linear search failed because parameter space was too complex. Could we make it less complex, whilst 
+ still keeping our lens model fairly realistic?
     
-    3) The source galaxy in this example had only 7 non-linear parameters. Real source galaxies may have multiple 
-       components (e.g. a bar, disk, bulge, star-forming knot) and there may even be more than 1 source galaxy! Do you 
-       think there is any hope of us navigating a parameter space if the source contributes 20+ parameters by itself?
+ 3) The source galaxy in this example had only 7 non-linear parameters. Real source galaxies may have multiple 
+ components (e.g. a bar, disk, bulge, star-forming knot) and there may even be more than 1 source galaxy! Do you 
+ think there is any hope of us navigating a parameter space if the source contributes 20+ parameters by itself?
 """

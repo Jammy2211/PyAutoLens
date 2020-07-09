@@ -123,7 +123,7 @@ bigger masks would *always* be better, for two reasons:
  where it isn't actually observed. If this region is masked, the poor fit in this region won't reduce the model's 
  log likelihood.
 
-As you use PyAutoLens more you will get a feel for how fast an analysis will run given a certain image resolution, 
+As you use __PyAutoLens__ more you will get a feel for how fast an analysis will run given a certain image resolution, 
 lens model complexity, non-linear search priors / setup, etc. As you develop this intuition, I would recommend you 
 always aim to use masks as big as possible which still give a reasonable run-speed. Aggressive masking will get your 
 code running fast - but it could lead you to infer an incorrect lens model!
@@ -136,7 +136,7 @@ source galaxy.
 # %%
 """
 We can also manually specify a set of image-pixels correspondin to the multiple images of the source-galaxy(s). 
-During the analysis, PyAutoLens will first check that these pixels trace within a specified arc-second threshold of 
+During the analysis, __PyAutoLens__ will first check that these pixels trace within a specified arc-second threshold of 
 one another (which is controlled by the 'position_threshold' parameter input into a phase). This provides two benefits:
 
  1) The analysis runs faster as the non-linear search avoids searching regions of parameter space where the 
@@ -148,7 +148,7 @@ one another (which is controlled by the 'position_threshold' parameter input int
 We can easily check the image-positions are accurate by plotting them using our _Imaging_ _Plotter_ (they are the magenta 
 dots on the image).
 
-To specify these positions, we use the *GridCoordinates* object, which is used by PyAutoLens in general to specify (y,x)
+To specify these positions, we use the *GridCoordinates* object, which is used by __PyAutoLens__ in general to specify (y,x)
 coordinates.
 """
 
@@ -293,17 +293,17 @@ When we cover pipelines next, you'll see that pipelines allow us to use a custom
 lens we model. So, although we have to draw the masks and positions for each lens in a sample, once we've done that 
 we can fit all lenses with one standardized pipeline!
 
- There are two things you should bare in mind in terms of masking and positions:
+There are two things you should bare in mind in terms of masking and positions:
 
-    1) Customizing the mask and positions for the analysis of one strong lens gets the analysis running fast and can 
-       provide accurate non-linear sampling. However, for a large sample of lenses, customizing the mask and positions 
-       will begin to take a lot of time. If you're willing to put that time and effort in, great, but these solutions 
-       *do not* scale-up to large samples of lenses.
+ 1) Customizing the mask and positions for the analysis of one strong lens gets the analysis running fast and can 
+ provide accurate non-linear sampling. However, for a large sample of lenses, customizing the mask and positions 
+ will begin to take a lot of time. If you're willing to put that time and effort in, great, but these solutions 
+ *do not* scale-up to large samples of lenses.
     
-    2) A word of warning - be *extremely* careful when using positions, especially if it is unclear if the lensed 
-       source galaxy has one or multiple source's of light. If your position threshold is small and the positions you 
-       give the analysis correspond to different parts of the source, you may remove the *correct lens model*. In my 
-       experience, as long as you keep the threshold above ~0.5" you'll be fine.
+ 2) A word of warning - be *extremely* careful when using positions, especially if it is unclear if the lensed 
+ source galaxy has one or multiple source's of light. If your position threshold is small and the positions you 
+ give the analysis correspond to different parts of the source, you may remove the *correct lens model*. In my 
+ experience, as long as you keep the threshold above ~0.5" you'll be fine.
 
 And with that, we've completed the chapter.
 """

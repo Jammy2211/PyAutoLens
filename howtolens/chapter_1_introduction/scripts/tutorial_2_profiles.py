@@ -23,7 +23,7 @@ grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
 
 # %%
 """
-Next, lets create a _LightProfile_ using the 'light_profiles' module, which in PyAutoLens is imported as 'lp' for 
+Next, lets create a _LightProfile_ using the 'light_profiles' module, which in __PyAutoLens__ is imported as 'lp' for 
 conciseness. We'll use an _EllipticalSersic_ function, which is an analytic function often use to depict galaxies.
 
 (If you are unsure what the 'elliptical_comps' are, I'll give a description of them at the end of the tutorial.)
@@ -48,7 +48,7 @@ print(sersic_light_profile)
 
 # %%
 """
-We can pass a _Grid_ to a _LightProfile_ to compute its intensity at every _Grid_ coordinate, using a '_from_grid
+We can pass a _Grid_ to a _LightProfile_ to compute its intensity at every _Grid_ coordinate, using a '_from_grid'
 method
 """
 
@@ -57,7 +57,7 @@ light_image = sersic_light_profile.image_from_grid(grid=grid)
 
 # %%
 """
-Much like the _Grid_ objects in the previous tutorials, these functions return PyAutoLens _Array_ objects which are 
+Much like the _Grid_ objects in the previous tutorials, these functions return __PyAutoLens__ _Array_ objects which are 
 accessible in both 2D and 1D.
 """
 
@@ -85,7 +85,7 @@ print(light_image[0])
 """
 The benefit of storing all the values on the sub-grid, is that we can now use these values to bin-up the regular grid's 
 shape by taking the mean of each intensity value computed on the sub-grid. This ensures that aliasing effects due to 
-computing intensities at only one pixel coordinate inside a full pixel do not degrade the image we create.
+computing intensities at only one pixel coordinate inside a full pixel does not degrade the image we create.
 """
 
 # %%
@@ -97,7 +97,7 @@ print(light_image.in_1d_binned[0])
 """
 If you find these 2D and 1D _Array_'s confusing - I wouldn't worry about it. From here on, we'll pretty much just use 
 these _Array_'s as they returned to us from functions and not think about if they should be in 2D or 1D. Nevertheless, 
-its important that you understand PyAutoLens offers these 2D and 1D representations - as it'll help us later when we 
+its important that you understand __PyAutoLens__ offers these 2D and 1D representations - as it'll help us later when we 
 cover fititng lens data!
 
 We can use a _Profile_ _Plotter_ to plot this image.
@@ -155,7 +155,8 @@ print(mass_profile_deflections.in_2d_binned[50, 50])
 """
 A _Profile_ _Plotter_ can plot these deflection angles.
 
-(The black line is the 'critical curve' of the _MassProfile_. We'll cover what this in a later tutorial.)
+(The black and red lines are the 'critical curve' and 'caustic' of the _MassProfile_. We'll cover what these are in 
+a later tutorial.)
 """
 
 # %%
@@ -172,7 +173,7 @@ images of below:
    - Potential: The gravitational of the _MassProfile_ again in convenient dimensionless units.
    - Magnification: Describes how much brighter each image-pixel appears due to focusing of light rays by the _MassProfile_.
 
-Extracting _Array_'s of these quantities from PyAutoLens is exactly the same as for the image and deflection angles above.
+Extracting _Array_'s of these quantities from __PyAutoLens__ is exactly the same as for the image and deflection angles above.
 """
 
 # %%
@@ -196,8 +197,8 @@ aplt.MassProfile.magnification(mass_profile=sis_mass_profile, grid=grid)
 
 # %%
 """
-Congratulations, you've completed your second PyAutoLens tutorial! Before moving on to the next one, experiment with 
-PyAutoLens by doing the following:
+Congratulations, you've completed your second __PyAutoLens__ tutorial! Before moving on to the next one, experiment with 
+__PyAutoLens__ by doing the following:
 
 1) Change the _LightProfile_'s effective radius and Sersic index - how does the image's appearance change?
 2) Change the _MassProfile_'s einstein radius - what happens to the deflection angles, potential and convergence?
@@ -215,7 +216,7 @@ familiar with a coordinate system where the ellipse is defined in terms of:
    - axis_ratio = semi-major axis / semi-minor axis = b/a
    - position angle phi, where phi is in degrees.
 
-We can use the **PyAutoLens** *convert* module to determine the elliptical components from the axis-ratio and phi,
+We can use the **__PyAutoLens__** *convert* module to determine the elliptical components from the axis-ratio and phi,
 noting that the position angle phi is defined counter-clockwise from the positive x-axis.
 """
 

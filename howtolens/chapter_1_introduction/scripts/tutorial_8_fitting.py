@@ -47,9 +47,9 @@ imaging = al.Imaging.from_fits(
 """
 The 'imaging' is an _Imaging_ object, which is a 'package' of all components of the dataset, in particular:
 
-    1) The image.
-    2) The Point Spread Function (PSF).
-    3) Its noise-map.
+ 1) The image.
+ 2) The Point Spread Function (PSF).
+ 3) Its noise-map.
     
 Which are all stored as _Array_ objects.
 """
@@ -97,7 +97,7 @@ aplt.Imaging.image(imaging=imaging, mask=mask)
 The _mask_ automatically 'zooms' our plot around the masked region only - meaning that if our image is very large, we 
 focus-in on the lens and source galaxies.
 
-You'll see this is an option for pretty much every _Plotter_ in PyAutoLens, and is something we'll do often throughout 
+You'll see this is an option for pretty much every _Plotter_ in __PyAutoLens__, and is something we'll do often throughout 
 the tutorials.
 """
 
@@ -106,14 +106,14 @@ the tutorials.
 To fit the data we create a _MaskedImaging_ object, which is a 'package' of all parts of a data-set we need in order 
 to fit it with a lens model:
 
-    1) The imaging-data, including the image, PSF (so that when we compare a tracer's image to the image instrument we 
-       can include blurring due to the telescope optics) and noise-map (so our goodness-of-fit measure accounts for 
-       noise in the observations).
+ 1) The imaging-data, including the image, PSF (so that when we compare a tracer's image to the image instrument we 
+ can include blurring due to the telescope optics) and noise-map (so our goodness-of-fit measure accounts for 
+ noise in the observations).
 
-    2) The mask, so that only the regions of the image with a signal are fitted.
+ 2) The mask, so that only the regions of the image with a signal are fitted.
 
-    3) A _Grid_ aligned to the _Imaging_ data's pixels, so the tracer's image is generated on the same (masked) _Grid_ 
-       as the image.
+ 3) A _Grid_ aligned to the _Imaging_ data's pixels, so the tracer's image is generated on the same (masked) _Grid_ 
+ as the image.
 """
 
 # %%
@@ -227,7 +227,7 @@ To fit the image, we pass the _MaskedImaging_ and _Tracer_ to a _FitImaging_ obj
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# # # # # aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
@@ -312,7 +312,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# # # # # aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
@@ -360,7 +360,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# # # # # aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
@@ -379,7 +379,7 @@ print(fit.log_likelihood)
 
 # %%
 """
-Congratulations, you've fitted your first strong lens with PyAutoLens! Perform the following exercises:
+Congratulations, you've fitted your first strong lens with __PyAutoLens__! Perform the following exercises:
 
  1) In this example, we 'knew' the correct solution, because we simulated the lens ourselves. In the real Universe, 
  we have no idea what the correct solution is. How would you go about finding the correct solution? Could you find a 

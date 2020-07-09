@@ -24,9 +24,9 @@ Hopefully, you're thinking, why should I bother fitting the lens and source gala
 find the right regions of non-linear parameter space by fitting each separately first? This is what we're going to do
 in this tutorial, using a pipeline composed of a modest 3 phases:
 
-    1) Fit the lens galaxy's light, ignoring the source.
-    2) Fit the source-galaxy's light (and therefore lens galaxy's mass), ignoring the len's light.
-    3) Fit both simultaneously, using these results to initialize our starting location in parameter space.
+ 1) Fit the lens galaxy's light, ignoring the source.
+ 2) Fit the source-galaxy's light (and therefore lens galaxy's mass), ignoring the len's light.
+ 3) Fit both simultaneously, using these results to initialize our starting location in parameter space.
 
 Of course, given that we do not care for the errors in phases 1 and 2, we will set up our non-linear search to perform
 sampling as fast as possible!
@@ -67,9 +67,7 @@ We'll use strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_3 import (
-    lens_sersic_sie__source_exp,
-)
+from howtolens.simulators.chapter_3 import lens_sersic_sie__source_exp
 
 dataset_type = "chapter_3"
 dataset_name = "lens_sersic_sie__source_exp"
@@ -102,7 +100,7 @@ __Settings__
 The *PhaseSettingsImaging* describe how the model is fitted to the data in the log likelihood function. We discussed
 these in chapter 2, and a full description of all settings can be found in the example script:
 
-    'autolens_workspace/examples/model/customize/settings.py'.
+ 'autolens_workspace/examples/model/customize/settings.py'.
 
 The settings chosen here are applied to all phases in the pipeline.
 """
@@ -134,14 +132,14 @@ __Pipeline Creation__
 
 To create a _Pipeline_, we call a 'make_pipeline' function, which is written in its own Python script: 
 
-    'tutorial_1_pipeline_lens_and_source.py'. 
+ 'tutorial_1_pipeline_lens_and_source.py'. 
     
 Before we check it out, lets get the pipeline running, by importing the script, running the 'make_pipeline' function
 to create the _Pipeline_ object and calling that objects 'run' function.
 
 The 'folders' below specify the path the pipeline results are written to, which is:
 
-    'autolens_workspace/output/howtolens/c3_t1_lens_and_source/pipeline_name/setup_tag/phase_name/settings_tag'
+ 'autolens_workspace/output/howtolens/c3_t1_lens_and_source/pipeline_name/setup_tag/phase_name/settings_tag'
 """
 
 # %%
@@ -156,7 +154,7 @@ pipeline_lens_and_source = tutorial_1_pipeline_lens_and_source.make_pipeline(
 
 # %%
 """
-Okay, good job, we're running our first pipeline in PyAutoLens! But what does it *actually* do? Well, to find that out, 
+Okay, good job, we're running our first pipeline in __PyAutoLens__! But what does it *actually* do? Well, to find that out, 
 go to the script 'tutorial_1_pipeline_lens_and_source.py', which contains a full description of the pipeline, as well 
 as an overview of the tools we use to write the most general pipelines possible. Once you're done, come back to this 
 pipeline runner script and we'll wrap up tutorial 1.
@@ -169,8 +167,8 @@ approach is much faster than fitting the lens and source simultaneously from the
 questions at the end of this chapter's tutorials, I'm gonna give a Q&A - this'll hopefully get you thinking about how 
 to approach pipeline writing.
 
-    1) Can this pipeline really be generalized to any lens? Surely the radii of the mask depends on the lens and source 
-    galaxies?
+ 1) Can this pipeline really be generalized to any lens? Surely the radii of the mask depends on the lens and source 
+ galaxies?
 
 Whilst this is true, we've chosen a mask radii above that is 'excessive' and masks out a lot more of the image than 
 just the source (which, in terms of run-time, is desirable). Thus, provided you know the Einstein radius distribution 

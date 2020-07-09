@@ -5,8 +5,8 @@ import numpy as np
 
 import pytest
 
-class TestPositionSolver:
 
+class TestPositionSolver:
     def test__mask_within_circle__uses_source_pixels_within_circle__omit_lensing(self):
 
         grid = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=0.1)
@@ -15,40 +15,67 @@ class TestPositionSolver:
 
         solver = al.PositionsSolver(initial_grid=grid)
 
-        within_circle_mask = solver.mask_within_circle_from(lensing_obj=sis, source_plane_coordinate=(0.0, 0.0), radius=0.05)
+        within_circle_mask = solver.mask_within_circle_from(
+            lensing_obj=sis, source_plane_coordinate=(0.0, 0.0), radius=0.05
+        )
 
-        assert (within_circle_mask == np.array([[True, True, True, True, True],
-                                                [True, True, True, True, True],
-                                                [True, True, False, True, True],
-                                                [True, True, True, True, True],
-                                                [True, True, True, True, True]])).all()
+        assert (
+            within_circle_mask
+            == np.array(
+                [
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                    [True, True, False, True, True],
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                ]
+            )
+        ).all()
 
-        within_circle_mask = solver.mask_within_circle_from(lensing_obj=sis, source_plane_coordinate=(0.1, 0.1), radius=0.11)
+        within_circle_mask = solver.mask_within_circle_from(
+            lensing_obj=sis, source_plane_coordinate=(0.1, 0.1), radius=0.11
+        )
 
-        assert (within_circle_mask == np.array([[True, True, True, False, True],
-                                                [True, True, False, False, False],
-                                                [True, True, True, False, True],
-                                                [True, True, True, True, True],
-                                                [True, True, True, True, True]])).all()
+        assert (
+            within_circle_mask
+            == np.array(
+                [
+                    [True, True, True, False, True],
+                    [True, True, False, False, False],
+                    [True, True, True, False, True],
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                ]
+            )
+        ).all()
 
     def test__mask_trough__finds_pixels_conforming_to_property(self):
 
-        mask = al.Mask.unmasked(shape_2d=(5,5), pixel_scales=0.1)
+        mask = al.Mask.unmasked(shape_2d=(5, 5), pixel_scales=0.1)
         grid = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=0.1)
 
         sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.0)
 
         solver = al.PositionsSolver(initial_grid=grid)
 
-        mask_trough = solver.mask_trough_from(lensing_obj=sis, source_plane_coordinate=(0.0, 0.0), mask=mask, buffer=0)
+        mask_trough = solver.mask_trough_from(
+            lensing_obj=sis, source_plane_coordinate=(0.0, 0.0), mask=mask, buffer=0
+        )
 
         print(mask_trough)
 
-        assert (mask_trough == np.array([[True, True, True, True, True],
-                                                [True, True, True, True, True],
-                                                [True, True, False, True, True],
-                                                [True, True, True, True, True],
-                                                [True, True, True, True, True]])).all()
+        assert (
+            mask_trough
+            == np.array(
+                [
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                    [True, True, False, True, True],
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                ]
+            )
+        ).all()
 
     def test__positions_for_simple_mass_profiles(self):
 
@@ -58,9 +85,11 @@ class TestPositionSolver:
 
         solver = al.PositionsSolver(initial_grid=grid)
 
-        positions = solver.image_plane_positions_from(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
-    
-    
+        positions = solver.image_plane_positions_from(
+            lensing_obj=sis, source_plane_coordinate=(0.0, 0.11)
+        )
+
+
 class TestPeakPixels:
     def test__simple_arrays(self):
 
@@ -383,7 +412,7 @@ class TestTroughPixels:
         trough_pixels = pos.trough_pixels_from(array_2d=array.in_2d, mask=mask)
 
         assert trough_pixels == [[3, 3]]
-        
+
 
 class TestPositionsAtCoordinate:
     def test__uniform_grid__locates_pixels_correctly(self):

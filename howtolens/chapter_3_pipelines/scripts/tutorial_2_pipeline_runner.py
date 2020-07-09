@@ -16,7 +16,7 @@ them simultaneously.
 
 Up to now, I've put a focus on pipelines being general. The pipeline we write in this example is going to be the
 opposite, specific to the image we're modeling. Fitting multiple lens galaxies is really difficult and writing a
-pipeline that we can generalize to many lenses isn't currently possible with PyAutoLens.
+pipeline that we can generalize to many lenses isn't currently possible with __PyAutoLens__.
 """
 
 # %%
@@ -53,9 +53,7 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_3 import (
-    lens_x2_sersic_sie__source_exp,
-)
+from howtolens.simulators.chapter_3 import lens_x2_sersic_sie__source_exp
 
 dataset_type = "chapter_3"
 dataset_name = "lens_x2_sersic_sie__source_exp"
@@ -88,7 +86,7 @@ __Settings__
 The *PhaseSettingsImaging* describe how the model is fitted to the data in the log likelihood function. We discussed
 these in chapter 2, and a full description of all settings can be found in the example script:
 
-    'autolens_workspace/examples/model/customize/settings.py'.
+ 'autolens_workspace/examples/model/customize/settings.py'.
 
 The settings chosen here are applied to all phases in the pipeline.
 """
@@ -106,16 +104,16 @@ Multi-galaxy ray-tracing is just a lot more complicated, which means so is model
 
 So, how can we break the lens modeling up? As follows:
 
-    1) Fit and subtract the light of each lens galaxy individually.
-    2) Use these results to initialize each lens galaxy's _MassProfile_.
+ 1) Fit and subtract the light of each lens galaxy individually.
+ 2) Use these results to initialize each lens galaxy's _MassProfile_.
 
 So, with this in mind, we've written a pipeline composed of 4 phases:
 
-    1) Fit the _LightProfile_ of the lens galaxy on the left of the image, at coordinates (0.0", -1.0").
-    2) Fit the _LightProfile_ of the lens galaxy on the right of the image, at coordinates (0.0", 1.0").
-    3) Use this lens-subtracted image to fit the source-galaxy's light. The _MassProfile_'s of the two lens 
-       galaxies are fixed to (0.0", -1.0") and (0.0", 1.0").
-    4) Fit all relevant parameters simultaneously, using priors from phases 1, 2 and 3.
+ 1) Fit the _LightProfile_ of the lens galaxy on the left of the image, at coordinates (0.0", -1.0").
+ 2) Fit the _LightProfile_ of the lens galaxy on the right of the image, at coordinates (0.0", 1.0").
+ 3) Use this lens-subtracted image to fit the source-galaxy's light. The _MassProfile_'s of the two lens 
+ galaxies are fixed to (0.0", -1.0") and (0.0", 1.0").
+ 4) Fit all relevant parameters simultaneously, using priors from phases 1, 2 and 3.
 """
 
 # %%
@@ -142,14 +140,14 @@ __Pipeline Creation__
 
 To create a _Pipeline_, we call a 'make_pipeline' function, which is written in its own Python script: 
 
-    'tutorial_2_pipeline_x2_lens_galaxies.py'. 
+ 'tutorial_2_pipeline_x2_lens_galaxies.py'. 
 
 Before we check it out, lets get the pipeline running, by importing the script, running the 'make_pipeline' function
 to create the _Pipeline_ object and calling that objects 'run' function.
 
 The 'folders' below specify the path the pipeline results are written to, which is:
 
-    'autolens_workspace/output/howtolens/c3_t2_x2_galaxies/pipeline_name/setup_tag/phase_name/settings_tag'
+ 'autolens_workspace/output/howtolens/c3_t2_x2_galaxies/pipeline_name/setup_tag/phase_name/settings_tag'
 """
 
 # %%
@@ -174,15 +172,15 @@ And, we're done. This pipeline takes a while to run, as is the nature of multi-g
 the techniques we've learnt above can be applied to systems with even more _Galaxy_'s albeit the increases in 
 parameters will slow down the non-linear search. Here are some more Q&A's
 
-    1) This system had two very similar lens galaxy's with comparable amounts of light and mass. How common is this? 
-    Does it make it harder to model them?
+ 1) This system had two very similar lens galaxy's with comparable amounts of light and mass. How common is this? 
+ Does it make it harder to model them?
 
 Typically, a 2 galaxy system has 1 massive galaxy (that makes up some 80%-90% of the overall light and mass), 
 accompanied by a smaller satellite. The satellite can't be ignored - it impacts the ray-tracing in a measureable way, 
 but its a lot less degenerate with the 'main' lens galaxy. This means we can often model the  satellite with much 
 simpler profiles (e.g. spherical profiles). So yes, multi-galaxy systems can often be easier to model.
 
-    2) It got pretty confusing passing all those priors towards the end of the pipeline there, didn't it?
+ 2) It got pretty confusing passing all those priors towards the end of the pipeline there, didn't it?
 
 It does get confusing, I won't lie. This is why we made galaxies named objects - so that we could call them the 
 'left_lens' and 'right_lens'. It still requires caution when writing the pipeline, but goes to show that if you name 

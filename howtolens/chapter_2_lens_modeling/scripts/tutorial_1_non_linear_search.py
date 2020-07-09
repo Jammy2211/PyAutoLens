@@ -13,8 +13,8 @@ To begin, we have to choose the parametrization of our lens model. We don't need
 and mass profiles (e.g. the centre, einstein_radius, etc.) - only the profiles themselves. In this example,
 we'll use the following lens model:
 
-1) A _SphericalIsothermal_ Sphere (SIS) for the lens galaxy's mass.
-2) A _SphericalExponential_ _LightProfile_ for the source-galaxy's light.
+ 1) A _SphericalIsothermal_ Sphere (SIS) for the lens galaxy's mass.
+ 2) A _SphericalExponential_ _LightProfile_ for the source-galaxy's light.
 
 I'll let you into a secret - this is the same lens model used to simulate the _Imaging_ data we're going to fit and
 we're going to infer the actual parameters I used!
@@ -37,16 +37,16 @@ being a successful lens modeler.
 
 We're going to use a non-linear search algorithm called 'Dynesty'. I highly recommend it, and find its great for
 lens modeling. However, for now, lets not worry about the details of how Dynesty actually works. Instead, just
-picture that a non-linear search in PyAutoLens operates as follows:
+picture that a non-linear search in __PyAutoLens__ operates as follows:
 
-1) Randomly guess a lens model and use its _LightProfile_'s and _MassProfile_'s to set up a lens galaxy, source galaxy
-and a _Tracer_.
+ 1) Randomly guess a lens model and use its _LightProfile_'s and _MassProfile_'s to set up a lens galaxy, source galaxy
+ and a _Tracer_.
 
-2) Use this _Tracer_ and a _MaskedImaging_ to generate a model image and compare this model image to the
-observed strong lens _Imaging_ data using a _FitImaging_ object, providing the log likelihood.
+ 2) Use this _Tracer_ and a _MaskedImaging_ to generate a model image and compare this model image to the
+ observed strong lens _Imaging_ data using a _FitImaging_ object, providing the log likelihood.
 
-3) Repeat this many times, using the likelihoods of previous fits (typically those with a high log_likelihood) to
-guide us to the lens models with the highest log likelihood.
+ 3) Repeat this many times, using the likelihoods of previous fits (typically those with a high log_likelihood) to
+ guide us to the lens models with the highest log likelihood.
 """
 
 # %%
@@ -62,11 +62,11 @@ import autolens.plot as aplt
 You're going to see a line like the one below (with 'conf.instance =') in every tutorial this chapter. This sets the
 following two properties:
 
- - The path to the configuration files used by PyAutoLens, some of which configure the non-linear search. You need 
+ - The path to the configuration files used by __PyAutoLens__, some of which configure the non-linear search. You need 
    to give the path to your autolens_workspace, so the configuration files in the workspace are used (e.g. 
    '/path/to/autolens_workspace/config'). 
 
- - The path to the PyAutoLens output folder, which is where the results of the non-linear search are written to 
+ - The path to the __PyAutoLens__ output folder, which is where the results of the non-linear search are written to 
    on your hard-disk, alongside visualization and other properties of the fit 
    (e.g. '/path/to/autolens_workspace/output/howtolens')
 
@@ -100,16 +100,16 @@ The strong lens in this image was generated using:
 
 Below, you'll notice the command:
 
-    'from howtolens.simulators.chapter_2 import lens_sis__source_exp'
+ 'from howtolens.simulators.chapter_2 import lens_sis__source_exp'
     
 This will crop up in nearly every tutorial from here on. This imports the simulator for the dataset we fit in the 
 tutorial, simulating the data and placing it in the folder:
 
-    'autolens_workspace/howtolens/dataset/chapter_2/lens_sis__source_exp'    
+ 'autolens_workspace/howtolens/dataset/chapter_2/lens_sis__source_exp'    
     
 To see how the _Imaging_ dataset is simulated, feel free to checkout the simulators in the folder:
 
-    'autolens_workspace/howtolens/simmulators'
+ 'autolens_workspace/howtolens/simmulators'
 """
 
 # %%
@@ -164,7 +164,7 @@ We can use a _PhaseSettingsImaging_ object to customize how a _Tracer_ and _FitI
 dataset. Below, we specify:
 
  - That a regular *Grid* is used to fit create the model-image when fitting the data 
-      (see 'autolens_workspace/examples/grids.py' for a description of grids).
+ (see 'autolens_workspace/examples/grids.py' for a description of grids).
  - The sub-grid size of this grid.
 
 You'll note that the output folder of non-linear seach results has been 'tagged' with these phase settings. We'll 
@@ -212,7 +212,7 @@ command on your command line or via your IDE (if you are using one).
 
 The non-linear search outputs all results to your hard-disk, thus if it runs and finishes in the script, you can then
 run the Jupyter notebook cell and immediately load the result. This is how we recommend all non-linear searches are 
-performed in PyAutoLens and is therefore a good habit to get into. In these tutorials, we have commented the 
+performed in __PyAutoLens__ and is therefore a good habit to get into. In these tutorials, we have commented the 
 'phase.run' command below in every cell to remind you that you should go to the tutorial script in the 
 'chapter_2_lens_modeling/scripts' folder, uncomment the line and run the entire script!
 """
@@ -240,13 +240,17 @@ In fact, even when a phase is running, it outputs the the current maximum log li
 to your hard-disk, on-the-fly. If you navigate to the output/howtolens folder, even before the phase has finished, 
 you'll see:
 
-    1) The 'image' folder, where the current maximum log likelihood lens model _Tracer_ and _FitImaging_ are visualized 
-       (again, this outputs on-the-fly).
-    2) The file 'samples/samples.csv', which contains a table-format list of every sample of the non-linear search
-       complete with log likelihood values.
-    3) The 'model.info' file, which lists all parameters of the lens model and their priors.
-    4) The 'model.results' file, which lists the current best-fit lens model (this outputs on-the-fly).
-    5) The 'output.log' file, where all Python interpreter output is directed.
+ 1) The 'image' folder, where the current maximum log likelihood lens model _Tracer_ and _FitImaging_ are visualized 
+ (again, this outputs on-the-fly).
+ 
+ 2) The file 'samples/samples.csv', which contains a table-format list of every sample of the non-linear search
+ complete with log likelihood values.
+ 
+ 3) The 'model.info' file, which lists all parameters of the lens model and their priors.
+ 
+ 4) The 'model.results' file, which lists the current best-fit lens model (this outputs on-the-fly).
+ 
+ 5) The 'output.log' file, where all Python interpreter output is directed.
 
 The best-fit solution (i.e. the maximum log likelihood) is stored in the 'results', which we can plot as per usual 
 (you must wait for the non-linear search to finish before you can get the 'results' variable). We'll discuss the 
@@ -262,15 +266,15 @@ The fit looks good and we've therefore found a model close to the one I used to 
 confirm this yourself if you want, by comparing the inferred parameters to those found in the script
 'autolens_workspace/howtolens/simulators/lens_sis__source_exp.py').
 
-And with that, we're done - you've successfully modeled your first strong lens with PyAutoLens! Before moving onto the 
+And with that, we're done - you've successfully modeled your first strong lens with __PyAutoLens__! Before moving onto the 
 next tutorial, I want you to think about the following:
 
-    1) a non-linear search is often said to search a 'non-linear parameter-space' - why is the term parameter-space 
-        used?
+ 1) a non-linear search is often said to search a 'non-linear parameter-space' - why is the term parameter-space 
+ used?
 
-    2) Why is this parameter space 'non-linear'?
+ 2) Why is this parameter space 'non-linear'?
 
-    3) Initially, the non-linear search randomly guesses the values of the parameters. However, it shouldn't 'know' 
-       what reasonable values for a parameter are. For example, it doesn't know that a reasonable Einstein radius is 
-       between 0.0" and 4.0"). How does it know what are reasonable values of parameters to guess?
+ 3) Initially, the non-linear search randomly guesses the values of the parameters. However, it shouldn't 'know' 
+ what reasonable values for a parameter are. For example, it doesn't know that a reasonable Einstein radius is 
+ between 0.0" and 4.0"). How does it know what are reasonable values of parameters to guess?
 """

@@ -191,7 +191,7 @@ fit_flat = fit_imaging_with_voronoi_magnification_pixelization(
     imaging=imaging_source_flat, mask=mask, regularization_coefficient=9.2
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit_flat,
     include=aplt.Include(inversion_image_pixelization_grid=True, mask=True),
 )
@@ -215,7 +215,7 @@ fit_compact = fit_imaging_with_voronoi_magnification_pixelization(
     imaging=imaging_source_compact, mask=mask, regularization_coefficient=3.3
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit_compact,
     include=aplt.Include(inversion_image_pixelization_grid=True, mask=True),
 )
@@ -244,7 +244,7 @@ fit_super_compact = fit_imaging_with_voronoi_magnification_pixelization(
     imaging=imaging_source_super_compact, mask=mask, regularization_coefficient=3.1
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit_super_compact,
     include=aplt.Include(inversion_image_pixelization_grid=True, mask=True),
 )
@@ -301,16 +301,16 @@ As you can see, all pixels are regularized with our input regularization_coeffic
 Is this the best way to regularize the source? Well, as you've probably guessed, it isn't. But why not? Its 
 because different regions of the source demand different levels of regularization:
 
-    1) In the source's central regions its flux gradient is steepest; the change in flux between two source pixels is 
-       much larger than in the exterior regions where the gradient is flatter (or there is no source flux at all). To 
-       reconstruct the detailed structure of the source's cuspy inner regions, the regularization_coefficient needs to 
-       be much lower to avoid over-smoothing.
+ 1) In the source's central regions its flux gradient is steepest; the change in flux between two source pixels is 
+ much larger than in the exterior regions where the gradient is flatter (or there is no source flux at all). To 
+ reconstruct the detailed structure of the source's cuspy inner regions, the regularization_coefficient needs to 
+ be much lower to avoid over-smoothing.
 
-    2) On the flip side, the source reconstruction wants to assume a high regularization_coefficient further out 
-       because the source's flux gradient is flat (or there is no source signal at all). Higher 
-       regularization_coefficients will increase the Bayesian log evidence because by smoothing more source-pixels it 
-       makes the solution 'simpler', given that correlating the flux in these source pixels the solution effectively 
-       uses fewer source-pixels (e.g. degrees of freedom).
+ 2) On the flip side, the source reconstruction wants to assume a high regularization_coefficient further out 
+ because the source's flux gradient is flat (or there is no source signal at all). Higher 
+ regularization_coefficients will increase the Bayesian log evidence because by smoothing more source-pixels it 
+ makes the solution 'simpler', given that correlating the flux in these source pixels the solution effectively 
+ uses fewer source-pixels (e.g. degrees of freedom).
 
 So, herein lies the pitfall of a constant _Regularization_scheme. Some parts of the reconstructed source demand a 
 low regularization_coefficient whereas other parts want a high value. Unfortunately, we end up with an intermediate 
@@ -325,7 +325,7 @@ why we might want to scale its variances. Lets look at the super-compact fit aga
 """
 
 # %%
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit_super_compact,
     include=aplt.Include(inversion_image_pixelization_grid=True, mask=True),
 )

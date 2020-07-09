@@ -499,7 +499,9 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
 
         solver = pos.PositionsSolver(grid=grid)
 
-        return solver.image_plane_positions_from(lensing_obj=self, source_plane_coordinate=source_plane_coordinate)
+        return solver.image_plane_positions_from(
+            lensing_obj=self, source_plane_coordinate=source_plane_coordinate
+        )
 
     @property
     def contribution_map(self):
