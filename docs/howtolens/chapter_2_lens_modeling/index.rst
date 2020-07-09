@@ -3,6 +3,11 @@ Chapter 2: Lens Modeling
 
 In chapter 2, we'll take you through how to model strong lenses using a non-linear search.
 
+A number of the notebooks require a *non-linear search* to be performed, which can lead the auto-generation of the
+**HowToLens** readthedocs pages to crash. For this reason, all cells which perform a *non-linear search* or use its
+result are commented out. We advise if you want to read through the **HowToLens** lectures in full that you download
+the autofit_workspace and run them from there (where these comments are removed).
+
 The chapter contains the following tutorials:
 
 `Tutorial 1: <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_2_lens_modeling/tutorial_1_non_linear_search.html>`_
