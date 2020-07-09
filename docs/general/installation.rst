@@ -28,7 +28,7 @@ This guide installs **PyAutoLens** with the following dependencies:
 
 **astropy** https://www.astropy.org/
 
-**GetDist** https://getdist.readthedocs.io/en/latest/
+**corner.py** https://github.com/dfm/corner.py
 
 **matplotlib** https://matplotlib.org/
 
