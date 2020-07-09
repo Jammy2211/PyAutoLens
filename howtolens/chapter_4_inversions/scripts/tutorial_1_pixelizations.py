@@ -37,7 +37,7 @@ source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[1]
 """
 Next, lets set up a _Pixelization_using the 'pixelization' module, which is imported as 'pix' for short.
 
-There are multiple _Pixelization_'s available in PyAutoLens. For now, we'll keep it simple and use a uniform 
+There are multiple _Pixelization_'s available in __PyAutoLens__. For now, we'll keep it simple and use a uniform 
 rectangular grid. As usual, the grid's 'shape' defines its (y,x) dimensions.
 """
 
@@ -151,10 +151,10 @@ print(mapper.pixelization_grid.scaled_minima)
 And with that, we're done. This was a relatively gentle overview of _Pixelization_'s, but one that was hopefully easy 
 to follow. Think about the following questions before moving on to the next tutorial:
 
-    1) Look at how the source-grid coordinates are distributed over the rectangular pixel-grid. Are these points 
-    distributed evenly over the rectangular grid's pixels? Do some pixels have a lot more grid-points inside of them? 
-    Do some pixels have no grid-points in them?
+ 1) Look at how the source-grid coordinates are distributed over the rectangular pixel-grid. Are these points 
+ distributed evenly over the rectangular grid's pixels? Do some pixels have a lot more grid-points inside of them? 
+ Do some pixels have no grid-points in them?
 
-    2) The rectangular pixelization's edges are aligned with the most exterior coordinates of the source-grid. This is 
-    intentional - why do you think this is?
+ 2) The rectangular pixelization's edges are aligned with the most exterior coordinates of the source-grid. This is 
+ intentional - why do you think this is?
 """

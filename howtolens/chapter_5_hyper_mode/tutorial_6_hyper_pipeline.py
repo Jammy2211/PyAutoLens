@@ -9,10 +9,10 @@ and don't want to scale.
 ##HYPER IMAGE PASSING ###
 
 So, lets start with hyper-image passing. That is, how do we pass the model images of the lens and source galaxies to
-later phases to use them as hyper-galaxy-images? Well, I've got some good news, *we no nothing*. PyAutoLens automatically
+later phases to use them as hyper-galaxy-images? Well, I've got some good news, *we no nothing*. __PyAutoLens__ automatically
 passes hyper-images between phases!
 
-However, PyAutoLens does need to know which hyper-images to pass to which galaxies. To do this, PyAutoLens uses
+However, __PyAutoLens__ does need to know which hyper-images to pass to which galaxies. To do this, __PyAutoLens__ uses
 galaxy-names. When you create a _GalaxyModel_, you name the _Galaxy_'s for example below we've called the lens galaxy
 'lens' and the source galaxy 'source':
 
@@ -33,7 +33,7 @@ NAME --> source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic)
 
 To pass the resulting model images of these galaxies to galaxies in the next phase, galaxies are paired by their names.
 So, in the next phase (phase2), the lens galaxy must be called 'lens' (again) and the source galaxy 'source' (again).
-Hopefully, you've followed this naming convention with PyAutoLens up to now anyway, so this should come naturually.
+Hopefully, you've followed this naming convention with __PyAutoLens__ up to now anyway, so this should come naturually.
 
 Why do we pass images based on galaxy names? It is because for more complex lens systems (e.g. with multiple lens and
 source galaixes) we must explicitly define how their images are linked between phases.

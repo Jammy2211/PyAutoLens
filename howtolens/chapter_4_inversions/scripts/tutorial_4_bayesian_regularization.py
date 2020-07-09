@@ -92,7 +92,7 @@ source_galaxy = al.Galaxy(
 
 fit = perform_fit_with_source_galaxy(imaging=imaging, source_galaxy=source_galaxy)
 
-# # # # aplt.FitImaging.subplot_fit_imaging(fit=fit)
+aplt.FitImaging.subplot_fit_imaging(fit=fit)
 
 # %%
 """
@@ -111,7 +111,7 @@ no_regularization_fit = perform_fit_with_source_galaxy(
     imaging=imaging, source_galaxy=source_galaxy
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=no_regularization_fit, include=aplt.Include(mask=True)
 )
 
@@ -130,8 +130,8 @@ regularization coefficient to zero, we set this penalty term to zero, meaning th
 
 Why do we need to regularize our solution? Well, we just saw why - if we don't apply this smoothing, we 'over-fit' 
 the image. More specifically, we over-fit the noise in the image, which is what the large flux values located at
- the exteriors of the source reconstruction are doing. Think about it, if your sole aim is to maximize the log likelihood, 
- the best way to do this is to fit *everything* accurately, including the noise.
+the exteriors of the source reconstruction are doing. Think about it, if your sole aim is to maximize the log 
+likelihood, the best way to do this is to fit *everything* accurately, including the noise.
 
 If we change the 'normalization' variables of the _Plotter_ such that the color-map is restricted to a narrower range of 
 values, we can see that even without _Regularization_we are still reconstructing the actual source galaxy.
@@ -161,7 +161,7 @@ high_regularization_fit = perform_fit_with_source_galaxy(
     imaging=imaging, source_galaxy=source_galaxy
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=high_regularization_fit, include=aplt.Include(mask=True)
 )
 
@@ -186,15 +186,15 @@ If we used the log likelihood we will always choose a coefficient of 0! We need 
 For this, we invoke the 'Bayesian Evidence', which quantifies the goodness of the fit as follows:
 
  - First, it requires that the residuals of the fit are consistent with Gaussian noise (which is the noise expected 
-      in the _Imaging_). If this Gaussian pattern is not visible in the residuals, the noise must have been over-fitted. 
-      Thus, the Bayesian log evidence decreases. Obviously, if the image is poorly fitted, the residuals don't appear 
-      Gaussian either, but the poor fit will lead to a decrease in Bayesian log evidence decreases all the same!
+ in the _Imaging_). If this Gaussian pattern is not visible in the residuals, the noise must have been over-fitted. 
+ Thus, the Bayesian log evidence decreases. Obviously, if the image is poorly fitted, the residuals don't appear 
+ Gaussian either, but the poor fit will lead to a decrease in Bayesian log evidence decreases all the same!
 
  - This leaves us with a large number of solutions which all fit the data equally well (e.g., to the noise level). 
-      To determine the best-fit from these solutions the Bayesian log evidence quantifies the complexity of each 
-      solution's source reconstruction. If the _Inversion_ requires lots of pixels and a low level of _Regularization_
-      to achieve a good fit, the Bayesian log evidence decreases. It penalizes solutions which are complex, which, in 
-      a Bayesian sense, are less probable (you may want to look up 'Occam's Razor').
+ To determine the best-fit from these solutions the Bayesian log evidence quantifies the complexity of each 
+ solution's source reconstruction. If the _Inversion_ requires lots of pixels and a low level of _Regularization_
+ to achieve a good fit, the Bayesian log evidence decreases. It penalizes solutions which are complex, which, in 
+ a Bayesian sense, are less probable (you may want to look up 'Occam's Razor').
 
 If a really complex source reconstruction is paramount to fitting the image accurately than that is probably the 
 correct solution. However, the Bayesian log evidence ensures we only invoke this more complex solution when the data 
@@ -229,10 +229,10 @@ parameters - there were 30+ when using _LightProfile_'s to represent the source!
 
 Here are a few questions for you to think about.
 
-    1) We maximize the log evidence by using simpler source reconstructions. Therefore, decreasing the pixel-grid 
-       size should provide a higher log_evidence, provided it still has enough resolution to fit the image well (and 
-       provided that the regularization coefficient is still an appropriate value). Can you increase the log evidence 
-       from the value above by changing these parameters - I've set you up with a code to do so below.
+ 1) We maximize the log evidence by using simpler source reconstructions. Therefore, decreasing the pixel-grid 
+ size should provide a higher log_evidence, provided it still has enough resolution to fit the image well (and 
+ provided that the regularization coefficient is still an appropriate value). Can you increase the log evidence 
+ from the value above by changing these parameters - I've set you up with a code to do so below.
 """
 
 # %%
@@ -249,11 +249,11 @@ print(10395.370224426646)
 print("New Bayesian Evidence:")
 print(fit.log_evidence)
 
-# # # # aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
-    2) Can you think of any other ways we might increase the log evidence even further? If not - don't worry. but 
-    you'll learn that PyAutoLens actually adapts its source reconstructions to the properties of the image that it is 
-    fitting, so as to objectively maximize the log evidence!
+ 2) Can you think of any other ways we might increase the log evidence even further? If not - don't worry. but 
+ you'll learn that __PyAutoLens__ actually adapts its source reconstructions to the properties of the image that it is 
+ fitting, so as to objectively maximize the log evidence!
 """

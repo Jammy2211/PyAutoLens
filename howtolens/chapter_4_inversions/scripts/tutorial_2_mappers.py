@@ -231,14 +231,14 @@ aplt.Mapper.subplot_image_and_mapper(
 Great - tutorial 2 down! We've learnt about _Mapper_'s, which map things, and we used them to understand how the image 
 and source plane map to one another. Your exercises are:
 
-    1) Change the einstein radius of the lens galaxy in small increments (e.g. einstein radius 1.6" -> 1.55"). As the 
-    radius deviates from 1.6" (the input value of the simulated lens), what do you notice about where the points map 
-    from the centre of the source-plane (where the source-galaxy is simulated, e.g. (0.0", 0.0"))?
+ 1) Change the einstein radius of the lens galaxy in small increments (e.g. einstein radius 1.6" -> 1.55"). As the 
+ radius deviates from 1.6" (the input value of the simulated lens), what do you notice about where the points map 
+ from the centre of the source-plane (where the source-galaxy is simulated, e.g. (0.0", 0.0"))?
     
-    2) Incrementally increase the axis ratio of the lens's _MassProfile_ to 1.0. What happens to quadruple imaging?
+ 2) Incrementally increase the axis ratio of the lens's _MassProfile_ to 1.0. What happens to quadruple imaging?
     
-    3) Now, finally, think - how is all of this going to help us actually model lenses? We've said we're going to 
-    reconstruct our source galaxies on the pixel-grid. So, how does knowing how each pixel maps to the image actually 
-    help us? If you've not got any bright ideas, then worry not - that exactly what we're going to cover in the next 
-    tutorial.
+ 3) Now, finally, think - how is all of this going to help us actually model lenses? We've said we're going to 
+ reconstruct our source galaxies on the pixel-grid. So, how does knowing how each pixel maps to the image actually 
+ help us? If you've not got any bright ideas, then worry not - that exactly what we're going to cover in the next 
+ tutorial.
 """

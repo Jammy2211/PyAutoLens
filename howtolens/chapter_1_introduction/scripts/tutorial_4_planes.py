@@ -14,31 +14,24 @@ When the alignment is just right and the lens is just massive enough, the backgr
 times. The schematic below shows a crude drawing of such a system, where two light-rays from the source are bending
 around the lens galaxy and into the observer (light should bend 'smoothly', but drawing this on a keyboard wasn't
 possible - so just pretend the diagonal lines coming from the observer and source are less jagged)
+"""
 
-
+# %%
+"""
 Observer                  Image-Plane               Source-Plane
 
 (z=0, Earth)               (z = 0.5)                (z = 1.0)
 
-      ----------------------------------------------
-
+         ----------------------------------------------
         /                                              \ <---- This is one of the source's light-rays
-
-       /                      __                       \
-
-  o   /                      /  \                      __
-
+       /                      __                        \
+  p   /                      /  \                      __
   |  /                      /   \                     /  \
-
  /\  \                      \   /                     \__/
-
       \                     \__/                 Source Galaxy (s)
-
        \                Lens Galaxy(s)                /
-
          \                                           / <----- And this is its other light-ray
-
-       ------------------------------------------/
+          ------------------------------------------/
 """
 
 # %%
@@ -247,7 +240,7 @@ aplt.Plane.plane_image(
 
 # %%
 """
-Plotting the _Grid_ over the plane image obscures its appearance, which isn't ideal. We can of course tell PyAutoLens 
+Plotting the _Grid_ over the plane image obscures its appearance, which isn't ideal. We can of course tell __PyAutoLens__ 
 not to plot the grid.
 """
 
@@ -261,22 +254,22 @@ aplt.Plane.plane_image(
 For _MassProfile_'s, you can also plot their 'critical curve' and 'caustics', which for those unfamiliar with lensing 
 are defined as follows:
 
-    **Critical Curve**:
-    
-        Lines of infinite magnification where the _MassProfile_ perfectly 'focuses' light rays. Source light near a 
-        critical curve appears much brighter than its true luminosity!
+__Critical Curve__
 
-    **Caustic**: 
+ Lines of infinite magnification where the _MassProfile_ perfectly 'focuses' light rays. Source light near a 
+ critical curve appears much brighter than its true luminosity!
+
+__Caustic**__
     
-        Given the deflection angles of the _MassProfile_ at the critical curves, the caustic is where the 
-        critical curve 'maps' too.
+ Given the deflection angles of the _MassProfile_ at the critical curves, the caustic is where the 
+ critical curve 'maps' too.
         
 You may be surprised that the inner critical curve does not appear symmetric, but instead is a non-circular jagged 
 shape. As a result of this, the correspnding caustic in the source plane also appears jaggedy. 
  
-This is a numerical issue with the way that PyAutoLens computes the critical curves and caustics - without this issue
+This is a numerical issue with the way that __PyAutoLens__ computes the critical curves and caustics - without this issue
 both would appear perfect symmetric and smooth! Implementing a more robust calculation of these quantities is on the
-PyAutoLens featre list, but for now you'll just have to accept this aspect of the visualization is sub-optimal!
+__PyAutoLens__ featre list, but for now you'll just have to accept this aspect of the visualization is sub-optimal!
 """
 
 # %%

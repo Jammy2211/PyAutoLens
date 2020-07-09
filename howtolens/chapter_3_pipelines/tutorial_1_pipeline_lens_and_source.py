@@ -86,7 +86,7 @@ def make_pipeline(setup, settings):
     in phase 1, ensuring the image we fit is lens subtracted. We do this below by passing the lens light as an
     'instance' object, a trick we use in nearly all pipelines!
 
-    By passing an 'instance', we are telling PyAutoLens that we want it to pass the maximum log likelihood result of
+    By passing an 'instance', we are telling __PyAutoLens__ that we want it to pass the maximum log likelihood result of
     that phase and use those parameters as fixed values in the model. The model parameters passed as an 'instance' are
     not free parameters fitted for by the non-linear search, thus this reduces the dimensionality of the non-linear 
     search making model-fitting faster and more reliable. 

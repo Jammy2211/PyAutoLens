@@ -3,9 +3,9 @@
 Tutorial 9: Summary
 ===================
 
-In this chapter, you've learnt how create and fit strong lenses with PyAutoLens. In particular, you've learnt:
+In this chapter, you've learnt how create and fit strong lenses with __PyAutoLens__. In particular, you've learnt:
 
- 1) PyAutoLens uses Cartesian _Grid_'s of (y,x) coordinates to perform ray-tracing.
+ 1) __PyAutoLens__ uses Cartesian _Grid_'s of (y,x) coordinates to perform ray-tracing.
  2) These _Grid_'s are combined with light and mass profiles to compute images, convergences, potentials and
  deflection angles.
  3) Profiles are combined to make galaxies.
@@ -15,7 +15,7 @@ In this chapter, you've learnt how create and fit strong lenses with PyAutoLens.
  7) The tracer's image can be used to simulate strong lens _Imaging_ observed on a real telescope.
  8) This instrument can be fitted, so to as quantify how well a model strong lens system represents the observed image.
 
-In this summary, we'll consider how flexible the tools PyAutoLens gives you are to study every aspect of a strong lens
+In this summary, we'll consider how flexible the tools __PyAutoLens__ gives you are to study every aspect of a strong lens
 system. Lets get a 'fit' to a strong lens, by setting up an image, mask, tracer, etc.
 """
 
@@ -161,21 +161,21 @@ aplt.LightProfile.image(
 And, we're done, not just with the tutorial, but the chapter!
 
 To end, I want to quickly talk about code-design and structure. Yeah, I know, as a scientist, you don't like code 
-and certainly don't want to think about code! However, the point is, with PyAutoLens, you don't need to!
+and certainly don't want to think about code! However, the point is, with __PyAutoLens__, you don't need to!
 
 Think about it - throughout this chapter, we never talk about anything like it was code. We didn't refer to 
 'variables', 'parameters' and 'functions' did we? Instead, we talked about 'galaxies', 'planes' and a _Tracer_. 
 These are the things that, as scientists, we use to visualize a strong lens system.
 
 Software that abstracts the underlying code in this way follows what is called an 'object-oriented design', and it 
-is our hope with PyAutoLens that we've made the way you use it (that is, in coding speak, its 'interface') intuitive.
+is our hope with __PyAutoLens__ that we've made the way you use it (that is, in coding speak, its 'interface') intuitive.
 
 However, if you do enjoy code, variables, functions, and parameters, you're probably ready to take a look at the 
-PyAutoLens source-code. This can be found in the 'autolens' folder. At team PyAutoLens, we take a lot of pride in our 
+__PyAutoLens__ source-code. This can be found in the 'autolens' folder. At team __PyAutoLens__, we take a lot of pride in our 
 source-code, so I can promise you its well written, well documented and thoroughly tested (check out the 'test' 
 directory if you're curious how to test code well!).
 
-Okay, enough self-serving praise for PyAutoLens, lets wrap up the chapter. You've learn a lot in this chapter, but 
+Okay, enough self-serving praise for __PyAutoLens__, lets wrap up the chapter. You've learn a lot in this chapter, but 
 what you haven't learnt is how to 'model' a real strong gravitational lens.
 
 In the real world, we've no idea what the 'correct' set of light and mass profile parameters are that will give a 

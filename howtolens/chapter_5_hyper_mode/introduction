@@ -1,4 +1,4 @@
-In this chapter, we will introduce PyAutoLens's 'hyper-mode'. In hyper mode, we use previous fits to a strong lens (e.g.
+In this chapter, we will introduce __PyAutoLens__'s 'hyper-mode'. In hyper mode, we use previous fits to a strong lens (e.g.
 in an earlier phase of a pipeline) to adapt various aspects of our model to the strong lens image being analysed. In
 particular, we will:
 
@@ -43,7 +43,7 @@ The Bayesian log evidence quantifies the following 3 apsects of a fit to strong 
 
 3) *The signal-to-noise (S/N) of the image that is fitted.* The log evidence favours models which fit higher S/N
    realizations of the observed _Imaging_ data (where the S/N is determined using the image-pixel variances. Up to now,
-   all PyAutoLens fits assumed fixed variances, meaning that this of the Bayeisan log evidence has had no impact on
+   all __PyAutoLens__ fits assumed fixed variances, meaning that this of the Bayeisan log evidence has had no impact on
    modeling. However, in hyper-model we will invoke increasing the variances wherever our model fits the data poorly.
    The premise is that whilst increasing the variances of image pixels lowers their S/N values and therefore also
    decreases the log evidence, doing so may produce a net increase in log evidence. This occurs when the chi-squared values of
@@ -53,7 +53,7 @@ The Bayesian log evidence quantifies the following 3 apsects of a fit to strong 
 
 In summary, the log evidence is maximized for solutions which most accurately reconstruct the highest S/N realization of
 the observed image, without over-fitting its noise and using the fewest correlated source pixels. By employing this
-framework throughout, PyAutoLens objectively determines the final lens model following the principles of Bayesian
+framework throughout, __PyAutoLens__ objectively determines the final lens model following the principles of Bayesian
 analysis and Occam’s Razor.
 
 Clearly, it is not just the lens model that determine the Bayesian log evidence and therefore our overall goodness of
@@ -77,4 +77,4 @@ At the end of this chapter, you'll be able to:
 2) Adapt the _Regularization_scheme applied to this source to its surface brightness profile.
 3) Use hyper-galaxies to scale the image's noise-map during fitting, to prevent over-fitting regions of the image.
 4) Include aspects of the data reduction in the model fitting, for example the background sky subtraction.
-5) Use these features in PyAutoLens's pipeline frame.
+5) Use these features in __PyAutoLens__'s pipeline frame.

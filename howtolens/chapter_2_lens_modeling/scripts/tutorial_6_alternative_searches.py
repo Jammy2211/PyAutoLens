@@ -35,9 +35,7 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import (
-    lens_sersic_sie__source_sersic,
-)
+from howtolens.simulators.chapter_2 import lens_sersic_sie__source_sersic
 
 dataset_type = "chapter_2"
 dataset_name = "lens_sersic_sie__source_sersic"
@@ -91,32 +89,32 @@ The following settings control how fast a nested sampling algorithm samples non-
 
 n_live_points:
 
-    The number of live points which sample parameter space. More points provide a more thorough sampling of parameter 
-    space, increasing the probability that we locate the global maxima solution at the expense if taking longer to 
-    convergence on this solution. Ideally, we would use as few live pooints as possible to locate the global maxima
-    as quickly as possible.
+ The number of live points which sample parameter space. More points provide a more thorough sampling of parameter 
+ space, increasing the probability that we locate the global maxima solution at the expense if taking longer to 
+ convergence on this solution. Ideally, we would use as few live pooints as possible to locate the global maxima
+ as quickly as possible.
 
 evidence_tolerance : float
 
-    Dynesty stops sampling when it estimates that it has converged on the global maxima solution in parameter space and
-    that continuing sampling will not increase the log likelihoods of the current live points more than this evidence
-    tolerance value. For example, an evidence tolerance of 1.0 roughly require that all live points have log likelihood
-    values within 1.0 of one another. Thus, the higher the evidence_tolerance the sooner Dynesty will stop running. 
+ Dynesty stops sampling when it estimates that it has converged on the global maxima solution in parameter space and
+ that continuing sampling will not increase the log likelihoods of the current live points more than this evidence
+ tolerance value. For example, an evidence tolerance of 1.0 roughly require that all live points have log likelihood
+ values within 1.0 of one another. Thus, the higher the evidence_tolerance the sooner Dynesty will stop running. 
     
-    A high tolerance will make the errors estimated on every parameter unreliable, and the tolerance must be kept below
-    0.8 if you want reliable error estimates. However, when linking phases, we typically *do not care* about the errors 
-    in the first phase, therefore setting a high evidence tolerance can be an effective means to make Dynesty converge
-    faster. 
+ A high tolerance will make the errors estimated on every parameter unreliable, and the tolerance must be kept below
+ 0.8 if you want reliable error estimates. However, when linking phases, we typically *do not care* about the errors 
+ in the first phase, therefore setting a high evidence tolerance can be an effective means to make Dynesty converge
+ faster. 
 
 Lets perform two fits, where:
 
  - One has many live points, a low sampling efficiency and evidence tolerance, causing the non-linear search to
-      take a long time to run (in fact, on my laptop, this run takes > 500000 iterations which translates to > 6 
-      hours. So, I've commented the run function out to not waste your time, but feel free to uncomment it and run
-      the phase to see this for yourself!).
+ take a long time to run (in fact, on my laptop, this run takes > 500000 iterations which translates to > 6 
+ hours. So, I've commented the run function out to not waste your time, but feel free to uncomment it and run
+ the phase to see this for yourself!).
       
  - One has few live points, a high sampling efficiency and evidence tolerance, causing the non-linear search to
-      converge and end quicker.
+ converge and end quicker.
 """
 
 # %%
@@ -181,7 +179,7 @@ print(
     " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# result_fast = phase_fast.run(dataset=imaging, mask=mask)
+# # result_fast = phase_fast.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -191,7 +189,7 @@ Lets check that this search, despite its faster sampling settings, still gives u
 """
 
 # %%
-# aplt.FitImaging.subplot_fit_imaging(fit=result_fast.max_log_likelihood_fit)
+# # aplt.FitImaging.subplot_fit_imaging(fit=result_fast.max_log_likelihood_fit)
 
 # %%
 """

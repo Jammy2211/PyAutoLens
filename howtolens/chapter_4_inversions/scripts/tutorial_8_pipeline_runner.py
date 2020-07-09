@@ -78,7 +78,7 @@ __Settings__
 The *PhaseSettingsImaging* describe how the model is fitted to the data in the log likelihood function. We discussed
 these in chapter 2, and a full description of all settings can be found in the example script:
 
-    'autolens_workspace/examples/model/customize/settings.py'.
+ 'autolens_workspace/examples/model/customize/settings.py'.
 
 The settings chosen here are applied to all phases in the pipeline.
 """

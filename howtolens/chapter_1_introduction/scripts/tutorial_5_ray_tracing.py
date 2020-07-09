@@ -6,7 +6,7 @@ Tutorial 5: Ray Tracing
 In the last tutorial, our use of _Plane_'s was a bit clunky. We manually had to input _Grid_'s to trace them, and keep
 track of which _Grid_'s were the image-plane's and which were the source planes. It was easy to make mistakes!
 
-Fotunately, in PyAutoLens, you won't actually spend much hands-on time with the _Plane_ objects. Instead, you'll
+Fotunately, in __PyAutoLens__, you won't actually spend much hands-on time with the _Plane_ objects. Instead, you'll
 primarily use the 'ray-tracing' module, which we'll cover in this example. Lets look at how easy it is to setup the
 same lens-plane + source-plane strong lens configuration as the previous tutorial, but with a lot less lines of code!
 """
@@ -156,7 +156,7 @@ aplt.Plane.plane_grid(
 
 # %%
 """
-PyAutoLens has tools for plotting a _Tracer_. A ray-tracing subplot plots the following:
+__PyAutoLens__ has tools for plotting a _Tracer_. A ray-tracing subplot plots the following:
 
 1) The image, computed by tracing the source-galaxy's light 'forwards' through the _Tracer_.
 
@@ -260,6 +260,6 @@ Multi-plane lensing:
  given by the _Tracer_.  This is beyond the scope of this chapter, but be reassured that what you're learning now 
  will prepare you for the advanced chapters later on!
 
-And with that, we're done. You've performed your first ray-tracing with PyAutoLens! There are no exercises for this 
+And with that, we're done. You've performed your first ray-tracing with __PyAutoLens__! There are no exercises for this 
 chapter, and we're going to take a deeper look at ray-tracing in the next chapter.
 """

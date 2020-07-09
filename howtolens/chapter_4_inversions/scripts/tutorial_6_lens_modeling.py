@@ -102,8 +102,8 @@ fit = perform_fit_with_lens__source_galaxy(
     imaging=imaging, lens_galaxy=lens_galaxy, source_galaxy=source_galaxy
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# # # # aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -139,8 +139,8 @@ correct_fit = perform_fit_with_lens__source_galaxy(
     imaging=imaging, lens_galaxy=lens_galaxy, source_galaxy=source_galaxy
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(fit=correct_fit, include=aplt.Include(mask=True))
-# # # # aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=correct_fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -176,9 +176,7 @@ source using an inversion. To do this, all we have to do is give the lens galaxy
 """
 
 # %%
-from howtolens.simulators.chapter_4 import (
-    lens_sersic_sie__source_sersic,
-)
+from howtolens.simulators.chapter_4 import lens_sersic_sie__source_sersic
 
 dataset_type = "chapter_4"
 dataset_name = "lens_sersic_sie__source_sersic"
@@ -196,7 +194,7 @@ mask = al.Mask.circular(
 )
 
 aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
-# # # # aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -252,8 +250,8 @@ _Inversion_. When we plot the image, a new panel on the sub-plot appears showing
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# # # # aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# # # # aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -278,8 +276,8 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# # # # aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# # # # aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -289,12 +287,12 @@ And with that, we're done. Finally, I'll point out a few things about what we've
 the next tutorial on adaption.
 
  - The unphysical solutions above are clearly problematic. Whilst they have lower Bayesian evidences their existance 
-      will still impact our inferred lens model. However, the _Pixelization_'s that we used in this chapter do not 
-      adapt to the images they are fitting, meaning the correct solutions achieve much lower Bayesian log evidence 
-      values than is actually possible. Thus, once we've covered adaption, these issues will be resolved!
+ will still impact our inferred lens model. However, the _Pixelization_'s that we used in this chapter do not 
+ adapt to the images they are fitting, meaning the correct solutions achieve much lower Bayesian log evidence 
+ values than is actually possible. Thus, once we've covered adaption, these issues will be resolved!
     
  - When the lens galaxy's light is subtracted perfectly it leaves no residuals. However, if it isn't subtracted 
-      perfectly it does leave residuals, which will be fitted by the inversion. If the residual are significant this is 
-      going to mess with our source reconstruction and can lead to some pretty nasty systematics. In the next chapter, 
-      we'll learn how our adaptive analysis can prevent this residual fitting.
+ perfectly it does leave residuals, which will be fitted by the inversion. If the residual are significant this is 
+ going to mess with our source reconstruction and can lead to some pretty nasty systematics. In the next chapter, 
+ we'll learn how our adaptive analysis can prevent this residual fitting.
 """

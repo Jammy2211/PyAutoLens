@@ -45,9 +45,7 @@ We'll use strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_5 import (
-    lens_sersic_sie__source_sersic_x4,
-)
+from howtolens.simulators.chapter_5 import lens_sersic_sie__source_sersic_x4
 
 dataset_type = "chapter_5"
 dataset_name = "lens_sersic_sie__source_sersic_x4"
@@ -73,7 +71,7 @@ __Settings__
 The *PhaseSettingsImaging* describe how the model is fitted to the data in the log likelihood function. We discussed
 these in chapter 2, and a full description of all settings can be found in the example script:
 
-    'autolens_workspace/examples/model/customize/settings.py'.
+ 'autolens_workspace/examples/model/customize/settings.py'.
 
 The settings chosen here are applied to all phases in the pipeline.
 """

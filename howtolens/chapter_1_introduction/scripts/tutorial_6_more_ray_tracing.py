@@ -31,7 +31,7 @@ Lets also stop calling it the 'image_plane_grid', and just remember from now on 
 """
 
 # %%
-grid = al.Grid.uniform(shape_2d=(200, 100), pixel_scales=0.05, sub_size=2)
+grid = al.Grid.uniform(shape_2d=(200, 200), pixel_scales=0.025, sub_size=2)
 
 # %%
 """
@@ -50,9 +50,9 @@ long and cumbersome to read. This time we'll setup easy galaxy using one block o
 
 We'll also give the lens galaxy some attributes we didn't in the last tutorial:
 
-    1) A _LightProfile_, meaning its light will appear in the image.
-    2) An external shear, which accounts for the deflection of light due to line-of-sight structures.
-    3) A redshift, which the _Tracer_ will use to convert arc second coordinates to kpc.
+ 1) A _LightProfile_, meaning its light will appear in the image.
+ 2) An external shear, which accounts for the deflection of light due to line-of-sight structures.
+ 3) A redshift, which the _Tracer_ will use to convert arc second coordinates to kpc.
 """
 
 # %%
@@ -187,7 +187,7 @@ aplt.Galaxy.image(
 """
 Now lets pass our 4 galaxies to the ray_tracing module, which means the following will occur:
 
-    1) Using the galaxy redshift's, and image-plane and source-plane will be created with the appopriate galaxies.
+ 1) Using the galaxy redshift's, and image-plane and source-plane will be created with the appopriate galaxies.
 
 Note that we've also supplied the _Tracer_ below with a Planck15 cosmology.
 """
@@ -202,16 +202,16 @@ tracer = al.Tracer.from_galaxies(
 """
 We can next plot the tracer's _Profile_ image, which is compute as follows:
 
-    1) First, using the image-plane _Grid_, the images of the lens galaxy and its satellite are computed.
+ 1) First, using the image-plane _Grid_, the images of the lens galaxy and its satellite are computed.
 
-    2) Using the _MassProfile_'s of the lens and satellite, their deflection angles are computed.
+ 2) Using the _MassProfile_'s of the lens and satellite, their deflection angles are computed.
 
-    3) These deflection angles are summed, such that the deflection of light due to every _MassProfile_ and both the lens 
-       galaxy and its satellite is computed.
+ 3) These deflection angles are summed, such that the deflection of light due to every _MassProfile_ and both the lens 
+ galaxy and its satellite is computed.
 
-    4) These deflection angles are used to trace every image-grid coordinate to a source-plane coordinate.
+ 4) These deflection angles are used to trace every image-grid coordinate to a source-plane coordinate.
 
-    5) The image of the source galaxies is computed by ray-tracing their light back to the image-plane.
+ 5) The image of the source galaxies is computed by ray-tracing their light back to the image-plane.
 """
 
 # %%
@@ -247,11 +247,12 @@ aplt.Plane.plane_grid(
 # %%
 """
 Lets plot the lensing quantities again. Note that, because we supplied our galaxies with redshifts and our _Tracer_ with 
-a cosmology, our units have been converted to kiloparsecs! (This cell can take a bit of time to run)
+a cosmology, our unit can be converted to kiloparsecs! (This cell can take a bit of time to run)
 """
 
 # %%
-aplt.Tracer.subplot_tracer(tracer=tracer, grid=grid)
+sub_plotter = aplt.SubPlotter(units=aplt.Units(in_kpc=True))
+aplt.Tracer.subplot_tracer(tracer=tracer, grid=grid, sub_plotter=sub_plotter)
 
 # %%
 """

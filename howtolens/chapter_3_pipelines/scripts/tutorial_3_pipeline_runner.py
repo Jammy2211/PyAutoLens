@@ -85,7 +85,7 @@ __Settings__
 The *PhaseSettingsImaging* describe how the model is fitted to the data in the log likelihood function. We discussed
 these in chapter 2, and a full description of all settings can be found in the example script:
 
-    'autolens_workspace/examples/model/customize/settings.py'.
+ 'autolens_workspace/examples/model/customize/settings.py'.
 
 The settings chosen here are applied to all phases in the pipeline.
 """
@@ -117,14 +117,14 @@ __Pipeline Creation__
 
 To create a _Pipeline_, we call a 'make_pipeline' function, which is written in its own Python script: 
 
-    'tutorial_3_complex_source.py'. 
+ 'tutorial_3_complex_source.py'. 
 
 Before we check it out, lets get the pipeline running, by importing the script, running the 'make_pipeline' function
 to create the _Pipeline_ object and calling that objects 'run' function.
 
 The 'folders' below specify the path the pipeline results are written to, which is:
 
-    'autolens_workspace/output/howtolens/c3_t3_complex_source/pipeline_name/setup_tag/phase_name/settings_tag'
+ 'autolens_workspace/output/howtolens/c3_t3_complex_source/pipeline_name/setup_tag/phase_name/settings_tag'
 """
 
 # %%
@@ -217,9 +217,9 @@ tracer = al.Tracer.from_galaxies(
 
 true_fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# # # # aplt.FitImaging.subplot_fit_imaging(fit=true_fit)
+aplt.FitImaging.subplot_fit_imaging(fit=true_fit)
 
-# # # # aplt.FitImaging.subplot_of_plane(fit=true_fit, plane_index=1)
+aplt.FitImaging.subplot_of_plane(fit=true_fit, plane_index=1)
 
 
 # %%
@@ -230,7 +230,7 @@ The morale of this story is that if the source morphology is complex, there is n
 fit it. For this tutorial, this was true even though our source model could actually fit the data perfectly. For real 
 lenses, the source will be *even more complex* and there is even less hope of getting a good fit :(
 
-But fear not, PyAutoLens has you covered. In chapter 4, we'll introduce a completely new way to model the source 
+But fear not, __PyAutoLens__ has you covered. In chapter 4, we'll introduce a completely new way to model the source 
 galaxy, which addresses the problem faced here. But before that, in the next tutorial we'll discuss how we actually 
 pass priors in a pipeline.
 """

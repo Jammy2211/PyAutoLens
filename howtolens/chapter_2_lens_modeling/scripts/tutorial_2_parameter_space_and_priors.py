@@ -22,15 +22,15 @@ This function has 3 parameters, x, y and z. The mappings between x, y and z and 
 space, albeit now in 3 dimensions. Nevertheless, one could still picture this parameter space as some 3 dimensional
 curved surface.
 
-The process of computing a log likelihood in PyAutoLens can be visualized in exactly the same way. We have a set of
-lens model parameters, which we input into PyAutoLens's 'log_likelihood function'. Now, this log likelihood function
+The process of computing a log likelihood in __PyAutoLens__ can be visualized in exactly the same way. We have a set of
+lens model parameters, which we input into __PyAutoLens__'s 'log_likelihood function'. Now, this log likelihood function
 isn't something that we can write down analytically and its inherently non-linear. But, nevertheless, it is a function;
 if we put the same set of lens model parameters into it, we'll compute the same log likelihood.
 
 We can write our log_likelihood function as follows (using x_mp, y_mp, I_lp etc. as short-hand notation for the
 _MassProfile_ and _LightProfile_ parameters):
 
-f(x_mp, y_mp, R_mp, x_lp, y_lp, I_lp, R_lp) = a log likelihood from PyAutoLens's _Tracer_ and _FitImaging_ objects.
+f(x_mp, y_mp, R_mp, x_lp, y_lp, I_lp, R_lp) = a log likelihood from __PyAutoLens__'s _Tracer_ and _FitImaging_ objects.
 
 The point is, like we did for the simple functions above, we again have a parameter space! It can't be written
 down analytically and its undoubtedly very complex and non-linear. Fortunately, we've already learnt how to search
@@ -50,20 +50,22 @@ leads to a similar log_likelihood value. The 2D PDF between the source-galaxy's 
 effective radius R shows such a degeneracy. This makes sense - making the source galaxy brighter and smaller is
 similar to making it fainter and bigger!
 
-So, how does PyAutoLens know where to look in parameter space? A parameter, say, the Einstein Radius, could in
-principle take any value between negative and positive infinity. PyAutoLens must of told it to only search regions of
+So, how does __PyAutoLens__ know where to look in parameter space? A parameter, say, the Einstein Radius, could in
+principle take any value between negative and positive infinity. __PyAutoLens__ must of told it to only search regions of
 parameter space with 'reasonable' values (i.e. Einstein radii of around 1"-3").
 
 These are our 'priors' - which define where we tell the non-linear search to search parameter space. These tutorials
 use two types of prior:
 
 UniformPrior:
-    The values of a parameter are randomly drawn between a lower and upper limit. For example, the
-    orientation angle phi of a _Profile_ typically assumes a uniform prior between 0.0 and 180.0 degrees.
+
+ The values of a parameter are randomly drawn between a lower and upper limit. For example, the
+ orientation angle phi of a _Profile_ typically assumes a uniform prior between 0.0 and 180.0 degrees.
 
 GaussianPrior:
-    The values of a parameter are randomly drawn from a Gaussian distribution with a mean value and a
-    width sigma. For example, an Einstein radius might assume a mean value of 1.0" and width of sigma = 1.0".
+
+ The values of a parameter are randomly drawn from a Gaussian distribution with a mean value and a
+ width sigma. For example, an Einstein radius might assume a mean value of 1.0" and width of sigma = 1.0".
 
 The default priors on all parameters can be found by navigating to the 'autolens_workspace/config/json_priors/' folder,
 and inspecting config files like light_profiles.json. The convention is as follow:
@@ -149,7 +151,7 @@ source = al.GalaxyModel(redshift=1.0, light=al.lp.SphericalExponential)
 # %%
 """
 To change priors, we use the 'prior' module of PyAutoFit (imported as af). These priors link our _GalaxyModel_ to the 
-non-linear search. Thus, it tells PyAutoLens where to search non-linear parameter space.
+non-linear search. Thus, it tells __PyAutoLens__ where to search non-linear parameter space.
 
 These two lines change the centre of the lens galaxy's _MassProfile_ to UniformPriors around the coordinates 
 (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the centre of emission of the lens 

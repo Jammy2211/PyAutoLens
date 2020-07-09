@@ -26,7 +26,7 @@ class PipelineSetup(setup.PipelineSetup):
         align_light_dark_centre=False,
         align_bulge_dark_centre=False,
         subhalo_instance=None,
-        inversion_evidence_tolerance=None,
+        evidence_tolerance=None,
     ):
         """The setup of a pipeline, which controls how PyAutoLens template pipelines runs, for example controlling
         assumptions about the lens's light profile bulge-disk model or if shear is included in the mass model.
@@ -97,7 +97,7 @@ class PipelineSetup(setup.PipelineSetup):
             align_bulge_disk_elliptical_comps=align_bulge_disk_elliptical_comps,
             disk_as_sersic=disk_as_sersic,
             number_of_gaussians=number_of_gaussians,
-            inversion_evidence_tolerance=inversion_evidence_tolerance,
+            evidence_tolerance=evidence_tolerance,
         )
 
         self.no_shear = no_shear

@@ -88,7 +88,7 @@ which are used for computing information about the model-fit such as the error o
 
 # %%
 """
-However, we are not going into any more detail on the result variable in this tutorial, or in the HowToLens lectures.
+However, we are not going into any more detail on the result variable in this tutorial, or in the __HowToLens__ lectures.
 
 A comprehensive description of the results can be found at the following script:
 
@@ -120,8 +120,8 @@ To set up the aggregator we simply pass it the folder of the results we want to 
 
 # %%
 output_path = f"{workspace_path}/output"
-# agg = af.Aggregator(directory=str(output_path))
-# agg = agg.filter(agg.phase == "phase_t1_non_linear_search")
+# # agg = af.Aggregator(directory=str(output_path))
+# # agg = agg.filter(agg.phase == "phase_t1_non_linear_search")
 
 # %%
 """
@@ -138,7 +138,7 @@ From here, we can inspect results as we please, for example printing the maximum
 """
 
 # %%
-# print(samples[0].max_log_likelihood_vector)
+print(samples[0].max_log_likelihood_vector)
 
 # %%
 """
@@ -151,7 +151,7 @@ location 'autolens_workspace/advanced'aggregator'. Here, you'll learn how to:
       plots of the probability density function of parameters in 1D and 2D.
  - Reproduce visualizations of results, such as a tracer's images or the fit to a lens dataset.
 
-Even if you are only modeling a small sample of lenses, if you anticipate using PyAutoLens for the long-term I 
+Even if you are only modeling a small sample of lenses, if you anticipate using __PyAutoLens__ for the long-term I 
 strongly recommend you begin using the aggregator to inspect and analyse your result. This is because it makes it 
 simple to perform all analyse in a Jupyter notebook, which as you already know is a flexible and versatile way to check 
 results and make figures.

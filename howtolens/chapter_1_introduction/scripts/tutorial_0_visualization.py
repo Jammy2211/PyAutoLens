@@ -3,7 +3,7 @@
 Tutorial 0: Visualization
 =========================
 
-In this tutorial, we'll cover visualization in PyAutoLens and make sure images display properly on your computer.
+In this tutorial, we'll cover visualization in __PyAutoLens__ and make sure images display properly on your computer.
 
 First, lets load an image of a (simulated) strong lens. Don't worry too much about what the code below is doing as it
 will be covered in a later tutorial.
@@ -74,7 +74,7 @@ aplt.Imaging.image(imaging=imaging)
 """
 Does the figure display correctly on your computer screen? 
 
-If not, you can customize a number of matplotlib setup options using a Plotter object in PyAutoLens.
+If not, you can customize a number of matplotlib setup options using a Plotter object in __PyAutoLens__.
 """
 
 # %%
@@ -101,11 +101,11 @@ your Jupter Notebooks. However, for future reference, a descrition of all option
 
 Ideally, we wouldn't need to specify a new _Plotter_ every time we plot an image we make, especially as you'll be 
 changing the same option to the same value over and over again (e.g. the figsize). Fortunately, the default values 
-used by PyAutoLens can be fully customized.
+used by __PyAutoLens__ can be fully customized.
 
 Checkout the the file 'autolens_workspace/config/visualize/figures.ini'.
 
-All default matplotlib values used by PyAutoLens are here. There's lots, so lets only focus on whats important for 
+All default matplotlib values used by __PyAutoLens__ are here. There's lots, so lets only focus on whats important for 
 displaying figures correctly:
 
 [figures] -> figsize
@@ -115,12 +115,12 @@ displaying figures correctly:
 [ticks] -> ysize, xsize
 
 Don't worry about all the other options listed in this file for now, as they'll make a lot more sense once you are 
-familiar with PyAutoLens.
+familiar with __PyAutoLens__.
 
 (Note that you will need to reset your Juypter notebook server for these changes to take effect, so make sure you 
 have the right values using the function above beforehand!)
 
-In addition to individual 'figures' which use a 'plotter' to plot them, PyAutoLens also plots 'subplots' using a 
+In addition to individual 'figures' which use a 'plotter' to plot them, __PyAutoLens__ also plots 'subplots' using a 
 'sub_plotter'. Lets plot a subplot of our _Imaging_ data:
 """
 
@@ -159,12 +159,12 @@ aplt.Imaging.image(imaging=imaging, plotter=plotter, include=aplt.Include(origin
 
 # %%
 """
-Throughout the HowToLens lecture series you'll see lots more objects that can include on figures.
+Throughout the __HowToLens__ lecture series you'll see lots more objects that can include on figures.
 
 Just like the matplotlib setup, you can customize what does and does not appear on figures by default using the 
 config file 'autolens_workspace/config/visualize/general.ini'
 
-Great! Hopefully, visualization in PyAutoLens is displaying nicely for us to get on with the HowToLens lecture series.
+Great! Hopefully, visualization in __PyAutoLens__ is displaying nicely for us to get on with the __HowToLens__ lecture series.
 """
 
 # %%

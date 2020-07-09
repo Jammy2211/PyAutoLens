@@ -96,7 +96,7 @@ fit = fit_masked_imaging_with_source_galaxy(
     masked_imaging=masked_imaging, source_galaxy=source_magnification
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -142,7 +142,7 @@ fit = fit_masked_imaging_with_source_galaxy(
     masked_imaging=masked_imaging, source_galaxy=source_adaptive
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -169,13 +169,13 @@ This is even more problematic when we try and use the Bayesian log evidence to o
 fit, as it means it cannot obtain a solution that provides a reduced chi-squared of 1.
 
 So, you're probably wondering, why can't we just change the mass model to fit the data better? Surely if we 
-actually modeled this image with PyAutoLens it wouldn't go to this solution anyway but instead infer the correct 
+actually modeled this image with __PyAutoLens__ it wouldn't go to this solution anyway but instead infer the correct 
 Einstein radius of 1.6? That's true.
 
 However, for *real* strong gravitational lenses, there is no such thing as a 'correct mass model'. Real galaxies are 
 not _EllipticalIsothermal profiles_, or power-laws, or NFW's, or any of the symmetric and smooth analytic profiles we 
 assume to model their mass. For real strong lenses our mass model will pretty much always lead to source-reconstruction 
-residuals, producing these skewed chi-squared distributions. PyAutoLens can't remove them by simply improving the 
+residuals, producing these skewed chi-squared distributions. __PyAutoLens__ can't remove them by simply improving the 
 mass model.
 
 This is where noise-map scaling comes in. If we have no alternative, the best way to get Gaussian-distribution 
@@ -205,7 +205,7 @@ fit = fit_masked_imaging_with_source_galaxy(
     masked_imaging=masked_imaging, source_galaxy=source_hyper_galaxy
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -236,11 +236,11 @@ hyper-galaxy image is different to the hyper-galaxy model image!
 
 We compute the contribution map as follows:
 
-    1) Add the 'contribution_factor' hyper-galaxy-parameter value to the 'hyper_model_image'.
+ 1) Add the 'contribution_factor' hyper-galaxy-parameter value to the 'hyper_model_image'.
+  
+ 2) Divide the 'hyper_galaxy_image' by the hyper-galaxy-model image created in step 1).
     
-    2) Divide the 'hyper_galaxy_image' by the hyper-galaxy-model image created in step 1).
-    
-    3) Divide the image created in step 2) by its maximum value, such that all pixels range between 0.0 and 1.0.
+ 3) Divide the image created in step 2) by its maximum value, such that all pixels range between 0.0 and 1.0.
 
 Lets look at a few contribution maps, generated using hyper-_Galaxy_'s with different contribution factors.
 """
@@ -306,16 +306,15 @@ By increasing the contribution factor we allocate more pixels with higher contri
 than pixels with lower values. This is all the contribution_factor does; it scales how we allocate contributions to 
 the source galaxy. Now, we're going to use this contribution map to scale the noise-map, as follows:
 
-    1) Multiply the baseline (e.g. unscaled) noise-map of the image-data by the contribution map made in step 3) above. 
-      This means that only noise-map values where the contribution map has large values (e.g. near 1.0) are going to 
-      remain in this image, with the majority of values multiplied by contribution map values near 0.0.
+ 1) Multiply the baseline (e.g. unscaled) noise-map of the image-data by the contribution map made in step 3) above. 
+ This means that only noise-map values where the contribution map has large values (e.g. near 1.0) are going to 
+ remain in this image, with the majority of values multiplied by contribution map values near 0.0.
     
-    2) Raise the noise-map generated in step 1) above to the power of the hyper-galaxy-parameter noise_power. Thus, for 
-       large values of noise_power, the largest noise-map values will be increased even more, raising their noise the 
-       most.
+ 2) Raise the noise-map generated in step 1) above to the power of the hyper-galaxy-parameter noise_power. Thus, for 
+ large values of noise_power, the largest noise-map values will be increased even more, raising their noise the most.
     
-    3) Multiply the noise-map values generated in step 2) by the hyper-galaxy-parameter noise_factor. Again, this is a
-       means by which PyAutoLens is able to scale the noise-map values.
+ 3) Multiply the noise-map values generated in step 2) by the hyper-galaxy-parameter noise_factor. Again, this is a
+ means by which __PyAutoLens__ is able to scale the noise-map values.
 
 Lets compare two fits, one where a hyper-galaxy scales the noise-map, and one where it doesn't.
 """
@@ -337,7 +336,7 @@ fit = fit_masked_imaging_with_source_galaxy(
     masked_imaging=masked_imaging, source_galaxy=source_no_hyper_galaxy
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -363,7 +362,7 @@ fit = fit_masked_imaging_with_source_galaxy(
     masked_imaging=masked_imaging, source_galaxy=source_hyper_galaxy
 )
 
-# # # # aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit, include=aplt.Include(inversion_image_pixelization_grid=True, mask=True)
 )
 
@@ -380,14 +379,14 @@ think, is there anything else that you can think of that would mean we need to s
 it was the inadequacy of our mass-model that lead to significant residuals and a skewed chi-squared distribution. 
 What else might cause residuals? I'll give you a couple below;
 
-    1) A mismatch between our model of the _Imaging_ data's Point Spread Function (PSF) and the true PSF of the 
-       telescope optics of the data.
+ 1) A mismatch between our model of the _Imaging_ data's Point Spread Function (PSF) and the true PSF of the 
+ telescope optics of the data.
     
-    2) Unaccounted for effects in our idata-reduction for the image, in particular the presense of correlated signal and 
-       noise during the image's instrument reduction.
+ 2) Unaccounted for effects in our idata-reduction for the image, in particular the presense of correlated signal and 
+ noise during the image's instrument reduction.
     
-    3) A sub-optimal background sky subtraction of the image, which can leave large levels of signal in the outskirts of 
-       the image that are not due to the strong lens system itself.
+ 3) A sub-optimal background sky subtraction of the image, which can leave large levels of signal in the outskirts of 
+ the image that are not due to the strong lens system itself.
 
 Oh, there's on more thing that can cause much worse residuals than all the effects above. That'll be the topic of 
 the next tutorial.
