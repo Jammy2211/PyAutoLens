@@ -1,12 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from abc import ABC
 
 import numpy as np
 from astropy import cosmology as cosmo
 from autoarray.operators.inversion import inversions as inv
 from autoarray.structures import grids
+from autoarray.mask import mask as msk
+from autoarray.util import array_util, grid_util
 from autogalaxy import lensing
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.plane import plane as pl
@@ -458,6 +457,45 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
         ]
 
     def image_plane_multiple_image_positions(self, grid, source_plane_coordinate):
+
+        # TODO : This should not input as a grid but use a iterative adaptive grid.
+
+        if grid.sub_size > 1:
+            grid = grid.in_1d_binned
+
+        source_plane_grid = self.traced_grids_of_planes_from_grid(grid=grid)[-1]
+
+        source_plane_squared_distances = source_plane_grid.squared_distances_from_coordinate(
+            coordinate=source_plane_coordinate
+        )
+
+        trough_pixels = pos.trough_pixels_from(
+            array_2d=source_plane_squared_distances.in_2d, mask=grid.mask
+        )
+
+        trough_mask = msk.Mask.from_pixel_coordinates(
+            shape_2d=grid.shape_2d,
+            pixel_coordinates=trough_pixels,
+            pixel_scales=grid.pixel_scales,
+            sub_size=grid.sub_size,
+            origin=grid.origin,
+            buffer=1,
+        )
+
+        multiple_image_pixels = pos.positions_at_coordinate_from(
+            grid_2d=source_plane_grid.in_2d,
+            coordinate=source_plane_coordinate,
+            mask=trough_mask,
+        )
+
+        return list(
+            map(
+                trough_mask.geometry.scaled_coordinates_from_pixel_coordinates,
+                multiple_image_pixels,
+            )
+        )
+
+    def _image_plane_multiple_image_positions(self, grid, source_plane_coordinate):
 
         solver = pos.PositionsSolver(grid=grid)
 
