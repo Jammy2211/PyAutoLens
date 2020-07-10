@@ -434,6 +434,11 @@ class SourceSetup(setup.PipelineSetup):
                 mean=self.lens_mass_centre[1], sigma=0.05
             )
 
+        else:
+
+            mass.centre.centre_0 = af.last[-1].model.galaxies.lens.mass.centre.centre_0
+            mass.centre.centre_1 = af.last[-1].model.galaxies.lens.mass.centre.centre_1
+
         return mass
 
     def unalign_lens_mass_centre_from_light_centre(self, mass):
@@ -443,6 +448,10 @@ class SourceSetup(setup.PipelineSetup):
         if self.align_light_mass_centre:
 
             mass.centre = af.last[-3].model.galaxies.lens.bulge.centre
+
+        else:
+
+            mass.centre = af.last[-1].model.galaxies.lens.mass.centre
 
         return mass
 

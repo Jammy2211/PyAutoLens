@@ -43,12 +43,12 @@ https://github.com/Jammy2211/PyAutoLens.
 Below are the packages used by **PyAutoLens** that we ask you also cite if your analysis used them. Links to the
 relevant web pages detailing their citation information or the papers themselves are provided.
 
-**GetDist**;
+**corner.py**;
 
-The visualization and samples analysis package **GetDist** is used by **PyAutoLens** for error estimates, so please
-make sure you cite it!
+The visualization and samples analysis package **corner.py** is used by **PyAutoLens** for plotting PDF's and error
+estimates, so please make sure you cite it!
 
-https://github.com/cmbant/getdist
+https://github.com/dfm/corner.py
 
 **Collosus**:
 
