@@ -26,6 +26,7 @@ class PipelineSetup(setup.PipelineSetup):
         align_light_dark_centre=False,
         align_bulge_dark_centre=False,
         subhalo_instance=None,
+        inversion_pixels_fixed=None,
         evidence_tolerance=None,
     ):
         """The setup of a pipeline, which controls how PyAutoLens template pipelines runs, for example controlling
@@ -97,6 +98,7 @@ class PipelineSetup(setup.PipelineSetup):
             align_bulge_disk_elliptical_comps=align_bulge_disk_elliptical_comps,
             disk_as_sersic=disk_as_sersic,
             number_of_gaussians=number_of_gaussians,
+            inversion_pixels_fixed=inversion_pixels_fixed,
             evidence_tolerance=evidence_tolerance,
         )
 

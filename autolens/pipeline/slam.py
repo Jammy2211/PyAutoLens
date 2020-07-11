@@ -299,6 +299,7 @@ class SourceSetup(setup.PipelineSetup):
         self,
         pixelization=None,
         regularization=None,
+        inversion_pixels_fixed=None,
         no_shear=False,
         lens_light_centre=None,
         lens_mass_centre=None,
@@ -310,6 +311,7 @@ class SourceSetup(setup.PipelineSetup):
         super().__init__(
             pixelization=pixelization,
             regularization=regularization,
+            inversion_pixels_fixed=inversion_pixels_fixed,
             no_shear=no_shear,
             lens_light_centre=lens_light_centre,
             lens_mass_centre=lens_mass_centre,

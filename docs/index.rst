@@ -37,7 +37,7 @@
    howtolens/chapter_5_hyper_mode/index
 
 .. toctree::
-   :caption: API Documentation:
+   :caption: API Reference:
    :maxdepth: 1
    :hidden:
 
