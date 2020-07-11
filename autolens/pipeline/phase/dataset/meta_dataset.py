@@ -109,10 +109,11 @@ class MetaLens:
         if (
             results.last is not None
             and self.pixelization is not None
-            and not self.pixelizaition_is_model
+            and not self.pixelization_is_model
         ):
             if self.pixelization.__class__ is results.last.pixelization.__class__:
                 if hasattr(results.last, "hyper_combined"):
+                    stop5555
                     return (
                         results.last.hyper_combined.max_log_likelihood_pixelization_grids_of_planes
                     )

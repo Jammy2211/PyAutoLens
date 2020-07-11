@@ -1,6 +1,6 @@
-=================
-API Documentation
-=================
+=============
+API Reference
+=============
 
 ---------------
 Data Structures
