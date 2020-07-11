@@ -113,7 +113,6 @@ class MetaLens:
         ):
             if self.pixelization.__class__ is results.last.pixelization.__class__:
                 if hasattr(results.last, "hyper_combined"):
-                    stop5555
                     return (
                         results.last.hyper_combined.max_log_likelihood_pixelization_grids_of_planes
                     )
