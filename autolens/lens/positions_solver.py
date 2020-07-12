@@ -1,33 +1,62 @@
 from autoarray import decorator_util
 import numpy as np
 from autoarray import mask as msk
-from autoarray.util import mask_util
+from autoarray.util import grid_util, mask_util
 from autoarray.structures import grids
 from autoarray.mask import mask as msk
 
+import copy
+
 
 class PositionsSolver:
-    def __init__(self, initial_grid):
+    def __init__(self):
 
-        self.initial_grid = initial_grid.in_1d_binned
+        pass
 
-    def mask_within_circle_from(
-        self, lensing_obj, source_plane_coordinate, radius, grid=None
+    def solve(self, lensing_obj, grid, source_plane_coordinate):
+
+        grid = copy.copy(grid)
+        pixel_scale = copy.copy(grid.pixel_scale)
+
+        for i in range(5):
+
+            grid = self.grid_within_circle_from(
+                lensing_obj=lensing_obj,
+                grid=grid,
+                source_plane_coordinate=source_plane_coordinate,
+                radius=pixel_scale,
+            )
+            grid = grids.GridCoordinates.from_grid_sparse_uniform_upscale(
+                grid_sparse_uniform=grid, upscale_factor=3
+            )
+            pixel_scale /= pixel_scale / 3
+            print(grid)
+
+        return grid
+
+    def grid_within_circle_from(
+        self, lensing_obj, grid, source_plane_coordinate, radius
     ):
-
-        if grid is None:
-            grid = self.initial_grid
 
         deflections = lensing_obj.deflections_from_grid(grid=grid)
         source_plane_grid = grid.grid_from_deflection_grid(deflection_grid=deflections)
         source_plane_squared_distances = source_plane_grid.squared_distances_from_coordinate(
             coordinate=source_plane_coordinate
         )
-        mask_within_circle = source_plane_squared_distances.in_2d < radius ** 2.0
 
-        return msk.Mask.manual(
-            mask=mask_within_circle, pixel_scales=grid.pixel_scales, invert=True
-        )
+        mask_within_circle = source_plane_squared_distances < radius ** 2.0
+        total_new_grid_pixels = sum(mask_within_circle)
+
+        grid_new = np.zeros(shape=(total_new_grid_pixels, 2))
+
+        grid_new_index = 0
+
+        for grid_index in range(grid.shape[0]):
+            if mask_within_circle[grid_index]:
+                grid_new[grid_new_index] = grid[grid_index]
+                grid_new_index += 1
+
+        return grids.GridCoordinates(coordinates=grid_new)
 
     def mask_trough_from(self, lensing_obj, source_plane_coordinate, mask, buffer=1):
 
@@ -123,6 +152,55 @@ class PositionsSolver:
         source_plane_squared_distances = source_plane_grid.squared_distances_from_coordinate(
             coordinate=source_plane_coordinate
         )
+
+
+@decorator_util.jit()
+def grid_neighbors_1d_from(grid_1d, pixel_scale):
+
+    y_shape = int((np.max(grid_1d[:, 0]) - np.min(grid_1d[:, 0]) / pixel_scale)) + 3
+    x_shape = int((np.max(grid_1d[:, 1]) - np.min(grid_1d[:, 1]) / pixel_scale)) + 3
+
+    mask_2d = np.full(shape=(y_shape, x_shape), fill_value=True)
+
+    grid_pixel_centres_1d = grid_util.grid_pixel_centres_1d_from(
+        grid_scaled_1d=grid_1d,
+        shape_2d=(y_shape, x_shape),
+        pixel_scales=(pixel_scale, pixel_scale),
+    )
+
+    for grid_index in range(grid_1d.shape[0]):
+
+        y_pixel = int(grid_pixel_centres_1d[grid_index, 0])
+        x_pixel = int(grid_pixel_centres_1d[grid_index, 1])
+
+        mask_2d[y_pixel, x_pixel] = False
+
+    mask_1d_indexes = mask_util.sub_mask_1d_index_for_sub_mask_index_from_sub_mask_from(
+        sub_mask=mask_2d
+    )
+
+    grid_has_neighbors = np.full(shape=(grid_1d.shape[0],), fill_value=False)
+    grid_neighbors_1d = np.full(shape=(grid_1d.shape[0], 8), fill_value=-1.0)
+
+    for grid_index in range(grid_1d.shape[0]):
+
+        y_pixel = int(grid_pixel_centres_1d[grid_index, 0])
+        x_pixel = int(grid_pixel_centres_1d[grid_index, 1])
+
+        if not mask_util.check_if_edge_pixel(mask=mask_2d, y=y_pixel, x=x_pixel):
+
+            grid_has_neighbors[grid_index] = True
+
+            grid_neighbors_1d[grid_index, 0] = mask_1d_indexes[y_pixel - 1, x_pixel - 1]
+            grid_neighbors_1d[grid_index, 1] = mask_1d_indexes[y_pixel - 1, x_pixel]
+            grid_neighbors_1d[grid_index, 2] = mask_1d_indexes[y_pixel - 1, x_pixel + 1]
+            grid_neighbors_1d[grid_index, 3] = mask_1d_indexes[y_pixel, x_pixel - 1]
+            grid_neighbors_1d[grid_index, 4] = mask_1d_indexes[y_pixel, x_pixel + 1]
+            grid_neighbors_1d[grid_index, 5] = mask_1d_indexes[y_pixel + 1, x_pixel - 1]
+            grid_neighbors_1d[grid_index, 6] = mask_1d_indexes[y_pixel + 1, x_pixel]
+            grid_neighbors_1d[grid_index, 7] = mask_1d_indexes[y_pixel + 1, x_pixel + 1]
+
+    return grid_neighbors_1d, grid_has_neighbors
 
 
 @decorator_util.jit()

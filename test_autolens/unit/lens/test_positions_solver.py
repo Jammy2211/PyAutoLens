@@ -7,47 +7,44 @@ import pytest
 
 
 class TestPositionSolver:
-    def test__mask_within_circle__uses_source_pixels_within_circle__omit_lensing(self):
+    def test__grid_within_circle__finds_all_image_pixels_within_circle_in_source_plane__returns_as_grid(
+        self
+    ):
 
         grid = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=0.1)
 
         sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.0)
 
-        solver = al.PositionsSolver(initial_grid=grid)
+        solver = al.PositionsSolver()
 
-        within_circle_mask = solver.mask_within_circle_from(
-            lensing_obj=sis, source_plane_coordinate=(0.0, 0.0), radius=0.05
+        grid_within_circle = solver.grid_within_circle_from(
+            lensing_obj=sis, grid=grid, source_plane_coordinate=(0.0, 0.0), radius=0.05
         )
 
-        assert (
-            within_circle_mask
-            == np.array(
-                [
-                    [True, True, True, True, True],
-                    [True, True, True, True, True],
-                    [True, True, False, True, True],
-                    [True, True, True, True, True],
-                    [True, True, True, True, True],
-                ]
-            )
-        ).all()
+        # [True, True, True, False, True]
+        # [True, True, True, True, False]
+        # [True, True, False True, True]
+        # [True, True, True, True, True]
+        # [True, True, True, True, True]
 
-        within_circle_mask = solver.mask_within_circle_from(
-            lensing_obj=sis, source_plane_coordinate=(0.1, 0.1), radius=0.11
+        assert (grid_within_circle == np.array([[0.0, 0.0]])).all()
+
+        grid_within_circle = solver.grid_within_circle_from(
+            lensing_obj=sis, grid=grid, source_plane_coordinate=(0.1, 0.1), radius=0.11
         )
 
-        assert (
-            within_circle_mask
-            == np.array(
-                [
-                    [True, True, True, False, True],
-                    [True, True, False, False, False],
-                    [True, True, True, False, True],
-                    [True, True, True, True, True],
-                    [True, True, True, True, True],
-                ]
-            )
-        ).all()
+        # Mask witihin circle:
+
+        # [True, True, True, False, True]
+        # [True, True, False, False, False]
+        # [True, True, True, False, True]
+        # [True, True, True, True, True]
+        # [True, True, True, True, True]
+
+        assert grid_within_circle == pytest.approx(
+            np.array([[0.2, 0.1], [0.1, 0.0], [0.1, 0.1], [0.1, 0.2], [0.0, 0.1]]),
+            1.0e-4,
+        )
 
     def test__mask_trough__finds_pixels_conforming_to_property(self):
 
@@ -88,6 +85,202 @@ class TestPositionSolver:
         positions = solver.image_plane_positions_from(
             lensing_obj=sis, source_plane_coordinate=(0.0, 0.11)
         )
+
+
+class TestGridNeighbors1d:
+    def test__creates_numpy_array_with_correct_neighbors(self):
+
+        grid_1d = np.array(
+            [
+                [1.0, -1.0],
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [0.0, -1.0],
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [-1.0, -1.0],
+                [-1.0, 0.0],
+                [-1.0, 1.0],
+            ]
+        )
+
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scale=1.0
+        )
+
+        assert (
+            grid_neighbors_1d
+            == np.array(
+                [
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [0, 1, 2, 3, 5, 6, 7, 8],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                ]
+            )
+        ).all()
+
+        assert (
+            grid_has_neighbors
+            == np.array([False, False, False, False, True, False, False, False, False])
+        ).all()
+
+        grid_1d = np.array(
+            [
+                [1.5, -1.5],
+                [1.5, -0.5],
+                [1.5, 0.5],
+                [1.5, 1.5],
+                [0.5, -1.5],
+                [0.5, -0.5],
+                [0.5, 0.5],
+                [0.5, 1.5],
+                [-0.5, -1.5],
+                [-0.5, -0.5],
+                [-0.5, 0.5],
+                [-0.5, 1.5],
+                [-1.5, -1.5],
+                [-1.5, -0.5],
+                [-1.5, 0.5],
+                [-1.5, 1.5],
+            ]
+        )
+
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scale=1.0
+        )
+
+        assert (
+            grid_neighbors_1d
+            == np.array(
+                [
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [0, 1, 2, 4, 6, 8, 9, 10],
+                    [1, 2, 3, 5, 7, 9, 10, 11],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [4, 5, 6, 8, 10, 12, 13, 14],
+                    [5, 6, 7, 9, 11, 13, 14, 15],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                ]
+            )
+        ).all()
+
+        assert (
+            grid_has_neighbors
+            == np.array(
+                [
+                    False,
+                    False,
+                    False,
+                    False,
+                    False,
+                    True,
+                    True,
+                    False,
+                    False,
+                    True,
+                    True,
+                    False,
+                    False,
+                    False,
+                    False,
+                    False,
+                ]
+            )
+        ).all()
+
+        grid_1d = np.array(
+            [
+                [1.0, -4.0],
+                [1.0, -3.0],
+                [1.0, -2.0],
+                [0.0, -4.0],
+                [0.0, -3.0],
+                [0.0, -2.0],
+                [-1.0, -4.0],
+                [-1.0, -3.0],
+                [-1.0, -2.0],
+                [1.0, 2.0],
+                [1.0, 3.0],
+                [1.0, 4.0],
+                [0.0, 2.0],
+                [0.0, 3.0],
+                [0.0, 4.0],
+                [-1.0, 2.0],
+                [-1.0, 3.0],
+                [-1.0, 4.0],
+            ]
+        )
+
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scale=1.0
+        )
+
+        assert (
+            grid_neighbors_1d
+            == np.array(
+                [
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [0, 1, 2, 6, 8, 12, 13, 14],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [3, 4, 5, 9, 11, 15, 16, 17],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                ]
+            )
+        ).all()
+
+        assert (
+            grid_has_neighbors
+            == np.array(
+                [
+                    False,
+                    False,
+                    False,
+                    False,
+                    True,
+                    False,
+                    False,
+                    False,
+                    False,
+                    False,
+                    False,
+                    False,
+                    False,
+                    True,
+                    False,
+                    False,
+                    False,
+                    False,
+                ]
+            )
+        ).all()
 
 
 class TestPeakPixels:
