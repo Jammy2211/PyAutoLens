@@ -5,6 +5,12 @@ import pytest
 from test_autolens import mock
 
 
+class MockMetaDataset:
+    def __init__(self, settings):
+
+        self.settings = settings
+
+
 class MockPhase:
     def __init__(self):
         self.phase_name = "phase_name"
@@ -14,6 +20,7 @@ class MockPhase:
         self.search = mock.MockSearch(paths=self.paths)
         self.model = af.ModelMapper()
         self.settings = al.PhaseSettingsImaging(log_likelihood_cap=None)
+        self.meta_dataset = MockMetaDataset(settings=self.settings)
 
     def save_dataset(self, dataset):
         pass
@@ -40,7 +47,10 @@ def make_stochastic():
 
 class TestStochasticPhase:
     def test__stochastic_result(self, imaging_7x7, stochastic):
-        result = stochastic.run(dataset=None, mask=None)
+
+        results = mock.MockResults(stochastic_log_evidences=[1.0, 1.0, 2.0])
+
+        result = stochastic.run(dataset=None, mask=None, results=results)
 
         assert hasattr(result, "stochastic")
         assert isinstance(result.stochastic, mock.MockResult)
@@ -53,7 +63,7 @@ class TestStochasticPhase:
 
         stochastic.run_hyper = run_hyper
 
-        result = stochastic.run(dataset=imaging_7x7)
+        result = stochastic.run(dataset=imaging_7x7, results=results)
 
         assert hasattr(result, "stochastic")
         assert isinstance(result.stochastic, mock.MockResult)
