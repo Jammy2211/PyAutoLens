@@ -53,7 +53,10 @@ class MockResult(af.MockResult):
             updated_positions if updated_positions is not None else []
         )
         self.updated_positions_threshold = updated_positions_threshold
-        self.stochastic_log_evidences = stochastic_log_evidences
+        self._stochastic_log_evidences = stochastic_log_evidences
+
+    def stochastic_log_evidences(self, histogram_samples=100):
+        return self._stochastic_log_evidences
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(self):

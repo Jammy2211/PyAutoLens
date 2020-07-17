@@ -79,7 +79,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             )
 
             return fit.figure_of_merit
-        except InversionException or GridException as e:
+        except InversionException or GridException or OverflowError as e:
             raise FitException from e
 
     def masked_imaging_fit_for_tracer(
@@ -93,7 +93,9 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_background_noise=hyper_background_noise,
         )
 
-    def stochastic_log_evidences_for_instance(self, instance):
+    def stochastic_log_evidences_for_instance(
+        self, instance, histogram_samples=100, histogram_bins=10
+    ):
 
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
@@ -118,22 +120,22 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         else:
             masked_dataset = self.masked_dataset
 
-        stochastic_histogram_samples = conf.instance.general.get(
-            "inversion", "stochastic_histogram_samples", int
-        )
-
         log_evidences = []
 
-        for i in range(stochastic_histogram_samples):
+        for i in range(histogram_samples):
 
-            log_evidences.append(
-                fit.FitImaging(
+            try:
+                log_evidence = fit.FitImaging(
                     masked_imaging=masked_dataset,
                     tracer=tracer,
                     hyper_image_sky=hyper_image_sky,
                     hyper_background_noise=hyper_background_noise,
                 ).log_evidence
-            )
+            except InversionException or GridException:
+                log_evidence = None
+
+            if log_evidence is not None:
+                log_evidences.append(log_evidence)
 
         return log_evidences
 
