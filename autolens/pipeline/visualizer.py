@@ -286,7 +286,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
             )
 
     def visualize_stochastic_histogram(
-        self, log_evidences, max_log_evidence, during_analysis
+        self, log_evidences, max_log_evidence, during_analysis, histogram_bins=10
     ):
 
         if log_evidences is None:
@@ -298,12 +298,8 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
 
         if self.plot_stochastic_histogram and not during_analysis:
 
-            bins = conf.instance.general.get(
-                "inversion", "stochastic_histogram_bins", int
-            )
-
             (mu, sigma) = norm.fit(log_evidences)
-            n, bins, patches = plt.hist(x=log_evidences, bins=bins, density=1)
+            n, bins, patches = plt.hist(x=log_evidences, bins=histogram_bins, density=1)
             y = norm.pdf(bins, mu, sigma)
             plt.plot(bins, y, "--")
             plt.xlabel("log evidence")

@@ -17,7 +17,7 @@ class TestPositionSolver:
 
         solver = al.PositionsSolver()
 
-        grid_within_circle = solver.grid_within_circle_from(
+        grid_within_circle, distances_within_circle = solver.grid_within_circle_from(
             lensing_obj=sis, grid=grid, source_plane_coordinate=(0.0, 0.0), radius=0.05
         )
 
@@ -28,8 +28,9 @@ class TestPositionSolver:
         # [True, True, True, True, True]
 
         assert (grid_within_circle == np.array([[0.0, 0.0]])).all()
+        assert (distances_within_circle == np.array([[0.0]])).all()
 
-        grid_within_circle = solver.grid_within_circle_from(
+        grid_within_circle, distances_within_circle = solver.grid_within_circle_from(
             lensing_obj=sis, grid=grid, source_plane_coordinate=(0.1, 0.1), radius=0.11
         )
 
@@ -41,38 +42,15 @@ class TestPositionSolver:
         # [True, True, True, True, True]
         # [True, True, True, True, True]
 
+        print(distances_within_circle)
+
         assert grid_within_circle == pytest.approx(
             np.array([[0.2, 0.1], [0.1, 0.0], [0.1, 0.1], [0.1, 0.2], [0.0, 0.1]]),
             1.0e-4,
         )
-
-    def test__mask_trough__finds_pixels_conforming_to_property(self):
-
-        mask = al.Mask.unmasked(shape_2d=(5, 5), pixel_scales=0.1)
-        grid = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=0.1)
-
-        sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.0)
-
-        solver = al.PositionsSolver(initial_grid=grid)
-
-        mask_trough = solver.mask_trough_from(
-            lensing_obj=sis, source_plane_coordinate=(0.0, 0.0), mask=mask, buffer=0
+        assert distances_within_circle == pytest.approx(
+            np.array([0.01, 0.01, 0.0, 0.01, 0.01]), 1.0e-4
         )
-
-        print(mask_trough)
-
-        assert (
-            mask_trough
-            == np.array(
-                [
-                    [True, True, True, True, True],
-                    [True, True, True, True, True],
-                    [True, True, False, True, True],
-                    [True, True, True, True, True],
-                    [True, True, True, True, True],
-                ]
-            )
-        ).all()
 
     def test__positions_for_simple_mass_profiles(self):
 
@@ -80,11 +58,81 @@ class TestPositionSolver:
 
         sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
-        solver = al.PositionsSolver(initial_grid=grid)
+        solver = al.PositionsSolver()
 
-        positions = solver.image_plane_positions_from(
-            lensing_obj=sis, source_plane_coordinate=(0.0, 0.11)
+        positions = solver.solve(
+            lensing_obj=sis, grid=grid, source_plane_coordinate=(0.0, 0.11)
         )
+
+
+class TestGridPixelCentres1dViaOverlay:
+    def test__overlays_grid_using_pixel_scale(self):
+
+        grid_1d = np.array(
+            [
+                [1.0, -1.0],
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [0.0, -1.0],
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [-1.0, -1.0],
+                [-1.0, 0.0],
+                [-1.0, 1.0],
+            ]
+        )
+
+        grid_pixel_centres_1d, y_shape, x_shape = pos.grid_pixel_centres_1d_via_grid_1d_overlap(
+            grid_1d=grid_1d, pixel_scale=1.0
+        )
+
+        assert (
+            grid_pixel_centres_1d
+            == np.array(
+                [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]]
+            )
+        ).all()
+        assert (y_shape, x_shape) == (5, 5)
+
+        grid_1d = np.array(
+            [
+                [3.0, 1.0],
+                [3.0, 2.0],
+                [3.0, 3.0],
+                [2.0, 1.0],
+                [2.0, 2.0],
+                [2.0, 3.0],
+                [1.0, 1.0],
+                [1.0, 2.0],
+                [1.0, 3.0],
+            ]
+        )
+
+        grid_pixel_centres_1d, y_shape, x_shape = pos.grid_pixel_centres_1d_via_grid_1d_overlap(
+            grid_1d=grid_1d, pixel_scale=1.0
+        )
+
+        assert (
+            grid_pixel_centres_1d
+            == np.array(
+                [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]]
+            )
+        ).all()
+        assert (y_shape, x_shape) == (5, 5)
+
+        grid_1d = np.array([[3.0, 3.0], [3.0, 1.0], [0.0, 3.0], [2.0, 2.0]])
+
+        grid_pixel_centres_1d, y_shape, x_shape = pos.grid_pixel_centres_1d_via_grid_1d_overlap(
+            grid_1d=grid_1d, pixel_scale=1.0
+        )
+
+        assert (
+            grid_pixel_centres_1d
+            == np.array(
+                [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]]
+            )
+        ).all()
+        assert (y_shape, x_shape) == (5, 5)
 
 
 class TestGridNeighbors1d:
@@ -101,6 +149,41 @@ class TestGridNeighbors1d:
                 [-1.0, -1.0],
                 [-1.0, 0.0],
                 [-1.0, 1.0],
+            ]
+        )
+
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scale=1.0
+        )
+
+        assert (
+            grid_neighbors_1d
+            == np.array(
+                [
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [0, 1, 2, 3, 5, 6, 7, 8],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                    [-1, -1, -1, -1, -1, -1, -1, -1],
+                ]
+            )
+        ).all()
+
+        grid_1d = np.array(
+            [
+                [3.0, 1.0],
+                [3.0, 2.0],
+                [3.0, 3.0],
+                [2.0, 1.0],
+                [2.0, 2.0],
+                [2.0, 3.0],
+                [1.0, 1.0],
+                [1.0, 2.0],
+                [1.0, 3.0],
             ]
         )
 
@@ -283,254 +366,37 @@ class TestGridNeighbors1d:
         ).all()
 
 
-class TestPeakPixels:
+class TestTroughCoordinates:
     def test__simple_arrays(self):
 
-        array = al.Array.manual_2d(
-            array=[
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 1.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
+        distance_1d = np.array([1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0])
+
+        grid_1d = np.array(
+            [
+                [1.0, -1.0],
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [0.0, -1.0],
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [-1.0, -1.0],
+                [-1.0, 0.0],
+                [-1.0, 1.0],
             ]
         )
 
-        peak_pixels = pos.peak_pixels_from(array_2d=array.in_2d)
-
-        assert peak_pixels == [[2, 2]]
-
-        array = al.Array.manual_2d(
-            array=[
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-            ]
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scale=1.0
         )
 
-        peak_pixels = pos.peak_pixels_from(array_2d=array.in_2d)
-
-        assert peak_pixels == [[2, 1], [2, 3]]
-
-        array = al.Array.manual_2d(
-            array=[
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 1.0, 0.0],
-                [0.0, 1.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-            ]
+        trough_coordinates = pos.trough_coordinates_from(
+            distance_1d=distance_1d,
+            grid_1d=grid_1d,
+            neighbors=grid_neighbors_1d.astype("int"),
+            has_neighbors=grid_has_neighbors,
         )
 
-        peak_pixels = pos.peak_pixels_from(array_2d=array.in_2d)
-
-        assert peak_pixels == [[2, 1]]
-
-        array = al.Array.manual_2d(
-            array=[
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 2.0, 0.0],
-                [0.0, 1.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-            ]
-        )
-
-        peak_pixels = pos.peak_pixels_from(array_2d=array.in_2d)
-
-        assert peak_pixels == [[1, 3], [2, 1]]
-
-        array = al.Array.manual_2d(
-            array=[
-                [0.0, 0.0, 7.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [4.0, 1.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 8.0, 0.0, 0.0],
-            ]
-        )
-
-        peak_pixels = pos.peak_pixels_from(array_2d=array.in_2d)
-
-        assert peak_pixels == [[2, 3]]
-
-        array = al.Array.manual_2d(
-            array=[
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [2.0, 8.0, 7.0, 6.0, 8.0],
-                [4.0, 9.0, 4.0, 1.0, 8.0],
-                [1.0, 0.5, 7.0, 9.0, 8.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-            ]
-        )
-
-        peak_pixels = pos.peak_pixels_from(array_2d=array.in_2d)
-
-        assert peak_pixels == [[2, 1], [3, 3]]
-
-    def test__simple_arrays_with_mask(self):
-
-        array = al.Array.manual_2d(
-            array=[
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-            ]
-        )
-
-        mask = al.Mask.manual(
-            mask=[
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-                [True, True, True, False, True],
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-            ]
-        )
-
-        peak_pixels = pos.peak_pixels_from(array_2d=array.in_2d, mask=mask)
-
-        assert peak_pixels == [[2, 3]]
-
-        array = al.Array.manual_2d(
-            array=[
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 1.0, 0.0],
-                [0.0, 1.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-            ]
-        )
-
-        mask = al.Mask.manual(
-            mask=[
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-            ]
-        )
-
-        peak_pixels = pos.peak_pixels_from(array_2d=array.in_2d, mask=mask)
-
-        assert peak_pixels == []
-
-        array = al.Array.manual_2d(
-            array=[
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-                [2.0, 8.0, 7.0, 6.0, 8.0],
-                [4.0, 9.0, 4.0, 1.0, 8.0],
-                [1.0, 0.5, 7.0, 9.0, 8.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0],
-            ]
-        )
-
-        mask = al.Mask.manual(
-            mask=[
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-                [True, True, True, False, True],
-                [True, True, True, True, True],
-            ]
-        )
-
-        peak_pixels = pos.peak_pixels_from(array_2d=array.in_2d, mask=mask)
-
-        assert peak_pixels == [[3, 3]]
-
-
-class TestTroughPixels:
-    def test__simple_arrays(self):
-
-        array = al.Array.manual_2d(
-            array=[
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [9.0, 9.0, 1.0, 9.0, 9.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-            ]
-        )
-
-        trough_pixels = pos.trough_pixels_from(array_2d=array.in_2d)
-
-        assert trough_pixels == [[2, 2]]
-
-        array = al.Array.manual_2d(
-            array=[
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [9.0, 1.0, 9.0, 1.0, 9.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-            ]
-        )
-
-        trough_pixels = pos.trough_pixels_from(array_2d=array.in_2d)
-
-        assert trough_pixels == [[2, 1], [2, 3]]
-
-        array = al.Array.manual_2d(
-            array=[
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [9.0, 9.0, 9.0, 1.0, 9.0],
-                [9.0, 1.0, 9.0, 1.0, 9.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-            ]
-        )
-
-        trough_pixels = pos.trough_pixels_from(array_2d=array.in_2d)
-
-        assert trough_pixels == [[2, 1]]
-
-        array = al.Array.manual_2d(
-            array=[
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [9.0, 9.0, 9.0, 1.0, 9.0],
-                [9.0, 1.0, 9.0, 2.0, 9.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-            ]
-        )
-
-        trough_pixels = pos.trough_pixels_from(array_2d=array.in_2d)
-
-        assert trough_pixels == [[1, 3], [2, 1]]
-
-        array = al.Array.manual_2d(
-            array=[
-                [9.0, 9.0, 7.0, 9.0, 9.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [4.0, 1.0, 9.0, 1.0, 9.0],
-                [9.0, 1.0, 9.0, 9.0, 9.0],
-                [9.0, 9.0, 8.0, 9.0, 9.0],
-            ]
-        )
-
-        trough_pixels = pos.trough_pixels_from(array_2d=array.in_2d)
-
-        assert trough_pixels == [[2, 3]]
-
-        array = al.Array.manual_2d(
-            array=[
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-                [2.0, 8.0, 7.0, 6.0, 8.0],
-                [4.0, 0.1, 4.0, 1.0, 8.0],
-                [1.0, 0.5, 7.0, 0.1, 8.0],
-                [9.0, 9.0, 9.0, 9.0, 9.0],
-            ]
-        )
-
-        trough_pixels = pos.trough_pixels_from(array_2d=array.in_2d)
-
-        assert trough_pixels == [[2, 1], [3, 3]]
+        assert (np.asarray(trough_coordinates) == np.array([[0.0, 0.0]])).all()
 
     def test__simple_arrays_with_mask(self):
 
@@ -554,9 +420,11 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = pos.trough_pixels_from(array_2d=array.in_2d, mask=mask)
+        trough_coordinates = pos.trough_coordinates_from(
+            array_2d=array.in_2d, mask=mask
+        )
 
-        assert trough_pixels == [[2, 3]]
+        assert trough_coordinates == [[2, 3]]
 
         array = al.Array.manual_2d(
             array=[
@@ -578,9 +446,11 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = pos.trough_pixels_from(array_2d=array.in_2d, mask=mask)
+        trough_coordinates = pos.trough_coordinates_from(
+            array_2d=array.in_2d, mask=mask
+        )
 
-        assert trough_pixels == []
+        assert trough_coordinates == []
 
         array = al.Array.manual_2d(
             array=[
@@ -602,9 +472,11 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = pos.trough_pixels_from(array_2d=array.in_2d, mask=mask)
+        trough_coordinates = pos.trough_coordinates_from(
+            array_2d=array.in_2d, mask=mask
+        )
 
-        assert trough_pixels == [[3, 3]]
+        assert trough_coordinates == [[3, 3]]
 
 
 class TestPositionsAtCoordinate:
