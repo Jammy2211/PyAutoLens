@@ -114,10 +114,12 @@ class PhaseImaging(dataset.PhaseDataset):
         include_lens_light=False,
         include_pixelization=False,
         include_regularization=False,
+        histogram_samples=500,
+        histogram_bins=10,
     ):
 
         if stochastic_search is None:
-            stochastic_search = self.search
+            stochastic_search = self.search.copy_with_name_extension(extension="")
 
         model_classes = [ag.mp.MassProfile]
 
@@ -131,7 +133,11 @@ class PhaseImaging(dataset.PhaseDataset):
             model_classes.append(ag.reg.Regularization)
 
         return StochasticPhase(
-            phase=self, search=stochastic_search, model_classes=tuple(model_classes)
+            phase=self,
+            search=stochastic_search,
+            model_classes=tuple(model_classes),
+            histogram_samples=histogram_samples,
+            histogram_bins=histogram_bins,
         )
 
     def output_phase_info(self):

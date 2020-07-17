@@ -9,12 +9,6 @@ like this one:
   :width: 400
   :alt: Alternative text
 
-**PyAutoLens** is based on the following papers:
-
-`Adaptive Semi-linear Inversion of Strong Gravitational Lens Imaging <https://arxiv.org/abs/1412.7436>`_
-
-`AutoLens: Automated Modeling of a Strong Lens's Light, Mass & Source <https://arxiv.org/abs/1708.07377>`_
-
 API Overview
 ------------
 

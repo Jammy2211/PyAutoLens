@@ -19,7 +19,7 @@ class TestSlam:
         assert slam.lens_light_tag_for_source_pipeline == "__light_sersic"
 
 
-class TestHyper:
+class TestHyperSetup:
     def test__hyper_fixed_after_source(self):
         hyper = al.slam.HyperSetup(hyper_fixed_after_source=False)
         assert hyper.hyper_fixed_after_source_tag == ""
@@ -51,7 +51,7 @@ class TestHyper:
         assert hyper.hyper_tag == "__hyper_galaxies_bg_noise_fixed"
 
 
-class TestSource:
+class TestSourceSetup:
     def test__lens_light_bulge_only_tag(self):
         source = al.slam.SourceSetup(lens_light_bulge_only=False)
         assert source.lens_light_bulge_only_tag == ""
@@ -172,10 +172,6 @@ class TestSource:
 
         source = al.slam.SourceSetup()
 
-        mass = source.unfix_lens_mass_centre(mass=mass)
-
-        assert mass.centre == (1.0, 2.0)
-
         mass = af.PriorModel(al.mp.SphericalIsothermal)
         source = al.slam.SourceSetup(lens_mass_centre=(5.0, 6.0))
 
@@ -187,7 +183,7 @@ class TestSource:
         assert mass.centre.centre_1.sigma == 0.05
 
 
-class TestLight:
+class TestLightSetup:
     def test__tag(self):
 
         light = al.slam.LightSetup(align_bulge_disk_elliptical_comps=True)
@@ -212,7 +208,7 @@ class TestLight:
         assert light.tag == "light__test__gaussians_x2"
 
 
-class TestMass:
+class TestMassSetup:
     def test__fix_lens_light_tag(self):
         mass = al.slam.MassSetup(fix_lens_light=False)
         assert mass.fix_lens_light_tag == ""

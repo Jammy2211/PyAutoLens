@@ -190,6 +190,73 @@ Inversions
    Mapper
    Inversion
 
+
+-----
+Plots
+-----
+
+.. currentmodule:: autolens.plot
+
+**Plotters**
+
+.. autosummary::
+   :toctree: generated/
+
+   Plotter
+   SubPlotter
+   Include
+
+**Matplotlib Objects**
+
+.. autosummary::
+   :toctree: generated/
+
+   Figure
+   ColorMap
+   ColorBar
+   Ticks
+   Labels
+   Legend
+   Units
+   Output
+   OriginScatterer
+   MaskScatterer
+   BorderScatterer
+   GridScatterer
+   PositionsScatterer
+   IndexScatterer
+   PixelizationGridScattere
+   Liner
+   ArrayOverlayer
+   VoronoiDrawer
+   LightProfileCentreScatterer
+   MassProfileCentreScatterer
+   MultipleImagesScatterer
+   CriticalCurvesLiner
+   CausticsLiner
+
+**Plots:**
+
+.. autosummary::
+   :toctree: generated/
+
+   Array
+   Grid
+   Line
+   MapperObj
+   Imaging
+   Interferometer
+   MassProfile
+   LightProfile
+   Galaxy
+   Plane
+   Tracer
+   FitImaging
+   FitInterferometer
+   FitGalaxy
+   Inversion
+   Mapper
+
 -------------
 Lens Modeling
 -------------
@@ -228,7 +295,7 @@ Lens Modeling
 
 **SLaM:**
 
-.. currentmodule:: autolens.slam
+.. currentmodule:: autolens.pipeline.slam
 
 .. autosummary::
    :toctree: generated/
