@@ -53,11 +53,11 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
             with open(log_likelihood_cap_file, "w+") as f:
                 f.write(str(log_likelihood_cap))
 
-        self.settings.log_likelihood_cap = log_likelihood_cap
-        self.meta_dataset.settings.log_likelihood_cap = log_likelihood_cap
-        self.paths.tag = self.settings.phase_with_inversion_tag
-
         phase = self.make_hyper_phase(include_path_prefix=False)
+
+        phase.settings.log_likelihood_cap = log_likelihood_cap
+        phase.meta_dataset.settings.log_likelihood_cap = log_likelihood_cap
+        phase.paths.tag = phase.settings.phase_no_inversion_tag
 
         phase.use_as_hyper_dataset = False
 

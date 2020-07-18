@@ -65,76 +65,6 @@ class TestPositionSolver:
         )
 
 
-class TestGridPixelCentres1dViaOverlay:
-    def test__overlays_grid_using_pixel_scale(self):
-
-        grid_1d = np.array(
-            [
-                [1.0, -1.0],
-                [1.0, 0.0],
-                [1.0, 1.0],
-                [0.0, -1.0],
-                [0.0, 0.0],
-                [0.0, 1.0],
-                [-1.0, -1.0],
-                [-1.0, 0.0],
-                [-1.0, 1.0],
-            ]
-        )
-
-        grid_pixel_centres_1d, y_shape, x_shape = pos.grid_pixel_centres_1d_via_grid_1d_overlap(
-            grid_1d=grid_1d, pixel_scale=1.0
-        )
-
-        assert (
-            grid_pixel_centres_1d
-            == np.array(
-                [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]]
-            )
-        ).all()
-        assert (y_shape, x_shape) == (5, 5)
-
-        grid_1d = np.array(
-            [
-                [3.0, 1.0],
-                [3.0, 2.0],
-                [3.0, 3.0],
-                [2.0, 1.0],
-                [2.0, 2.0],
-                [2.0, 3.0],
-                [1.0, 1.0],
-                [1.0, 2.0],
-                [1.0, 3.0],
-            ]
-        )
-
-        grid_pixel_centres_1d, y_shape, x_shape = pos.grid_pixel_centres_1d_via_grid_1d_overlap(
-            grid_1d=grid_1d, pixel_scale=1.0
-        )
-
-        assert (
-            grid_pixel_centres_1d
-            == np.array(
-                [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]]
-            )
-        ).all()
-        assert (y_shape, x_shape) == (5, 5)
-
-        grid_1d = np.array([[3.0, 3.0], [3.0, 1.0], [0.0, 3.0], [2.0, 2.0]])
-
-        grid_pixel_centres_1d, y_shape, x_shape = pos.grid_pixel_centres_1d_via_grid_1d_overlap(
-            grid_1d=grid_1d, pixel_scale=1.0
-        )
-
-        assert (
-            grid_pixel_centres_1d
-            == np.array(
-                [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]]
-            )
-        ).all()
-        assert (y_shape, x_shape) == (5, 5)
-
-
 class TestGridNeighbors1d:
     def test__creates_numpy_array_with_correct_neighbors(self):
 
@@ -389,7 +319,7 @@ class TestTroughCoordinates:
             grid_1d=grid_1d, pixel_scale=1.0
         )
 
-        trough_coordinates = pos.trough_coordinates_from(
+        trough_coordinates = pos.grid_trough_from(
             distance_1d=distance_1d,
             grid_1d=grid_1d,
             neighbors=grid_neighbors_1d.astype("int"),
@@ -420,9 +350,7 @@ class TestTroughCoordinates:
             ]
         )
 
-        trough_coordinates = pos.trough_coordinates_from(
-            array_2d=array.in_2d, mask=mask
-        )
+        trough_coordinates = pos.grid_trough_from(array_2d=array.in_2d, mask=mask)
 
         assert trough_coordinates == [[2, 3]]
 
@@ -446,9 +374,7 @@ class TestTroughCoordinates:
             ]
         )
 
-        trough_coordinates = pos.trough_coordinates_from(
-            array_2d=array.in_2d, mask=mask
-        )
+        trough_coordinates = pos.grid_trough_from(array_2d=array.in_2d, mask=mask)
 
         assert trough_coordinates == []
 
@@ -472,9 +398,7 @@ class TestTroughCoordinates:
             ]
         )
 
-        trough_coordinates = pos.trough_coordinates_from(
-            array_2d=array.in_2d, mask=mask
-        )
+        trough_coordinates = pos.grid_trough_from(array_2d=array.in_2d, mask=mask)
 
         assert trough_coordinates == [[3, 3]]
 

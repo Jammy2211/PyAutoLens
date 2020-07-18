@@ -18,7 +18,7 @@ class PositionsSolver:
         grid = copy.copy(grid)
         pixel_scale = copy.copy(grid.pixel_scale)
 
-        for i in range(3):
+        for i in range(2):
 
             grid, source_plane_distances = self.grid_within_circle_from(
                 lensing_obj=lensing_obj,
@@ -26,27 +26,28 @@ class PositionsSolver:
                 source_plane_coordinate=source_plane_coordinate,
                 radius=2.0 * pixel_scale,
             )
+            grid = grid_util.grid_buffed_from(
+                grid_1d=grid, pixel_scales=(pixel_scale, pixel_scale), buffer=1
+            )
             grid_neighbors, grid_has_neighbors = grid_neighbors_1d_from(
                 grid_1d=grid, pixel_scale=pixel_scale
             )
-            trough_coordinates = trough_coordinates_from(
+            trough_list = grid_trough_from(
                 distance_1d=source_plane_distances,
                 grid_1d=grid,
                 neighbors=grid_neighbors.astype("int"),
                 has_neighbors=grid_has_neighbors,
             )
 
-            print(trough_coordinates)
+            print(trough_list)
+            print(len(trough_list))
 
             grid = grids.GridCoordinates.from_grid_sparse_uniform_upscale(
-                grid_sparse_uniform=np.asarray(trough_coordinates),
+                grid_sparse_uniform=np.asarray(trough_list),
                 upscale_factor=3,
                 pixel_scale=pixel_scale,
             )
-            print(pixel_scale)
-            print(grid[0, 0] - grid[4, 0])
-            print(grid[0, 1] - grid[1, 1])
-            stop
+
             pixel_scale /= 3
 
         #     grid = grids.GridCoordinates(coordinates=trough_coordinates)
@@ -85,61 +86,48 @@ class PositionsSolver:
         )
 
 
-def grid_pixel_centres_1d_via_grid_1d_overlap(grid_1d, pixel_scale):
-    """Take a 1D grid of irregular (y,x) coordinates over-lay a uniform square grid defined by an input pixel scale,
-    where:
+# @decorator_util.jit()
+def grid_neighbors_1d_from(grid_1d, pixel_scale):
+    """From a (y,x) grid of coordinates, determine the 8 neighors of every coordinate on the grid which has 8
+    neighboring (y,x) coordinates.
 
-    1) The overlaid grid uses the extrema (y,x) coordinates of the irregular grid at the top-left, top-right,
-    bottom-left and bottom-right.
+    Neighbor indexes use the 1D index of the pixel on the masked grid counting from the top-left right and down.
 
-    2) The over-laid grid is buffed by 1 pixel on every side of the grid.
+    For example:
 
-    The (y,x) 2D pixel centres of the overlaid grid are then computed for every irregular (y,x) coordinate and returned
-    along with the shape of the buffed overlaid grid.
+         x x x  x x x x x x x
+         x x x  x x x x x x x      Th s  s an example mask.Mask, where:
+         x x x  x x x x x x x
+         x x x  0 1 2 3 x x x      x = True (P xel  s masked and excluded from the gr d)
+         x x x  4 5 6 7 x x x      o = False (P xel  s not masked and  ncluded  n the gr d)
+         x x x  8 9 10 11 x x x
+         x x x  x x x x x x x
+         x x x  x x x x x x x
+         x x x  x x x x x x x
+         x x x  x x x x x x x
 
-    This is used to create small regular grids defined by a pixel scale around irregular (y,x) grid coordinates, for
-    example when creating an upscaled subset of coordinates around the point.
+    On the grid above, the grid cells in 1D indxes 5 and 6 have 8 neighboring pixels and their entries in the
+    grid_neighbors_1d array will be:
+
+    grid_neighbors_1d[0,:] = [0, 1, 2, 4, 6, 8, 9, 10]
+    grid_neighbors_1d[1,:] = [1, 2, 3, 5, 7, 9, 10, 11]
+
+    The other pixels will be included in the grid_neighbors_1d array, but correspond to False entries in
+    grid_has_neighbors and be omitted from calculations that use the neighbor array.
 
     Parameters
+    ----------
     grid_1d : ndarray
         The irregular 1D grid of (y,x) coordinates over which a square uniform grid is overlaid.
     pixel_scale : float
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
     """
 
-    y_size = np.max(grid_1d[:, 0]) - np.min(grid_1d[:, 0])
-    x_size = np.max(grid_1d[:, 1]) - np.min(grid_1d[:, 1])
-
-    y_shape = int(y_size / pixel_scale) + 3
-    x_shape = int(x_size / pixel_scale) + 3
-
-    y_origin = (np.max(grid_1d[:, 0]) + np.min(grid_1d[:, 0])) / 2.0
-    x_origin = (np.max(grid_1d[:, 1]) + np.min(grid_1d[:, 1])) / 2.0
-
-    return (
-        grid_util.grid_pixel_centres_1d_from(
-            grid_scaled_1d=grid_1d,
-            shape_2d=(y_shape, x_shape),
-            pixel_scales=(pixel_scale, pixel_scale),
-            origin=(y_origin, x_origin),
-        ),
-        y_shape,
-        x_shape,
-    )
-
-
-# @decorator_util.jit()
-def grid_neighbors_1d_from(grid_1d, pixel_scale):
-
     grid_pixel_centres_1d, y_shape, x_shape = grid_pixel_centres_1d_via_grid_1d_overlap(
         grid_1d=grid_1d, pixel_scale=pixel_scale
     )
 
     mask_2d = np.full(shape=(y_shape, x_shape), fill_value=True)
-
-    grid_pixel_centres_1d = grid_pixel_centres_1d_via_grid_1d_overlap(
-        grid_1d=grid_1d, pixel_scale=pixel_scale
-    )
 
     for grid_index in range(grid_1d.shape[0]):
 
@@ -177,9 +165,26 @@ def grid_neighbors_1d_from(grid_1d, pixel_scale):
 
 
 # @decorator_util.jit()
-def trough_coordinates_from(distance_1d, grid_1d, neighbors, has_neighbors):
+def grid_trough_from(distance_1d, grid_1d, neighbors, has_neighbors):
+    """ Given an input grid of (y,x) coordinates and a 1d array of their distances to the centre of the source,
+    determine the coordinates which are closer to the source than their 8 neighboring pixels.
 
-    trough_coordinates = []
+    These pixels are selected as the next closest set of pixels to the source and used to define the coordinates of
+    the next higher resolution grid.
+
+    Parameters
+    ----------
+    distance_1d : ndarray
+        The distance of every (y,x) grid coordinate to the centre of the source in the source-plane.
+    grid_1d : ndarray
+        The irregular 1D grid of (y,x) coordinates whose distances to the source are compared.
+    neighbors : ndarray
+        A 2D array of shape [pixels, 8] giving the 1D index of every grid pixel to its 8 neighboring pixels.
+    has_neighbors : ndarray
+        An array of bools, where True means a pixel has 8 neighbors and False means it has less than 8 and is not
+        compared to the source distance.
+    """
+    trough_list = []
 
     for grid_index in range(grid_1d.shape[0]):
 
@@ -198,9 +203,9 @@ def trough_coordinates_from(distance_1d, grid_1d, neighbors, has_neighbors):
                 and distance < distance_1d[neighbors[grid_index, 7]]
             ):
 
-                trough_coordinates.append(grid_1d[grid_index])
+                trough_list.append(grid_1d[grid_index])
 
-    return trough_coordinates
+    return trough_list
 
 
 @decorator_util.jit()
