@@ -6,11 +6,11 @@ This is called strong gravitational lensing, & **PyAutoLens** makes it simple to
 like this one:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/development/image.png
-  :width: 32%
+  :width: 15%
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/development/model_image.png
-  :width: 32%
+  :width: 15%
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/development/reconstruction.png
-  :width: 32%
+  :width: 15%
 
 API Overview
 ------------
