@@ -2579,31 +2579,6 @@ class TestAbstractTracerLensing:
             assert (grid_at_redshift == sub_grid_7x7.geometry.unmasked_grid).all()
 
     class TestMultipleImages:
-        def test__simple_isothermal_case_positions_are_correct(self):
-
-            grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
-
-            g0 = al.Galaxy(
-                redshift=0.5,
-                mass=al.mp.EllipticalIsothermal(
-                    centre=(0.001, 0.001),
-                    einstein_radius=1.0,
-                    elliptical_comps=(0.0, 0.111111),
-                ),
-            )
-
-            g1 = al.Galaxy(redshift=1.0)
-
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
-
-            coordinates = tracer.image_plane_multiple_image_positions(
-                grid=grid, source_plane_coordinate=(0.0, 0.0)
-            )
-
-            assert coordinates[0] == pytest.approx((1.025, -0.025), 1.0e-4)
-            assert coordinates[1] == pytest.approx((0.025, -0.975), 1.0e-4)
-            assert coordinates[2] == pytest.approx((0.025, 0.975), 1.0e-4)
-            assert coordinates[3] == pytest.approx((-1.025, -0.025), 1.0e-4)
 
         def test__multiple_image_coordinate_of_light_profile_centres_of_source_plane(
             self
@@ -2640,8 +2615,8 @@ class TestAbstractTracerLensing:
                 grid=grid
             )
 
-            assert coordinates_manual_0 == positions_of_galaxies[0]
-            assert coordinates_manual_1 == positions_of_galaxies[1]
+            assert (coordinates_manual_0 == positions_of_galaxies[0]).all()
+            assert (coordinates_manual_1 == positions_of_galaxies[1]).all()
 
     class TestContributionMap:
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
