@@ -1647,11 +1647,10 @@ class TestFitInterferometer:
                 primary_beam=None,
             )
 
+            real_space_mask = al.Mask.unmasked(shape_2d=(1, 3), pixel_scales=1.0)
+
             transformer = al.TransformerDFT(
-                uv_wavelengths=uv_wavelengths,
-                grid=al.Grid.manual_2d(
-                    [[[0.0, -1.0], [0.0, 1.0], [1.0, 1.0]]], pixel_scales=(1.0, 1.0)
-                ),
+                uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
             )
 
             visibilities_mask = np.full(fill_value=False, shape=(3, 2))

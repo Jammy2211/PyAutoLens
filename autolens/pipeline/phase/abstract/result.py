@@ -1,6 +1,7 @@
 from autoarray.structures import grids
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.pipeline.phase.abstract import result
+from autolens.lens import positions_solver as pos
 
 
 class Result(result.Result):
@@ -65,21 +66,17 @@ class Result(result.Result):
 
         grid = self.analysis.masked_dataset.mask.geometry.unmasked_grid
 
-        # TODO: Tracer method will ultimately return GridCoordinates, need to determine best way to implement method.
-
-        positions = []
-
-        for centre_list in self.source_plane_centres.in_list:
-            for centre in centre_list:
-
-                positions_list = self.max_log_likelihood_tracer.image_plane_multiple_image_positions(
-                    grid=grid, source_plane_coordinate=centre
-                )
-
-                positions.append(positions_list)
+        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.001)
 
         try:
-            return grids.GridCoordinates(coordinates=positions)
+            multiple_images = [
+                solver.solve(
+                    lensing_obj=self.max_log_likelihood_tracer,
+                    source_plane_coordinate=centre,
+                )
+                for centre in self.source_plane_centres.in_list[0]
+            ]
+            return grids.GridCoordinates(coordinates=multiple_images)
         except IndexError:
             return None
 

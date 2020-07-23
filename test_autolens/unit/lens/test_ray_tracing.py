@@ -1,9 +1,14 @@
 import autolens as al
 import numpy as np
 import pytest
+import os
+import shutil
 from astropy import cosmology as cosmo
 from skimage import measure
 from test_autoarray import mock as mock_inv
+
+
+test_path = "{}/files/tracer".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def critical_curve_via_magnification_from_tracer_and_grid(tracer, grid):
@@ -837,6 +842,27 @@ class TestAbstractTracer:
             )
 
             assert tracer.cosmology == 1
+
+    class TestPickle:
+        def test__tracer_can_be_pickled_and_loaded(self):
+
+            if os.path.exists(test_path):
+                shutil.rmtree(test_path)
+
+            if not os.path.exists(test_path):
+                os.mkdir(test_path)
+
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[
+                    al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.1))
+                ]
+            )
+
+            tracer.save(file_path=test_path, filename="test_tracer")
+
+            tracer = al.Tracer.from_pickle(file_path=test_path, filename="test_tracer")
+
+            assert tracer.galaxies[0].light.intensity == 1.1
 
 
 class TestAbstractTracerCosmology:
@@ -2577,46 +2603,6 @@ class TestAbstractTracerLensing:
             )
 
             assert (grid_at_redshift == sub_grid_7x7.geometry.unmasked_grid).all()
-
-    class TestMultipleImages:
-
-        def test__multiple_image_coordinate_of_light_profile_centres_of_source_plane(
-            self
-        ):
-
-            grid = al.Grid.uniform(shape_2d=(50, 50), pixel_scales=0.05, sub_size=4)
-
-            g0 = al.Galaxy(
-                redshift=0.5,
-                mass=al.mp.EllipticalIsothermal(
-                    centre=(0.0, 0.0),
-                    einstein_radius=1.0,
-                    elliptical_comps=(0.0, 0.055555),
-                ),
-            )
-
-            g1 = al.Galaxy(
-                redshift=1.0,
-                light=al.lp.SphericalGaussian(centre=(0.0, 0.0)),
-                light0=al.lp.SphericalGaussian(centre=(0.1, 0.1)),
-            )
-
-            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
-
-            coordinates_manual_0 = tracer.image_plane_multiple_image_positions(
-                grid=grid, source_plane_coordinate=(0.0, 0.0)
-            )
-
-            coordinates_manual_1 = tracer.image_plane_multiple_image_positions(
-                grid=grid, source_plane_coordinate=(0.1, 0.1)
-            )
-
-            positions_of_galaxies = tracer.image_plane_multiple_image_positions_of_galaxies(
-                grid=grid
-            )
-
-            assert (coordinates_manual_0 == positions_of_galaxies[0]).all()
-            assert (coordinates_manual_1 == positions_of_galaxies[1]).all()
 
     class TestContributionMap:
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
@@ -4405,7 +4391,9 @@ class TestDecorators:
         assert (image == image_no_interp + image_interp).all()
 
         mass_profile = al.mp.EllipticalIsothermal(einstein_radius=1.0)
-        mass_profile_interp = al.mp.SphericalIsothermal(einstein_radius=1.0)
+        mass_profile_interp = al.mp.SphericalIsothermal(
+            einstein_radius=3.0, centre=(0.1, 0.1)
+        )
 
         convergence_no_interp = mass_profile.convergence_from_grid(grid=grid)
 
@@ -4466,5 +4454,6 @@ class TestDecorators:
         source_plane_grid = traced_grids[0] - deflections
         assert (traced_grids[1] == source_plane_grid).all()
 
+        grid = al.Grid.from_mask(mask=mask)
         traced_grids_no_interp = tracer.traced_grids_of_planes_from_grid(grid=grid)
         assert (traced_grids[1][0, 0] != traced_grids_no_interp[1][0, 0]).all()

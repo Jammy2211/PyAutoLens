@@ -1,17 +1,14 @@
 from abc import ABC
-
+import pickle
 import numpy as np
 from astropy import cosmology as cosmo
 from autoarray.operators.inversion import inversions as inv
 from autoarray.structures import grids
-from autoarray.mask import mask as msk
-from autoarray.util import array_util, grid_util
 from autogalaxy import lensing
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.plane import plane as pl
 from autogalaxy.util import cosmology_util
 from autogalaxy.util import plane_util
-from autolens.lens import positions_solver as pos
 
 
 class AbstractTracer(lensing.LensingObject, ABC):
@@ -42,6 +39,11 @@ class AbstractTracer(lensing.LensingObject, ABC):
         self.planes = planes
         self.plane_redshifts = [plane.redshift for plane in planes]
         self.cosmology = cosmology
+
+    @classmethod
+    def from_pickle(cls, file_path, filename="tracer"):
+        with open(f"{file_path}/{filename}.pickle", "rb") as f:
+            return pickle.load(f)
 
     @property
     def total_planes(self):
@@ -238,6 +240,13 @@ class AbstractTracer(lensing.LensingObject, ABC):
             return self.planes_with_mass_profile[0].unit_mass
         else:
             return None
+
+    def save(self, file_path, filename="tracer"):
+        """
+        Save the tracer by serializing it with pickle.
+        """
+        with open(f"{file_path}/{filename}.pickle", "wb") as f:
+            pickle.dump(self, f)
 
 
 class AbstractTracerCosmology(AbstractTracer, ABC):
@@ -447,24 +456,6 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
         tracer = Tracer(planes=planes, cosmology=self.cosmology)
 
         return tracer.traced_grids_of_planes_from_grid(grid=grid)[plane_index_insert]
-
-    def image_plane_multiple_image_positions_of_galaxies(self, grid):
-
-        return [
-            self.image_plane_multiple_image_positions(
-                grid=grid, source_plane_coordinate=light_profile_centre
-            )
-            for light_profile_centre in self.light_profile_centres.in_list[-1]
-        ]
-
-    def image_plane_multiple_image_positions(self, grid, source_plane_coordinate):
-
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
-
-        return solver.solve(
-            lensing_obj=self,
-            source_plane_coordinate=source_plane_coordinate,
-        )
 
     @property
     def contribution_map(self):

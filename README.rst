@@ -20,8 +20,8 @@ mass profile lenses a background source at redshift 1.0 with an Exponential ligh
     import autolens.plot as aplt
 
     """
-    To describe the deflection of light grids are used which are two-dimensional Cartesian grids
-    of (y,x) coordinates which are deflected by mass profiles.
+    To describe the deflection of light by mass, two-dimensional grids of (y,x) Cartesian
+    coordinates are used.
     """
 
     grid = al.Grid.uniform(
@@ -29,7 +29,7 @@ mass profile lenses a background source at redshift 1.0 with an Exponential ligh
         pixel_scales=0.05,  # <- Conversion from pixel units to arc-seconds.
     )
 
-    """The lens galaxy is at redshift 0.5 and its mass profile is an elliptical Isothermal."""
+    """The lens galaxy has an EllipticalIsothermal MassProfile and is at redshift 0.5."""
 
     sie = al.mp.EllipticalIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.1, 0.05), einstein_radius=1.6
@@ -37,7 +37,7 @@ mass profile lenses a background source at redshift 1.0 with an Exponential ligh
 
     lens_galaxy = al.Galaxy(redshift=0.5, mass=sie)
 
-    """The source galaxy is at redshift 1.0, and its light profile is elliptical Exponential."""
+    """The source galaxy has an EllipticalExponential LightProfile and is at redshift 1.0."""
 
     exponential = al.lp.EllipticalExponential(
         centre=(0.3, 0.2),
@@ -49,9 +49,8 @@ mass profile lenses a background source at redshift 1.0 with an Exponential ligh
     source_galaxy = al.Galaxy(redshift=1.0, light=exponential)
 
     """
-    We create the strong lens system by performing ray-tracing via a Tracer object, which uses the
-    galaxies above, their redshifts and an input cosmology to determine how light is deflected on
-    its path to Earth.
+    We create the strong lens using a Tracer, which uses the galaxies, their redshifts
+    and an input cosmology to determine how light is deflected on its path to Earth.
     """
 
     tracer = al.Tracer.from_galaxies(
@@ -59,8 +58,8 @@ mass profile lenses a background source at redshift 1.0 with an Exponential ligh
     )
 
     """
-    We can use the tracer to perform many lensing calculations, for example plotting the
-    image of the lensed source.
+    We can use the Grid and Tracer to perform many lensing calculations, for example
+    plotting the image of the lensed source.
     """
 
     aplt.Tracer.image(tracer=tracer, grid=grid)
@@ -72,15 +71,14 @@ analysis which fits the foreground lens galaxy's mass & the background source ga
 
     import autofit as af
     import autolens as al
-
-    import os
+    import autolens.plot as aplt
 
     """In this example, we'll fit a simple lens galaxy + source galaxy system."""
 
-    dataset_path = "{}/../data".format(os.path.dirname(os.path.realpath(__file__)))
+    dataset_path = "/path/to/dataset"
     lens_name = "example_lens"
 
-    """Use the relative path to the dataset to load the imaging data."""
+    """Use the dataset path and lens name to load the imaging data."""
 
     imaging = al.Imaging.from_fits(
         image_path=f"{dataset_path}/{lens_name}/image.fits",
@@ -96,8 +94,8 @@ analysis which fits the foreground lens galaxy's mass & the background source ga
     )
 
     """
-    We model our lens galaxy using a mass profile (a singular isothermal ellipsoid) &
-    our source galaxy a light profile (an elliptical Sersic).
+    We model our lens galaxy using an EllipticalIsothermal MassProfile &
+    our source galaxy as an EllipticalSersic LightProfile.
     """
 
     lens_mass_profile = al.mp.EllipticalIsothermal
@@ -119,7 +117,7 @@ analysis which fits the foreground lens galaxy's mass & the background source ga
     phase = al.PhaseImaging(
         galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
         phase_name="example/phase_example",
-        search=af.DynestyStatic(n_live_points=50, sampling_efficiency=0.5),
+        search=af.DynestyStatic(n_live_points=50),
     )
 
     """
@@ -128,12 +126,12 @@ analysis which fits the foreground lens galaxy's mass & the background source ga
     """
 
     result = phase.run(dataset=imaging, mask=mask)
-    al.plot.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+    aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 Getting Started
 ---------------
 
-To get started checkout our `readthedocs <https://pyautolens.readthedocs.io/>`_,
+To get started go to our `readthedocs <https://pyautolens.readthedocs.io/>`_,
 where you'll find our installation guide, a complete overview of **PyAutoLens**'s features, examples scripts and
 tutorials and detailed API documentation.
 
