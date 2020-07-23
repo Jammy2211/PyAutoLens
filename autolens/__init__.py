@@ -8,8 +8,8 @@ from autoarray.operators.inversion import pixelizations as pix, regularization a
 from autoarray.operators.inversion.inversions import inversion as Inversion
 from autoarray.operators.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
-from autoarray.operators.transformer import TransformerFFT
 from autoarray.operators.transformer import TransformerNUFFT
+from autoarray.operators.transformer import TransformerNUFFTLops
 from autoarray.structures.arrays import Array, Values
 from autoarray.structures.arrays import MaskedArray
 from autoarray.structures.grids import (

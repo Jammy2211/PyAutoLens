@@ -17,7 +17,9 @@ class TestPositionSolver:
 
         positions = solver.solve(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
 
-    def test__positions_for_tracer(self):
+    def test__positions_for_tracer_with_simple_mass_model__returns_correct_grid_coordinates(
+        self
+    ):
 
         grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
 
@@ -40,12 +42,44 @@ class TestPositionSolver:
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
         )
 
-        assert coordinates[0] == pytest.approx((1.028125, -0.003125), 1.0e-4)
-        assert coordinates[1] == pytest.approx((0.009375, -0.95312), 1.0e-4)
-        assert coordinates[2] == pytest.approx((0.009375, 0.95312), 1.0e-4)
-        assert coordinates[3] == pytest.approx((-1.028125, -0.003125), 1.0e-4)
+        assert coordinates.in_list[0][0] == pytest.approx((1.028125, -0.003125), 1.0e-4)
+        assert coordinates.in_list[0][1] == pytest.approx((0.009375, -0.95312), 1.0e-4)
+        assert coordinates.in_list[0][2] == pytest.approx((0.009375, 0.95312), 1.0e-4)
+        assert coordinates.in_list[0][3] == pytest.approx(
+            (-1.028125, -0.003125), 1.0e-4
+        )
 
-    def test__multiple_image_coordinate_of_light_profile_centres_of_source_plane(self):
+    def test__same_as_above_using_solver_for_tracer_method(self):
+
+        grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
+
+        g0 = al.Galaxy(
+            redshift=0.5,
+            mass=al.mp.EllipticalIsothermal(
+                centre=(0.001, 0.001),
+                einstein_radius=1.0,
+                elliptical_comps=(0.0, 0.111111),
+            ),
+        )
+
+        g1 = al.Galaxy(
+            redshift=1.0, light=al.lp.EllipticalLightProfile(centre=(0.0, 0.0))
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+
+        coordinates = solver.solve_from_tracer(tracer=tracer)
+
+        assert coordinates.in_list[0][0] == pytest.approx((1.028125, -0.003125), 1.0e-4)
+        assert coordinates.in_list[0][1] == pytest.approx((0.009375, -0.95312), 1.0e-4)
+        assert coordinates.in_list[0][2] == pytest.approx((0.009375, 0.95312), 1.0e-4)
+        assert coordinates.in_list[0][3] == pytest.approx(
+            (-1.028125, -0.003125), 1.0e-4
+        )
+
+    def test__solver_for_tracer_method__multiple_source_planes_or_galaxies(self):
 
         grid = al.Grid.uniform(shape_2d=(50, 50), pixel_scales=0.05, sub_size=4)
 
@@ -58,32 +92,43 @@ class TestPositionSolver:
 
         g1 = al.Galaxy(
             redshift=1.0,
-            light=al.lp.SphericalGaussian(centre=(0.0, 0.0)),
-            light0=al.lp.SphericalGaussian(centre=(0.1, 0.1)),
+            light_0=al.lp.EllipticalLightProfile(centre=(0.0, 0.0)),
+            light_1=al.lp.EllipticalLightProfile(centre=(0.1, 0.1)),
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        coordinates_manual_0 = tracer.image_plane_multiple_image_positions(
-            grid=grid, source_plane_coordinate=(0.0, 0.0)
-        )
-
-        coordinates_manual_1 = tracer.image_plane_multiple_image_positions(
-            grid=grid, source_plane_coordinate=(0.1, 0.1)
-        )
-
-        positions_of_galaxies = tracer.image_plane_multiple_image_positions_of_galaxies(
-            grid=grid
-        )
-
         solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
 
-        coordinates = solver.solve(
+        position_manual_0 = solver.solve(
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
         )
 
-        assert coordinates_manual_0 == positions_of_galaxies[0]
-        assert coordinates_manual_1 == positions_of_galaxies[1]
+        position_manual_1 = solver.solve(
+            lensing_obj=tracer, source_plane_coordinate=(0.1, 0.1)
+        )
+
+        positions = solver.solve_from_tracer(tracer=tracer)
+
+        assert position_manual_0.in_list[0] == positions.in_list[0]
+        assert position_manual_1.in_list[0] == positions.in_list[1]
+
+        g2 = al.Galaxy(
+            redshift=1.0, light=al.lp.EllipticalLightProfile(centre=(0.0, 0.0))
+        )
+
+        g3 = al.Galaxy(
+            redshift=1.0, light=al.lp.EllipticalLightProfile(centre=(0.1, 0.1))
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g2, g3])
+
+        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+
+        positions = solver.solve_from_tracer(tracer=tracer)
+
+        assert position_manual_0.in_list[0] == positions.in_list[0]
+        assert position_manual_1.in_list[0] == positions.in_list[1]
 
 
 class TestGridNeighbors1d:
@@ -104,7 +149,7 @@ class TestGridNeighbors1d:
         )
 
         grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scale=1.0
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
         )
 
         assert (
@@ -139,7 +184,7 @@ class TestGridNeighbors1d:
         )
 
         grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scale=1.0
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
         )
 
         assert (
@@ -186,7 +231,7 @@ class TestGridNeighbors1d:
         )
 
         grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scale=1.0
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
         )
 
         assert (
@@ -261,7 +306,7 @@ class TestGridNeighbors1d:
         )
 
         grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scale=1.0
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
         )
 
         assert (
@@ -337,17 +382,17 @@ class TestTroughCoordinates:
         )
 
         grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scale=1.0
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
         )
 
-        trough_coordinates = pos.grid_trough_from(
+        peaks_coordinates = pos.grid_peaks_from(
             distance_1d=distance_1d,
             grid_1d=grid_1d,
             neighbors=grid_neighbors_1d.astype("int"),
             has_neighbors=grid_has_neighbors,
         )
 
-        assert (np.asarray(trough_coordinates) == np.array([[0.0, 0.0]])).all()
+        assert (np.asarray(peaks_coordinates) == np.array([[0.0, 0.0]])).all()
 
     # def test__simple_arrays_with_mask(self):
     #
@@ -371,9 +416,9 @@ class TestTroughCoordinates:
     #         ]
     #     )
     #
-    #     trough_coordinates = pos.grid_trough_from(array_2d=array.in_2d, mask=mask)
+    #     peaks_coordinates = pos.grid_peaks_from(array_2d=array.in_2d, mask=mask)
     #
-    #     assert trough_coordinates == [[2, 3]]
+    #     assert peaks_coordinates == [[2, 3]]
     #
     #     array = al.Array.manual_2d(
     #         array=[
@@ -395,9 +440,9 @@ class TestTroughCoordinates:
     #         ]
     #     )
     #
-    #     trough_coordinates = pos.grid_trough_from(array_2d=array.in_2d, mask=mask)
+    #     peaks_coordinates = pos.grid_peaks_from(array_2d=array.in_2d, mask=mask)
     #
-    #     assert trough_coordinates == []
+    #     assert peaks_coordinates == []
     #
     #     array = al.Array.manual_2d(
     #         array=[
@@ -419,6 +464,32 @@ class TestTroughCoordinates:
     #         ]
     #     )
     #
-    #     trough_coordinates = pos.grid_trough_from(array_2d=array.in_2d, mask=mask)
+    #     peaks_coordinates = pos.grid_peaks_from(array_2d=array.in_2d, mask=mask)
     #
-    #     assert trough_coordinates == [[3, 3]]
+    #     assert peaks_coordinates == [[3, 3]]
+
+
+class TestWithinDistance:
+    def test__grid_keeps_only_points_within_distance(self):
+
+        grid_1d = np.array([[2.0, 2.0], [1.0, 1.0], [3.0, 3.0]])
+
+        distances_1d = np.array([2.0, 1.0, 3.0])
+
+        new_grid = pos.grid_within_distance(
+            distances_1d=distances_1d, grid_1d=grid_1d, within_distance=10.0
+        )
+
+        assert (new_grid == grid_1d).all()
+
+        new_grid = pos.grid_within_distance(
+            distances_1d=distances_1d, grid_1d=grid_1d, within_distance=2.5
+        )
+
+        assert (new_grid == np.array([[2.0, 2.0], [1.0, 1.0]])).all()
+
+        new_grid = pos.grid_within_distance(
+            distances_1d=distances_1d, grid_1d=grid_1d, within_distance=1.5
+        )
+
+        assert (new_grid == np.array([[1.0, 1.0]])).all()

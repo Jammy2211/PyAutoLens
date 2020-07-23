@@ -190,7 +190,9 @@ class PhaseGalaxy(abstract.AbstractPhase):
         self.save_metadata(galaxy_data.name)
         self.model = self.model.populate(results)
 
-        result = self.run_analysis(analysis=analysis, info=info)
+        result = self.run_analysis(
+            analysis=analysis, info=info, pickle_files=pickle_files
+        )
 
         return self.make_result(result, analysis)
 
