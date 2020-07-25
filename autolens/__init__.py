@@ -11,7 +11,6 @@ from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.operators.transformer import TransformerNUFFTLops
 from autoarray.structures.arrays import Array, Values
-from autoarray.structures.arrays import MaskedArray
 from autoarray.structures.grids import (
     Grid,
     GridIterate,
