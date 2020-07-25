@@ -196,7 +196,7 @@ def potential(tracer, grid, include=None, plotter=None):
 def deflections_y(tracer, grid, include=None, plotter=None):
 
     deflections = tracer.deflections_from_grid(grid=grid)
-    deflections_y = arrays.MaskedArray.manual_1d(
+    deflections_y = arrays.Array.manual_mask(
         array=deflections.in_1d[:, 0], mask=grid.mask
     )
 
@@ -215,7 +215,7 @@ def deflections_y(tracer, grid, include=None, plotter=None):
 def deflections_x(tracer, grid, include=None, plotter=None):
 
     deflections = tracer.deflections_from_grid(grid=grid)
-    deflections_x = arrays.MaskedArray.manual_1d(
+    deflections_x = arrays.Array.manual_mask(
         array=deflections.in_1d[:, 1], mask=grid.mask
     )
 

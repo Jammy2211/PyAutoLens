@@ -138,7 +138,10 @@ class Result(dataset.Result):
     @property
     def hyper_model_image(self):
 
-        hyper_model_image = aa.MaskedArray.zeros(mask=self.real_space_mask.mask_sub_1)
+        hyper_model_image = aa.Array.manual_mask(
+            array=np.zeros(self.real_space_mask.mask_sub_1.pixels_in_mask),
+            mask=self.real_space_mask.mask_sub_1,
+        )
 
         for path, galaxy in self.path_galaxy_tuples:
             hyper_model_image += self.hyper_galaxy_image_path_dict[path]

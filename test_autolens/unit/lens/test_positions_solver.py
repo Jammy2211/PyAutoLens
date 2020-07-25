@@ -362,7 +362,7 @@ class TestGridNeighbors1d:
         ).all()
 
 
-class TestTroughCoordinates:
+class TestGridPeaks:
     def test__simple_arrays(self):
 
         distance_1d = np.array([1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0])
@@ -394,79 +394,401 @@ class TestTroughCoordinates:
 
         assert (np.asarray(peaks_coordinates) == np.array([[0.0, 0.0]])).all()
 
-    # def test__simple_arrays_with_mask(self):
-    #
-    #     array = al.Array.manual_2d(
-    #         array=[
-    #             [9.0, 9.0, 9.0, 9.0, 9.0],
-    #             [9.0, 9.0, 9.0, 9.0, 9.0],
-    #             [9.0, 1.0, 9.0, 1.0, 9.0],
-    #             [9.0, 9.0, 9.0, 9.0, 9.0],
-    #             [9.0, 9.0, 9.0, 9.0, 9.0],
-    #         ]
-    #     )
-    #
-    #     mask = al.Mask.manual(
-    #         mask=[
-    #             [True, True, True, True, True],
-    #             [True, True, True, True, True],
-    #             [True, True, True, False, True],
-    #             [True, True, True, True, True],
-    #             [True, True, True, True, True],
-    #         ]
-    #     )
-    #
-    #     peaks_coordinates = pos.grid_peaks_from(array_2d=array.in_2d, mask=mask)
-    #
-    #     assert peaks_coordinates == [[2, 3]]
-    #
-    #     array = al.Array.manual_2d(
-    #         array=[
-    #             [9.0, 9.0, 9.0, 9.0, 9.0],
-    #             [9.0, 9.0, 9.0, 1.0, 9.0],
-    #             [9.0, 1.0, 9.0, 1.0, 9.0],
-    #             [9.0, 9.0, 9.0, 9.0, 9.0],
-    #             [9.0, 9.0, 9.0, 9.0, 9.0],
-    #         ]
-    #     )
-    #
-    #     mask = al.Mask.manual(
-    #         mask=[
-    #             [True, True, True, True, True],
-    #             [True, True, True, True, True],
-    #             [True, True, True, True, True],
-    #             [True, True, True, True, True],
-    #             [True, True, True, True, True],
-    #         ]
-    #     )
-    #
-    #     peaks_coordinates = pos.grid_peaks_from(array_2d=array.in_2d, mask=mask)
-    #
-    #     assert peaks_coordinates == []
-    #
-    #     array = al.Array.manual_2d(
-    #         array=[
-    #             [9.0, 9.0, 9.0, 9.0, 9.0],
-    #             [2.0, 8.0, 7.0, 6.0, 8.0],
-    #             [4.0, 9.0, 4.0, 1.0, 8.0],
-    #             [1.0, 0.5, 7.0, 0.1, 8.0],
-    #             [9.0, 9.0, 9.0, 9.0, 9.0],
-    #         ]
-    #     )
-    #
-    #     mask = al.Mask.manual(
-    #         mask=[
-    #             [True, True, True, True, True],
-    #             [True, True, True, True, True],
-    #             [True, True, True, True, True],
-    #             [True, True, True, False, True],
-    #             [True, True, True, True, True],
-    #         ]
-    #     )
-    #
-    #     peaks_coordinates = pos.grid_peaks_from(array_2d=array.in_2d, mask=mask)
-    #
-    #     assert peaks_coordinates == [[3, 3]]
+        distance_1d = np.array(
+            [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                0.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                0.0,
+                1.0,
+                0.0,
+                1.0,
+                0.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+            ]
+        )
+
+        grid_1d = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
+
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+        )
+
+        peaks_coordinates = pos.grid_peaks_from(
+            distance_1d=distance_1d,
+            grid_1d=grid_1d,
+            neighbors=grid_neighbors_1d.astype("int"),
+            has_neighbors=grid_has_neighbors,
+        )
+
+        assert (
+            np.asarray(peaks_coordinates) == np.array([[0.0, -1.0], [0.0, 1.0]])
+        ).all()
+
+    def test__simple_arrays__neighbors_total(self):
+
+        distance_1d = np.array([1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0])
+
+        grid_1d = np.array(
+            [
+                [1.0, -1.0],
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [0.0, -1.0],
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [-1.0, -1.0],
+                [-1.0, 0.0],
+                [-1.0, 1.0],
+            ]
+        )
+
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+        )
+
+        peaks_neighbor_total = pos.grid_peaks_neighbor_total_from(
+            distance_1d=distance_1d,
+            grid_1d=grid_1d,
+            neighbors=grid_neighbors_1d.astype("int"),
+            has_neighbors=grid_has_neighbors,
+        )
+
+        assert (peaks_neighbor_total == np.array([0, 0, 0, 0, 8, 0, 0, 0, 0])).all()
+
+        distance_1d = np.array(
+            [
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.5,
+                0.5,
+                0.5,
+                0.1,
+                0.1,
+                0.0,
+                0.5,
+                0.0,
+                0.1,
+                0.1,
+                0.5,
+                0.5,
+                0.5,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+            ]
+        )
+
+        grid_1d = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
+
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+        )
+
+        peaks_neighbor_total = pos.grid_peaks_neighbor_total_from(
+            distance_1d=distance_1d,
+            grid_1d=grid_1d,
+            neighbors=grid_neighbors_1d.astype("int"),
+            has_neighbors=grid_has_neighbors,
+        )
+
+        assert (
+            peaks_neighbor_total
+            == np.array(
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    3,
+                    2,
+                    0,
+                    0,
+                    8,
+                    6,
+                    8,
+                    0,
+                    0,
+                    2,
+                    3,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                ]
+            )
+        ).all()
+
+        distance_1d = np.array(
+            [
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.01,
+                0.06,
+                0.5,
+                0.1,
+                0.1,
+                0.5,
+                0.04,
+                0.05,
+                0.1,
+                0.1,
+                0.5,
+                0.5,
+                0.05,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+            ]
+        )
+
+        grid_1d = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
+
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+        )
+
+        peaks_neighbor_total = pos.grid_peaks_neighbor_total_from(
+            distance_1d=distance_1d,
+            grid_1d=grid_1d,
+            neighbors=grid_neighbors_1d.astype("int"),
+            has_neighbors=grid_has_neighbors,
+        )
+
+        assert (
+            peaks_neighbor_total
+            == np.array(
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    8,
+                    5,
+                    0,
+                    0,
+                    0,
+                    2,
+                    7,
+                    7,
+                    0,
+                    0,
+                    2,
+                    2,
+                    7,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                ]
+            )
+        ).all()
+
+    def test__simple_arrays_2(self):
+
+        distance_1d = np.array([1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0])
+
+        grid_1d = np.array(
+            [
+                [1.0, -1.0],
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [0.0, -1.0],
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [-1.0, -1.0],
+                [-1.0, 0.0],
+                [-1.0, 1.0],
+            ]
+        )
+
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+        )
+
+        peaks_coordinates = pos.grid_peaks_2_from(
+            distance_1d=distance_1d,
+            grid_1d=grid_1d,
+            neighbors=grid_neighbors_1d.astype("int"),
+            has_neighbors=grid_has_neighbors,
+        )
+
+        assert (np.asarray(peaks_coordinates) == np.array([[0.0, 0.0]])).all()
+
+        distance_1d = np.array(
+            [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                0.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                0.0,
+                1.0,
+                0.0,
+                1.0,
+                0.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+            ]
+        )
+
+        grid_1d = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
+
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+        )
+
+        peaks_coordinates = pos.grid_peaks_2_from(
+            distance_1d=distance_1d,
+            grid_1d=grid_1d,
+            neighbors=grid_neighbors_1d.astype("int"),
+            has_neighbors=grid_has_neighbors,
+        )
+
+        assert (
+            np.asarray(peaks_coordinates) == np.array([[0.0, -1.0], [0.0, 1.0]])
+        ).all()
+
+        distance_1d = np.array(
+            [
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.01,
+                0.06,
+                0.5,
+                0.1,
+                0.1,
+                0.5,
+                0.04,
+                0.05,
+                0.1,
+                0.1,
+                0.5,
+                0.5,
+                0.05,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+            ]
+        )
+
+        grid_1d = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
+
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+        )
+
+        peaks_neighbor_total = pos.grid_peaks_neighbor_total_from(
+            distance_1d=distance_1d,
+            grid_1d=grid_1d,
+            neighbors=grid_neighbors_1d.astype("int"),
+            has_neighbors=grid_has_neighbors,
+        )
+
+        assert (
+            peaks_neighbor_total
+            == np.array(
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    8,
+                    5,
+                    0,
+                    0,
+                    0,
+                    2,
+                    7,
+                    7,
+                    0,
+                    0,
+                    2,
+                    2,
+                    7,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                ]
+            )
+        ).all()
+
+        peaks_coordinates = pos.grid_peaks_2_from(
+            distance_1d=distance_1d,
+            grid_1d=grid_1d,
+            neighbors=grid_neighbors_1d.astype("int"),
+            has_neighbors=grid_has_neighbors,
+        )
+
+        assert (
+            np.asarray(peaks_coordinates)
+            == np.array([[1.0, -1.0], [0.0, 1.0], [-1.0, 1.0]])
+        ).all()
 
 
 class TestWithinDistance:
