@@ -19,7 +19,6 @@ from autoarray.structures.grids import (
     GridRectangular,
     GridVoronoi,
 )
-from autoarray.structures.grids import MaskedGrid
 from autoarray.structures.kernel import Kernel
 from autoarray.structures.visibilities import Visibilities
 from autogalaxy import dimensions as dim
