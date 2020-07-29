@@ -79,7 +79,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             )
 
             return fit.figure_of_merit
-        except InversionException or GridException or OverflowError as e:
+        except (InversionException or GridException or OverflowError) as e:
             raise FitException from e
 
     def masked_imaging_fit_for_tracer(
@@ -131,7 +131,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                     hyper_image_sky=hyper_image_sky,
                     hyper_background_noise=hyper_background_noise,
                 ).log_evidence
-            except InversionException or GridException as e:
+            except (InversionException or GridException) as e:
                 log_evidence = None
 
             if log_evidence is not None:
@@ -171,10 +171,13 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
 
             visualizer = self.visualizer
 
-        visualizer.visualize_ray_tracing(
-            tracer=fit.tracer, during_analysis=during_analysis
-        )
-        visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)
+        try:
+            visualizer.visualize_ray_tracing(
+                tracer=fit.tracer, during_analysis=during_analysis
+            )
+            visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)
+        except Exception:
+            pass
 
         if not during_analysis and visualizer.plot_stochastic_histogram:
 

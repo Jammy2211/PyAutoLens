@@ -1,17 +1,14 @@
 from abc import ABC
-
+import pickle
 import numpy as np
 from astropy import cosmology as cosmo
 from autoarray.operators.inversion import inversions as inv
 from autoarray.structures import grids
-from autoarray.mask import mask as msk
-from autoarray.util import array_util, grid_util
 from autogalaxy import lensing
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.plane import plane as pl
 from autogalaxy.util import cosmology_util
 from autogalaxy.util import plane_util
-from autolens.lens import positions_solver as pos
 
 
 class AbstractTracer(lensing.LensingObject, ABC):
@@ -239,6 +236,18 @@ class AbstractTracer(lensing.LensingObject, ABC):
         else:
             return None
 
+    @classmethod
+    def load(cls, file_path, filename="tracer"):
+        with open(f"{file_path}/{filename}.pickle", "rb") as f:
+            return pickle.load(f)
+
+    def save(self, file_path, filename="tracer"):
+        """
+        Save the tracer by serializing it with pickle.
+        """
+        with open(f"{file_path}/{filename}.pickle", "wb") as f:
+            pickle.dump(self, f)
+
 
 class AbstractTracerCosmology(AbstractTracer, ABC):
     @property
@@ -447,61 +456,6 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
         tracer = Tracer(planes=planes, cosmology=self.cosmology)
 
         return tracer.traced_grids_of_planes_from_grid(grid=grid)[plane_index_insert]
-
-    def image_plane_multiple_image_positions_of_galaxies(self, grid):
-        return [
-            self.image_plane_multiple_image_positions(
-                grid=grid, source_plane_coordinate=light_profile_centre
-            )
-            for light_profile_centre in self.light_profile_centres.in_list[-1]
-        ]
-
-    def image_plane_multiple_image_positions(self, grid, source_plane_coordinate):
-
-        # TODO : This should not input as a grid but use a iterative adaptive grid.
-
-        if grid.sub_size > 1:
-            grid = grid.in_1d_binned
-
-        source_plane_grid = self.traced_grids_of_planes_from_grid(grid=grid)[-1]
-
-        source_plane_squared_distances = source_plane_grid.squared_distances_from_coordinate(
-            coordinate=source_plane_coordinate
-        )
-
-        trough_pixels = pos.trough_pixels_from(
-            array_2d=source_plane_squared_distances.in_2d, mask=grid.mask
-        )
-
-        trough_mask = msk.Mask.from_pixel_coordinates(
-            shape_2d=grid.shape_2d,
-            pixel_coordinates=trough_pixels,
-            pixel_scales=grid.pixel_scales,
-            sub_size=grid.sub_size,
-            origin=grid.origin,
-            buffer=1,
-        )
-
-        multiple_image_pixels = pos.positions_at_coordinate_from(
-            grid_2d=source_plane_grid.in_2d,
-            coordinate=source_plane_coordinate,
-            mask=trough_mask,
-        )
-
-        return list(
-            map(
-                trough_mask.geometry.scaled_coordinates_from_pixel_coordinates,
-                multiple_image_pixels,
-            )
-        )
-
-    def _image_plane_multiple_image_positions(self, grid, source_plane_coordinate):
-
-        solver = pos.PositionsSolver(grid=grid)
-
-        return solver.image_plane_positions_from(
-            lensing_obj=self, source_plane_coordinate=source_plane_coordinate
-        )
 
     @property
     def contribution_map(self):
@@ -813,6 +767,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         inversion_uses_border=False,
         preload_sparse_grids_of_planes=None,
         inversion_stochastic=False,
+        visibilities_complex=None,
     ):
         mappers_of_planes = self.mappers_of_planes_from_grid(
             grid=grid,
@@ -827,6 +782,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             transformer=transformer,
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],
+            visibilities_complex=visibilities_complex,
         )
 
     def hyper_noise_map_from_noise_map(self, noise_map):

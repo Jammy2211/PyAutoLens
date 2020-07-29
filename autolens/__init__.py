@@ -8,10 +8,9 @@ from autoarray.operators.inversion import pixelizations as pix, regularization a
 from autoarray.operators.inversion.inversions import inversion as Inversion
 from autoarray.operators.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
-from autoarray.operators.transformer import TransformerFFT
 from autoarray.operators.transformer import TransformerNUFFT
+from autoarray.operators.transformer import TransformerNUFFTLops
 from autoarray.structures.arrays import Array, Values
-from autoarray.structures.arrays import MaskedArray
 from autoarray.structures.grids import (
     Grid,
     GridIterate,
@@ -20,7 +19,6 @@ from autoarray.structures.grids import (
     GridRectangular,
     GridVoronoi,
 )
-from autoarray.structures.grids import MaskedGrid
 from autoarray.structures.kernel import Kernel
 from autoarray.structures.visibilities import Visibilities
 from autogalaxy import dimensions as dim
@@ -64,4 +62,4 @@ from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 from .pipeline.pipeline import PipelineDataset, PipelinePositions
 
-__version__ = '1.2.3'
+__version__ = '1.3.0'

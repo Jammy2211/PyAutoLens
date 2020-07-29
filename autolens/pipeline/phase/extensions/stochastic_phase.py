@@ -30,7 +30,14 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
     def make_model(self, instance):
         return instance.as_model(self.model_classes)
 
-    def run_hyper(self, dataset, results: af.ResultsCollection, info=None, **kwargs):
+    def run_hyper(
+        self,
+        dataset,
+        results: af.ResultsCollection,
+        info=None,
+        pickle_files=None,
+        **kwargs,
+    ):
         """
         Run the phase, overriding the search's model instance with one created to
         only fit pixelization hyperparameters.
@@ -63,4 +70,22 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         phase.model = self.make_model(results.last.instance)
 
-        return phase.run(dataset, mask=results.last.mask, results=results)
+        # TODO : HACK
+
+        from autogalaxy.profiles import mass_profiles as mp
+
+        mass = af.PriorModel(mp.EllipticalPowerLaw)
+
+        mass.centre = af.last[-1].model.galaxies.lens.mass.centre
+        mass.elliptical_comps = af.last[-1].model.galaxies.lens.mass.elliptical_comps
+        mass.einstein_radius = af.last[-1].model.galaxies.lens.mass.einstein_radius
+
+        phase.model.galaxies.lens.mass = mass
+
+        return phase.run(
+            dataset,
+            mask=results.last.mask,
+            results=results,
+            info=info,
+            pickle_files=pickle_files,
+        )
