@@ -648,7 +648,7 @@ class TestFitImaging:
                 noise_map=masked_imaging_7x7.noise_map
             )
 
-            log_likelihood = al.util.fit.likelihood_from(
+            log_likelihood = al.util.fit.log_likelihood_from(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
@@ -793,7 +793,7 @@ class TestFitImaging:
                 noise_map=hyper_noise_map
             )
 
-            log_likelihood = al.util.fit.likelihood_from(
+            log_likelihood = al.util.fit.log_likelihood_from(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
@@ -923,13 +923,13 @@ class TestFitImaging:
                 noise_map=masked_imaging_7x7.noise_map
             )
 
-            log_likelihood = al.util.fit.likelihood_from(
+            log_likelihood = al.util.fit.log_likelihood_from(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
             assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from(
+            log_likelihood_with_regularization = al.util.fit.log_likelihood_with_regularization_from(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1073,13 +1073,13 @@ class TestFitImaging:
                 noise_map=hyper_noise_map
             )
 
-            log_likelihood = al.util.fit.likelihood_from(
+            log_likelihood = al.util.fit.log_likelihood_from(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
             assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from(
+            log_likelihood_with_regularization = al.util.fit.log_likelihood_with_regularization_from(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1234,13 +1234,13 @@ class TestFitImaging:
                 noise_map=masked_imaging_7x7.noise_map
             )
 
-            log_likelihood = al.util.fit.likelihood_from(
+            log_likelihood = al.util.fit.log_likelihood_from(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
             assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from(
+            log_likelihood_with_regularization = al.util.fit.log_likelihood_with_regularization_from(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1443,13 +1443,13 @@ class TestFitImaging:
                 noise_map=hyper_noise_map
             )
 
-            log_likelihood = al.util.fit.likelihood_from(
+            log_likelihood = al.util.fit.log_likelihood_from(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
             assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from(
+            log_likelihood_with_regularization = al.util.fit.log_likelihood_with_regularization_from(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -1647,11 +1647,10 @@ class TestFitInterferometer:
                 primary_beam=None,
             )
 
+            real_space_mask = al.Mask.unmasked(shape_2d=(1, 3), pixel_scales=1.0)
+
             transformer = al.TransformerDFT(
-                uv_wavelengths=uv_wavelengths,
-                grid=al.Grid.manual_2d(
-                    [[[0.0, -1.0], [0.0, 1.0], [1.0, 1.0]]], pixel_scales=(1.0, 1.0)
-                ),
+                uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
             )
 
             visibilities_mask = np.full(fill_value=False, shape=(3, 2))
@@ -1855,7 +1854,7 @@ class TestFitInterferometer:
                 noise_map=masked_interferometer_7.noise_map
             )
 
-            log_likelihood = al.util.fit.likelihood_from(
+            log_likelihood = al.util.fit.log_likelihood_from(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
@@ -2039,13 +2038,13 @@ class TestFitInterferometer:
                 noise_map=masked_interferometer_7.noise_map
             )
 
-            log_likelihood = al.util.fit.likelihood_from(
+            log_likelihood = al.util.fit.log_likelihood_from(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
             assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from(
+            log_likelihood_with_regularization = al.util.fit.log_likelihood_with_regularization_from(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,
@@ -2298,13 +2297,13 @@ class TestFitInterferometer:
                 noise_map=masked_interferometer_7.noise_map
             )
 
-            log_likelihood = al.util.fit.likelihood_from(
+            log_likelihood = al.util.fit.log_likelihood_from(
                 chi_squared=chi_squared, noise_normalization=noise_normalization
             )
 
             assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
 
-            log_likelihood_with_regularization = al.util.fit.likelihood_with_regularization_from(
+            log_likelihood_with_regularization = al.util.fit.log_likelihood_with_regularization_from(
                 chi_squared=chi_squared,
                 regularization_term=inversion.regularization_term,
                 noise_normalization=noise_normalization,

@@ -192,7 +192,7 @@ class TestTracer:
         source = al.Galaxy(
             redshift=1.0,
             light=al.lp.SphericalSersic(centre=(0.0, 0.0), intensity=2.0),
-            light1=al.lp.SphericalSersic(centre=(0.0, 0.0), intensity=2.0),
+            light1=al.lp.SphericalSersic(centre=(0.0, 0.1), intensity=2.0),
             pixelization=al.pix.Rectangular((3, 3)),
             regularization=al.reg.Constant(coefficient=1.0),
         )
@@ -209,23 +209,29 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        # TODO : Again, we'll remove this need to pass a mask around when the Tracer uses an adaptive gird..
+        mask = al.Mask.unmasked(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
 
-        result.analysis.masked_dataset.mask = al.Mask.unmasked(
-            shape_2d=(100, 100), pixel_scales=0.05, sub_size=1
-        )
+        result.analysis.masked_dataset.mask = mask
 
-        coordinates = (
+        multiple_images = (
             result.image_plane_multiple_image_positions_of_source_plane_centres
         )
 
-        assert coordinates.in_list[0][0] == pytest.approx((1.025, -0.025), 1.0e-4)
-        assert coordinates.in_list[0][1] == pytest.approx((0.025, -0.975), 1.0e-4)
-        assert coordinates.in_list[0][2] == pytest.approx((0.025, 0.975), 1.0e-4)
-        assert coordinates.in_list[0][3] == pytest.approx((-1.025, -0.025), 1.0e-4)
-        assert coordinates.in_list[1][0] == pytest.approx((1.025, -0.025), 1.0e-4)
-        assert coordinates.in_list[1][1] == pytest.approx((0.025, -0.975), 1.0e-4)
-        assert coordinates.in_list[1][2] == pytest.approx((0.025, 0.975), 1.0e-4)
-        assert coordinates.in_list[1][3] == pytest.approx((-1.025, -0.025), 1.0e-4)
-        assert coordinates.in_list[2][0] == pytest.approx((0.225, -0.375), 1.0e-4)
-        assert coordinates.in_list[2][1] == pytest.approx((-1.125, 1.025), 1.0e-4)
+        grid = al.Grid.from_mask(mask=mask)
+
+        solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.001)
+
+        multiple_images_manual_0 = solver.solve(
+            lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
+        )
+        multiple_images_manual_1 = solver.solve(
+            lensing_obj=tracer, source_plane_coordinate=(0.0, 0.1)
+        )
+        multiple_images_manual_2 = solver.solve(
+            lensing_obj=tracer,
+            source_plane_coordinate=result.source_plane_inversion_centres[0],
+        )
+
+        assert multiple_images.in_list[0] == multiple_images_manual_0.in_list[0]
+        assert multiple_images.in_list[1] == multiple_images_manual_1.in_list[0]
+        assert multiple_images.in_list[2] == multiple_images_manual_2.in_list[0]
