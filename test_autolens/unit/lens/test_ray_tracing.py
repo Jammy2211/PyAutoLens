@@ -860,7 +860,7 @@ class TestAbstractTracer:
 
             tracer.save(file_path=test_path, filename="test_tracer")
 
-            tracer = al.Tracer.from_pickle(file_path=test_path, filename="test_tracer")
+            tracer = al.Tracer.load(file_path=test_path, filename="test_tracer")
 
             assert tracer.galaxies[0].light.intensity == 1.1
 

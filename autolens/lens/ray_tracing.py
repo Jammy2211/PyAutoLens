@@ -40,11 +40,6 @@ class AbstractTracer(lensing.LensingObject, ABC):
         self.plane_redshifts = [plane.redshift for plane in planes]
         self.cosmology = cosmology
 
-    @classmethod
-    def from_pickle(cls, file_path, filename="tracer"):
-        with open(f"{file_path}/{filename}.pickle", "rb") as f:
-            return pickle.load(f)
-
     @property
     def total_planes(self):
         return len(self.plane_redshifts)
@@ -240,6 +235,11 @@ class AbstractTracer(lensing.LensingObject, ABC):
             return self.planes_with_mass_profile[0].unit_mass
         else:
             return None
+
+    @classmethod
+    def load(cls, file_path, filename="tracer"):
+        with open(f"{file_path}/{filename}.pickle", "rb") as f:
+            return pickle.load(f)
 
     def save(self, file_path, filename="tracer"):
         """
@@ -767,6 +767,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         inversion_uses_border=False,
         preload_sparse_grids_of_planes=None,
         inversion_stochastic=False,
+        visibilities_complex=None,
     ):
         mappers_of_planes = self.mappers_of_planes_from_grid(
             grid=grid,
@@ -781,6 +782,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             transformer=transformer,
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],
+            visibilities_complex=visibilities_complex,
         )
 
     def hyper_noise_map_from_noise_map(self, noise_map):
