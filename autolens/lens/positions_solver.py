@@ -9,9 +9,12 @@ import copy
 
 
 class PositionsSolver:
-    def __init__(self, grid, pixel_scale_precision, upscale_factor=2):
+    def __init__(
+        self, grid, use_upscaling=True, pixel_scale_precision=None, upscale_factor=2
+    ):
 
         self.grid = grid.in_1d_binned
+        self.use_upscaling = use_upscaling
         self.pixel_scale_precision = pixel_scale_precision
         self.upscale_factor = upscale_factor
 
@@ -35,13 +38,16 @@ class PositionsSolver:
 
         max_distance = None
 
+        if not self.use_upscaling:
+            return grids.GridCoordinates(coordinates=grid)
+
         while grid.pixel_scale > self.pixel_scale_precision:
 
-            grid = self.grid_buffed_from(grid=grid)
+            grid = self.grid_buffed_from(grid=grid, buffer=2)
 
             grid = self.grid_upscaled_from(grid=grid)
 
-            grid = self.grid_buffed_from(grid=grid)
+            grid = self.grid_buffed_from(grid=grid, buffer=1)
 
             grid = self.grid_peaks_from(
                 lensing_obj=lensing_obj,
@@ -62,8 +68,6 @@ class PositionsSolver:
             if not hasattr(grid, "pixel_scale"):
                 return None
 
-        print(grid)
-
         return grids.GridCoordinates(coordinates=grid)
 
     def grid_upscaled_from(self, grid):
@@ -74,10 +78,10 @@ class PositionsSolver:
             shape_2d=grid.shape_2d,
         )
 
-    def grid_buffed_from(self, grid):
+    def grid_buffed_from(self, grid, buffer):
 
         grid_buffed, y_shape, x_shape = grid_util.grid_buffed_from(
-            grid_1d=grid, pixel_scales=grid.pixel_scales, buffer=self.upscale_factor
+            grid_1d=grid, pixel_scales=grid.pixel_scales, buffer=buffer
         )
 
         return grids.GridCoordinatesUniform(
