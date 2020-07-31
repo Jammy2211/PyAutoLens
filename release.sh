@@ -31,6 +31,7 @@ twine upload dist/* --skip-existing --username $PYPI_USERNAME --password $PYPI_P
 git flow release finish $VERSION
 
 git checkout master
+git merge develop
 git push
 git checkout development
 git push
