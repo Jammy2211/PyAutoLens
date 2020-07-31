@@ -1,7 +1,7 @@
 autoconf==0.6.1
 autofit==0.65.0
 autoarray==0.12.2
-autogalaxy==0.12.6
+autogalaxy==0.12.7
 astropy>=3.0.0
 ipython>=7.0.1
 ipykernel>=5.1.0
