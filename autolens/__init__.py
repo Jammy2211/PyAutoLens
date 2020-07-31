@@ -10,7 +10,7 @@ from autoarray.operators.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.operators.transformer import TransformerNUFFTLops
-from autoarray.structures.arrays import Array, Values
+from autoarray.structures.arrays import Values
 from autoarray.structures.grids import (
     Grid,
     GridIterate,
@@ -42,6 +42,7 @@ from autogalaxy.profiles import (
     mass_profiles as mp,
     light_and_mass_profiles as lmp,
 )
+from autogalaxy.structures.arrays import Array
 from autogalaxy.util import convert
 
 from . import aggregator as agg
