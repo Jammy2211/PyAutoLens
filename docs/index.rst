@@ -34,6 +34,7 @@
    howtolens/chapter_2_lens_modeling/index
    howtolens/chapter_3_pipelines/index
    howtolens/chapter_4_inversions/index
+   howtolens/chapter_5_hyper_mode/index
 
 .. toctree::
    :caption: API Reference:
