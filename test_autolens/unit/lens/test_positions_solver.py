@@ -17,9 +17,8 @@ class TestPositionSolver:
 
         positions = solver.solve(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
 
-    def test__positions_for_tracer_with_simple_mass_model__returns_correct_grid_coordinates(
-        self
-    ):
+        assert positions[0] == pytest.approx(np.array([0.003125, 1.109375]), 1.0e-4)
+        assert positions[1] == pytest.approx(np.array([-0.003125, -0.890625]), 1.0e-4)
 
         grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
 
@@ -130,6 +129,24 @@ class TestPositionSolver:
         assert position_manual_0.in_list[0] == positions.in_list[0]
         assert position_manual_1.in_list[0] == positions.in_list[1]
 
+    def test__solver_with_remove_distance_from_mass_profile_centre__remove_pixels_from_initial_grid(self):
+
+        grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05)
+
+        sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+
+        solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01, distance_from_mass_profile_centre=0.1)
+
+        positions = solver.solve(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
+
+        assert positions[0] == pytest.approx(np.array([0.003125, 1.109375]), 1.0e-4)
+        assert positions[1] == pytest.approx(np.array([-0.003125, -0.890625]), 1.0e-4)
+
+        solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01, distance_from_mass_profile_centre=0.8)
+
+        positions = solver.solve(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
+
+        assert positions[0] == pytest.approx(np.array([0.003125, 1.109375]), 1.0e-4)
 
 class TestGridNeighbors1d:
     def test__creates_numpy_array_with_correct_neighbors(self):
@@ -622,172 +639,6 @@ class TestGridPeaks:
                     0,
                 ]
             )
-        ).all()
-
-    def test__simple_arrays_2(self):
-
-        distance_1d = np.array([1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0])
-
-        grid_1d = np.array(
-            [
-                [1.0, -1.0],
-                [1.0, 0.0],
-                [1.0, 1.0],
-                [0.0, -1.0],
-                [0.0, 0.0],
-                [0.0, 1.0],
-                [-1.0, -1.0],
-                [-1.0, 0.0],
-                [-1.0, 1.0],
-            ]
-        )
-
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
-        )
-
-        peaks_coordinates = pos.grid_peaks_2_from(
-            distance_1d=distance_1d,
-            grid_1d=grid_1d,
-            neighbors=grid_neighbors_1d.astype("int"),
-            has_neighbors=grid_has_neighbors,
-        )
-
-        assert (np.asarray(peaks_coordinates) == np.array([[0.0, 0.0]])).all()
-
-        distance_1d = np.array(
-            [
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                0.0,
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                0.0,
-                1.0,
-                0.0,
-                1.0,
-                0.0,
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-            ]
-        )
-
-        grid_1d = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
-
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
-        )
-
-        peaks_coordinates = pos.grid_peaks_2_from(
-            distance_1d=distance_1d,
-            grid_1d=grid_1d,
-            neighbors=grid_neighbors_1d.astype("int"),
-            has_neighbors=grid_has_neighbors,
-        )
-
-        assert (
-            np.asarray(peaks_coordinates) == np.array([[0.0, -1.0], [0.0, 1.0]])
-        ).all()
-
-        distance_1d = np.array(
-            [
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.01,
-                0.06,
-                0.5,
-                0.1,
-                0.1,
-                0.5,
-                0.04,
-                0.05,
-                0.1,
-                0.1,
-                0.5,
-                0.5,
-                0.05,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-            ]
-        )
-
-        grid_1d = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
-
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
-        )
-
-        peaks_neighbor_total = pos.grid_peaks_neighbor_total_from(
-            distance_1d=distance_1d,
-            grid_1d=grid_1d,
-            neighbors=grid_neighbors_1d.astype("int"),
-            has_neighbors=grid_has_neighbors,
-        )
-
-        assert (
-            peaks_neighbor_total
-            == np.array(
-                [
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    8,
-                    5,
-                    0,
-                    0,
-                    0,
-                    2,
-                    7,
-                    7,
-                    0,
-                    0,
-                    2,
-                    2,
-                    7,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                ]
-            )
-        ).all()
-
-        peaks_coordinates = pos.grid_peaks_2_from(
-            distance_1d=distance_1d,
-            grid_1d=grid_1d,
-            neighbors=grid_neighbors_1d.astype("int"),
-            has_neighbors=grid_has_neighbors,
-        )
-
-        assert (
-            np.asarray(peaks_coordinates)
-            == np.array([[1.0, -1.0], [0.0, 1.0], [-1.0, 1.0]])
         ).all()
 
 

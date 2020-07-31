@@ -10,13 +10,14 @@ import copy
 
 class PositionsSolver:
     def __init__(
-        self, grid, use_upscaling=True, pixel_scale_precision=None, upscale_factor=2
+        self, grid, use_upscaling=True, pixel_scale_precision=None, upscale_factor=2, distance_from_mass_profile_centre=None
     ):
 
         self.grid = grid.in_1d_binned
         self.use_upscaling = use_upscaling
         self.pixel_scale_precision = pixel_scale_precision
         self.upscale_factor = upscale_factor
+        self.distance_from_mass_profile_centre = distance_from_mass_profile_centre
 
     def solve_from_tracer(self, tracer):
         """Needs work - idea is it solves for all image plane multiple image positions using the redshift distribution of
@@ -30,15 +31,21 @@ class PositionsSolver:
 
     def solve(self, lensing_obj, source_plane_coordinate):
 
+        grid = self.grid
+
+        if self.distance_from_mass_profile_centre is not None:
+            grid = grid.grid_with_coordinates_within_distance_removed(coordinates=lensing_obj.mass_profile_centres.in_1d_list, distance=self.distance_from_mass_profile_centre)
+
         grid = self.grid_peaks_from(
             lensing_obj=lensing_obj,
-            grid=self.grid,
+            grid=grid,
             source_plane_coordinate=source_plane_coordinate,
         )
 
         max_distance = None
 
         if not self.use_upscaling:
+
             return grids.GridCoordinates(coordinates=grid)
 
         while grid.pixel_scale > self.pixel_scale_precision:
@@ -131,6 +138,8 @@ class PositionsSolver:
             )
         else:
             grid_within_distance_of_centre = grid
+
+        print(grid_within_distance_of_centre)
 
         if distance is None:
             distance = np.max(source_plane_distances)
@@ -380,67 +389,6 @@ def grid_peaks_neighbor_total_from(distance_1d, grid_1d, neighbors, has_neighbor
             )
 
     return grid_peaks_neighbor_total
-
-
-@decorator_util.jit()
-def grid_peaks_2_from(distance_1d, grid_1d, neighbors, has_neighbors):
-    """ Given an input grid of (y,x) coordinates and a 1d array of their distances to the centre of the source,
-    determine the coordinates which are closer to the source than their 8 neighboring pixels.
-
-    These pixels are selected as the next closest set of pixels to the source and used to define the coordinates of
-    the next higher resolution grid.
-
-    Parameters
-    ----------
-    distance_1d : ndarray
-        The distance of every (y,x) grid coordinate to the centre of the source in the source-plane.
-    grid_1d : ndarray
-        The irregular 1D grid of (y,x) coordinates whose distances to the source are compared.
-    neighbors : ndarray
-        A 2D array of shape [pixels, 8] giving the 1D index of every grid pixel to its 8 neighboring pixels.
-    has_neighbors : ndarray
-        An array of bools, where True means a pixel has 8 neighbors and False means it has less than 8 and is not
-        compared to the source distance.
-    """
-    peaks_list = []
-
-    grid_peaks_neighbor_total = grid_peaks_neighbor_total_from(
-        distance_1d=distance_1d,
-        grid_1d=grid_1d,
-        neighbors=neighbors,
-        has_neighbors=has_neighbors,
-    )
-
-    for grid_index in range(grid_1d.shape[0]):
-
-        if grid_peaks_neighbor_total[grid_index] == 8:
-            peaks_list.append(grid_1d[grid_index])
-        elif grid_peaks_neighbor_total[grid_index] == 7:
-
-            if (
-                grid_peaks_neighbor_total[neighbors[grid_index, 0]] != 8
-                and grid_peaks_neighbor_total[neighbors[grid_index, 1]] != 8
-                and grid_peaks_neighbor_total[neighbors[grid_index, 2]] != 8
-                and grid_peaks_neighbor_total[neighbors[grid_index, 3]] != 8
-                and grid_peaks_neighbor_total[neighbors[grid_index, 4]] != 8
-                and grid_peaks_neighbor_total[neighbors[grid_index, 5]] != 8
-                and grid_peaks_neighbor_total[neighbors[grid_index, 6]] != 8
-                and grid_peaks_neighbor_total[neighbors[grid_index, 7]] != 8
-            ):
-
-                if (
-                    grid_peaks_neighbor_total[neighbors[grid_index, 0]] == 7
-                    or grid_peaks_neighbor_total[neighbors[grid_index, 1]] == 7
-                    or grid_peaks_neighbor_total[neighbors[grid_index, 2]] == 7
-                    or grid_peaks_neighbor_total[neighbors[grid_index, 3]] == 7
-                    or grid_peaks_neighbor_total[neighbors[grid_index, 4]] == 7
-                    or grid_peaks_neighbor_total[neighbors[grid_index, 5]] == 7
-                    or grid_peaks_neighbor_total[neighbors[grid_index, 6]] == 7
-                    or grid_peaks_neighbor_total[neighbors[grid_index, 7]] == 7
-                ):
-                    peaks_list.append(grid_1d[grid_index])
-
-    return peaks_list
 
 
 @decorator_util.jit()

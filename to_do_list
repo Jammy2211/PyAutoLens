@@ -1,3 +1,12 @@
+Positions:
+
+    - Split PositioonSolver and PositionSolverData, where latter uses a known position to define the starting grid
+      and remove all peaks by only keeping the closest. Do we need to be careful that the cloest solution isnt nearest the
+      source? Hmm.
+
+    - Positions dict used for source plane chisquared image chi ssqaured.
+
+
 Model Fitting:
 
     - We are going fully Dynesty - explain rwalk, steps setting, facc, Dynamic etc simila to MultiiNest black magic!

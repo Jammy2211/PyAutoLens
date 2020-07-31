@@ -68,7 +68,7 @@ class MetaLens:
             if positions is None:
                 return None
 
-            positions_fits = fit.FitPositions(
+            positions_fits = fit.FitPositionsSourcePlane(
                 positions=aa.GridCoordinates(coordinates=positions),
                 tracer=results.last.max_log_likelihood_tracer,
                 noise_map=1.0,
