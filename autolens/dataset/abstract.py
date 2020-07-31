@@ -19,7 +19,7 @@ class AbstractLensMasked:
 
         if self.positions is not None and self.positions_threshold is not None:
 
-            positions_fit = fit.FitPositions(
+            positions_fit = fit.FitPositionsSourcePlane(
                 positions=self.positions,
                 tracer=tracer,
                 noise_map=self.imaging.pixel_scales,

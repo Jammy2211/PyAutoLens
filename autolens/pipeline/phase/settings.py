@@ -257,3 +257,13 @@ class PhaseSettingsInterferometer(
             + self.inversion_stochastic_tag
             + self.log_likelihood_cap_tag
         )
+
+
+class PhaseSettingsPositions(PhaseSettingsLens):
+
+    def __init__(self, positions_threshold):
+
+        PhaseSettingsLens.__init__(
+            self=self,
+            positions_threshold=positions_threshold,
+        )

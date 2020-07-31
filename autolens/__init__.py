@@ -50,7 +50,7 @@ from . import plot
 from .dataset.imaging import MaskedImaging, SimulatorImaging
 from .dataset.interferometer import MaskedInterferometer, SimulatorInterferometer
 from .fit.fit import FitImaging, FitInterferometer
-from .fit.fit import FitPositions
+from .fit.fit_positions import FitPositionsSourcePlaneMaxSeparation
 from .lens.ray_tracing import Tracer
 from .lens.positions_solver import PositionsSolver
 from .pipeline.setup import PipelineSetup
