@@ -49,11 +49,8 @@ class PhasePositions(abstract.AbstractPhase):
 
         self.solver = solver
 
-
     def make_phase_attributes(self, analysis):
-        return PhaseAttributes(
-            cosmology=self.cosmology,
-        )
+        return PhaseAttributes(cosmology=self.cosmology)
 
     def make_analysis(self, positions, imaging=None, results=None):
         """
@@ -96,9 +93,7 @@ class PhasePositions(abstract.AbstractPhase):
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.search).__name__))
             phase_info.write(
-                "Positions Threshold = {} \n".format(
-                    self.settings.positions_threshold
-                )
+                "Positions Threshold = {} \n".format(self.settings.positions_threshold)
             )
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
 
@@ -106,9 +101,5 @@ class PhasePositions(abstract.AbstractPhase):
 
 
 class PhaseAttributes(AgPhaseAttributes):
-    def __init__(
-        self, cosmology,
-    ):
-        super().__init__(
-            cosmology=cosmology,
-        )
+    def __init__(self, cosmology):
+        super().__init__(cosmology=cosmology)

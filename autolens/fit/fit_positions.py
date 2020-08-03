@@ -5,7 +5,6 @@ from autogalaxy.galaxy import galaxy as g
 
 
 class AbstractFitPositionsSourcePlane:
-    
     def __init__(self, positions, tracer, noise_value):
         """Given a positions dataset, which is a list of positions with names that associated them to model source
         galaxies, use a _Tracer_ to determine the traced coordinate positions in the source-plane.
@@ -48,8 +47,8 @@ class AbstractFitPositionsSourcePlane:
             rdist_max[i] = np.max(np.add(xdists, ydists))
         return np.max(np.sqrt(rdist_max))
 
-class FitPositionsSourcePlaneMaxSeparation(AbstractFitPositionsSourcePlane):
 
+class FitPositionsSourcePlaneMaxSeparation(AbstractFitPositionsSourcePlane):
     def __init__(self, positions, tracer, noise_value):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
@@ -61,7 +60,9 @@ class FitPositionsSourcePlaneMaxSeparation(AbstractFitPositionsSourcePlane):
         noise_value : float
             The noise-value assumed when computing the log likelihood.
         """
-        super(FitPositionsSourcePlaneMaxSeparation, self).__init__(positions=positions, tracer=tracer, noise_value=noise_value)
+        super(FitPositionsSourcePlaneMaxSeparation, self).__init__(
+            positions=positions, tracer=tracer, noise_value=noise_value
+        )
 
     @property
     def chi_squared_map(self):

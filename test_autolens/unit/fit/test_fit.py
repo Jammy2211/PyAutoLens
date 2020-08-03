@@ -2508,4 +2508,3 @@ class TestFitInterferometer:
             )
 
             assert hyper_noise_map.in_1d == pytest.approx(fit.noise_map.in_1d)
-

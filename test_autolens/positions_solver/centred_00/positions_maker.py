@@ -57,7 +57,7 @@ iters = 50
 
 """Use a _PositionsSolver_ which does not use grid upscaling."""
 
-solver = al.PositionsSolver(grid=grid, use_upscaling=False)
+solver = al.PositionsFinder(grid=grid, use_upscaling=True, upscale_factor=2)
 
 for i in range(iters):
 

@@ -6,19 +6,80 @@ import numpy as np
 import pytest
 
 
-class TestPositionSolver:
-    def test__positions_for_simple_mass_profiles(self):
+class TestAbstractPositionsSolver:
+
+    def test__solver_with_remove_distance_from_mass_profile_centre__remove_pixels_from_initial_grid(
+        self
+    ):
+
+        grid = al.Grid.manual_1d(grid=[[0.0, -0.1], [0.0, 0.0], [0.0, 0.1]], shape_2d=(1, 3), pixel_scales=0.1)
+
+        sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+
+        solver = pos.AbstractPositionsSolver(
+            distance_from_mass_profile_centre=0.01
+        )
+
+        grid = solver.grid_with_coordinates_from_mass_profile_centre_removed(grid=grid, lensing_obj=sis)
+
+        assert grid == pytest.approx(np.array([[0.0, -0.1], [0.0, 0.1]]), 1.0e-4)
+
+    def test__solver_create_buffed_and_updated_grid_from_input_coordinate(self):
+
+        solver = pos.AbstractPositionsSolver(
+            use_upscaling=True, upscale_factor=1
+        )
+
+        grid = solver.grid_buffed_around_coordinate_from(coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=1)
+
+        grid_util = pos.grid_buffed_around_coordinate_from(coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=1, upscale_factor=1)
+
+        assert (grid == grid_util).all()
+
+        solver = pos.AbstractPositionsSolver(
+            use_upscaling=False, upscale_factor=3
+        )
+
+        grid = solver.grid_buffed_around_coordinate_from(coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=1)
+
+        grid_util = pos.grid_buffed_around_coordinate_from(coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=1, upscale_factor=1)
+
+        assert (grid == grid_util).all()
+
+        solver = pos.AbstractPositionsSolver(
+            use_upscaling=True, upscale_factor=1
+        )
+
+        grid = solver.grid_buffed_around_coordinate_from(coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=3)
+
+        grid_util = pos.grid_buffed_around_coordinate_from(coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=3, upscale_factor=1)
+
+        assert (grid == grid_util).all()
+
+        solver = pos.AbstractPositionsSolver(
+            use_upscaling=True, upscale_factor=2
+        )
+
+        grid = solver.grid_buffed_around_coordinate_from(coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=2)
+
+        grid_util = pos.grid_buffed_around_coordinate_from(coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=2, upscale_factor=2)
+
+        assert (grid == grid_util).all()
+
+
+class TestPositionFinder:
+    def test__positions_found_for_simple_mass_profiles(self):
 
         grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05)
 
         sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
-        solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+        solver = al.PositionsFinder(grid=grid, pixel_scale_precision=0.01)
 
         positions = solver.solve(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
 
-        assert positions[0] == pytest.approx(np.array([0.003125, 1.109375]), 1.0e-4)
-        assert positions[1] == pytest.approx(np.array([-0.003125, -0.890625]), 1.0e-4)
+        assert positions[0] == pytest.approx(np.array([0.0, -0.8875]), 1.0e-4)
+        assert positions[1] == pytest.approx(np.array([0.0, 1.1125]), 1.0e-4)
 
         grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
 
@@ -35,7 +96,7 @@ class TestPositionSolver:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+        solver = pos.PositionsFinder(grid=grid, pixel_scale_precision=0.01)
 
         coordinates = solver.solve(
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
@@ -67,7 +128,7 @@ class TestPositionSolver:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+        solver = pos.PositionsFinder(grid=grid, pixel_scale_precision=0.01)
 
         coordinates = solver.solve_from_tracer(tracer=tracer)
 
@@ -97,7 +158,7 @@ class TestPositionSolver:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+        solver = pos.PositionsFinder(grid=grid, pixel_scale_precision=0.01)
 
         position_manual_0 = solver.solve(
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
@@ -122,36 +183,89 @@ class TestPositionSolver:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g2, g3])
 
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+        solver = pos.PositionsFinder(grid=grid, pixel_scale_precision=0.01)
 
         positions = solver.solve_from_tracer(tracer=tracer)
 
         assert position_manual_0.in_list[0] == positions.in_list[0]
         assert position_manual_1.in_list[0] == positions.in_list[1]
 
-    def test__solver_with_remove_distance_from_mass_profile_centre__remove_pixels_from_initial_grid(self):
 
-        grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05)
+class TestPositionsPairer:
+
+    def test__paired_coordinate_from_buffer_search(self):
 
         sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
-        solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01, distance_from_mass_profile_centre=0.1)
+        solver = al.PositionsPairer(
+            pair_pixel_scales=0.05,
+            pair_search_factors=[5, 25, 100],
+            pair_precision=0.001)
 
-        positions = solver.solve(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
+        paired_coordinate = solver.paired_coordinate_from_buffer_search(position=(1.1, 0.0), lensing_obj=sis, source_plane_coordinate=(0.0, 0.0))
 
-        assert positions[0] == pytest.approx(np.array([0.003125, 1.109375]), 1.0e-4)
-        assert positions[1] == pytest.approx(np.array([-0.003125, -0.890625]), 1.0e-4)
+        assert paired_coordinate == pytest.approx((1.0, 0.0), 1.0e-2)
 
-        solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01, distance_from_mass_profile_centre=0.8)
+    def test__positions_paired_for_simple_mass_profiles(self):
 
-        positions = solver.solve(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
+        # sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        #
+        # solver = al.PositionsPairer(
+        #     pair_pixel_scales=0.05,
+        #     pair_search_factors=[5, 25, 100],
+        #     pair_precision=0.001,
+        #     upscale_factor=3
+        # )
+        #
+        # paired_coorodinate = solver.solve(position=(0.0, 1.1), lensing_obj=sis, source_plane_coordinate=(0.0, 0.0))
+        #
+        # assert paired_coorodinate == pytest.approx((0.00, 1.0), 1.0e-1)
+        #
+        # paired_coorodinate = solver.solve(position=(0.0, 1.1), lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
+        #
+        # assert paired_coorodinate == pytest.approx((0.00, 1.10976), 1.0e-1)
 
-        assert positions[0] == pytest.approx(np.array([0.003125, 1.109375]), 1.0e-4)
+        g0 = al.Galaxy(
+            redshift=0.5,
+            mass=al.mp.EllipticalIsothermal(
+                centre=(0.001, 0.001),
+                einstein_radius=1.0,
+                elliptical_comps=(0.05, 0.02),
+            ),
+        )
 
-class TestGridNeighbors1d:
-    def test__creates_numpy_array_with_correct_neighbors(self):
+        g1 = al.Galaxy(redshift=1.0)
 
-        grid_1d = np.array(
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+        solver = al.PositionsPairer(
+            pair_pixel_scales=0.05,
+            pair_search_factors=[5, 25, 100],
+            pair_precision=0.01,
+        #    upscale_factor=3,
+        )
+
+        paired_coorodinate = solver.solve(position=(1.0, 0.0), lensing_obj=tracer, source_plane_coordinate=(0.0, 0.11))
+
+        print(paired_coorodinate)
+
+        assert paired_coorodinate == pytest.approx((1.028125, -0.003125), 1.0e-4)
+
+        paired_coorodinate = solver.solve(position=(0.0, -1.0), lensing_obj=tracer, source_plane_coordinate=(0.0, 0.11))
+
+        assert paired_coorodinate == pytest.approx((0.009375, -0.95312), 1.0e-4)
+
+
+class TestGridBuffedAroundCoordinate:
+
+    def test__single_point_grid_buffed_correctly__upscale_factor_1(self):
+        grid_buffed_1d = pos.grid_buffed_around_coordinate_from(
+            coordinate=(0.0, 0.0), pixel_scales=(1.0, 1.0), buffer=1
+        )
+
+        assert (
+                grid_buffed_1d
+                == np.array(
             [
                 [1.0, -1.0],
                 [1.0, 0.0],
@@ -164,95 +278,172 @@ class TestGridNeighbors1d:
                 [-1.0, 1.0],
             ]
         )
+        ).all()
 
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+        grid_buffed_1d = pos.grid_buffed_around_coordinate_from(
+            coordinate=(0.5, 1.2), pixel_scales=(1.0, 1.0), buffer=1
+        )
+
+        assert grid_buffed_1d == pytest.approx(np.array(
+            [
+                [1.5, 0.2],
+                [1.5, 1.2],
+                [1.5, 2.2],
+                [0.5, 0.2],
+                [0.5, 1.2],
+                [0.5, 2.2],
+                [-0.5, 0.2],
+                [-0.5, 1.2],
+                [-0.5, 2.2],
+            ]
+        ), 1.0e-4)
+
+        grid_buffed_1d = pos.grid_buffed_around_coordinate_from(
+            coordinate=(0.0, 0.0), pixel_scales=(1.0, 1.0), buffer=2
         )
 
         assert (
-            grid_neighbors_1d
-            == np.array(
-                [
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [0, 1, 2, 3, 5, 6, 7, 8],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                ]
-            )
-        ).all()
-
-        grid_1d = np.array(
+                grid_buffed_1d
+                == np.array(
             [
-                [3.0, 1.0],
-                [3.0, 2.0],
-                [3.0, 3.0],
+                [2.0, -2.0],
+                [2.0, -1.0],
+                [2.0, 0.0],
                 [2.0, 1.0],
                 [2.0, 2.0],
-                [2.0, 3.0],
+                [1.0, -2.0],
+                [1.0, -1.0],
+                [1.0, 0.0],
                 [1.0, 1.0],
                 [1.0, 2.0],
-                [1.0, 3.0],
+                [0.0, -2.0],
+                [0.0, -1.0],
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [0.0, 2.0],
+                [-1.0, -2.0],
+                [-1.0, -1.0],
+                [-1.0, 0.0],
+                [-1.0, 1.0],
+                [-1.0, 2.0],
+                [-2.0, -2.0],
+                [-2.0, -1.0],
+                [-2.0, 0.0],
+                [-2.0, 1.0],
+                [-2.0, 2.0],
             ]
         )
+        ).all()
 
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+    def test__single_point_grid_buffed_correctly__upscale_factor_above_1(self):
+        grid_buffed_1d = pos.grid_buffed_around_coordinate_from(
+            coordinate=(0.0, 0.0), pixel_scales=(1.0, 1.0), buffer=1, upscale_factor=2
         )
 
-        assert (
-            grid_neighbors_1d
-            == np.array(
-                [
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [0, 1, 2, 3, 5, 6, 7, 8],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                ]
-            )
-        ).all()
-
-        assert (
-            grid_has_neighbors
-            == np.array([False, False, False, False, True, False, False, False, False])
-        ).all()
-
-        grid_1d = np.array(
+        assert grid_buffed_1d == pytest.approx(np.array(
             [
-                [1.5, -1.5],
-                [1.5, -0.5],
-                [1.5, 0.5],
-                [1.5, 1.5],
-                [0.5, -1.5],
-                [0.5, -0.5],
-                [0.5, 0.5],
-                [0.5, 1.5],
-                [-0.5, -1.5],
-                [-0.5, -0.5],
-                [-0.5, 0.5],
-                [-0.5, 1.5],
-                [-1.5, -1.5],
-                [-1.5, -0.5],
-                [-1.5, 0.5],
-                [-1.5, 1.5],
+                [1.25, -1.25], [1.25, -0.75], [1.25, -0.25], [1.25, 0.25], [1.25, 0.75], [1.25, 1.25],
+                [0.75, -1.25], [0.75, -0.75], [0.75, -0.25], [0.75, 0.25], [0.75, 0.75], [0.75, 1.25],
+                [0.25, -1.25], [0.25, -0.75], [0.25, -0.25], [0.25, 0.25], [0.25, 0.75], [0.25, 1.25],
+                [-0.25, -1.25], [-0.25, -0.75], [-0.25, -0.25], [-0.25, 0.25], [-0.25, 0.75], [-0.25, 1.25],
+                [-0.75, -1.25], [-0.75, -0.75], [-0.75, -0.25], [-0.75, 0.25], [-0.75, 0.75], [-0.75, 1.25],
+                [-1.25, -1.25], [-1.25, -0.75], [-1.25, -0.25], [-1.25, 0.25], [-1.25, 0.75], [-1.25, 1.25],
             ]
+        ), 1.0e-4)
+
+        grid_buffed_1d = pos.grid_buffed_around_coordinate_from(
+            coordinate=(0.0, 0.0), pixel_scales=(1.0, 1.0), buffer=2, upscale_factor=2
         )
 
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+        assert grid_buffed_1d == pytest.approx(np.array(
+            [
+                [2.25, -2.25], [2.25, -1.75], [2.25, -1.25], [2.25, -0.75], [2.25, -0.25], [2.25, 0.25], [2.25, 0.75],
+                [2.25, 1.25], [2.25, 1.75], [2.25, 2.25],
+                [1.75, -2.25], [1.75, -1.75], [1.75, -1.25], [1.75, -0.75], [1.75, -0.25], [1.75, 0.25], [1.75, 0.75],
+                [1.75, 1.25], [1.75, 1.75], [1.75, 2.25],
+                [1.25, -2.25], [1.25, -1.75], [1.25, -1.25], [1.25, -0.75], [1.25, -0.25], [1.25, 0.25], [1.25, 0.75],
+                [1.25, 1.25], [1.25, 1.75], [1.25, 2.25],
+                [0.75, -2.25], [0.75, -1.75], [0.75, -1.25], [0.75, -0.75], [0.75, -0.25], [0.75, 0.25], [0.75, 0.75],
+                [0.75, 1.25], [0.75, 1.75], [0.75, 2.25],
+                [0.25, -2.25], [0.25, -1.75], [0.25, -1.25], [0.25, -0.75], [0.25, -0.25], [0.25, 0.25], [0.25, 0.75],
+                [0.25, 1.25], [0.25, 1.75], [0.25, 2.25],
+                [-0.25, -2.25], [-0.25, -1.75], [-0.25, -1.25], [-0.25, -0.75], [-0.25, -0.25], [-0.25, 0.25],
+                [-0.25, 0.75],
+                [-0.25, 1.25], [-0.25, 1.75], [-0.25, 2.25],
+                [-0.75, -2.25], [-0.75, -1.75], [-0.75, -1.25], [-0.75, -0.75], [-0.75, -0.25], [-0.75, 0.25],
+                [-0.75, 0.75],
+                [-0.75, 1.25], [-0.75, 1.75], [-0.75, 2.25],
+                [-1.25, -2.25], [-1.25, -1.75], [-1.25, -1.25], [-1.25, -0.75], [-1.25, -0.25], [-1.25, 0.25],
+                [-1.25, 0.75],
+                [-1.25, 1.25], [-1.25, 1.75], [-1.25, 2.25],
+                [-1.75, -2.25], [-1.75, -1.75], [-1.75, -1.25], [-1.75, -0.75], [-1.75, -0.25], [-1.75, 0.25],
+                [-1.75, 0.75],
+                [-1.75, 1.25], [-1.75, 1.75], [-1.75, 2.25],
+                [-2.25, -2.25], [-2.25, -1.75], [-2.25, -1.25], [-2.25, -0.75], [-2.25, -0.25], [-2.25, 0.25],
+                [-2.25, 0.75],
+                [-2.25, 1.25], [-2.25, 1.75], [-2.25, 2.25],
+            ]
+        ), 1.0e-4)
+
+        grid_buffed_1d = pos.grid_buffed_around_coordinate_from(
+            coordinate=(0.0, 0.0), pixel_scales=(1.0, 1.0), buffer=1, upscale_factor=3
+        )
+
+        assert grid_buffed_1d == pytest.approx(np.array(
+            [
+                [1.33, -1.33], [1.33, -1.0], [1.33, -0.66], [1.33, -0.33], [1.33, 0.0], [1.33, 0.33], [1.33, 0.66],
+                [1.33, 1.0], [1.33, 1.33],
+                [1.0, -1.33], [1.0, -1.0], [1.0, -0.66], [1.0, -0.33], [1.0, 0.0], [1.0, 0.33], [1.0, 0.66], [1.0, 1.0],
+                [1.0, 1.33],
+                [0.66, -1.33], [0.66, -1.0], [0.66, -0.66], [0.66, -0.33], [0.66, 0.0], [0.66, 0.33], [0.66, 0.66],
+                [0.66, 1.0], [0.66, 1.33],
+                [0.33, -1.33], [0.33, -1.0], [0.33, -0.66], [0.33, -0.33], [0.33, 0.0], [0.33, 0.33], [0.33, 0.66],
+                [0.33, 1.0], [0.33, 1.33],
+                [0.0, -1.33], [0.0, -1.0], [0.0, -0.66], [0.0, -0.33], [0.0, 0.0], [0.0, 0.33], [0.0, 0.66],
+                [0.0, 1.0], [0.0, 1.33],
+                [-0.33, -1.33], [-0.33, -1.0], [-0.33, -0.66], [-0.33, -0.33], [-0.33, 0.0], [-0.33, 0.33],
+                [-0.33, 0.66],
+                [-0.33, 1.0], [-0.33, 1.33],
+                [-0.66, -1.33], [-0.66, -1.0], [-0.66, -0.66], [-0.66, -0.33], [-0.66, 0.0], [-0.66, 0.33],
+                [-0.66, 0.66],
+                [-0.66, 1.0], [-0.66, 1.33],
+                [-1.0, -1.33], [-1.0, -1.0], [-1.0, -0.66], [-1.0, -0.33], [-1.0, 0.0], [-1.0, 0.33], [-1.0, 0.66],
+                [-1.0, 1.0], [-1.0, 1.33],
+                [-1.33, -1.33], [-1.33, -1.0], [-1.33, -0.66], [-1.33, -0.33], [-1.33, 0.0], [-1.33, 0.33],
+                [-1.33, 0.66],
+                [-1.33, 1.0], [-1.33, 1.33],
+            ]
+        ), 1.0e-1)
+
+
+class TestGridNeighbors1d:
+    def test__creates_numpy_array_with_correct_neighbors(self):
+
+        neighbors_1d, has_neighbors = pos.grid_square_neighbors_1d_from(
+            shape_1d=9,
+        )
+
+        assert (neighbors_1d == np.array([
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [0, 1, 2, 3, 5, 6, 7, 8],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1]],
+        )
+                ).all()
+
+        assert (has_neighbors == np.array([False, False, False, False, True, False, False, False, False])).all()
+
+        neighbors_1d, has_neighbors = pos.grid_square_neighbors_1d_from(
+            shape_1d=16
         )
 
         assert (
-            grid_neighbors_1d
+            neighbors_1d
             == np.array(
                 [
                     [-1, -1, -1, -1, -1, -1, -1, -1],
@@ -275,108 +466,40 @@ class TestGridNeighbors1d:
             )
         ).all()
 
-        assert (
-            grid_has_neighbors
-            == np.array(
-                [
-                    False,
-                    False,
-                    False,
-                    False,
-                    False,
-                    True,
-                    True,
-                    False,
-                    False,
-                    True,
-                    True,
-                    False,
-                    False,
-                    False,
-                    False,
-                    False,
-                ]
-            )
-        ).all()
+        assert (has_neighbors == np.array([False, False, False, False, False, True, True, False, False, True, True, False, False, False, False, False])).all()
 
-        grid_1d = np.array(
-            [
-                [1.0, -4.0],
-                [1.0, -3.0],
-                [1.0, -2.0],
-                [0.0, -4.0],
-                [0.0, -3.0],
-                [0.0, -2.0],
-                [-1.0, -4.0],
-                [-1.0, -3.0],
-                [-1.0, -2.0],
-                [1.0, 2.0],
-                [1.0, 3.0],
-                [1.0, 4.0],
-                [0.0, 2.0],
-                [0.0, 3.0],
-                [0.0, 4.0],
-                [-1.0, 2.0],
-                [-1.0, 3.0],
-                [-1.0, 4.0],
-            ]
-        )
 
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
-        )
+class TestPairCoordinateToGrid:
 
-        assert (
-            grid_neighbors_1d
-            == np.array(
-                [
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [0, 1, 2, 6, 8, 12, 13, 14],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [3, 4, 5, 9, 11, 15, 16, 17],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1],
-                ]
-            )
-        ).all()
+    def test__coordinate_paired_to_closest_pixel_on_grid(self):
 
-        assert (
-            grid_has_neighbors
-            == np.array(
-                [
-                    False,
-                    False,
-                    False,
-                    False,
-                    True,
-                    False,
-                    False,
-                    False,
-                    False,
-                    False,
-                    False,
-                    False,
-                    False,
-                    True,
-                    False,
-                    False,
-                    False,
-                    False,
-                ]
-            )
-        ).all()
+        grid_1d = np.array([
+                        [1.0, -1.0],
+                        [1.0, 0.0],
+                        [1.0, 1.0],
+                        [0.0, -1.0],
+                        [0.0, 0.0],
+                        [0.0, 1.0],
+                        [-1.0, -1.0],
+                        [-1.0, 0.0],
+                        [-1.0, 1.0],
+                    ])
+
+        index = pos.pair_coordinate_to_closest_pixel_on_grid(coordinate=(1.0, -1.0), grid_1d=grid_1d)
+
+        assert index == 0
+
+        index = pos.pair_coordinate_to_closest_pixel_on_grid(coordinate=(1.0, 1.0), grid_1d=grid_1d)
+
+        assert index == 2
+
+        index = pos.pair_coordinate_to_closest_pixel_on_grid(coordinate=(1.01, 1.10), grid_1d=grid_1d)
+
+        assert index == 2
+
+        index = pos.pair_coordinate_to_closest_pixel_on_grid(coordinate=(10.0, 10.0), grid_1d=grid_1d)
+
+        assert index == 2
 
 
 class TestGridPeaks:
@@ -398,8 +521,8 @@ class TestGridPeaks:
             ]
         )
 
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_square_neighbors_1d_from(
+            shape_1d=grid_1d, pixel_scales=(1.0, 1.0)
         )
 
         peaks_coordinates = pos.grid_peaks_from(
@@ -443,8 +566,8 @@ class TestGridPeaks:
 
         grid_1d = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
 
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+        grid_neighbors_1d, grid_has_neighbors = pos.grid_square_neighbors_1d_from(
+            shape_1d=grid_1d, pixel_scales=(1.0, 1.0)
         )
 
         peaks_coordinates = pos.grid_peaks_from(
@@ -456,189 +579,6 @@ class TestGridPeaks:
 
         assert (
             np.asarray(peaks_coordinates) == np.array([[0.0, -1.0], [0.0, 1.0]])
-        ).all()
-
-    def test__simple_arrays__neighbors_total(self):
-
-        distance_1d = np.array([1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0])
-
-        grid_1d = np.array(
-            [
-                [1.0, -1.0],
-                [1.0, 0.0],
-                [1.0, 1.0],
-                [0.0, -1.0],
-                [0.0, 0.0],
-                [0.0, 1.0],
-                [-1.0, -1.0],
-                [-1.0, 0.0],
-                [-1.0, 1.0],
-            ]
-        )
-
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
-        )
-
-        peaks_neighbor_total = pos.grid_peaks_neighbor_total_from(
-            distance_1d=distance_1d,
-            grid_1d=grid_1d,
-            neighbors=grid_neighbors_1d.astype("int"),
-            has_neighbors=grid_has_neighbors,
-        )
-
-        assert (peaks_neighbor_total == np.array([0, 0, 0, 0, 8, 0, 0, 0, 0])).all()
-
-        distance_1d = np.array(
-            [
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.5,
-                0.5,
-                0.5,
-                0.1,
-                0.1,
-                0.0,
-                0.5,
-                0.0,
-                0.1,
-                0.1,
-                0.5,
-                0.5,
-                0.5,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-            ]
-        )
-
-        grid_1d = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
-
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
-        )
-
-        peaks_neighbor_total = pos.grid_peaks_neighbor_total_from(
-            distance_1d=distance_1d,
-            grid_1d=grid_1d,
-            neighbors=grid_neighbors_1d.astype("int"),
-            has_neighbors=grid_has_neighbors,
-        )
-
-        assert (
-            peaks_neighbor_total
-            == np.array(
-                [
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    2,
-                    3,
-                    2,
-                    0,
-                    0,
-                    8,
-                    6,
-                    8,
-                    0,
-                    0,
-                    2,
-                    3,
-                    2,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                ]
-            )
-        ).all()
-
-        distance_1d = np.array(
-            [
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.01,
-                0.06,
-                0.5,
-                0.1,
-                0.1,
-                0.5,
-                0.04,
-                0.05,
-                0.1,
-                0.1,
-                0.5,
-                0.5,
-                0.05,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-                0.1,
-            ]
-        )
-
-        grid_1d = al.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
-
-        grid_neighbors_1d, grid_has_neighbors = pos.grid_neighbors_1d_from(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
-        )
-
-        peaks_neighbor_total = pos.grid_peaks_neighbor_total_from(
-            distance_1d=distance_1d,
-            grid_1d=grid_1d,
-            neighbors=grid_neighbors_1d.astype("int"),
-            has_neighbors=grid_has_neighbors,
-        )
-
-        assert (
-            peaks_neighbor_total
-            == np.array(
-                [
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    8,
-                    5,
-                    0,
-                    0,
-                    0,
-                    2,
-                    7,
-                    7,
-                    0,
-                    0,
-                    2,
-                    2,
-                    7,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                ]
-            )
         ).all()
 
 

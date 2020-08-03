@@ -37,7 +37,7 @@ grid = al.Grid.uniform(
 
 """Use a _PositionsSolver_ which uses grid upscaling."""
 
-solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.001, upscale_factor=2)
+solver = al.PositionsFinder(grid=grid, pixel_scale_precision=0.001, upscale_factor=2)
 
 iters = 50
 
@@ -62,9 +62,8 @@ for i in range(iters):
             positions_true=positions_true, positions=positions
         )
 
-
         in_positions_true = util.check_if_positions_in_positions_true(
-            positions_true=positions_true, positions=positions, threshold=0.05
+            positions_true=positions_true, positions=positions, threshold=0.1
         )
 
         print(positions.in_list)
@@ -80,10 +79,7 @@ for i in range(iters):
         minimum_separations = None
         in_positions_true = None
 
-        positions_plot = al.GridCoordinates(
-            coordinates=[positions_true.in_list[0]]
-        )
-
+        positions_plot = al.GridCoordinates(coordinates=[positions_true.in_list[0]])
 
     aplt.Tracer.image(
         tracer=tracer,

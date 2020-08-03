@@ -5,6 +5,10 @@ class RayTracingException(af.exc.FitException):
     pass
 
 
+class PositionsException(af.exc.FitException):
+    pass
+
+
 class PlottingException(Exception):
     pass
 

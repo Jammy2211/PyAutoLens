@@ -52,7 +52,7 @@ from .dataset.interferometer import MaskedInterferometer, SimulatorInterferomete
 from .fit.fit import FitImaging, FitInterferometer
 from .fit.fit_positions import FitPositionsSourcePlaneMaxSeparation
 from .lens.ray_tracing import Tracer
-from .lens.positions_solver import PositionsSolver
+from .lens.positions_solver import PositionsFinder, PositionsPairer
 from .pipeline.setup import PipelineSetup
 from .pipeline import slam
 from .pipeline.phase.settings import PhaseSettingsImaging
@@ -63,4 +63,4 @@ from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 from .pipeline.pipeline import PipelineDataset, PipelinePositions
 
-__version__ = '1.3.4'
+__version__ = "1.3.4"
