@@ -29,8 +29,8 @@ pickle_path = f"{path}/pickles"
 
 # %%
 grid = al.Grid.uniform(
-    shape_2d=(600, 600),
-    pixel_scales=0.01,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+    shape_2d=(200, 200),
+    pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
 # %%
@@ -65,7 +65,7 @@ iters = 50
 
 """Use a _PositionsSolver_ which does not use grid upscaling."""
 
-solver = al.PositionsSolver(grid=grid, use_upscaling=False)
+solver = al.PositionsFinder(grid=grid, pixel_scale_precision=0.001, upscale_factor=2, use_upscaling=True)
 
 for i in range(iters):
 
@@ -92,6 +92,8 @@ for i in range(iters):
         lensing_obj=tracer,
         source_plane_coordinate=tracer.source_plane.galaxies[0].light.centre,
     )
+
+    print(positions)
 
     """Visually inspect the positions (comment this out if you are confident the code is behaving as expected)."""
 

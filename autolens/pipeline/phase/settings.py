@@ -260,10 +260,6 @@ class PhaseSettingsInterferometer(
 
 
 class PhaseSettingsPositions(PhaseSettingsLens):
-
     def __init__(self, positions_threshold):
 
-        PhaseSettingsLens.__init__(
-            self=self,
-            positions_threshold=positions_threshold,
-        )
+        PhaseSettingsLens.__init__(self=self, positions_threshold=positions_threshold)

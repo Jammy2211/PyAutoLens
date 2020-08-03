@@ -52,17 +52,13 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         tracer = self.tracer_for_instance(instance=instance)
 
         try:
-            fit = self.positions_fit_for_tracer(
-                tracer=tracer,
-            )
+            fit = self.positions_fit_for_tracer(tracer=tracer)
 
             return fit.figure_of_merit
         except (GridException) as e:
             raise FitException from e
 
-    def positions_fit_for_tracer(
-        self, tracer, hyper_image_sky, hyper_background_noise
-    ):
+    def positions_fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
 
         return fit.FitImaging(
             masked_imaging=self.masked_dataset,
