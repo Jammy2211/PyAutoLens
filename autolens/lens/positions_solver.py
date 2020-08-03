@@ -120,7 +120,31 @@ class AbstractPositionsSolver:
         )
 
     def grid_peaks_from(self, lensing_obj, grid, source_plane_coordinate):
+        """ Find the 'peaks' of a grid of coordinates, where a peak corresponds to a (y,x) coordinate on the grid which
+        traces closer to the input (y,x) source-plane coordinate than any of its 8 adjacent neighbors. This is
+        performed by:
 
+         1) Computing the deflection angle of every (y,x) coordinate on the grid using the input lensing object.
+         2) Ray tracing these coordinates to the source-plane.
+         3) Computing their distance to the centre of the source in the source-plane.
+         4) Finding pixels whose source-plane distance is lower than all 8 neighboring pixels.
+
+        The _PositionFinder_ works by locating pixels that trace closer to the source galaxy than neighboring pixels
+        and iteratively refining the grid to find pixels that trace close at higher and higher resolutions. This
+        function is core to finding pixelsl that meet this criteria.
+
+        Parameters
+        ----------
+        lensing_obj : autogalaxy.LensingObject
+            An object which has a deflection_from_grid method for performing lensing calculations, for example a
+            _MassProfile_, _Galaxy_, _Plane_ or _Tracer_.
+        grid : autoarray.GridCoordinatesUniform or ndarray
+            A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
+            their neighbors are found.
+        source_plane_coordinate : (y,x)
+            The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
+            for.
+        """
         deflections = lensing_obj.deflections_from_grid(grid=grid)
         source_plane_grid = grid.grid_from_deflection_grid(deflection_grid=deflections)
         source_plane_distances = source_plane_grid.distances_from_coordinate(
@@ -140,10 +164,23 @@ class AbstractPositionsSolver:
             coordinates=grid_peaks, pixel_scales=grid.pixel_scales
         )
 
-    def grid_within_distance_of_centre(
+    def grid_within_distance_of_source_plane_centre(
         self, lensing_obj, source_plane_coordinate, grid, distance
     ):
+        """ For an input grid of (y,x) coordinates, remove all coordinates that do not trace within a 
 
+        Parameters
+        ----------
+        lensing_obj : autogalaxy.LensingObject
+            An object which has a deflection_from_grid method for performing lensing calculations, for example a
+            _MassProfile_, _Galaxy_, _Plane_ or _Tracer_.
+        grid : autoarray.GridCoordinatesUniform or ndarray
+            A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
+            their neighbors are found.
+        source_plane_coordinate : (y,x)
+            The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
+            for.
+        """
         if distance is None:
             return grid
 
@@ -152,9 +189,6 @@ class AbstractPositionsSolver:
         source_plane_distances = source_plane_grid.distances_from_coordinate(
             coordinate=source_plane_coordinate
         )
-
-        print(grid)
-        print(source_plane_distances)
 
         grid_within_distance_of_centre = grid_within_distance(
             distances_1d=source_plane_distances, grid_1d=grid, within_distance=distance
@@ -260,7 +294,7 @@ class PositionsFinder(AbstractPositionsSolver):
 
             coordinates_list = refined_coordinates_list
 
-        coordinates_list = self.grid_within_distance_of_centre(
+        coordinates_list = self.grid_within_distance_of_source_plane_centre(
             lensing_obj=lensing_obj,
             grid=grids.GridCoordinatesUniform(
                 coordinates=coordinates_list, pixel_scales=(pixel_scale, pixel_scale)
