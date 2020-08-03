@@ -167,7 +167,17 @@ class AbstractPositionsSolver:
     def grid_within_distance_of_source_plane_centre(
         self, lensing_obj, source_plane_coordinate, grid, distance
     ):
-        """ For an input grid of (y,x) coordinates, remove all coordinates that do not trace within a 
+        """ For an input grid of (y,x) coordinates, remove all coordinates that do not trace within a threshold distance
+        of the source-plane centre. This is performed by:
+
+         1) Computing the deflection angle of every (y,x) coordinate on the grid using the input lensing object.
+         2) Ray tracing these coordinates to the source-plane.
+         3) Computing their distance to the centre of the source in the source-plane.
+         4) Removing all coordinates that are not within the input distance of the centre.
+
+        This algorithm is optionally used in the _PositionFiner_. It may be required to remove solutions that are
+        genuine 'peaks' that tracer closer to a source than their 8 neighboring pixels, but which do not truly
+        trace to the centre of the source-centre.
 
         Parameters
         ----------
@@ -180,6 +190,8 @@ class AbstractPositionsSolver:
         source_plane_coordinate : (y,x)
             The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
             for.
+        distance : float
+            The distance within which a grid coordinate must trace to the source-plane centre to be retained.
         """
         if distance is None:
             return grid
@@ -209,6 +221,29 @@ class PositionsFinder(AbstractPositionsSolver):
         distance_from_source_centre=None,
         distance_from_mass_profile_centre=None,
     ):
+        """Given a _LensingObject_ (e.g. a _MassProfile, _Galaxy_, _Plane_ or _Tracer_) this class uses their
+        deflections_from_grid method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
+        source-centre coordinate in the source-plane.
+
+        This is performed as follows:
+
+         1) For an initial input grid, compute all deflection angles, map their values to source-plane and compute the
+            distance of each traced coordinate to the source-plane centre.
+         2) Find the 'peak' pixels on the image-plane grid. A peak pixel is one that traces closer to the centre of
+            the source in the source-plane than it 8 direct neighboring adjacent pixels.
+         3) For every peak pixel, create a higher resolution grid around it and centred on it and using this higher
+            resolution grid find its peak pixel.
+
+         This process thus finds a set of 'peak' pixels and iteratively refines their values by locating them for
+         higher and higher resolution grids. The following occurances may happen during this process:
+
+          - A peak pixel may 'split' into multiple images. This is to be expected, when genuine multiple images
+            were previously merged into one due to the grid being too low resolution.
+
+          - Image pixels which do not correspond to genuine multiple images may be detected as they meet the peak
+            criteria. This can occurance in certain circumstances where a non-multiple image still traces closer than its
+            8 neighbors. Depending on how the _PositionFinder_ is being used these can be removed.
+         """
 
         super(PositionsFinder, self).__init__(
             use_upscaling=use_upscaling,
@@ -220,9 +255,29 @@ class PositionsFinder(AbstractPositionsSolver):
         self.grid = grid.in_1d_binned
         self.pixel_scale_precision = pixel_scale_precision
 
-    def refined_coordinate_from_coordinate(
+    def refined_coordinates_from_coordinate(
         self, coordinate, pixel_scale, lensing_obj, source_plane_coordinate
     ):
+        """For an input (y,x) coordinate, determine a set of refined coordinates that are computed by locating peak
+        pixels on a higher resolution grid around that pixel.
+
+        This may return 1 or multiple refined coordinates. Multiple coordinates occurance when the peak 'splits' into
+        multiple images.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The (y,x) coordinate around which the upscaled grid used to fin the refined coordinates is computed.
+        pixel_scales : (float, float)
+            The pixel-scale resolution of the buffed and upscaled grid that is formed around the input coordinate. If
+            upscale > 1, the pixel_scales are reduced to pixel_scale / upscale_factor.
+        lensing_obj : autogalaxy.LensingObject
+            An object which has a deflection_from_grid method for performing lensing calculations, for example a
+            _MassProfile_, _Galaxy_, _Plane_ or _Tracer_.
+        source_plane_coordinate : (float, float)
+            The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
+            for.
+        """
 
         grid = self.grid_buffed_and_upscaled_around_coordinate_from(
             coordinate=coordinate,
@@ -276,7 +331,7 @@ class PositionsFinder(AbstractPositionsSolver):
 
             for coordinate in coordinates_list:
 
-                refined_coordinates = self.refined_coordinate_from_coordinate(
+                refined_coordinates = self.refined_coordinates_from_coordinate(
                     coordinate=coordinate,
                     pixel_scale=pixel_scale,
                     lensing_obj=lensing_obj,
