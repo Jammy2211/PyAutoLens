@@ -24,28 +24,80 @@ class AbstractPositionsSolver:
         self.distance_from_mass_profile_centre = distance_from_mass_profile_centre
 
     def grid_with_coordinates_from_mass_profile_centre_removed(self, lensing_obj, grid):
+        """Remove all coordinates from a grid which are within the distance_from_mass_profile_centre attribute of any
+        mass profile of the lensing object.
 
+        The _PositionFinder_ often finds multiple unphyiscal solutions near a mass profile due to the high levels of
+        demagnification. These are typically not observable in real galaxies and thus may benefit from being removed
+        from the PositionFiner.
+
+        The positions are removed by computing the distance between all grid points and the mass profile centres of
+        every mass profile in the lensing object.
+
+        Parameters
+        ----------
+        lensing_obj : autogalaxy.LensingObject
+            An object which has a deflection_from_grid method for performing lensing calculations, for example a
+            _MassProfile_, _Galaxy_, _Plane_ or _Tracer_.
+        grid : autoarray.GridCoordinatesUniform or ndarray
+            A gridd of (y,x) Cartesian coordinates for which their distances to the mass profile centres are computed,
+            with points within the threshold removed.
+        """
         if self.distance_from_mass_profile_centre is not None:
 
             pixel_scales = grid.pixel_scales
 
             for centre in lensing_obj.mass_profile_centres.in_1d_list:
 
-                distances_1d = np.sqrt(np.square(grid[:, 0] - centre[0]) + np.square(
-                    grid[:, 1] - centre[1]
-                ))
+                distances_1d = np.sqrt(
+                    np.square(grid[:, 0] - centre[0])
+                    + np.square(grid[:, 1] - centre[1])
+                )
 
                 grid = grid_outside_distance_mask_from(
                     distances_1d=distances_1d,
                     grid_1d=grid,
-                    outside_distance=self.distance_from_mass_profile_centre
+                    outside_distance=self.distance_from_mass_profile_centre,
                 )
 
-            return grids.GridCoordinatesUniform(coordinates=grid, pixel_scales=pixel_scales)
+            return grids.GridCoordinatesUniform(
+                coordinates=grid, pixel_scales=pixel_scales
+            )
 
         return grid
 
-    def grid_buffed_around_coordinate_from(self, coordinate, pixel_scales, buffer, upscale_factor=1):
+    def grid_buffed_and_upscaled_around_coordinate_from(
+        self, coordinate, pixel_scales, buffer, upscale_factor
+    ):
+        """ For an input (y,x) Catersian coordinate create a buffed and upscaled square grid of (y,x) coordinates where:
+
+        - The new grid of coordinates are buffed. For example, if buffer=1, the new grid will correspond to a 3x3 grid
+          of coordinates centred on the input (y,x) value with spacings defined by the input pixel_scales.
+
+        - The new grid is upscaled. For example, if upscale=2, the new grid will be at x2 the resolution of the input
+          pixel_scale.
+
+        Buffing and upscaling work together, so a buffer=2 and upscale=2 will produce a new 6x6 grid centred around the
+        input coordinate.
+
+        The _PositionFinder_ works by locating pixels that trace closer to the source galaxy than neighboring pixels
+        and iteratively refining the grid to find pixels that trace close at higher and higher resolutions. This
+        function is core to producing these upscaled grids.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The (y,x) Cartesian coordinates aroun which the buffed and upscaled grid is created.
+        pixel_scales : (float, float)
+            The pixel-scale resolution of the buffed and upscaled grid that is formed around the input coordinate. If
+            upscale > 1, the pixel_scales are reduced to pixel_scale / upscale_factor.
+        buffer : int
+            The number of pixels around the central (y,x) coordinate that the grid is computed on, i.e. how much it is
+            buffed. A buffer of 1 puts 1 pixel in every direction around the (y,x) coordinate, creating a 3x3 grid. A
+            buffer=2 places two pixels around it in every direction, creating a 5x5 grid. And so on.
+        upscale_factor : int
+            The factor by which the resolution of the grid is increased relative to the input pixel-scales.
+        """
 
         if self.use_upscaling:
             upscale_factor = upscale_factor
@@ -53,12 +105,18 @@ class AbstractPositionsSolver:
             upscale_factor = 1
 
         grid_buffed = grid_buffed_around_coordinate_from(
-            coordinate=coordinate, pixel_scales=pixel_scales, buffer=buffer, upscale_factor=upscale_factor
+            coordinate=coordinate,
+            pixel_scales=pixel_scales,
+            buffer=buffer,
+            upscale_factor=upscale_factor,
         )
 
         return grids.GridCoordinatesUniform(
             coordinates=grid_buffed,
-            pixel_scales=(pixel_scales[0] / upscale_factor, pixel_scales[1] / upscale_factor)
+            pixel_scales=(
+                pixel_scales[0] / upscale_factor,
+                pixel_scales[1] / upscale_factor,
+            ),
         )
 
     def grid_peaks_from(self, lensing_obj, grid, source_plane_coordinate):
@@ -69,9 +127,7 @@ class AbstractPositionsSolver:
             coordinate=source_plane_coordinate
         )
 
-        neighbors, has_neighbors = grid_square_neighbors_1d_from(
-            shape_1d=grid.shape[0],
-        )
+        neighbors, has_neighbors = grid_square_neighbors_1d_from(shape_1d=grid.shape[0])
 
         grid_peaks = grid_peaks_from(
             distance_1d=source_plane_distances,
@@ -97,15 +153,16 @@ class AbstractPositionsSolver:
             coordinate=source_plane_coordinate
         )
 
+        print(grid)
+        print(source_plane_distances)
+
         grid_within_distance_of_centre = grid_within_distance(
-            distances_1d=source_plane_distances,
-            grid_1d=grid,
-            within_distance=distance,
+            distances_1d=source_plane_distances, grid_1d=grid, within_distance=distance
         )
 
         return grids.GridCoordinatesUniform(
-                coordinates=grid_within_distance_of_centre,
-                pixel_scales=grid.pixel_scales)
+            coordinates=grid_within_distance_of_centre, pixel_scales=grid.pixel_scales
+        )
 
 
 class PositionsFinder(AbstractPositionsSolver):
@@ -129,13 +186,15 @@ class PositionsFinder(AbstractPositionsSolver):
         self.grid = grid.in_1d_binned
         self.pixel_scale_precision = pixel_scale_precision
 
-    def refined_coordinate_from_coordinate(self, coordinate, pixel_scale, lensing_obj, source_plane_coordinate):
+    def refined_coordinate_from_coordinate(
+        self, coordinate, pixel_scale, lensing_obj, source_plane_coordinate
+    ):
 
-        grid = self.grid_buffed_around_coordinate_from(
+        grid = self.grid_buffed_and_upscaled_around_coordinate_from(
             coordinate=coordinate,
             pixel_scales=(pixel_scale, pixel_scale),
-            buffer=5,
-            upscale_factor=self.upscale_factor
+            buffer=4,
+            upscale_factor=self.upscale_factor,
         )
 
         grid = self.grid_peaks_from(
@@ -146,8 +205,6 @@ class PositionsFinder(AbstractPositionsSolver):
 
         if len(grid) == 0:
             return None
-        elif len(grid) == 1:
-            return [tuple(grid[0])]
         else:
             return [tuple(coordinate) for coordinate in grid]
 
@@ -163,15 +220,15 @@ class PositionsFinder(AbstractPositionsSolver):
 
     def solve(self, lensing_obj, source_plane_coordinate):
 
-        print()
-
         coordinates_list = self.grid_peaks_from(
             lensing_obj=lensing_obj,
             grid=self.grid,
             source_plane_coordinate=source_plane_coordinate,
         )
 
-        coordinates_list = self.grid_with_coordinates_from_mass_profile_centre_removed(lensing_obj=lensing_obj, grid=coordinates_list)
+        coordinates_list = self.grid_with_coordinates_from_mass_profile_centre_removed(
+            lensing_obj=lensing_obj, grid=coordinates_list
+        )
 
         if not self.use_upscaling:
 
@@ -179,7 +236,7 @@ class PositionsFinder(AbstractPositionsSolver):
 
         pixel_scale = self.grid.pixel_scale
 
-        while pixel_scale > 0.0001:
+        while pixel_scale > self.pixel_scale_precision:
 
             refined_coordinates_list = []
 
@@ -189,124 +246,70 @@ class PositionsFinder(AbstractPositionsSolver):
                     coordinate=coordinate,
                     pixel_scale=pixel_scale,
                     lensing_obj=lensing_obj,
-                    source_plane_coordinate=source_plane_coordinate
+                    source_plane_coordinate=source_plane_coordinate,
                 )
 
                 if refined_coordinates is not None:
                     refined_coordinates_list += refined_coordinates
 
+            refined_coordinates_list = grid_remove_duplicates(
+                grid=np.asarray(refined_coordinates_list)
+            )
+
             pixel_scale = pixel_scale / self.upscale_factor
 
             coordinates_list = refined_coordinates_list
 
-        # coordinates_list = self.grid_within_distance_of_centre(
-        #     lensing_obj=lensing_obj,
-        #     grid=grids.GridCoordinatesUniform(coordinates=coordinates_list, pixel_scales=(pixel_scale, pixel_scale)),
-        #     source_plane_coordinate=source_plane_coordinate,
-        #     distance=self.distance_from_source_centre,
-        # )
-        print(coordinates_list)
+        coordinates_list = self.grid_within_distance_of_centre(
+            lensing_obj=lensing_obj,
+            grid=grids.GridCoordinatesUniform(
+                coordinates=coordinates_list, pixel_scales=(pixel_scale, pixel_scale)
+            ),
+            source_plane_coordinate=source_plane_coordinate,
+            distance=self.distance_from_source_centre,
+        )
 
         return grids.GridCoordinates(coordinates=coordinates_list)
 
 
-class PositionsPairer(AbstractPositionsSolver):
-    def __init__(
-        self,
-        pair_pixel_scales,
-        pair_search_factors,
-        pair_precision,
-        use_upscaling=True,
-        upscale_factor=2,
-        distance_from_source_centre=None,
-        distance_from_mass_profile_centre=None,
-    ):
+@decorator_util.jit()
+def grid_remove_duplicates(grid):
 
-        super(PositionsPairer, self).__init__(
-            use_upscaling=use_upscaling,
-            upscale_factor=upscale_factor,
-            distance_from_source_centre=distance_from_source_centre,
-            distance_from_mass_profile_centre=distance_from_mass_profile_centre,
-        )
+    tolerance = 1e-8
 
-        self.pair_pixel_scales = abstract_structure.convert_pixel_scales(pixel_scales=pair_pixel_scales)
-        self.pair_search_factors = pair_search_factors
-        self.pair_precision = pair_precision
+    grid_no_duplicates = []
 
-    def paired_coordinate_from_buffer_search(self, position, lensing_obj, source_plane_coordinate):
+    separations = np.zeros((grid.shape[0], grid.shape[0]))
 
-        for buffer in self.pair_search_factors:
-
-            grid = self.grid_buffed_around_coordinate_from(coordinate=position, pixel_scales=self.pair_pixel_scales, buffer=buffer, upscale_factor=1)
-
-            grid = self.grid_peaks_from(
-                lensing_obj=lensing_obj,
-                grid=grid,
-                source_plane_coordinate=source_plane_coordinate,
+    for i in range(grid.shape[0]):
+        for j in range(grid.shape[0]):
+            separations[i, j] = np.sqrt(
+                np.square(grid[i, 0] - grid[j, 0]) + np.square(grid[i, 1] - grid[j, 1])
             )
+            separations[i, i] = tolerance * 2
 
-            if len(grid) > 0:
-                paired_coordinate_index = pair_coordinate_to_closest_pixel_on_grid(coordinate=position, grid_1d=grid)
-                return grid[paired_coordinate_index]
+    for i in range(grid.shape[0]):
 
-        return None
+        is_duplicate = False
 
-    def solve_from_tracer(self, tracer):
-        """Needs work - idea is it solves for all image plane multiple image positions using the redshift distribution of
-        the tracer."""
-        return grids.GridCoordinates(
-            coordinates=[
-                self.solve(lensing_obj=tracer, source_plane_coordinate=centre)
-                for centre in tracer.light_profile_centres.in_list[-1]
-            ]
-        )
+        for j in range(grid.shape[0]):
 
-    def solve(self, position, lensing_obj, source_plane_coordinate):
+            if separations[i, j] < tolerance:
 
-        paired_coordinate = self.paired_coordinate_from_buffer_search(
-            position=position,
-            lensing_obj=lensing_obj,
-            source_plane_coordinate=source_plane_coordinate
-        )
+                is_duplicate = True
+                separations[i, j] = tolerance * 2
+                separations[j, i] = tolerance * 2
 
-        if paired_coordinate is None:
-            raise exc.PositionsException
+        if not is_duplicate:
+            grid_no_duplicates.append((grid[i, 0], grid[i, 1]))
 
-        if not self.use_upscaling or self.upscale_factor == 1:
-            return grids.GridCoordinates(coordinates=paired_coordinate)
-
-        paired_coordinate_precision = np.inf
-
-        pixel_scales = self.pair_pixel_scales
-        paired_coordinate_new = paired_coordinate
-
-        while paired_coordinate_precision > self.pair_precision:
-
-            grid = self.grid_buffed_around_coordinate_from(
-                coordinate=paired_coordinate,
-                pixel_scales=pixel_scales,
-                buffer=3,
-                upscale_factor=self.upscale_factor
-            )
-
-            pixel_scales = grid.pixel_scales
-
-            grid = self.grid_peaks_from(
-                lensing_obj=lensing_obj,
-                grid=grid,
-                source_plane_coordinate=source_plane_coordinate,
-            )
-
-            paired_coordinate_index = pair_coordinate_to_closest_pixel_on_grid(coordinate=position, grid_1d=grid)
-            paired_coordinate_new = grid[paired_coordinate_index]
-            paired_coordinate_precision = np.sqrt(np.square(paired_coordinate[0] - paired_coordinate_new[0]) + np.square(paired_coordinate[1] - paired_coordinate_new[1]))
-            paired_coordinate = paired_coordinate_new
-
-        return paired_coordinate_new
+    return grid_no_duplicates
 
 
 @decorator_util.jit()
-def grid_buffed_around_coordinate_from(coordinate, pixel_scales, buffer, upscale_factor=1):
+def grid_buffed_around_coordinate_from(
+    coordinate, pixel_scales, buffer, upscale_factor=1
+):
     """From an input 1D grid, return a 1D buffed grid where (y,x) coordinates are added next to all grid pixels whose
     neighbors in the 8 neighboring directions were masked and not included in the grid.
 
@@ -321,13 +324,16 @@ def grid_buffed_around_coordinate_from(coordinate, pixel_scales, buffer, upscale
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
     """
 
-    total_coordinates = (upscale_factor*(2*buffer+1))**2
+    total_coordinates = (upscale_factor * (2 * buffer + 1)) ** 2
 
     grid_1d = np.zeros(shape=(total_coordinates, 2))
 
     grid_index = 0
 
-    pixel_scales_upscaled = (pixel_scales[0] / upscale_factor, pixel_scales[1] / upscale_factor)
+    pixel_scales_upscaled = (
+        pixel_scales[0] / upscale_factor,
+        pixel_scales[1] / upscale_factor,
+    )
 
     y_upscale_half = pixel_scales_upscaled[0] / 2
     x_upscale_half = pixel_scales_upscaled[1] / 2
@@ -335,13 +341,13 @@ def grid_buffed_around_coordinate_from(coordinate, pixel_scales, buffer, upscale
     edge = int(np.sqrt(total_coordinates))
 
     if edge % 2 != 0:
-        edge_start = -int((edge-1)/2)
-        edge_end = int((edge-1)/2) + 1
+        edge_start = -int((edge - 1) / 2)
+        edge_end = int((edge - 1) / 2) + 1
         y_odd_pixel_scale = y_upscale_half
         x_odd_pixel_scale = x_upscale_half
     else:
-        edge_start = -int(edge/2)
-        edge_end = int(edge/2)
+        edge_start = -int(edge / 2)
+        edge_end = int(edge / 2)
         y_odd_pixel_scale = 0.0
         x_odd_pixel_scale = 0.0
 
@@ -349,10 +355,16 @@ def grid_buffed_around_coordinate_from(coordinate, pixel_scales, buffer, upscale
         for x in range(edge_start, edge_end):
 
             grid_1d[grid_index, 0] = (
-                coordinate[0] - y*pixel_scales_upscaled[0] - y_upscale_half + y_odd_pixel_scale
+                coordinate[0]
+                - y * pixel_scales_upscaled[0]
+                - y_upscale_half
+                + y_odd_pixel_scale
             )
             grid_1d[grid_index, 1] = (
-                coordinate[1] + x*pixel_scales_upscaled[1] + x_upscale_half - x_odd_pixel_scale
+                coordinate[1]
+                + x * pixel_scales_upscaled[1]
+                + x_upscale_half
+                - x_odd_pixel_scale
             )
             grid_index += 1
 
@@ -416,7 +428,7 @@ def grid_square_neighbors_1d_from(shape_1d):
     for y in range(shape_of_edge):
         for x in range(shape_of_edge):
 
-            if y > 0 and x > 0 and y < shape_of_edge-1 and x < shape_of_edge - 1:
+            if y > 0 and x > 0 and y < shape_of_edge - 1 and x < shape_of_edge - 1:
 
                 neighbors_1d[index, 0] = index - shape_of_edge - 1
                 neighbors_1d[index, 1] = index - shape_of_edge
@@ -480,20 +492,20 @@ def grid_peaks_from(distance_1d, grid_1d, neighbors, has_neighbors):
 
 @decorator_util.jit()
 def grid_within_distance(distances_1d, grid_1d, within_distance):
-    
+
     grid_within_size = 0
 
     for grid_index in range(grid_1d.shape[0]):
         if distances_1d[grid_index] < within_distance:
             grid_within_size += 1
-            
+
     grid_within = np.zeros(shape=(grid_within_size, 2))
 
     grid_within_index = 0
 
     for grid_index in range(grid_1d.shape[0]):
         if distances_1d[grid_index] < within_distance:
-            
+
             grid_within[grid_within_index, :] = grid_1d[grid_index, :]
             grid_within_index += 1
 

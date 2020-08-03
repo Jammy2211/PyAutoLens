@@ -65,7 +65,9 @@ iters = 50
 
 """Use a _PositionsSolver_ which does not use grid upscaling."""
 
-solver = al.PositionsFinder(grid=grid, pixel_scale_precision=0.001, upscale_factor=2, use_upscaling=True)
+solver = al.PositionsFinder(
+    grid=grid, use_upscaling=True, pixel_scale_precision=0.0001, upscale_factor=2
+)
 
 for i in range(iters):
 
@@ -92,8 +94,6 @@ for i in range(iters):
         lensing_obj=tracer,
         source_plane_coordinate=tracer.source_plane.galaxies[0].light.centre,
     )
-
-    print(positions)
 
     """Visually inspect the positions (comment this out if you are confident the code is behaving as expected)."""
 

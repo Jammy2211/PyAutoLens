@@ -31,17 +31,23 @@ pickle_path = f"{path}/pickles"
 
 # %%
 grid = al.Grid.uniform(
-    shape_2d=(200, 200),
-    pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+    shape_2d=(2000, 2000),
+    pixel_scales=0.005,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
 """Use a _PositionsSolver_ which uses grid upscaling."""
 
-solver = al.PositionsFinder(grid=grid, pixel_scale_precision=0.001, upscale_factor=2)
+solver = al.PositionsFinder(
+    grid=grid,
+    use_upscaling=True,
+    pixel_scale_precision=0.0000001,
+    upscale_factor=2,
+    distance_from_source_centre=0.1,
+)
 
 iters = 50
 
-for i in range(iters):
+for i in range(40, 41):
 
     tracer = al.Tracer.load(file_path=pickle_path, filename=f"tracer_{str(i)}")
 
@@ -54,9 +60,6 @@ for i in range(iters):
         file_path=pickle_path, filename=f"positions_{str(i)}"
     )
 
-    print()
-    print(positions_true.in_list)
-
     if positions is not None:
         minimum_separations = util.minimum_separations_from(
             positions_true=positions_true, positions=positions
@@ -65,10 +68,6 @@ for i in range(iters):
         in_positions_true = util.check_if_positions_in_positions_true(
             positions_true=positions_true, positions=positions, threshold=0.1
         )
-
-        print(positions.in_list)
-        print(minimum_separations)
-        print(in_positions_true)
 
         positions_plot = al.GridCoordinates(
             coordinates=[positions.in_list[0], positions_true.in_list[0]]
@@ -81,9 +80,11 @@ for i in range(iters):
 
         positions_plot = al.GridCoordinates(coordinates=[positions_true.in_list[0]])
 
+    print(positions)
+
     aplt.Tracer.image(
         tracer=tracer,
         grid=grid,
         positions=positions_plot,
-        include=aplt.Include(origin=False, critical_curves=False, caustics=False),
+        include=aplt.Include(origin=False, critical_curves=True, caustics=False),
     )
