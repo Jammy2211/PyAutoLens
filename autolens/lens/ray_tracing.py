@@ -750,7 +750,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             inversion_stochastic=inversion_stochastic,
         )
 
-        return inv.InversionImaging.from_data_mapper_and_regularization(
+        return inv.InversionImagingMatrix.from_data_mapper_and_regularization(
             image=image,
             noise_map=noise_map,
             convolver=convolver,
@@ -767,7 +767,6 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         inversion_uses_border=False,
         preload_sparse_grids_of_planes=None,
         inversion_stochastic=False,
-        visibilities_complex=None,
     ):
         mappers_of_planes = self.mappers_of_planes_from_grid(
             grid=grid,
@@ -776,13 +775,12 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             inversion_stochastic=inversion_stochastic,
         )
 
-        return inv.InversionInterferometer.from_data_mapper_and_regularization(
+        return inv.AbstractInversionInterferometer.from_data_mapper_and_regularization(
             visibilities=visibilities,
             noise_map=noise_map,
             transformer=transformer,
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],
-            visibilities_complex=visibilities_complex,
         )
 
     def hyper_noise_map_from_noise_map(self, noise_map):

@@ -882,7 +882,7 @@ class TestFitImaging:
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_imaging_7x7.grid_inversion, sparse_grid=None
             )
-            inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
+            inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
                 mapper=mapper,
                 regularization=reg,
                 image=masked_imaging_7x7.image,
@@ -967,7 +967,7 @@ class TestFitImaging:
                 grid=masked_imaging_7x7.grid, sparse_grid=None
             )
 
-            inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
+            inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
                 mapper=mapper,
                 regularization=reg,
                 image=masked_imaging_7x7.image,
@@ -1035,7 +1035,7 @@ class TestFitImaging:
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_imaging_7x7.grid, inversion_uses_border=False
             )
-            inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
+            inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
                 mapper=mapper,
                 regularization=reg,
                 image=image,
@@ -1117,7 +1117,7 @@ class TestFitImaging:
                 grid=masked_imaging_7x7.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
+            inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
                 mapper=mapper,
                 regularization=reg,
                 image=masked_imaging_7x7.image,
@@ -1196,7 +1196,7 @@ class TestFitImaging:
                 grid=masked_imaging_7x7.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
+            inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
                 image=profile_subtracted_image,
                 noise_map=masked_imaging_7x7.noise_map,
                 convolver=masked_imaging_7x7.convolver,
@@ -1311,7 +1311,7 @@ class TestFitImaging:
                 grid=masked_imaging_7x7_grid.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
+            inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
                 image=profile_subtracted_image,
                 noise_map=masked_imaging_7x7_grid.noise_map,
                 convolver=masked_imaging_7x7_grid.convolver,
@@ -1403,7 +1403,7 @@ class TestFitImaging:
                 grid=masked_imaging_7x7.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
+            inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
                 image=profile_subtracted_image,
                 noise_map=hyper_noise_map,
                 convolver=masked_imaging_7x7.convolver,
@@ -1497,7 +1497,7 @@ class TestFitImaging:
                 grid=masked_imaging_7x7_grid.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
+            inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
                 image=profile_subtracted_image,
                 noise_map=masked_imaging_7x7_grid.noise_map,
                 convolver=masked_imaging_7x7_grid.convolver,
@@ -1997,7 +1997,7 @@ class TestFitInterferometer:
                 grid=masked_interferometer_7.grid_inversion, sparse_grid=None
             )
 
-            inversion = inversions.InversionInterferometer.from_data_mapper_and_regularization(
+            inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
                 mapper=mapper,
                 regularization=reg,
                 visibilities=masked_interferometer_7.visibilities,
@@ -2094,7 +2094,7 @@ class TestFitInterferometer:
                 grid=masked_interferometer_7.grid, sparse_grid=None
             )
 
-            inversion = inversions.InversionInterferometer.from_data_mapper_and_regularization(
+            inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
                 mapper=mapper,
                 regularization=reg,
                 visibilities=masked_interferometer_7.visibilities,
@@ -2127,7 +2127,7 @@ class TestFitInterferometer:
                 grid=masked_interferometer_7.grid, sparse_grid=None
             )
 
-            inversion = inversions.InversionInterferometer.from_data_mapper_and_regularization(
+            inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
                 mapper=mapper,
                 regularization=reg,
                 visibilities=masked_interferometer_7.visibilities,
@@ -2216,6 +2216,106 @@ class TestFitInterferometer:
 
             assert fit_0.log_evidence != fit_1.log_evidence
 
+        def test___all_lens_fit_quantities__linear_operator(
+            self, masked_interferometer_7_lop
+        ):
+
+            # Ensures the inversion grid is used, as this would cause the test to fail.
+            masked_interferometer_7_lop.grid[0, 0] = -100.0
+
+            pix = al.pix.Rectangular(shape=(3, 3))
+            reg = al.reg.Constant(coefficient=0.01)
+
+            g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+
+            fit = al.FitInterferometer(
+                masked_interferometer=masked_interferometer_7_lop, tracer=tracer
+            )
+
+            mapper = pix.mapper_from_grid_and_sparse_grid(
+                grid=masked_interferometer_7_lop.grid_inversion, sparse_grid=None
+            )
+
+            inversion = inversions.InversionInterferometerLinearOperator.from_data_mapper_and_regularization(
+                mapper=mapper,
+                regularization=reg,
+                visibilities=masked_interferometer_7_lop.visibilities,
+                noise_map=masked_interferometer_7_lop.noise_map,
+                transformer=masked_interferometer_7_lop.transformer,
+            )
+
+            assert inversion.mapped_reconstructed_visibilities == pytest.approx(
+                fit.model_visibilities, 1.0e-4
+            )
+
+            residual_map = al.util.fit.residual_map_from(
+                data=masked_interferometer_7_lop.visibilities,
+                model_data=inversion.mapped_reconstructed_visibilities,
+            )
+
+            assert residual_map.in_1d == pytest.approx(fit.residual_map.in_1d, 1.0e-4)
+
+            normalized_residual_map = al.util.fit.normalized_residual_map_from(
+                residual_map=residual_map, noise_map=masked_interferometer_7_lop.noise_map
+            )
+
+            assert normalized_residual_map.in_1d == pytest.approx(
+                fit.normalized_residual_map.in_1d, 1.0e-4
+            )
+
+            chi_squared_map = al.util.fit.chi_squared_map_from(
+                residual_map=residual_map, noise_map=masked_interferometer_7_lop.noise_map
+            )
+
+            assert chi_squared_map.in_1d == pytest.approx(
+                fit.chi_squared_map.in_1d, 1.0e-4
+            )
+
+            chi_squared = al.util.fit.chi_squared_from(chi_squared_map=chi_squared_map)
+
+            noise_normalization = al.util.fit.noise_normalization_from(
+                noise_map=masked_interferometer_7_lop.noise_map
+            )
+
+            log_likelihood = al.util.fit.log_likelihood_from(
+                chi_squared=chi_squared, noise_normalization=noise_normalization
+            )
+
+            assert log_likelihood == pytest.approx(fit.log_likelihood, 1e-4)
+
+            log_likelihood_with_regularization = al.util.fit.log_likelihood_with_regularization_from(
+                chi_squared=chi_squared,
+                regularization_term=inversion.regularization_term,
+                noise_normalization=noise_normalization,
+            )
+
+            assert log_likelihood_with_regularization == pytest.approx(
+                fit.log_likelihood_with_regularization, 1e-4
+            )
+
+            log_evidence = al.util.fit.log_evidence_from(
+                chi_squared=chi_squared,
+                regularization_term=inversion.regularization_term,
+                log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
+                log_regularization_term=inversion.log_det_regularization_matrix_term,
+                noise_normalization=noise_normalization,
+            )
+
+            assert log_evidence == fit.log_evidence
+            assert log_evidence == fit.figure_of_merit
+
+            mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_from(
+                mapping_matrix=fit.inversion.mapper.mapping_matrix,
+                reconstruction=fit.inversion.reconstruction,
+            )
+
+            assert (
+                fit.inversion.mapped_reconstructed_image.in_1d
+                == mapped_reconstructed_image
+            ).all()
+
     class TestCompareToManualProfilesAndInversion:
         def test___all_lens_fit_quantities__no_hyper_methods(
             self, masked_interferometer_7
@@ -2255,7 +2355,7 @@ class TestFitInterferometer:
                 grid=masked_interferometer_7.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.InversionInterferometer.from_data_mapper_and_regularization(
+            inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
                 visibilities=profile_subtracted_visibilities,
                 noise_map=masked_interferometer_7.noise_map,
                 transformer=masked_interferometer_7.transformer,
@@ -2379,7 +2479,7 @@ class TestFitInterferometer:
                 grid=masked_interferometer_7_grid.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.InversionInterferometer.from_data_mapper_and_regularization(
+            inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
                 visibilities=profile_subtracted_visibilities,
                 noise_map=masked_interferometer_7_grid.noise_map,
                 transformer=masked_interferometer_7_grid.transformer,
@@ -2448,7 +2548,7 @@ class TestFitInterferometer:
                 grid=masked_interferometer_7_grid.grid, inversion_uses_border=False
             )
 
-            inversion = inversions.InversionInterferometer.from_data_mapper_and_regularization(
+            inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
                 visibilities=profile_subtracted_visibilities,
                 noise_map=masked_interferometer_7_grid.noise_map,
                 transformer=masked_interferometer_7_grid.transformer,

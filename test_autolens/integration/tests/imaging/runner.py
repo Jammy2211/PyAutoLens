@@ -24,9 +24,11 @@ def run(
             shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
         )
 
+    info = {"Test" : 100}
+
     module.make_pipeline(
         name=test_name, folders=[module.test_type, test_name], search=search
-    ).run(dataset=imaging, mask=mask)
+    ).run(dataset=imaging, mask=mask, info=info)
 
 
 def run_a_mock(module):
