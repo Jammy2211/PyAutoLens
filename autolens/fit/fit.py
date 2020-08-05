@@ -193,7 +193,6 @@ class FitInterferometer(aa_fit.FitInterferometer):
                 inversion_uses_border=masked_interferometer.inversion_uses_border,
                 preload_sparse_grids_of_planes=masked_interferometer.preload_sparse_grids_of_planes,
                 inversion_stochastic=masked_interferometer.inversion_stochastic,
-                visibilities_complex=masked_interferometer.visibilities_complex,
             )
 
             model_visibilities = (

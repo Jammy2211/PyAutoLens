@@ -11,8 +11,8 @@ interferometer = instrument_util.load_test_interferometer(
     data_name="lens_sie__source_smooth", instrument="sma"
 )
 
-aplt.Interferometer.visibilities(interferometer=interferometer)
-aplt.Interferometer.uv_wavelengths(interferometer=interferometer)
+# aplt.Interferometer.visibilities(interferometer=interferometer)
+# aplt.Interferometer.uv_wavelengths(interferometer=interferometer)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -35,7 +35,7 @@ lens_galaxy = al.Galaxy(
 source_galaxy = al.Galaxy(
     redshift=1.0,
     pixelization=al.pix.VoronoiMagnification(shape=(20, 20)),
-    regularization=al.reg.Constant(coefficient=0.01),
+    regularization=al.reg.Constant(coefficient=1.0),
 )
 
 real_space_shape = 256
@@ -56,7 +56,7 @@ masked_interferometer = al.MaskedInterferometer(
     visibilities_mask=np.full(
         fill_value=False, shape=interferometer.visibilities.shape
     ),
-    transformer_class=al.TransformerNUFFT,
+    transformer_class=al.TransformerNUFFTLinearOperator,
 )
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])

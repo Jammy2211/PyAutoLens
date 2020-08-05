@@ -9,7 +9,7 @@ from autoarray.operators.inversion.inversions import inversion as Inversion
 from autoarray.operators.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.operators.transformer import TransformerNUFFTLops
+from autoarray.operators.transformer import TransformerNUFFTLinearOperator
 from autoarray.structures.arrays import Values
 from autoarray.structures.grids import (
     Grid,
@@ -52,7 +52,7 @@ from .dataset.interferometer import MaskedInterferometer, SimulatorInterferomete
 from .fit.fit import FitImaging, FitInterferometer
 from .fit.fit_positions import FitPositionsSourcePlaneMaxSeparation
 from .lens.ray_tracing import Tracer
-from .lens.positions_solver import PositionsFinder, PositionsPairer
+from .lens.positions_solver import PositionsFinder
 from .pipeline.setup import PipelineSetup
 from .pipeline import slam
 from .pipeline.phase.settings import PhaseSettingsImaging
