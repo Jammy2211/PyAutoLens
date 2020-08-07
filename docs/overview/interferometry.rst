@@ -34,13 +34,11 @@ like (these are representative of a Square Mile Array dataset):
 To perform uv-plane modeling, **PyAutoLens** generates an image of the strong lens system via a *Tracer* and then
 Fourier transforms it to the uv-plane. This operation uses a *Transformer* object, of which there are multiple
 available in **PyAutoLens**. This includes one which performs a direct Fourier transform and thus suffers no
-approximations and a non-uniform fast fourier transform which is significalty quicker for datasets with many
-visibilities.
+approximations.
 
 .. code-block:: bash
 
-    transformer = al.TransformerDFT()
-    transformer = al.TransformerNUFFT()
+    transformer_class = al.TransformerDFT
 
 The perform a fit, we need two masks, a 'real-space mask' which defines the grid on which the image of the lensed
 source galaxy is computed and a 'visibilities mask' which defining which visibilities are omitted from the chi-squared
@@ -59,7 +57,7 @@ evaluation. We can use these masks to create a *MaskedInterferometer* object whi
         interferometer=interferometer,
         visibilities_mask=visibilities_mask,
         real_space_mask=real_space_mask,
-        transformer_class=aa.TransformerNUFFT,
+        transformer_class=transformer_class,
     )
 
 The masked interferometer can now be used with a *FitInterferometer* object to fit it to a data-set:
@@ -102,6 +100,25 @@ To show the fit to the real and imaginary visibilities, we plot the residuals an
 
 Interferometer data can also be modeled using pixelized source's, which again perform the source reconstruction by
 directly fitting the visibilities in the uv-plane. The source reconstruction itself is visualized in real space:
+
+Modeling interferometer data from telescopes such as ALMA and JVLA in the uv-plane is synonomously expensive. This is
+because they often observe *millions* of visibilities. This makes the direct Fourier transform used above
+**extremely slow** and makes the matrices stored dring the linear-algebra calculations that reconstruct the source on a
+pixel-grid uses potentially **hundreds of GB of memory**! Ouch!
+
+**PyAutoLens** has solutions to both of these problems:
+
+ 1) To Fourier transform the model to Fourier space, we use the non-uniform fast fourier transform algorithm
+    **PyNUFFT** (https://github.com/jyhmiinlin/pynufft). This is much quicker than the direct Fourier transform whilst
+    retaining a high level of accuracy in the computation.
+
+ 2) Instead of representing the linear algebra as matrices, we represent the calculation as a series of Linear Operators
+    using the library **PyLops** (https://pylops.readthedocs.io/en/latest/).
+
+.. code-block:: bash
+
+    transformer = al.TransformerDFT()
+    transformer = al.TransformerNUFFT()
 
 Simulated interferometer datasets can be generated using the *SimulatorInterferometer* object, which includes adding
 Gaussian noise to the visibilities:
