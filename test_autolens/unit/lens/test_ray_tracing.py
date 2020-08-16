@@ -3464,7 +3464,7 @@ class TestAbstractTracerData:
                 image=masked_imaging_7x7.image,
                 noise_map=masked_imaging_7x7.noise_map,
                 convolver=masked_imaging_7x7.convolver,
-                inversion_uses_border=False,
+                pixelization_settings=al.PixelizationSettings(use_border=False),
             )
 
             assert inversion.mapped_reconstructed_image == pytest.approx(
@@ -3489,7 +3489,7 @@ class TestAbstractTracerData:
                 visibilities=masked_interferometer_7.visibilities,
                 noise_map=masked_interferometer_7.noise_map,
                 transformer=masked_interferometer_7.transformer,
-                inversion_uses_border=False,
+                pixelization_settings=al.PixelizationSettings(use_border=False),
             )
 
             assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(

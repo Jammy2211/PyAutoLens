@@ -51,8 +51,6 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
             with open(log_likelihood_cap_file) as f:
                 log_likelihood_cap = float(f.read())
         except FileNotFoundError:
-            print(results)
-            print(results.last)
             log_evidences = results.last.stochastic_log_evidences(
                 histogram_samples=self.histogram_samples
             )

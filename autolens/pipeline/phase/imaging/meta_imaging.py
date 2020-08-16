@@ -56,10 +56,7 @@ class MetaImaging(ag_meta_imaging.MetaImaging, meta_dataset.MetaLens):
             sub_steps=self.settings.sub_steps,
             psf_shape_2d=self.settings.psf_shape_2d,
             pixel_scales_interp=self.settings.pixel_scales_interp,
-            inversion_pixel_limit=self.settings.inversion_pixel_limit,
             positions_threshold=self.settings.positions_threshold,
-            inversion_uses_border=self.settings.inversion_uses_border,
-            inversion_stochastic=self.settings.inversion_stochastic,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
 

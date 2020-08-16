@@ -1,6 +1,7 @@
 from autoconf import conf
 from autoarray.structures import grids
 from autoarray.operators import transformer
+from autoarray.inversion import pixelizations as pix, inversions as inv
 from autogalaxy.pipeline.phase import settings
 
 
@@ -10,15 +11,11 @@ class PhaseSettingsLens:
         auto_positions_factor=None,
         auto_positions_minimum_threshold=None,
         positions_threshold=None,
-        inversion_uses_border=True,
-        inversion_stochastic=False,
     ):
 
         self.auto_positions_factor = auto_positions_factor
         self.auto_positions_minimum_threshold = auto_positions_minimum_threshold
         self.positions_threshold = positions_threshold
-        self.inversion_uses_border = inversion_uses_border
-        self.inversion_stochastic = inversion_stochastic
 
     @property
     def auto_positions_factor_tag(self):
@@ -65,43 +62,6 @@ class PhaseSettingsLens:
             + "_{0:.2f}".format(self.positions_threshold)
         )
 
-    @property
-    def inversion_uses_border_tag(self):
-        """Generate a tag for whether a border is used by the inversion.
-
-        This changes the setup folder as follows (the example tags below are the default config tags):
-
-        inversion_uses_border = False -> settings
-        inversion_uses_border = True -> settings___no_border
-        """
-        if self.inversion_uses_border:
-
-            tag = conf.instance.tag.get("phase", "inversion_uses_border", str)
-
-            if not tag:
-                return str(tag)
-            return "__" + tag
-        elif not self.inversion_uses_border:
-            return "__" + conf.instance.tag.get("phase", "inversion_no_border", str)
-
-    @property
-    def inversion_stochastic_tag(self):
-        """Generate a tag for whether the inversion is stochastic.
-
-        This changes the setup folder as follows (the example tags below are the default config tags):
-
-        inversion_stochastic = False -> settings
-        inversion_stochastic = True -> settings___stochastic
-        """
-        if not self.inversion_stochastic:
-
-            tag = conf.instance.tag.get("phase", "inversion_not_stochastic", str)
-            if not tag:
-                return tag
-            return "__" + tag
-        elif self.inversion_stochastic:
-            return "__" + conf.instance.tag.get("phase", "inversion_stochastic", str)
-
 
 class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
     def __init__(
@@ -113,14 +73,13 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
         sub_steps=None,
         signal_to_noise_limit=None,
         bin_up_factor=None,
-        inversion_pixel_limit=None,
         psf_shape_2d=None,
         pixel_scales_interp=None,
         auto_positions_factor=None,
         auto_positions_minimum_threshold=None,
         positions_threshold=None,
-        inversion_uses_border=True,
-        inversion_stochastic=False,
+        pixelization_settings=pix.PixelizationSettings(),
+        inversion_settings=inv.InversionSettings(),
         log_likelihood_cap=None,
     ):
 
@@ -133,8 +92,9 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
             pixel_scales_interp=pixel_scales_interp,
             signal_to_noise_limit=signal_to_noise_limit,
             bin_up_factor=bin_up_factor,
-            inversion_pixel_limit=inversion_pixel_limit,
             psf_shape_2d=psf_shape_2d,
+            pixelization_settings=pixelization_settings,
+            inversion_settings=inversion_settings,
             log_likelihood_cap=log_likelihood_cap,
         )
 
@@ -143,8 +103,6 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
             auto_positions_factor=auto_positions_factor,
             auto_positions_minimum_threshold=auto_positions_minimum_threshold,
             positions_threshold=positions_threshold,
-            inversion_uses_border=inversion_uses_border,
-            inversion_stochastic=inversion_stochastic,
         )
 
     @property
@@ -157,8 +115,8 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
             + self.psf_shape_tag
             + self.auto_positions_factor_tag
             + self.positions_threshold_tag
-            + self.inversion_uses_border_tag
-            + self.inversion_stochastic_tag
+            + self.pixelization.use_border_tag
+            + self.pixelization.is_stochastic_tag
             + self.log_likelihood_cap_tag
         )
 
@@ -172,8 +130,8 @@ class PhaseSettingsImaging(settings.PhaseSettingsImaging, PhaseSettingsLens):
             + self.psf_shape_tag
             + self.auto_positions_factor_tag
             + self.positions_threshold_tag
-            + self.inversion_uses_border_tag
-            + self.inversion_stochastic_tag
+            + self.pixelization.use_border_tag
+            + self.pixelization.is_stochastic_tag
             + self.log_likelihood_cap_tag
         )
 
@@ -191,14 +149,13 @@ class PhaseSettingsInterferometer(
         pixel_scales_interp=None,
         signal_to_noise_limit=None,
         bin_up_factor=None,
-        inversion_pixel_limit=None,
         transformer_class=transformer.TransformerNUFFT,
         primary_beam_shape_2d=None,
         auto_positions_factor=None,
         auto_positions_minimum_threshold=None,
         positions_threshold=None,
-        inversion_uses_border=True,
-        inversion_stochastic=False,
+        pixelization_settings=pix.PixelizationSettings(),
+        inversion_settings=inv.InversionSettings(),
         log_likelihood_cap=None,
     ):
 
@@ -211,9 +168,10 @@ class PhaseSettingsInterferometer(
             pixel_scales_interp=pixel_scales_interp,
             signal_to_noise_limit=signal_to_noise_limit,
             bin_up_factor=bin_up_factor,
-            inversion_pixel_limit=inversion_pixel_limit,
             transformer_class=transformer_class,
             primary_beam_shape_2d=primary_beam_shape_2d,
+            pixelization_settings=pixelization_settings,
+            inversion_settings=inversion_settings,
             log_likelihood_cap=log_likelihood_cap,
         )
 
@@ -222,8 +180,6 @@ class PhaseSettingsInterferometer(
             auto_positions_factor=auto_positions_factor,
             auto_positions_minimum_threshold=auto_positions_minimum_threshold,
             positions_threshold=positions_threshold,
-            inversion_uses_border=inversion_uses_border,
-            inversion_stochastic=inversion_stochastic,
         )
 
     @property
@@ -237,8 +193,8 @@ class PhaseSettingsInterferometer(
             + self.primary_beam_shape_tag
             + self.auto_positions_factor_tag
             + self.positions_threshold_tag
-            + self.inversion_uses_border_tag
-            + self.inversion_stochastic_tag
+            + self.pixelization.use_border_tag
+            + self.pixelization.is_stochastic_tag
             + self.log_likelihood_cap_tag
         )
 
@@ -248,13 +204,14 @@ class PhaseSettingsInterferometer(
             conf.instance.tag.get("phase", "phase", str)
             + self.grid_with_inversion_tag
             + self.transformer_tag
+            + self.inversion.use_linear_operators_tag
             + self.signal_to_noise_limit_tag
             + self.bin_up_factor_tag
             + self.primary_beam_shape_tag
             + self.auto_positions_factor_tag
             + self.positions_threshold_tag
-            + self.inversion_uses_border_tag
-            + self.inversion_stochastic_tag
+            + self.pixelization.use_border_tag
+            + self.pixelization.is_stochastic_tag
             + self.log_likelihood_cap_tag
         )
 

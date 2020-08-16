@@ -222,13 +222,14 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         real_space_mask=real_space_mask,
         grid_class=al.Grid,
         transformer_class=al.TransformerDFT,
-        inversion_uses_border=False,
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitInterferometer(
-        masked_interferometer=masked_interferometer, tracer=tracer
+        masked_interferometer=masked_interferometer,
+        tracer=tracer,
+        pixelization_settings=al.PixelizationSettings(use_border=False),
     )
 
     assert fit.chi_squared == pytest.approx(0.0)
@@ -248,7 +249,9 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitInterferometer(
-        masked_interferometer=masked_interferometer, tracer=tracer
+        masked_interferometer=masked_interferometer,
+        tracer=tracer,
+        pixelization_settings=al.PixelizationSettings(use_border=False),
     )
     assert abs(fit.chi_squared) < 1.0e-4
 

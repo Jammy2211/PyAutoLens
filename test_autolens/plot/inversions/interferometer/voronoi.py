@@ -56,7 +56,7 @@ masked_interferometer = al.MaskedInterferometer(
     visibilities_mask=np.full(
         fill_value=False, shape=interferometer.visibilities.shape
     ),
-    transformer_class=al.TransformerNUFFTLinearOperator,
+    transformer_class=al.TransformerNUFFT,
 )
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])

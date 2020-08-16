@@ -86,9 +86,6 @@ def masked_imaging_from_agg_obj(agg_obj):
         sub_steps=agg_obj.settings.sub_steps,
         pixel_scales_interp=agg_obj.settings.pixel_scales_interp,
         psf_shape_2d=agg_obj.settings.psf_shape_2d,
-        inversion_pixel_limit=agg_obj.settings.inversion_pixel_limit,
-        inversion_uses_border=agg_obj.settings.inversion_uses_border,
-        inversion_stochastic=agg_obj.settings.inversion_stochastic,
         positions_threshold=agg_obj.settings.positions_threshold,
     )
 
@@ -122,7 +119,12 @@ def fit_imaging_from_agg_obj(agg_obj):
     masked_imaging = masked_imaging_from_agg_obj(agg_obj=agg_obj)
     tracer = tracer_from_agg_obj(agg_obj=agg_obj)
 
-    return al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    return al.FitImaging(
+        masked_imaging=masked_imaging,
+        tracer=tracer,
+        pixelization_settings=agg_obj.settings.pixelization,
+        inversion_settings=agg_obj.settings.inversion,
+    )
 
 
 def masked_interferometer_generator_from_aggregator(aggregator):
@@ -166,9 +168,6 @@ def masked_interferometer_from_agg_obj(agg_obj):
         sub_steps=agg_obj.settings.sub_steps,
         primary_beam_shape_2d=agg_obj.settings.primary_beam_shape_2d,
         pixel_scales_interp=agg_obj.settings.pixel_scales_interp,
-        inversion_pixel_limit=agg_obj.settings.inversion_pixel_limit,
-        inversion_uses_border=agg_obj.settings.inversion_uses_border,
-        inversion_stochastic=agg_obj.settings.inversion_stochastic,
         positions_threshold=agg_obj.meta_dataset.settings.positions_threshold,
     )
 
@@ -205,5 +204,8 @@ def fit_interferometer_from_agg_obj(agg_obj):
     tracer = tracer_from_agg_obj(agg_obj=agg_obj)
 
     return al.FitInterferometer(
-        masked_interferometer=masked_interferometer, tracer=tracer
+        masked_interferometer=masked_interferometer,
+        tracer=tracer,
+        pixelization_settings=agg_obj.settings.pixelization,
+        inversion_settings=agg_obj.settings.inversion,
     )

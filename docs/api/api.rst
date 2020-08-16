@@ -159,7 +159,7 @@ Lensing
 Inversions
 ----------
 
-.. currentmodule:: autoarray.operators.inversion.pixelizations
+.. currentmodule:: autoarray.inversion.pixelizations
 
 **Pixelizations:**
 
@@ -170,7 +170,7 @@ Inversions
    VoronoiMagnification
    VoronoiBrightnessImage
 
-.. currentmodule:: autoarray.operators.inversion.regularization
+.. currentmodule:: autoarray.inversion.regularization
 
 **Regularizations:**
 

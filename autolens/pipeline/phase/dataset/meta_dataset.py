@@ -1,7 +1,7 @@
 import autoarray as aa
 import numpy as np
 from autolens import exc
-from autolens.fit import fit
+from autolens.fit import fit_positions
 
 
 class MetaLens:
@@ -68,10 +68,10 @@ class MetaLens:
             if positions is None:
                 return None
 
-            positions_fits = fit.FitPositionsSourcePlane(
+            positions_fits = fit_positions.FitPositionsSourcePlaneMaxSeparation(
                 positions=aa.GridCoordinates(coordinates=positions),
                 tracer=results.last.max_log_likelihood_tracer,
-                noise_map=1.0,
+                noise_value=1.0,
             )
 
             positions_threshold = self.settings.auto_positions_factor * np.max(

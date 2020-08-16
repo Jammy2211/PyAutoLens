@@ -27,11 +27,12 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
             sub_size=3,
             signal_to_noise_limit=1.0,
             bin_up_factor=2,
-            inversion_pixel_limit=100,
             primary_beam_shape_2d=(3, 3),
             positions_threshold=0.3,
-            inversion_uses_border=False,
-            inversion_stochastic=True,
+            pixelization_settings=al.PixelizationSettings(
+                use_border=False, is_stochastic=True
+            ),
+            inversion_settings=al.InversionSettings(use_linear_operators=True),
         ),
         search=mock.MockSearch(),
         real_space_mask=mask_7x7,
@@ -40,11 +41,16 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
     assert phase_interferometer_7.meta_dataset.settings.sub_size == 3
     assert phase_interferometer_7.meta_dataset.settings.signal_to_noise_limit == 1.0
     assert phase_interferometer_7.meta_dataset.settings.bin_up_factor == 2
-    assert phase_interferometer_7.meta_dataset.settings.inversion_pixel_limit == 100
     assert phase_interferometer_7.meta_dataset.settings.primary_beam_shape_2d == (3, 3)
     assert phase_interferometer_7.meta_dataset.settings.positions_threshold == 0.3
-    assert phase_interferometer_7.meta_dataset.settings.inversion_uses_border == False
-    assert phase_interferometer_7.meta_dataset.settings.inversion_stochastic == True
+    assert phase_interferometer_7.meta_dataset.settings.pixelization.use_border == False
+    assert (
+        phase_interferometer_7.meta_dataset.settings.pixelization.is_stochastic == True
+    )
+    assert (
+        phase_interferometer_7.meta_dataset.settings.inversion.use_linear_operators
+        == True
+    )
 
     analysis = phase_interferometer_7.make_analysis(
         dataset=interferometer_7, mask=mask_7x7, results=mock.MockResults()
@@ -54,8 +60,6 @@ def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
     assert isinstance(analysis.masked_dataset.grid_inversion, al.Grid)
     assert isinstance(analysis.masked_dataset.transformer, al.TransformerNUFFT)
     assert analysis.masked_dataset.positions_threshold == 0.3
-    assert analysis.masked_dataset.inversion_uses_border == False
-    assert analysis.masked_dataset.inversion_stochastic == True
 
     phase_interferometer_7 = al.PhaseInterferometer(
         phase_name="phase_interferometer_7",

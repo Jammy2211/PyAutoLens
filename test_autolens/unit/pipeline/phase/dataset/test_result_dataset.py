@@ -77,7 +77,7 @@ class TestResult:
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase",
-            settings=al.PhaseSettingsImaging(inversion_pixel_limit=6),
+            settings=al.PhaseSettingsImaging(),
             search=mock.MockSearch(samples=samples),
         )
 
@@ -103,7 +103,7 @@ class TestResult:
 
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase",
-            settings=al.PhaseSettingsImaging(inversion_pixel_limit=6),
+            settings=al.PhaseSettingsImaging(),
             search=mock.MockSearch(samples=samples),
         )
 
@@ -151,7 +151,7 @@ class TestResult:
         phase_imaging_7x7 = al.PhaseImaging(
             phase_name="test_phase_2",
             galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
-            settings=al.PhaseSettingsImaging(inversion_pixel_limit=6),
+            settings=al.PhaseSettingsImaging(),
             search=mock.MockSearch(samples=samples),
         )
 
