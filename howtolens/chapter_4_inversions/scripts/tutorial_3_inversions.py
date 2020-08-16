@@ -199,7 +199,7 @@ Nevertheless, I know a lot of you hate 'black-boxes', or have an interest in lin
 inclined, then checkout the documentation of the autolens source code for more information. In particular, you should 
 look at the following functions in the project PyAutoArray:
 
-autoarray.operators.inversions.mappers.mapping_matrix
+autoarray.inversions.mappers.mapping_matrix
 autoarray.opterators.convolution.convolve_mapping_matrix
 autoarray.opterators.inversions.regularization.Regularization
 autoarray.opterators.inversions.inversions.Inversion

@@ -32,7 +32,7 @@ class TestAbstractPositionsSolver:
         solver = pos.AbstractPositionsSolver(use_upscaling=True, upscale_factor=1)
 
         grid = solver.grid_buffed_and_upscaled_around_coordinate_from(
-            coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=1
+            coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=1, upscale_factor=1
         )
 
         grid_util = pos.grid_buffed_around_coordinate_from(
@@ -44,7 +44,7 @@ class TestAbstractPositionsSolver:
         solver = pos.AbstractPositionsSolver(use_upscaling=False, upscale_factor=3)
 
         grid = solver.grid_buffed_and_upscaled_around_coordinate_from(
-            coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=1
+            coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=1, upscale_factor=1
         )
 
         grid_util = pos.grid_buffed_around_coordinate_from(
@@ -56,7 +56,7 @@ class TestAbstractPositionsSolver:
         solver = pos.AbstractPositionsSolver(use_upscaling=True, upscale_factor=1)
 
         grid = solver.grid_buffed_and_upscaled_around_coordinate_from(
-            coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=3
+            coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=3, upscale_factor=1
         )
 
         grid_util = pos.grid_buffed_around_coordinate_from(

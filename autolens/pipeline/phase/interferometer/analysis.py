@@ -12,6 +12,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     def __init__(
         self,
         masked_interferometer,
+        settings,
         cosmology,
         image_path=None,
         results=None,
@@ -19,7 +20,10 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     ):
 
         super(Analysis, self).__init__(
-            cosmology=cosmology, results=results, log_likelihood_cap=log_likelihood_cap
+            settings=settings,
+            cosmology=cosmology,
+            results=results,
+            log_likelihood_cap=log_likelihood_cap,
         )
 
         self.visualizer = visualizer.PhaseInterferometerVisualizer(
@@ -71,9 +75,6 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         tracer = self.tracer_for_instance(instance=instance)
 
         self.masked_dataset.check_positions_trace_within_threshold_via_tracer(
-            tracer=tracer
-        )
-        self.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
             tracer=tracer
         )
 
@@ -133,6 +134,8 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             masked_interferometer=self.masked_dataset,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
+            pixelization_settings=self.settings.pixelization,
+            inversion_settings=self.settings.inversion,
         )
 
     def visualize(self, instance, during_analysis):

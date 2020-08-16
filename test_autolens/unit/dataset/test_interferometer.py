@@ -63,18 +63,12 @@ class TestMaskedInterferometer:
             real_space_mask=sub_mask_7x7,
             grid_class=al.Grid,
             primary_beam_shape_2d=(3, 3),
-            inversion_pixel_limit=20.0,
-            inversion_uses_border=False,
-            inversion_stochastic=True,
             preload_sparse_grids_of_planes=1,
         )
 
         assert (masked_interferometer_7.grid.in_1d_binned == grid_7x7).all()
         assert (masked_interferometer_7.grid == sub_grid_7x7).all()
 
-        assert masked_interferometer_7.inversion_pixel_limit == 20.0
-        assert masked_interferometer_7.inversion_uses_border == False
-        assert masked_interferometer_7.inversion_stochastic == True
         assert masked_interferometer_7.preload_sparse_grids_of_planes == 1
 
         grid = al.Grid.from_mask(mask=sub_mask_7x7)

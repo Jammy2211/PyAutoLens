@@ -24,7 +24,7 @@ def run(
             shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
         )
 
-    info = {"Test" : 100}
+    info = {"Test": 100}
 
     module.make_pipeline(
         name=test_name, folders=[module.test_type, test_name], search=search

@@ -1,12 +1,19 @@
 import numpy as np
 
 from autoarray.fit import fit as aa_fit
+from autoarray.inversion import pixelizations as pix, inversions as inv
 from autogalaxy.galaxy import galaxy as g
 
 
 class FitImaging(aa_fit.FitImaging):
     def __init__(
-        self, masked_imaging, tracer, hyper_image_sky=None, hyper_background_noise=None
+        self,
+        masked_imaging,
+        tracer,
+        hyper_image_sky=None,
+        hyper_background_noise=None,
+        pixelization_settings=pix.PixelizationSettings(),
+        inversion_settings=inv.InversionSettings(),
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
@@ -25,7 +32,7 @@ class FitImaging(aa_fit.FitImaging):
             image=masked_imaging.image, hyper_image_sky=hyper_image_sky
         )
 
-        noise_map = hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
+        noise_map = hyper_noise_map_from_noise_map_tracer_and_hyper_background_noise(
             noise_map=masked_imaging.noise_map,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
@@ -61,9 +68,9 @@ class FitImaging(aa_fit.FitImaging):
                 image=self.profile_subtracted_image,
                 noise_map=noise_map,
                 convolver=masked_imaging.convolver,
-                inversion_uses_border=masked_imaging.inversion_uses_border,
+                pixelization_settings=pixelization_settings,
+                inversion_settings=inversion_settings,
                 preload_sparse_grids_of_planes=masked_imaging.preload_sparse_grids_of_planes,
-                inversion_stochastic=masked_imaging.inversion_stochastic,
             )
 
             model_image = self.blurred_image + inversion.mapped_reconstructed_image
@@ -142,7 +149,14 @@ class FitImaging(aa_fit.FitImaging):
 
 
 class FitInterferometer(aa_fit.FitInterferometer):
-    def __init__(self, masked_interferometer, tracer, hyper_background_noise=None):
+    def __init__(
+        self,
+        masked_interferometer,
+        tracer,
+        hyper_background_noise=None,
+        pixelization_settings=pix.PixelizationSettings(),
+        inversion_settings=inv.InversionSettings(),
+    ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
 
@@ -190,9 +204,9 @@ class FitInterferometer(aa_fit.FitInterferometer):
                 visibilities=self.profile_subtracted_visibilities,
                 noise_map=noise_map,
                 transformer=masked_interferometer.transformer,
-                inversion_uses_border=masked_interferometer.inversion_uses_border,
+                pixelization_settings=pixelization_settings,
+                inversion_settings=inversion_settings,
                 preload_sparse_grids_of_planes=masked_interferometer.preload_sparse_grids_of_planes,
-                inversion_stochastic=masked_interferometer.inversion_stochastic,
             )
 
             model_visibilities = (
@@ -288,7 +302,7 @@ def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
         return image
 
 
-def hyper_noise_map_from_noise_map_tracer_and_hyper_backkground_noise(
+def hyper_noise_map_from_noise_map_tracer_and_hyper_background_noise(
     noise_map, tracer, hyper_background_noise
 ):
 

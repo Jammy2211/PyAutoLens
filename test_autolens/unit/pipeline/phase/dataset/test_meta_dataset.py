@@ -3,7 +3,6 @@ from os import path
 import autolens as al
 import numpy as np
 import pytest
-from astropy import cosmology as cosmo
 from test_autolens import mock
 
 pytestmark = pytest.mark.filterwarnings(
@@ -294,7 +293,8 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(
         phase_name="test_phase",
         galaxies=[lens_galaxy, source_galaxy],
         settings=al.PhaseSettingsImaging(
-            grid_inversion_class=al.Grid, inversion_uses_border=True
+            grid_inversion_class=al.Grid,
+            pixelization_settings=al.PixelizationSettings(use_border=True),
         ),
         search=mock.MockSearch(),
     )
@@ -319,7 +319,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(
         settings=al.PhaseSettingsImaging(
             grid_class=al.Grid,
             grid_inversion_class=al.Grid,
-            inversion_uses_border=False,
+            pixelization_settings=al.PixelizationSettings(use_border=False),
         ),
         search=mock.MockSearch(),
     )
@@ -337,29 +337,3 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(
     )
 
     assert fit.inversion.mapper.grid[4][0] == pytest.approx(200.0, 1.0e-4)
-
-
-def test__inversion_pixel_limit_computed_via_config_or_input():
-    phase_imaging_7x7 = al.PhaseImaging(
-        phase_name="phase_imaging_7x7",
-        settings=al.PhaseSettingsImaging(inversion_pixel_limit=None),
-        search=mock.MockSearch(),
-    )
-
-    assert phase_imaging_7x7.meta_dataset.settings.inversion_pixel_limit == 3000
-
-    phase_imaging_7x7 = al.PhaseImaging(
-        phase_name="phase_imaging_7x7",
-        settings=al.PhaseSettingsImaging(inversion_pixel_limit=10),
-        search=mock.MockSearch(),
-    )
-
-    assert phase_imaging_7x7.meta_dataset.settings.inversion_pixel_limit == 10
-
-    phase_imaging_7x7 = al.PhaseImaging(
-        phase_name="phase_imaging_7x7",
-        settings=al.PhaseSettingsImaging(inversion_pixel_limit=2000),
-        search=mock.MockSearch(),
-    )
-
-    assert phase_imaging_7x7.meta_dataset.settings.inversion_pixel_limit == 2000

@@ -22,9 +22,6 @@ class MaskedInterferometer(
         pixel_scales_interp=None,
         transformer_class=transformer.TransformerNUFFT,
         primary_beam_shape_2d=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
-        inversion_stochastic=False,
         positions_threshold=None,
         renormalize_primary_beam=True,
         preload_sparse_grids_of_planes=None,
@@ -70,14 +67,11 @@ class MaskedInterferometer(
             pixel_scales_interp=pixel_scales_interp,
             transformer_class=transformer_class,
             primary_beam_shape_2d=primary_beam_shape_2d,
-            inversion_pixel_limit=inversion_pixel_limit,
-            inversion_uses_border=inversion_uses_border,
             renormalize_primary_beam=renormalize_primary_beam,
         )
 
         abstract.AbstractLensMasked.__init__(
             self=self,
-            inversion_stochastic=inversion_stochastic,
             positions_threshold=positions_threshold,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )

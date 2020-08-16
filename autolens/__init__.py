@@ -4,12 +4,13 @@ from autoarray.dataset.imaging import Imaging
 from autoarray.dataset.interferometer import Interferometer
 from autoarray.mask.mask import Mask
 from autoarray.operators.convolver import Convolver
-from autoarray.operators.inversion import pixelizations as pix, regularization as reg
-from autoarray.operators.inversion.inversions import inversion as Inversion
-from autoarray.operators.inversion.mappers import mapper as Mapper
+from autoarray.inversion import pixelizations as pix, regularization as reg
+from autoarray.inversion.pixelizations import PixelizationSettings
+from autoarray.inversion.inversions import inversion as Inversion, InversionSettings
+from autoarray.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.operators.transformer import TransformerNUFFTLinearOperator
+from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays import Array, Values
 from autoarray.structures.grids import (
     Grid,
@@ -20,7 +21,7 @@ from autoarray.structures.grids import (
     GridVoronoi,
 )
 from autoarray.structures.kernel import Kernel
-from autoarray.structures.visibilities import Visibilities
+from autoarray.structures.visibilities import Visibilities, VisibilitiesNoiseMap
 from autogalaxy import dimensions as dim
 from autogalaxy import util
 from autogalaxy.galaxy.fit_galaxy import FitGalaxy

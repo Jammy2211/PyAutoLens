@@ -34,20 +34,6 @@ class TestTags:
         settings = al.PhaseSettingsImaging(positions_threshold=2.56)
         assert settings.positions_threshold_tag == "__pos_2.56"
 
-    def test__inversion_uses_border_tag(self):
-
-        settings = al.PhaseSettingsImaging(inversion_uses_border=True)
-        assert settings.inversion_uses_border_tag == ""
-        settings = al.PhaseSettingsImaging(inversion_uses_border=False)
-        assert settings.inversion_uses_border_tag == "__no_border"
-
-    def test__inversion_stochastic_tag(self):
-
-        settings = al.PhaseSettingsImaging(inversion_stochastic=True)
-        assert settings.inversion_stochastic_tag == "__stochastic"
-        settings = al.PhaseSettingsImaging(inversion_stochastic=False)
-        assert settings.inversion_stochastic_tag == ""
-
     def test__tag__mixture_of_values(self):
 
         settings = al.PhaseSettingsImaging(
@@ -79,8 +65,9 @@ class TestTags:
             psf_shape_2d=(2, 2),
             auto_positions_factor=0.5,
             positions_threshold=None,
-            inversion_uses_border=False,
-            inversion_stochastic=True,
+            pixelization_settings=al.PixelizationSettings(
+                use_border=False, is_stochastic=True
+            ),
             log_likelihood_cap=200.01,
         )
 
@@ -100,8 +87,9 @@ class TestTags:
             pixel_scales_interp=0.3,
             transformer_class=al.TransformerDFT,
             primary_beam_shape_2d=(2, 2),
-            inversion_uses_border=False,
-            inversion_stochastic=True,
+            pixelization_settings=al.PixelizationSettings(
+                use_border=False, is_stochastic=True
+            ),
             log_likelihood_cap=100.01,
         )
 
@@ -112,4 +100,15 @@ class TestTags:
         assert (
             settings.phase_with_inversion_tag
             == "settings__grid_facc_0.5_inv_interp_0.300__dft__pb_2x2__no_border__stochastic__lh_cap_100.0"
+        )
+
+        settings = al.PhaseSettingsInterferometer(
+            transformer_class=al.TransformerNUFFT,
+            inversion_settings=al.InversionSettings(use_linear_operators=True),
+        )
+
+        assert settings.phase_no_inversion_tag == "settings__grid_sub_2__nufft"
+        assert (
+            settings.phase_with_inversion_tag
+            == "settings__grid_sub_2_inv_sub_2__nufft__lop"
         )

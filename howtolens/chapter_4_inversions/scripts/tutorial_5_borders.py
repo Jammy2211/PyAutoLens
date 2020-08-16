@@ -88,11 +88,11 @@ to input a mask and use a border.
 
 # %%
 def perform_fit_with_source_galaxy_mask_and_border(
-    imaging, source_galaxy, mask, inversion_uses_border
+    imaging, source_galaxy, mask, inversion_use_border
 ):
 
     masked_imaging = al.MaskedImaging(
-        imaging=imaging, mask=mask, inversion_uses_border=inversion_uses_border
+        imaging=imaging, mask=mask, inversion_use_border=inversion_use_border
     )
 
     lens_galaxy = al.Galaxy(
@@ -123,7 +123,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_annular,
-    inversion_uses_border=False,
+    inversion_use_border=False,
 )
 
 aplt.Inversion.reconstruction(
@@ -141,7 +141,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_uses_border=False,
+    inversion_use_border=False,
 )
 
 aplt.Inversion.reconstruction(
@@ -218,7 +218,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_uses_border=False,
+    inversion_use_border=False,
 )
 
 aplt.Inversion.reconstruction(
@@ -241,7 +241,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_uses_border=True,
+    inversion_use_border=True,
 )
 
 aplt.Inversion.reconstruction(
@@ -315,11 +315,11 @@ We need to redefine our perform fit function, to use the x2 lens galaxy model.
 
 # %%
 def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
-    imaging, source_galaxy, mask, inversion_uses_border
+    imaging, source_galaxy, mask, inversion_use_border
 ):
 
     masked_imaging = al.MaskedImaging(
-        imaging=imaging, mask=mask, inversion_uses_border=inversion_uses_border
+        imaging=imaging, mask=mask, inversion_use_border=inversion_use_border
     )
 
     lens_galaxy_0 = al.Galaxy(
@@ -354,7 +354,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_uses_border=False,
+    inversion_use_border=False,
 )
 
 aplt.Inversion.reconstruction(
@@ -372,7 +372,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_uses_border=True,
+    inversion_use_border=True,
 )
 aplt.Inversion.reconstruction(
     inversion=fit.inversion, include=aplt.Include(inversion_grid=True, border=True)
@@ -396,7 +396,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_uses_border=True,
+    inversion_use_border=True,
 )
 aplt.Inversion.reconstruction(
     inversion=fit.inversion, include=aplt.Include(inversion_grid=True, border=True)
@@ -409,7 +409,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_uses_border=True,
+    inversion_use_border=True,
 )
 aplt.Inversion.reconstruction(
     inversion=fit.inversion, include=aplt.Include(inversion_grid=True, border=True)
@@ -423,7 +423,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_uses_border=True,
+    inversion_use_border=True,
 )
 aplt.Inversion.reconstruction(
     inversion=fit.inversion, include=aplt.Include(inversion_grid=True, border=True)
@@ -437,7 +437,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_uses_border=True,
+    inversion_use_border=True,
 )
 aplt.Inversion.reconstruction(
     inversion=fit.inversion, include=aplt.Include(inversion_grid=True, border=True)

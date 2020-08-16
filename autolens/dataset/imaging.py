@@ -17,9 +17,6 @@ class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
         sub_steps=[2, 4, 8, 16],
         pixel_scales_interp=None,
         psf_shape_2d=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
-        inversion_stochastic=False,
         positions_threshold=None,
         renormalize_psf=True,
         preload_sparse_grids_of_planes=None,
@@ -63,14 +60,11 @@ class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
             sub_steps=sub_steps,
             pixel_scales_interp=pixel_scales_interp,
             psf_shape_2d=psf_shape_2d,
-            inversion_pixel_limit=inversion_pixel_limit,
-            inversion_uses_border=inversion_uses_border,
             renormalize_psf=renormalize_psf,
         )
 
         abstract.AbstractLensMasked.__init__(
             self=self,
-            inversion_stochastic=inversion_stochastic,
             positions_threshold=positions_threshold,
             preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
         )
