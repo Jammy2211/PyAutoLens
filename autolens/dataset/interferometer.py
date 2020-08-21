@@ -3,34 +3,20 @@ import copy
 from autoarray.dataset import interferometer
 from autoarray.operators import transformer
 from autoarray.structures import grids
-from autolens.dataset import abstract
+from autogalaxy.dataset import interferometer as inter
 from autolens.lens import ray_tracing
 
 
-class MaskedInterferometer(
-    interferometer.MaskedInterferometer, abstract.AbstractLensMasked
-):
+class MaskedInterferometer(interferometer.MaskedInterferometer):
     def __init__(
         self,
         interferometer,
         visibilities_mask,
         real_space_mask,
-        grid_class=grids.Grid,
-        grid_inversion_class=grids.Grid,
-        fractional_accuracy=0.9999,
-        sub_steps=None,
-        pixel_scales_interp=None,
-        transformer_class=transformer.TransformerNUFFT,
-        primary_beam_shape_2d=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
-        inversion_stochastic=False,
-        positions_threshold=None,
-        renormalize_primary_beam=True,
-        preload_sparse_grids_of_planes=None,
+        settings=inter.SettingsMaskedInterferometer(),
     ):
         """
-        The lens dataset is the collection of data (image, noise-map, primary_beam), a mask, grid, convolver \
+        The lens dataset is the collection of data (image, noise-map), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
         Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
@@ -39,15 +25,12 @@ class MaskedInterferometer(
         Parameters
         ----------
         imaging: im.Imaging
-            The imaging data all in 2D (the image, noise-map, primary_beam, etc.)
+            The imaging data all in 2D (the image, noise-map, etc.)
         real_space_mask: msk.Mask
             The 2D mask that is applied to the image.
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
             sub-grid.
-        primary_beam_shape_2d : (int, int)
-            The shape of the primary_beam used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the primary_beam relative to the input image primary_beam, giving a faster analysis run-time.
         positions : [[]]
             Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
             used to speed up the non-linear sampling.
@@ -63,23 +46,7 @@ class MaskedInterferometer(
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
-            grid_class=grid_class,
-            grid_inversion_class=grid_inversion_class,
-            fractional_accuracy=fractional_accuracy,
-            sub_steps=sub_steps,
-            pixel_scales_interp=pixel_scales_interp,
-            transformer_class=transformer_class,
-            primary_beam_shape_2d=primary_beam_shape_2d,
-            inversion_pixel_limit=inversion_pixel_limit,
-            inversion_uses_border=inversion_uses_border,
-            renormalize_primary_beam=renormalize_primary_beam,
-        )
-
-        abstract.AbstractLensMasked.__init__(
-            self=self,
-            inversion_stochastic=inversion_stochastic,
-            positions_threshold=positions_threshold,
-            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
+            settings=settings,
         )
 
 
@@ -90,8 +57,6 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
         exposure_time_map,
         background_sky_map,
         transformer_class=transformer.TransformerDFT,
-        primary_beam=None,
-        renormalize_primary_beam=True,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -119,8 +84,6 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
             exposure_time_map=exposure_time_map,
             background_sky_map=background_sky_map,
             transformer_class=transformer_class,
-            primary_beam=primary_beam,
-            renormalize_primary_beam=renormalize_primary_beam,
             noise_sigma=noise_sigma,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,

@@ -48,7 +48,7 @@ total flux emitted within a pixel.
 """
 grid = al.GridIterate.uniform(
     shape_2d=(100, 100),
-    pixel_scales=0.05,
+    pixel_scales=0.1,
     fractional_accuracy=0.9999,
     sub_steps=[2, 4, 8, 16, 24],
 )
@@ -156,10 +156,18 @@ imaging dataset.
 """
 imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
-"""Finally, lets output our simulated dataset to the dataset path as .fits files"""
+"""Output our simulated dataset to the dataset path as .fits files"""
 imaging.output_to_fits(
     image_path=f"{dataset_path}/image.fits",
     psf_path=f"{dataset_path}/psf.fits",
     noise_map_path=f"{dataset_path}/noise_map.fits",
     overwrite=True,
 )
+
+"""
+Pickle the _Tracer_ in the dataset folder, ensuring the true _Tracer_ is safely stored and available if we need to 
+check how the dataset was simulated in the future. 
+
+This will also be accessible via the _Aggregator_ if a model-fit is performed using the dataset.
+"""
+tracer.save(file_path=dataset_path, filename="true_tracer")

@@ -556,7 +556,6 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
         )
 
         self.plot_dataset_uv_wavelengths = plot_setting("dataset", "uv_wavelengths")
-        self.plot_dataset_primary_beam = plot_setting("dataset", "primary_beam")
 
         self.plot_hyper_model_image = plot_setting("hyper_galaxy", "model_image")
         self.plot_hyper_galaxy_images = plot_setting("hyper_galaxy", "images")
@@ -585,7 +584,6 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
             plot_visibilities=self.plot_dataset_data,
             plot_u_wavelengths=self.plot_dataset_uv_wavelengths,
             plot_v_wavelengths=self.plot_dataset_uv_wavelengths,
-            plot_primary_beam=self.plot_dataset_primary_beam,
             include=self.include,
             plotter=plotter,
         )

@@ -3,6 +3,9 @@ import autofit as af
 from autogalaxy.pipeline.phase import abstract
 from autogalaxy.pipeline.phase import extensions
 
+import math
+from scipy.stats import norm
+import json
 import numpy as np
 
 # noinspection PyAbstractClass
@@ -14,11 +17,15 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
         model_classes=tuple(),
         histogram_samples=100,
         histogram_bins=10,
+        stochastic_method="gaussian",
+        stochastic_sigma=0.0,
     ):
 
         self.is_stochastic = True
         self.histogram_samples = histogram_samples
         self.histogram_bins = histogram_bins
+        self.stochastic_method = stochastic_method
+        self.stochastic_sigma = stochastic_sigma
 
         super().__init__(
             phase=phase,
@@ -45,26 +52,45 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         self.results = results
 
-        log_likelihood_cap_file = f"{conf.instance.output_path}/{self.paths.path_prefix}/{self.paths.name}/log_likelihood_cap.txt"
+        stochastic_log_evidences_file = f"{conf.instance.output_path}/{self.paths.path_prefix}/{self.paths.name}/stochastic_log_evidences.json"
 
         try:
-            with open(log_likelihood_cap_file) as f:
-                log_likelihood_cap = float(f.read())
+            stochastic_log_evidences = self.stochastic_log_evidences_from_json(
+                filename=stochastic_log_evidences_file
+            )
         except FileNotFoundError:
-            print(results)
-            print(results.last)
-            log_evidences = results.last.stochastic_log_evidences(
+            stochastic_log_evidences = results.last.stochastic_log_evidences(
                 histogram_samples=self.histogram_samples
             )
-            log_likelihood_cap = np.median(log_evidences)
-            with open(log_likelihood_cap_file, "w+") as f:
-                f.write(str(log_likelihood_cap))
+            self.stochastic_log_evidences_to_json(
+                filename=stochastic_log_evidences_file,
+                stochastic_log_evidences=stochastic_log_evidences,
+            )
 
-        phase = self.make_hyper_phase(include_path_prefix=False)
+        if self.stochastic_method in "gaussian":
+
+            mean, sigma = norm.fit(stochastic_log_evidences)
+
+            limit = math.erf(0.5 * np.abs(self.stochastic_sigma) * math.sqrt(2))
+
+            if self.stochastic_sigma >= 0.0:
+                log_likelihood_cap = mean + (sigma * limit)
+            else:
+                log_likelihood_cap = mean - (sigma * limit)
+
+            stochastic_tag = f"{self.stochastic_method}_{str(self.stochastic_sigma)}"
+
+        else:
+
+            log_likelihood_cap = np.median(stochastic_log_evidences)
+
+            stochastic_tag = f"{self.stochastic_method}"
+
+        phase = self.make_hyper_phase()
+        phase.hyper_name = f"{phase.hyper_name}_{stochastic_tag}"
 
         phase.settings.log_likelihood_cap = log_likelihood_cap
-        phase.meta_dataset.settings.log_likelihood_cap = log_likelihood_cap
-        phase.paths.tag = phase.settings.phase_no_inversion_tag
+        #       phase.paths.tag = phase.settings.phase_tag_no_inversion
 
         phase.use_as_hyper_dataset = False
 
@@ -89,3 +115,16 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
             info=info,
             pickle_files=pickle_files,
         )
+
+    def stochastic_log_evidences_from_json(cls, filename):
+        with open(filename, "r") as f:
+            return np.asarray(json.load(f))
+
+    def stochastic_log_evidences_to_json(self, filename, stochastic_log_evidences):
+        """
+        Save the dataset associated with the phase
+        """
+        with open(filename, "w") as outfile:
+            json.dump(
+                [float(evidence) for evidence in stochastic_log_evidences], outfile
+            )

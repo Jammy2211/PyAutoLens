@@ -10,5 +10,5 @@ class Result(dataset.Result):
     def max_log_likelihood_fit(self):
 
         return self.analysis.positions_fit_for_tracer(
-            tracer=self.max_log_likelihood_tracer,
+            tracer=self.max_log_likelihood_tracer
         )

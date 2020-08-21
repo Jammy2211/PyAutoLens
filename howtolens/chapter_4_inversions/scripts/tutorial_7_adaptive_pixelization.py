@@ -61,7 +61,9 @@ lens_galaxy = al.Galaxy(
     ),
 )
 
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = al.MaskedImaging(
+    imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
+)
 
 source_galaxy = al.Galaxy(
     redshift=1.0,

@@ -81,12 +81,14 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 
 # %%
 """
-Like in the previous tutorial, we use a_PhaseSettingsImaging_ object to specify our model-fitting procedure uses a 
+Like in the previous tutorial, we use a_SettingsPhaseImaging_ object to specify our model-fitting procedure uses a 
 regular _Grid_.
 """
 
 # %%
-settings = al.PhaseSettingsImaging(grid_class=al.Grid, sub_size=2)
+settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+
+settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
 
 # %%
 """
@@ -162,8 +164,10 @@ aplt.Imaging.subplot_imaging(imaging=imaging, positions=positions)
 
 # %%
 """
-For the positions to be used in a Phase, we associate them with the _Imaging_ data and input a 'position_threshold'
-to the _PhaseSettings_:
+For the positions to be used in a Phase, we associate them with the _Imaging_ data.
+ 
+We also pass the _SettingsPhaseImaging_ a new object, _SettingsLens_. This includes the *position_threshold* used 
+during modeling to resample inaccurate mass models.
 """
 
 # %%
@@ -174,9 +178,13 @@ imaging = al.Imaging(
     positions=positions,
 )
 
-settings = al.PhaseSettingsImaging(
-    grid_class=al.Grid, sub_size=2, positions_threshold=2.0
+settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+settings_lens = al.SettingsLens(positions_threshold=2.0)
+
+settings = al.SettingsPhaseImaging(
+    settings_masked_imaging=settings_masked_imaging, settings_lens=settings_lens
 )
+
 
 # %%
 """
@@ -257,8 +265,11 @@ imaging = al.Imaging(
     positions=positions,
 )
 
-settings = al.PhaseSettingsImaging(
-    grid_class=al.Grid, sub_size=2, positions_threshold=2.0
+settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+settings_lens = al.SettingsLens(positions_threshold=2.0)
+
+settings = al.SettingsPhaseImaging(
+    settings_masked_imaging=settings_masked_imaging, settings_lens=settings_lens
 )
 
 phase_with_x2_positions = al.PhaseImaging(

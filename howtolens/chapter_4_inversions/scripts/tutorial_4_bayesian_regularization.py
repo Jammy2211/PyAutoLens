@@ -64,7 +64,9 @@ def perform_fit_with_source_galaxy(imaging, source_galaxy):
         outer_radius=2.6,
     )
 
-    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+    masked_imaging = al.MaskedImaging(
+        imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
+    )
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,

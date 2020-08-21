@@ -40,7 +40,6 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
                 regularization=al.reg.AdaptiveBrightness,
             ),
         ),
-        inversion_pixel_limit=50,
         search=search,
     )
 
@@ -60,7 +59,6 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
             lens=phase1.result.model.galaxies.lens,
             source=phase2.result.instance.galaxies.source,
         ),
-        inversion_pixel_limit=50,
         search=search,
     )
 

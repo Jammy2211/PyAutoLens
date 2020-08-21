@@ -2,7 +2,8 @@ from abc import ABC
 import pickle
 import numpy as np
 from astropy import cosmology as cosmo
-from autoarray.operators.inversion import inversions as inv
+from autoarray.inversion import pixelizations as pix
+from autoarray.inversion import inversions as inv
 from autoarray.structures import grids
 from autogalaxy import lensing
 from autogalaxy.galaxy import galaxy as g
@@ -500,6 +501,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
+        if not self.has_light_profile:
+            return np.zeros(shape=grid.shape_1d)
+
         image = self.image_from_grid(grid=grid)
 
         blurring_image = self.image_from_grid(grid=blurring_grid)
@@ -544,6 +548,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         convolver : hyper_galaxies.imaging.convolution.ConvolverImage
             Class which performs the PSF convolution of a masked image in 1D.
         """
+
+        if not self.has_light_profile:
+            return np.zeros(shape=grid.shape_1d)
 
         image = self.image_from_grid(grid=grid)
 
@@ -644,6 +651,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
     def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
+        if not self.has_light_profile:
+            return np.zeros(shape=transformer.uv_wavelengths.shape)
+
         image = self.image_from_grid(grid=grid)
 
         return transformer.visibilities_from_image(image=image)
@@ -659,32 +669,37 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         ]
 
     def sparse_image_plane_grids_of_planes_from_grid(
-        self, grid, inversion_stochastic=False
+        self, grid, pixelization_setting=pix.SettingsPixelization()
     ):
 
         sparse_image_plane_grids_of_planes = []
 
         for plane in self.planes:
             sparse_image_plane_grid = plane.sparse_image_plane_grid_from_grid(
-                grid=grid, inversion_stochastic=inversion_stochastic
+                grid=grid, settings_pixelization=pixelization_setting
             )
             sparse_image_plane_grids_of_planes.append(sparse_image_plane_grid)
 
         return sparse_image_plane_grids_of_planes
 
     def traced_sparse_grids_of_planes_from_grid(
-        self, grid, preload_sparse_grids_of_planes=None, inversion_stochastic=False
+        self, grid, settings_pixelization=pix.SettingsPixelization()
     ):
 
-        if preload_sparse_grids_of_planes is None or inversion_stochastic:
+        if (
+            settings_pixelization.preload_sparse_grids_of_planes is None
+            or settings_pixelization.is_stochastic
+        ):
 
             sparse_image_plane_grids_of_planes = self.sparse_image_plane_grids_of_planes_from_grid(
-                grid=grid, inversion_stochastic=inversion_stochastic
+                grid=grid, pixelization_setting=settings_pixelization
             )
 
         else:
 
-            sparse_image_plane_grids_of_planes = preload_sparse_grids_of_planes
+            sparse_image_plane_grids_of_planes = (
+                settings_pixelization.preload_sparse_grids_of_planes
+            )
 
         traced_sparse_grids_of_planes = []
 
@@ -701,11 +716,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         return traced_sparse_grids_of_planes
 
     def mappers_of_planes_from_grid(
-        self,
-        grid,
-        inversion_uses_border=False,
-        preload_sparse_grids_of_planes=None,
-        inversion_stochastic=False,
+        self, grid, settings_pixelization=pix.SettingsPixelization()
     ):
 
         mappers_of_planes = []
@@ -713,9 +724,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         traced_sparse_grids_of_planes = self.traced_sparse_grids_of_planes_from_grid(
-            grid=grid,
-            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
-            inversion_stochastic=inversion_stochastic,
+            grid=grid, settings_pixelization=settings_pixelization
         )
 
         for (plane_index, plane) in enumerate(self.planes):
@@ -726,7 +735,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
                 mapper = plane.mapper_from_grid_and_sparse_grid(
                     grid=traced_grids_of_planes[plane_index],
                     sparse_grid=traced_sparse_grids_of_planes[plane_index],
-                    inversion_uses_border=inversion_uses_border,
+                    settings_pixelization=settings_pixelization,
                 )
                 mappers_of_planes.append(mapper)
 
@@ -738,24 +747,21 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         image,
         noise_map,
         convolver,
-        inversion_uses_border=False,
-        preload_sparse_grids_of_planes=None,
-        inversion_stochastic=False,
+        settings_pixelization=pix.SettingsPixelization(),
+        settings_inversion=inv.SettingsInversion(),
     ):
 
         mappers_of_planes = self.mappers_of_planes_from_grid(
-            grid=grid,
-            inversion_uses_border=inversion_uses_border,
-            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
-            inversion_stochastic=inversion_stochastic,
+            grid=grid, settings_pixelization=settings_pixelization
         )
 
-        return inv.InversionImaging.from_data_mapper_and_regularization(
+        return inv.InversionImagingMatrix.from_data_mapper_and_regularization(
             image=image,
             noise_map=noise_map,
             convolver=convolver,
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],
+            settings=settings_inversion,
         )
 
     def inversion_interferometer_from_grid_and_data(
@@ -764,25 +770,20 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         visibilities,
         noise_map,
         transformer,
-        inversion_uses_border=False,
-        preload_sparse_grids_of_planes=None,
-        inversion_stochastic=False,
-        visibilities_complex=None,
+        settings_pixelization=pix.SettingsPixelization(),
+        settings_inversion=inv.SettingsInversion(),
     ):
         mappers_of_planes = self.mappers_of_planes_from_grid(
-            grid=grid,
-            inversion_uses_border=inversion_uses_border,
-            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
-            inversion_stochastic=inversion_stochastic,
+            grid=grid, settings_pixelization=settings_pixelization
         )
 
-        return inv.InversionInterferometer.from_data_mapper_and_regularization(
+        return inv.AbstractInversionInterferometer.from_data_mapper_and_regularization(
             visibilities=visibilities,
             noise_map=noise_map,
             transformer=transformer,
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],
-            visibilities_complex=visibilities_complex,
+            settings=settings_inversion,
         )
 
     def hyper_noise_map_from_noise_map(self, noise_map):

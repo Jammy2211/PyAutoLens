@@ -19,7 +19,7 @@ class MockPhase:
         )
         self.search = mock.MockSearch(paths=self.paths)
         self.model = af.ModelMapper()
-        self.settings = al.PhaseSettingsImaging(log_likelihood_cap=None)
+        self.settings = al.SettingsPhaseImaging(log_likelihood_cap=None)
         self.meta_dataset = MockMetaDataset(settings=self.settings)
 
     def save_dataset(self, dataset):
@@ -87,7 +87,7 @@ class TestStochasticPhase:
             phase_name="test_phase",
             galaxies=dict(galaxy=galaxy),
             search=af.DynestyStatic(n_live_points=1),
-            settings=al.PhaseSettingsImaging(bin_up_factor=2),
+            settings=al.SettingsPhaseImaging(bin_up_factor=2),
         )
 
         phase_stochastic = phase.extend_with_stochastic_phase(

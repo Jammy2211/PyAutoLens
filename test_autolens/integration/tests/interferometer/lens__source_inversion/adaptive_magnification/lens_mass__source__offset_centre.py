@@ -49,8 +49,8 @@ def make_pipeline(name, folders, real_space_mask, search=af.DynestyStatic()):
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase1.results.inversion.instance.galaxies.source.pixelization,
-                regularization=phase1.results.inversion.instance.galaxies.source.regularization,
+                pixelization=phase1.results.settings_inversion.instance.galaxies.source.pixelization,
+                regularization=phase1.results.settings_inversion.instance.galaxies.source.regularization,
             ),
         ),
         real_space_mask=real_space_mask,

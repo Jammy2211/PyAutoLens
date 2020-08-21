@@ -184,7 +184,9 @@ grid.
 """
 
 # %%
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = al.MaskedImaging(
+    imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
+)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, al.Galaxy(redshift=1.0)])
 

@@ -53,7 +53,6 @@ def make_pipeline(name, folders, real_space_mask, search=af.DynestyStatic()):
                 regularization=al.reg.AdaptiveBrightness,
             ),
         ),
-        inversion_pixel_limit=50,
         real_space_mask=real_space_mask,
         search=search,
     )
@@ -96,7 +95,6 @@ def make_pipeline(name, folders, real_space_mask, search=af.DynestyStatic()):
                 regularization=al.reg.AdaptiveBrightness,
             ),
         ),
-        inversion_pixel_limit=50,
         real_space_mask=real_space_mask,
         search=search,
     )

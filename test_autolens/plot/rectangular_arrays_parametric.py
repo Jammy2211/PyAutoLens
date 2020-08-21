@@ -26,13 +26,13 @@ mask = al.Mask.elliptical(
 
 # The lines of code below do everything we're used to, that is, setup an image and its grid, mask it, trace it
 # via a tracer, setup the rectangular mapper, etc.
-lens_galaxy = al.LightSetup(
+lens_galaxy = al.SLaMLight(
     redshift=0.5,
     mass=al.mp.EllipticalIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
     ),
 )
-source_galaxy = al.LightSetup(
+source_galaxy = al.SLaMLight(
     redshift=1.0,
     light=al.lp.EllipticalSersic(
         centre=(1.0, 1.0),

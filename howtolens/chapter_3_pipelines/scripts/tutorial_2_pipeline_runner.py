@@ -63,7 +63,7 @@ imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
     noise_map_path=f"{dataset_path}/noise_map.fits",
     psf_path=f"{dataset_path}/psf.fits",
-    pixel_scales=0.1,
+    pixel_scales=0.05,
 )
 
 # %%
@@ -83,7 +83,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 """
 __Settings__
 
-The *PhaseSettingsImaging* describe how the model is fitted to the data in the log likelihood function. We discussed
+The *SettingsPhaseImaging* describe how the model is fitted to the data in the log likelihood function. We discussed
 these in chapter 2, and a full description of all settings can be found in the example script:
 
  'autolens_workspace/examples/model/customize/settings.py'.
@@ -92,7 +92,9 @@ The settings chosen here are applied to all phases in the pipeline.
 """
 
 # %%
-settings = al.PhaseSettingsImaging(grid_class=al.Grid, sub_size=2)
+settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+
+settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
 
 # %%
 """
@@ -132,7 +134,7 @@ to different output folders and thus not clash with one another!
 """
 
 # %%
-setup = al.PipelineSetup(no_shear=False, folders=["howtolens", "c3_t2_x2_galaxies"])
+setup = al.SetupPipeline(no_shear=False, folders=["c3_t2_x2_galaxies"])
 
 # %%
 """

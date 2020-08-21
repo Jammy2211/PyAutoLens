@@ -29,8 +29,8 @@ pickle_path = f"{path}/pickles"
 
 # %%
 grid = al.Grid.uniform(
-    shape_2d=(600, 600),
-    pixel_scales=0.01,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+    shape_2d=(200, 200),
+    pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
 # %%
@@ -65,7 +65,9 @@ iters = 50
 
 """Use a _PositionsSolver_ which does not use grid upscaling."""
 
-solver = al.PositionsSolver(grid=grid, use_upscaling=False)
+solver = al.PositionsFinder(
+    grid=grid, use_upscaling=True, pixel_scale_precision=0.0001, upscale_factor=2
+)
 
 for i in range(iters):
 
