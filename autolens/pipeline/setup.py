@@ -3,7 +3,7 @@ from autogalaxy.pipeline import setup
 from autolens import exc
 
 
-class PipelineSetup(setup.PipelineSetup):
+class SetupPipeline(setup.SetupPipeline):
     def __init__(
         self,
         folders=None,
@@ -32,7 +32,7 @@ class PipelineSetup(setup.PipelineSetup):
         """The setup of a pipeline, which controls how PyAutoLens template pipelines runs, for example controlling
         assumptions about the lens's light profile bulge-disk model or if shear is included in the mass model.
 
-        Users can write their own pipelines which do not use or require the *PipelineSetup* class.
+        Users can write their own pipelines which do not use or require the *SetupPipeline* class.
 
         This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
         scripts to tag the output path of the results depending on the setup parameters. This allows one to fit

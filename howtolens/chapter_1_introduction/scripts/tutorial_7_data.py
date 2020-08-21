@@ -110,7 +110,7 @@ aplt.Imaging.image(imaging=imaging)
 
 # %%
 """
-Finally, lets output these files to.fits files, we'll begin to analyze them in the next tutorial!
+Output these files to.fits files, we'll begin to analyze them in the next tutorial!
 """
 
 # %%

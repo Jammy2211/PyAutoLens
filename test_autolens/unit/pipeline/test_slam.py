@@ -5,10 +5,10 @@ import autolens as al
 class TestSlam:
     def test__lens_light_tag_for_source_pipeline(self):
 
-        hyper = al.slam.HyperSetup()
-        source = al.slam.SourceSetup()
-        light = al.slam.LightSetup()
-        mass = al.slam.MassSetup()
+        hyper = al.slam.SLaMHyper()
+        source = al.slam.SLaMSource()
+        light = al.slam.SLaMLight()
+        mass = al.slam.SLaMMass()
 
         slam = al.slam.SLaM(hyper=hyper, source=source, light=light, mass=mass)
 
@@ -19,17 +19,17 @@ class TestSlam:
         assert slam.lens_light_tag_for_source_pipeline == "__light_sersic"
 
 
-class TestHyperSetup:
+class TestSLaMHyper:
     def test__hyper_fixed_after_source(self):
-        hyper = al.slam.HyperSetup(hyper_fixed_after_source=False)
+        hyper = al.slam.SLaMHyper(hyper_fixed_after_source=False)
         assert hyper.hyper_fixed_after_source_tag == ""
 
-        hyper = al.slam.HyperSetup(hyper_fixed_after_source=True)
+        hyper = al.slam.SLaMHyper(hyper_fixed_after_source=True)
         assert hyper.hyper_fixed_after_source_tag == "_fixed"
 
     def test__hyper_tag(self):
 
-        hyper = al.slam.HyperSetup(
+        hyper = al.slam.SLaMHyper(
             hyper_galaxies=True,
             hyper_image_sky=True,
             hyper_background_noise=True,
@@ -38,11 +38,11 @@ class TestHyperSetup:
 
         assert hyper.hyper_tag == "__hyper_galaxies_bg_sky_bg_noise_fixed"
 
-        hyper = al.slam.HyperSetup(hyper_galaxies=True, hyper_background_noise=True)
+        hyper = al.slam.SLaMHyper(hyper_galaxies=True, hyper_background_noise=True)
 
         assert hyper.hyper_tag == "__hyper_galaxies_bg_noise"
 
-        hyper = al.slam.HyperSetup(
+        hyper = al.slam.SLaMHyper(
             hyper_fixed_after_source=True,
             hyper_galaxies=True,
             hyper_background_noise=True,
@@ -51,16 +51,16 @@ class TestHyperSetup:
         assert hyper.hyper_tag == "__hyper_galaxies_bg_noise_fixed"
 
 
-class TestSourceSetup:
+class TestSLaMSource:
     def test__lens_light_bulge_only_tag(self):
-        source = al.slam.SourceSetup(lens_light_bulge_only=False)
+        source = al.slam.SLaMSource(lens_light_bulge_only=False)
         assert source.lens_light_bulge_only_tag == ""
-        source = al.slam.SourceSetup(lens_light_bulge_only=True)
+        source = al.slam.SLaMSource(lens_light_bulge_only=True)
         assert source.lens_light_bulge_only_tag == "__bulge_only"
 
     def test__tag(self):
 
-        source = al.slam.SourceSetup(
+        source = al.slam.SLaMSource(
             pixelization=al.pix.Rectangular,
             regularization=al.reg.Constant,
             lens_light_centre=(1.0, 2.0),
@@ -76,7 +76,7 @@ class TestSourceSetup:
             == "source____pix_rect__reg_const__no_shear__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)"
         )
 
-        source = al.slam.SourceSetup(
+        source = al.slam.SLaMSource(
             pixelization=al.pix.Rectangular,
             regularization=al.reg.Constant,
             align_light_mass_centre=True,
@@ -93,16 +93,16 @@ class TestSourceSetup:
 
     def test__shear(self):
 
-        source = al.slam.SourceSetup(no_shear=False)
+        source = al.slam.SLaMSource(no_shear=False)
         assert source.shear is al.mp.ExternalShear
-        source = al.slam.SourceSetup(no_shear=True)
+        source = al.slam.SLaMSource(no_shear=True)
         assert source.shear == None
 
     def test__align_centre_of_mass_to_light(self):
 
         mass = af.PriorModel(al.mp.SphericalIsothermal)
 
-        source = al.slam.SourceSetup(align_light_mass_centre=False)
+        source = al.slam.SLaMSource(align_light_mass_centre=False)
 
         mass = source.align_centre_of_mass_to_light(mass=mass, light_centre=(1.0, 2.0))
 
@@ -111,7 +111,7 @@ class TestSourceSetup:
         assert mass.centre.centre_0.mean == 1.0
         assert mass.centre.centre_0.sigma == 0.1
 
-        source = al.slam.SourceSetup(align_light_mass_centre=True)
+        source = al.slam.SLaMSource(align_light_mass_centre=True)
 
         mass = source.align_centre_of_mass_to_light(mass=mass, light_centre=(1.0, 2.0))
 
@@ -121,7 +121,7 @@ class TestSourceSetup:
 
         light = af.PriorModel(al.mp.SphericalIsothermal)
 
-        source = al.slam.SourceSetup(lens_light_centre=(1.0, 2.0))
+        source = al.slam.SLaMSource(lens_light_centre=(1.0, 2.0))
 
         light = source.align_centre_to_lens_light_centre(light=light)
 
@@ -131,7 +131,7 @@ class TestSourceSetup:
 
         mass = af.PriorModel(al.mp.SphericalIsothermal)
 
-        source = al.slam.SourceSetup(lens_mass_centre=(1.0, 2.0))
+        source = al.slam.SLaMSource(lens_mass_centre=(1.0, 2.0))
 
         mass = source.align_centre_to_lens_mass_centre(mass=mass)
 
@@ -143,13 +143,13 @@ class TestSourceSetup:
             redshift=0.5, bulge=al.lp.EllipticalSersic, disk=al.lp.EllipticalExponential
         )
 
-        source = al.slam.SourceSetup(lens_light_bulge_only=False)
+        source = al.slam.SLaMSource(lens_light_bulge_only=False)
 
         lens = source.remove_disk_from_lens_galaxy(lens=lens)
 
         assert type(lens.disk) is af.PriorModel
 
-        source = al.slam.SourceSetup(lens_light_bulge_only=True)
+        source = al.slam.SLaMSource(lens_light_bulge_only=True)
 
         lens = source.remove_disk_from_lens_galaxy(lens=lens)
 
@@ -157,7 +157,7 @@ class TestSourceSetup:
 
     def test__is_inversion(self):
 
-        source = al.slam.SourceSetup()
+        source = al.slam.SLaMSource()
 
         source.type_tag = "sersic"
         assert source.is_inversion == False
@@ -170,10 +170,10 @@ class TestSourceSetup:
         mass = af.PriorModel(al.mp.SphericalIsothermal)
         mass.centre = (1.0, 2.0)
 
-        source = al.slam.SourceSetup()
+        source = al.slam.SLaMSource()
 
         mass = af.PriorModel(al.mp.SphericalIsothermal)
-        source = al.slam.SourceSetup(lens_mass_centre=(5.0, 6.0))
+        source = al.slam.SLaMSource(lens_mass_centre=(5.0, 6.0))
 
         mass = source.unfix_lens_mass_centre(mass=mass)
 
@@ -183,21 +183,21 @@ class TestSourceSetup:
         assert mass.centre.centre_1.sigma == 0.05
 
 
-class TestLightSetup:
+class TestSLaMLight:
     def test__tag(self):
 
-        light = al.slam.LightSetup(align_bulge_disk_elliptical_comps=True)
+        light = al.slam.SLaMLight(align_bulge_disk_elliptical_comps=True)
         light.type_tag = ""
 
         assert light.tag == "light____align_bulge_disk_ell"
 
-        light = al.slam.LightSetup(align_bulge_disk_centre=True, disk_as_sersic=True)
+        light = al.slam.SLaMLight(align_bulge_disk_centre=True, disk_as_sersic=True)
 
         light.type_tag = "lol"
 
         assert light.tag == "light__lol__align_bulge_disk_centre__disk_sersic"
 
-        light = al.slam.LightSetup(
+        light = al.slam.SLaMLight(
             align_bulge_disk_centre=True,
             align_bulge_disk_elliptical_comps=True,
             disk_as_sersic=True,
@@ -208,23 +208,23 @@ class TestLightSetup:
         assert light.tag == "light__test__gaussians_x2"
 
 
-class TestMassSetup:
+class TestSLaMMass:
     def test__fix_lens_light_tag(self):
-        mass = al.slam.MassSetup(fix_lens_light=False)
+        mass = al.slam.SLaMMass(fix_lens_light=False)
         assert mass.fix_lens_light_tag == ""
-        mass = al.slam.MassSetup(fix_lens_light=True)
+        mass = al.slam.SLaMMass(fix_lens_light=True)
         assert mass.fix_lens_light_tag == "__fix_lens_light"
 
     def test__tag(self):
 
-        mass = al.slam.MassSetup(
+        mass = al.slam.SLaMMass(
             no_shear=True, align_light_dark_centre=True, fix_lens_light=True
         )
         mass.type_tag = ""
 
         assert mass.tag == "mass____no_shear__align_light_dark_centre__fix_lens_light"
 
-        mass = al.slam.MassSetup(align_bulge_dark_centre=True)
+        mass = al.slam.SLaMMass(align_bulge_dark_centre=True)
 
         mass.type_tag = "test"
 
@@ -232,10 +232,10 @@ class TestMassSetup:
 
     def test__shear_from_previous_pipeline(self):
 
-        mass = al.slam.MassSetup(no_shear=True)
+        mass = al.slam.SLaMMass(no_shear=True)
 
         assert mass.shear_from_previous_pipeline == None
 
-        mass = al.slam.MassSetup(no_shear=False)
+        mass = al.slam.SLaMMass(no_shear=False)
 
         assert isinstance(mass.shear_from_previous_pipeline, af.AbstractPromise)

@@ -202,7 +202,7 @@ class SLaM:
                 )
 
 
-class HyperSetup(setup.PipelineSetup):
+class SLaMHyper(setup.SetupPipeline):
     def __init__(
         self,
         hyper_galaxies=False,
@@ -217,7 +217,7 @@ class HyperSetup(setup.PipelineSetup):
         """The setup of a pipeline, which controls how PyAutoLens template pipelines runs, for example controlling
         assumptions about the lens's light profile bulge-disk model or if shear is included in the mass model.
 
-        Users can write their own pipelines which do not use or require the *PipelineSetup* class.
+        Users can write their own pipelines which do not use or require the *SetupPipeline* class.
 
         This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
         scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
@@ -294,7 +294,7 @@ class HyperSetup(setup.PipelineSetup):
             )
 
 
-class SourceSetup(setup.PipelineSetup):
+class SLaMSource(setup.SetupPipeline):
     def __init__(
         self,
         pixelization=None,
@@ -458,7 +458,7 @@ class SourceSetup(setup.PipelineSetup):
         return mass
 
 
-class LightSetup(setup.PipelineSetup):
+class SLaMLight(setup.SetupPipeline):
     def __init__(
         self,
         align_bulge_disk_centre=False,
@@ -495,7 +495,7 @@ class LightSetup(setup.PipelineSetup):
             )
 
 
-class MassSetup(setup.PipelineSetup):
+class SLaMMass(setup.SetupPipeline):
     def __init__(
         self,
         no_shear=False,

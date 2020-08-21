@@ -61,8 +61,8 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
-        self.masked_dataset.check_positions_trace_within_threshold_via_tracer(
-            tracer=tracer
+        self.settings.settings_lens.check_positions_trace_within_threshold_via_tracer(
+            tracer=tracer, positions=self.masked_dataset.positions
         )
 
         hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
@@ -91,8 +91,8 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
-            pixelization_settings=self.settings.pixelization,
-            inversion_settings=self.settings.inversion,
+            settings_pixelization=self.settings.settings_pixelization,
+            settings_inversion=self.settings.settings_inversion,
         )
 
     def stochastic_log_evidences_for_instance(
@@ -116,8 +116,8 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             instance=instance
         )
 
-        pixelization_settings = (
-            self.settings.pixelization.settings_with_is_stochastic_true()
+        settings_pixelization = (
+            self.settings.settings_pixelization.settings_with_is_stochastic_true()
         )
 
         log_evidences = []
@@ -130,8 +130,8 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                     tracer=tracer,
                     hyper_image_sky=hyper_image_sky,
                     hyper_background_noise=hyper_background_noise,
-                    pixelization_settings=pixelization_settings,
-                    inversion_settings=self.settings.inversion,
+                    settings_pixelization=settings_pixelization,
+                    settings_inversion=self.settings.settings_inversion,
                 ).log_evidence
             except (InversionException or GridException) as e:
                 log_evidence = None

@@ -669,35 +669,37 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         ]
 
     def sparse_image_plane_grids_of_planes_from_grid(
-        self, grid, pixelization_setting=pix.PixelizationSettings()
+        self, grid, pixelization_setting=pix.SettingsPixelization()
     ):
 
         sparse_image_plane_grids_of_planes = []
 
         for plane in self.planes:
             sparse_image_plane_grid = plane.sparse_image_plane_grid_from_grid(
-                grid=grid, pixelization_settings=pixelization_setting
+                grid=grid, settings_pixelization=pixelization_setting
             )
             sparse_image_plane_grids_of_planes.append(sparse_image_plane_grid)
 
         return sparse_image_plane_grids_of_planes
 
     def traced_sparse_grids_of_planes_from_grid(
-        self,
-        grid,
-        preload_sparse_grids_of_planes=None,
-        pixelization_setting=pix.PixelizationSettings(),
+        self, grid, settings_pixelization=pix.SettingsPixelization()
     ):
 
-        if preload_sparse_grids_of_planes is None or pixelization_setting.is_stochastic:
+        if (
+            settings_pixelization.preload_sparse_grids_of_planes is None
+            or settings_pixelization.is_stochastic
+        ):
 
             sparse_image_plane_grids_of_planes = self.sparse_image_plane_grids_of_planes_from_grid(
-                grid=grid, pixelization_setting=pixelization_setting
+                grid=grid, pixelization_setting=settings_pixelization
             )
 
         else:
 
-            sparse_image_plane_grids_of_planes = preload_sparse_grids_of_planes
+            sparse_image_plane_grids_of_planes = (
+                settings_pixelization.preload_sparse_grids_of_planes
+            )
 
         traced_sparse_grids_of_planes = []
 
@@ -714,10 +716,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         return traced_sparse_grids_of_planes
 
     def mappers_of_planes_from_grid(
-        self,
-        grid,
-        pixelization_settings=pix.PixelizationSettings(),
-        preload_sparse_grids_of_planes=None,
+        self, grid, settings_pixelization=pix.SettingsPixelization()
     ):
 
         mappers_of_planes = []
@@ -725,9 +724,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         traced_sparse_grids_of_planes = self.traced_sparse_grids_of_planes_from_grid(
-            grid=grid,
-            pixelization_setting=pixelization_settings,
-            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
+            grid=grid, settings_pixelization=settings_pixelization
         )
 
         for (plane_index, plane) in enumerate(self.planes):
@@ -738,7 +735,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
                 mapper = plane.mapper_from_grid_and_sparse_grid(
                     grid=traced_grids_of_planes[plane_index],
                     sparse_grid=traced_sparse_grids_of_planes[plane_index],
-                    pixelization_settings=pixelization_settings,
+                    settings_pixelization=settings_pixelization,
                 )
                 mappers_of_planes.append(mapper)
 
@@ -750,15 +747,12 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         image,
         noise_map,
         convolver,
-        pixelization_settings=pix.PixelizationSettings(),
-        inversion_settings=inv.InversionSettings(),
-        preload_sparse_grids_of_planes=None,
+        settings_pixelization=pix.SettingsPixelization(),
+        settings_inversion=inv.SettingsInversion(),
     ):
 
         mappers_of_planes = self.mappers_of_planes_from_grid(
-            grid=grid,
-            pixelization_settings=pixelization_settings,
-            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
+            grid=grid, settings_pixelization=settings_pixelization
         )
 
         return inv.InversionImagingMatrix.from_data_mapper_and_regularization(
@@ -767,7 +761,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             convolver=convolver,
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],
-            settings=inversion_settings,
+            settings=settings_inversion,
         )
 
     def inversion_interferometer_from_grid_and_data(
@@ -776,14 +770,11 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         visibilities,
         noise_map,
         transformer,
-        pixelization_settings=pix.PixelizationSettings(),
-        inversion_settings=inv.InversionSettings(),
-        preload_sparse_grids_of_planes=None,
+        settings_pixelization=pix.SettingsPixelization(),
+        settings_inversion=inv.SettingsInversion(),
     ):
         mappers_of_planes = self.mappers_of_planes_from_grid(
-            grid=grid,
-            pixelization_settings=pixelization_settings,
-            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
+            grid=grid, settings_pixelization=settings_pixelization
         )
 
         return inv.AbstractInversionInterferometer.from_data_mapper_and_regularization(
@@ -792,7 +783,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             transformer=transformer,
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],
-            settings=inversion_settings,
+            settings=settings_inversion,
         )
 
     def hyper_noise_map_from_noise_map(self, noise_map):

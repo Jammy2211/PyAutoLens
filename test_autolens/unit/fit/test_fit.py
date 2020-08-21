@@ -84,11 +84,12 @@ class TestFitImaging:
                     ]
                 ),
                 pixel_scales=1.0,
-                sub_size=1,
             )
 
             masked_imaging_7x7 = al.MaskedImaging(
-                imaging=imaging, mask=mask, grid_class=al.Grid
+                imaging=imaging,
+                mask=mask,
+                settings=al.SettingsMaskedImaging(sub_size=1),
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -189,11 +190,12 @@ class TestFitImaging:
                     ]
                 ),
                 pixel_scales=1.0,
-                sub_size=1,
             )
 
             masked_imaging_7x7 = al.MaskedImaging(
-                imaging=imaging, mask=mask, grid_class=al.Grid, renormalize_psf=False
+                imaging=imaging,
+                mask=mask,
+                settings=al.SettingsMaskedImaging(sub_size=1, renormalize_psf=False),
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -297,11 +299,12 @@ class TestFitImaging:
                     ]
                 ),
                 pixel_scales=1.0,
-                sub_size=1,
             )
 
             masked_imaging_7x7 = al.MaskedImaging(
-                imaging=imaging, mask=mask, grid_class=al.Grid, renormalize_psf=False
+                imaging=imaging,
+                mask=mask,
+                settings=al.SettingsMaskedImaging(sub_size=1, renormalize_psf=False),
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -404,11 +407,12 @@ class TestFitImaging:
                     ]
                 ),
                 pixel_scales=1.0,
-                sub_size=1,
             )
 
             masked_imaging_7x7 = al.MaskedImaging(
-                imaging=imaging, mask=mask, grid_class=al.Grid
+                imaging=imaging,
+                mask=mask,
+                settings=al.SettingsMaskedImaging(sub_size=1),
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -511,11 +515,12 @@ class TestFitImaging:
                     ]
                 ),
                 pixel_scales=1.0,
-                sub_size=1,
             )
 
             masked_imaging_7x7 = al.MaskedImaging(
-                imaging=imaging, mask=mask, grid_class=al.Grid
+                imaging=imaging,
+                mask=mask,
+                settings=al.SettingsMaskedImaging(sub_size=1),
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -656,7 +661,7 @@ class TestFitImaging:
             assert log_likelihood == fit.figure_of_merit
 
         def test___lens_fit_galaxy_model_image_dict__corresponds_to_blurred_galaxy_images(
-            self, masked_imaging_7x7_grid
+            self, masked_imaging_7x7
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -670,13 +675,13 @@ class TestFitImaging:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            fit = al.FitImaging(masked_imaging=masked_imaging_7x7_grid, tracer=tracer)
+            fit = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=masked_imaging_7x7_grid.grid
+                grid=masked_imaging_7x7.grid
             )
             traced_blurring_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=masked_imaging_7x7_grid.blurring_grid
+                grid=masked_imaging_7x7.blurring_grid
             )
 
             g0_image = g0.image_from_grid(grid=traced_grids_of_planes[0])
@@ -684,7 +689,7 @@ class TestFitImaging:
                 grid=traced_blurring_grids_of_planes[0]
             )
 
-            g0_blurred_image = masked_imaging_7x7_grid.convolver.convolved_image_from_image_and_blurring_image(
+            g0_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_and_blurring_image(
                 image=g0_image, blurring_image=g0_blurring_image
             )
 
@@ -693,7 +698,7 @@ class TestFitImaging:
                 grid=traced_blurring_grids_of_planes[1]
             )
 
-            g1_blurred_image = masked_imaging_7x7_grid.convolver.convolved_image_from_image_and_blurring_image(
+            g1_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_and_blurring_image(
                 image=g1_image, blurring_image=g1_blurring_image
             )
 
@@ -801,7 +806,7 @@ class TestFitImaging:
             assert log_likelihood == fit.figure_of_merit
 
         def test___blurred_and_model_images_of_planes_and_unmasked_blurred_image_properties(
-            self, masked_imaging_7x7_grid
+            self, masked_imaging_7x7
         ):
 
             g0 = al.Galaxy(
@@ -816,12 +821,12 @@ class TestFitImaging:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            fit = al.FitImaging(masked_imaging=masked_imaging_7x7_grid, tracer=tracer)
+            fit = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             blurred_images_of_planes = tracer.blurred_images_of_planes_from_grid_and_convolver(
-                grid=masked_imaging_7x7_grid.grid,
-                convolver=masked_imaging_7x7_grid.convolver,
-                blurring_grid=masked_imaging_7x7_grid.blurring_grid,
+                grid=masked_imaging_7x7.grid,
+                convolver=masked_imaging_7x7.convolver,
+                blurring_grid=masked_imaging_7x7.blurring_grid,
             )
 
             assert blurred_images_of_planes[0].in_2d == pytest.approx(
@@ -833,13 +838,13 @@ class TestFitImaging:
             )
 
             unmasked_blurred_image = tracer.unmasked_blurred_image_from_grid_and_psf(
-                grid=masked_imaging_7x7_grid.grid, psf=masked_imaging_7x7_grid.psf
+                grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
             )
 
             assert (unmasked_blurred_image == fit.unmasked_blurred_image).all()
 
             unmasked_blurred_image_of_planes = tracer.unmasked_blurred_image_of_planes_from_grid_and_psf(
-                grid=masked_imaging_7x7_grid.grid, psf=masked_imaging_7x7_grid.psf
+                grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
             )
 
             assert (
@@ -852,7 +857,7 @@ class TestFitImaging:
             ).all()
 
             unmasked_blurred_image_of_galaxies = tracer.unmasked_blurred_image_of_planes_and_galaxies_from_grid_and_psf(
-                grid=masked_imaging_7x7_grid.grid, psf=masked_imaging_7x7_grid.psf
+                grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
             )
 
             assert (
@@ -1034,7 +1039,7 @@ class TestFitImaging:
 
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_imaging_7x7.grid,
-                settings=al.PixelizationSettings(use_border=False),
+                settings=al.SettingsPixelization(use_border=False),
             )
             inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
                 mapper=mapper,
@@ -1116,7 +1121,7 @@ class TestFitImaging:
 
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_imaging_7x7.grid,
-                settings=al.PixelizationSettings(use_border=False),
+                settings=al.SettingsPixelization(use_border=False),
             )
 
             inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
@@ -1155,12 +1160,12 @@ class TestFitImaging:
             fit_0 = al.FitImaging(
                 masked_imaging=masked_imaging_7x7,
                 tracer=tracer,
-                pixelization_settings=al.PixelizationSettings(is_stochastic=False),
+                settings_pixelization=al.SettingsPixelization(is_stochastic=False),
             )
             fit_1 = al.FitImaging(
                 masked_imaging=masked_imaging_7x7,
                 tracer=tracer,
-                pixelization_settings=al.PixelizationSettings(is_stochastic=False),
+                settings_pixelization=al.SettingsPixelization(is_stochastic=False),
             )
 
             assert fit_0.log_evidence == fit_1.log_evidence
@@ -1168,12 +1173,12 @@ class TestFitImaging:
             fit_0 = al.FitImaging(
                 masked_imaging=masked_imaging_7x7,
                 tracer=tracer,
-                pixelization_settings=al.PixelizationSettings(is_stochastic=True),
+                settings_pixelization=al.SettingsPixelization(is_stochastic=True),
             )
             fit_1 = al.FitImaging(
                 masked_imaging=masked_imaging_7x7,
                 tracer=tracer,
-                pixelization_settings=al.PixelizationSettings(is_stochastic=True),
+                settings_pixelization=al.SettingsPixelization(is_stochastic=True),
             )
 
             assert fit_0.log_evidence != fit_1.log_evidence
@@ -1208,7 +1213,7 @@ class TestFitImaging:
 
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_imaging_7x7.grid,
-                settings=al.PixelizationSettings(use_border=False),
+                settings=al.SettingsPixelization(use_border=False),
             )
 
             inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
@@ -1277,7 +1282,7 @@ class TestFitImaging:
             assert log_evidence == fit.figure_of_merit
 
         def test___lens_fit_galaxy_model_image_dict__has_blurred_images_and_inversion_mapped_reconstructed_image(
-            self, masked_imaging_7x7_grid
+            self, masked_imaging_7x7
         ):
 
             g0 = al.Galaxy(
@@ -1294,44 +1299,44 @@ class TestFitImaging:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
-            masked_imaging_7x7_grid.image[0] = 3.0
+            masked_imaging_7x7.image[0] = 3.0
 
-            fit = al.FitImaging(masked_imaging=masked_imaging_7x7_grid, tracer=tracer)
+            fit = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             traced_grids = tracer.traced_grids_of_planes_from_grid(
-                grid=masked_imaging_7x7_grid.grid
+                grid=masked_imaging_7x7.grid
             )
             traced_blurring_grids = tracer.traced_grids_of_planes_from_grid(
-                grid=masked_imaging_7x7_grid.blurring_grid
+                grid=masked_imaging_7x7.blurring_grid
             )
 
             g0_image = g0.image_from_grid(grid=traced_grids[0])
             g0_blurring_image = g0.image_from_grid(grid=traced_blurring_grids[0])
 
-            g0_blurred_image = masked_imaging_7x7_grid.convolver.convolved_image_from_image_and_blurring_image(
+            g0_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_and_blurring_image(
                 image=g0_image, blurring_image=g0_blurring_image
             )
 
             g1_image = g1.image_from_grid(grid=traced_grids[1])
             g1_blurring_image = g1.image_from_grid(grid=traced_blurring_grids[1])
 
-            g1_blurred_image = masked_imaging_7x7_grid.convolver.convolved_image_from_image_and_blurring_image(
+            g1_blurred_image = masked_imaging_7x7.convolver.convolved_image_from_image_and_blurring_image(
                 image=g1_image, blurring_image=g1_blurring_image
             )
 
             blurred_image = g0_blurred_image + g1_blurred_image
 
-            profile_subtracted_image = masked_imaging_7x7_grid.image - blurred_image
+            profile_subtracted_image = masked_imaging_7x7.image - blurred_image
 
             mapper = pix.mapper_from_grid_and_sparse_grid(
-                grid=masked_imaging_7x7_grid.grid,
-                settings=al.PixelizationSettings(use_border=False),
+                grid=masked_imaging_7x7.grid,
+                settings=al.SettingsPixelization(use_border=False),
             )
 
             inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
                 image=profile_subtracted_image,
-                noise_map=masked_imaging_7x7_grid.noise_map,
-                convolver=masked_imaging_7x7_grid.convolver,
+                noise_map=masked_imaging_7x7.noise_map,
+                convolver=masked_imaging_7x7.convolver,
                 mapper=mapper,
                 regularization=reg,
             )
@@ -1418,7 +1423,7 @@ class TestFitImaging:
 
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_imaging_7x7.grid,
-                settings=al.PixelizationSettings(use_border=False),
+                settings=al.SettingsPixelization(use_border=False),
             )
 
             inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
@@ -1489,7 +1494,7 @@ class TestFitImaging:
             assert log_evidence == fit.figure_of_merit
 
         def test___blurred_and_model_images_of_planes_and_unmasked_blurred_image_properties(
-            self, masked_imaging_7x7_grid
+            self, masked_imaging_7x7
         ):
             galaxy_light = al.Galaxy(
                 redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
@@ -1501,25 +1506,25 @@ class TestFitImaging:
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-            fit = al.FitImaging(masked_imaging=masked_imaging_7x7_grid, tracer=tracer)
+            fit = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
             blurred_image = tracer.blurred_image_from_grid_and_convolver(
-                grid=masked_imaging_7x7_grid.grid,
-                convolver=masked_imaging_7x7_grid.convolver,
-                blurring_grid=masked_imaging_7x7_grid.blurring_grid,
+                grid=masked_imaging_7x7.grid,
+                convolver=masked_imaging_7x7.convolver,
+                blurring_grid=masked_imaging_7x7.blurring_grid,
             )
 
-            profile_subtracted_image = masked_imaging_7x7_grid.image - blurred_image
+            profile_subtracted_image = masked_imaging_7x7.image - blurred_image
 
             mapper = pix.mapper_from_grid_and_sparse_grid(
-                grid=masked_imaging_7x7_grid.grid,
-                settings=al.PixelizationSettings(use_border=False),
+                grid=masked_imaging_7x7.grid,
+                settings=al.SettingsPixelization(use_border=False),
             )
 
             inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
                 image=profile_subtracted_image,
-                noise_map=masked_imaging_7x7_grid.noise_map,
-                convolver=masked_imaging_7x7_grid.convolver,
+                noise_map=masked_imaging_7x7.noise_map,
+                convolver=masked_imaging_7x7.convolver,
                 mapper=mapper,
                 regularization=reg,
             )
@@ -1601,7 +1606,6 @@ class TestFitInterferometer:
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(1,)),
                 noise_map=al.Visibilities.ones(shape_1d=(1,)),
                 uv_wavelengths=uv_wavelengths,
-                primary_beam=None,
             )
 
             interferometer.visibilities[0, 1] = 4.0
@@ -1617,15 +1621,15 @@ class TestFitInterferometer:
                     ]
                 ),
                 pixel_scales=1.0,
-                sub_size=1,
             )
 
             masked_interferometer = al.MaskedInterferometer(
                 interferometer=interferometer,
                 visibilities_mask=visibilities_mask,
                 real_space_mask=real_space_mask,
-                grid_class=al.Grid,
-                transformer_class=al.TransformerDFT,
+                settings=al.SettingsMaskedInterferometer(
+                    sub_size=1, transformer_class=al.TransformerDFT
+                ),
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -1663,7 +1667,6 @@ class TestFitInterferometer:
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(3,)),
                 noise_map=al.Visibilities.full(fill_value=2.0, shape_1d=(3,)),
                 uv_wavelengths=uv_wavelengths,
-                primary_beam=None,
             )
 
             real_space_mask = al.Mask.unmasked(shape_2d=(1, 3), pixel_scales=1.0)
@@ -1683,15 +1686,15 @@ class TestFitInterferometer:
                     ]
                 ),
                 pixel_scales=1.0,
-                sub_size=1,
             )
 
             masked_interferometer = al.MaskedInterferometer(
                 interferometer=interferometer,
                 visibilities_mask=visibilities_mask,
-                grid_class=al.Grid,
                 real_space_mask=real_space_mask,
-                transformer_class=al.TransformerDFT,
+                settings=al.SettingsMaskedInterferometer(
+                    sub_size=1, transformer_class=al.TransformerDFT
+                ),
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -1771,7 +1774,6 @@ class TestFitInterferometer:
                 visibilities=al.Visibilities.full(fill_value=5.0, shape_1d=(3,)),
                 noise_map=al.Visibilities.full(fill_value=2.0, shape_1d=(3,)),
                 uv_wavelengths=uv_wavelengths,
-                primary_beam=None,
             )
 
             visibilities_mask = np.full(fill_value=False, shape=(1, 2))
@@ -1785,14 +1787,13 @@ class TestFitInterferometer:
                     ]
                 ),
                 pixel_scales=1.0,
-                sub_size=1,
             )
 
             masked_interferometer = al.MaskedInterferometer(
                 interferometer=interferometer,
                 visibilities_mask=visibilities_mask,
                 real_space_mask=real_space_mask,
-                grid_class=al.Grid,
+                settings=al.SettingsMaskedInterferometer(sub_size=1),
             )
 
             # Setup as a ray trace instance, using a light profile for the lens
@@ -2216,12 +2217,12 @@ class TestFitInterferometer:
             fit_0 = al.FitInterferometer(
                 masked_interferometer=masked_interferometer_7,
                 tracer=tracer,
-                pixelization_settings=al.PixelizationSettings(is_stochastic=False),
+                settings_pixelization=al.SettingsPixelization(is_stochastic=False),
             )
             fit_1 = al.FitInterferometer(
                 masked_interferometer=masked_interferometer_7,
                 tracer=tracer,
-                pixelization_settings=al.PixelizationSettings(is_stochastic=False),
+                settings_pixelization=al.SettingsPixelization(is_stochastic=False),
             )
 
             assert fit_0.log_evidence == fit_1.log_evidence
@@ -2229,12 +2230,12 @@ class TestFitInterferometer:
             fit_0 = al.FitInterferometer(
                 masked_interferometer=masked_interferometer_7,
                 tracer=tracer,
-                pixelization_settings=al.PixelizationSettings(is_stochastic=True),
+                settings_pixelization=al.SettingsPixelization(is_stochastic=True),
             )
             fit_1 = al.FitInterferometer(
                 masked_interferometer=masked_interferometer_7,
                 tracer=tracer,
-                pixelization_settings=al.PixelizationSettings(is_stochastic=True),
+                settings_pixelization=al.SettingsPixelization(is_stochastic=True),
             )
 
             assert fit_0.log_evidence != fit_1.log_evidence
@@ -2256,7 +2257,7 @@ class TestFitInterferometer:
             fit = al.FitInterferometer(
                 masked_interferometer=masked_interferometer_7,
                 tracer=tracer,
-                inversion_settings=al.InversionSettings(use_linear_operators=True),
+                settings_inversion=al.SettingsInversion(use_linear_operators=True),
             )
 
             mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -2269,7 +2270,7 @@ class TestFitInterferometer:
                 visibilities=masked_interferometer_7.visibilities,
                 noise_map=masked_interferometer_7.noise_map,
                 transformer=masked_interferometer_7.transformer,
-                settings=al.InversionSettings(use_linear_operators=True),
+                settings=al.SettingsInversion(use_linear_operators=True),
             )
 
             assert inversion.mapped_reconstructed_visibilities == pytest.approx(
@@ -2379,7 +2380,7 @@ class TestFitInterferometer:
 
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_interferometer_7.grid,
-                settings=al.PixelizationSettings(use_border=False),
+                settings=al.SettingsPixelization(use_border=False),
             )
 
             inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
@@ -2504,7 +2505,7 @@ class TestFitInterferometer:
             )
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_interferometer_7_grid.grid,
-                settings=al.PixelizationSettings(use_border=False),
+                settings=al.SettingsPixelization(use_border=False),
             )
 
             inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
@@ -2574,7 +2575,7 @@ class TestFitInterferometer:
             )
             mapper = pix.mapper_from_grid_and_sparse_grid(
                 grid=masked_interferometer_7_grid.grid,
-                settings=al.PixelizationSettings(use_border=False),
+                settings=al.SettingsPixelization(use_border=False),
             )
 
             inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(

@@ -1,9 +1,6 @@
 import autolens as al
 import autolens.plot as aplt
 import numpy as np
-from scipy import sparse
-import pylops
-from projects.lops import nufft_lop
 
 from test_autolens.simulators.interferometer import instrument_util
 
@@ -66,6 +63,7 @@ inversion = tracer.inversion_interferometer_from_grid_and_data(
     visibilities=masked_interferometer.visibilities,
     noise_map=masked_interferometer.noise_map,
     transformer=masked_interferometer.transformer,
+    settings_inversion=al.SettingsInversion(use_linear_operators=True),
 )
 
 aplt.Inversion.reconstruction(inversion=inversion)

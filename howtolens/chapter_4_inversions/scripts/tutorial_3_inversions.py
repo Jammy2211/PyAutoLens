@@ -63,7 +63,9 @@ galaxy model (we don't need to provide the source's _LightProfile_, as we're usi
 """
 
 # %%
-masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+masked_imaging = al.MaskedImaging(
+    imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
+)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,

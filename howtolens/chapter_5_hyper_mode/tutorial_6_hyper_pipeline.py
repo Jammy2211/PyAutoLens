@@ -156,7 +156,7 @@ def make_pipeline(setup, settings, folders=None):
     """
     This extends phase 1 with hyper-phases that fit for the hyper-galaxies, as described above. The extension below
     adds two phases, a 'hyper-galaxy' phase which fits for the lens hyper-galaxy + the background noise, and a
-    'hyper_combined' phase which fits them again.
+ 'hyper_combined' phase which fits them again.
     
     Although this might sound like unnecessary repetition, the second phase uses Gaussian priors inferred from the
     first phase, meaning that it can search regions of parameter space that may of been unaccessible due to the

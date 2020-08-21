@@ -16,6 +16,77 @@ directory = os.path.dirname(os.path.realpath(__file__))
 
 
 class TestMakeAnalysis:
+    def test__masked_interferometer__settings_inputs_are_used_in_masked_interferometer(
+        self, interferometer_7, mask_7x7
+    ):
+
+        phase_interferometer_7 = al.PhaseInterferometer(
+            phase_name="phase_interferometer_7",
+            settings=al.SettingsPhaseInterferometer(
+                masked_interferometer=al.SettingsMaskedInterferometer(
+                    grid_class=al.Grid,
+                    grid_inversion_class=al.Grid,
+                    sub_size=3,
+                    signal_to_noise_limit=1.0,
+                ),
+                settings_pixelization=al.SettingsPixelization(
+                    use_border=False, is_stochastic=True
+                ),
+                settings_inversion=al.SettingsInversion(use_linear_operators=True),
+            ),
+            search=mock.MockSearch(),
+            real_space_mask=mask_7x7,
+        )
+
+        assert (
+            phase_interferometer_7.settings.settings_masked_interferometer.sub_size == 3
+        )
+        assert (
+            phase_interferometer_7.settings.settings_masked_interferometer.signal_to_noise_limit
+            == 1.0
+        )
+        assert phase_interferometer_7.settings.settings_pixelization.use_border == False
+        assert (
+            phase_interferometer_7.settings.settings_pixelization.is_stochastic == True
+        )
+        assert (
+            phase_interferometer_7.settings.settings_inversion.use_linear_operators
+            == True
+        )
+
+        analysis = phase_interferometer_7.make_analysis(
+            dataset=interferometer_7, mask=mask_7x7, results=mock.MockResults()
+        )
+
+        assert isinstance(analysis.masked_dataset.grid, al.Grid)
+        assert isinstance(analysis.masked_dataset.grid_inversion, al.Grid)
+        assert isinstance(analysis.masked_dataset.transformer, al.TransformerNUFFT)
+
+        phase_interferometer_7 = al.PhaseInterferometer(
+            phase_name="phase_interferometer_7",
+            settings=al.SettingsPhaseInterferometer(
+                masked_interferometer=al.SettingsMaskedInterferometer(
+                    grid_class=al.GridIterate,
+                    sub_size=3,
+                    fractional_accuracy=0.99,
+                    sub_steps=[2],
+                    transformer_class=al.TransformerDFT,
+                )
+            ),
+            search=mock.MockSearch(),
+            real_space_mask=mask_7x7,
+        )
+
+        analysis = phase_interferometer_7.make_analysis(
+            dataset=interferometer_7, mask=mask_7x7, results=mock.MockResults()
+        )
+
+        assert isinstance(analysis.masked_dataset.grid, al.GridIterate)
+        assert analysis.masked_dataset.grid.sub_size == 1
+        assert analysis.masked_dataset.grid.fractional_accuracy == 0.99
+        assert analysis.masked_dataset.grid.sub_steps == [2]
+        assert isinstance(analysis.masked_dataset.transformer, al.TransformerDFT)
+
     def test__masks_visibilities_and_noise_map_correctly(
         self, phase_interferometer_7, interferometer_7, visibilities_mask_7x2
     ):
@@ -49,7 +120,6 @@ class TestMakeAnalysis:
 
         search = phase_info.readline()
         sub_size = phase_info.readline()
-        primary_beam_shape_2d = phase_info.readline()
         positions_threshold = phase_info.readline()
         cosmology = phase_info.readline()
 
@@ -57,7 +127,6 @@ class TestMakeAnalysis:
 
         assert search == "Optimizer = MockSearch \n"
         assert sub_size == "Sub-grid size = 2 \n"
-        assert primary_beam_shape_2d == "Primary Beam shape = None \n"
         assert positions_threshold == "Positions Threshold = None \n"
         assert (
             cosmology
@@ -93,8 +162,9 @@ class TestMakeAnalysis:
         phase_imaging_7x7 = al.PhaseInterferometer(
             phase_name="test_phase",
             galaxies=dict(lens=lens_galaxy),
-            settings=al.PhaseSettingsInterferometer(
-                grid_class=al.Grid, sub_size=1, log_likelihood_cap=100.0
+            settings=al.SettingsPhaseInterferometer(
+                masked_interferometer=al.SettingsMaskedInterferometer(sub_size=1),
+                log_likelihood_cap=100.0,
             ),
             search=mock.MockSearch(),
             real_space_mask=mask_7x7,
@@ -152,7 +222,7 @@ class TestHyperMethods:
         )
 
         phase_interferometer_7.extend_with_multiple_hyper_phases(
-            setup=al.PipelineSetup()
+            setup=al.SetupPipeline()
         )
 
         analysis = phase_interferometer_7.make_analysis(

@@ -1,3 +1,6 @@
+- Move Inversioon interpolation setup to settings.
+- Check stochastic mode.
+
 Positions:
 
     - Split PositioonSolver and PositionSolverData, where latter uses a known position to define the starting grid
