@@ -12,6 +12,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     def __init__(
         self,
         masked_interferometer,
+        settings,
         cosmology,
         image_path=None,
         results=None,
@@ -19,7 +20,10 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     ):
 
         super(Analysis, self).__init__(
-            cosmology=cosmology, results=results, log_likelihood_cap=log_likelihood_cap
+            settings=settings,
+            cosmology=cosmology,
+            results=results,
+            log_likelihood_cap=log_likelihood_cap,
         )
 
         self.visualizer = visualizer.PhaseInterferometerVisualizer(
@@ -70,11 +74,8 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
-        self.masked_dataset.check_positions_trace_within_threshold_via_tracer(
-            tracer=tracer
-        )
-        self.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
-            tracer=tracer
+        self.settings.settings_lens.check_positions_trace_within_threshold_via_tracer(
+            tracer=tracer, positions=self.masked_dataset.positions
         )
 
         hyper_background_noise = self.hyper_background_noise_for_instance(
@@ -85,7 +86,6 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             fit = self.masked_interferometer_fit_for_tracer(
                 tracer=tracer, hyper_background_noise=hyper_background_noise
             )
-
             return fit.figure_of_merit
         except InversionException as e:
             raise FitException from e
@@ -134,6 +134,8 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             masked_interferometer=self.masked_dataset,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
+            settings_pixelization=self.settings.settings_pixelization,
+            settings_inversion=self.settings.settings_inversion,
         )
 
     def visualize(self, instance, during_analysis):

@@ -279,6 +279,43 @@ print(fit.log_likelihood)
 
 # %%
 """
+We can customize the _MaskedImaging_ we set up, using the _SettingsMaskedImaging_ object. 
+
+For example, we can: 
+
+ - Specify the _Grid_ used by the _MaskedImaging_ to fit the data, where we below increase it from its default value of
+   2 to 5.
+ 
+ - Bin-up the masked imaging by a factor 2. This decreases the resolution of the data losing us  information, but 
+   makes the fit computationally faster (which will be important in the next chapter).
+"""
+
+# %%
+settings_masked_imaging = al.SettingsMaskedImaging(
+    grid_class=al.Grid, sub_size=4, bin_up_factor=2
+)
+
+masked_imaging_custom = al.MaskedImaging(
+    imaging=imaging, mask=mask, settings=settings_masked_imaging
+)
+
+# %%
+"""
+If we use this data to perform a fit, we can immediately note how the resolution of the data has been binned up.
+"""
+
+fit_custom = al.FitImaging(masked_imaging=masked_imaging_custom, tracer=tracer)
+
+# aplt.FitImaging.subplot_fit_imaging(fit=fit_custom, include=aplt.Include(mask=True))
+
+# %%
+"""
+The use of _Settings_ objects is a core feature of the **PyAutoLens** API and will appear throughout the **HowToLens**
+chapters for setting up many different aspects of a **PyAutoLens** fit, so take note!
+"""
+
+# %%
+"""
 We used the same _Tracer_ to create and fit the image, giving an excellent fit. The residual-map and chi-squared-map, 
 show no signs of the source-galaxy's light present, indicating a good fit. This solution will translate to one of the 
 highest-log_likelihood solutions possible.

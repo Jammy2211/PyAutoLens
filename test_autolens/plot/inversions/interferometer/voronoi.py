@@ -1,9 +1,6 @@
 import autolens as al
 import autolens.plot as aplt
 import numpy as np
-from scipy import sparse
-import pylops
-from projects.lops import nufft_lop
 
 from test_autolens.simulators.interferometer import instrument_util
 
@@ -11,8 +8,8 @@ interferometer = instrument_util.load_test_interferometer(
     data_name="lens_sie__source_smooth", instrument="sma"
 )
 
-aplt.Interferometer.visibilities(interferometer=interferometer)
-aplt.Interferometer.uv_wavelengths(interferometer=interferometer)
+# aplt.Interferometer.visibilities(interferometer=interferometer)
+# aplt.Interferometer.uv_wavelengths(interferometer=interferometer)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -35,7 +32,7 @@ lens_galaxy = al.Galaxy(
 source_galaxy = al.Galaxy(
     redshift=1.0,
     pixelization=al.pix.VoronoiMagnification(shape=(20, 20)),
-    regularization=al.reg.Constant(coefficient=0.01),
+    regularization=al.reg.Constant(coefficient=1.0),
 )
 
 real_space_shape = 256
@@ -66,6 +63,7 @@ inversion = tracer.inversion_interferometer_from_grid_and_data(
     visibilities=masked_interferometer.visibilities,
     noise_map=masked_interferometer.noise_map,
     transformer=masked_interferometer.transformer,
+    settings_inversion=al.SettingsInversion(use_linear_operators=True),
 )
 
 aplt.Inversion.reconstruction(inversion=inversion)

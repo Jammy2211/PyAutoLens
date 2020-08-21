@@ -22,23 +22,20 @@ def set_config_path():
 
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
-    return al.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
-
-
-@pytest.fixture(name="masked_imaging_7x7_grid")
-def make_masked_imaging_7x7_grid(imaging_7x7, sub_mask_7x7):
-    return al.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.Grid)
+    return al.MaskedImaging(
+        imaging=imaging_7x7,
+        mask=sub_mask_7x7,
+        settings=al.SettingsMaskedImaging(sub_size=1),
+    )
 
 
 @pytest.fixture(name="masked_interferometer_7")
-def make_masked_interferometer_7(
-    interferometer_7, mask_7x7, visibilities_mask_7x2, sub_grid_7x7, transformer_7x7_7
-):
+def make_masked_interferometer_7(interferometer_7, mask_7x7, visibilities_mask_7x2):
     return al.MaskedInterferometer(
         interferometer=interferometer_7,
         visibilities_mask=visibilities_mask_7x2,
         real_space_mask=mask_7x7,
-        transformer_class=aa.TransformerDFT,
+        settings=al.SettingsMaskedInterferometer(transformer_class=aa.TransformerNUFFT),
     )
 
 
@@ -50,8 +47,9 @@ def make_masked_interferometer_7_grid(
         interferometer=interferometer_7,
         visibilities_mask=visibilities_mask_7x2,
         real_space_mask=mask_7x7,
-        grid_class=aa.Grid,
-        transformer_class=aa.TransformerDFT,
+        settings=al.SettingsMaskedInterferometer(
+            grid_class=aa.Grid, sub_size=1, transformer_class=aa.TransformerDFT
+        ),
     )
 
 
@@ -157,7 +155,7 @@ def make_mask_7x7_1_pix():
         ]
     )
 
-    return aa.Mask.manual(mask=array)
+    return aa.Mask.manual(mask=array, pixel_scales=1.0)
 
 
 @pytest.fixture(name="phase_dataset_7x7")

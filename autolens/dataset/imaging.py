@@ -2,28 +2,12 @@ import copy
 
 from autoarray.dataset import imaging
 from autoarray.structures import grids
-from autolens.dataset import abstract
+from autogalaxy.dataset import imaging as im
 from autolens.lens import ray_tracing
 
 
-class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
-    def __init__(
-        self,
-        imaging,
-        mask,
-        grid_class=grids.Grid,
-        grid_inversion_class=grids.Grid,
-        fractional_accuracy=0.9999,
-        sub_steps=[2, 4, 8, 16],
-        pixel_scales_interp=None,
-        psf_shape_2d=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
-        inversion_stochastic=False,
-        positions_threshold=None,
-        renormalize_psf=True,
-        preload_sparse_grids_of_planes=None,
-    ):
+class MaskedImaging(imaging.MaskedImaging):
+    def __init__(self, imaging, mask, settings=im.SettingsMaskedImaging()):
         """
         The lens dataset is the collection of data (image, noise-map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
@@ -55,24 +39,7 @@ class MaskedImaging(imaging.MaskedImaging, abstract.AbstractLensMasked):
         """
 
         super(MaskedImaging, self).__init__(
-            imaging=imaging,
-            mask=mask,
-            grid_class=grid_class,
-            grid_inversion_class=grid_inversion_class,
-            fractional_accuracy=fractional_accuracy,
-            sub_steps=sub_steps,
-            pixel_scales_interp=pixel_scales_interp,
-            psf_shape_2d=psf_shape_2d,
-            inversion_pixel_limit=inversion_pixel_limit,
-            inversion_uses_border=inversion_uses_border,
-            renormalize_psf=renormalize_psf,
-        )
-
-        abstract.AbstractLensMasked.__init__(
-            self=self,
-            inversion_stochastic=inversion_stochastic,
-            positions_threshold=positions_threshold,
-            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes,
+            imaging=imaging, mask=mask, settings=settings
         )
 
 

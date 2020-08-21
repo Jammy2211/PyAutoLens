@@ -2599,10 +2599,10 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7.geometry.unmasked_grid, redshift=0.3
+                grid=sub_grid_7x7.geometry.unmasked_grid_sub_1, redshift=0.3
             )
 
-            assert (grid_at_redshift == sub_grid_7x7.geometry.unmasked_grid).all()
+            assert (grid_at_redshift == sub_grid_7x7.geometry.unmasked_grid_sub_1).all()
 
     class TestContributionMap:
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
@@ -3464,7 +3464,7 @@ class TestAbstractTracerData:
                 image=masked_imaging_7x7.image,
                 noise_map=masked_imaging_7x7.noise_map,
                 convolver=masked_imaging_7x7.convolver,
-                inversion_uses_border=False,
+                settings_pixelization=al.SettingsPixelization(use_border=False),
             )
 
             assert inversion.mapped_reconstructed_image == pytest.approx(
@@ -3489,7 +3489,7 @@ class TestAbstractTracerData:
                 visibilities=masked_interferometer_7.visibilities,
                 noise_map=masked_interferometer_7.noise_map,
                 transformer=masked_interferometer_7.transformer,
-                inversion_uses_border=False,
+                settings_pixelization=al.SettingsPixelization(use_border=False),
             )
 
             assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(

@@ -160,19 +160,25 @@ source_galaxy_model = al.GalaxyModel(redshift=1.0, light=al.lp.SphericalExponent
 
 # %%
 """
-We can use a _PhaseSettingsImaging_ object to customize how a _Tracer_ and _FitImaging_ are used to fit the _Imaging_ 
+We can use a _SettingsPhaseImaging_ object to customize how a _Tracer_ and _FitImaging_ are used to fit the _Imaging_ 
 dataset. Below, we specify:
 
  - That a regular *Grid* is used to fit create the model-image when fitting the data 
  (see 'autolens_workspace/examples/grids.py' for a description of grids).
  - The sub-grid size of this grid.
 
+These settings are passed to _SettingsPhaseImaging_ via a _SettingsMaskedImaging_ object, which in the previous chapter
+we saw could be used to customize how the _MaskedImaging_ was setup. All settings passed to a _SettingsPhaseImaging_
+object are passed in this way, thus the settings we input into a phase are categorized based on what they change.
+
 You'll note that the output folder of non-linear seach results has been 'tagged' with these phase settings. We'll 
 discuss this and phase settings in more detail in a later tutorial.
 """
 
 # %%
-settings = al.PhaseSettingsImaging(grid_class=al.Grid, sub_size=2)
+settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+
+settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
 
 # %%
 """

@@ -54,7 +54,9 @@ mask = al.Mask.circular(
 
 phase = al.PhaseImaging(
     phase_name="phase_t1_non_linear_search",
-    settings=al.PhaseSettingsImaging(grid_class=al.Grid, sub_size=2),
+    settings=al.SettingsPhaseImaging(
+        settings_masked_imaging=al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+    ),
     galaxies=dict(
         lens_galaxy=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
         source_galaxy=al.GalaxyModel(redshift=1.0, light=al.lp.SphericalExponential),
@@ -92,7 +94,7 @@ However, we are not going into any more detail on the result variable in this tu
 
 A comprehensive description of the results can be found at the following script:
 
-    'autolens_workspace/examples/model/result.py'
+ 'autolens_workspace/examples/model/result.py'
 
 """
 

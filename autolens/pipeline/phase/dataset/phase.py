@@ -1,14 +1,34 @@
 import autoarray as aa
-import numpy as np
+from autolens.fit import fit_positions
+from autogalaxy.pipeline.phase import dataset
 from autolens import exc
-from autolens.fit import fit
+import numpy as np
 
 
-class MetaLens:
-    def __init__(self, settings, is_hyper_phase):
+class PhaseDataset(dataset.PhaseDataset):
+    def modify_dataset(self, dataset, results):
 
-        self.settings = settings
-        self.is_hyper_phase = is_hyper_phase
+        positions = self.updated_positions_from_positions_and_results(
+            positions=dataset.positions, results=results
+        )
+        dataset.positions = positions
+
+    def modify_settings(self, dataset, results):
+
+        positions_threshold = self.updated_positions_threshold_from_positions(
+            positions=dataset.positions, results=results
+        )
+        self.settings.settings_lens = self.settings.settings_lens.modify_positions_threshold(
+            positions_threshold=positions_threshold
+        )
+        self.check_positions(positions=dataset.positions)
+
+        preload_sparse_grids_of_planes = self.preload_pixelization_grids_of_planes_from_results(
+            results=results
+        )
+        self.settings.settings_pixelization = self.settings.settings_pixelization.modify_preload(
+            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes
+        )
 
     def updated_positions_from_positions_and_results(self, positions, results):
         """If automatic position updating is on, update the phase's positions using the results of the previous phase's
@@ -33,7 +53,10 @@ class MetaLens:
             except AttributeError:
                 pass
 
-        if self.settings.auto_positions_factor is not None and results.last is not None:
+        if (
+            self.settings.settings_lens.auto_positions_factor is not None
+            and results.last is not None
+        ):
 
             updated_positions = (
                 results.last.image_plane_multiple_image_positions_of_source_plane_centres
@@ -63,43 +86,42 @@ class MetaLens:
 
         The threshold is rounded up to the auto positions minimum threshold if that setting is included."""
 
-        if self.settings.auto_positions_factor and results.last is not None:
+        if (
+            self.settings.settings_lens.auto_positions_factor
+            and results.last is not None
+        ):
 
             if positions is None:
                 return None
 
-            positions_fits = fit.FitPositionsSourcePlane(
+            positions_fits = fit_positions.FitPositionsSourcePlaneMaxSeparation(
                 positions=aa.GridCoordinates(coordinates=positions),
                 tracer=results.last.max_log_likelihood_tracer,
-                noise_map=1.0,
+                noise_value=1.0,
             )
 
-            positions_threshold = self.settings.auto_positions_factor * np.max(
-                positions_fits.maximum_separations
+            positions_threshold = (
+                self.settings.settings_lens.auto_positions_factor
+                * np.max(positions_fits.maximum_separations)
             )
 
         else:
 
-            positions_threshold = self.settings.positions_threshold
+            positions_threshold = self.settings.settings_lens.positions_threshold
 
         if (
-            self.settings.auto_positions_minimum_threshold is not None
+            self.settings.settings_lens.auto_positions_minimum_threshold is not None
             and positions_threshold is not None
         ):
             if (
-                positions_threshold < self.settings.auto_positions_minimum_threshold
+                positions_threshold
+                < self.settings.settings_lens.auto_positions_minimum_threshold
             ) or (positions_threshold is None):
-                positions_threshold = self.settings.auto_positions_minimum_threshold
+                positions_threshold = (
+                    self.settings.settings_lens.auto_positions_minimum_threshold
+                )
 
         return positions_threshold
-
-    def check_positions(self, positions):
-
-        if self.settings.positions_threshold is not None and positions is None:
-            raise exc.PhaseException(
-                "You have specified for a phase to use positions, but not input positions to the "
-                "pipeline when you ran it."
-            )
 
     def preload_pixelization_grids_of_planes_from_results(self, results):
 
@@ -119,3 +141,14 @@ class MetaLens:
                 else:
                     return results.last.max_log_likelihood_pixelization_grids_of_planes
         return None
+
+    def check_positions(self, positions):
+
+        if (
+            self.settings.settings_lens.positions_threshold is not None
+            and positions is None
+        ):
+            raise exc.PhaseException(
+                "You have specified for a phase to use positions, but not input positions to the "
+                "pipeline when you ran it."
+            )

@@ -160,7 +160,11 @@ def fit_imaging_with_voronoi_magnification_pixelization(
     imaging, mask, regularization_coefficient
 ):
 
-    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+    masked_imaging = al.MaskedImaging(
+        imaging=imaging,
+        mask=mask,
+        settings=al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2),
+    )
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,

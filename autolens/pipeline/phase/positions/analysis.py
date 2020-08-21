@@ -1,5 +1,5 @@
 from autoconf import conf
-from autoarray.operators.inversion import pixelizations as pix
+from autoarray.inversion import pixelizations as pix
 from autoarray.exc import InversionException, GridException
 from autofit.exc import FitException
 from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
@@ -52,17 +52,13 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         tracer = self.tracer_for_instance(instance=instance)
 
         try:
-            fit = self.positions_fit_for_tracer(
-                tracer=tracer,
-            )
+            fit = self.positions_fit_for_tracer(tracer=tracer)
 
             return fit.figure_of_merit
         except (GridException) as e:
             raise FitException from e
 
-    def positions_fit_for_tracer(
-        self, tracer, hyper_image_sky, hyper_background_noise
-    ):
+    def positions_fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
 
         return fit.FitImaging(
             masked_imaging=self.masked_dataset,
@@ -70,52 +66,6 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
-
-    def stochastic_log_evidences_for_instance(
-        self, instance, histogram_samples=100, histogram_bins=10
-    ):
-
-        instance = self.associate_hyper_images(instance=instance)
-        tracer = self.tracer_for_instance(instance=instance)
-
-        if not tracer.has_pixelization:
-            return None
-
-        if not isinstance(
-            tracer.pixelizations_of_planes[-1], pix.VoronoiBrightnessImage
-        ):
-            return None
-
-        hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
-
-        hyper_background_noise = self.hyper_background_noise_for_instance(
-            instance=instance
-        )
-
-        if self.masked_dataset.inversion_stochastic is False:
-            masked_dataset = copy.copy(self.masked_dataset)
-            masked_dataset.inversion_stochastic = True
-        else:
-            masked_dataset = self.masked_dataset
-
-        log_evidences = []
-
-        for i in range(histogram_samples):
-
-            try:
-                log_evidence = fit.FitImaging(
-                    masked_imaging=masked_dataset,
-                    tracer=tracer,
-                    hyper_image_sky=hyper_image_sky,
-                    hyper_background_noise=hyper_background_noise,
-                ).log_evidence
-            except (InversionException or GridException) as e:
-                log_evidence = None
-
-            if log_evidence is not None:
-                log_evidences.append(log_evidence)
-
-        return log_evidences
 
     def visualize(self, instance, during_analysis):
 
@@ -156,15 +106,3 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)
         except Exception:
             pass
-
-        if not during_analysis and visualizer.plot_stochastic_histogram:
-
-            log_evidences = self.stochastic_log_evidences_for_instance(
-                instance=instance
-            )
-
-            visualizer.visualize_stochastic_histogram(
-                log_evidences=log_evidences,
-                max_log_evidence=fit.log_evidence,
-                during_analysis=during_analysis,
-            )

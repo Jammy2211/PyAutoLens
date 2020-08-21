@@ -1,5 +1,5 @@
 from autoconf import conf
-from autoarray.operators.inversion import pixelizations as pix
+from autoarray.inversion import pixelizations as pix
 from autoarray.exc import InversionException, GridException
 from autofit.exc import FitException
 from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
@@ -14,6 +14,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     def __init__(
         self,
         masked_imaging,
+        settings,
         cosmology,
         image_path=None,
         results=None,
@@ -21,7 +22,10 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     ):
 
         super().__init__(
-            cosmology=cosmology, results=results, log_likelihood_cap=log_likelihood_cap
+            settings=settings,
+            cosmology=cosmology,
+            results=results,
+            log_likelihood_cap=log_likelihood_cap,
         )
 
         self.visualizer = visualizer.PhaseImagingVisualizer(
@@ -57,12 +61,8 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
-        self.masked_dataset.check_positions_trace_within_threshold_via_tracer(
-            tracer=tracer
-        )
-
-        self.masked_dataset.check_inversion_pixels_are_below_limit_via_tracer(
-            tracer=tracer
+        self.settings.settings_lens.check_positions_trace_within_threshold_via_tracer(
+            tracer=tracer, positions=self.masked_dataset.positions
         )
 
         hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
@@ -91,6 +91,8 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
+            settings_pixelization=self.settings.settings_pixelization,
+            settings_inversion=self.settings.settings_inversion,
         )
 
     def stochastic_log_evidences_for_instance(
@@ -114,11 +116,9 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             instance=instance
         )
 
-        if self.masked_dataset.inversion_stochastic is False:
-            masked_dataset = copy.copy(self.masked_dataset)
-            masked_dataset.inversion_stochastic = True
-        else:
-            masked_dataset = self.masked_dataset
+        settings_pixelization = (
+            self.settings.settings_pixelization.settings_with_is_stochastic_true()
+        )
 
         log_evidences = []
 
@@ -126,10 +126,12 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
 
             try:
                 log_evidence = fit.FitImaging(
-                    masked_imaging=masked_dataset,
+                    masked_imaging=self.masked_dataset,
                     tracer=tracer,
                     hyper_image_sky=hyper_image_sky,
                     hyper_background_noise=hyper_background_noise,
+                    settings_pixelization=settings_pixelization,
+                    settings_inversion=self.settings.settings_inversion,
                 ).log_evidence
             except (InversionException or GridException) as e:
                 log_evidence = None
