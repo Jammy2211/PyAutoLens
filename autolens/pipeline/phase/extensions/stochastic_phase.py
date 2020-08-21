@@ -5,6 +5,7 @@ from autogalaxy.pipeline.phase import extensions
 
 import math
 from scipy.stats import norm
+import pickle
 import json
 import numpy as np
 
@@ -108,13 +109,28 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         phase.model.galaxies.lens.mass = mass
 
-        return phase.run(
+        result = phase.run(
             dataset,
             mask=results.last.mask,
             results=results,
             info=info,
             pickle_files=pickle_files,
         )
+
+        self.save_stochastic_log_evidences(
+            stochastic_log_evidences=stochastic_log_evidences
+        )
+
+        return result
+
+    def save_stochastic_log_evidences(self, stochastic_log_evidences):
+        """
+        Save the dataset associated with the phase
+        """
+        with open(
+            "{}/stochastic_log_evidences.pickle".format(self.paths.pickle_path), "wb"
+        ) as f:
+            pickle.dump(stochastic_log_evidences, f)
 
     def stochastic_log_evidences_from_json(cls, filename):
         with open(filename, "r") as f:
