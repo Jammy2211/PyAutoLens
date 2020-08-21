@@ -88,11 +88,11 @@ to input a mask and use a border.
 
 # %%
 def perform_fit_with_source_galaxy_mask_and_border(
-    imaging, source_galaxy, mask, inversion_use_border
+    imaging, source_galaxy, mask, settings_pixelization
 ):
 
     masked_imaging = al.MaskedImaging(
-        imaging=imaging, mask=mask, inversion_use_border=inversion_use_border
+        imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
     )
 
     lens_galaxy = al.Galaxy(
@@ -104,12 +104,21 @@ def perform_fit_with_source_galaxy_mask_and_border(
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    return al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    return al.FitImaging(
+        masked_imaging=masked_imaging,
+        tracer=tracer,
+        settings_pixelization=settings_pixelization,
+    )
 
 
 # %%
 """
 Okay, so lets first look at our _Mapper_ without using a border using our annular _Mask_.
+
+First, note how we set up the border. We use a _SettingsPixelization_ object, which is analogous to the 
+_SettingsMaskedImaging_ and _SettingsLens_ objects we used in previous tutorials. Later, you'll see how these 
+settings can also be passed to a _SettingsPhaseImaging_ object, to control the behaviour of the pixelization during a
+model-fit.
 """
 
 # %%
@@ -123,7 +132,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_annular,
-    inversion_use_border=False,
+    settings_pixelization=al.SettingsPixelization(use_border=False),
 )
 
 aplt.Inversion.reconstruction(
@@ -141,7 +150,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_use_border=False,
+    settings_pixelization=al.SettingsPixelization(use_border=False),
 )
 
 aplt.Inversion.reconstruction(
@@ -218,7 +227,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_use_border=False,
+    settings_pixelization=al.SettingsPixelization(use_border=False),
 )
 
 aplt.Inversion.reconstruction(
@@ -241,7 +250,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_use_border=True,
+    settings_pixelization=al.SettingsPixelization(use_border=True),
 )
 
 aplt.Inversion.reconstruction(
@@ -315,12 +324,10 @@ We need to redefine our perform fit function, to use the x2 lens galaxy model.
 
 # %%
 def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
-    imaging, source_galaxy, mask, inversion_use_border
+    imaging, source_galaxy, mask, settings_pixelization
 ):
 
-    masked_imaging = al.MaskedImaging(
-        imaging=imaging, mask=mask, inversion_use_border=inversion_use_border
-    )
+    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
     lens_galaxy_0 = al.Galaxy(
         redshift=0.5,
@@ -340,7 +347,11 @@ def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
         galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy]
     )
 
-    return al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    return al.FitImaging(
+        masked_imaging=masked_imaging,
+        tracer=tracer,
+        settings_pixelization=settings_pixelization,
+    )
 
 
 # %%
@@ -354,7 +365,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_use_border=False,
+    settings_pixelization=al.SettingsPixelization(use_border=False),
 )
 
 aplt.Inversion.reconstruction(
@@ -372,7 +383,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_use_border=True,
+    settings_pixelization=al.SettingsPixelization(use_border=True),
 )
 aplt.Inversion.reconstruction(
     inversion=fit.inversion, include=aplt.Include(inversion_grid=True, border=True)
@@ -396,7 +407,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_use_border=True,
+    settings_pixelization=al.SettingsPixelization(use_border=True),
 )
 aplt.Inversion.reconstruction(
     inversion=fit.inversion, include=aplt.Include(inversion_grid=True, border=True)
@@ -409,7 +420,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_use_border=True,
+    settings_pixelization=al.SettingsPixelization(use_border=True),
 )
 aplt.Inversion.reconstruction(
     inversion=fit.inversion, include=aplt.Include(inversion_grid=True, border=True)
@@ -423,7 +434,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_use_border=True,
+    settings_pixelization=al.SettingsPixelization(use_border=True),
 )
 aplt.Inversion.reconstruction(
     inversion=fit.inversion, include=aplt.Include(inversion_grid=True, border=True)
@@ -437,7 +448,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
     source_galaxy=source_galaxy,
     mask=mask_circular,
-    inversion_use_border=True,
+    settings_pixelization=al.SettingsPixelization(use_border=True),
 )
 aplt.Inversion.reconstruction(
     inversion=fit.inversion, include=aplt.Include(inversion_grid=True, border=True)

@@ -27,7 +27,7 @@ Unfortunately, Jupyter notebooks cannot use relative paths, therefore we use the
 'here' function provides the path to the GitHub project directory, which is the autolens_workspace. For example on my 
 computer the here() function returns:
  
-    '/home/jammy/PycharmProjects/PyAuto/autolens_workspace'
+ '/home/jammy/PycharmProjects/PyAuto/autolens_workspace'
 
 Throughout these tutorials, we will use this workspace_path. 
 """

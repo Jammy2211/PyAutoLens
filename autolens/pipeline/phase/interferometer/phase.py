@@ -1,15 +1,12 @@
 import autofit as af
 from astropy import cosmology as cosmo
-from autoarray.operators import transformer
-from autogalaxy.pipeline.phase import dataset
 from autogalaxy.pipeline.phase.interferometer.phase import (
     PhaseAttributes as AgPhaseAttributes,
 )
-from autolens.pipeline.phase.settings import PhaseSettingsInterferometer
+from autolens.dataset import interferometer
+from autolens.pipeline.phase import dataset
+from autolens.pipeline.phase.settings import SettingsPhaseInterferometer
 from autolens.pipeline.phase.interferometer.analysis import Analysis
-from autolens.pipeline.phase.interferometer.meta_interferometer import (
-    MetaInterferometer,
-)
 from autolens.pipeline.phase.interferometer.result import Result
 
 
@@ -29,7 +26,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         real_space_mask,
         galaxies=None,
         hyper_background_noise=None,
-        settings=PhaseSettingsInterferometer(),
+        settings=SettingsPhaseInterferometer(),
         cosmology=cosmo.Planck15,
     ):
 
@@ -46,7 +43,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
             The side length of the subgrid
         """
 
-        paths.tag = settings.phase_with_inversion_tag
+        paths.tag = settings.phase_tag_with_inversion
 
         super().__init__(
             paths=paths,
@@ -60,31 +57,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         self.is_hyper_phase = False
 
-        self.meta_dataset = MetaInterferometer(
-            settings=settings,
-            model=self.model,
-            real_space_mask=real_space_mask,
-            is_hyper_phase=False,
-        )
-
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
-    def modify_visibilities(self, visibilities, results):
-        """
-        Customize an masked_interferometer. e.g. removing lens light.
-
-        Parameters
-        ----------
-        image: scaled_array.ScaledSquarePixelArray
-            An masked_interferometer that has been masked
-        results: autofit.tools.pipeline.ResultsCollection
-            The result of the previous lens
-
-        Returns
-        -------
-        masked_interferometer: scaled_array.ScaledSquarePixelArray
-            The modified image (not changed by default)
-        """
-        return visibilities
+        self.real_space_mask = real_space_mask
 
     def make_analysis(self, dataset, mask, results=None):
         """
@@ -106,16 +79,12 @@ class PhaseInterferometer(dataset.PhaseDataset):
         lens : Analysis
             An lens object that the non-linear search calls to determine the fit of a set of values
         """
-        self.meta_dataset.model = self.model
-        modified_visibilities = self.modify_visibilities(
-            visibilities=dataset.visibilities, results=results
-        )
 
-        masked_interferometer = self.meta_dataset.masked_dataset_from(
-            dataset=dataset,
-            mask=mask,
-            results=results,
-            modified_visibilities=modified_visibilities,
+        masked_interferometer = interferometer.MaskedInterferometer(
+            interferometer=dataset,
+            visibilities_mask=mask,
+            real_space_mask=self.real_space_mask,
+            settings=self.settings.settings_masked_interferometer,
         )
 
         self.output_phase_info()
@@ -134,6 +103,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
     def make_phase_attributes(self, analysis):
         return PhaseAttributes(
             cosmology=self.cosmology,
+            real_space_mask=self.real_space_mask,
             positions=analysis.masked_dataset.positions,
             hyper_model_image=analysis.hyper_model_image,
             hyper_galaxy_image_path_dict=analysis.hyper_galaxy_image_path_dict,
@@ -146,16 +116,13 @@ class PhaseInterferometer(dataset.PhaseDataset):
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.search).__name__))
             phase_info.write(
-                "Sub-grid size = {} \n".format(self.meta_dataset.settings.sub_size)
-            )
-            phase_info.write(
-                "Primary Beam shape = {} \n".format(
-                    self.meta_dataset.settings.primary_beam_shape_2d
+                "Sub-grid size = {} \n".format(
+                    self.settings.settings_masked_interferometer.sub_size
                 )
             )
             phase_info.write(
                 "Positions Threshold = {} \n".format(
-                    self.meta_dataset.settings.positions_threshold
+                    self.settings.settings_lens.positions_threshold
                 )
             )
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
@@ -165,11 +132,17 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
 class PhaseAttributes(AgPhaseAttributes):
     def __init__(
-        self, cosmology, positions, hyper_model_image, hyper_galaxy_image_path_dict
+        self,
+        cosmology,
+        real_space_mask,
+        positions,
+        hyper_model_image,
+        hyper_galaxy_image_path_dict,
     ):
 
         super().__init__(
             cosmology=cosmology,
+            real_space_mask=real_space_mask,
             hyper_model_image=hyper_model_image,
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
         )

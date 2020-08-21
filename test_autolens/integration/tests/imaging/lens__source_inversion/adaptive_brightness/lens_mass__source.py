@@ -24,7 +24,7 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
     pixeliation.pixels = 100
 
     phase1 = phase1.extend_with_multiple_hyper_phases(
-        setup=al.PipelineSetup(), include_inversion=False
+        setup=al.SetupPipeline(), include_inversion=False
     )
 
     phase2 = al.PhaseImaging(
@@ -44,7 +44,7 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
     )
 
     phase2 = phase2.extend_with_multiple_hyper_phases(
-        setup=al.PipelineSetup(), include_inversion=True
+        setup=al.SetupPipeline(), include_inversion=True
     )
 
     phase3 = al.PhaseImaging(

@@ -12,8 +12,8 @@ class FitImaging(aa_fit.FitImaging):
         tracer,
         hyper_image_sky=None,
         hyper_background_noise=None,
-        pixelization_settings=pix.PixelizationSettings(),
-        inversion_settings=inv.InversionSettings(),
+        settings_pixelization=pix.SettingsPixelization(),
+        settings_inversion=inv.SettingsInversion(),
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
@@ -68,9 +68,8 @@ class FitImaging(aa_fit.FitImaging):
                 image=self.profile_subtracted_image,
                 noise_map=noise_map,
                 convolver=masked_imaging.convolver,
-                pixelization_settings=pixelization_settings,
-                inversion_settings=inversion_settings,
-                preload_sparse_grids_of_planes=masked_imaging.preload_sparse_grids_of_planes,
+                settings_pixelization=settings_pixelization,
+                settings_inversion=settings_inversion,
             )
 
             model_image = self.blurred_image + inversion.mapped_reconstructed_image
@@ -154,8 +153,8 @@ class FitInterferometer(aa_fit.FitInterferometer):
         masked_interferometer,
         tracer,
         hyper_background_noise=None,
-        pixelization_settings=pix.PixelizationSettings(),
-        inversion_settings=inv.InversionSettings(),
+        settings_pixelization=pix.SettingsPixelization(),
+        settings_inversion=inv.SettingsInversion(),
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
@@ -204,9 +203,8 @@ class FitInterferometer(aa_fit.FitInterferometer):
                 visibilities=self.profile_subtracted_visibilities,
                 noise_map=noise_map,
                 transformer=masked_interferometer.transformer,
-                pixelization_settings=pixelization_settings,
-                inversion_settings=inversion_settings,
-                preload_sparse_grids_of_planes=masked_interferometer.preload_sparse_grids_of_planes,
+                settings_pixelization=settings_pixelization,
+                settings_inversion=settings_inversion,
             )
 
             model_visibilities = (

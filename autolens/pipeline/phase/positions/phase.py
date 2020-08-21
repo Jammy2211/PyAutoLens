@@ -2,7 +2,7 @@ import autofit as af
 from astropy import cosmology as cosmo
 from autogalaxy.pipeline.phase import abstract
 from autogalaxy.pipeline.phase.imaging.phase import PhaseAttributes as AgPhaseAttributes
-from autolens.pipeline.phase.settings import PhaseSettingsPositions
+from autolens.pipeline.phase.settings import SettingsPhasePositions
 from autolens.pipeline.phase.positions.analysis import Analysis
 from autolens.pipeline.phase.positions.result import Result
 
@@ -22,7 +22,7 @@ class PhasePositions(abstract.AbstractPhase):
         search,
         solver,
         galaxies=None,
-        settings=PhaseSettingsPositions(),
+        settings=SettingsPhasePositions(),
         cosmology=cosmo.Planck15,
     ):
 

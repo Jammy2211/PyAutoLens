@@ -69,7 +69,9 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
     )
 
     masked_imaging = al.MaskedImaging(
-        imaging=imaging, mask=mask, grid_class=al.GridIterate
+        imaging=imaging,
+        mask=mask,
+        settings=al.SettingsMaskedImaging(grid_class=al.GridIterate),
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -141,10 +143,12 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
     )
 
     mask = al.Mask.circular(
-        shape_2d=simulator.image.shape_2d, pixel_scales=0.2, sub_size=1, radius=0.8
+        shape_2d=simulator.image.shape_2d, pixel_scales=0.2, radius=0.8
     )
 
-    masked_imaging = al.MaskedImaging(imaging=simulator, mask=mask, grid_class=al.Grid)
+    masked_imaging = al.MaskedImaging(
+        imaging=simulator, mask=mask, settings=al.SettingsMaskedImaging(sub_size=1)
+    )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
@@ -220,8 +224,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         interferometer=interferometer,
         visibilities_mask=visibilities_mask,
         real_space_mask=real_space_mask,
-        grid_class=al.Grid,
-        transformer_class=al.TransformerDFT,
+        settings=al.SettingsMaskedInterferometer(transformer_class=al.TransformerDFT),
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -229,7 +232,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     fit = al.FitInterferometer(
         masked_interferometer=masked_interferometer,
         tracer=tracer,
-        pixelization_settings=al.PixelizationSettings(use_border=False),
+        settings_pixelization=al.SettingsPixelization(use_border=False),
     )
 
     assert fit.chi_squared == pytest.approx(0.0)
@@ -251,7 +254,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     fit = al.FitInterferometer(
         masked_interferometer=masked_interferometer,
         tracer=tracer,
-        pixelization_settings=al.PixelizationSettings(use_border=False),
+        settings_pixelization=al.SettingsPixelization(use_border=False),
     )
     assert abs(fit.chi_squared) < 1.0e-4
 

@@ -1,5 +1,7 @@
 import autolens as al
 
+from functools import partial
+
 
 def tracer_generator_from_aggregator(aggregator):
     """Compute a generator of *Tracer* objects from an input aggregator, which generates a list of the *Tracer* objects 
@@ -49,7 +51,7 @@ def tracer_from_agg_obj(agg_obj):
     return al.Tracer.from_galaxies(galaxies=galaxies)
 
 
-def masked_imaging_generator_from_aggregator(aggregator):
+def masked_imaging_generator_from_aggregator(aggregator, settings_masked_imaging=None):
     """Compute a generator of *MaskedImaging* objects from an input aggregator, which generates a list of the 
     *MaskedImaging* objects for every set of results loaded in the aggregator.
 
@@ -61,10 +63,13 @@ def masked_imaging_generator_from_aggregator(aggregator):
     ----------
     aggregator : af.Aggregator
         A PyAutoFit aggregator object containing the results of PyAutoLens model-fits."""
-    return aggregator.map(func=masked_imaging_from_agg_obj)
+    func = partial(
+        masked_imaging_from_agg_obj, settings_masked_imaging=settings_masked_imaging
+    )
+    return aggregator.map(func=func)
 
 
-def masked_imaging_from_agg_obj(agg_obj):
+def masked_imaging_from_agg_obj(agg_obj, settings_masked_imaging=None):
     """Compute a *MaskedImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe 
      that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator 
      outputs such that the function can use the *Aggregator*'s map function to to create a *MaskedImaging* generator.
@@ -77,20 +82,21 @@ def masked_imaging_from_agg_obj(agg_obj):
     agg_obj : af.PhaseOutput
         A PyAutoFit aggregator's PhaseOutput object containing the generators of the results of PyAutoLens model-fits.
     """
+
+    if settings_masked_imaging is None:
+        settings_masked_imaging = agg_obj.settings.settings_masked_imaging
+
     return al.MaskedImaging(
-        imaging=agg_obj.dataset,
-        mask=agg_obj.mask,
-        grid_class=agg_obj.settings.grid_class,
-        grid_inversion_class=agg_obj.settings.grid_inversion_class,
-        fractional_accuracy=agg_obj.settings.fractional_accuracy,
-        sub_steps=agg_obj.settings.sub_steps,
-        pixel_scales_interp=agg_obj.settings.pixel_scales_interp,
-        psf_shape_2d=agg_obj.settings.psf_shape_2d,
-        positions_threshold=agg_obj.settings.positions_threshold,
+        imaging=agg_obj.dataset, mask=agg_obj.mask, settings=settings_masked_imaging
     )
 
 
-def fit_imaging_generator_from_aggregator(aggregator):
+def fit_imaging_generator_from_aggregator(
+    aggregator,
+    settings_masked_imaging=None,
+    settings_pixelization=None,
+    settings_inversion=None,
+):
     """Compute a generator of *FitImaging* objects from an input aggregator, which generates a list of the 
     *FitImaging* objects for every set of results loaded in the aggregator.
 
@@ -101,10 +107,23 @@ def fit_imaging_generator_from_aggregator(aggregator):
     ----------
     aggregator : af.Aggregator
         A PyAutoFit aggregator object containing the results of PyAutoLens model-fits."""
-    return aggregator.map(func=fit_imaging_from_agg_obj)
+
+    func = partial(
+        fit_imaging_from_agg_obj,
+        settings_masked_imaging=settings_masked_imaging,
+        settings_pixelization=settings_pixelization,
+        settings_inversion=settings_inversion,
+    )
+
+    return aggregator.map(func=func)
 
 
-def fit_imaging_from_agg_obj(agg_obj):
+def fit_imaging_from_agg_obj(
+    agg_obj,
+    settings_masked_imaging=None,
+    settings_pixelization=None,
+    settings_inversion=None,
+):
     """Compute a *FitImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe 
      that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator 
      outputs such that the function can use the *Aggregator*'s map function to to create a *FitImaging* generator.
@@ -116,18 +135,28 @@ def fit_imaging_from_agg_obj(agg_obj):
     agg_obj : af.PhaseOutput
         A PyAutoFit aggregator's PhaseOutput object containing the generators of the results of PyAutoLens model-fits.
     """
-    masked_imaging = masked_imaging_from_agg_obj(agg_obj=agg_obj)
+    masked_imaging = masked_imaging_from_agg_obj(
+        agg_obj=agg_obj, settings_masked_imaging=settings_masked_imaging
+    )
     tracer = tracer_from_agg_obj(agg_obj=agg_obj)
+
+    if settings_pixelization is None:
+        settings_pixelization = agg_obj.settings.settings_pixelization
+
+    if settings_inversion is None:
+        settings_inversion = agg_obj.settings.settings_inversion
 
     return al.FitImaging(
         masked_imaging=masked_imaging,
         tracer=tracer,
-        pixelization_settings=agg_obj.settings.pixelization,
-        inversion_settings=agg_obj.settings.inversion,
+        settings_pixelization=settings_pixelization,
+        settings_inversion=settings_inversion,
     )
 
 
-def masked_interferometer_generator_from_aggregator(aggregator):
+def masked_interferometer_generator_from_aggregator(
+    aggregator, settings_masked_interferometer=None
+):
     """Compute a generator of *MaskedInterferometer* objects from an input aggregator, which generates a list of the 
     *MaskedInterferometer* objects for every set of results loaded in the aggregator.
 
@@ -139,10 +168,14 @@ def masked_interferometer_generator_from_aggregator(aggregator):
     ----------
     aggregator : af.Aggregator
         A PyAutoFit aggregator object containing the results of PyAutoLens model-fits."""
-    return aggregator.map(func=masked_interferometer_from_agg_obj)
+    func = partial(
+        masked_interferometer_from_agg_obj,
+        settings_masked_interferometer=settings_masked_interferometer,
+    )
+    return aggregator.map(func=func)
 
 
-def masked_interferometer_from_agg_obj(agg_obj):
+def masked_interferometer_from_agg_obj(agg_obj, settings_masked_interferometer=None):
     """Compute a *MaskedInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to 
     describe that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's 
     generator outputs such that the function can use the *Aggregator*'s map function to to create a 
@@ -157,22 +190,24 @@ def masked_interferometer_from_agg_obj(agg_obj):
     agg_obj : af.PhaseOutput
         A PyAutoFit aggregator's PhaseOutput object containing the generators of the results of PyAutoLens model-fits.
     """
+
+    if settings_masked_interferometer is None:
+        settings_masked_interferometer = agg_obj.settings.settings_masked_interferometer
+
     return al.MaskedInterferometer(
         interferometer=agg_obj.dataset,
         visibilities_mask=agg_obj.mask,
-        real_space_mask=agg_obj.meta_dataset.real_space_mask,
-        transformer_class=agg_obj.settings.transformer_class,
-        grid_class=agg_obj.settings.grid_class,
-        grid_inversion_class=agg_obj.settings.grid_inversion_class,
-        fractional_accuracy=agg_obj.settings.fractional_accuracy,
-        sub_steps=agg_obj.settings.sub_steps,
-        primary_beam_shape_2d=agg_obj.settings.primary_beam_shape_2d,
-        pixel_scales_interp=agg_obj.settings.pixel_scales_interp,
-        positions_threshold=agg_obj.meta_dataset.settings.positions_threshold,
+        real_space_mask=agg_obj.phase_attributes.real_space_mask,
+        settings=settings_masked_interferometer,
     )
 
 
-def fit_interferometer_generator_from_aggregator(aggregator):
+def fit_interferometer_generator_from_aggregator(
+    aggregator,
+    settings_masked_interferometer=None,
+    settings_pixelization=None,
+    settings_inversion=None,
+):
     """Compute a *FitInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to 
     describe that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's 
     generator outputs such that the function can use the *Aggregator*'s map function to to create a *FitInterferometer* 
@@ -185,10 +220,22 @@ def fit_interferometer_generator_from_aggregator(aggregator):
     agg_obj : af.PhaseOutput
         A PyAutoFit aggregator's PhaseOutput object containing the generators of the results of PyAutoLens model-fits.
     """
-    return aggregator.map(func=fit_interferometer_from_agg_obj)
+
+    func = partial(
+        fit_interferometer_from_agg_obj,
+        settings_masked_interferometer=settings_masked_interferometer,
+        settings_pixelization=settings_pixelization,
+        settings_inversion=settings_inversion,
+    )
+    return aggregator.map(func=func)
 
 
-def fit_interferometer_from_agg_obj(agg_obj):
+def fit_interferometer_from_agg_obj(
+    agg_obj,
+    settings_masked_interferometer=None,
+    settings_pixelization=None,
+    settings_inversion=None,
+):
     """Compute a generator of *FitInterferometer* objects from an input aggregator, which generates a list of the 
     *FitInterferometer* objects for every set of results loaded in the aggregator.
 
@@ -200,12 +247,20 @@ def fit_interferometer_from_agg_obj(agg_obj):
     ----------
     aggregator : af.Aggregator
         A PyAutoFit aggregator object containing the results of PyAutoLens model-fits."""
-    masked_interferometer = masked_interferometer_from_agg_obj(agg_obj=agg_obj)
+    masked_interferometer = masked_interferometer_from_agg_obj(
+        agg_obj=agg_obj, settings_masked_interferometer=settings_masked_interferometer
+    )
     tracer = tracer_from_agg_obj(agg_obj=agg_obj)
+
+    if settings_pixelization is None:
+        settings_pixelization = agg_obj.settings.settings_pixelization
+
+    if settings_inversion is None:
+        settings_inversion = agg_obj.settings.settings_inversion
 
     return al.FitInterferometer(
         masked_interferometer=masked_interferometer,
         tracer=tracer,
-        pixelization_settings=agg_obj.settings.pixelization,
-        inversion_settings=agg_obj.settings.inversion,
+        settings_pixelization=settings_pixelization,
+        settings_inversion=settings_inversion,
     )

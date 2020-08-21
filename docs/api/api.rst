@@ -276,8 +276,8 @@ Lens Modeling
 .. autosummary::
    :toctree: generated/
 
-   PhaseSettingsImaging
-   PhaseSettingsInterferometer
+   SettingsPhaseImaging
+   SettingsPhaseInterferometer
 
 **Pipelines:**
 
@@ -291,7 +291,7 @@ Lens Modeling
 .. autosummary::
    :toctree: generated/
 
-   PipelineSetup
+   SetupPipeline
 
 **SLaM:**
 
@@ -301,10 +301,10 @@ Lens Modeling
    :toctree: generated/
 
    SLaM
-   HyperSetup
-   SourceSetup 
-   LightSetup
-   MassSetup
+   SLaMHyper
+   SLaMSource
+   SLaMLight
+   SLaMMass
 
 ---------
 PyAutoFit

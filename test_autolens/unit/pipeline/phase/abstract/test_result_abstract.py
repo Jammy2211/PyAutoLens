@@ -35,8 +35,6 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        print(result.max_log_likelihood_tracer.galaxies[0].light)
-
         assert isinstance(result.max_log_likelihood_tracer, al.Tracer)
         assert result.max_log_likelihood_tracer.galaxies[0].light.intensity == 1.0
         assert result.max_log_likelihood_tracer.galaxies[1].light.intensity == 2.0
