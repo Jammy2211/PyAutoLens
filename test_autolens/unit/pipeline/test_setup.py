@@ -1,5 +1,5 @@
 import autolens as al
-
+import autofit as af
 
 def test__lens_light_centre_tag():
 
@@ -46,19 +46,38 @@ def test__no_shear_tag():
     assert setup.no_shear_tag == "__no_shear"
 
 
+def test__constant_mass_to_light_ratio_tag():
+
+    setup = al.SetupPipeline(constant_mass_to_light_ratio=True)
+    assert setup.constant_mass_to_light_ratio_tag == "__mlr_const"
+    setup = al.SetupPipeline(constant_mass_to_light_ratio=False)
+    assert setup.constant_mass_to_light_ratio_tag == "__mlr_free"
+
 def test__align_light_dark_tag():
 
-    setup = al.slam.SLaMMass(align_light_dark_centre=False)
+    setup = al.SetupPipeline(align_light_dark_centre=False)
     assert setup.align_light_dark_centre_tag == ""
-    setup = al.slam.SLaMMass(align_light_dark_centre=True)
+    setup = al.SetupPipeline(align_light_dark_centre=True)
     assert setup.align_light_dark_centre_tag == "__align_light_dark_centre"
 
 
 def test__align_bulge_dark_tag():
-    setup = al.slam.SLaMMass(align_bulge_dark_centre=False)
+    setup = al.SetupPipeline(align_bulge_dark_centre=False)
     assert setup.align_bulge_dark_centre_tag == ""
-    setup = al.slam.SLaMMass(align_bulge_dark_centre=True)
+    setup = al.SetupPipeline(align_bulge_dark_centre=True)
     assert setup.align_bulge_dark_centre_tag == "__align_bulge_dark_centre"
+
+
+def test__smbh_tag():
+
+    setup = al.SetupPipeline(include_smbh=False)
+    assert setup.include_smbh_tag == ""
+
+    setup = al.SetupPipeline(include_smbh=True, smbh_centre_fixed=True)
+    assert setup.include_smbh_tag == "__smbh_centre_fixed"
+
+    setup = al.SetupPipeline(include_smbh=True, smbh_centre_fixed=False)
+    assert setup.include_smbh_tag == "__smbh_centre_free"
 
 
 def test__subhalo_centre_tag():
@@ -127,6 +146,63 @@ def test__tag():
         subhalo_instance=al.mp.SphericalNFWMCRLudlow(centre=(1.0, 2.0), mass_at_200=1e8)
     )
 
-    print(setup.tag)
-
     assert setup.tag == "setup__with_shear__sub_centre_(1.00,2.00)__sub_mass_1.0e+08"
+
+    setup = al.SetupPipeline(
+        include_smbh=True, smbh_centre_fixed=True
+    )
+
+    assert (
+        setup.tag
+        == "setup__with_shear__smbh_centre_fixed"
+    )
+
+
+def test__set_mass_to_light_ratios_of_lens():
+
+    lmp_0 = af.PriorModel(al.lmp.EllipticalSersic)
+    lmp_1 = af.PriorModel(al.lmp.EllipticalSersic)
+    lmp_2 = af.PriorModel(al.lmp.EllipticalSersic)
+
+    setup = al.SetupPipeline(constant_mass_to_light_ratio=False)
+
+    setup.set_mass_to_light_ratios_of_light_and_mass_profiles(light_and_mass_profiles=[lmp_0, lmp_1, lmp_2])
+
+    assert lmp_0.mass_to_light_ratio != lmp_1.mass_to_light_ratio
+    assert lmp_0.mass_to_light_ratio != lmp_2.mass_to_light_ratio
+    assert lmp_1.mass_to_light_ratio != lmp_2.mass_to_light_ratio
+
+    lmp_0 = af.PriorModel(al.lmp.EllipticalSersic)
+    lmp_1 = af.PriorModel(al.lmp.EllipticalSersic)
+    lmp_2 = af.PriorModel(al.lmp.EllipticalSersic)
+
+    setup = al.SetupPipeline(constant_mass_to_light_ratio=True)
+
+    setup.set_mass_to_light_ratios_of_light_and_mass_profiles(light_and_mass_profiles=[lmp_0, lmp_1, lmp_2])
+
+    assert lmp_0.mass_to_light_ratio == lmp_1.mass_to_light_ratio
+    assert lmp_0.mass_to_light_ratio == lmp_2.mass_to_light_ratio
+    assert lmp_1.mass_to_light_ratio == lmp_2.mass_to_light_ratio
+
+def test__smbh_from_centre():
+
+    setup = al.SetupPipeline(include_smbh=False, smbh_centre_fixed=True)
+    smbh = setup.smbh_from_centre(centre=(0.0, 0.0))
+    assert smbh is None
+
+    setup = al.SetupPipeline(include_smbh=True, smbh_centre_fixed=True)
+    smbh = setup.smbh_from_centre(centre=(0.0, 0.0))
+    assert isinstance(smbh, af.PriorModel)
+    assert smbh.centre == (0.0, 0.0)
+
+    setup = al.SetupPipeline(include_smbh=True, smbh_centre_fixed=False)
+    smbh = setup.smbh_from_centre(centre=(0.1, 0.2), centre_sigma=0.2)
+    assert isinstance(smbh, af.PriorModel)
+    assert isinstance(smbh.centre[0], af.GaussianPrior)
+    assert smbh.centre[0].mean == 0.1
+    assert smbh.centre[0].sigma == 0.2
+    assert isinstance(smbh.centre[1], af.GaussianPrior)
+    assert smbh.centre[1].mean == 0.2
+    assert smbh.centre[1].sigma == 0.2
+
+

@@ -4,14 +4,25 @@ from autogalaxy.pipeline.phase import dataset
 from autolens import exc
 import numpy as np
 
+import copy
 
 class PhaseDataset(dataset.PhaseDataset):
     def modify_dataset(self, dataset, results):
 
-        positions = self.updated_positions_from_positions_and_results(
-            positions=dataset.positions, results=results
-        )
-        dataset.positions = positions
+        # TODO : There is a very weird error no cosma for this line we don't yet undersatand. This try / except fixes it.
+
+        try:
+
+            positions_copy = copy.copy(dataset.positions)
+
+            positions = self.updated_positions_from_positions_and_results(
+                positions=positions_copy, results=results
+            )
+
+            dataset.positions = positions
+
+        except OSError:
+            pass
 
     def modify_settings(self, dataset, results):
 

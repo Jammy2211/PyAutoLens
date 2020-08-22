@@ -1,5 +1,7 @@
+import autofit as af
 from autoconf import conf
 from autogalaxy.pipeline import setup
+from autogalaxy.profiles import mass_profiles as mp
 from autolens import exc
 
 
@@ -23,8 +25,11 @@ class SetupPipeline(setup.SetupPipeline):
         number_of_gaussians=None,
         no_shear=False,
         lens_mass_centre=None,
+        constant_mass_to_light_ratio=False,
         align_light_dark_centre=False,
         align_bulge_dark_centre=False,
+        include_smbh=False,
+        smbh_centre_fixed=True,
         subhalo_instance=None,
         inversion_pixels_fixed=None,
         evidence_tolerance=None,
@@ -113,8 +118,11 @@ class SetupPipeline(setup.SetupPipeline):
                 "can not both be True (one is not relevent to the light profile you are fitting"
             )
 
+        self.constant_mass_to_light_ratio = constant_mass_to_light_ratio
         self.align_light_dark_centre = align_light_dark_centre
         self.align_bulge_dark_centre = align_bulge_dark_centre
+        self.include_smbh = include_smbh
+        self.smbh_centre_fixed = smbh_centre_fixed
 
         self.subhalo_instance = subhalo_instance
 
@@ -123,7 +131,7 @@ class SetupPipeline(setup.SetupPipeline):
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
         return (
-            conf.instance.tag.get("pipeline", "pipeline", str)
+            conf.instance.tag.get("pipeline", "pipeline")
             + self.hyper_tag
             + self.inversion_tag
             + self.align_light_mass_centre_tag
@@ -135,6 +143,7 @@ class SetupPipeline(setup.SetupPipeline):
             + self.lens_mass_centre_tag
             + self.align_light_dark_centre_tag
             + self.align_bulge_dark_centre_tag
+            + self.include_smbh_tag
             + self.subhalo_centre_tag
             + self.subhalo_mass_at_200_tag
         )
@@ -150,9 +159,8 @@ class SetupPipeline(setup.SetupPipeline):
         no_shear = True -> setup___no_shear
         """
         if not self.no_shear:
-            return "__" + conf.instance.tag.get("pipeline", "with_shear", str)
-        elif self.no_shear:
-            return "__" + conf.instance.tag.get("pipeline", "no_shear", str)
+            return "__" + conf.instance.tag.get("pipeline", "with_shear")
+        return "__" + conf.instance.tag.get("pipeline", "no_shear")
 
     @property
     def lens_light_centre_tag(self):
@@ -167,18 +175,18 @@ class SetupPipeline(setup.SetupPipeline):
         """
         if self.lens_light_centre is None:
             return ""
-        else:
-            y = "{0:.2f}".format(self.lens_light_centre[0])
-            x = "{0:.2f}".format(self.lens_light_centre[1])
-            return (
-                "__"
-                + conf.instance.tag.get("pipeline", "lens_light_centre", str)
-                + "_("
-                + y
-                + ","
-                + x
-                + ")"
-            )
+
+        y = "{0:.2f}".format(self.lens_light_centre[0])
+        x = "{0:.2f}".format(self.lens_light_centre[1])
+        return (
+            "__"
+            + conf.instance.tag.get("pipeline", "lens_light_centre")
+            + "_("
+            + y
+            + ","
+            + x
+            + ")"
+        )
 
     @property
     def lens_mass_centre_tag(self):
@@ -193,18 +201,32 @@ class SetupPipeline(setup.SetupPipeline):
         """
         if self.lens_mass_centre is None:
             return ""
-        else:
-            y = "{0:.2f}".format(self.lens_mass_centre[0])
-            x = "{0:.2f}".format(self.lens_mass_centre[1])
-            return (
-                "__"
-                + conf.instance.tag.get("pipeline", "lens_mass_centre", str)
-                + "_("
-                + y
-                + ","
-                + x
-                + ")"
-            )
+
+        y = "{0:.2f}".format(self.lens_mass_centre[0])
+        x = "{0:.2f}".format(self.lens_mass_centre[1])
+        return (
+            "__"
+            + conf.instance.tag.get("pipeline", "lens_mass_centre")
+            + "_("
+            + y
+            + ","
+            + x
+            + ")"
+        )
+
+    @property
+    def constant_mass_to_light_ratio_tag(self):
+        """Generate a tag for whether the mass-to-light ratio in a light-dark mass model is constaant (shared amongst
+         all light and mass profiles) or free (all mass-to-light ratios are free parameters).
+
+        This changes the setup folder as follows:
+
+        constant_mass_to_light_ratio = False -> mlr_free
+        constant_mass_to_light_ratio = True -> mlr_constant
+        """
+        if self.constant_mass_to_light_ratio:
+            return f"__{conf.instance.tag.get('pipeline', 'constant_mass_to_light_ratio')}"
+        return f"__{conf.instance.tag.get('pipeline', 'free_mass_to_light_ratio')}"
 
     @property
     def align_light_mass_centre_tag(self):
@@ -220,10 +242,9 @@ class SetupPipeline(setup.SetupPipeline):
 
         if not self.align_light_mass_centre:
             return ""
-        elif self.align_light_mass_centre:
-            return "__" + conf.instance.tag.get(
-                "pipeline", "align_light_mass_centre", str
-            )
+        return "__" + conf.instance.tag.get(
+            "pipeline", "align_light_mass_centre"
+        )
 
     @property
     def align_light_dark_centre_tag(self):
@@ -236,10 +257,7 @@ class SetupPipeline(setup.SetupPipeline):
         """
         if not self.align_light_dark_centre:
             return ""
-        elif self.align_light_dark_centre:
-            return "__" + conf.instance.tag.get(
-                "pipeline", "align_light_dark_centre", str
-            )
+        return f"__{conf.instance.tag.get('pipeline', 'align_light_dark_centre')}"
 
     @property
     def align_bulge_dark_centre_tag(self):
@@ -253,10 +271,42 @@ class SetupPipeline(setup.SetupPipeline):
         """
         if not self.align_bulge_dark_centre:
             return ""
-        elif self.align_bulge_dark_centre:
-            return "__" + conf.instance.tag.get(
-                "pipeline", "align_bulge_dark_centre", str
+        return "__" + conf.instance.tag.get(
+            "pipeline", "align_bulge_dark_centre"
+        )
+
+    @property
+    def include_smbh_tag(self):
+        """Generate a tag if the lens mass model includes a _PointMass_ representing a super-massive black hole (smbh).
+        
+        The tag includes whether the _PointMass_ centre is fixed or fitted for as a free parameter.
+
+        This changes the setup folder as follows:
+
+        include_smbh = False -> setup
+        include_smbh = True, smbh_centre_fixed=True -> setup___smbh_centre_fixed
+        include_smbh = True, smbh_centre_fixed=False -> setup___smbh_centre_free
+        """
+        if not self.include_smbh:
+            return ""
+        
+        include_smbh_tag = conf.instance.tag.get(
+            "pipeline", "include_smbh"
+        )
+        
+        if self.smbh_centre_fixed:
+            
+            smbh_centre_tag = conf.instance.tag.get(
+            "pipeline", "smbh_centre_fixed"
+        )
+
+        else:
+
+            smbh_centre_tag = conf.instance.tag.get(
+                "pipeline", "smbh_centre_free"
             )
+            
+        return f"__{include_smbh_tag}_{smbh_centre_tag}"
 
     @property
     def subhalo_centre_tag(self):
@@ -276,7 +326,7 @@ class SetupPipeline(setup.SetupPipeline):
             x = "{0:.2f}".format(self.subhalo_instance.centre[1])
             return (
                 "__"
-                + conf.instance.tag.get("pipeline", "subhalo_centre", str)
+                + conf.instance.tag.get("pipeline", "subhalo_centre")
                 + "_("
                 + y
                 + ","
@@ -301,7 +351,55 @@ class SetupPipeline(setup.SetupPipeline):
 
             return (
                 "__"
-                + conf.instance.tag.get("pipeline", "subhalo_mass_at_200", str)
+                + conf.instance.tag.get("pipeline", "subhalo_mass_at_200")
                 + "_"
                 + "{0:.1e}".format(self.subhalo_instance.mass_at_200_input)
             )
+
+    def smbh_from_centre(self, centre, centre_sigma=0.1):
+        """
+        Create a _PriorModel_ of a _PointMass_ _MassProfile_ if *include_smbh* is True, which is fitted for in the
+        mass-model too represent a super-massive black-hole (smbh).
+
+        The centre of the smbh is an input parameter of the functiono, and this centre is either fixed to the input
+        values as an instance or fitted for as a model.
+
+        Parameters
+        ----------
+        centre : (float, float)
+            The centre of the _PointMass_ that repreents the super-massive black hole.
+        centre_fixed : bool
+            If True, the centre is fixed to the input values, else it is fitted for as free parameters.
+        centre_sigma : float
+            If the centre is free, this is the sigma value of each centre's _GaussianPrior_.
+        """
+        if not self.include_smbh:
+            return None
+
+        smbh = af.PriorModel(mp.PointMass)
+
+        if self.smbh_centre_fixed:
+            smbh.centre = centre
+        else:
+            smbh.centre.centre_0 = af.GaussianPrior(mean=centre[0], sigma=centre_sigma)
+            smbh.centre.centre_1 = af.GaussianPrior(mean=centre[1], sigma=centre_sigma)
+
+        return smbh
+
+    def set_mass_to_light_ratios_of_light_and_mass_profiles(self, light_and_mass_profiles):
+        """
+        For an input list of _LightMassProfile_'s which will represent a galaxy with a light-dark mass model, set all
+        the mass-to-light ratios of every light and mass profile to the same value if a constant mass-to-light ratio
+        is being used, else keep them as free parameters.
+
+        Parameters
+        ----------
+        light_and_mass_profiles : [LightMassProfile]
+            The light and mass profiles which have their mass-to-light ratios changed.
+        """
+
+        if self.constant_mass_to_light_ratio:
+
+            for profile in light_and_mass_profiles[1:]:
+
+                profile.mass_to_light_ratio = light_and_mass_profiles[0].mass_to_light_ratio
