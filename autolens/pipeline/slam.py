@@ -502,12 +502,16 @@ class SLaMMass(setup.SetupPipeline):
         align_light_dark_centre=False,
         align_bulge_dark_centre=False,
         fix_lens_light=False,
+        include_smbh=False,
+        smbh_centre_fixed=True,
     ):
 
         super().__init__(
             no_shear=no_shear,
             align_light_dark_centre=align_light_dark_centre,
             align_bulge_dark_centre=align_bulge_dark_centre,
+            include_smbh=include_smbh,
+            smbh_centre_fixed=smbh_centre_fixed
         )
 
         self.fix_lens_light = fix_lens_light
@@ -522,6 +526,7 @@ class SLaMMass(setup.SetupPipeline):
             + self.no_shear_tag
             + self.align_light_dark_centre_tag
             + self.align_bulge_dark_centre_tag
+            + self.include_smbh_tag
             + self.fix_lens_light_tag
         )
 
@@ -542,7 +547,7 @@ class SLaMMass(setup.SetupPipeline):
 
     @property
     def shear_from_previous_pipeline(self):
-        """Return the shear PriorModel from a previous pipeline, where:
+        """Return the shear _PriorModel_ from a previous pipeline, where:
 
         1) If the shear was included in the *Source* pipeline and *no_shear* is *False* in the *Mass* object, it is
            returned using this pipeline result as a model.
@@ -557,3 +562,5 @@ class SLaMMass(setup.SetupPipeline):
                 return ag.mp.ExternalShear
         else:
             return None
+
+

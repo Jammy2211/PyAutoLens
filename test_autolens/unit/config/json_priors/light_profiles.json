@@ -116,7 +116,7 @@
         "intensity": {
             "type": "LogUniform",
             "lower_limit": 1e-06,
-            "upper_limit": 1e6,
+            "upper_limit": 1000000.0,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5

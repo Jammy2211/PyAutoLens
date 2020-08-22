@@ -230,6 +230,12 @@ class TestSLaMMass:
 
         assert mass.tag == "mass__test__with_shear__align_bulge_dark_centre"
 
+        mass = al.slam.SLaMMass(include_smbh=True, smbh_centre_fixed=False)
+
+        mass.type_tag = "test"
+
+        assert mass.tag == "mass__test__with_shear__smbh_centre_free"
+
     def test__shear_from_previous_pipeline(self):
 
         mass = al.slam.SLaMMass(no_shear=True)
