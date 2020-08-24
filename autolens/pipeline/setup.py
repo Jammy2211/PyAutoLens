@@ -225,7 +225,9 @@ class SetupPipeline(setup.SetupPipeline):
         constant_mass_to_light_ratio = True -> mlr_constant
         """
         if self.constant_mass_to_light_ratio:
-            return f"__{conf.instance.tag.get('pipeline', 'constant_mass_to_light_ratio')}"
+            return (
+                f"__{conf.instance.tag.get('pipeline', 'constant_mass_to_light_ratio')}"
+            )
         return f"__{conf.instance.tag.get('pipeline', 'free_mass_to_light_ratio')}"
 
     @property
@@ -242,9 +244,7 @@ class SetupPipeline(setup.SetupPipeline):
 
         if not self.align_light_mass_centre:
             return ""
-        return "__" + conf.instance.tag.get(
-            "pipeline", "align_light_mass_centre"
-        )
+        return "__" + conf.instance.tag.get("pipeline", "align_light_mass_centre")
 
     @property
     def align_light_dark_centre_tag(self):
@@ -271,9 +271,7 @@ class SetupPipeline(setup.SetupPipeline):
         """
         if not self.align_bulge_dark_centre:
             return ""
-        return "__" + conf.instance.tag.get(
-            "pipeline", "align_bulge_dark_centre"
-        )
+        return "__" + conf.instance.tag.get("pipeline", "align_bulge_dark_centre")
 
     @property
     def include_smbh_tag(self):
@@ -289,23 +287,17 @@ class SetupPipeline(setup.SetupPipeline):
         """
         if not self.include_smbh:
             return ""
-        
-        include_smbh_tag = conf.instance.tag.get(
-            "pipeline", "include_smbh"
-        )
-        
+
+        include_smbh_tag = conf.instance.tag.get("pipeline", "include_smbh")
+
         if self.smbh_centre_fixed:
-            
-            smbh_centre_tag = conf.instance.tag.get(
-            "pipeline", "smbh_centre_fixed"
-        )
+
+            smbh_centre_tag = conf.instance.tag.get("pipeline", "smbh_centre_fixed")
 
         else:
 
-            smbh_centre_tag = conf.instance.tag.get(
-                "pipeline", "smbh_centre_free"
-            )
-            
+            smbh_centre_tag = conf.instance.tag.get("pipeline", "smbh_centre_free")
+
         return f"__{include_smbh_tag}_{smbh_centre_tag}"
 
     @property
@@ -386,7 +378,9 @@ class SetupPipeline(setup.SetupPipeline):
 
         return smbh
 
-    def set_mass_to_light_ratios_of_light_and_mass_profiles(self, light_and_mass_profiles):
+    def set_mass_to_light_ratios_of_light_and_mass_profiles(
+        self, light_and_mass_profiles
+    ):
         """
         For an input list of _LightMassProfile_'s which will represent a galaxy with a light-dark mass model, set all
         the mass-to-light ratios of every light and mass profile to the same value if a constant mass-to-light ratio
@@ -402,4 +396,6 @@ class SetupPipeline(setup.SetupPipeline):
 
             for profile in light_and_mass_profiles[1:]:
 
-                profile.mass_to_light_ratio = light_and_mass_profiles[0].mass_to_light_ratio
+                profile.mass_to_light_ratio = light_and_mass_profiles[
+                    0
+                ].mass_to_light_ratio
