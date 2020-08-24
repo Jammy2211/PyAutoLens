@@ -1,6 +1,7 @@
 import autolens as al
 import autofit as af
 
+
 def test__lens_light_centre_tag():
 
     setup = al.SetupPipeline(lens_light_centre=None)
@@ -52,6 +53,7 @@ def test__constant_mass_to_light_ratio_tag():
     assert setup.constant_mass_to_light_ratio_tag == "__mlr_const"
     setup = al.SetupPipeline(constant_mass_to_light_ratio=False)
     assert setup.constant_mass_to_light_ratio_tag == "__mlr_free"
+
 
 def test__align_light_dark_tag():
 
@@ -148,14 +150,9 @@ def test__tag():
 
     assert setup.tag == "setup__with_shear__sub_centre_(1.00,2.00)__sub_mass_1.0e+08"
 
-    setup = al.SetupPipeline(
-        include_smbh=True, smbh_centre_fixed=True
-    )
+    setup = al.SetupPipeline(include_smbh=True, smbh_centre_fixed=True)
 
-    assert (
-        setup.tag
-        == "setup__with_shear__smbh_centre_fixed"
-    )
+    assert setup.tag == "setup__with_shear__smbh_centre_fixed"
 
 
 def test__set_mass_to_light_ratios_of_lens():
@@ -166,7 +163,9 @@ def test__set_mass_to_light_ratios_of_lens():
 
     setup = al.SetupPipeline(constant_mass_to_light_ratio=False)
 
-    setup.set_mass_to_light_ratios_of_light_and_mass_profiles(light_and_mass_profiles=[lmp_0, lmp_1, lmp_2])
+    setup.set_mass_to_light_ratios_of_light_and_mass_profiles(
+        light_and_mass_profiles=[lmp_0, lmp_1, lmp_2]
+    )
 
     assert lmp_0.mass_to_light_ratio != lmp_1.mass_to_light_ratio
     assert lmp_0.mass_to_light_ratio != lmp_2.mass_to_light_ratio
@@ -178,11 +177,14 @@ def test__set_mass_to_light_ratios_of_lens():
 
     setup = al.SetupPipeline(constant_mass_to_light_ratio=True)
 
-    setup.set_mass_to_light_ratios_of_light_and_mass_profiles(light_and_mass_profiles=[lmp_0, lmp_1, lmp_2])
+    setup.set_mass_to_light_ratios_of_light_and_mass_profiles(
+        light_and_mass_profiles=[lmp_0, lmp_1, lmp_2]
+    )
 
     assert lmp_0.mass_to_light_ratio == lmp_1.mass_to_light_ratio
     assert lmp_0.mass_to_light_ratio == lmp_2.mass_to_light_ratio
     assert lmp_1.mass_to_light_ratio == lmp_2.mass_to_light_ratio
+
 
 def test__smbh_from_centre():
 
@@ -204,5 +206,3 @@ def test__smbh_from_centre():
     assert isinstance(smbh.centre[1], af.GaussianPrior)
     assert smbh.centre[1].mean == 0.2
     assert smbh.centre[1].sigma == 0.2
-
-
