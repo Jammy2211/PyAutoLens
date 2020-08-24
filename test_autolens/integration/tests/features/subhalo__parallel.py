@@ -9,7 +9,22 @@ instrument = "vro"
 
 
 def make_pipeline(name, folders, search=af.DynestyStatic()):
-    class GridPhase(af.as_grid_search(al.PhaseImaging, parallel=True)):
+
+    lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
+
+    lens.mass.centre_0 = af.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
+    lens.mass.centre_1 = af.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
+    lens.mass.einstein_radius = af.UniformPrior(lower_limit=1.55, upper_limit=1.65)
+
+    source = al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic)
+
+    source.light.centre_0 = af.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
+    source.light.centre_1 = af.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
+    source.light.intensity = af.UniformPrior(lower_limit=0.35, upper_limit=0.45)
+    source.light.effective_radius = af.UniformPrior(lower_limit=0.45, upper_limit=0.55)
+    source.light.sersic_index = af.UniformPrior(lower_limit=0.9, upper_limit=1.1)
+
+    class GridPhase(af.as_grid_search(phase_class=al.PhaseImaging, parallel=True)):
         @property
         def grid_priors(self):
             return [
@@ -17,39 +32,21 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
                 self.model.galaxies.subhalo.mass.centre_1,
             ]
 
-        def customize_priors(self, results):
+    subhalo = al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalTruncatedNFWMCRLudlow)
 
-            ### Lens Subhalo, Adjust priors to physical masses (10^6 - 10^10) and concentrations (6-24)
+    subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
 
-            self.galaxies.subhalo.mass.kappa_s = af.UniformPrior(
-                lower_limit=0.0005, upper_limit=0.2
-            )
-            self.galaxies.subhalo.mass.centre_0 = af.UniformPrior(
-                lower_limit=-2.0, upper_limit=2.0
-            )
-            self.galaxies.subhalo.mass.centre_1 = af.UniformPrior(
-                lower_limit=-2.0, upper_limit=2.0
-            )
+    subhalo.mass.centre_0 = af.UniformPrior(lower_limit=-2.5, upper_limit=2.5)
+    subhalo.mass.centre_1 = af.UniformPrior(lower_limit=-2.5, upper_limit=2.5)
 
     phase1 = GridPhase(
         phase_name="phase_1",
         folders=folders,
-        galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
-            subhalo=al.GalaxyModel(
-                redshift=0.5, mass=al.mp.SphericalTruncatedNFWChallenge
-            ),
-            source=al.GalaxyModel(
-                redshift=1.0,
-                pixelization=al.pix.VoronoiMagnification,
-                regularization=al.reg.Constant,
-            ),
-        ),
+        galaxies=dict(lens=lens, subhalo=subhalo, source=source),
         search=search,
+        settings=al.SettingsPhaseImaging(),
         number_of_steps=2,
     )
-
-    phase1.search.const_efficiency_mode = True
 
     return al.PipelineDataset(name, phase1)
 
