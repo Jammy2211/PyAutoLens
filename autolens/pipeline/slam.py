@@ -511,7 +511,7 @@ class SLaMMass(setup.SetupPipeline):
             align_light_dark_centre=align_light_dark_centre,
             align_bulge_dark_centre=align_bulge_dark_centre,
             include_smbh=include_smbh,
-            smbh_centre_fixed=smbh_centre_fixed
+            smbh_centre_fixed=smbh_centre_fixed,
         )
 
         self.fix_lens_light = fix_lens_light
@@ -562,5 +562,3 @@ class SLaMMass(setup.SetupPipeline):
                 return ag.mp.ExternalShear
         else:
             return None
-
-
