@@ -2,6 +2,7 @@ import autofit as af
 from autoconf import conf
 from autogalaxy.pipeline import setup
 from autogalaxy.profiles import mass_profiles as mp
+from autogalaxy.profiles import light_and_mass_profiles as lmp
 from autolens import exc
 
 
@@ -26,6 +27,8 @@ class SetupPipeline(setup.SetupPipeline):
         no_shear=False,
         lens_mass_centre=None,
         constant_mass_to_light_ratio=False,
+        bulge_mass_to_light_ratio_gradient=False,
+        disk_mass_to_light_ratio_gradient=False,
         align_light_dark_centre=False,
         align_bulge_dark_centre=False,
         include_smbh=False,
@@ -119,6 +122,8 @@ class SetupPipeline(setup.SetupPipeline):
             )
 
         self.constant_mass_to_light_ratio = constant_mass_to_light_ratio
+        self.bulge_mass_to_light_ratio_gradient = bulge_mass_to_light_ratio_gradient
+        self.disk_mass_to_light_ratio_gradient = disk_mass_to_light_ratio_gradient
         self.align_light_dark_centre = align_light_dark_centre
         self.align_bulge_dark_centre = align_bulge_dark_centre
         self.include_smbh = include_smbh
@@ -215,6 +220,29 @@ class SetupPipeline(setup.SetupPipeline):
         )
 
     @property
+    def mass_to_light_ratio_tag(self):
+        mass_to_light_tag = f"__{conf.instance.tag.get('pipeline', 'mass_to_light_ratio')}{self.constant_mass_to_light_ratio_tag}"
+
+        if (
+            self.bulge_mass_to_light_ratio_gradient
+            or self.disk_mass_to_light_ratio_gradient
+        ):
+            gradient_tag = conf.instance.tag.get(
+                "pipeline", "mass_to_light_ratio_gradient"
+            )
+            if self.bulge_mass_to_light_ratio_gradient:
+                gradient_tag = (
+                    f"{gradient_tag}{self.bulge_mass_to_light_ratio_gradient_tag}"
+                )
+            if self.disk_mass_to_light_ratio_gradient:
+                gradient_tag = (
+                    f"{gradient_tag}{self.disk_mass_to_light_ratio_gradient_tag}"
+                )
+            return f"{mass_to_light_tag}_{gradient_tag}"
+        else:
+            return mass_to_light_tag
+
+    @property
     def constant_mass_to_light_ratio_tag(self):
         """Generate a tag for whether the mass-to-light ratio in a light-dark mass model is constaant (shared amongst
          all light and mass profiles) or free (all mass-to-light ratios are free parameters).
@@ -226,9 +254,39 @@ class SetupPipeline(setup.SetupPipeline):
         """
         if self.constant_mass_to_light_ratio:
             return (
-                f"__{conf.instance.tag.get('pipeline', 'constant_mass_to_light_ratio')}"
+                f"_{conf.instance.tag.get('pipeline', 'constant_mass_to_light_ratio')}"
             )
-        return f"__{conf.instance.tag.get('pipeline', 'free_mass_to_light_ratio')}"
+        return f"_{conf.instance.tag.get('pipeline', 'free_mass_to_light_ratio')}"
+
+    @property
+    def bulge_mass_to_light_ratio_gradient_tag(self):
+        """Generate a tag for whether the mass-to-light ratio in a light-dark mass model is constaant (shared amongst
+         all light and mass profiles) or free (all mass-to-light ratios are free parameters).
+
+        This changes the setup folder as follows:
+
+        constant_mass_to_light_ratio = False -> mlr_free
+        constant_mass_to_light_ratio = True -> mlr_constant
+        """
+        if not self.bulge_mass_to_light_ratio_gradient:
+            return ""
+        return f"_{conf.instance.tag.get('pipeline', 'bulge_mass_to_light_ratio_gradient')}"
+
+    @property
+    def disk_mass_to_light_ratio_gradient_tag(self):
+        """Generate a tag for whether the mass-to-light ratio in a light-dark mass model is constaant (shared amongst
+         all light and mass profiles) or free (all mass-to-light ratios are free parameters).
+
+        This changes the setup folder as follows:
+
+        constant_mass_to_light_ratio = False -> mlr_free
+        constant_mass_to_light_ratio = True -> mlr_constant
+        """
+        if not self.disk_mass_to_light_ratio_gradient:
+            return ""
+        return (
+            f"_{conf.instance.tag.get('pipeline', 'disk_mass_to_light_ratio_gradient')}"
+        )
 
     @property
     def align_light_mass_centre_tag(self):
@@ -348,6 +406,59 @@ class SetupPipeline(setup.SetupPipeline):
                 + "{0:.1e}".format(self.subhalo_instance.mass_at_200_input)
             )
 
+    @property
+    def bulge_light_and_mass_profile(self):
+        """
+        The light and mass profile of a bulge component of a galaxy.
+
+        By default, this is returned as an  _EllipticalSersic_ profile without a radial gradient, however
+        the _SetupPipeline_ inputs can be customized to change this to include a radial gradient.
+        """
+        if not self.bulge_mass_to_light_ratio_gradient:
+            return af.PriorModel(lmp.EllipticalSersic)
+        return af.PriorModel(lmp.EllipticalSersicRadialGradient)
+
+    @property
+    def disk_light_and_mass_profile(self):
+        """
+        The light and mass profile of a disk component of a galaxy.
+
+        By default, this is returned as an  _EllipticalExponential_ profile without a radial gradient, however
+        the _SetupPipeline_ inputs can be customized to change this to an _EllipticalSersic_ or to include a radial
+        gradient.
+        """
+
+        if self.disk_as_sersic:
+            if not self.disk_mass_to_light_ratio_gradient:
+                return af.PriorModel(lmp.EllipticalSersic)
+            return af.PriorModel(lmp.EllipticalSersicRadialGradient)
+        else:
+            if not self.disk_mass_to_light_ratio_gradient:
+                return af.PriorModel(lmp.EllipticalExponential)
+            return af.PriorModel(lmp.EllipticalExponentialRadialGradient)
+
+    def set_mass_to_light_ratios_of_light_and_mass_profiles(
+        self, light_and_mass_profiles
+    ):
+        """
+        For an input list of _LightMassProfile_'s which will represent a galaxy with a light-dark mass model, set all
+        the mass-to-light ratios of every light and mass profile to the same value if a constant mass-to-light ratio
+        is being used, else keep them as free parameters.
+
+        Parameters
+        ----------
+        light_and_mass_profiles : [LightMassProfile]
+            The light and mass profiles which have their mass-to-light ratios changed.
+        """
+
+        if self.constant_mass_to_light_ratio:
+
+            for profile in light_and_mass_profiles[1:]:
+
+                profile.mass_to_light_ratio = light_and_mass_profiles[
+                    0
+                ].mass_to_light_ratio
+
     def smbh_from_centre(self, centre, centre_sigma=0.1):
         """
         Create a _PriorModel_ of a _PointMass_ _MassProfile_ if *include_smbh* is True, which is fitted for in the
@@ -377,25 +488,3 @@ class SetupPipeline(setup.SetupPipeline):
             smbh.centre.centre_1 = af.GaussianPrior(mean=centre[1], sigma=centre_sigma)
 
         return smbh
-
-    def set_mass_to_light_ratios_of_light_and_mass_profiles(
-        self, light_and_mass_profiles
-    ):
-        """
-        For an input list of _LightMassProfile_'s which will represent a galaxy with a light-dark mass model, set all
-        the mass-to-light ratios of every light and mass profile to the same value if a constant mass-to-light ratio
-        is being used, else keep them as free parameters.
-
-        Parameters
-        ----------
-        light_and_mass_profiles : [LightMassProfile]
-            The light and mass profiles which have their mass-to-light ratios changed.
-        """
-
-        if self.constant_mass_to_light_ratio:
-
-            for profile in light_and_mass_profiles[1:]:
-
-                profile.mass_to_light_ratio = light_and_mass_profiles[
-                    0
-                ].mass_to_light_ratio
