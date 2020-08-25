@@ -12,6 +12,7 @@ class SLaM:
         self.source = source
         self.light = light
         self.mass = mass
+        self.mass.disk_as_sersic = self.light.disk_as_sersic
 
     def set_source_type(self, source_type):
 
@@ -499,21 +500,28 @@ class SLaMMass(setup.SetupPipeline):
     def __init__(
         self,
         no_shear=False,
+        fix_lens_light=False,
+        constant_mass_to_light_ratio=False,
+        bulge_mass_to_light_ratio_gradient=False,
+        disk_mass_to_light_ratio_gradient=False,
         align_light_dark_centre=False,
         align_bulge_dark_centre=False,
-        fix_lens_light=False,
         include_smbh=False,
         smbh_centre_fixed=True,
     ):
 
         super().__init__(
             no_shear=no_shear,
+            constant_mass_to_light_ratio=constant_mass_to_light_ratio,
+            bulge_mass_to_light_ratio_gradient=bulge_mass_to_light_ratio_gradient,
+            disk_mass_to_light_ratio_gradient=disk_mass_to_light_ratio_gradient,
             align_light_dark_centre=align_light_dark_centre,
             align_bulge_dark_centre=align_bulge_dark_centre,
             include_smbh=include_smbh,
             smbh_centre_fixed=smbh_centre_fixed,
         )
 
+        self.disk_as_sersic = None
         self.fix_lens_light = fix_lens_light
         self.type_tag = None
 

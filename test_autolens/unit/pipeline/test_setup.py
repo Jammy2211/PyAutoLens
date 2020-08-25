@@ -50,9 +50,46 @@ def test__no_shear_tag():
 def test__constant_mass_to_light_ratio_tag():
 
     setup = al.SetupPipeline(constant_mass_to_light_ratio=True)
-    assert setup.constant_mass_to_light_ratio_tag == "__mlr_const"
+    assert setup.constant_mass_to_light_ratio_tag == "_const"
     setup = al.SetupPipeline(constant_mass_to_light_ratio=False)
-    assert setup.constant_mass_to_light_ratio_tag == "__mlr_free"
+    assert setup.constant_mass_to_light_ratio_tag == "_free"
+
+
+def test__bulge_and_disk_mass_to_light_ratio_gradient_tag():
+
+    setup = al.SetupPipeline(bulge_mass_to_light_ratio_gradient=True)
+    assert setup.bulge_mass_to_light_ratio_gradient_tag == "_bulge"
+    setup = al.SetupPipeline(bulge_mass_to_light_ratio_gradient=False)
+    assert setup.bulge_mass_to_light_ratio_gradient_tag == ""
+
+    setup = al.SetupPipeline(disk_mass_to_light_ratio_gradient=True)
+    assert setup.disk_mass_to_light_ratio_gradient_tag == "_disk"
+    setup = al.SetupPipeline(disk_mass_to_light_ratio_gradient=False)
+    assert setup.disk_mass_to_light_ratio_gradient_tag == ""
+
+
+def test__mass_to_light_ratio_tag():
+
+    setup = al.SetupPipeline(
+        constant_mass_to_light_ratio=True,
+        bulge_mass_to_light_ratio_gradient=False,
+        disk_mass_to_light_ratio_gradient=False,
+    )
+    assert setup.mass_to_light_ratio_tag == "__mlr_const"
+
+    setup = al.SetupPipeline(
+        constant_mass_to_light_ratio=True,
+        bulge_mass_to_light_ratio_gradient=True,
+        disk_mass_to_light_ratio_gradient=False,
+    )
+    assert setup.mass_to_light_ratio_tag == "__mlr_const_grad_bulge"
+
+    setup = al.SetupPipeline(
+        constant_mass_to_light_ratio=True,
+        bulge_mass_to_light_ratio_gradient=True,
+        disk_mass_to_light_ratio_gradient=True,
+    )
+    assert setup.mass_to_light_ratio_tag == "__mlr_const_grad_bulge_disk"
 
 
 def test__align_light_dark_tag():
@@ -155,7 +192,53 @@ def test__tag():
     assert setup.tag == "setup__with_shear__smbh_centre_fixed"
 
 
-def test__set_mass_to_light_ratios_of_lens():
+def test__bulge_light_and_mass_profile():
+
+    light = al.SetupPipeline(bulge_mass_to_light_ratio_gradient=False)
+    assert (
+        light.bulge_light_and_mass_profile.effective_radius is al.lmp.EllipticalSersic
+    )
+
+    light = al.SetupPipeline(bulge_mass_to_light_ratio_gradient=True)
+    assert (
+        light.bulge_light_and_mass_profile.effective_radius
+        is al.lmp.EllipticalSersicRadialGradient
+    )
+
+
+def test__disk_light_and_mass_profile():
+
+    light = al.SetupPipeline(
+        disk_as_sersic=False, disk_mass_to_light_ratio_gradient=False
+    )
+    assert (
+        light.disk_light_and_mass_profile.effective_radius
+        is al.lmp.EllipticalExponential
+    )
+
+    light = al.SetupPipeline(
+        disk_as_sersic=True, disk_mass_to_light_ratio_gradient=False
+    )
+    assert light.disk_light_and_mass_profile.effective_radius is al.lmp.EllipticalSersic
+
+    light = al.SetupPipeline(
+        disk_as_sersic=False, disk_mass_to_light_ratio_gradient=True
+    )
+    assert (
+        light.disk_light_and_mass_profile.effective_radius
+        is al.lmp.EllipticalExponentialRadialGradient
+    )
+
+    light = al.SetupPipeline(
+        disk_as_sersic=True, disk_mass_to_light_ratio_gradient=True
+    )
+    assert (
+        light.disk_light_and_mass_profile.effective_radius
+        is al.lmp.EllipticalSersicRadialGradient
+    )
+
+
+def test__set_mass_to_light_ratios_of_light_and_mass_profiles():
 
     lmp_0 = af.PriorModel(al.lmp.EllipticalSersic)
     lmp_1 = af.PriorModel(al.lmp.EllipticalSersic)
