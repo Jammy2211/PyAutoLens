@@ -88,7 +88,9 @@ for instrument in ["vro", "euclid", "hst", "hst_up"]:  # , 'ao']:
     start = time.time()
     for i in range(repeats):
         mapper = pixelization.mapper_from_grid_and_sparse_grid(
-            grid=traced_grid, sparse_grid=traced_sparse_grid, inversion_use_border=True
+            grid=traced_grid,
+            sparse_grid=traced_sparse_grid,
+            settings=al.SettingsPixelization(use_border=True),
         )
     diff = time.time() - start
     print("Time to create mapper (Border Relocation) = {}".format(diff / repeats))

@@ -12,7 +12,8 @@ class SLaM:
         self.source = source
         self.light = light
         self.mass = mass
-        self.mass.disk_as_sersic = self.light.disk_as_sersic
+        if self.light is not None:
+            self.mass.disk_as_sersic = self.light.disk_as_sersic
 
     def set_source_type(self, source_type):
 
@@ -28,7 +29,7 @@ class SLaM:
 
     @property
     def source_pipeline_tag(self):
-        return conf.instance.tag.get("pipeline", "pipeline", str) + self.hyper.hyper_tag
+        return conf.instance.tag.get("pipeline", "pipeline", str) + self.hyper.tag
 
     @property
     def lens_light_tag_for_source_pipeline(self):
