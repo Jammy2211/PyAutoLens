@@ -19,7 +19,29 @@ class SettingsLens:
 
     @property
     def tag(self):
-        return self.auto_positions_factor_tag + self.positions_threshold_tag
+        return (
+            f"{conf.instance.settings_tag.get('lens', 'lens')}["
+            f"{self.positions_threshold_tag}"
+            f"{self.auto_positions_factor_tag}]"
+        )
+
+    @property
+    def positions_threshold_tag(self):
+        """Generate a positions threshold tag, to customize phase names based on the threshold that positions are required \
+        to trace within one another.
+
+        This changes the phase name 'phase_name' as follows:
+
+        positions_threshold = 1 -> phase_name
+        positions_threshold = 2 -> phase_name_positions_threshold_2
+        positions_threshold = 2 -> phase_name_positions_threshold_2
+        """
+
+        if self.positions_threshold is None:
+            return ""
+        return conf.instance.settings_tag.get(
+            "lens", "positions_threshold"
+        ) + "_{0:.2f}".format(self.positions_threshold)
 
     @property
     def auto_positions_factor_tag(self):
@@ -36,40 +58,18 @@ class SettingsLens:
             return ""
 
         if self.auto_positions_minimum_threshold is not None:
-            auto_positions_minimum_threshold_tag = f"_{conf.instance.tag.get('lens', 'auto_positions_minimum_threshold')}_{str(self.auto_positions_minimum_threshold)}"
+            auto_positions_minimum_threshold_tag = (
+                f"_{conf.instance.settings_tag.get('lens', 'auto_positions_minimum_threshold')}_"
+                f"{str(self.auto_positions_minimum_threshold)}"
+            )
         else:
             auto_positions_minimum_threshold_tag = ""
 
         return (
-            "__"
-            + conf.instance.tag.get("lens", "auto_positions_factor")
+            "_"
+            + conf.instance.settings_tag.get("lens", "auto_positions_factor")
             + "_x{0:.2f}".format(self.auto_positions_factor)
             + auto_positions_minimum_threshold_tag
-        )
-
-    @property
-    def positions_threshold_tag(self):
-        """Generate a positions threshold tag, to customize phase names based on the threshold that positions are required \
-        to trace within one another.
-
-        This changes the phase name 'phase_name' as follows:
-
-        positions_threshold = 1 -> phase_name
-        positions_threshold = 2 -> phase_name_positions_threshold_2
-        positions_threshold = 2 -> phase_name_positions_threshold_2
-        """
-
-        old_tag = conf.instance.general.get("tag", "old_tag", bool)
-
-        if old_tag and self.auto_positions_factor is not None:
-            return ""
-
-        if self.positions_threshold is None:
-            return ""
-        return (
-            "__"
-            + conf.instance.tag.get("lens", "positions_threshold", str)
-            + "_{0:.2f}".format(self.positions_threshold)
         )
 
     def check_positions_trace_within_threshold_via_tracer(self, positions, tracer):
