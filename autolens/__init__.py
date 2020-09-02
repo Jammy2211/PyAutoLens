@@ -58,9 +58,9 @@ from .lens.ray_tracing import Tracer
 from .lens.positions_solver import PositionsFinder
 from .pipeline.setup import (
     SetupPipeline,
-    SetupSource,
-    SetupLight,
-    SetupMass,
+    SetupSourceInversion,
+    SetupLightBulgeDisk,
+    SetupMassLightDark,
     SetupSubhalo,
 )
 from .pipeline import slam

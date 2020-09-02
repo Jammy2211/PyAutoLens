@@ -29,7 +29,9 @@ class SLaM:
 
     @property
     def source_pipeline_tag(self):
-        return conf.instance.tag.get("pipeline", "pipeline", str) + self.hyper.tag
+        return (
+            conf.instance.settings_tag.get("pipeline", "pipeline", str) + self.hyper.tag
+        )
 
     @property
     def lens_light_tag_for_source_pipeline(self):
@@ -39,7 +41,7 @@ class SLaM:
         if self.light.type_tag is None:
             return ""
 
-        light_tag = conf.instance.tag.get("pipeline", "light", str)
+        light_tag = conf.instance.settings_tag.get("pipeline", "light", str)
         return "__" + light_tag + "_" + self.light.type_tag
 
     def lens_from_light_pipeline_for_mass_pipeline(self, redshift_lens, mass, shear):
@@ -256,7 +258,7 @@ class SLaMHyper(setup.SetupPipeline):
     @property
     def tag(self):
         return (
-            conf.instance.tag.get("pipeline", "pipeline", str)
+            conf.instance.settings_tag.get("pipeline", "pipeline", str)
             + self.hyper_tag
             + self.hyper_fixed_after_source_tag
         )
@@ -272,7 +274,7 @@ class SLaMHyper(setup.SetupPipeline):
 
         return (
             "__"
-            + conf.instance.tag.get("pipeline", "hyper", str)
+            + conf.instance.settings_tag.get("pipeline", "hyper")
             + self.hyper_galaxies_tag
             + self.hyper_image_sky_tag
             + self.hyper_background_noise_tag
@@ -291,7 +293,7 @@ class SLaMHyper(setup.SetupPipeline):
         if not self.hyper_fixed_after_source:
             return ""
         elif self.hyper_fixed_after_source:
-            return "_" + conf.instance.tag.get(
+            return "_" + conf.instance.settings_tag.get(
                 "pipeline", "hyper_fixed_after_source", str
             )
 
@@ -303,11 +305,10 @@ class SLaMSource(setup.SetupPipeline):
         regularization=None,
         inversion_pixels_fixed=None,
         no_shear=False,
-        lens_light_centre=None,
-        lens_mass_centre=None,
+        light_centre=None,
+        mass_centre=None,
         align_light_mass_centre=False,
         lens_light_bulge_only=False,
-        number_of_gaussians=None,
     ):
 
         super().__init__(
@@ -315,9 +316,8 @@ class SLaMSource(setup.SetupPipeline):
             regularization=regularization,
             inversion_pixels_fixed=inversion_pixels_fixed,
             no_shear=no_shear,
-            lens_light_centre=lens_light_centre,
-            lens_mass_centre=lens_mass_centre,
-            number_of_gaussians=number_of_gaussians,
+            light_centre=light_centre,
+            mass_centre=mass_centre,
             align_light_mass_centre=align_light_mass_centre,
         )
 
@@ -327,13 +327,12 @@ class SLaMSource(setup.SetupPipeline):
     @property
     def tag(self):
         return (
-            conf.instance.tag.get("pipeline", "source", str)
+            conf.instance.settings_tag.get("pipeline", "source")
             + "__"
             + self.type_tag
-            + self.number_of_gaussians_tag
             + self.no_shear_tag
-            + self.lens_light_centre_tag
-            + self.lens_mass_centre_tag
+            + self.light_centre_tag
+            + self.mass_centre_tag
             + self.align_light_mass_centre_tag
             + self.lens_light_bulge_only_tag
         )
@@ -351,7 +350,7 @@ class SLaMSource(setup.SetupPipeline):
         if not self.lens_light_bulge_only:
             return ""
         elif self.lens_light_bulge_only:
-            return "__" + conf.instance.tag.get("pipeline", "bulge_only", str)
+            return "__" + conf.instance.settings_tag.get("pipeline", "bulge_only", str)
 
     @property
     def shear(self):
@@ -375,7 +374,7 @@ class SLaMSource(setup.SetupPipeline):
         Parameters
         ----------
         mass : ag.mp.MassProfile
-            The mass profile whose centre may be aligned with the lens_light_centre attribute.
+            The mass profile whose centre may be aligned with the light_centre attribute.
         light : (float, float)
             The centre of the light profile the mass profile is aligned with.
         """
@@ -386,36 +385,36 @@ class SLaMSource(setup.SetupPipeline):
             mass.centre.centre_1 = af.GaussianPrior(mean=light_centre[1], sigma=0.1)
         return mass
 
-    def align_centre_to_lens_light_centre(self, light):
+    def align_centre_to_light_centre(self, light):
         """
-        Align the centre of an input light profile to the lens_light_centre of this instance of the SLaM Source
+        Align the centre of an input light profile to the light_centre of this instance of the SLaM Source
         class, make the centre of the light profile fixed and thus not free parameters that are fitted for.
 
-        If the lens_light_centre is not input (and thus None) the light profile centre is unchanged.
+        If the light_centre is not input (and thus None) the light profile centre is unchanged.
 
         Parameters
         ----------
         light : ag.mp.MassProfile
-            The light profile whose centre may be aligned with the lens_light_centre attribute.
+            The light profile whose centre may be aligned with the light_centre attribute.
         """
-        if self.lens_light_centre is not None:
-            light.centre = self.lens_light_centre
+        if self.light_centre is not None:
+            light.centre = self.light_centre
         return light
 
-    def align_centre_to_lens_mass_centre(self, mass):
+    def align_centre_to_mass_centre(self, mass):
         """
-        Align the centre of an input mass profile to the lens_mass_centre of this instance of the SLaM Source
+        Align the centre of an input mass profile to the mass_centre of this instance of the SLaM Source
         class, make the centre of the mass profile fixed and thus not free parameters that are fitted for.
 
-        If the lens_mass_centre is not input (and thus None) the mass profile centre is unchanged.
+        If the mass_centre is not input (and thus None) the mass profile centre is unchanged.
 
         Parameters
         ----------
         mass : ag.mp.MassProfile
-            The mass profile whose centre may be aligned with the lens_mass_centre attribute.
+            The mass profile whose centre may be aligned with the mass_centre attribute.
         """
-        if self.lens_mass_centre is not None:
-            mass.centre = self.lens_mass_centre
+        if self.mass_centre is not None:
+            mass.centre = self.mass_centre
         return mass
 
     def remove_disk_from_lens_galaxy(self, lens):
@@ -424,18 +423,18 @@ class SLaMSource(setup.SetupPipeline):
             lens.disk = None
         return lens
 
-    def unfix_lens_mass_centre(self, mass):
-        """If the centre of a mass model was previously fixed to an input value (e.g. lens_mass_centre), unaligned it
+    def unfix_mass_centre(self, mass):
+        """If the centre of a mass model was previously fixed to an input value (e.g. mass_centre), unaligned it
         by making its centre GaussianPriors.
         """
 
-        if self.lens_mass_centre is not None:
+        if self.mass_centre is not None:
 
             mass.centre.centre_0 = af.GaussianPrior(
-                mean=self.lens_mass_centre[0], sigma=0.05
+                mean=self.mass_centre[0], sigma=0.05
             )
             mass.centre.centre_1 = af.GaussianPrior(
-                mean=self.lens_mass_centre[1], sigma=0.05
+                mean=self.mass_centre[1], sigma=0.05
             )
 
         else:
@@ -445,7 +444,7 @@ class SLaMSource(setup.SetupPipeline):
 
         return mass
 
-    def unalign_lens_mass_centre_from_light_centre(self, mass):
+    def unalign_mass_centre_from_light_centre(self, mass):
         """If the centre of a mass model was previously aligned with that of the lens light centre, unaligned them
         by using an earlier model of the light.
         """
@@ -466,35 +465,15 @@ class SLaMLight(setup.SetupPipeline):
         align_bulge_disk_centre=False,
         align_bulge_disk_elliptical_comps=False,
         disk_as_sersic=False,
-        number_of_gaussians=None,
     ):
 
         super().__init__(
             align_bulge_disk_centre=align_bulge_disk_centre,
             align_bulge_disk_elliptical_comps=align_bulge_disk_elliptical_comps,
             disk_as_sersic=disk_as_sersic,
-            number_of_gaussians=number_of_gaussians,
         )
 
         self.type_tag = None
-
-    @property
-    def tag(self):
-        if self.number_of_gaussians is None:
-            return (
-                conf.instance.tag.get("pipeline", "light", str)
-                + "__"
-                + self.type_tag
-                + self.align_bulge_disk_tag
-                + self.disk_as_sersic_tag
-            )
-        else:
-            return (
-                conf.instance.tag.get("pipeline", "light", str)
-                + "__"
-                + self.type_tag
-                + self.number_of_gaussians_tag
-            )
 
 
 class SLaMMass(setup.SetupPipeline):
@@ -529,7 +508,7 @@ class SLaMMass(setup.SetupPipeline):
     @property
     def tag(self):
         return (
-            conf.instance.tag.get("pipeline", "mass", str)
+            conf.instance.settings_tag.get("pipeline", "mass", str)
             + "__"
             + self.type_tag
             + self.no_shear_tag
@@ -552,7 +531,9 @@ class SLaMMass(setup.SetupPipeline):
         if not self.fix_lens_light:
             return ""
         elif self.fix_lens_light:
-            return "__" + conf.instance.tag.get("pipeline", "fix_lens_light", str)
+            return "__" + conf.instance.settings_tag.get(
+                "pipeline", "fix_lens_light", str
+            )
 
     @property
     def shear_from_previous_pipeline(self):

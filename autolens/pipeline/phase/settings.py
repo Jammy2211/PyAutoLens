@@ -27,39 +27,22 @@ class SettingsPhaseImaging(settings.SettingsPhaseImaging):
     @property
     def phase_tag_no_inversion(self):
 
-        use_old_tag = conf.instance.general.get("tag", "old_tag", bool)
-
-        if use_old_tag:
-
-            return (
-                conf.instance.tag.get("phase", "phase")
-                + self.settings_masked_imaging.grid_tag_no_inversion
-                + self.settings_masked_imaging.signal_to_noise_limit_tag
-                + self.settings_masked_imaging.bin_up_factor_tag
-                + self.settings_masked_imaging.psf_shape_tag
-                + self.settings_lens.auto_positions_factor_tag
-                + self.settings_lens.positions_threshold_tag
-                + self.settings_pixelization.use_border_tag
-                + self.settings_pixelization.is_stochastic_tag
-                + self.log_likelihood_cap_tag
-            )
-
         return (
-            conf.instance.tag.get("phase", "phase")
-            + self.settings_masked_imaging.tag_no_inversion
-            + self.settings_lens.tag
-            + self.log_likelihood_cap_tag
+            f"{conf.instance.settings_tag.get('phase', 'phase')}__"
+            f"{self.settings_masked_imaging.tag_no_inversion}_"
+            f"{self.settings_lens.tag}"
+            f"{self.log_likelihood_cap_tag}"
         )
 
     @property
     def phase_tag_with_inversion(self):
         return (
-            conf.instance.tag.get("phase", "phase", str)
-            + self.settings_masked_imaging.tag_with_inversion
-            + self.settings_lens.tag
-            + self.settings_pixelization.tag
-            + self.settings_inversion.tag
-            + self.log_likelihood_cap_tag
+            f"{conf.instance.settings_tag.get('phase', 'phase')}__"
+            f"{self.settings_masked_imaging.tag_with_inversion}_"
+            f"{self.settings_lens.tag}_"
+            f"{self.settings_pixelization.tag}_"
+            f"{self.settings_inversion.tag}"
+            f"{self.log_likelihood_cap_tag}"
         )
 
 
@@ -85,21 +68,22 @@ class SettingsPhaseInterferometer(settings.SettingsPhaseInterferometer):
     @property
     def phase_tag_no_inversion(self):
         return (
-            conf.instance.tag.get("phase", "phase")
-            + self.settings_masked_interferometer.tag_no_inversion
-            + self.settings_lens.tag
-            + self.log_likelihood_cap_tag
+            f"{conf.instance.settings_tag.get('phase', 'phase')}__"
+            f"{self.settings_masked_interferometer.tag_no_inversion}_"
+            f"{self.settings_lens.tag}"
+            f"{self.log_likelihood_cap_tag}"
         )
 
     @property
     def phase_tag_with_inversion(self):
+
         return (
-            conf.instance.tag.get("phase", "phase")
-            + self.settings_masked_interferometer.tag_with_inversion
-            + self.settings_lens.tag
-            + self.settings_pixelization.tag
-            + self.settings_inversion.tag
-            + self.log_likelihood_cap_tag
+            f"{conf.instance.settings_tag.get('phase', 'phase')}__"
+            f"{self.settings_masked_interferometer.tag_with_inversion}_"
+            f"{self.settings_lens.tag}_"
+            f"{self.settings_pixelization.tag}_"
+            f"{self.settings_inversion.tag}"
+            f"{self.log_likelihood_cap_tag}"
         )
 
 

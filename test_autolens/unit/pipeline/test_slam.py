@@ -63,17 +63,17 @@ class TestSLaMSource:
         source = al.slam.SLaMSource(
             pixelization=al.pix.Rectangular,
             regularization=al.reg.Constant,
-            lens_light_centre=(1.0, 2.0),
-            lens_mass_centre=(3.0, 4.0),
+            light_centre=(1.0, 2.0),
+            mass_centre=(3.0, 4.0),
             align_light_mass_centre=False,
             no_shear=True,
         )
 
-        source.type_tag = source.inversion_tag
+        source.type_tag = source.tag
 
         assert (
             source.tag
-            == "source____pix_rect__reg_const__no_shear__lens_light_centre_(1.00,2.00)__lens_mass_centre_(3.00,4.00)"
+            == "source____pix_rect__reg_const__no_shear__light_centre_(1.00,2.00)__mass_centre_(3.00,4.00)"
         )
 
         source = al.slam.SLaMSource(
@@ -117,23 +117,23 @@ class TestSLaMSource:
 
         assert mass.centre == (1.0, 2.0)
 
-    def test__align_centre_to_lens_light_centre(self):
+    def test__align_centre_to_light_centre(self):
 
         light = af.PriorModel(al.mp.SphericalIsothermal)
 
-        source = al.slam.SLaMSource(lens_light_centre=(1.0, 2.0))
+        source = al.slam.SLaMSource(light_centre=(1.0, 2.0))
 
-        light = source.align_centre_to_lens_light_centre(light=light)
+        light = source.align_centre_to_light_centre(light=light)
 
         assert light.centre == (1.0, 2.0)
 
-    def test__align_centre_to_lens_mass_centre(self):
+    def test__align_centre_to_mass_centre(self):
 
         mass = af.PriorModel(al.mp.SphericalIsothermal)
 
-        source = al.slam.SLaMSource(lens_mass_centre=(1.0, 2.0))
+        source = al.slam.SLaMSource(mass_centre=(1.0, 2.0))
 
-        mass = source.align_centre_to_lens_mass_centre(mass=mass)
+        mass = source.align_centre_to_mass_centre(mass=mass)
 
         assert mass.centre == (1.0, 2.0)
 
@@ -165,7 +165,7 @@ class TestSLaMSource:
         source.type_tag = "anything_else"
         assert source.is_inversion == True
 
-    def test__unfix_lens_mass_centre(self):
+    def test__unfix_mass_centre(self):
 
         mass = af.PriorModel(al.mp.SphericalIsothermal)
         mass.centre = (1.0, 2.0)
@@ -173,9 +173,9 @@ class TestSLaMSource:
         source = al.slam.SLaMSource()
 
         mass = af.PriorModel(al.mp.SphericalIsothermal)
-        source = al.slam.SLaMSource(lens_mass_centre=(5.0, 6.0))
+        source = al.slam.SLaMSource(mass_centre=(5.0, 6.0))
 
-        mass = source.unfix_lens_mass_centre(mass=mass)
+        mass = source.unfix_mass_centre(mass=mass)
 
         assert mass.centre.centre_0.mean == 5.0
         assert mass.centre.centre_0.sigma == 0.05

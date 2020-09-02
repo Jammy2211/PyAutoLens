@@ -6,7 +6,7 @@ from autogalaxy.profiles import mass_profiles as mp, light_and_mass_profiles as 
 from autolens import exc
 
 
-class SetupSource(setup.SetupSource):
+class SetupSourceInversion(setup.SetupSourceInversion):
     def __init__(
         self,
         pixelization: pix.Pixelization = None,
@@ -43,10 +43,10 @@ class SetupSource(setup.SetupSource):
         )
 
 
-class SetupLight(setup.SetupLight):
+class SetupLightBulgeDisk(setup.SetupLightBulgeDisk):
     def __init__(
         self,
-        lens_light_centre: (float, float) = None,
+        light_centre: (float, float) = None,
         align_bulge_disk_centre: bool = False,
         align_bulge_disk_elliptical_comps: bool = False,
         disk_as_sersic: bool = False,
@@ -62,7 +62,7 @@ class SetupLight(setup.SetupLight):
 
         Parameters
         ----------
-        lens_light_centre : (float, float)
+        light_centre : (float, float)
            If input, a fixed (y,x) centre of the galaxy is used for the lens light profile model which is not treated
            as a free parameter by the non-linear search.
         align_bulge_disk_centre : bool
@@ -77,47 +77,18 @@ class SetupLight(setup.SetupLight):
         """
 
         super().__init__(
+            light_centre=light_centre,
             align_bulge_disk_centre=align_bulge_disk_centre,
             align_bulge_disk_elliptical_comps=align_bulge_disk_elliptical_comps,
             disk_as_sersic=disk_as_sersic,
         )
 
-        self.lens_light_centre = lens_light_centre
 
-    @property
-    def tag(self):
-        return (
-            self.lens_light_centre_tag
-            + self.align_bulge_disk_tag
-            + self.disk_as_sersic_tag
-        )
-
-    @property
-    def lens_light_centre_tag(self):
-        """Tag if the lens light of the pipeline are fixed to a previous estimate, or varied \
-         during the analysis, to customize pipeline output paths.
-
-        This changes the setup folder as follows:
-
-        lens_light_centre = None -> setup
-        lens_light_centre = (1.0, 1.0) -> setup___light_centre_(1.0, 1.0)
-        lens_light_centre = (3.0, -2.0) -> setup___light_centre_(3.0, -2.0)
-        """
-        if self.lens_light_centre is None:
-            return ""
-        else:
-            y = "{0:.2f}".format(self.lens_light_centre[0])
-            x = "{0:.2f}".format(self.lens_light_centre[1])
-            return (
-                f"__{conf.instance.tag.get('pipeline', 'lens_light_centre')}_({y},{x})"
-            )
-
-
-class SetupMass(setup.SetupMass):
+class SetupMassLightDark(setup.SetupMassLightDark):
     def __init__(
         self,
         no_shear=False,
-        lens_mass_centre: (float, float) = None,
+        mass_centre: (float, float) = None,
         align_light_mass_centre: bool = False,
         constant_mass_to_light_ratio: bool = False,
         bulge_mass_to_light_ratio_gradient: bool = False,
@@ -169,18 +140,20 @@ class SetupMass(setup.SetupMass):
         )
 
         self.no_shear = no_shear
-        self.lens_mass_centre = lens_mass_centre
+        self.mass_centre = mass_centre
 
     @property
     def tag(self):
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
         return (
-            self.no_shear_tag
-            + self.align_light_mass_centre_tag
-            + self.lens_mass_centre_tag
-            + self.align_light_dark_centre_tag
-            + self.align_bulge_dark_centre_tag
+            f"{conf.instance.setup_tag.get('mass', 'mass')}[{self.model_type}"
+            f"{self.no_shear_tag}"
+            f"{self.mass_to_light_tag}"
+            f"{self.align_light_mass_centre_tag}"
+            f"{self.mass_centre_tag}"
+            f"{self.align_light_dark_centre_tag}"
+            f"{self.align_bulge_dark_centre_tag}]"
         )
 
     @property
@@ -194,28 +167,28 @@ class SetupMass(setup.SetupMass):
         no_shear = True -> setup___no_shear
         """
         if not self.no_shear:
-            return "__" + conf.instance.tag.get("pipeline", "with_shear")
-        return "__" + conf.instance.tag.get("pipeline", "no_shear")
+            return "__" + conf.instance.setup_tag.get("mass", "with_shear")
+        return "__" + conf.instance.setup_tag.get("mass", "no_shear")
 
     @property
-    def lens_mass_centre_tag(self):
+    def mass_centre_tag(self):
         """Generate a tag if the lens mass model centre of the pipeline is fixed to an input value, to customize
         pipeline output paths.
 
         This changes the setup folder as follows:
 
-        lens_mass_centre = None -> setup
-        lens_mass_centre = (1.0, 1.0) -> setup___lens_mass_centre_(1.0, 1.0)
-        lens_mass_centre = (3.0, -2.0) -> setup___lens_mass_centre_(3.0, -2.0)
+        mass_centre = None -> setup
+        mass_centre = (1.0, 1.0) -> setup___mass_centre_(1.0, 1.0)
+        mass_centre = (3.0, -2.0) -> setup___mass_centre_(3.0, -2.0)
         """
-        if self.lens_mass_centre is None:
+        if self.mass_centre is None:
             return ""
 
-        y = "{0:.2f}".format(self.lens_mass_centre[0])
-        x = "{0:.2f}".format(self.lens_mass_centre[1])
+        y = "{0:.2f}".format(self.mass_centre[0])
+        x = "{0:.2f}".format(self.mass_centre[1])
         return (
             "__"
-            + conf.instance.tag.get("pipeline", "lens_mass_centre")
+            + conf.instance.setup_tag.get("mass", "mass_centre")
             + "_("
             + y
             + ","
@@ -243,8 +216,16 @@ class SetupSubhalo:
         self.subhalo_instance = subhalo_instance
 
     @property
+    def model_type(self):
+        return "nfw"
+
+    @property
     def tag(self):
-        return self.subhalo_centre_tag + self.subhalo_mass_at_200_tag
+        return (
+            f"{conf.instance.setup_tag.get('subhalo', 'subhalo')}[{self.model_type}"
+            f"{self.subhalo_centre_tag}"
+            f"{self.subhalo_mass_at_200_tag}]"
+        )
 
     @property
     def subhalo_centre_tag(self):
@@ -264,7 +245,7 @@ class SetupSubhalo:
             x = "{0:.2f}".format(self.subhalo_instance.centre[1])
             return (
                 "__"
-                + conf.instance.tag.get("pipeline", "subhalo_centre")
+                + conf.instance.setup_tag.get("subhalo", "subhalo_centre")
                 + "_("
                 + y
                 + ","
@@ -289,7 +270,7 @@ class SetupSubhalo:
 
             return (
                 "__"
-                + conf.instance.tag.get("pipeline", "subhalo_mass_at_200")
+                + conf.instance.setup_tag.get("subhalo", "mass_at_200")
                 + "_"
                 + "{0:.1e}".format(self.subhalo_instance.mass_at_200_input)
             )
@@ -299,12 +280,12 @@ class SetupPipeline(setup.SetupPipeline):
     def __init__(
         self,
         folders: [str] = None,
-        hyper: setup.SetupHyper = setup.SetupHyper(),
-        source: SetupSource = SetupSource(),
-        light: SetupLight = SetupLight(),
-        mass: SetupMass = SetupMass(),
-        smbh: setup.SetupSMBH = setup.SetupSMBH(),
-        subhalo: SetupSubhalo = SetupSubhalo(),
+        hyper: setup.SetupHyper = None,
+        source: SetupSourceInversion = None,
+        light: SetupLightBulgeDisk = None,
+        mass: SetupMassLightDark = None,
+        smbh: setup.SetupSMBH = None,
+        subhalo: SetupSubhalo = None,
     ):
         """The setup of a pipeline, which controls how PyAutoGalaxy template pipelines runs, for example controlling
         assumptions about the bulge-disk model or the model used to fit the source galaxy.
@@ -318,13 +299,17 @@ class SetupPipeline(setup.SetupPipeline):
         Parameters
         ----------
         hyper : SetupHyper
-            The settings of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
-        source : SetupSource
-            The settings of the source analysis (e.g. the _Pixelization and _Regularization used).
-        light : SetupLight
-            The settings of the light profile modeling (e.g. for bulge-disk models if they are geometrically aligned).
-        mass : SetupMass
-            The settings of the mass modeling (e.g. if a constant mass to light ratio is used).
+            The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
+        source : SetupSourceInversion
+            The setup of the source analysis (e.g. the _Pixelization and _Regularization used).
+        light : SetupLightBulgeDisk
+            The setup of the light profile modeling (e.g. for bulge-disk models if they are geometrically aligned).
+        mass : SetupMassLightDark
+            The setup of the mass modeling (e.g. if a constant mass to light ratio is used).
+        smbh : SetupSMBH
+            The setup of a SMBH in the mass model, if included.
+        subhalo : SetupSubhalo
+            The setup of a subhalo in the mass model, if included.
         """
 
         super().__init__(
@@ -342,12 +327,13 @@ class SetupPipeline(setup.SetupPipeline):
     def tag(self):
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
-        return (
-            conf.instance.tag.get("pipeline", "pipeline")
-            + self.hyper.tag
-            + self.source.tag
-            + self.light.tag
-            + self.mass.tag
-            + self.smbh.tag
-            + self.subhalo.tag
-        )
+
+        setup_tag = conf.instance.setup_tag.get("pipeline", "pipeline")
+        hyper_tag = f"_{self.hyper.tag}" if self.hyper is not None else ""
+        source_tag = f"_{self.source.tag}" if self.source is not None else ""
+        light_tag = f"_{self.light.tag}" if self.light is not None else ""
+        mass_tag = f"_{self.mass.tag}" if self.mass is not None else ""
+        smbh_tag = f"_{self.smbh.tag}" if self.smbh is not None else ""
+        subhalo_tag = f"_{self.subhalo.tag}" if self.subhalo is not None else ""
+
+        return f"{setup_tag}_{hyper_tag}{source_tag}{light_tag}{mass_tag}{smbh_tag}{subhalo_tag}"
