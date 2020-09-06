@@ -19,7 +19,7 @@ That's what we are going to cover in this tutorial.
 # %%
 #%matplotlib inline
 
-from howtolens.simulators.chapter_4 import lens_sie__source_sersic
+from autolens_workspace.howtolens.simulators.chapter_4 import mass_sie__source_sersic
 import autolens as al
 import autolens.plot as aplt
 from pyprojroot import here
@@ -38,7 +38,7 @@ We'll use the same strong lensing data as the previous tutorial, where:
 
 # %%
 dataset_type = "chapter_4"
-dataset_name = "lens_sie__source_sersic__2"
+dataset_name = "mass_sie__source_sersic__2"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -104,8 +104,8 @@ fit = perform_fit_with_lens__source_galaxy(
     imaging=imaging, lens_galaxy=lens_galaxy, source_galaxy=source_galaxy
 )
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-aplt.FitImaging.subplot_of_plane(
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -141,8 +141,8 @@ correct_fit = perform_fit_with_lens__source_galaxy(
     imaging=imaging, lens_galaxy=lens_galaxy, source_galaxy=source_galaxy
 )
 
-aplt.FitImaging.subplot_fit_imaging(fit=correct_fit, include=aplt.Include(mask=True))
-aplt.FitImaging.subplot_of_plane(
+# aplt.FitImaging.subplot_fit_imaging(fit=correct_fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -162,7 +162,7 @@ incorrect lens model (e.g. a local maxima).
 There is no simple fix for this. The reality is that for an _Inversion_ these solutions exist. This is how phase 
 linking and pipelines were initially conceived, they offer a simple solution to this problem. We write a pipeline that 
 begins by modeling the source galaxy as a _LightProfile_, 'initializing' our lens mass model. Then, when we switch to 
-an inversion in the next phase, our mass model starts in the correct regions of parameter space and doesn't get lost 
+an _Inversion_ in the next phase, our mass model starts in the correct regions of parameter space and doesn't get lost 
 sampling these incorrect solutions.
 
 Its not ideal, but its also not a big problem. Furthermore, _LightProfile_'ss run faster computationally than 
@@ -174,14 +174,16 @@ _Inversion_ anyway!
 """
 Okay, so we've covered incorrect solutions, lets end by noting that we can model profiles and inversions at the same 
 time. We do this when we want to simultaneously fit and subtract the light of a lens galaxy and reconstruct its lensed 
-source using an inversion. To do this, all we have to do is give the lens galaxy a _LightProfile_.
+source using an _Inversion_. To do this, all we have to do is give the lens galaxy a _LightProfile_.
 """
 
 # %%
-from howtolens.simulators.chapter_4 import lens_sersic_sie__source_sersic
+from autolens_workspace.howtolens.simulators.chapter_4 import (
+    light_sersic__mass_sie__source_sersic,
+)
 
 dataset_type = "chapter_4"
-dataset_name = "lens_sersic_sie__source_sersic"
+dataset_name = "light_sersic__mass_sie__source_sersic"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -196,7 +198,7 @@ mask = al.Mask.circular(
 )
 
 aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
-aplt.FitImaging.subplot_of_plane(
+# aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -219,7 +221,7 @@ As I said above, performing this fit is the same as usual, we just give the lens
 # %%
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    light=al.lp.SphericalSersic(
+    sersic=al.lp.SphericalSersic(
         centre=(0.0, 0.0), intensity=0.2, effective_radius=0.8, sersic_index=4.0
     ),
     mass=al.mp.EllipticalIsothermal(
@@ -254,8 +256,8 @@ _Inversion_. When we plot the image, a new panel on the sub-plot appears showing
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-aplt.FitImaging.subplot_of_plane(
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -268,7 +270,7 @@ lens galaxy's light accurately (below, I've increased the lens galaxy intensity 
 # %%
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    light=al.lp.SphericalSersic(
+    sersic=al.lp.SphericalSersic(
         centre=(0.0, 0.0), intensity=0.3, effective_radius=0.8, sersic_index=4.0
     ),
     mass=al.mp.EllipticalIsothermal(
@@ -280,8 +282,8 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-aplt.FitImaging.subplot_of_plane(
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -296,7 +298,7 @@ the next tutorial on adaption.
  values than is actually possible. Thus, once we've covered adaption, these issues will be resolved!
     
  - When the lens galaxy's light is subtracted perfectly it leaves no residuals. However, if it isn't subtracted 
- perfectly it does leave residuals, which will be fitted by the inversion. If the residual are significant this is 
+ perfectly it does leave residuals, which will be fitted by the _Inversion_. If the residual are significant this is 
  going to mess with our source reconstruction and can lead to some pretty nasty systematics. In the next chapter, 
  we'll learn how our adaptive analysis can prevent this residual fitting.
 """

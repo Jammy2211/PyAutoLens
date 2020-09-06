@@ -44,11 +44,11 @@ def test__tag__mixture_of_values():
 
     assert (
         settings.phase_tag_no_inversion
-        == "settings__imaging[grid_facc_0.5__bin_3__psf_2x2]_lens[pos_1.00_auto_pos_x0.50]_lh_cap_200.0"
+        == "settings__imaging[grid_facc_0.5__bin_3__psf_2x2]_lens[pos_1.00]_lh_cap_200.0"
     )
     assert (
         settings.phase_tag_with_inversion
-        == "settings__imaging[grid_facc_0.5_inv_interp_0.300__bin_3__psf_2x2]_lens[pos_1.00_auto_pos_x0.50]_pix[no_border__stochastic]_inv[mat]_lh_cap_200.0"
+        == "settings__imaging[grid_facc_0.5_inv_interp_0.300__bin_3__psf_2x2]_lens[pos_1.00]_pix[no_border__stochastic]_inv[mat]_lh_cap_200.0"
     )
 
     settings = al.SettingsPhaseInterferometer(

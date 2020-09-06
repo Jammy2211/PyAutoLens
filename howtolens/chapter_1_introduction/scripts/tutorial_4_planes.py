@@ -84,7 +84,7 @@ light_profile = al.lp.SphericalSersic(
     centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=1.0
 )
 
-source_galaxy = al.Galaxy(redshift=1.0, light=light_profile)
+source_galaxy = al.Galaxy(redshift=1.0, sersic=light_profile)
 
 # %%
 """

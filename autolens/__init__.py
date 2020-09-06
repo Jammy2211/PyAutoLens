@@ -30,7 +30,12 @@ from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
 from autogalaxy.galaxy.galaxy_data import GalaxyData
 from autogalaxy.galaxy.galaxy_model import GalaxyModel
 from autogalaxy.hyper import hyper_data
-from autogalaxy.pipeline.setup import SetupHyper, SetupSMBH
+from autogalaxy.pipeline.setup import (
+    SetupHyper,
+    SetupLightSersic,
+    SetupSourceParametric,
+    SetupSMBH,
+)
 from autogalaxy.pipeline.phase.extensions import CombinedHyperPhase
 from autogalaxy.pipeline.phase.extensions import HyperGalaxyPhase
 from autogalaxy.pipeline.phase.extensions.hyper_galaxy_phase import HyperGalaxyPhase
@@ -60,10 +65,17 @@ from .pipeline.setup import (
     SetupPipeline,
     SetupSourceInversion,
     SetupLightBulgeDisk,
+    SetupMassTotal,
     SetupMassLightDark,
     SetupSubhalo,
 )
-from .pipeline import slam
+from .pipeline.slam import (
+    SLaMPipelineSourceParametric,
+    SLaMPipelineSourceInversion,
+    SLaMPipelineLight,
+    SLaMPipelineMass,
+    SLaM,
+)
 from .pipeline.phase.settings import SettingsPhaseImaging
 from .pipeline.phase.settings import SettingsPhaseInterferometer
 from .pipeline.phase.imaging.phase import PhaseImaging

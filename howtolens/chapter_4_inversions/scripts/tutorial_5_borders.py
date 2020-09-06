@@ -26,10 +26,10 @@ We'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_4 import lens_sie__source_sersic__2
+from autolens_workspace.howtolens.simulators.chapter_4 import mass_sie__source_sersic__2
 
 dataset_type = "chapter_4"
-dataset_name = "lens_sie__source_sersic__2"
+dataset_name = "mass_sie__source_sersic__2"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -117,7 +117,7 @@ Okay, so lets first look at our _Mapper_ without using a border using our annula
 
 First, note how we set up the border. We use a _SettingsPixelization_ object, which is analogous to the 
 _SettingsMaskedImaging_ and _SettingsLens_ objects we used in previous tutorials. Later, you'll see how these 
-settings can also be passed to a _SettingsPhaseImaging_ object, to control the behaviour of the pixelization during a
+settings can also be passed to a _SettingsPhaseImaging_ object, to control the behaviour of the _Pixelization_ during a
 model-fit.
 """
 
@@ -289,10 +289,10 @@ We'll use new strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_4 import lens_sie_x2__source_sersic
+from autolens_workspace.howtolens.simulators.chapter_4 import mass_sie_x2__source_sersic
 
 dataset_type = "chapter_4"
-dataset_name = "lens_sie_x2__source_sersic"
+dataset_name = "mass_sie_x2__source_sersic"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
