@@ -47,20 +47,23 @@ The simplest way to install **PyAutoLens** is via pip:
 
     pip install autolens
 
-Clone autolens workspace & set WORKSPACE enviroment model ('--depth 1' clones only the most recent branch on the
+Clone autolens workspace & set WORKSPACE environment model ('--depth 1' clones only the most recent branch on the
 autolens_workspace, reducing the download size):
 
 .. code-block:: bash
 
-    cd /path/where/you/want/autolens_workspace
-    git clone https://github.com/Jammy2211/autolens_workspace --depth 1
-    export WORKSPACE=/path/to/autolens_workspace/
+   cd /example/path/autolens_workspace
+   git clone https://github.com/Jammy2211/autolens_workspace --depth 1
+   export WORKSPACE=/example/path/autolens_workspace/
 
-Set PYTHONPATH to include the autolens_workspace directory:
+Set PYTHONPATH to include the directory containing the autolens_workspace folder:
 
 .. code-block:: bash
 
-    export PYTHONPATH=/path/to/autolens_workspace
+    export PYTHONPATH=/example/path
+
+NOTE: As shown above, the PYTHONPATH points to the directory containing the 'autolens_workspace' folder but does not
+contain the 'autolens_workspace' in the path itself.
 
 Matplotlib uses the default backend on your computer, as set in the config file:
 
@@ -89,7 +92,7 @@ You can test everything is working by running the example pipeline runner in the
 
 .. code-block:: bash
 
-    python3 /path/to/autolens_workspace/examples/model/intro/lens_sie__source_sersic.py
+    python3 /path/to/autolens_workspace/examples/model/intro/mass_sie__source_sersic.py
 
 Installation with conda
 -----------------------
@@ -123,19 +126,23 @@ Install autolens:
 
     pip install autolens
 
-Clone the autolens workspace & set WORKSPACE environment model:
+Clone autolens workspace & set WORKSPACE environment model ('--depth 1' clones only the most recent branch on the
+autolens_workspace, reducing the download size):
 
 .. code-block:: bash
 
-    cd /path/where/you/want/autolens_workspace
-    git clone https://github.com/Jammy2211/autolens_workspace
-    export WORKSPACE=/path/to/autolens_workspace/
+   cd /example/path/autolens_workspace
+   git clone https://github.com/Jammy2211/autolens_workspace --depth 1
+   export WORKSPACE=/example/path/autolens_workspace/
 
-Set PYTHONPATH to include the autolens_workspace directory:
+Set PYTHONPATH to include the directory containing the autolens_workspace folder:
 
 .. code-block:: bash
 
-    export PYTHONPATH=/path/to/autolens_workspace/
+    export PYTHONPATH=/example/path
+
+NOTE: As shown above, the PYTHONPATH points to the directory containing the 'autolens_workspace' folder but does not
+contain the 'autolens_workspace' in the path itself.
 
 Matplotlib uses the default backend on your computer, as set in the config file:
 
@@ -160,12 +167,11 @@ works (TKAgg has worked on Linux machines, Qt5Agg has worked on new MACs). For e
     [general]
     backend = TKAgg
 
-
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 
 .. code-block:: bash
 
-    python3 /path/to/autolens_workspace/examples/model/intro/lens_sie__source_sersic.py
+    python3 /path/to/autolens_workspace/examples/model/beginner/mass_sie__source_sersic.py
 
 Forking / Cloning
 -----------------

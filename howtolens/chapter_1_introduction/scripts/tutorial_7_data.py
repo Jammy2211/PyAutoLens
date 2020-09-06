@@ -46,7 +46,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalSersic(
+    sersic=al.lp.EllipticalSersic(
         centre=(0.1, 0.1),
         elliptical_comps=(0.0, 0.111111),
         intensity=1.0,
@@ -67,7 +67,7 @@ aplt.Tracer.image(tracer=tracer, grid=grid)
 
 # %%
 """
-To Simulate the Imaging data, we don't use the image plotted above. Instead, we use an image which has been generated
+To Simulate the _Imaging_ data, we don't use the image plotted above. Instead, we use an image which has been generated
 specifically for simulating an image, which pads the array it is computed on based on the shape of the PSF we
  convolve the image with. This ensures edge-effects do not degrade our simulation's PSF convolution.
 """
@@ -122,7 +122,7 @@ is correct on your computer!
 """
 
 # %%
-"""Setup the path to the autolens workspace, using the project pyprojroot which determines it automatically."""
+"""Setup the path to the autolens workspace, using pyprojroot to determine it automatically."""
 
 # %%
 from pyprojroot import here

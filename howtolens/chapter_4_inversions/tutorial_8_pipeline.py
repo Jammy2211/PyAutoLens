@@ -2,7 +2,7 @@ import autofit as af
 import autolens as al
 
 """
-In this pipeline, we fit the a strong lens using a _EllipticalIsothermal_ mass profile and a source which uses an
+In this pipeline, we fit the a strong lens using a _EllipticalIsothermal_ _MassProfile_ and a source which uses an
 inversion.
 
 The pipeline is three phases:
@@ -18,21 +18,21 @@ Phase 1:
 
 Phase 2:
 
-    Fit the source inversion using the lens _MassProfile_ inferred in phase 1.
+    Fit the source _Inversion_ using the lens _MassProfile_ inferred in phase 1.
     
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: VoronoiMagnification + Constant
     Prior Passing: Lens & Mass (instance -> phase1).
-    Notes: Lens mass fixed, source inversion parameters vary.
+    Notes: Lens mass fixed, source _Inversion_ parameters vary.
 
 Phase 3:
 
-    Refines the lens light and mass models using the source inversion of phase 2.
+    Refines the lens light and mass models using the source _Inversion_ of phase 2.
     
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: VoronoiMagnification + Constant
-    Prior Passing: Lens Mass (model -> phase 1), Source Inversion (instance -> phase 2)
-    Notes: Lens mass varies, source inversion parameters fixed.
+    Prior Passing: Lens Mass (model -> phase 1), Source _Inversion_ (instance -> phase 2)
+    Notes: Lens mass varies, source _Inversion_ parameters fixed.
 """
 
 
@@ -45,19 +45,19 @@ def make_pipeline(setup, settings, folders=None):
     """
     This pipeline is tagged according to whether:
 
-        1) The lens galaxy mass model includes an external shear.
-        2) The pixelization and regularization scheme of the pipeline (fitted in phases 3 & 4).
+        1) The lens galaxy mass model includes an  _ExternalShear_.
+        2) The _Pixelization_ and _Regularization_ scheme of the pipeline (fitted in phases 3 & 4).
     """
 
     setup.folders.append(pipeline_name)
     setup.folders.append(setup.tag)
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1__lens_sie__source_sersic",
+        phase_name="phase_1__mass_sie__source_sersic",
         folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
-            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
         ),
         settings=settings,
         search=af.DynestyStatic(n_live_points=50, evidence_tolerance=5.0),
@@ -67,9 +67,9 @@ def make_pipeline(setup, settings, folders=None):
     phase1.search.const_efficiency_mode = True
 
     """
-    Phase 2: Fit the input pipeline pixelization & regularization, where we:
+    Phase 2: Fit the input pipeline _Pixelization_ & _Regularization_, where we:
 
-        1) Set lens's mass model using the results of phase 1.
+        1) Fix the lens's _MassProfile_'s to the results of phase 1.
     """
 
     source = al.GalaxyModel(
@@ -109,7 +109,7 @@ def make_pipeline(setup, settings, folders=None):
     """
     We now 'extend' phase 1 with an additional 'inversion phase' which uses the maximum log likelihood mass model of 
     phase 1 above to refine the _Inversion_, by fitting only the parameters of the _Pixelization_ and _Regularization_
-    (in this case, the shape of the _VoronoiMagnification_ and regularization coefficient of the _Constant_.
+    (in this case, the shape of the _VoronoiMagnification_ and _Regularization_ coefficient of the _Constant_.
 
     The the _Inversion_ phase results are accessible as attributes of the phase results and used in phase 3 below.
     """
@@ -119,10 +119,10 @@ def make_pipeline(setup, settings, folders=None):
     )
 
     """
-    Phase 3: Fit the lens's mass using the input pipeline pixelization & regularization, where we:
+    Phase 3: Fit the lens's mass using the input pipeline _Pixelization_ & _Regularization_, where we:
 
-        1) Fix the source inversion parameters to the results of the extended inversion phase of phase 2.
-        2) Set priors on the lens galaxy mass using the results of phase 1.
+        1) Fix the source _Inversion_ parameters to the results of the extended _Inversion_ phase of phase 2.
+        2) Set priors on the lens galaxy _MassProfile_'s using the results of phase 1.
     """
 
     phase3 = al.PhaseImaging(

@@ -62,10 +62,12 @@ We'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import lens_sersic_sie__source_exp
+from autolens_workspace.howtolens.simulators.chapter_2 import (
+    light_sersic__mass_sie__source_exp,
+)
 
 dataset_type = "chapter_2"
-dataset_name = "lens_sersic_sie__source_exp"
+dataset_name = "light_sersic__mass_sie__source_exp"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -113,10 +115,10 @@ next phase, lets take a more liberal approach than before and fix the lens centr
 
 # %%
 lens = al.GalaxyModel(
-    redshift=0.5, light=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+    redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
 )
 
-source = al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalExponential)
+source = al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential)
 
 # %%
 """
@@ -125,8 +127,8 @@ removed from non-linear parameter space and always fixed to that value. Pretty n
 """
 
 # %%
-lens.light.centre_0 = 0.0
-lens.light.centre_1 = 0.0
+lens.sersic.centre_0 = 0.0
+lens.sersic.centre_1 = 0.0
 lens.mass.centre_0 = 0.0
 lens.mass.centre_1 = 0.0
 
@@ -134,7 +136,7 @@ lens.mass.centre_1 = 0.0
 """
 Lets use the same approach of making the ellipticity of the mass trace that of the light.
 """
-lens.mass.elliptical_comps = lens.light.elliptical_comps
+lens.mass.elliptical_comps = lens.sersic.elliptical_comps
 
 # %%
 """
@@ -149,7 +151,7 @@ We also discussed that the Sersic index of most lens galaxies is around 4. Lets 
 """
 
 # %%
-lens.light.sersic_index = 4.0
+lens.sersic.sersic_index = 4.0
 
 # %%
 """
@@ -201,9 +203,9 @@ parameter can or can't take. It makes it more likely we'll accidently cut-out th
 
 # %%
 lens = al.GalaxyModel(
-    redshift=0.5, light=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+    redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
 )
-source = al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalExponential)
+source = al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential)
 
 # %%
 """
@@ -216,25 +218,25 @@ values for now, I've chosen values that I know will ensure reasonable sampling, 
 
 """LENS LIGHT PRIORS"""
 
-lens.light.centre.centre_0 = af.GaussianPrior(
+lens.sersic.centre.centre_0 = af.GaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-np.inf, upper_limit=np.inf
 )
-lens.light.centre.centre_1 = af.GaussianPrior(
+lens.sersic.centre.centre_1 = af.GaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-np.inf, upper_limit=np.inf
 )
-lens.light.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
+lens.sersic.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
     mean=0.33333, sigma=0.15, lower_limit=-1.0, upper_limit=1.0
 )
-lens.light.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
+lens.sersic.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
     mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
 )
-lens.light.intensity = af.GaussianPrior(
+lens.sersic.intensity = af.GaussianPrior(
     mean=0.02, sigma=0.01, lower_limit=0.0, upper_limit=np.inf
 )
-lens.light.effective_radius = af.GaussianPrior(
+lens.sersic.effective_radius = af.GaussianPrior(
     mean=0.62, sigma=0.2, lower_limit=0.0, upper_limit=np.inf
 )
-lens.light.sersic_index = af.GaussianPrior(
+lens.sersic.sersic_index = af.GaussianPrior(
     mean=4.0, sigma=2.0, lower_limit=0.0, upper_limit=np.inf
 )
 
@@ -258,22 +260,22 @@ lens.mass.einstein_radius = af.GaussianPrior(
 
 """SOURCE LIGHT PRIORS"""
 
-source.light.centre.centre_0 = af.GaussianPrior(
+source.sersic.centre.centre_0 = af.GaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-np.inf, upper_limit=np.inf
 )
-source.light.centre.centre_1 = af.GaussianPrior(
+source.sersic.centre.centre_1 = af.GaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-np.inf, upper_limit=np.inf
 )
-source.light.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
+source.sersic.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
     mean=0.0, sigma=0.15, lower_limit=-1.0, upper_limit=1.0
 )
-source.light.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
+source.sersic.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
     mean=-0.33333, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
 )
-source.light.intensity = af.GaussianPrior(
+source.sersic.intensity = af.GaussianPrior(
     mean=0.14, sigma=0.05, lower_limit=0.0, upper_limit=np.inf
 )
-source.light.effective_radius = af.GaussianPrior(
+source.sersic.effective_radius = af.GaussianPrior(
     mean=0.27, sigma=0.2, lower_limit=0.0, upper_limit=np.inf
 )
 
@@ -379,13 +381,13 @@ component and then passing the priors of each individual parameter.
 # %%
 """LENS LIGHT PRIORS"""
 
-light = af.PriorModel(al.lp.EllipticalSersic)
+sersic = af.PriorModel(al.lp.EllipticalSersic)
 
 light.elliptical_comps.elliptical_comps = (
-    phase1_result.model.galaxies.lens.light.elliptical_comps
+    phase1_result.model.galaxies.lens.sersic.elliptical_comps
 )
-light.intensity = phase1_result.model.galaxies.lens.light.intensity
-light.effective_radius = phase1_result.model.galaxies.lens.light.effective_radius
+light.intensity = phase1_result.model.galaxies.lens.sersic.intensity
+light.effective_radius = phase1_result.model.galaxies.lens.sersic.effective_radius
 
 """LENS MASS PRIORS"""
 
@@ -396,7 +398,7 @@ lens.mass.elliptical_comps.elliptical_comps = (
 )
 lens.mass.einstein_radius = phase1_result.model.galaxies.lens.mass.einstein_radius
 
-lens = al.GalaxyModel(redshift=0.5, light=light, mass=mass)
+lens = al.GalaxyModel(redshift=0.5, sersic=sersic, mass=mass)
 
 # %%
 """
@@ -504,7 +506,7 @@ Lets go through an example using a real parameter. Lets say in phase 1 we fit th
 elliptical Sersic profile, and we estimate that its sersic index is equal to 4.0 +- 2.0 where the error value of 2.0 
 was computed at 3.0 sigma confidence. To pass this as a prior to phase 2, we would write:
 
- lens.light.sersic_index = phase1.result.model.lens.light.sersic_index
+ lens.sersic.sersic_index = phase1.result.model.lens.sersic.sersic_index
 
 The prior on the lens galaxy's sersic _LightProfile_ in phase 2 would thus be a GaussianPrior, with mean=4.0 and 
 sigma=2.0. If we had used a sigma value of 1.0 to compute the error, which reduced the estimate from 4.0 +- 2.0 to 

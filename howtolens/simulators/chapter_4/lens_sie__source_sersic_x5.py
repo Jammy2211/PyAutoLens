@@ -25,7 +25,7 @@ gives it a descriptive name. They define the folder the dataset is output to on 
  - The psf will be output to '/autolens_workspace/dataset/dataset_type/dataset_name/psf.fits'.
 """
 dataset_type = "chapter_4"
-dataset_name = "lens_sie__source_sersic_x5"
+dataset_name = "mass_sie__source_sersic_x5"
 
 """
 Create the path where the dataset will be output, which in this case is:

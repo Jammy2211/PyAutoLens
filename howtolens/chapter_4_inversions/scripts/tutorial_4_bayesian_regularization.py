@@ -31,10 +31,10 @@ We'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_4 import lens_sie__source_sersic
+from autolens_workspace.howtolens.simulators.chapter_4 import mass_sie__source_sersic
 
 dataset_type = "chapter_4"
-dataset_name = "lens_sie__source_sersic"
+dataset_name = "mass_sie__source_sersic"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -94,7 +94,7 @@ source_galaxy = al.Galaxy(
 
 fit = perform_fit_with_source_galaxy(imaging=imaging, source_galaxy=source_galaxy)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=fit)
 
 # %%
 """
@@ -113,7 +113,7 @@ no_regularization_fit = perform_fit_with_source_galaxy(
     imaging=imaging, source_galaxy=source_galaxy
 )
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=no_regularization_fit, include=aplt.Include(mask=True)
 )
 
@@ -163,7 +163,7 @@ high_regularization_fit = perform_fit_with_source_galaxy(
     imaging=imaging, source_galaxy=source_galaxy
 )
 
-aplt.FitImaging.subplot_fit_imaging(
+# aplt.FitImaging.subplot_fit_imaging(
     fit=high_regularization_fit, include=aplt.Include(mask=True)
 )
 
@@ -220,7 +220,7 @@ evidence solution.
 
 Before we end, lets consider which aspects of an _Inversion_ are linear and which are non-linear.
 
-The linear part of the linear inversion solves for the 'best-fit' solution. For a given regularizaton coefficient, 
+The linear part of the linear _Inversion_ solves for the 'best-fit' solution. For a given regularizaton coefficient, 
 this includes the _Regularization_ pattern. That is, we linearly reconstruct the combination of source-pixel fluxes 
 that best-fit the image *including* the penalty term due to comparing neighboring source-pixel fluxes.
 
@@ -233,7 +233,7 @@ Here are a few questions for you to think about.
 
  1) We maximize the log evidence by using simpler source reconstructions. Therefore, decreasing the pixel-grid 
  size should provide a higher log_evidence, provided it still has enough resolution to fit the image well (and 
- provided that the regularization coefficient is still an appropriate value). Can you increase the log evidence 
+ provided that the _Regularization_ coefficient is still an appropriate value). Can you increase the log evidence 
  from the value above by changing these parameters - I've set you up with a code to do so below.
 """
 
@@ -251,7 +251,7 @@ print(10395.370224426646)
 print("New Bayesian Evidence:")
 print(fit.log_evidence)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
