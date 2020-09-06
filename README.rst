@@ -135,6 +135,15 @@ To get started go to our `readthedocs <https://pyautolens.readthedocs.io/>`_,
 where you'll find our installation guide, a complete overview of **PyAutoLens**'s features, examples scripts and
 tutorials and detailed API documentation.
 
+
+Config Files
+------------
+
+**PyAutoLens** requires the config files on the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_
+to run, which must be set according to the `installation guide <https://pyautolens.readthedocs.io/en/latest/general/installation.html>`_.
+
+So, if you Fork / Clone the GitHub repo, make sure you download and set up the configurationo files first!
+
 Slack
 -----
 
