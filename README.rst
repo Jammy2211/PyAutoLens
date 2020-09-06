@@ -142,7 +142,7 @@ Config Files
 **PyAutoLens** requires the config files on the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_
 to run, which must be set according to the `installation guide <https://pyautolens.readthedocs.io/en/latest/general/installation.html>`_.
 
-So, if you Fork / Clone the GitHub repo, make sure you download and set up the configurationo files first!
+So, if you Fork / Clone the GitHub repo, make sure you download and set up the configuration files first!
 
 Slack
 -----
