@@ -140,11 +140,11 @@ setup_mass = al.SetupMassTotal(no_shear=False)
 
 # %%
 """
-Next, we create a _SetupSourceParametric_ which does not customize the pipeline behaviour except for tagging (see below).
+Next, we create a _SetupSourceSersic_ which does not customize the pipeline behaviour except for tagging (see below).
 """
 
 # %%
-setup_source = al.SetupSourceParametric()
+setup_source = al.SetupSourceSersic()
 
 """
 _Pipeline Tagging_

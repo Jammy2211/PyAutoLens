@@ -33,7 +33,7 @@ from autogalaxy.hyper import hyper_data
 from autogalaxy.pipeline.setup import (
     SetupHyper,
     SetupLightSersic,
-    SetupSourceParametric,
+    SetupSourceSersic,
     SetupSMBH,
 )
 from autogalaxy.pipeline.phase.extensions import CombinedHyperPhase

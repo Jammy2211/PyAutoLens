@@ -55,7 +55,7 @@ class TestSetupPipeline:
 
         assert (
             setup.tag == "setup__"
-            "hyper[galaxies_bg_sky_bg_noise]_"
+            "hyper[galaxies_bg_sky_bg_noise]__"
             "mass[light_dark__with_shear__mlr_free__align_bulge_dark_centre]"
         )
 
@@ -73,9 +73,9 @@ class TestSetupPipeline:
 
         assert (
             setup.tag == "setup__"
-            "light[bulge_disk__light_centre_(1.00,2.00)]_"
-            "mass[light_dark__mass_centre_(3.00,4.00)__no_shear__mlr_free]_"
-            "source[pix_rect_reg_const]"
+            "light[bulge_disk__light_centre_(1.00,2.00)]__"
+            "mass[light_dark__mass_centre_(3.00,4.00)__no_shear__mlr_free]__"
+            "source[pix_rect__reg_const]"
         )
 
         setup_mass = al.SetupMassLightDark(align_light_dark_centre=True)
@@ -99,6 +99,6 @@ class TestSetupPipeline:
 
         assert (
             setup.tag == "setup__"
-            "smbh[centre_fixed]_"
+            "smbh[centre_fixed]__"
             "subhalo[nfw__sub_centre_(1.00,2.00)__sub_mass_1.0e+08]"
         )
