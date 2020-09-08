@@ -4,7 +4,7 @@ Pixelizations
 -------------
 
 **PyAutoLens** can reconstruct the light of the strong lensed source-galaxy using a pixel-grid, using a process
-called an *Inversion*.
+called an _Inversion_.
 
 Lets use a *Pixelization* to reconstruct the source-galaxy of the image below, noting how complex the lensed source
 appears, with multiple rings and clumps of light:
@@ -13,7 +13,7 @@ appears, with multiple rings and clumps of light:
   :width: 400
   :alt: Alternative text
 
-We are going to fit this image with an *Inversion*, so we first create *Mask* and *MaskedImaging* objects:
+We are going to fit this image with an _Inversion_, so we first create *Mask* and *MaskedImaging* objects:
 
 .. code-block:: bash
 
@@ -38,7 +38,7 @@ Below, we use a *Rectangular* pixelization with resolution 40 x 40 and *Constant
 
 To fit the data, we simply pass this source-galaxy into a *Tracer* (complete with lens galaxy mass model). The
 *FitImaging* object will automatically use the source galaxy's *Pixelization* and *Regularization* to reconstruct
-the lensed source's light using the *Inversion*:
+the lensed source's light using the _Inversion_:
 
 .. code-block:: bash
 
@@ -83,5 +83,5 @@ here, which is covered in chapters 4 and 5 of the **HowToLens**, specifically:
 
     - How the source reconstruction determines the flux-values of the source it reconstructs.
     - The Bayesian framework employed to choose the approrpriate level of *Regularization* and avoid overfitting noise.
-    - Unphysical lens model solutions that often arise when using an *Inversion*.
+    - Unphysical lens model solutions that often arise when using an _Inversion_.
     - Advanced *Pixelization* and *Regularization* schemes that adapt to the source galaxy being reconstructed.

@@ -21,13 +21,8 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
             ),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
-        sub_size=1,
         search=search,
     )
-
-    phase1.search.const_efficiency_mode = True
-    phase1.search.n_live_points = 60
-    phase1.search.facc = 0.8
 
     # This is an example of us passing results via phases, which we know will work.
 
@@ -45,7 +40,6 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
             ),
             source=phase1.result.model.galaxies.source,
         ),
-        sub_size=1,
         search=search,
     )
 

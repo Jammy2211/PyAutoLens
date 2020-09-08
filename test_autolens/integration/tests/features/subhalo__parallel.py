@@ -28,8 +28,8 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
         @property
         def grid_priors(self):
             return [
-                self.model.galaxies.subhalo.mass.centre_0,
-                self.model.galaxies.subhalo.mass.centre_1,
+                self.model.galaxies.subhalo.pipeline_mass.centre_0,
+                self.model.galaxies.subhalo.pipeline_mass.centre_1,
             ]
 
     subhalo = al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalTruncatedNFWMCRLudlow)

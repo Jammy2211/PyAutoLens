@@ -45,10 +45,10 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_3 import lens_sie__source_sersic_x4
+from autolens_workspace.howtolens.simulators.chapter_3 import mass_sie__source_sersic_x4
 
 dataset_type = "chapter_3"
-dataset_name = "lens_sie__source_sersic_x4"
+dataset_name = "mass_sie__source_sersic_x4"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -82,7 +82,7 @@ keep the number of parameters down and the phases running fast, but we wouldn't 
 """
 __Settings__
 
-The *SettingsPhaseImaging* describe how the model is fitted to the data in the log likelihood function. We discussed
+The _SettingsPhaseImaging_ describe how the model is fitted to the data in the log likelihood function. We discussed
 these in chapter 2, and a full description of all settings can be found in the example script:
 
  'autolens_workspace/examples/model/customize/settings.py'.
@@ -101,17 +101,20 @@ __Pipeline_Setup_And_Tagging__:
 
 For this pipeline the pipeline setup customizes:
 
- - If there is an external shear in the mass model or not.
-
-The pipeline setup 'tags' the output path of a pipeline. For example, if 'no_shear' is True, the pipeline's output 
-paths are 'tagged' with the string 'no_shear'.
-
-This means you can run the same pipeline on the same data twice (with and without shear) and the results will go
-to different output folders and thus not clash with one another!
+ - If there is an _ExternalShear_ in the mass model or not.
 """
 
 # %%
-setup = al.SetupPipeline(no_shear=False, folders=["c3_t3_complex_source"])
+setup_mass = al.SetupMassTotal(no_shear=False)
+setup_source = al.SetupSourceSersic()
+
+setup = al.SetupPipeline(
+    folders=["c3_t3_complex_source"],
+    redshift_lens=0.5,
+    redshift_source=1.0,
+    setup_mass=setup_mass,
+    setup_source=setup_source,
+)
 
 # %%
 """
@@ -130,7 +133,9 @@ The 'folders' below specify the path the pipeline results are written to, which 
 """
 
 # %%
-from howtolens.chapter_3_pipelines import tutorial_3_pipeline_complex_source
+from autolens_workspace.howtolens.chapter_3_pipelines import (
+    tutorial_3_pipeline_complex_source,
+)
 
 pipeline_complex_source = tutorial_3_pipeline_complex_source.make_pipeline(
     setup=setup, settings=settings
@@ -165,7 +170,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy_0 = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalSersic(
+    sersic=al.lp.EllipticalSersic(
         centre=(0.1, 0.1),
         elliptical_comps=(0.0, 0.1),
         intensity=0.2,
@@ -176,7 +181,7 @@ source_galaxy_0 = al.Galaxy(
 
 source_galaxy_1 = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalSersic(
+    sersic=al.lp.EllipticalSersic(
         centre=(-0.25, 0.25),
         elliptical_comps=(0.0, 0.15),
         intensity=0.1,
@@ -187,7 +192,7 @@ source_galaxy_1 = al.Galaxy(
 
 source_galaxy_2 = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalSersic(
+    sersic=al.lp.EllipticalSersic(
         centre=(0.45, -0.35),
         elliptical_comps=(0.0, 0.222222),
         intensity=0.03,
@@ -198,7 +203,7 @@ source_galaxy_2 = al.Galaxy(
 
 source_galaxy_3 = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalSersic(
+    sersic=al.lp.EllipticalSersic(
         centre=(-0.05, -0.0),
         elliptical_comps=(0.0, 0.15),
         intensity=0.03,
