@@ -114,10 +114,10 @@ We'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import lens_sis__source_exp
+from autolens_workspace.howtolens.simulators.chapter_2 import mass_sis__source_exp
 
 dataset_type = "chapter_2"
-dataset_name = "lens_sis__source_exp"
+dataset_name = "mass_sis__source_exp"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -146,7 +146,7 @@ To change the priors on specific parameters, we create our galaxy models and the
 
 # %%
 lens = al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal)
-source = al.GalaxyModel(redshift=1.0, light=al.lp.SphericalExponential)
+source = al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential)
 
 # %%
 """
@@ -179,7 +179,7 @@ We can also customize the source galaxy - lets say we believe it is compact and 
 """
 
 # %%
-source.light.effective_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.3)
+source.sersic.effective_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.3)
 
 # %%
 """

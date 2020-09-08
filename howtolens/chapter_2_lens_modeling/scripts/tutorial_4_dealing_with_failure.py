@@ -40,10 +40,12 @@ We'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import lens_sersic_sie__source_exp
+from autolens_workspace.howtolens.simulators.chapter_2 import (
+    light_sersic__mass_sie__source_exp,
+)
 
 dataset_type = "chapter_2"
-dataset_name = "lens_sersic_sie__source_exp"
+dataset_name = "light_sersic__mass_sie__source_exp"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -104,7 +106,7 @@ giving these searches a good starting point will increase the chances of us find
 
 # %%
 lens = al.GalaxyModel(
-    redshift=0.5, light=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+    redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
 )
 
 # %%
@@ -115,8 +117,8 @@ so lets reduce where non-linear search looks for these parameters.
 """
 
 # %%
-lens.light.centre.centre_0 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
-lens.light.centre.centre_1 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
+lens.sersic.centre.centre_0 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
+lens.sersic.centre.centre_1 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
 lens.mass.centre.centre_0 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
 lens.mass.centre.centre_1 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
 
@@ -131,10 +133,10 @@ However, looking close to the image it is clear that the lens galaxy's light is 
 """
 
 # %%
-lens.light.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
+lens.sersic.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
     mean=0.333333, sigma=0.1, lower_limit=-1.0, upper_limit=1.0
 )
-lens.light.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
+lens.sersic.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-1.0, upper_limit=1.0
 )
 
@@ -161,7 +163,7 @@ is internal to a circle defined within that radius. __PyAutoLens__ assumes a Uni
 """
 
 # %%
-lens.light.effective_radius = af.GaussianPrior(
+lens.sersic.effective_radius = af.GaussianPrior(
     mean=1.0, sigma=0.8, lower_limit=0.0, upper_limit=np.inf
 )
 
@@ -172,7 +174,7 @@ have Sersic indexes near 4. So lets change our Sersic index from a UniformPrior 
 """
 
 # %%
-lens.light.sersic_index = af.GaussianPrior(
+lens.sersic.sersic_index = af.GaussianPrior(
     mean=4.0, sigma=1.0, lower_limit=0.0, upper_limit=np.inf
 )
 
@@ -195,7 +197,7 @@ form. Furthermore, the source's morphology can be pretty complex, making it diff
 """
 
 # %%
-source = al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalExponential)
+source = al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential)
 
 # %%
 """
@@ -263,10 +265,10 @@ elliptical components), so its worth trying!
 
 # %%
 lens = al.GalaxyModel(
-    redshift=0.5, light=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+    redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
 )
 
-source = al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalExponential)
+source = al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential)
 
 # %%
 """
@@ -276,7 +278,7 @@ parameter on the right-hand side.
 """
 
 # %%
-lens.mass.centre = lens.light.centre
+lens.mass.centre = lens.sersic.centre
 
 # %%
 """
@@ -284,7 +286,7 @@ Lets do this with the elliptical components of the light and mass profiles.
 """
 
 # %%
-lens.mass.elliptical_comps = lens.light.elliptical_comps
+lens.mass.elliptical_comps = lens.sersic.elliptical_comps
 
 # %%
 """

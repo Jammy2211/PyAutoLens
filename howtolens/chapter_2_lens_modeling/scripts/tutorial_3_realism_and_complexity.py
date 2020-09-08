@@ -48,10 +48,12 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import lens_sersic_sie__source_exp
+from autolens_workspace.howtolens.simulators.chapter_2 import (
+    light_sersic__mass_sie__source_exp,
+)
 
 dataset_type = "chapter_2"
-dataset_name = "lens_sersic_sie__source_exp"
+dataset_name = "light_sersic__mass_sie__source_exp"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -101,9 +103,9 @@ phase = al.PhaseImaging(
     settings=settings,
     galaxies=dict(
         lens_galaxy=al.GalaxyModel(
-            redshift=0.5, light=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source_galaxy=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalExponential),
+        source_galaxy=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential),
     ),
     search=af.DynestyStatic(n_live_points=80),
 )
@@ -126,7 +128,7 @@ print("Dynesty has finished run - you may now continue the notebook.")
 
 # %%
 """
-And lets look at the fit to the Imaging data, which as we are used to fits the data brilliantly!
+And lets look at the fit to the _Imaging_ data, which as we are used to fits the data brilliantly!
 """
 
 # %%
@@ -157,9 +159,9 @@ phase = al.PhaseImaging(
     settings=settings,
     galaxies=dict(
         lens_galaxy=al.GalaxyModel(
-            redshift=0.5, light=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source_galaxy=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalExponential),
+        source_galaxy=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential),
     ),
     search=af.DynestyStatic(n_live_points=5),
 )
@@ -176,7 +178,7 @@ print("Dynesty has finished run - you may now continue the notebook.")
 
 # %%
 """
-And lets look at the fit to the Imaging data, which is clearly worse than our original fit above.
+And lets look at the fit to the _Imaging_ data, which is clearly worse than our original fit above.
 """
 
 # %%
