@@ -28,10 +28,10 @@ We'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_4 import lens_sie__source_sersic
+from autolens_workspace.howtolens.simulators.chapter_4 import mass_sie__source_sersic
 
 dataset_type = "chapter_4"
-dataset_name = "lens_sie__source_sersic"
+dataset_name = "mass_sie__source_sersic"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -103,7 +103,7 @@ majority of source pixels are located away from the source. By my estimate, we'r
 4x4 grid) out of the 1600 pixels to actually fit the data! The remaining ~1500 pixels are doing *nothing* but fit noise.
 
 This is a waste and our analysis will take longer to run because of it. However, more importantly, it means that our 
-Bayesian regularization scheme is sub-optimal. In tutorial 4, we discussed how the Bayesian log evidence of the 
+Bayesian _Regularization_ scheme is sub-optimal. In tutorial 4, we discussed how the Bayesian log evidence of the 
 regularization wants to obtain the *simplest* source solution possible. That is the solution which fits the data 
 well using the fewest source pixels. Clearly, if we dedicating a huge number of source pixels to doing *nothing*, our 
 source reconstruction will be unecessarily complex (and therefore lower log_evidence).

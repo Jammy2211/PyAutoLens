@@ -68,15 +68,15 @@ def make_pipeline(setup, settings):
     """
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1__lens_sersic",
+        phase_name="phase_1__light_sersic",
         folders=setup.folders,
-        galaxies=dict(lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic)),
+        galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)),
         settings=settings,
         search=af.DynestyStatic(n_live_points=30, evidence_tolerance=5.0),
     )
 
     """
-    Phase 2: Fit the lens galaxy's mass and source galaxy's light, where we:
+    Phase 2: Fit the lens's _MassProfile_'s and source galaxy's light, where we:
 
         1) Fix the foreground lens light subtraction to the lens galaxy light model from phase 1.
         2) Set priors on the centre of the lens galaxy's _MassProfile_ by linking them to those inferred for 
@@ -95,19 +95,19 @@ def make_pipeline(setup, settings):
     """
 
     mass = af.PriorModel(al.mp.EllipticalIsothermal)
-    mass.centre_0 = phase1.result.model.galaxies.lens.light.centre_0
-    mass.centre_1 = phase1.result.model.galaxies.lens.light.centre_1
+    mass.centre_0 = phase1.result.model.galaxies.lens.sersic.centre_0
+    mass.centre_1 = phase1.result.model.galaxies.lens.sersic.centre_1
 
     phase2 = al.PhaseImaging(
-        phase_name="phase_2__lens_sie__source_sersic",
+        phase_name="phase_2__mass_sie__source_sersic",
         folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase1.result.instance.galaxies.lens.light,
+                sersic=phase1.result.instance.galaxies.lens.sersic,
                 mass=mass,
             ),
-            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
         ),
         settings=settings,
         search=af.DynestyStatic(n_live_points=50, evidence_tolerance=5.0),
@@ -123,16 +123,16 @@ def make_pipeline(setup, settings):
     """
 
     phase3 = al.PhaseImaging(
-        phase_name="phase_3__lens_sersic_sie__source_sersic",
+        phase_name="phase_3__light_sersic__mass_sie__source_sersic",
         folders=setup.folders,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                light=phase1.result.model.galaxies.lens.light,
+                sersic=phase1.result.model.galaxies.lens.sersic,
                 mass=phase2.result.model.galaxies.lens.mass,
             ),
             source=al.GalaxyModel(
-                redshift=1.0, light=phase2.result.model.galaxies.source.light
+                redshift=1.0, sersic=phase2.result.model.galaxies.source.sersic
             ),
         ),
         settings=settings,

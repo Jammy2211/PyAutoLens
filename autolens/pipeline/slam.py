@@ -1,45 +1,273 @@
 import autofit as af
 import autogalaxy as ag
 from autoconf import conf
+from autogalaxy.pipeline import setup as ag_setup
 from autolens.pipeline import setup
 
 
+class AbstractSLaMPipeline:
+    def __init__(self, setup_light, setup_mass, setup_source):
+
+        self.setup_light = setup_light
+        self.setup_mass = setup_mass
+        self.setup_source = setup_source
+
+    @property
+    def shear(self):
+        """For a SLaM source pipeline, determine the shear model from the no_shear setting."""
+        if not self.setup_mass.no_shear:
+            return ag.mp.ExternalShear
+
+
+class SLaMPipelineSourceParametric(AbstractSLaMPipeline):
+    def __init__(
+        self,
+        setup_light: setup.SetupLightBulgeDisk = setup.SetupLightBulgeDisk(),
+        setup_mass: setup.SetupMassTotal = setup.SetupMassTotal(),
+        setup_source: ag_setup.SetupSourceSersic = ag_setup.SetupSourceSersic(),
+    ):
+
+        super().__init__(
+            setup_light=setup_light, setup_mass=setup_mass, setup_source=setup_source
+        )
+
+
+class SLaMPipelineSourceInversion(AbstractSLaMPipeline):
+    def __init__(
+        self, setup_source: setup.SetupSourceInversion = setup.SetupSourceInversion()
+    ):
+
+        super().__init__(setup_light=None, setup_mass=None, setup_source=setup_source)
+
+
+class SLaMPipelineLight(AbstractSLaMPipeline):
+    def __init__(
+        self,
+        setup_light: setup.SetupLightBulgeDisk = setup.SetupLightBulgeDisk(),
+        setup_mass: setup.SetupMassTotal = setup.SetupMassTotal(),
+    ):
+
+        super().__init__(
+            setup_source=None, setup_light=setup_light, setup_mass=setup_mass
+        )
+
+
+class SLaMPipelineMass(AbstractSLaMPipeline):
+    def __init__(
+        self,
+        setup_mass: setup.SetupMassTotal = setup.SetupMassTotal(),
+        fix_lens_light=True,
+    ):
+
+        super().__init__(setup_source=None, setup_light=None, setup_mass=setup_mass)
+
+        self.fix_lens_light = fix_lens_light
+
+    @property
+    def fix_lens_light_tag(self):
+        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate,
+        or varied during he analysis, to customize phase names.
+
+        This changes the setup folder as follows:
+
+        fix_lens_light = False -> setup__
+        fix_lens_light = True -> setup___fix_lens_light
+        """
+        if not self.fix_lens_light:
+            return ""
+        elif self.fix_lens_light:
+            return f"__{conf.instance.setup_tag.get('pipeline', 'fix_lens_light')}"
+
+    def shear_from_previous_pipeline(self, index=0):
+        """Return the shear _PriorModel_ from a previous pipeline, where:
+
+        1) If the shear was included in the *Source* pipeline and *no_shear* is *False* in the *Mass* object, it is
+           returned using this pipeline result as a model.
+        2) If the shear was not included in the *Source* pipeline and *no_shear* is *False* in the *Mass* object, it is
+            returned as a new *ExternalShear* PriorModel.
+        3) If *no_shear* is *True* in the *Mass* object, it is returned as None and omitted from the lens model.
+        """
+        if not self.setup_mass.no_shear:
+            if af.last[index].model.galaxies.lens.shear is not None:
+                return af.last[index].model.galaxies.lens.shear
+            else:
+                return ag.mp.ExternalShear
+        else:
+            return None
+
+
 class SLaM:
-    def __init__(self, folders=None, hyper=None, source=None, light=None, mass=None):
+    def __init__(
+        self,
+        folders: [str] = None,
+        redshift_lens: float = 0.5,
+        redshift_source: float = 1.0,
+        setup_hyper: ag_setup.SetupHyper = None,
+        pipeline_source_parametric: SLaMPipelineSourceParametric = None,
+        pipeline_source_inversion: SLaMPipelineSourceInversion = None,
+        pipeline_light: SLaMPipelineLight = None,
+        pipeline_mass: SLaMPipelineMass = None,
+    ):
+        """
+
+        Parameters
+        ----------
+        folders : [str] or None
+            A list of folders that the output of the pipeline are output into before the pipeline name, tags and
+            phase folders.
+        redshift_lens : float
+            The redshift of the lens galaxy used by the pipeline for converting arc-seconds to kpc, masses to solMass,
+            etc.
+        redshift_source : float
+            The redshift of the source galaxy used by the pipeline for converting arc-seconds to kpc, masses to solMass,
+            etc.
+        setup_hyper : SetupHyper
+            The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
+        """
 
         self.folders = folders
-        self.hyper = hyper
-        self.source = source
-        self.light = light
-        self.mass = mass
-        self.mass.disk_as_sersic = self.light.disk_as_sersic
+        self.redshift_lens = redshift_lens
+        self.redshift_source = redshift_source
 
-    def set_source_type(self, source_type):
+        self.setup_hyper = setup_hyper
 
-        self.source.type_tag = source_type
+        self.pipeline_source_parametric = pipeline_source_parametric
+        self.pipeline_source_inversion = pipeline_source_inversion
 
-    def set_light_type(self, light_type):
+        if self.pipeline_source_inversion is not None:
+            self.pipeline_source_inversion.setup_light = (
+                self.pipeline_source_parametric.setup_light
+            )
+            self.pipeline_source_inversion.setup_mass = (
+                self.pipeline_source_parametric.setup_mass
+            )
 
-        self.light.type_tag = light_type
+        self.pipeline_light = pipeline_light
 
-    def set_mass_type(self, mass_type):
+        if self.pipeline_light is not None:
+            if self.pipeline_source_inversion is None:
+                self.pipeline_light.setup_source = (
+                    self.pipeline_source_parametric.setup_source
+                )
+            else:
+                self.pipeline_light.setup_source = (
+                    self.pipeline_source_inversion.setup_source
+                )
 
-        self.mass.type_tag = mass_type
+        self.pipeline_mass = pipeline_mass
+
+        if self.pipeline_light is not None:
+            self.pipeline_mass.setup_source = self.pipeline_light.setup_source
+        else:
+            if self.pipeline_source_inversion is None:
+                self.pipeline_mass.setup_source = (
+                    self.pipeline_source_parametric.setup_source
+                )
+            else:
+                self.pipeline_mass.setup_source = (
+                    self.pipeline_source_inversion.setup_source
+                )
 
     @property
-    def source_pipeline_tag(self):
-        return conf.instance.tag.get("pipeline", "pipeline", str) + self.hyper.hyper_tag
+    def source_parametric_tag(self):
+        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
+        """
+
+        setup_tag = conf.instance.setup_tag.get("source", "source")
+        hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
+
+        if hyper_tag == "__":
+            hyper_tag = ""
+
+        source_tag = (
+            f"__{self.pipeline_source_parametric.setup_source.tag}"
+            if self.pipeline_source_parametric.setup_source is not None
+            else ""
+        )
+        if self.pipeline_light is not None:
+            light_tag = (
+                f"__{self.pipeline_source_parametric.setup_light.tag}"
+                if self.pipeline_source_parametric.setup_light is not None
+                else ""
+            )
+        else:
+            light_tag = ""
+        mass_tag = (
+            f"__{self.pipeline_source_parametric.setup_mass.tag}"
+            if self.pipeline_source_parametric.setup_mass is not None
+            else ""
+        )
+        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
 
     @property
-    def lens_light_tag_for_source_pipeline(self):
-        """Return the lens light tag in a *Source* pipeline, where the lens light is set depending on the source
-        initialize pipeline that was used."""
+    def source_inversion_tag(self):
+        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
+        """
 
-        if self.light.type_tag is None:
-            return ""
+        setup_tag = conf.instance.setup_tag.get("source", "source")
+        hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
 
-        light_tag = conf.instance.tag.get("pipeline", "light", str)
-        return "__" + light_tag + "_" + self.light.type_tag
+        if hyper_tag == "__":
+            hyper_tag = ""
+
+        source_tag = (
+            f"__{self.pipeline_source_inversion.setup_source.tag}"
+            if self.pipeline_source_inversion.setup_source is not None
+            else ""
+        )
+        if self.pipeline_light is not None:
+            light_tag = (
+                f"__{self.pipeline_source_inversion.setup_light.tag}"
+                if self.pipeline_source_inversion.setup_light is not None
+                else ""
+            )
+        else:
+            light_tag = ""
+        mass_tag = (
+            f"__{self.pipeline_source_inversion.setup_mass.tag}"
+            if self.pipeline_source_inversion.setup_mass is not None
+            else ""
+        )
+
+        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
+
+    @property
+    def source_tag(self):
+        if self.pipeline_source_inversion is None:
+            return self.source_parametric_tag
+        return self.source_inversion_tag
+
+    @property
+    def mass_tag(self):
+        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
+        """
+
+        setup_tag = conf.instance.setup_tag.get("mass", "mass")
+        hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
+
+        if hyper_tag == "__":
+            hyper_tag = ""
+
+        source_tag = (
+            f"__{self.pipeline_mass.setup_source.tag}"
+            if self.pipeline_mass.setup_source is not None
+            else ""
+        )
+        if self.pipeline_light is not None:
+            light_tag = (
+                f"__{self.pipeline_mass.setup_light.tag}"
+                if self.pipeline_mass.setup_light is not None
+                else ""
+            )
+        else:
+            light_tag = ""
+        mass_tag = (
+            f"__{self.pipeline_mass.setup_mass.tag}"
+            if self.pipeline_mass.setup_mass is not None
+            else ""
+        )
+
+        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
 
     def lens_from_light_pipeline_for_mass_pipeline(self, redshift_lens, mass, shear):
         """Setup the lens model for a Mass pipeline using the previous pipeline and phase results.
@@ -57,10 +285,10 @@ class SLaM:
         mass : ag.MassProfile
             The mass model of the len galaxy.
         shear : ag.ExternalShear
-            The external shear of the lens galaxy.
+            The _ExternalShear_ of the lens galaxy.
         """
 
-        if self.mass.fix_lens_light:
+        if self.pipeline_mass.fix_lens_light:
 
             return ag.GalaxyModel(
                 redshift=redshift_lens,
@@ -85,11 +313,11 @@ class SLaM:
     def source_from_source_pipeline_for_light_pipeline(self):
         """Setup the source model for a Light pipeline using the previous pipeline and phase results.
 
-        The source light model is not specified by the Light pipeline, so the Source pipelines are used to 
-        determine whether the source model is parametric or an inversion. This behaviour can be customized in SLaM 
-        pipelines by replacing this method with the *source_from_previous_pipeline_model_or_instance* method of the 
+        The source light model is not specified by the Light pipeline, so the Source pipelines are used to
+        determine whether the source model is parametric or an inversion. This behaviour can be customized in SLaM
+        pipelines by replacing this method with the *source_from_previous_pipeline_model_or_instance* method of the
         SLaM class.
-        
+
         The source is returned as an instance for the Light pipeline, irrespective of whether it is parametric or an
         Inversion. This is because this phase fits the lens light, and thus does not depend strongly on the source.
         """
@@ -97,10 +325,10 @@ class SLaM:
             source_as_model=False, index=0
         )
 
-    def source_from_source_pipeline_for_mass_pipeline(self):
+    def source_from_source_pipeline_for_mass_pipeline(self, index=0):
         """Setup the source model for a Mass pipeline using the previous pipeline and phase results.
 
-        The source light model is not specified by the pipeline Mass pipeline (e.g. the previous pipelines are used to 
+        The source light model is not specified by the pipeline Mass pipeline (e.g. the previous pipelines are used to
         determine whether the source model is parametric or an inversion.
 
         The source is returned as a model if it is parametric (given it must be updated to properly compute a new mass
@@ -108,13 +336,13 @@ class SLaM:
         required updating). This behaviour can be customized in SLaM pipelines by replacing this method with the
         *source_from_previous_pipeline_model_or_instance* method of the SLaM class.
         """
-        if self.source.type_tag in "sersic":
+        if self.pipeline_source_inversion is None:
             return self.source_from_previous_pipeline_model_or_instance(
-                source_as_model=True, index=0
+                source_as_model=True, index=index
             )
         else:
             return self.source_from_previous_pipeline_model_or_instance(
-                source_as_model=False, index=0
+                source_as_model=False, index=index
             )
 
     def source_from_previous_pipeline_model_or_instance(
@@ -143,7 +371,7 @@ class SLaM:
             The index (counting backwards from this phase) of the phase result used to setup the source.
         """
 
-        if self.hyper.hyper_galaxies:
+        if self.setup_hyper.hyper_galaxies:
 
             hyper_galaxy = af.PriorModel(ag.HyperGalaxy)
 
@@ -161,7 +389,7 @@ class SLaM:
 
             hyper_galaxy = None
 
-        if self.source.type_tag in "sersic":
+        if self.pipeline_source_inversion is None:
 
             if source_as_model:
 
@@ -201,372 +429,3 @@ class SLaM:
                     ].hyper_combined.instance.galaxies.source.regularization,
                     hyper_galaxy=hyper_galaxy,
                 )
-
-
-class SLaMHyper(setup.SetupPipeline):
-    def __init__(
-        self,
-        hyper_galaxies=False,
-        hyper_image_sky=False,
-        hyper_background_noise=False,
-        hyper_fixed_after_source=False,
-        hyper_galaxies_search=None,
-        inversion_search=None,
-        hyper_combined_search=None,
-        evidence_tolerance=None,
-    ):
-        """The setup of a pipeline, which controls how PyAutoLens template pipelines runs, for example controlling
-        assumptions about the lens's light profile bulge-disk model or if shear is included in the mass model.
-
-        Users can write their own pipelines which do not use or require the *SetupPipeline* class.
-
-        This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
-        scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
-        different models to a dataset in a structured path format.
-
-        Parameters
-        ----------
-        hyper_galaxies : bool
-            If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used to scale the
-            noise-map of the dataset throughout the fitting.
-        hyper_image_sky : bool
-            If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used include the
-            image's background sky component in the model.
-        hyper_background_noise : bool
-            If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used include the
-            noise-map's background component in the model.
-        hyper_fixed_after_source : bool
-            If, after the Source pipeline, the hyper parameters are fixed and thus no longer reopitmized using new
-            mass models.
-        """
-
-        super().__init__(
-            hyper_galaxies=hyper_galaxies,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-            hyper_galaxies_search=hyper_galaxies_search,
-            inversion_search=inversion_search,
-            hyper_combined_search=hyper_combined_search,
-            evidence_tolerance=evidence_tolerance,
-        )
-
-        self.hyper_fixed_after_source = hyper_fixed_after_source
-
-    @property
-    def tag(self):
-        return (
-            conf.instance.tag.get("pipeline", "pipeline", str)
-            + self.hyper_tag
-            + self.hyper_fixed_after_source_tag
-        )
-
-    @property
-    def hyper_tag(self):
-        """Tag ithe hyper pipeline features used in a hyper pipeline to customize pipeline output paths.
-        """
-        if not any(
-            [self.hyper_galaxies, self.hyper_image_sky, self.hyper_background_noise]
-        ):
-            return ""
-
-        return (
-            "__"
-            + conf.instance.tag.get("pipeline", "hyper", str)
-            + self.hyper_galaxies_tag
-            + self.hyper_image_sky_tag
-            + self.hyper_background_noise_tag
-            + self.hyper_fixed_after_source_tag
-        )
-
-    @property
-    def hyper_fixed_after_source_tag(self):
-        """Generate a tag for if the hyper parameters are held fixed after the source pipeline.
-
-        This changes the pipeline setup tag as follows:
-
-        hyper_fixed_after_source = False -> setup
-        hyper_fixed_after_source = True -> setup__hyper_fixed
-        """
-        if not self.hyper_fixed_after_source:
-            return ""
-        elif self.hyper_fixed_after_source:
-            return "_" + conf.instance.tag.get(
-                "pipeline", "hyper_fixed_after_source", str
-            )
-
-
-class SLaMSource(setup.SetupPipeline):
-    def __init__(
-        self,
-        pixelization=None,
-        regularization=None,
-        inversion_pixels_fixed=None,
-        no_shear=False,
-        lens_light_centre=None,
-        lens_mass_centre=None,
-        align_light_mass_centre=False,
-        lens_light_bulge_only=False,
-        number_of_gaussians=None,
-    ):
-
-        super().__init__(
-            pixelization=pixelization,
-            regularization=regularization,
-            inversion_pixels_fixed=inversion_pixels_fixed,
-            no_shear=no_shear,
-            lens_light_centre=lens_light_centre,
-            lens_mass_centre=lens_mass_centre,
-            number_of_gaussians=number_of_gaussians,
-            align_light_mass_centre=align_light_mass_centre,
-        )
-
-        self.lens_light_bulge_only = lens_light_bulge_only
-        self.type_tag = None
-
-    @property
-    def tag(self):
-        return (
-            conf.instance.tag.get("pipeline", "source", str)
-            + "__"
-            + self.type_tag
-            + self.number_of_gaussians_tag
-            + self.no_shear_tag
-            + self.lens_light_centre_tag
-            + self.lens_mass_centre_tag
-            + self.align_light_mass_centre_tag
-            + self.lens_light_bulge_only_tag
-        )
-
-    @property
-    def lens_light_bulge_only_tag(self):
-        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate, or
-        varied during he analysis, to customize phase names.
-
-        This changes the setup folder as follows:
-
-        fix_lens_light = False -> setup__
-        fix_lens_light = True -> setup___fix_lens_light
-        """
-        if not self.lens_light_bulge_only:
-            return ""
-        elif self.lens_light_bulge_only:
-            return "__" + conf.instance.tag.get("pipeline", "bulge_only", str)
-
-    @property
-    def shear(self):
-        """For a SLaM source pipeline, determine the shear model from the no_shear setting."""
-        if not self.no_shear:
-            return ag.mp.ExternalShear
-
-    @property
-    def is_inversion(self):
-        """Returns True is the source is an inversion, meaning this SLaM analysis has gone through a source
-        inversion pipeline."""
-        if self.type_tag in "sersic":
-            return False
-        else:
-            return True
-
-    def align_centre_of_mass_to_light(self, mass, light_centre):
-        """Align the centre of a mass profile to the centre of a light profile, if the align_light_mass_centre
-        SLaM setting is True.
-        
-        Parameters
-        ----------
-        mass : ag.mp.MassProfile
-            The mass profile whose centre may be aligned with the lens_light_centre attribute.
-        light : (float, float)
-            The centre of the light profile the mass profile is aligned with.
-        """
-        if self.align_light_mass_centre:
-            mass.centre = light_centre
-        else:
-            mass.centre.centre_0 = af.GaussianPrior(mean=light_centre[0], sigma=0.1)
-            mass.centre.centre_1 = af.GaussianPrior(mean=light_centre[1], sigma=0.1)
-        return mass
-
-    def align_centre_to_lens_light_centre(self, light):
-        """
-        Align the centre of an input light profile to the lens_light_centre of this instance of the SLaM Source
-        class, make the centre of the light profile fixed and thus not free parameters that are fitted for.
-
-        If the lens_light_centre is not input (and thus None) the light profile centre is unchanged.
-
-        Parameters
-        ----------
-        light : ag.mp.MassProfile
-            The light profile whose centre may be aligned with the lens_light_centre attribute.
-        """
-        if self.lens_light_centre is not None:
-            light.centre = self.lens_light_centre
-        return light
-
-    def align_centre_to_lens_mass_centre(self, mass):
-        """
-        Align the centre of an input mass profile to the lens_mass_centre of this instance of the SLaM Source
-        class, make the centre of the mass profile fixed and thus not free parameters that are fitted for.
-
-        If the lens_mass_centre is not input (and thus None) the mass profile centre is unchanged.
-
-        Parameters
-        ----------
-        mass : ag.mp.MassProfile
-            The mass profile whose centre may be aligned with the lens_mass_centre attribute.
-        """
-        if self.lens_mass_centre is not None:
-            mass.centre = self.lens_mass_centre
-        return mass
-
-    def remove_disk_from_lens_galaxy(self, lens):
-        """Remove the disk from a GalaxyModel, if the SLaM settings specify to mooel the lens's light as bulge-only."""
-        if self.lens_light_bulge_only:
-            lens.disk = None
-        return lens
-
-    def unfix_lens_mass_centre(self, mass):
-        """If the centre of a mass model was previously fixed to an input value (e.g. lens_mass_centre), unaligned it
-        by making its centre GaussianPriors.
-        """
-
-        if self.lens_mass_centre is not None:
-
-            mass.centre.centre_0 = af.GaussianPrior(
-                mean=self.lens_mass_centre[0], sigma=0.05
-            )
-            mass.centre.centre_1 = af.GaussianPrior(
-                mean=self.lens_mass_centre[1], sigma=0.05
-            )
-
-        else:
-
-            mass.centre.centre_0 = af.last[-1].model.galaxies.lens.mass.centre.centre_0
-            mass.centre.centre_1 = af.last[-1].model.galaxies.lens.mass.centre.centre_1
-
-        return mass
-
-    def unalign_lens_mass_centre_from_light_centre(self, mass):
-        """If the centre of a mass model was previously aligned with that of the lens light centre, unaligned them
-        by using an earlier model of the light.
-        """
-        if self.align_light_mass_centre:
-
-            mass.centre = af.last[-3].model.galaxies.lens.bulge.centre
-
-        else:
-
-            mass.centre = af.last[-1].model.galaxies.lens.mass.centre
-
-        return mass
-
-
-class SLaMLight(setup.SetupPipeline):
-    def __init__(
-        self,
-        align_bulge_disk_centre=False,
-        align_bulge_disk_elliptical_comps=False,
-        disk_as_sersic=False,
-        number_of_gaussians=None,
-    ):
-
-        super().__init__(
-            align_bulge_disk_centre=align_bulge_disk_centre,
-            align_bulge_disk_elliptical_comps=align_bulge_disk_elliptical_comps,
-            disk_as_sersic=disk_as_sersic,
-            number_of_gaussians=number_of_gaussians,
-        )
-
-        self.type_tag = None
-
-    @property
-    def tag(self):
-        if self.number_of_gaussians is None:
-            return (
-                conf.instance.tag.get("pipeline", "light", str)
-                + "__"
-                + self.type_tag
-                + self.align_bulge_disk_tag
-                + self.disk_as_sersic_tag
-            )
-        else:
-            return (
-                conf.instance.tag.get("pipeline", "light", str)
-                + "__"
-                + self.type_tag
-                + self.number_of_gaussians_tag
-            )
-
-
-class SLaMMass(setup.SetupPipeline):
-    def __init__(
-        self,
-        no_shear=False,
-        fix_lens_light=False,
-        constant_mass_to_light_ratio=False,
-        bulge_mass_to_light_ratio_gradient=False,
-        disk_mass_to_light_ratio_gradient=False,
-        align_light_dark_centre=False,
-        align_bulge_dark_centre=False,
-        include_smbh=False,
-        smbh_centre_fixed=True,
-    ):
-
-        super().__init__(
-            no_shear=no_shear,
-            constant_mass_to_light_ratio=constant_mass_to_light_ratio,
-            bulge_mass_to_light_ratio_gradient=bulge_mass_to_light_ratio_gradient,
-            disk_mass_to_light_ratio_gradient=disk_mass_to_light_ratio_gradient,
-            align_light_dark_centre=align_light_dark_centre,
-            align_bulge_dark_centre=align_bulge_dark_centre,
-            include_smbh=include_smbh,
-            smbh_centre_fixed=smbh_centre_fixed,
-        )
-
-        self.disk_as_sersic = None
-        self.fix_lens_light = fix_lens_light
-        self.type_tag = None
-
-    @property
-    def tag(self):
-        return (
-            conf.instance.tag.get("pipeline", "mass", str)
-            + "__"
-            + self.type_tag
-            + self.no_shear_tag
-            + self.align_light_dark_centre_tag
-            + self.align_bulge_dark_centre_tag
-            + self.include_smbh_tag
-            + self.fix_lens_light_tag
-        )
-
-    @property
-    def fix_lens_light_tag(self):
-        """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate,
-        or varied during he analysis, to customize phase names.
-
-        This changes the setup folder as follows:
-
-        fix_lens_light = False -> setup__
-        fix_lens_light = True -> setup___fix_lens_light
-        """
-        if not self.fix_lens_light:
-            return ""
-        elif self.fix_lens_light:
-            return "__" + conf.instance.tag.get("pipeline", "fix_lens_light", str)
-
-    @property
-    def shear_from_previous_pipeline(self):
-        """Return the shear _PriorModel_ from a previous pipeline, where:
-
-        1) If the shear was included in the *Source* pipeline and *no_shear* is *False* in the *Mass* object, it is
-           returned using this pipeline result as a model.
-        2) If the shear was not included in the *Source* pipeline and *no_shear* is *False* in the *Mass* object, it is
-            returned as a new *ExternalShear* PriorModel.
-        3) If *no_shear* is *True* in the *Mass* object, it is returned as None and omitted from the lens model.
-        """
-        if not self.no_shear:
-            if af.last.model.galaxies.lens.shear is not None:
-                return af.last.model.galaxies.lens.shear
-            else:
-                return ag.mp.ExternalShear
-        else:
-            return None

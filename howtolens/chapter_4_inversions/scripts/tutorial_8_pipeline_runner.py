@@ -37,7 +37,6 @@ conf.instance = conf.Config(
 """ AUTOLENS + DATA SETUP """
 
 # %%
-import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
@@ -51,10 +50,10 @@ We'll use strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_4 import lens_sie__source_sersic_x4
+from autolens_workspace.howtolens.simulators.chapter_4 import mass_sie__source_sersic_x4
 
 dataset_type = "chapter_4"
-dataset_name = "lens_sie__source_sersic_x4"
+dataset_name = "mass_sie__source_sersic_x4"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -75,7 +74,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 """
 __Settings__
 
-The *SettingsPhaseImaging* describe how the model is fitted to the data in the log likelihood function. We discussed
+The _SettingsPhaseImaging_ describe how the model is fitted to the data in the log likelihood function. We discussed
 these in chapter 2, and a full description of all settings can be found in the example script:
 
  'autolens_workspace/examples/model/customize/settings.py'.
@@ -99,17 +98,19 @@ __Pipeline_Setup_And_Tagging__:
 
 For this pipeline the pipeline setup customizes and tags:
 
- - The Pixelization used by the inversion of this pipeline.
- - The Regularization scheme used by of this pipeline.
- - If there is an external shear in the mass model or not.
+ - If there is an _ExternalShear_ in the mass model or not.
+ - The _Pixelization_ used by the _Inversion_ of this pipeline.
+ - The _Regularization_ scheme used by of this pipeline.
 """
 
 # %%
+setup_mass = al.SetupMassTotal(no_shear=False)
+setup_source = al.SetupSourceInversion(
+    pixelization=al.pix.VoronoiMagnification, regularization=al.reg.Constant
+)
+
 setup = al.SetupPipeline(
-    pixelization=al.pix.VoronoiMagnification,
-    regularization=al.reg.Constant,
-    no_shear=False,
-    folders=["c4_t8_inversion"],
+    folders=["c4_t8_inversion"], setup_mass=setup_mass, setup_source=setup_source
 )
 
 # %%
@@ -121,7 +122,7 @@ To create a pipeline we import it from the pipelines folder and run its 'make_pi
 """
 
 # %%
-from howtolens.chapter_4_inversions import tutorial_8_pipeline
+from autolens_workspace.howtolens.chapter_4_inversions import tutorial_8_pipeline
 
 pipeline_inversion = tutorial_8_pipeline.make_pipeline(setup=setup, settings=settings)
 

@@ -10,7 +10,7 @@ down into a series of phases, linking the results of the phases to guide the non
 sample parameter space. In this chapter, we'll cover _Pipeline_'s, which provide a powerful means by which to
 link together many phases.
 
-In chapter 2, we fitted strong lens imaging which included the lens galaxy's light. We're going to fit this dataset
+In chapter 2, we fitted strong lens _Imaging_ which included the lens galaxy's light. We're going to fit this dataset
 again (I promise, this is the last time!). However, now we're using pipelines, we can perform a different (and
 significantly faster) model-fit.
 
@@ -67,10 +67,12 @@ We'll use strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_3 import lens_sersic_sie__source_exp
+from autolens_workspace.howtolens.simulators.chapter_3 import (
+    light_sersic__mass_sie__source_exp,
+)
 
 dataset_type = "chapter_3"
-dataset_name = "lens_sersic_sie__source_exp"
+dataset_name = "light_sersic__mass_sie__source_exp"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -97,7 +99,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 """
 __Settings__
 
-The *SettingsPhaseImaging* describe how the model is fitted to the data in the log likelihood function. We discussed
+The _SettingsPhaseImaging_ describe how the model is fitted to the data in the log likelihood function. We discussed
 these in chapter 2, and a full description of all settings can be found in the example script:
 
  'autolens_workspace/examples/model/customize/settings.py'.
@@ -112,21 +114,64 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 
 # %%
 """
-__Pipeline_Setup_And_Tagging__:
+__Pipeline_Setup__:
 
-For this pipeline the pipeline setup customizes:
+Pipelines can contain _Setup_ objects, which customize how different aspects of the model are fitted. 
 
- - If there is an external shear in the mass model or not.
+First, we create a _SetupLightSersic_ which customizes:
 
-The pipeline setup 'tags' the output path of a pipeline. For example, if 'no_shear' is True, the pipeline's output 
-paths are 'tagged' with the string 'no_shear'.
+ - If the centre of the lens light profile is manually input and fixed for modeling.
 
-This means you can run the same pipeline on the same data twice (with and without shear) and the results will go
-to different output folders and thus not clash with one another!
+In this example we do not fix the centre of the _EllipticalSersic_ light model to a specific value.
 """
 
 # %%
-setup = al.SetupPipeline(no_shear=False, folders=["c3_t1_lens_and_source"])
+setup_light = al.SetupLightSersic(light_centre=None)
+
+# %%
+"""
+This pipeline also uses a _SetupMass_, which customizes:
+
+ - If there is an _ExternalShear_ in the mass model or not.
+"""
+
+# %%
+setup_mass = al.SetupMassTotal(no_shear=False)
+
+# %%
+"""
+Next, we create a _SetupSourceSersic_ which does not customize the pipeline behaviour except for tagging (see below).
+"""
+
+# %%
+setup_source = al.SetupSourceSersic()
+
+"""
+_Pipeline Tagging_
+
+The _Setup_ objects are input into a _SetupPipeline_ object, which is passed into the pipeline and used to customize
+the analysis depending on the setup. This includes tagging the output path of a pipeline. For example, if 'no_shear' 
+is True, the pipeline's output paths are 'tagged' with the string 'no_shear'.
+
+This means you can run the same pipeline on the same data twice (with and without shear) and the results will go
+to different output folders and thus not clash with one another!
+
+The 'folders' below specify the path the pipeline results are written 
+
+ 'autolens_workspace/howtolens/output/c3_t1_lens_and_source/pipeline__light_and_source'
+
+The redshift of the lens and source galaxies are also input (see 'examples/model/customimze/redshift.py') for a 
+description of what inputting redshifts into **PyAutoLens** does.
+"""
+
+# %%
+setup = al.SetupPipeline(
+    folders=["c3_t1_lens_and_source"],
+    redshift_lens=0.5,
+    redshift_source=1.0,
+    setup_mass=setup_mass,
+    setup_source=setup_source,
+)
 
 # %%
 """
@@ -145,7 +190,9 @@ The 'folders' below specify the path the pipeline results are written to, which 
 """
 
 # %%
-from howtolens.chapter_3_pipelines import tutorial_1_pipeline_lens_and_source
+from autolens_workspace.howtolens.chapter_3_pipelines import (
+    tutorial_1_pipeline_lens_and_source,
+)
 
 pipeline_lens_and_source = tutorial_1_pipeline_lens_and_source.make_pipeline(
     setup=setup, settings=settings
