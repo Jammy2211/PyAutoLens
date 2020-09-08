@@ -222,7 +222,7 @@ class TestHyperMethods:
         )
 
         phase_interferometer_7.extend_with_multiple_hyper_phases(
-            setup=al.SetupPipeline()
+            setup_hyper=al.SetupHyper()
         )
 
         analysis = phase_interferometer_7.make_analysis(

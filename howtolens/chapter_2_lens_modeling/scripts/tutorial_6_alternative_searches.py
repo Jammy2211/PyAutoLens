@@ -35,10 +35,12 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import lens_sersic_sie__source_sersic
+from autolens_workspace.howtolens.simulators.chapter_2 import (
+    light_sersic__mass_sie__source_sersic,
+)
 
 dataset_type = "chapter_2"
-dataset_name = "lens_sersic_sie__source_sersic"
+dataset_name = "light_sersic__mass_sie__source_sersic"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -125,9 +127,9 @@ phase_slow = al.PhaseImaging(
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(
-            redshift=0.5, light=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
     ),
     search=af.DynestyStatic(n_live_points=150, evidence_tolerance=0.8),
 )
@@ -167,9 +169,9 @@ phase_fast = al.PhaseImaging(
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(
-            redshift=0.5, light=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
     ),
     search=af.DynestyStatic(n_live_points=30),
 )
@@ -238,9 +240,9 @@ phase_pso = al.PhaseImaging(
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(
-            redshift=0.5, light=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
     ),
     search=af.PySwarmsLocal(n_particles=50, iters=1000),
 )
@@ -293,9 +295,9 @@ phase_mcmc = al.PhaseImaging(
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(
-            redshift=0.5, light=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
     ),
     search=af.Emcee(nwalkers=50, nsteps=1000),
 )

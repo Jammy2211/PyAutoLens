@@ -301,10 +301,10 @@ Lens Modeling
    :toctree: generated/
 
    SLaM
-   SLaMHyper
-   SLaMSource
-   SLaMLight
-   SLaMMass
+   SetupHyper
+   SLaMPipelineSource
+   SLaMPipelineLight
+   SLaMPipelineMass
 
 ---------
 PyAutoFit

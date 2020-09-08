@@ -30,6 +30,12 @@ from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
 from autogalaxy.galaxy.galaxy_data import GalaxyData
 from autogalaxy.galaxy.galaxy_model import GalaxyModel
 from autogalaxy.hyper import hyper_data
+from autogalaxy.pipeline.setup import (
+    SetupHyper,
+    SetupLightSersic,
+    SetupSourceSersic,
+    SetupSMBH,
+)
 from autogalaxy.pipeline.phase.extensions import CombinedHyperPhase
 from autogalaxy.pipeline.phase.extensions import HyperGalaxyPhase
 from autogalaxy.pipeline.phase.extensions.hyper_galaxy_phase import HyperGalaxyPhase
@@ -55,8 +61,21 @@ from .fit.fit_positions import FitPositionsSourcePlaneMaxSeparation
 from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
 from .lens.positions_solver import PositionsFinder
-from .pipeline.setup import SetupPipeline
-from .pipeline import slam
+from .pipeline.setup import (
+    SetupPipeline,
+    SetupSourceInversion,
+    SetupLightBulgeDisk,
+    SetupMassTotal,
+    SetupMassLightDark,
+    SetupSubhalo,
+)
+from .pipeline.slam import (
+    SLaMPipelineSourceParametric,
+    SLaMPipelineSourceInversion,
+    SLaMPipelineLight,
+    SLaMPipelineMass,
+    SLaM,
+)
 from .pipeline.phase.settings import SettingsPhaseImaging
 from .pipeline.phase.settings import SettingsPhaseInterferometer
 from .pipeline.phase.imaging.phase import PhaseImaging
@@ -65,4 +84,5 @@ from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 from .pipeline.pipeline import PipelineDataset, PipelinePositions
 
-__version__ = '1.5.0'
+
+__version__ = '1.5.1'

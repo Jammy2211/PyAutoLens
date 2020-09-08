@@ -31,7 +31,7 @@ We'll need the path to the chapter in this tutorial to load the dataset from you
 """
 
 # %%
-"""Setup the path to the autolens workspace, using the project pyprojroot which determines it automatically."""
+"""Setup the path to the autolens workspace, using pyprojroot to determine it automatically."""
 
 # %%
 from pyprojroot import here
@@ -178,7 +178,7 @@ directory if you're curious how to test code well!).
 Okay, enough self-serving praise for __PyAutoLens__, lets wrap up the chapter. You've learn a lot in this chapter, but 
 what you haven't learnt is how to 'model' a real strong gravitational lens.
 
-In the real world, we've no idea what the 'correct' set of light and mass profile parameters are that will give a 
+In the real world, we've no idea what the 'correct' set of light and _MassProfile_ parameters are that will give a 
 good fit to a lens. Lens modeling is the process of finding the lens model which provides the best-fit, and that will 
 be the focus of our next set of tutorials.
 """
