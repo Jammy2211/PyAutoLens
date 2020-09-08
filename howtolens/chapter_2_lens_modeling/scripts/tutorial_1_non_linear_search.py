@@ -19,7 +19,7 @@ we'll use the following lens model:
 I'll let you into a secret - this is the same lens model used to simulate the _Imaging_ data we're going to fit and
 we're going to infer the actual parameters I used!
 
-So, how do we infer the light and mass profile parameters that give a good fit to our data?
+So, how do we infer the light and _MassProfile_ parameters that give a good fit to our data?
 
 Well, we could randomly guess a lens model, corresponding to some random set of parameters. We could use this
 lens model to create a _Tracer_ and fit the _Imaging_ with it, via a _FitImaging_ object. We can quantify how good the
@@ -75,7 +75,7 @@ Nevertheless, setting the paths explicitly within the code is good practise.
 """
 
 # %%
-"""Setup the path to the autolens workspace, using the project pyprojroot which determines it automatically."""
+"""Setup the path to the autolens workspace, using pyprojroot to determine it automatically."""
 
 # %%
 from pyprojroot import here
@@ -100,12 +100,12 @@ The strong lens in this image was generated using:
 
 Below, you'll notice the command:
 
- 'from howtolens.simulators.chapter_2 import lens_sis__source_exp'
+ 'from autolens_workspace.howtolens.simulators.chapter_2 import mass_sis__source_exp'
     
 This will crop up in nearly every tutorial from here on. This imports the simulator for the dataset we fit in the 
 tutorial, simulating the data and placing it in the folder:
 
- 'autolens_workspace/howtolens/dataset/chapter_2/lens_sis__source_exp'    
+ 'autolens_workspace/howtolens/dataset/chapter_2/mass_sis__source_exp'    
     
 To see how the _Imaging_ dataset is simulated, feel free to checkout the simulators in the folder:
 
@@ -113,10 +113,10 @@ To see how the _Imaging_ dataset is simulated, feel free to checkout the simulat
 """
 
 # %%
-from howtolens.simulators.chapter_2 import lens_sis__source_exp
+from autolens_workspace.howtolens.simulators.chapter_2 import mass_sis__source_exp
 
 dataset_type = "chapter_2"
-dataset_name = "lens_sis__source_exp"
+dataset_name = "mass_sis__source_exp"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -156,7 +156,7 @@ Lets model the source galaxy with a spherical exponential _LightProfile_ (again,
 """
 
 # %%
-source_galaxy_model = al.GalaxyModel(redshift=1.0, light=al.lp.SphericalExponential)
+source_galaxy_model = al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential)
 
 # %%
 """
@@ -270,7 +270,7 @@ The best-fit solution (i.e. the maximum log likelihood) is stored in the 'result
 """
 The fit looks good and we've therefore found a model close to the one I used to simulate the image with (you can 
 confirm this yourself if you want, by comparing the inferred parameters to those found in the script
-'autolens_workspace/howtolens/simulators/lens_sis__source_exp.py').
+'autolens_workspace/howtolens/simulators/mass_sis__source_exp.py').
 
 And with that, we're done - you've successfully modeled your first strong lens with __PyAutoLens__! Before moving onto the 
 next tutorial, I want you to think about the following:

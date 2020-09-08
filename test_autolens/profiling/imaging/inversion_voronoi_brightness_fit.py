@@ -4,15 +4,15 @@ import autolens as al
 import numpy as np
 from test_autolens.simulators.imaging import instrument_util
 
-repeats = 10
+repeats = 1
 
 print("Number of repeats = " + str(repeats))
 print()
 
-sub_size = 4
-radius = 3.6
+sub_size = 2
+radius = 3.0
 psf_shape_2d = (11, 11)
-pixels = 500
+pixels = 1200
 
 print("sub grid size = " + str(sub_size))
 print("circular mask radius = " + str(radius) + "\n")
@@ -28,7 +28,7 @@ lens_galaxy = al.Galaxy(
 
 pixelization = al.pix.VoronoiBrightnessImage(pixels=pixels)
 
-for instrument in ["vro", "euclid", "hst", "hst_up"]:  # , 'ao']:
+for instrument in ["euclid", "hst", "hst_up"]:  # , 'ao']:
 
     imaging = instrument_util.load_test_imaging(
         data_name="lens_sie__source_smooth", instrument=instrument
@@ -88,7 +88,9 @@ for instrument in ["vro", "euclid", "hst", "hst_up"]:  # , 'ao']:
     start = time.time()
     for i in range(repeats):
         mapper = pixelization.mapper_from_grid_and_sparse_grid(
-            grid=traced_grid, sparse_grid=traced_sparse_grid, inversion_use_border=True
+            grid=traced_grid,
+            sparse_grid=traced_sparse_grid,
+            settings=al.SettingsPixelization(use_border=True),
         )
     diff = time.time() - start
     print("Time to create mapper (Border Relocation) = {}".format(diff / repeats))

@@ -69,15 +69,15 @@ def make_pipeline(setup, settings):
         1) Fix the centres to (0.0, -1.0), the pixel we know the left _Galaxy_'s light centre peaks.
     """
 
-    left_lens = al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic)
-    left_lens.light.centre_0 = 0.0
-    left_lens.light.centre_1 = -1.0
+    left_lens = al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)
+    left_lens.sersic.centre_0 = 0.0
+    left_lens.sersic.centre_1 = -1.0
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1__left_lens_light",
         folders=setup.folders,
         galaxies=dict(
-            left_lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic)
+            left_lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)
         ),
         settings=settings,
         search=af.DynestyStatic(n_live_points=30, evidence_tolerance=5.0),
@@ -90,9 +90,9 @@ def make_pipeline(setup, settings):
         2) Pass the left lens's light model as an instance, to improve the fitting of the right galaxy.
     """
 
-    right_lens = al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic)
-    right_lens.light.centre_0 = 0.0
-    right_lens.light.centre_1 = 1.0
+    right_lens = al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)
+    right_lens.sersic.centre_0 = 0.0
+    right_lens.sersic.centre_1 = 1.0
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2__right_lens_light",
@@ -115,13 +115,13 @@ def make_pipeline(setup, settings):
 
     left_lens = al.GalaxyModel(
         redshift=0.5,
-        light=phase1.result.instance.galaxies.left_lens.light,
+        sersic=phase1.result.instance.galaxies.left_lens.sersic,
         mass=al.mp.EllipticalIsothermal,
     )
 
     right_lens = al.GalaxyModel(
         redshift=0.5,
-        light=phase2.result.instance.galaxies.right_lens.light,
+        sersic=phase2.result.instance.galaxies.right_lens.sersic,
         mass=al.mp.EllipticalIsothermal,
     )
 
@@ -136,7 +136,7 @@ def make_pipeline(setup, settings):
         galaxies=dict(
             left_lens=left_lens,
             right_lens=right_lens,
-            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalExponential),
+            source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential),
         ),
         search=af.DynestyStatic(n_live_points=50, evidence_tolerance=5.0),
     )
@@ -150,22 +150,24 @@ def make_pipeline(setup, settings):
     Remember that in the above phases, we fixed the centres of the light and mass profiles. Thus, if we were to simply
     setup these model components using the command:
     
-        light=phase1.result.model.galaxies.left_lens.light
+        sersic=phase1.result.model.galaxies.left_lens.sersic
 
     The model would be set up with these fixed centres! We want to treat the centres as free parameters in this phase,
     requiring us to unpack the prior passing and setup the models using a PriorModel.
     
     """
 
-    left_light = af.PriorModel(al.lp.EllipticalSersic)
-    left_light.elliptical_comps = (
-        phase1.result.model.galaxies.left_lens.light.elliptical_comps
+    left_sersic = af.PriorModel(al.lp.EllipticalSersic)
+    left_sersic.elliptical_comps = (
+        phase1.result.model.galaxies.left_lens.sersic.elliptical_comps
     )
-    left_light.intensity = phase1.result.model.galaxies.left_lens.light.intensity
-    left_light.effective_radius = (
-        phase1.result.model.galaxies.left_lens.light.effective_radius
+    left_sersic.intensity = phase1.result.model.galaxies.left_lens.sersic.intensity
+    left_sersic.effective_radius = (
+        phase1.result.model.galaxies.left_lens.sersic.effective_radius
     )
-    left_light.sersic_index = phase1.result.model.galaxies.left_lens.light.sersic_index
+    left_sersic.sersic_index = (
+        phase1.result.model.galaxies.left_lens.sersic.sersic_index
+    )
 
     left_mass = af.PriorModel(al.mp.EllipticalIsothermal)
     left_mass.elliptical_comps = (
@@ -175,18 +177,18 @@ def make_pipeline(setup, settings):
         phase3.result.model.galaxies.left_lens.mass.einstein_radius
     )
 
-    left_lens = al.GalaxyModel(redshift=0.5, light=left_light, mass=left_mass)
+    left_lens = al.GalaxyModel(redshift=0.5, sersic=left_sersic, mass=left_mass)
 
-    right_light = af.PriorModel(al.lp.EllipticalSersic)
-    right_light.elliptical_comps = (
-        phase2.result.model.galaxies.right_lens.light.elliptical_comps
+    right_sersic = af.PriorModel(al.lp.EllipticalSersic)
+    right_sersic.elliptical_comps = (
+        phase2.result.model.galaxies.right_lens.sersic.elliptical_comps
     )
-    right_light.intensity = phase2.result.model.galaxies.right_lens.light.intensity
-    right_light.effective_radius = (
-        phase2.result.model.galaxies.right_lens.light.effective_radius
+    right_sersic.intensity = phase2.result.model.galaxies.right_lens.sersic.intensity
+    right_sersic.effective_radius = (
+        phase2.result.model.galaxies.right_lens.sersic.effective_radius
     )
-    right_light.sersic_index = (
-        phase2.result.model.galaxies.right_lens.light.sersic_index
+    right_sersic.sersic_index = (
+        phase2.result.model.galaxies.right_lens.sersic.sersic_index
     )
 
     right_mass = af.PriorModel(al.mp.EllipticalIsothermal)
@@ -197,10 +199,10 @@ def make_pipeline(setup, settings):
         phase3.result.model.galaxies.right_lens.mass.einstein_radius
     )
 
-    right_lens = al.GalaxyModel(redshift=0.5, light=right_light, mass=right_mass)
+    right_lens = al.GalaxyModel(redshift=0.5, sersic=right_sersic, mass=right_mass)
 
     phase4 = al.PhaseImaging(
-        phase_name="phase_4__lens_x2_sersic_sie__source_exp",
+        phase_name="phase_4__light_sersic_x2__mass_sie_x2__source_exp",
         folders=setup.folders,
         galaxies=dict(
             left_lens=left_lens,

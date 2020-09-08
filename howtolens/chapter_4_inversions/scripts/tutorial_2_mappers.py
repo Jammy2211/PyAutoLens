@@ -27,10 +27,10 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_4 import lens_sie__source_sersic
+from autolens_workspace.howtolens.simulators.chapter_4 import mass_sie__source_sersic
 
 dataset_type = "chapter_4"
-dataset_name = "lens_sie__source_sersic"
+dataset_name = "mass_sie__source_sersic"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -53,7 +53,7 @@ grid = al.Grid.uniform(
 
 # %%
 """
-Our _Tracer_ will use the same lens galaxy and source galaxy that we used to Simulate the Imaging data (although, 
+Our _Tracer_ will use the same lens galaxy and source galaxy that we used to Simulate the _Imaging_ data (although, 
 becuase we're modeling the source with a pixel-grid, we don't need to supply its _LightProfile_).
 """
 
