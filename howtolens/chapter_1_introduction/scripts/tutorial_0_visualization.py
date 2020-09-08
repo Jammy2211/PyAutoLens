@@ -23,6 +23,12 @@ The tutorials need to know the path to your autolens_workspace folder, in order 
  - Load example data.
  - Output the results of models fits to your hard-disk. 
     
+If you don't have an autolens_workspace (perhaps you cloned / forked the **PyAutoLens** GitHub repository?) you can
+acccess and download it here - https://github.com/Jammy2211/autolens_workspace
+
+Make sure to set up your WORKSPACE enviroment variable, as described in the installation isntructions 
+https://pyautolens.readthedocs.io/en/latest/general/installation.html
+    
 Unfortunately, Jupyter notebooks cannot use relative paths, therefore we use the library 'pyprojroot' to do instead. Its
 'here' function provides the path to the GitHub project directory, which is the autolens_workspace. For example on my 
 computer the here() function returns:
@@ -33,7 +39,7 @@ Throughout these tutorials, we will use this workspace_path.
 """
 
 # %%
-"""Setup the path to the autolens workspace, using the project pyprojroot which determines it automatically."""
+"""Setup the path to the autolens workspace, using pyprojroot to determine it automatically."""
 
 # %%
 from pyprojroot import here

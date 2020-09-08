@@ -33,10 +33,10 @@ We'll use the same strong lensing data as tutorials 1 & 2, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import lens_sis__source_exp
+from autolens_workspace.howtolens.simulators.chapter_2 import mass_sis__source_exp
 
 dataset_type = "chapter_2"
-dataset_name = "lens_sis__source_exp"
+dataset_name = "mass_sis__source_exp"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -101,7 +101,7 @@ phase_with_custom_mask = al.PhaseImaging(
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
-        source=al.GalaxyModel(redshift=1.0, light=al.lp.SphericalExponential),
+        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential),
     ),
     search=af.DynestyStatic(n_live_points=40),
 )
@@ -197,7 +197,7 @@ phase_with_positions = al.PhaseImaging(
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
-        source=al.GalaxyModel(redshift=1.0, light=al.lp.SphericalExponential),
+        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential),
     ),
     search=af.DynestyStatic(n_live_points=40),
 )
@@ -223,10 +223,10 @@ Lets load example data containing two distinct source galaxies.
 """
 
 # %%
-from howtolens.simulators.chapter_2 import lens_sis__source_exp_x2
+from autolens_workspace.howtolens.simulators.chapter_2 import mass_sis__source_exp_x2
 
 dataset_type = "chapter_2"
-dataset_name = "lens_sis__source_exp_x2"
+dataset_name = "mass_sis__source_exp_x2"
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
@@ -277,8 +277,8 @@ phase_with_x2_positions = al.PhaseImaging(
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
-        source_0=al.GalaxyModel(redshift=1.0, light=al.lp.SphericalExponential),
-        source_1=al.GalaxyModel(redshift=1.0, light=al.lp.SphericalExponential),
+        source_0=al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential),
+        source_1=al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential),
     ),
     search=af.DynestyStatic(n_live_points=40),
 )
