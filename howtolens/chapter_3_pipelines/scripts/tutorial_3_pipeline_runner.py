@@ -106,7 +106,7 @@ For this pipeline the pipeline setup customizes:
 
 # %%
 setup_mass = al.SetupMassTotal(no_shear=False)
-setup_source = al.SetupSourceParametric()
+setup_source = al.SetupSourceSersic()
 
 setup = al.SetupPipeline(
     folders=["c3_t3_complex_source"],

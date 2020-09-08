@@ -37,7 +37,7 @@ class SettingsLens:
         """
 
         if self.positions_threshold is None:
-            return ""
+            return conf.instance.settings_tag.get("lens", "no_positions_threshold")
         return conf.instance.settings_tag.get(
             "lens", "positions_threshold"
         ) + "_{0:.2f}".format(self.positions_threshold)

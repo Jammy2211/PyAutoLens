@@ -48,7 +48,12 @@ class SetupLightBulgeDisk(setup.SetupLightBulgeDisk):
 
 
 class SetupMassTotal(setup.SetupMassTotal):
-    def __init__(self, no_shear=False, mass_centre: (float, float) = None):
+    def __init__(
+        self,
+        mass_profile: mp.MassProfile = None,
+        no_shear=False,
+        mass_centre: (float, float) = None,
+    ):
         """The setup of mass modeling in a pipeline, which controls how PyAutoLens template pipelines runs, for
         example controlling assumptions about the mass-to-light profile used too control how a light profile is
         converted to a mass profile.
@@ -66,7 +71,7 @@ class SetupMassTotal(setup.SetupMassTotal):
            non-linear search.
         """
 
-        super().__init__(mass_centre=mass_centre)
+        super().__init__(mass_profile=mass_profile, mass_centre=mass_centre)
 
         self.no_shear = no_shear
 
@@ -89,7 +94,7 @@ class SetupMassTotal(setup.SetupMassTotal):
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
         return (
-            f"{conf.instance.setup_tag.get('mass', 'mass')}[{self.model_type}"
+            f"{conf.instance.setup_tag.get('mass', 'mass')}[{self.model_type}{self.mass_profile_tag}"
             f"{self.no_shear_tag}"
             f"{self.mass_centre_tag}]"
         )
@@ -387,13 +392,13 @@ class SetupPipeline(setup.SetupPipeline):
         """
 
         setup_tag = conf.instance.setup_tag.get("pipeline", "pipeline")
-        hyper_tag = f"_{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
+        hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
         source_tag = (
-            f"_{self.setup_source.tag}" if self.setup_source is not None else ""
+            f"__{self.setup_source.tag}" if self.setup_source is not None else ""
         )
-        light_tag = f"_{self.setup_light.tag}" if self.setup_light is not None else ""
-        mass_tag = f"_{self.setup_mass.tag}" if self.setup_mass is not None else ""
-        smbh_tag = f"_{self.setup_smbh.tag}" if self.setup_smbh is not None else ""
-        subhalo_tag = f"_{self.subhalo.tag}" if self.subhalo is not None else ""
+        light_tag = f"__{self.setup_light.tag}" if self.setup_light is not None else ""
+        mass_tag = f"__{self.setup_mass.tag}" if self.setup_mass is not None else ""
+        smbh_tag = f"__{self.setup_smbh.tag}" if self.setup_smbh is not None else ""
+        subhalo_tag = f"__{self.subhalo.tag}" if self.subhalo is not None else ""
 
-        return f"{setup_tag}_{hyper_tag}{light_tag}{mass_tag}{smbh_tag}{subhalo_tag}{source_tag}"
+        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{smbh_tag}{subhalo_tag}{source_tag}"

@@ -8,7 +8,7 @@ class TestTags:
     def test__positions_threshold_tag(self):
 
         settings = al.SettingsLens(positions_threshold=None)
-        assert settings.positions_threshold_tag == ""
+        assert settings.positions_threshold_tag == "pos_off"
         settings = al.SettingsLens(positions_threshold=1.0)
         assert settings.positions_threshold_tag == "pos_1.00"
         settings = al.SettingsLens(positions_threshold=2.56)

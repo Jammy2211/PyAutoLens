@@ -134,7 +134,7 @@ The pipeline setup again 'tags' the output path of a pipeline.
 # %%
 setup_light = al.SetupLightSersic()
 setup_mass = al.SetupMassTotal(no_shear=False)
-setup_source = al.SetupSourceParametric()
+setup_source = al.SetupSourceSersic()
 
 setup = al.SetupPipeline(
     folders=["c3_t2_x2_galaxies"],

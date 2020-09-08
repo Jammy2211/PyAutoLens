@@ -188,3 +188,15 @@ Trouble Shooting
 If you have issues with installation or using **PyAutoFit** in general, please raise an issue on the
 `autolens_workspace issues page <https://github.com/Jammy2211/autolens_workspace/issues>`_ with a description of the
 problem and your system setup (operating system, Python version, etc.).
+
+Known Issues
+------------
+
+The libraries **numba** and **llvmlite** used for optimizing **PyAutoLens** can cause installation issues. If these
+crop up we recommend that you either try using a conda build instead of pip (or visa versa) or try to manually
+install these versions of the libraries:
+
+.. code-block:: bash
+
+    pip install llvmlite==0.32.1
+    pip install numba==0.47.0
