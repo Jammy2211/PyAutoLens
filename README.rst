@@ -10,8 +10,9 @@ like this one:
 Installation
 ------------
 
-You can install via pip or conda (see `this link <https://pyautolens.readthedocs.io/en/latest/general/installation.html#installation-with-conda>`_
-for conda instructioons). To install via pip run the following command (we recommend you set up a
+You can install via pip or conda (see `this link 
+<https://pyautolens.readthedocs.io/en/latest/general/installation.html#installation-with-conda>`_ 
+for conda instructions). To install via pip run the following command (we recommend you set up a
 `Python virtual enviroment first <https://www.geeksforgeeks.org/python-virtual-environment/>`_).
 
 .. code-block:: bash
