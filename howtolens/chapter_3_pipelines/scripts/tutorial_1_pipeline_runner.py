@@ -38,9 +38,8 @@ sampling as fast as possible!
 # %%
 #%matplotlib inline
 from autoconf import conf
-from pyprojroot import here
-
-workspace_path = str(here())
+import os
+workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 conf.instance = conf.Config(

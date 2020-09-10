@@ -17,9 +17,8 @@ solutions discussed in tutorial 6. We'll then switch to an _Inversion_.
 #%matplotlib inline
 
 from autoconf import conf
-from pyprojroot import here
-
-workspace_path = str(here())
+import os
+workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 # %%

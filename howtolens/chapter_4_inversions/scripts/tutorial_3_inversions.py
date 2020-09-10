@@ -12,9 +12,8 @@ can use these _Mapper_'s (which map things) to reconstruct the source galaxy - I
 
 import autolens as al
 import autolens.plot as aplt
-from pyprojroot import here
-
-workspace_path = str(here())
+import os
+workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 # %%

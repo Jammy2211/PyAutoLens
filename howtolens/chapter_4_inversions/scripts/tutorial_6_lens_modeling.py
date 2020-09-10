@@ -22,9 +22,8 @@ That's what we are going to cover in this tutorial.
 from autolens_workspace.howtolens.simulators.chapter_4 import mass_sie__source_sersic
 import autolens as al
 import autolens.plot as aplt
-from pyprojroot import here
-
-workspace_path = str(here())
+import os
+workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 # %%
