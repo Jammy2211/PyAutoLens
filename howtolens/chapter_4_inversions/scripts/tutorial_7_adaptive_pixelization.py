@@ -75,8 +75,8 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -151,7 +151,7 @@ If we look at the lens fit, we'll see that our source-plane no longer uses recta
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(
+aplt.FitImaging.subplot_fit_imaging(
     fit=fit,
     include=aplt.Include(
         mask=True,
@@ -159,7 +159,7 @@ fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
         inversion_pixelization_grid=True,
     ),
 )
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 

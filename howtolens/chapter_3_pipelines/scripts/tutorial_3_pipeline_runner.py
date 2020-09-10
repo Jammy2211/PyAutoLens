@@ -224,9 +224,9 @@ tracer = al.Tracer.from_galaxies(
 
 true_fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=true_fit)
+aplt.FitImaging.subplot_fit_imaging(fit=true_fit)
 
-# aplt.FitImaging.subplot_of_plane(fit=true_fit, plane_index=1)
+aplt.FitImaging.subplot_of_plane(fit=true_fit, plane_index=1)
 
 
 # %%
