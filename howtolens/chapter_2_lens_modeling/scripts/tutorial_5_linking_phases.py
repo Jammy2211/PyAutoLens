@@ -134,7 +134,7 @@ lens.mass.centre_1 = 0.0
 
 # %%
 """
-Lets use the same approach of making the ellipticity of the mass trace that of the light.
+Lets use the same approach of making the ellipticity of the mass trace that of the sersic.
 """
 lens.mass.elliptical_comps = lens.sersic.elliptical_comps
 
@@ -368,9 +368,9 @@ In fact, the individual components of the __GalaxyModel__ class have been __Prio
 """
 
 # %%
-print(lens.light)
+print(lens.sersic)
 print(lens.mass)
-print(source.light)
+print(source.sersic)
 
 # %%
 """
@@ -383,11 +383,11 @@ component and then passing the priors of each individual parameter.
 
 sersic = af.PriorModel(al.lp.EllipticalSersic)
 
-light.elliptical_comps.elliptical_comps = (
+sersic.elliptical_comps.elliptical_comps = (
     phase1_result.model.galaxies.lens.sersic.elliptical_comps
 )
-light.intensity = phase1_result.model.galaxies.lens.sersic.intensity
-light.effective_radius = phase1_result.model.galaxies.lens.sersic.effective_radius
+sersic.intensity = phase1_result.model.galaxies.lens.sersic.intensity
+sersic.effective_radius = phase1_result.model.galaxies.lens.sersic.effective_radius
 
 """LENS MASS PRIORS"""
 
