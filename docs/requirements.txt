@@ -11,4 +11,4 @@ numpy>=1.17.2
 ipython>=7.0.1
 ipykernel>=5.1.0
 jupyter_client>=5.2.3
-pygments==2.2.0
+pygments==2.4.1
