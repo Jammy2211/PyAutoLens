@@ -23,6 +23,7 @@ from autolens_workspace.howtolens.simulators.chapter_4 import mass_sie__source_s
 import autolens as al
 import autolens.plot as aplt
 import os
+
 workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
