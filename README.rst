@@ -10,10 +10,9 @@ like this one:
 Installation
 ------------
 
-**PyAutoLens** requires Python 3.6+. You can install it via pip or conda (see
+**PyAutoLens** requires Python 3.6+ and you can install it via pip or conda (see
 `this link <https://pyautolens.readthedocs.io/en/latest/general/installation.html#installation-with-conda>`_
-for conda instructions). To install via pip we recommend you install it in a
-`Python virtual environment <https://www.geeksforgeeks.org/python-virtual-environment/>`_):
+for conda instructions).
 
 .. code-block:: bash
 

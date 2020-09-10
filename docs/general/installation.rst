@@ -134,7 +134,7 @@ Therefore, if you fork or clone the **PyAutoLens** repository, you must also clo
    git clone https://github.com/Jammy2211/autolens_workspace --depth 1
    cd autolens_workspace
 
-Once your fork of **PyAutoLens** is setup, I recommend you run the `welcome.py` script in the autolens workspace
+Once your fork of **PyAutoLens** is setup, I recommend you run the `welcome.py` script in the *autolens_workspace*
 for an introduction to **PyAutoLens**.
 
 .. code-block:: bash
@@ -191,7 +191,11 @@ works (TKAgg has worked on Linux machines, Qt5Agg has worked on new MACs). For e
 Trouble Shooting
 ----------------
 
-Firstly, if your installation via pip raised an error, try instead using conda (or visa versa).
+Firstly, if your installation via pip raised an error, try instead creating a
+`Python virtual environment <https://www.geeksforgeeks.org/python-virtual-environment/>`_ first and installing it there.
+Alternatively, you could try using conda.
+
+If your conda build failed, then try pip!
 
 The libraries **numba** and **llvmlite** used for optimizing **PyAutoLens** can cause installation issues. If these
 crop up we recommend that you either try using a conda build instead of pip (or visa versa) or try to manually
