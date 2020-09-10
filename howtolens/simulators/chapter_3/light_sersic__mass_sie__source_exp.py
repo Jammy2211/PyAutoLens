@@ -15,6 +15,7 @@ This dataset is used in chapter 2, tutorials 1-3.
 
 # %%
 import os
+
 workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 

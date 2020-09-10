@@ -35,6 +35,7 @@ We'll need the path to the chapter in this tutorial to load the dataset from you
 
 # %%
 import os
+
 workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 

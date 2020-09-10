@@ -17,6 +17,7 @@ cover now.
 import autolens as al
 import autolens.plot as aplt
 import os
+
 workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
