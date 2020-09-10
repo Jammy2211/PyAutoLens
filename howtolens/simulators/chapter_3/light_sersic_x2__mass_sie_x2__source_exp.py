@@ -11,10 +11,14 @@ This script simulates _Imaging_ of a strong lens where:
 This dataset is used in chapter 2, tutorials 1-3.
 """
 
-"""Setup the path to the autolens_workspace, using a relative directory name."""
-from pyprojroot import here
+# %%
+"""Use the WORKSPACE environment variable to determine the path to the autolens workspace."""
 
-workspace_path = str(here())
+# %%
+import os
+
+workspace_path = os.environ["WORKSPACE"]
+print("Workspace Path: ", workspace_path)
 
 """
 The 'dataset_type' describes the type of data being simulated (in this case, _Imaging_ data) and 'dataset_name' 

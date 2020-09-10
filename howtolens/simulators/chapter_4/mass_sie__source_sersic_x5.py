@@ -11,10 +11,14 @@ This script simulates _Imaging_ of a strong lens where:
 This dataset is used in chapter 2, tutorials 1-3.
 """
 
-"""Setup the path to the autolens_workspace, using a relative directory name."""
-from pyprojroot import here
+# %%
+"""Use the WORKSPACE environment variable to determine the path to the autolens workspace."""
 
-workspace_path = str(here())
+# %%
+import os
+
+workspace_path = os.environ["WORKSPACE"]
+print("Workspace Path: ", workspace_path)
 
 """
 The 'dataset_type' describes the type of data being simulated (in this case, _Imaging_ data) and 'dataset_name' 
@@ -90,7 +94,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy_0 = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalSersic(
+    sersic=al.lp.EllipticalSersic(
         centre=(0.1, 0.1),
         elliptical_comps=(0.1, 0.0),
         intensity=0.2,
@@ -101,7 +105,7 @@ source_galaxy_0 = al.Galaxy(
 
 source_galaxy_1 = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalSersic(
+    sersic=al.lp.EllipticalSersic(
         centre=(-0.25, 0.25),
         elliptical_comps=(0.0, 0.15),
         intensity=0.1,
@@ -112,7 +116,7 @@ source_galaxy_1 = al.Galaxy(
 
 source_galaxy_2 = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalSersic(
+    sersic=al.lp.EllipticalSersic(
         centre=(0.45, -0.35),
         elliptical_comps=(0.0, 0.222222),
         intensity=0.03,
@@ -123,7 +127,7 @@ source_galaxy_2 = al.Galaxy(
 
 source_galaxy_3 = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalSersic(
+    sersic=al.lp.EllipticalSersic(
         centre=(-0.05, -0.0),
         elliptical_comps=(0.05, 0.1),
         intensity=0.03,
@@ -134,7 +138,7 @@ source_galaxy_3 = al.Galaxy(
 
 source_galaxy_4 = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalSersic(
+    sersic=al.lp.EllipticalSersic(
         centre=(0.85, -0.85),
         elliptical_comps=(0.0, 0.222222),
         intensity=0.03,
@@ -145,7 +149,7 @@ source_galaxy_4 = al.Galaxy(
 
 source_galaxy_5 = al.Galaxy(
     redshift=1.0,
-    light=al.lp.EllipticalSersic(
+    sersic=al.lp.EllipticalSersic(
         centre=(-0.75, -0.1),
         elliptical_comps=(0.05, 0.1),
         intensity=0.03,

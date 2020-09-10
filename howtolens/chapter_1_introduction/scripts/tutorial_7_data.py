@@ -117,17 +117,16 @@ Output these files to.fits files, we'll begin to analyze them in the next tutori
 """
 The data path specifies where the data is output, this time in the directory 'chapter_path/data'.
 
-Recall that we use the library pyprojroot to get a relative path to the autolens_workspace, double check this path
-is correct on your computer!
 """
 
 # %%
-"""Setup the path to the autolens workspace, using pyprojroot to determine it automatically."""
+"""Use the WORKSPACE environment variable to determine the path to the autolens workspace."""
 
 # %%
-from pyprojroot import here
+import os
+workspace_path = os.environ["WORKSPACE"]
+print("Workspace Path: ", workspace_path)
 
-workspace_path = str(here())
 dataset_path = f"{workspace_path}/howtolens/dataset/chapter_1"
 print("Dataset Path: ", dataset_path)
 
