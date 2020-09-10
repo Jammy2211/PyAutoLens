@@ -21,7 +21,6 @@ Data Structures
    Convolver
    Visibilities
    TransformerDFT
-   TransformerFFT
    TransformerNUFFT
 
 --------
@@ -225,7 +224,7 @@ Plots
    GridScatterer
    PositionsScatterer
    IndexScatterer
-   PixelizationGridScattere
+   PixelizationGridScatterer
    Liner
    ArrayOverlayer
    VoronoiDrawer
@@ -291,18 +290,25 @@ Lens Modeling
 .. autosummary::
    :toctree: generated/
 
-   SetupPipeline
+    SetupHyper
+    SetupLightSersic
+    SetupLightBulgeDisk
+    SetupMassTotal
+    SetupMassLightDark
+    SetupSourceSersic
+    SetupSourceInversion
+    SetupSMBH
+    SetupSubhalo
+    SetupPipeline
 
 **SLaM:**
-
-.. currentmodule:: autolens.pipeline.slam
 
 .. autosummary::
    :toctree: generated/
 
    SLaM
-   SetupHyper
-   SLaMPipelineSource
+   SLaMPipelineSourceParametric
+   SLaMPipelineSourceInversion
    SLaMPipelineLight
    SLaMPipelineMass
 
