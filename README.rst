@@ -12,8 +12,8 @@ Installation
 
 **PyAutoLens** requires Python 3.6+. You can install it via pip or conda (see
 `this link <https://pyautolens.readthedocs.io/en/latest/general/installation.html#installation-with-conda>`_
-for conda instructions). To install via pip we recommend you install a
-`Python virtual envirobment <https://www.geeksforgeeks.org/python-virtual-environment/>`_ first):
+for conda instructions). To install via pip we recommend you install it in a
+`Python virtual environment <https://www.geeksforgeeks.org/python-virtual-environment/>`_):
 
 .. code-block:: bash
 
@@ -34,11 +34,11 @@ Finally, run *welcome.py* in the *autolens_workspace* to get started!
 
    python3 welcome.py
 
-If your installation had an error, please checking the
+If your installation had an error, please check the
 `troubleshooting section <https://pyautolens.readthedocs.io/en/latest/general/installation.html#trouble-shooting>`_ on
 our readthedocs.
 
-If you would prefer to Fork or Clone the **PyAutoLens** GitHub repo, please read the
+If you would prefer to Fork / Clone the **PyAutoLens** GitHub repo, please read the
 `cloning section <https://pyautolens.readthedocs.io/en/latest/general/installation.html#forking-cloning>`_ on our
 readthedocs first.
 
