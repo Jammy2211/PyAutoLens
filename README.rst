@@ -10,9 +10,10 @@ like this one:
 Installation
 ------------
 
-You can install via pip or conda (see `this link <https://pyautolens.readthedocs.io/en/latest/general/installation.html#installation-with-conda>`_
-for conda instructioons). To install via pip run the following command (we recommend you set up a
-`Python virtual enviroment first <https://www.geeksforgeeks.org/python-virtual-environment/>`_).
+**PyAutoLens** requires Python 3.6+. You can install it via pip or conda (see
+`this link <https://pyautolens.readthedocs.io/en/latest/general/installation.html#installation-with-conda>`_
+for conda instructions). To install via pip we recommend you install a
+`Python virtual envirobment <https://www.geeksforgeeks.org/python-virtual-environment/>`_ first):
 
 .. code-block:: bash
 
@@ -27,7 +28,7 @@ configuration files, example scripts and more!
    git clone https://github.com/Jammy2211/autolens_workspace --depth 1
    cd autolens_workspace
 
-Finally, run the `welcome.py` script to get started!
+Finally, run *welcome.py* in the *autolens_workspace* to get started!
 
 .. code-block:: bash
 
@@ -36,6 +37,10 @@ Finally, run the `welcome.py` script to get started!
 If your installation had an error, please checking the
 `troubleshooting section <https://pyautolens.readthedocs.io/en/latest/general/installation.html#trouble-shooting>`_ on
 our readthedocs.
+
+If you would prefer to Fork or Clone the **PyAutoLens** GitHub repo, please read the
+`cloning section <https://pyautolens.readthedocs.io/en/latest/general/installation.html#forking-cloning>`_ on our
+readthedocs first.
 
 API Overview
 ------------
@@ -165,14 +170,6 @@ To get started go to our `readthedocs <https://pyautolens.readthedocs.io/>`_,
 where you'll find our installation guide, a complete overview of **PyAutoLens**'s features, examples scripts and
 tutorials and detailed API documentation.
 
-
-Config Files
-------------
-
-**PyAutoLens** requires the config files on the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_
-to run, which must be set according to the `installation guide <https://pyautolens.readthedocs.io/en/latest/general/installation.html>`_.
-
-So, if you Fork / Clone the GitHub repo, make sure you download and set up the configuration files first!
 
 Slack
 -----
