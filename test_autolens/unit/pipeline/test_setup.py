@@ -11,6 +11,30 @@ class TestSetupMass:
 
 
 class TestSetupSubhalo:
+    def test__mass_is_model_tag(self):
+
+        setup = al.SetupSubhalo(mass_is_model=False)
+        assert setup.mass_is_model_tag == "__mass_is_instance"
+
+        setup = al.SetupSubhalo(mass_is_model=True)
+        assert setup.mass_is_model_tag == "__mass_is_model"
+
+    def test__source_is_model_tag(self):
+
+        setup = al.SetupSubhalo(source_is_model=False)
+        assert setup.source_is_model_tag == "__source_is_instance"
+
+        setup = al.SetupSubhalo(source_is_model=True)
+        assert setup.source_is_model_tag == "__source_is_model"
+
+    def test__grid_size_tag(self):
+
+        setup = al.SetupSubhalo(grid_size=3)
+        assert setup.grid_size_tag == "__grid_3"
+
+        setup = al.SetupSubhalo(grid_size=4)
+        assert setup.grid_size_tag == "__grid_4"
+
     def test__subhalo_centre_tag(self):
 
         setup = al.SetupSubhalo(subhalo_instance=None)
@@ -40,6 +64,24 @@ class TestSetupSubhalo:
             subhalo_instance=al.mp.SphericalNFWMCRLudlow(mass_at_200=1e10)
         )
         assert setup.subhalo_mass_at_200_tag == "__sub_mass_1.0e+10"
+
+    def test__tag(self):
+
+        setup = al.SetupSubhalo(mass_is_model=True, source_is_model=False)
+        assert setup.tag == "subhalo[nfw__mass_is_model__source_is_instance__grid_5]"
+
+        setup = al.SetupSubhalo(
+            mass_is_model=False,
+            source_is_model=True,
+            grid_size=4,
+            subhalo_instance=al.mp.SphericalNFWMCRLudlow(
+                centre=(2.0, 2.0), mass_at_200=1e10
+            ),
+        )
+        assert (
+            setup.tag
+            == "subhalo[nfw__mass_is_instance__source_is_model__grid_4__sub_centre_(2.00,2.00)__sub_mass_1.0e+10]"
+        )
 
 
 class TestSetupPipeline:

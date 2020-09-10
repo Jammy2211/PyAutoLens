@@ -141,6 +141,9 @@ print(
     " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
+# This code (and the lines of code after) is commented out to signify the analysis runs slow, so it is optional for
+# you to run this part of the tutorials.
+
 # # result_slow = phase_slow.run(dataset=imaging, mask=mask)
 
 # %%

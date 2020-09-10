@@ -248,7 +248,15 @@ class SetupSourceInversion(setup.SetupSourceInversion):
 
 
 class SetupSubhalo:
-    def __init__(self, subhalo_instance=None):
+    def __init__(
+        self,
+        subhalo_search: af.NonLinearSearch = None,
+        source_is_model: bool = True,
+        mass_is_model: bool = True,
+        grid_size: int = 5,
+        parallel: bool = False,
+        subhalo_instance=None,
+    ):
         """The setup of a subhalo pipeline, which controls how PyAutoLens template pipelines runs.
 
         Users can write their own pipelines which do not use or require the *SetupPipeline* class.
@@ -263,6 +271,14 @@ class SetupSubhalo:
             An instance of the mass-profile used as a fixed model for a subhalo pipeline.
         """
 
+        if subhalo_search is None:
+            subhalo_search = af.DynestyStatic(n_live_points=50, walks=5, facc=0.2)
+
+        self.subhalo_search = subhalo_search
+        self.source_is_model = source_is_model
+        self.mass_is_model = mass_is_model
+        self.grid_size = grid_size
+        self.parallel = parallel
         self.subhalo_instance = subhalo_instance
 
     @property
@@ -273,9 +289,24 @@ class SetupSubhalo:
     def tag(self):
         return (
             f"{conf.instance.setup_tag.get('subhalo', 'subhalo')}[{self.model_type}"
+            f"{self.mass_is_model_tag}"
+            f"{self.source_is_model_tag}"
+            f"{self.grid_size_tag}"
             f"{self.subhalo_centre_tag}"
             f"{self.subhalo_mass_at_200_tag}]"
         )
+
+    @property
+    def mass_is_model_tag(self):
+        if self.mass_is_model:
+            return f"__{conf.instance.setup_tag.get('subhalo', 'mass_is_model')}"
+        return f"__{conf.instance.setup_tag.get('subhalo', 'mass_is_instance')}"
+
+    @property
+    def source_is_model_tag(self):
+        if self.source_is_model:
+            return f"__{conf.instance.setup_tag.get('subhalo', 'source_is_model')}"
+        return f"__{conf.instance.setup_tag.get('subhalo', 'source_is_instance')}"
 
     @property
     def subhalo_centre_tag(self):
@@ -304,6 +335,10 @@ class SetupSubhalo:
             )
 
     @property
+    def grid_size_tag(self):
+        return f"__{conf.instance.setup_tag.get('subhalo', 'grid_size')}_{str(self.grid_size)}"
+
+    @property
     def subhalo_mass_at_200_tag(self):
         """Generate a tag if the subhalo mass model mass_at_200 of the pipeline is fixed to an input value, to
         customize pipeline output paths.
@@ -322,7 +357,7 @@ class SetupSubhalo:
                 "__"
                 + conf.instance.setup_tag.get("subhalo", "mass_at_200")
                 + "_"
-                + "{0:.1e}".format(self.subhalo_instance.mass_at_200_input)
+                + "{0:.1e}".format(self.subhalo_instance.mass_at_200)
             )
 
 
