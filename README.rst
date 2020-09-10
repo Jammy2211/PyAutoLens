@@ -7,6 +7,36 @@ like this one:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/development/imageaxis.png
 
+Installation
+------------
+
+You can install via pip or conda (see `this link <https://pyautolens.readthedocs.io/en/latest/general/installation.html#installation-with-conda>`_
+for conda instructioons). To install via pip run the following command (we recommend you set up a
+`Python virtual enviroment first <https://www.geeksforgeeks.org/python-virtual-environment/>`_).
+
+.. code-block:: bash
+
+    pip install autolens
+
+Next, clone the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_, which includes **PyAutoLens**
+configuration files, example scripts and more!
+
+.. code-block:: bash
+
+   cd /path/on/your/computer/you/want/to/put/the/autolens_workspace
+   git clone https://github.com/Jammy2211/autolens_workspace --depth 1
+   cd autolens_workspace
+
+Finally, run the `welcome.py` script to get started!
+
+.. code-block:: bash
+
+   python3 welcome.py
+
+If your installation had an error, please checking the
+`troubleshooting section <https://pyautolens.readthedocs.io/en/latest/general/installation.html#trouble-shooting>`_ on
+our readthedocs.
+
 API Overview
 ------------
 

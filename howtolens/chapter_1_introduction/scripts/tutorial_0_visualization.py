@@ -26,25 +26,21 @@ The tutorials need to know the path to your autolens_workspace folder, in order 
 If you don't have an autolens_workspace (perhaps you cloned / forked the **PyAutoLens** GitHub repository?) you can
 acccess and download it here - https://github.com/Jammy2211/autolens_workspace
 
-Make sure to set up your WORKSPACE enviroment variable, as described in the installation isntructions 
+Make sure to set up your WORKSPACE environment variable, as described in the installation isntructions 
 https://pyautolens.readthedocs.io/en/latest/general/installation.html
     
-Unfortunately, Jupyter notebooks cannot use relative paths, therefore we use the library 'pyprojroot' to do instead. Its
-'here' function provides the path to the GitHub project directory, which is the autolens_workspace. For example on my 
-computer the here() function returns:
- 
- '/home/jammy/PycharmProjects/PyAuto/autolens_workspace'
+This WORKSPACE enviroment variable is used in each tutorial to determine the path to the autolens_workspace, 
+as shown below. 
 
 Throughout these tutorials, we will use this workspace_path. 
 """
 
 # %%
-"""Setup the path to the autolens workspace, using pyprojroot to determine it automatically."""
+"""Use the WORKSPACE environment variable to determine the path to the autolens workspace."""
 
 # %%
-from pyprojroot import here
-
-workspace_path = str(here())
+import os
+workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 # %%
