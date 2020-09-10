@@ -96,6 +96,23 @@ autolens_workspace, reducing the download size):
    git clone https://github.com/Jammy2211/autolens_workspace --depth 1
    cd autolens_workspace
 
+We will import files from the autolens_workspace as if it were a Python module. To do this in conda, we need to
+create a .pth file in our conda enviroments site-packages folder. In your browser or on the command line find your
+site packages folder:
+
+.. code-block:: bash
+
+   cd /home/usr/anaconda3/envs/autolens/lib/python3.7/site-packages/
+
+Now create a .pth file via a text editor and put the path to your autolens_workspace in the file and save
+
+NOTE: As shown below, the path in the .pth file points to the directory containing the 'autolens_workspace' folder
+but does not contain the 'autolens_workspace' in PYTHONPATH itself!
+
+.. code-block:: bash
+
+   /path/on/your/computer/you/want/to/put/the
+
 Finally, run the `welcome.py` script to get started!
 
 .. code-block:: bash
@@ -124,8 +141,8 @@ for an introduction to **PyAutoLens**.
 
    python3 welcome.py
 
-Enviroment Variables
---------------------
+Environment Variables
+---------------------
 
 **PyAutoLens** uses an environment variable called WORKSPACE to know where the 'autolens_workspace' folder is located.
 This is used to locate config files and output results. It should automatically be detected and set in the `welcome.py`

@@ -12,9 +12,8 @@ was actually mapping. Infact, it didn't do much mapping at all! Therefore, in th
 
 import autolens as al
 import autolens.plot as aplt
-from pyprojroot import here
-
-workspace_path = str(here())
+import os
+workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 # %%

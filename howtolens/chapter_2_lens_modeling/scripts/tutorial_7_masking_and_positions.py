@@ -14,9 +14,8 @@ from autoconf import conf
 import autolens as al
 import autolens.plot as aplt
 import autofit as af
-from pyprojroot import here
-
-workspace_path = str(here())
+import os
+workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 conf.instance = conf.Config(
