@@ -124,6 +124,7 @@ The data path specifies where the data is output, this time in the directory 'ch
 
 # %%
 import os
+
 workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 

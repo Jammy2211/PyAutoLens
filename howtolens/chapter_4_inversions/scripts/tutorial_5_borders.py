@@ -12,6 +12,7 @@ In the previous tutorial, we told our _Inversion_ to use a border. Here, we'll d
 import autolens as al
 import autolens.plot as aplt
 import os
+
 workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 

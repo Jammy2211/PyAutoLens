@@ -40,6 +40,7 @@ Throughout these tutorials, we will use this workspace_path.
 
 # %%
 import os
+
 workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
