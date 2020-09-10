@@ -18,6 +18,7 @@ solutions discussed in tutorial 6. We'll then switch to an _Inversion_.
 
 from autoconf import conf
 import os
+
 workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 

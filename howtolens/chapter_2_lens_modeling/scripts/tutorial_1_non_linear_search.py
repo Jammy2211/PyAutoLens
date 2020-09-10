@@ -79,6 +79,7 @@ Nevertheless, setting the paths explicitly within the code is good practise.
 
 # %%
 import os
+
 workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
