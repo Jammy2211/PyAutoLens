@@ -363,7 +363,7 @@ class SLaM:
         if source_is_model:
 
             return ag.GalaxyModel(
-                redshift=af.last[index].model.galaxies.source.redshift,
+                redshift=self.redshift_source,
                 sersic=af.last[index].model.galaxies.source.sersic,
                 hyper_galaxy=hyper_galaxy,
             )
@@ -371,7 +371,7 @@ class SLaM:
         else:
 
             return ag.GalaxyModel(
-                redshift=af.last[index].instance.galaxies.source.redshift,
+                redshift=self.redshift_source,
                 sersic=af.last[index].instance.galaxies.source.sersic,
                 hyper_galaxy=hyper_galaxy,
             )
@@ -383,15 +383,19 @@ class SLaM:
         if source_is_model:
 
             return ag.GalaxyModel(
-                redshift=af.last.instance.galaxies.source.redshift,
-                pixelization=af.last.hyper_combined.instance.galaxies.source.pixelization,
-                regularization=af.last.hyper_combined.model.galaxies.source.regularization,
+                redshift=self.redshift_source,
+                pixelization=af.last[
+                    index
+                ].hyper_combined.instance.galaxies.source.pixelization,
+                regularization=af.last[
+                    index
+                ].hyper_combined.model.galaxies.source.regularization,
             )
 
         else:
 
             return ag.GalaxyModel(
-                redshift=af.last.instance.galaxies.source.redshift,
+                redshift=self.redshift_source,
                 pixelization=af.last[
                     index
                 ].hyper_combined.instance.galaxies.source.pixelization,
@@ -453,6 +457,6 @@ class SLaM:
         return self.source_from_previous_pipeline(source_is_model=False, index=index)
 
     def source_for_subhalo_pipeline(self, index=0):
-        self.source_from_previous_pipeline(
+        return self.source_from_previous_pipeline(
             source_is_model=self.setup_subhalo.source_is_model, index=index
         )
