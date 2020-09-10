@@ -42,14 +42,10 @@ class SLaMPipelineSourceInversion(AbstractSLaMPipeline):
 
 class SLaMPipelineLight(AbstractSLaMPipeline):
     def __init__(
-        self,
-        setup_light: setup.SetupLightBulgeDisk = setup.SetupLightBulgeDisk(),
-        setup_mass: setup.SetupMassTotal = setup.SetupMassTotal(),
+        self, setup_light: setup.SetupLightBulgeDisk = setup.SetupLightBulgeDisk()
     ):
 
-        super().__init__(
-            setup_source=None, setup_light=setup_light, setup_mass=setup_mass
-        )
+        super().__init__(setup_source=None, setup_light=setup_light, setup_mass=None)
 
 
 class SLaMPipelineMass(AbstractSLaMPipeline):
@@ -107,6 +103,7 @@ class SLaM:
         pipeline_source_inversion: SLaMPipelineSourceInversion = None,
         pipeline_light: SLaMPipelineLight = None,
         pipeline_mass: SLaMPipelineMass = None,
+        setup_subhalo: setup.SetupSubhalo = None,
     ):
         """
 
@@ -132,6 +129,12 @@ class SLaM:
         self.setup_hyper = setup_hyper
 
         self.pipeline_source_parametric = pipeline_source_parametric
+
+        if self.pipeline_source_parametric.setup_mass.mass_profile is None:
+            self.pipeline_source_parametric.setup_mass.mass_profile = (
+                ag.mp.EllipticalIsothermal
+            )
+
         self.pipeline_source_inversion = pipeline_source_inversion
 
         if self.pipeline_source_inversion is not None:
@@ -145,6 +148,9 @@ class SLaM:
         self.pipeline_light = pipeline_light
 
         if self.pipeline_light is not None:
+
+            self.pipeline_light.setup_mass = self.pipeline_source_parametric.setup_mass
+
             if self.pipeline_source_inversion is None:
                 self.pipeline_light.setup_source = (
                     self.pipeline_source_parametric.setup_source
@@ -167,6 +173,8 @@ class SLaM:
                 self.pipeline_mass.setup_source = (
                     self.pipeline_source_inversion.setup_source
                 )
+
+        self.setup_subhalo = setup_subhalo
 
     @property
     def source_parametric_tag(self):
@@ -269,7 +277,25 @@ class SLaM:
 
         return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
 
-    def lens_from_light_pipeline_for_mass_pipeline(self, redshift_lens, mass, shear):
+    def hyper_galaxy_source_from_previous_pipeline(self, index=0):
+
+        if self.setup_hyper.hyper_galaxies:
+
+            hyper_galaxy = af.PriorModel(ag.HyperGalaxy)
+
+            hyper_galaxy.noise_factor = af.last[
+                index
+            ].hyper_combined.model.galaxies.source.hyper_galaxy.noise_factor
+            hyper_galaxy.contribution_factor = af.last[
+                index
+            ].hyper_combined.instance.optional.galaxies.source.hyper_galaxy.contribution_factor
+            hyper_galaxy.noise_power = af.last[
+                index
+            ].hyper_combined.instance.optional.galaxies.source.hyper_galaxy.noise_power
+
+            return hyper_galaxy
+
+    def lens_from_light_pipeline_for_mass_pipeline(self, mass, shear):
         """Setup the lens model for a Mass pipeline using the previous pipeline and phase results.
 
         The lens light model is not specified by the Mass pipeline, so the Light pipelines are used to
@@ -291,7 +317,7 @@ class SLaM:
         if self.pipeline_mass.fix_lens_light:
 
             return ag.GalaxyModel(
-                redshift=redshift_lens,
+                redshift=self.redshift_lens,
                 bulge=af.last.instance.galaxies.lens.bulge,
                 disk=af.last.instance.galaxies.lens.disk,
                 mass=mass,
@@ -302,7 +328,7 @@ class SLaM:
         else:
 
             return ag.GalaxyModel(
-                redshift=redshift_lens,
+                redshift=self.redshift_lens,
                 bulge=af.last.model.galaxies.lens.bulge,
                 disk=af.last.model.galaxies.lens.disk,
                 mass=mass,
@@ -310,44 +336,72 @@ class SLaM:
                 hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
             )
 
-    def source_from_source_pipeline_for_light_pipeline(self):
-        """Setup the source model for a Light pipeline using the previous pipeline and phase results.
+    def lens_for_subhalo_pipeline(self, index=0):
 
-        The source light model is not specified by the Light pipeline, so the Source pipelines are used to
-        determine whether the source model is parametric or an inversion. This behaviour can be customized in SLaM
-        pipelines by replacing this method with the *source_from_previous_pipeline_model_or_instance* method of the
-        SLaM class.
+        if self.setup_subhalo.mass_is_model:
 
-        The source is returned as an instance for the Light pipeline, irrespective of whether it is parametric or an
-        Inversion. This is because this phase fits the lens light, and thus does not depend strongly on the source.
-        """
-        return self.source_from_previous_pipeline_model_or_instance(
-            source_as_model=False, index=0
-        )
-
-    def source_from_source_pipeline_for_mass_pipeline(self, index=0):
-        """Setup the source model for a Mass pipeline using the previous pipeline and phase results.
-
-        The source light model is not specified by the pipeline Mass pipeline (e.g. the previous pipelines are used to
-        determine whether the source model is parametric or an inversion.
-
-        The source is returned as a model if it is parametric (given it must be updated to properly compute a new mass
-        model) whereas inversions are returned as an instance (as they have sufficient flexibility to typically not
-        required updating). This behaviour can be customized in SLaM pipelines by replacing this method with the
-        *source_from_previous_pipeline_model_or_instance* method of the SLaM class.
-        """
-        if self.pipeline_source_inversion is None:
-            return self.source_from_previous_pipeline_model_or_instance(
-                source_as_model=True, index=index
+            return ag.GalaxyModel(
+                redshift=self.redshift_lens,
+                mass=af.last[index].model.galaxies.lens.mass,
+                shear=af.last[index].model.galaxies.lens.shear,
+                hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
             )
+
         else:
-            return self.source_from_previous_pipeline_model_or_instance(
-                source_as_model=False, index=index
+
+            return ag.GalaxyModel(
+                redshift=self.redshift_lens,
+                mass=af.last[index].instance.galaxies.lens.mass,
+                shear=af.last[index].instance.galaxies.lens.shear,
+                hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
             )
 
-    def source_from_previous_pipeline_model_or_instance(
-        self, source_as_model=False, index=0
-    ):
+    def source_sersic_from_previous_pipeline(self, source_is_model=True, index=0):
+
+        hyper_galaxy = self.hyper_galaxy_source_from_previous_pipeline(index=index)
+
+        if source_is_model:
+
+            return ag.GalaxyModel(
+                redshift=af.last[index].model.galaxies.source.redshift,
+                sersic=af.last[index].model.galaxies.source.sersic,
+                hyper_galaxy=hyper_galaxy,
+            )
+
+        else:
+
+            return ag.GalaxyModel(
+                redshift=af.last[index].instance.galaxies.source.redshift,
+                sersic=af.last[index].instance.galaxies.source.sersic,
+                hyper_galaxy=hyper_galaxy,
+            )
+
+    def source_inversion_from_previous_pipeline(self, source_is_model=False, index=0):
+
+        hyper_galaxy = self.hyper_galaxy_source_from_previous_pipeline(index=index)
+
+        if source_is_model:
+
+            return ag.GalaxyModel(
+                redshift=af.last.instance.galaxies.source.redshift,
+                pixelization=af.last.hyper_combined.instance.galaxies.source.pixelization,
+                regularization=af.last.hyper_combined.model.galaxies.source.regularization,
+            )
+
+        else:
+
+            return ag.GalaxyModel(
+                redshift=af.last.instance.galaxies.source.redshift,
+                pixelization=af.last[
+                    index
+                ].hyper_combined.instance.galaxies.source.pixelization,
+                regularization=af.last[
+                    index
+                ].hyper_combined.instance.galaxies.source.regularization,
+                hyper_galaxy=hyper_galaxy,
+            )
+
+    def source_from_previous_pipeline(self, source_is_model=False, index=0):
         """Setup the source model using the previous pipeline and phase results.
 
         The source light model is not specified by the pipeline light and mass pipelines (e.g. the previous pipelines
@@ -364,68 +418,41 @@ class SLaM:
 
         Parameters
         ----------
-        source_as_model : bool
+        source_is_model : bool
             If *True* the source is returned as a *model* where the parameters are fitted for using priors of the
             phase result it is loaded from. If *False*, it is an instance of that phase's result.
         index : integer
             The index (counting backwards from this phase) of the phase result used to setup the source.
         """
 
-        if self.setup_hyper.hyper_galaxies:
-
-            hyper_galaxy = af.PriorModel(ag.HyperGalaxy)
-
-            hyper_galaxy.noise_factor = (
-                af.last.hyper_combined.model.galaxies.source.hyper_galaxy.noise_factor
-            )
-            hyper_galaxy.contribution_factor = (
-                af.last.hyper_combined.instance.optional.galaxies.source.hyper_galaxy.contribution_factor
-            )
-            hyper_galaxy.noise_power = (
-                af.last.hyper_combined.instance.optional.galaxies.source.hyper_galaxy.noise_power
-            )
-
-        else:
-
-            hyper_galaxy = None
-
         if self.pipeline_source_inversion is None:
 
-            if source_as_model:
-
-                return ag.GalaxyModel(
-                    redshift=af.last[index].model.galaxies.source.redshift,
-                    sersic=af.last[index].model.galaxies.source.sersic,
-                    hyper_galaxy=hyper_galaxy,
-                )
-
-            else:
-
-                return ag.GalaxyModel(
-                    redshift=af.last[index].instance.galaxies.source.redshift,
-                    sersic=af.last[index].instance.galaxies.source.sersic,
-                    hyper_galaxy=hyper_galaxy,
-                )
+            return self.source_sersic_from_previous_pipeline(
+                source_is_model=source_is_model, index=index
+            )
 
         else:
 
-            if source_as_model:
+            return self.source_inversion_from_previous_pipeline(
+                source_is_model=source_is_model, index=index
+            )
 
-                return ag.GalaxyModel(
-                    redshift=af.last.instance.galaxies.source.redshift,
-                    pixelization=af.last.hyper_combined.instance.galaxies.source.pixelization,
-                    regularization=af.last.hyper_combined.model.galaxies.source.regularization,
-                )
+    def source_from_previous_pipeline_model_if_parametric(self, index=0):
+        """Setup the source model for a Mass pipeline using the previous pipeline and phase results.
 
-            else:
+        The source light model is not specified by the pipeline Mass pipeline (e.g. the previous pipelines are used to
+        determine whether the source model is parametric or an inversion.
 
-                return ag.GalaxyModel(
-                    redshift=af.last.instance.galaxies.source.redshift,
-                    pixelization=af.last[
-                        index
-                    ].hyper_combined.instance.galaxies.source.pixelization,
-                    regularization=af.last[
-                        index
-                    ].hyper_combined.instance.galaxies.source.regularization,
-                    hyper_galaxy=hyper_galaxy,
-                )
+        The source is returned as a model if it is parametric (given it must be updated to properly compute a new mass
+        model) whereas inversions are returned as an instance (as they have sufficient flexibility to typically not
+        required updating). This behaviour can be customized in SLaM pipelines by replacing this method with the
+        *source_from_previous_pipeline_model_or_instance* method of the SLaM class.
+        """
+        if self.pipeline_source_inversion is None:
+            return self.source_from_previous_pipeline(source_is_model=True, index=index)
+        return self.source_from_previous_pipeline(source_is_model=False, index=index)
+
+    def source_for_subhalo_pipeline(self, index=0):
+        self.source_from_previous_pipeline(
+            source_is_model=self.setup_subhalo.source_is_model, index=index
+        )

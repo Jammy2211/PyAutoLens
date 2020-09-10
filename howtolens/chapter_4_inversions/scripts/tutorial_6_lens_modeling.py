@@ -104,8 +104,8 @@ fit = perform_fit_with_lens__source_galaxy(
     imaging=imaging, lens_galaxy=lens_galaxy, source_galaxy=source_galaxy
 )
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -141,8 +141,8 @@ correct_fit = perform_fit_with_lens__source_galaxy(
     imaging=imaging, lens_galaxy=lens_galaxy, source_galaxy=source_galaxy
 )
 
-# aplt.FitImaging.subplot_fit_imaging(fit=correct_fit, include=aplt.Include(mask=True))
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=correct_fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -198,7 +198,7 @@ mask = al.Mask.circular(
 )
 
 aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -256,8 +256,8 @@ _Inversion_. When we plot the image, a new panel on the sub-plot appears showing
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 
@@ -282,8 +282,8 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
-# aplt.FitImaging.subplot_of_plane(
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_of_plane(
     fit=fit, plane_index=1, include=aplt.Include(mask=True)
 )
 

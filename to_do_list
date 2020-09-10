@@ -1,5 +1,6 @@
 Fancy:
 
+    - autolens_workspace path function with proper checks.
     - Welcome.py
     - Better Config message.
 
