@@ -29,8 +29,8 @@ Use this path to explicitly set the config path and output path.
 
 # %%
 conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
+    config_path=f"{workspace_path}/config",
+    output_path=f"{workspace_path}/output",
 )
 
 # %%
@@ -50,11 +50,11 @@ We'll use strong lensing data, where:
 """
 
 # %%
-from autolens_workspace.howtolens.simulators.chapter_4 import mass_sie__source_sersic_x4
+from howtolens.simulators.chapter_4 import mass_sie__source_sersic_x4
 
 dataset_type = "chapter_4"
 dataset_name = "mass_sie__source_sersic_x4"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"{workspace_path}/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -122,7 +122,7 @@ To create a pipeline we import it from the pipelines folder and run its 'make_pi
 """
 
 # %%
-from autolens_workspace.howtolens.chapter_4_inversions import tutorial_8_pipeline
+from howtolens.chapter_4_inversions import tutorial_8_pipeline
 
 pipeline_inversion = tutorial_8_pipeline.make_pipeline(setup=setup, settings=settings)
 

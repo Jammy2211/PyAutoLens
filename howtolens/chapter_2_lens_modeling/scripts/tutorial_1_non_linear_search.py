@@ -84,8 +84,8 @@ workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
+    config_path=f"{workspace_path}/config",
+    output_path=f"{workspace_path}/output",
 )
 
 # %%
@@ -100,7 +100,7 @@ The strong lens in this image was generated using:
 
 Below, you'll notice the command:
 
- 'from autolens_workspace.howtolens.simulators.chapter_2 import mass_sis__source_exp'
+ 'from howtolens.simulators.chapter_2 import mass_sis__source_exp'
     
 This will crop up in nearly every tutorial from here on. This imports the simulator for the dataset we fit in the 
 tutorial, simulating the data and placing it in the folder:
@@ -113,11 +113,11 @@ To see how the _Imaging_ dataset is simulated, feel free to checkout the simulat
 """
 
 # %%
-from autolens_workspace.howtolens.simulators.chapter_2 import mass_sis__source_exp
+from howtolens.simulators.chapter_2 import mass_sis__source_exp
 
 dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"{workspace_path}/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",

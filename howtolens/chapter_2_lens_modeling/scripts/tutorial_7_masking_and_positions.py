@@ -20,8 +20,8 @@ workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
+    config_path=f"{workspace_path}/config",
+    output_path=f"{workspace_path}/output",
 )
 
 # %%
@@ -33,11 +33,11 @@ We'll use the same strong lensing data as tutorials 1 & 2, where:
 """
 
 # %%
-from autolens_workspace.howtolens.simulators.chapter_2 import mass_sis__source_exp
+from howtolens.simulators.chapter_2 import mass_sis__source_exp
 
 dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"{workspace_path}/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -223,11 +223,11 @@ Lets load example data containing two distinct source galaxies.
 """
 
 # %%
-from autolens_workspace.howtolens.simulators.chapter_2 import mass_sis__source_exp_x2
+from howtolens.simulators.chapter_2 import mass_sis__source_exp_x2
 
 dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp_x2"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"{workspace_path}/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
