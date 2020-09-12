@@ -175,8 +175,8 @@ Lets run the phase, noting that our liberal approach to reducing the lens model 
 # %%
 print(
     "Dynesty has begun running - checkout the workspace/output/5_linking_phases"
-    "folder for live output of the results, images and lens model."
-    "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    " folder for live output of the results, images and lens model."
+    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # phase1_# result =  phase1.run(dataset=imaging, mask=mask)
@@ -295,8 +295,8 @@ phase2 = al.PhaseImaging(
 
 print(
     "Dynesty has begun running - checkout the workspace/output/5_linking_phases"
-    "folder for live output of the results, images and lens model."
-    "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    " folder for live output of the results, images and lens model."
+    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # phase2_# result =  phase2.run(dataset=imaging, mask=mask)

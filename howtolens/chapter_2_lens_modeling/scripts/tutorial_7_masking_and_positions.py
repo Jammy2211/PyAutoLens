@@ -205,8 +205,8 @@ phase_with_positions = al.PhaseImaging(
 # %%
 print(
     "Dynesty has begun running - checkout the workspace/output/t7_with_positions"
-    " folder for live output of the results, images and lens model."
-    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    "  folder for live output of the results, images and lens model."
+    "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # phase_with_positions.run(dataset=imaging, mask=mask)
@@ -285,8 +285,8 @@ phase_with_x2_positions = al.PhaseImaging(
 
 print(
     "Dynesty has begun running - checkout the workspace/output/t7_with_x2_positions"
-    " folder for live output of the results, images and lens model."
-    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    "  folder for live output of the results, images and lens model."
+    "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 

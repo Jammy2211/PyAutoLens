@@ -1,6 +1,6 @@
 import autolens as al
 
-from test_autolens.simulate.imaging import instrument_util
+from test_autolens.simulators.imaging import instrument_util
 
 imaging = instrument_util.load_test_imaging(
     data_name="lens_sie__source_smooth__offset_centre", instrument="vro"

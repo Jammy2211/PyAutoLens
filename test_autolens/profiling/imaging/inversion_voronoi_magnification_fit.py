@@ -2,7 +2,7 @@ import time
 
 import autolens as al
 import numpy as np
-from test_autolens.simulate.imaging import instrument_util
+from test_autolens.simulators.imaging import instrument_util
 
 repeats = 10
 

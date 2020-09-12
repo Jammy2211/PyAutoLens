@@ -215,8 +215,8 @@ phase = al.PhaseImaging(
 
 print(
     "Dynesty has begun running - checkout the workspace/output/4_dealing_with_failure"
-    "folder for live output of the results, images and lens model."
-    "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    " folder for live output of the results, images and lens model."
+    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # result_custom_priors = phase.run(dataset=imaging, mask=mask)
@@ -303,8 +303,8 @@ phase_light_traces_mass = al.PhaseImaging(
 
 print(
     "Dynesty has begun running - checkout the workspace/output/4_dealing_with_failure"
-    "folder for live output of the results, images and lens model."
-    "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    " folder for live output of the results, images and lens model."
+    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # result_light_trace_mass = phase_light_traces_mass.run(dataset=imaging, mask=mask)

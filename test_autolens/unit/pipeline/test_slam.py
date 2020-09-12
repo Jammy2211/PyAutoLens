@@ -17,12 +17,12 @@ class TestSLaMPipelineSource:
 
 
 class TestSLaMPipelineMass:
-    def test__fix_lens_light_tag(self):
+    def test__light_is_model_tag(self):
 
-        pipeline_mass = al.SLaMPipelineMass(fix_lens_light=False)
-        assert pipeline_mass.fix_lens_light_tag == ""
-        pipeline_mass = al.SLaMPipelineMass(fix_lens_light=True)
-        assert pipeline_mass.fix_lens_light_tag == "__fix_lens_light"
+        pipeline_mass = al.SLaMPipelineMass(light_is_model=False)
+        assert pipeline_mass.light_is_model_tag == ""
+        pipeline_mass = al.SLaMPipelineMass(light_is_model=True)
+        assert pipeline_mass.light_is_model_tag == "__light_is_model"
 
     def test__shear_from_previous_pipeline(self):
 

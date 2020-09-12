@@ -24,15 +24,17 @@ The tutorials need to know the path to your autolens_workspace folder, in order 
  - Output the results of models fits to your hard-disk. 
     
 If you don't have an autolens_workspace (perhaps you cloned / forked the **PyAutoLens** GitHub repository?) you can
-acccess and download it here - https://github.com/Jammy2211/autolens_workspace
+download it here:
+ 
+ ttps://github.com/Jammy2211/autolens_workspace
 
-Make sure to set up your WORKSPACE environment variable, as described in the installation isntructions 
+Make sure to set up your WORKSPACE environment variable correctly, using either the "setup_environment.py" script 
+supplied in the workspace or as described in the installation instructions:
+
 https://pyautolens.readthedocs.io/en/latest/general/installation.html
     
 This WORKSPACE enviroment variable is used in each tutorial to determine the path to the autolens_workspace, 
 as shown below. 
-
-Throughout these tutorials, we will use this workspace_path. 
 """
 
 # %%
