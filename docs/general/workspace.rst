@@ -1,7 +1,7 @@
 .. _workspace:
 
-Workspace Tour (New User)
-=========================
+Workspace Tour
+==============
 
 You should have downloaded and configured the `autolens workspace <https://github.com/Jammy2211/autolens_workspace>`_
 when you installed **PyAutoLens**. If you didn't, checkout the
@@ -32,6 +32,9 @@ searches, plot results with **PyAutoLens** and use many other features. These ex
 `API overview <file:///home/jammy/PycharmProjects/PyAuto/PyAutoLens/docs/_build/overview/lensing.html>`_ found on
 this readthedocs.
 
+An overview of the example scripts can be found on the readthedocs, starting with the
+`lensing API overview <https://pyautolens.readthedocs.io/en/latest/overview/lensing.html>`_
+
 HowToLens
 ---------
 
@@ -52,35 +55,13 @@ of real instruments such as the Hubble Space Telescope, Euclid and ALMA.
 Dataset
 -------
 
-The folder where data for your model-fitting problem is stored. Example data for the 1D data fitting problem
-are provided in the workspace.
+The folder where data for your model-fitting problem is stored. Example data created using the simulators are
+provided with the workspace.
 
 Output
 ------
 
 The folder where the model-fitting results of your model-fitting problem are stored.
-
-Workspace Tour (Advanced)
-=========================
-
-The following sections of the workspace are for users already familiar with **PyAutoLens**:
-
-Aggregator
-----------
-
-Manipulate large suites of modeling results via Jupyter notebooks, using **PyAutoFit**'s in-built results database.
-
-Transdimensional
-----------------
-
-Example pipelines for modeling strong lenses using **PyAutoLens**'s transdimensional model-fitting pipelines, which
-fit the lens model using a sequence of linked non-linear searches which initially perform fast and efficient model
-fits using simple lens model parameterization and gradually increase the lens model complexity.
-
-SLaM
-----
-
-Example pipelines using the Source, Light and Mass (SLaM) approach to lens modeling.
 
 Preprocess
 ----------
@@ -88,3 +69,33 @@ Preprocess
 Example scripts and tutorials on how to preprocess CCD imaging and interferometer data before analysing it with
 **PyAutoLens**. These includes scripts covering the image formats and units, computing a noise-map, creating the
 PSF and setting up masks for the data.
+
+Transdimensional (Advanced)
+---------------------------
+
+Example pipelines for modeling strong lenses using **PyAutoLens**'s transdimensional model-fitting pipelines, which
+fit the lens model using a sequence of linked non-linear searches which initially perform fast and efficient model
+fits using simple lens model parameterization and gradually increase the lens model complexity.
+
+See `here <https://pyautolens.readthedocs.io/en/latest/advanced/pipelines.html>`_ for an overview.
+
+SLaM (Advanced)
+---------------
+
+Example pipelines using the Source, Light and Mass (SLaM) approach to lens modeling.
+
+See `here <https://pyautolens.readthedocs.io/en/latest/advanced/slam.html>`_ for an overview.
+
+Aggregator (Advanced)
+---------------------
+
+Manipulate large suites of modeling results via Jupyter notebooks, using **PyAutoFit**'s in-built results database tools.
+
+See `here <https://pyautolens.readthedocs.io/en/latest/advanced/aggregator.html>`_ for an overview.
+
+Hyper (Advanced)
+----------------
+
+Example scripts for using **PyAutoLens**'s hyper-mode.
+
+See `here <https://pyautolens.readthedocs.io/en/latest/advanced/hyper_mode.html>`_ for an overview.

@@ -49,6 +49,6 @@
    :hidden:
 
    advanced/pipelines
+   advanced/slam
    advanced/aggregator
    advanced/hyper_mode
-   advanced/slam
