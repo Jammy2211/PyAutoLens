@@ -118,8 +118,8 @@ Lets run the phase.
 # %%
 print(
     "Dynesty has begun running - checkout the autolens_workspace/output/3_realism_and_complexity"
-    "folder for live output of the results, images and lens model."
-    "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    " folder for live output of the results, images and lens model."
+    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # result =  phase.run(dataset=imaging, mask=mask)
@@ -168,8 +168,8 @@ phase = al.PhaseImaging(
 
 print(
     "Dynesty has begun running - checkout the autolens_workspace/output/3_realism_and_complexity"
-    "folder for live output of the results, images and lens model."
-    "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    " folder for live output of the results, images and lens model."
+    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # result_local_maxima = phase.run(dataset=imaging, mask=mask)
