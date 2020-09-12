@@ -137,8 +137,8 @@ phase_slow = al.PhaseImaging(
 # %%
 print(
     "Dynesty has begun running - checkout the workspace/output"
-    " folder for live output of the results, images and lens model."
-    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    "  folder for live output of the results, images and lens model."
+    "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # This code (and the lines of code after) is commented out to signify the analysis runs slow, so it is optional for
@@ -182,8 +182,8 @@ phase_fast = al.PhaseImaging(
 # %%
 print(
     "Dynesty has begun running - checkout the workspace/output"
-    " folder for live output of the results, images and lens model."
-    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    "  folder for live output of the results, images and lens model."
+    "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # # result_fast = phase_fast.run(dataset=imaging, mask=mask)
@@ -252,8 +252,8 @@ phase_pso = al.PhaseImaging(
 
 print(
     "Dynesty has begun running - checkout the workspace/output"
-    " folder for live output of the results, images and lens model."
-    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    "  folder for live output of the results, images and lens model."
+    "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # result_pso = phase_pso.run(dataset=imaging, mask=mask)
@@ -307,8 +307,8 @@ phase_mcmc = al.PhaseImaging(
 
 print(
     "Emcee has begun running - checkout the workspace/output"
-    " folder for live output of the results, images and lens model."
-    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    "  folder for live output of the results, images and lens model."
+    "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # result_mcmc = phase_mcmc.run(dataset=imaging, mask=mask)
