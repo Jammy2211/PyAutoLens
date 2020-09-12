@@ -30,8 +30,8 @@ workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
+    config_path=f"{workspace_path}/config",
+    output_path=f"{workspace_path}/output",
 )
 
 # %%
@@ -53,13 +53,13 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from autolens_workspace.howtolens.simulators.chapter_3 import (
+from howtolens.simulators.chapter_3 import (
     light_sersic_x2__mass_sie_x2__source_exp,
 )
 
 dataset_type = "chapter_3"
 dataset_name = "light_sersic_x2__mass_sie_x2__source_exp"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"{workspace_path}/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -162,7 +162,7 @@ The 'folders' below specify the path the pipeline results are written to, which 
 """
 
 # %%
-from autolens_workspace.howtolens.chapter_3_pipelines import (
+from howtolens.chapter_3_pipelines import (
     tutorial_2_pipeline_x2_lens_galaxies,
 )
 

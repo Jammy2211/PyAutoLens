@@ -128,7 +128,7 @@ import os
 workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
-dataset_path = f"{workspace_path}/howtolens/dataset/chapter_1"
+dataset_path = f"{workspace_path}/dataset/chapter_1"
 print("Dataset Path: ", dataset_path)
 
 # %%

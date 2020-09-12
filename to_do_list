@@ -1,8 +1,7 @@
 Fancy:
 
-    - al.get_workspace_path() method which auto calcs WORKSPACE env and PYTHONPATH and conda.
+    - sanity checks (PSF size, pixel scale > 0).
     - Welcome.py
-    - Better Config message.
 
 Positions:
 
