@@ -304,6 +304,7 @@ masked_imaging_custom = al.MaskedImaging(
 If we use this data to perform a fit, we can immediately note how the resolution of the data has been binned up.
 """
 
+# %%
 fit_custom = al.FitImaging(masked_imaging=masked_imaging_custom, tracer=tracer)
 
 # aplt.FitImaging.subplot_fit_imaging(fit=fit_custom, include=aplt.Include(mask=True))

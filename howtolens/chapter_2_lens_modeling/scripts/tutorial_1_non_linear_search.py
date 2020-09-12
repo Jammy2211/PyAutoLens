@@ -226,8 +226,8 @@ performed in __PyAutoLens__ and is therefore a good habit to get into. In these 
 # %%
 print(
     "Dynesty has begun running - checkout the autolens_workspace/output/"
-    "folder for live output of the results, images and lens model."
-    "This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
+    " folder for live output of the results, images and lens model."
+    " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
 # result =  phase.run(dataset=imaging, mask=mask)
