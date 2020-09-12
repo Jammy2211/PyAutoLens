@@ -99,6 +99,12 @@ class SetupMassTotal(setup.SetupMassTotal):
             f"{self.mass_centre_tag}]"
         )
 
+    @property
+    def shear_prior_model(self):
+        """For a SLaM source pipeline, determine the shear model from the no_shear setting."""
+        if not self.no_shear:
+            return af.PriorModel(mp.ExternalShear)
+
 
 class SetupMassLightDark(setup.SetupMassLightDark):
     def __init__(
@@ -208,6 +214,12 @@ class SetupMassLightDark(setup.SetupMassLightDark):
             + x
             + ")"
         )
+
+    @property
+    def shear_prior_model(self):
+        """For a SLaM source pipeline, determine the shear model from the no_shear setting."""
+        if not self.no_shear:
+            return af.PriorModel(mp.ExternalShear)
 
 
 class SetupSourceInversion(setup.SetupSourceInversion):
