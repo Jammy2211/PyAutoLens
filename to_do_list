@@ -1,5 +1,6 @@
 Fancy:
 
+    - al.get_workspace_path() method which auto calcs WORKSPACE env and PYTHONPATH and conda.
     - Welcome.py
     - Better Config message.
 
