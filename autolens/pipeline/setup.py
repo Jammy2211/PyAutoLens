@@ -13,6 +13,8 @@ class SetupLightBulgeDisk(setup.SetupLightBulgeDisk):
         align_bulge_disk_centre: bool = False,
         align_bulge_disk_elliptical_comps: bool = False,
         disk_as_sersic: bool = False,
+        include_envelope: bool = False,
+        envelope_as_sersic: bool = False,
     ):
         """The setup of the light modeling in a pipeline, which controls how PyAutoGalaxy template pipelines runs, for
         example controlling assumptions about the bulge-disk model.
@@ -44,6 +46,8 @@ class SetupLightBulgeDisk(setup.SetupLightBulgeDisk):
             align_bulge_disk_centre=align_bulge_disk_centre,
             align_bulge_disk_elliptical_comps=align_bulge_disk_elliptical_comps,
             disk_as_sersic=disk_as_sersic,
+            include_envelope=include_envelope,
+            envelope_as_sersic=envelope_as_sersic
         )
 
 
