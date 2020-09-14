@@ -17,11 +17,11 @@ def test__tag__mixture_of_values():
 
     assert (
         settings.phase_tag_no_inversion
-        == "settings__imaging[grid_sub_2__snr_2]_lens[pos_2.00]"
+        == "settings__imaging[grid_sub_2__snr_2]__lens[pos_2.00]"
     )
     assert (
         settings.phase_tag_with_inversion
-        == "settings__imaging[grid_sub_2_inv_sub_2__snr_2]_lens[pos_2.00]_pix[]_inv[mat]"
+        == "settings__imaging[grid_sub_2_inv_sub_2__snr_2]_-lens[pos_2.00]__pix[use_border]__inv[mat]"
     )
 
     settings = al.SettingsPhaseImaging(
