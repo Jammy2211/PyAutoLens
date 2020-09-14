@@ -49,7 +49,7 @@ class SettingsPhaseImaging(settings.SettingsPhaseImaging):
 class SettingsPhaseInterferometer(settings.SettingsPhaseInterferometer):
     def __init__(
         self,
-        masked_interferometer=interferometer.SettingsMaskedInterferometer(),
+        settings_masked_interferometer=interferometer.SettingsMaskedInterferometer(),
         settings_pixelization=pix.SettingsPixelization(use_border=True),
         settings_inversion=inv.SettingsInversion(),
         settings_lens=SettingsLens(),
@@ -57,7 +57,7 @@ class SettingsPhaseInterferometer(settings.SettingsPhaseInterferometer):
     ):
 
         super().__init__(
-            masked_interferometer=masked_interferometer,
+            settings_masked_interferometer=settings_masked_interferometer,
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
             log_likelihood_cap=log_likelihood_cap,
