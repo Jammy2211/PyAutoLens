@@ -45,7 +45,7 @@ The data path specifies where the data was output in the last tutorial, which is
 """
 
 # %%
-dataset_path = f"{workspace_path}/dataset/chapter_1/"
+dataset_path = f"{workspace_path}/howtolens/dataset/chapter_1/"
 
 # %%
 """
