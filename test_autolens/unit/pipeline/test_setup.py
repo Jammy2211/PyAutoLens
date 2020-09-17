@@ -1,6 +1,57 @@
 import autolens as al
 
 
+class TestSetupHyper:
+    def test__hyper_galaxies_names_and_tag_for_lens_and_source(self):
+        setup = al.SetupHyper(hyper_galaxies_lens=False, hyper_galaxies_source=False)
+        assert setup.hyper_galaxies is False
+        assert setup.hyper_galaxies_tag == ""
+        assert setup.hyper_galaxy_names == None
+
+        setup = al.SetupHyper(hyper_galaxies_lens=True, hyper_galaxies_source=False)
+        assert setup.hyper_galaxies is True
+        assert setup.hyper_galaxies_tag == "galaxies_lens"
+        assert setup.hyper_galaxy_names == ["lens"]
+
+        setup = al.SetupHyper(hyper_galaxies_lens=False, hyper_galaxies_source=True)
+        assert setup.hyper_galaxies is True
+        assert setup.hyper_galaxies_tag == "galaxies_source"
+        assert setup.hyper_galaxy_names == ["source"]
+
+        setup = al.SetupHyper(hyper_galaxies_lens=True, hyper_galaxies_source=True)
+        assert setup.hyper_galaxies is True
+        assert setup.hyper_galaxies_tag == "galaxies_lens_source"
+        assert setup.hyper_galaxy_names == ["lens", "source"]
+
+    def test__hyper_tag(self):
+
+        setup = al.SetupHyper(hyper_image_sky=False, hyper_background_noise=False)
+
+        assert setup.tag == ""
+
+        setup = al.SetupHyper(hyper_image_sky=True)
+
+        assert setup.tag == "hyper[__bg_sky]"
+
+        setup = al.SetupHyper(
+            hyper_galaxies_lens=True,
+            hyper_galaxies_source=False,
+            hyper_image_sky=True,
+            hyper_background_noise=True,
+        )
+
+        assert setup.tag == "hyper[galaxies_lens__bg_sky__bg_noise]"
+
+        setup = al.SetupHyper(
+            hyper_galaxies_lens=True,
+            hyper_galaxies_source=True,
+            hyper_background_noise=True,
+            hyper_fixed_after_source=True,
+        )
+
+        assert setup.tag == "hyper[galaxies_lens_source__bg_noise__fixed]"
+
+
 class TestSetupMass:
     def test__no_shear_tag(self):
         setup = al.SetupMassLightDark(no_shear=False)

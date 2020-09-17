@@ -34,7 +34,7 @@ The data path specifies where the data was output in the last tutorial, this tim
 """
 
 # %%
-dataset_path = f"{workspace_path}/dataset/chapter_1/"
+dataset_path = f"{workspace_path}/howtolens/dataset/chapter_1/"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",

@@ -6,6 +6,80 @@ from autogalaxy.profiles import mass_profiles as mp, light_and_mass_profiles as 
 from autolens import exc
 
 
+class SetupHyper(setup.SetupHyper):
+    def __init__(
+        self,
+        hyper_galaxies_lens: bool = False,
+        hyper_galaxies_source: bool = False,
+        hyper_image_sky: bool = False,
+        hyper_background_noise: bool = False,
+        hyper_galaxy_phase_first: bool = False,
+        hyper_fixed_after_source=False,
+        hyper_galaxies_search: af.NonLinearSearch = None,
+        inversion_search: af.NonLinearSearch = None,
+        hyper_combined_search: af.NonLinearSearch = None,
+        evidence_tolerance: float = None,
+    ):
+
+        if hyper_galaxies_lens or hyper_galaxies_source:
+            hyper_galaxies = True
+        else:
+            hyper_galaxies = False
+
+        super().__init__(
+            hyper_galaxies=hyper_galaxies,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+            hyper_galaxy_phase_first=hyper_galaxy_phase_first,
+            hyper_fixed_after_source=hyper_fixed_after_source,
+            hyper_galaxies_search=hyper_galaxies_search,
+            inversion_search=inversion_search,
+            hyper_combined_search=hyper_combined_search,
+            evidence_tolerance=evidence_tolerance,
+        )
+
+        self.hyper_galaxies_lens = hyper_galaxies_lens
+        self.hyper_galaxies_source = hyper_galaxies_source
+
+        if self.hyper_galaxies_lens or self.hyper_galaxies_source:
+            self.hyper_galaxy_names = []
+
+        if self.hyper_galaxies_lens:
+            self.hyper_galaxy_names.append("lens")
+
+        if self.hyper_galaxies_source:
+            self.hyper_galaxy_names.append("source")
+
+    @property
+    def hyper_galaxies_tag(self):
+        """Tag if hyper-galaxies are used in a hyper pipeline to customize pipeline output paths.
+
+        This is used to generate an overall hyper tag in *hyper_tag*.
+        """
+        if not self.hyper_galaxies:
+            return ""
+
+        hyper_galaxies_tag = conf.instance.setup_tag.get("hyper", "hyper_galaxies")
+
+        if self.hyper_galaxies_lens:
+            hyper_galaxies_lens_tag = (
+                f"_{conf.instance.setup_tag.get('hyper', 'hyper_galaxies_lens')}"
+            )
+        else:
+            hyper_galaxies_lens_tag = ""
+
+        if self.hyper_galaxies_source:
+            hyper_galaxies_source_tag = (
+                f"_{conf.instance.setup_tag.get('hyper', 'hyper_galaxies_source')}"
+            )
+        else:
+            hyper_galaxies_source_tag = ""
+
+        return (
+            f"{hyper_galaxies_tag}{hyper_galaxies_lens_tag}{hyper_galaxies_source_tag}"
+        )
+
+
 class SetupLightBulgeDisk(setup.SetupLightBulgeDisk):
     def __init__(
         self,
@@ -47,7 +121,7 @@ class SetupLightBulgeDisk(setup.SetupLightBulgeDisk):
             align_bulge_disk_elliptical_comps=align_bulge_disk_elliptical_comps,
             disk_as_sersic=disk_as_sersic,
             include_envelope=include_envelope,
-            envelope_as_sersic=envelope_as_sersic
+            envelope_as_sersic=envelope_as_sersic,
         )
 
 
