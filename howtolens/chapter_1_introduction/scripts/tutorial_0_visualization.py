@@ -52,7 +52,7 @@ The dataset path specifies where the dataset is located, this time in the direct
 """
 
 # %%
-dataset_path = f"{workspace_path}/dataset/chapter_1"
+dataset_path = f"{workspace_path}/howtolens/dataset/chapter_1"
 
 # %%
 """

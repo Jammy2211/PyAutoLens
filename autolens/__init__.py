@@ -34,12 +34,7 @@ from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
 from autogalaxy.galaxy.galaxy_data import GalaxyData
 from autogalaxy.galaxy.galaxy_model import GalaxyModel
 from autogalaxy.hyper import hyper_data
-from autogalaxy.pipeline.setup import (
-    SetupHyper,
-    SetupLightSersic,
-    SetupSourceSersic,
-    SetupSMBH,
-)
+from autogalaxy.pipeline.setup import SetupLightSersic, SetupSourceSersic, SetupSMBH
 from autogalaxy.pipeline.phase.extensions import CombinedHyperPhase
 from autogalaxy.pipeline.phase.extensions import HyperGalaxyPhase
 from autogalaxy.pipeline.phase.extensions.hyper_galaxy_phase import HyperGalaxyPhase
@@ -67,6 +62,7 @@ from .lens.ray_tracing import Tracer
 from .lens.positions_solver import PositionsFinder
 from .pipeline.setup import (
     SetupPipeline,
+    SetupHyper,
     SetupSourceInversion,
     SetupLightBulgeDisk,
     SetupMassTotal,
@@ -89,4 +85,4 @@ from .pipeline.phase.phase_galaxy import PhaseGalaxy
 from .pipeline.pipeline import PipelineDataset, PipelinePositions
 
 
-__version__ = '1.5.10'
+__version__ = "1.5.10"
