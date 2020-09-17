@@ -199,7 +199,9 @@ class SLaM:
         """
 
         setup_tag = conf.instance.setup_tag.get("source", "source")
-        hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
+        hyper_tag = (
+            f"__{self.setup_hyper.tag_no_fixed}" if self.setup_hyper is not None else ""
+        )
 
         if hyper_tag == "__":
             hyper_tag = ""
@@ -230,7 +232,9 @@ class SLaM:
         """
 
         setup_tag = conf.instance.setup_tag.get("source", "source")
-        hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
+        hyper_tag = (
+            f"__{self.setup_hyper.tag_no_fixed}" if self.setup_hyper is not None else ""
+        )
 
         if hyper_tag == "__":
             hyper_tag = ""
