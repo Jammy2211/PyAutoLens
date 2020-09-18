@@ -23,7 +23,7 @@ class TestMakeAnalysis:
         phase_interferometer_7 = al.PhaseInterferometer(
             phase_name="phase_interferometer_7",
             settings=al.SettingsPhaseInterferometer(
-                masked_interferometer=al.SettingsMaskedInterferometer(
+                settings_masked_interferometer=al.SettingsMaskedInterferometer(
                     grid_class=al.Grid,
                     grid_inversion_class=al.Grid,
                     sub_size=3,
@@ -65,7 +65,7 @@ class TestMakeAnalysis:
         phase_interferometer_7 = al.PhaseInterferometer(
             phase_name="phase_interferometer_7",
             settings=al.SettingsPhaseInterferometer(
-                masked_interferometer=al.SettingsMaskedInterferometer(
+                settings_masked_interferometer=al.SettingsMaskedInterferometer(
                     grid_class=al.GridIterate,
                     sub_size=3,
                     fractional_accuracy=0.99,
@@ -163,7 +163,9 @@ class TestMakeAnalysis:
             phase_name="test_phase",
             galaxies=dict(lens=lens_galaxy),
             settings=al.SettingsPhaseInterferometer(
-                masked_interferometer=al.SettingsMaskedInterferometer(sub_size=1),
+                settings_masked_interferometer=al.SettingsMaskedInterferometer(
+                    sub_size=1
+                ),
                 log_likelihood_cap=100.0,
             ),
             search=mock.MockSearch(),

@@ -53,9 +53,7 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_3 import (
-    light_sersic_x2__mass_sie_x2__source_exp,
-)
+from howtolens.simulators.chapter_3 import light_sersic_x2__mass_sie_x2__source_exp
 
 dataset_type = "chapter_3"
 dataset_name = "light_sersic_x2__mass_sie_x2__source_exp"
@@ -162,9 +160,7 @@ The 'folders' below specify the path the pipeline results are written to, which 
 """
 
 # %%
-from howtolens.chapter_3_pipelines import (
-    tutorial_2_pipeline_x2_lens_galaxies,
-)
+from howtolens.chapter_3_pipelines import tutorial_2_pipeline_x2_lens_galaxies
 
 pipeline_x2_galaxies = tutorial_2_pipeline_x2_lens_galaxies.make_pipeline(
     setup=setup, settings=settings

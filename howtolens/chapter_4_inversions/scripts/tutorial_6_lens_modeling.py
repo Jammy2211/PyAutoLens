@@ -178,9 +178,7 @@ source using an _Inversion_. To do this, all we have to do is give the lens gala
 """
 
 # %%
-from howtolens.simulators.chapter_4 import (
-    light_sersic__mass_sie__source_sersic,
-)
+from howtolens.simulators.chapter_4 import light_sersic__mass_sie__source_sersic
 
 dataset_type = "chapter_4"
 dataset_name = "light_sersic__mass_sie__source_sersic"

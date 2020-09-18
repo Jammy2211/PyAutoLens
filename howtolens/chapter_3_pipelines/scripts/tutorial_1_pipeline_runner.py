@@ -67,9 +67,7 @@ We'll use strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_3 import (
-    light_sersic__mass_sie__source_exp,
-)
+from howtolens.simulators.chapter_3 import light_sersic__mass_sie__source_exp
 
 dataset_type = "chapter_3"
 dataset_name = "light_sersic__mass_sie__source_exp"
@@ -190,9 +188,7 @@ The 'folders' below specify the path the pipeline results are written to, which 
 """
 
 # %%
-from howtolens.chapter_3_pipelines import (
-    tutorial_1_pipeline_lens_and_source,
-)
+from howtolens.chapter_3_pipelines import tutorial_1_pipeline_lens_and_source
 
 pipeline_lens_and_source = tutorial_1_pipeline_lens_and_source.make_pipeline(
     setup=setup, settings=settings
