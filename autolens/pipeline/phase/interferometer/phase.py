@@ -17,10 +17,8 @@ class PhaseInterferometer(dataset.PhaseDataset):
     Analysis = Analysis
     Result = Result
 
-    @af.convert_paths
     def __init__(
         self,
-        paths,
         *,
         search,
         real_space_mask,
@@ -43,10 +41,9 @@ class PhaseInterferometer(dataset.PhaseDataset):
             The side length of the subgrid
         """
 
-        paths.tag = settings.phase_tag_with_inversion
+        search.paths.tag = settings.phase_tag_with_inversion
 
         super().__init__(
-            paths=paths,
             search=search,
             galaxies=galaxies,
             settings=settings,

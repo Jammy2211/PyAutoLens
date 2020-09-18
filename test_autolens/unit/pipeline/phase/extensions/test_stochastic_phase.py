@@ -84,9 +84,8 @@ class TestStochasticPhase:
         galaxy = al.Galaxy(mass=al.mp.SphericalIsothermal(), redshift=1.0)
 
         phase = al.PhaseImaging(
-            phase_name="test_phase",
             galaxies=dict(galaxy=galaxy),
-            search=af.DynestyStatic(n_live_points=1),
+            search=af.DynestyStatic(phase_name="test_phase", n_live_points=1),
             settings=al.SettingsPhaseImaging(bin_up_factor=2),
         )
 
