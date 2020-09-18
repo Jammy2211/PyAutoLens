@@ -35,9 +35,7 @@ We'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import (
-    light_sersic__mass_sie__source_sersic,
-)
+from howtolens.simulators.chapter_2 import light_sersic__mass_sie__source_sersic
 
 dataset_type = "chapter_2"
 dataset_name = "light_sersic__mass_sie__source_sersic"

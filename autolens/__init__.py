@@ -85,4 +85,4 @@ from .pipeline.phase.phase_galaxy import PhaseGalaxy
 from .pipeline.pipeline import PipelineDataset, PipelinePositions
 
 
-__version__ = '1.5.13'
+__version__ = "1.5.13"

@@ -80,7 +80,9 @@ class TestFit:
             galaxies=dict(lens=lens_galaxy),
             cosmology=cosmo.FLRW,
             settings=al.SettingsPhaseInterferometer(
-                masked_interferometer=al.SettingsMaskedInterferometer(sub_size=2)
+                settings_masked_interferometer=al.SettingsMaskedInterferometer(
+                    sub_size=2
+                )
             ),
             search=mock.MockSearch(),
             real_space_mask=mask_7x7,
@@ -122,7 +124,9 @@ class TestFit:
             galaxies=dict(lens=lens_galaxy),
             hyper_background_noise=hyper_background_noise,
             settings=al.SettingsPhaseInterferometer(
-                masked_interferometer=al.SettingsMaskedInterferometer(sub_size=4)
+                settings_masked_interferometer=al.SettingsMaskedInterferometer(
+                    sub_size=4
+                )
             ),
             search=mock.MockSearch(),
             real_space_mask=mask_7x7,
