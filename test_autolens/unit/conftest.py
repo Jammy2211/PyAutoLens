@@ -1,4 +1,3 @@
-from autoconf import conf
 import autolens as al
 from test_autogalaxy.unit.conftest import *
 from test_autolens import mock
@@ -41,7 +40,7 @@ def make_masked_interferometer_7(interferometer_7, mask_7x7, visibilities_mask_7
 
 @pytest.fixture(name="masked_interferometer_7_grid")
 def make_masked_interferometer_7_grid(
-    interferometer_7, mask_7x7, visibilities_mask_7x2, sub_grid_7x7, transformer_7x7_7
+        interferometer_7, mask_7x7, visibilities_mask_7x2, sub_grid_7x7, transformer_7x7_7
 ):
     return al.MaskedInterferometer(
         interferometer=interferometer_7,
@@ -104,7 +103,7 @@ def make_masked_imaging_fit_x2_plane_7x7(masked_imaging_7x7, tracer_x2_plane_7x7
 
 @pytest.fixture(name="masked_imaging_fit_x2_plane_inversion_7x7")
 def make_masked_imaging_fit_x2_plane_inversion_7x7(
-    masked_imaging_7x7, tracer_x2_plane_inversion_7x7
+        masked_imaging_7x7, tracer_x2_plane_inversion_7x7
 ):
     return al.FitImaging(
         masked_imaging=masked_imaging_7x7, tracer=tracer_x2_plane_inversion_7x7
@@ -113,7 +112,7 @@ def make_masked_imaging_fit_x2_plane_inversion_7x7(
 
 @pytest.fixture(name="masked_interferometer_fit_x1_plane_7x7")
 def make_masked_interferometer_fit_x1_plane_7x7(
-    masked_interferometer_7, tracer_x1_plane_7x7
+        masked_interferometer_7, tracer_x1_plane_7x7
 ):
     return al.FitInterferometer(
         masked_interferometer=masked_interferometer_7, tracer=tracer_x1_plane_7x7
@@ -122,7 +121,7 @@ def make_masked_interferometer_fit_x1_plane_7x7(
 
 @pytest.fixture(name="masked_interferometer_fit_x2_plane_7x7")
 def make_masked_interferometer_fit_x2_plane_7x7(
-    masked_interferometer_7, tracer_x2_plane_7x7
+        masked_interferometer_7, tracer_x2_plane_7x7
 ):
     return al.FitInterferometer(
         masked_interferometer=masked_interferometer_7, tracer=tracer_x2_plane_7x7
@@ -131,7 +130,7 @@ def make_masked_interferometer_fit_x2_plane_7x7(
 
 @pytest.fixture(name="masked_interferometer_fit_x2_plane_inversion_7x7")
 def make_masked_interferometer_fit_x2_plane_inversion_7x7(
-    masked_interferometer_7, tracer_x2_plane_inversion_7x7
+        masked_interferometer_7, tracer_x2_plane_inversion_7x7
 ):
     return al.FitInterferometer(
         masked_interferometer=masked_interferometer_7,
@@ -160,16 +159,16 @@ def make_mask_7x7_1_pix():
 
 @pytest.fixture(name="phase_dataset_7x7")
 def make_phase_data(mask_7x7):
-    return al.PhaseDataset(phase_name="test_phase", search=mock.MockSearch())
+    return al.PhaseDataset(search=mock.MockSearch("test_phase", ))
 
 
 @pytest.fixture(name="phase_imaging_7x7")
 def make_phase_imaging_7x7():
-    return al.PhaseImaging(phase_name="test_phase", search=mock.MockSearch())
+    return al.PhaseImaging(search=mock.MockSearch("test_phase", ))
 
 
 @pytest.fixture(name="phase_interferometer_7")
 def make_phase_interferometer_7(mask_7x7):
     return al.PhaseInterferometer(
-        phase_name="test_phase", search=mock.MockSearch(), real_space_mask=mask_7x7
+        search=mock.MockSearch("test_phase", ), real_space_mask=mask_7x7
     )
