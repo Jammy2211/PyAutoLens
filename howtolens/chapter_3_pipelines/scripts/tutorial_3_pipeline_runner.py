@@ -133,9 +133,7 @@ The 'folders' below specify the path the pipeline results are written to, which 
 """
 
 # %%
-from howtolens.chapter_3_pipelines import (
-    tutorial_3_pipeline_complex_source,
-)
+from howtolens.chapter_3_pipelines import tutorial_3_pipeline_complex_source
 
 pipeline_complex_source = tutorial_3_pipeline_complex_source.make_pipeline(
     setup=setup, settings=settings

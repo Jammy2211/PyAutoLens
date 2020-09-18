@@ -16,12 +16,16 @@ def test__tag__mixture_of_values():
     )
 
     assert (
-        settings.phase_tag_no_inversion
-        == "settings__imaging[grid_sub_2__snr_2]__lens[pos_2.00]"
+        settings.phase_tag_no_inversion == "settings__"
+        "imaging[grid_sub_2__snr_2]__"
+        "lens[pos_2.00]"
     )
     assert (
-        settings.phase_tag_with_inversion
-        == "settings__imaging[grid_sub_2_inv_sub_2__snr_2]_-lens[pos_2.00]__pix[use_border]__inv[mat]"
+        settings.phase_tag_with_inversion == "settings__"
+        "imaging[grid_sub_2_inv_sub_2__snr_2]__"
+        "lens[pos_2.00]__"
+        "pix[use_border]__"
+        "inv[mat]"
     )
 
     settings = al.SettingsPhaseImaging(
@@ -43,16 +47,22 @@ def test__tag__mixture_of_values():
     )
 
     assert (
-        settings.phase_tag_no_inversion
-        == "settings__imaging[grid_facc_0.5__bin_3__psf_2x2]_lens[pos_1.00]_lh_cap_200.0"
+        settings.phase_tag_no_inversion == "settings__"
+        "imaging[grid_facc_0.5__bin_3__psf_2x2]__"
+        "lens[pos_1.00]__"
+        "lh_cap_200.0"
     )
     assert (
-        settings.phase_tag_with_inversion
-        == "settings__imaging[grid_facc_0.5_inv_interp_0.300__bin_3__psf_2x2]_lens[pos_1.00]_pix[no_border__stochastic]_inv[mat]_lh_cap_200.0"
+        settings.phase_tag_with_inversion == "settings__"
+        "imaging[grid_facc_0.5_inv_interp_0.300__bin_3__psf_2x2]__"
+        "lens[pos_1.00]__"
+        "pix[no_border__stochastic]__"
+        "inv[mat]__"
+        "lh_cap_200.0"
     )
 
     settings = al.SettingsPhaseInterferometer(
-        masked_interferometer=al.SettingsMaskedInterferometer(
+        settings_masked_interferometer=al.SettingsMaskedInterferometer(
             grid_class=al.GridIterate,
             grid_inversion_class=al.GridInterpolate,
             fractional_accuracy=0.5,
@@ -66,26 +76,36 @@ def test__tag__mixture_of_values():
     )
 
     assert (
-        settings.phase_tag_no_inversion
-        == "settings__interferometer[grid_facc_0.5__dft]_lens[]_lh_cap_100.0"
+        settings.phase_tag_no_inversion == "settings__"
+        "interferometer[grid_facc_0.5__dft]__"
+        "lens[pos_off]__"
+        "lh_cap_100.0"
     )
     assert (
-        settings.phase_tag_with_inversion
-        == "settings__interferometer[grid_facc_0.5_inv_interp_0.300__dft]_lens[]_pix[no_border__stochastic]_inv[mat]_lh_cap_100.0"
+        settings.phase_tag_with_inversion == "settings__"
+        "interferometer[grid_facc_0.5_inv_interp_0.300__dft]__"
+        "lens[pos_off]__"
+        "pix[no_border__stochastic]__"
+        "inv[mat]__"
+        "lh_cap_100.0"
     )
 
     settings = al.SettingsPhaseInterferometer(
-        masked_interferometer=al.SettingsMaskedInterferometer(
+        settings_masked_interferometer=al.SettingsMaskedInterferometer(
             transformer_class=al.TransformerNUFFT
         ),
         settings_inversion=al.SettingsInversion(use_linear_operators=True),
     )
 
     assert (
-        settings.phase_tag_no_inversion
-        == "settings__interferometer[grid_sub_2__nufft]_lens[]"
+        settings.phase_tag_no_inversion == "settings__"
+        "interferometer[grid_sub_2__nufft]__"
+        "lens[pos_off]"
     )
     assert (
-        settings.phase_tag_with_inversion
-        == "settings__interferometer[grid_sub_2_inv_sub_2__nufft]_lens[]_pix[]_inv[lop]"
+        settings.phase_tag_with_inversion == "settings__"
+        "interferometer[grid_sub_2_inv_sub_2__nufft]__"
+        "lens[pos_off]__"
+        "pix[use_border]__"
+        "inv[lop]"
     )
