@@ -122,7 +122,7 @@ def test__masked_interferometer_generator_from_aggregator(
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
         ),
         settings=al.SettingsPhaseInterferometer(
-            masked_interferometer=al.SettingsMaskedInterferometer(
+            settings_masked_interferometer=al.SettingsMaskedInterferometer(
                 transformer_class=al.TransformerDFT,
                 grid_class=al.GridIterate,
                 grid_inversion_class=al.GridInterpolate,

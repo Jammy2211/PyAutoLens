@@ -40,9 +40,7 @@ We'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_2 import (
-    light_sersic__mass_sie__source_exp,
-)
+from howtolens.simulators.chapter_2 import light_sersic__mass_sie__source_exp
 
 dataset_type = "chapter_2"
 dataset_name = "light_sersic__mass_sie__source_exp"

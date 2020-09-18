@@ -49,7 +49,7 @@ class TestSetupHyper:
             hyper_fixed_after_source=True,
         )
 
-        assert setup.tag == "hyper[galaxies_lens_source__bg_noise__fixed]"
+        assert setup.tag == "hyper[galaxies_lens_source__bg_noise__fixed_from_source]"
 
 
 class TestSetupMass:
@@ -139,7 +139,7 @@ class TestSetupPipeline:
     def test__tag(self):
 
         hyper = al.SetupHyper(
-            hyper_galaxies=True, hyper_background_noise=True, hyper_image_sky=True
+            hyper_galaxies_lens=True, hyper_background_noise=True, hyper_image_sky=True
         )
 
         setup_mass = al.SetupMassLightDark(align_bulge_dark_centre=True)
@@ -148,7 +148,7 @@ class TestSetupPipeline:
 
         assert (
             setup.tag == "setup__"
-            "hyper[galaxies_bg_sky_bg_noise]__"
+            "hyper[galaxies_lens__bg_sky__bg_noise]__"
             "mass[light_dark__with_shear__mlr_free__align_bulge_dark_centre]"
         )
 
@@ -193,5 +193,5 @@ class TestSetupPipeline:
         assert (
             setup.tag == "setup__"
             "smbh[centre_fixed]__"
-            "subhalo[nfw__sub_centre_(1.00,2.00)__sub_mass_1.0e+08]"
+            "subhalo[nfw__mass_is_model__source_is_model__grid_5__sub_centre_(1.00,2.00)__sub_mass_1.0e+08]"
         )

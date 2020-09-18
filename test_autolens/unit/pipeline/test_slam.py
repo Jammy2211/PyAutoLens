@@ -8,12 +8,12 @@ class TestSLaMPipelineSource:
         setup_mass = al.SetupMassTotal(no_shear=False)
         pipeline_source = al.SLaMPipelineSourceParametric(setup_mass=setup_mass)
 
-        assert pipeline_source.shear is al.mp.ExternalShear
+        assert isinstance(pipeline_source.setup_mass.shear_prior_model, af.PriorModel)
 
         setup_mass = al.SetupMassTotal(no_shear=True)
         pipeline_source = al.SLaMPipelineSourceParametric(setup_mass=setup_mass)
 
-        assert pipeline_source.shear == None
+        assert pipeline_source.setup_mass.shear_prior_model == None
 
 
 class TestSLaMPipelineMass:
@@ -29,11 +29,11 @@ class TestSLaMPipelineMass:
         setup_mass = al.SetupMassTotal(no_shear=True)
         pipeline_mass = al.SLaMPipelineMass(setup_mass=setup_mass)
 
-        assert pipeline_mass.shear_from_previous_pipeline == None
+        assert pipeline_mass.shear_from_previous_pipeline() == None
 
         setup_mass = al.SetupMassTotal(no_shear=False)
         pipeline_mass = al.SLaMPipelineMass(setup_mass=setup_mass)
 
         assert isinstance(
-            pipeline_mass.shear_from_previous_pipeline, af.AbstractPromise
+            pipeline_mass.shear_from_previous_pipeline(), af.AbstractPromise
         )
