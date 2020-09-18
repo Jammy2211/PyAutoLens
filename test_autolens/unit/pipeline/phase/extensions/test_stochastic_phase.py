@@ -45,7 +45,7 @@ def make_stochastic():
     )
 
 
-class TestStochasticPhase:
+class _TestStochasticPhase:
     def test__stochastic_result(self, imaging_7x7, stochastic):
 
         results = mock.MockResults(stochastic_log_evidences=[1.0, 1.0, 2.0])
