@@ -21,7 +21,10 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 
-os.environ["WORKSPACE"] = f"{str(workspace_path)}/howtolens"
+os.system("git clone https://github.com/Jammy2211/autolens_workspace --depth 1")
+os.system("cp -r autolens_workspace/config .")
+os.system("rm -rf autolens_workspace")
+os.environ["WORKSPACE"] = f"{str(workspace_path)}
 
 # -- Project information -----------------------------------------------------
 
