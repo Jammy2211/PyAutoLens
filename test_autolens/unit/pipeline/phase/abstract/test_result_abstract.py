@@ -27,8 +27,7 @@ class TestTracer:
     ):
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2",
-            search=mock.MockSearch(samples=samples_with_result),
+                        search=mock.MockSearch("test_phase_2", samples=samples_with_result),
         )
 
         result = phase_dataset_7x7.run(
@@ -54,7 +53,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+             search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -78,7 +77,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+             search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -95,7 +94,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+             search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -120,7 +119,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+             search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -141,7 +140,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+             search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -166,7 +165,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+             search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -200,7 +199,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+             search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
