@@ -1,7 +1,3 @@
-from autolens.conf import check_workspace_path
-
-check_workspace_path()
-
 from autoarray import preprocess
 from autoarray.dataset.imaging import Imaging
 from autoarray.dataset.interferometer import Interferometer
