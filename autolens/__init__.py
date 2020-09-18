@@ -43,6 +43,7 @@ from autogalaxy.pipeline.phase.extensions.inversion_phase import (
     InversionPhase,
     ModelFixingHyperPhase,
 )
+from autogalaxy.pipeline.pipeline import PipelineDataset
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles import (
     light_profiles as lp,
@@ -82,7 +83,6 @@ from .pipeline.phase.imaging.phase import PhaseImaging
 from .pipeline.phase.interferometer.phase import PhaseInterferometer
 from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
-from .pipeline.pipeline import PipelineDataset, PipelinePositions
 
 
 __version__ = "1.5.13"
