@@ -46,3 +46,4 @@ from autogalaxy.plot.lensing_plotters import plot_mapper_obj as MapperObj
 from autolens.plot import fit_imaging_plots as FitImaging
 from autolens.plot import fit_interferometer_plots as FitInterferometer
 from autolens.plot import ray_tracing_plots as Tracer
+from autolens.plot import subhalo_plots as Subhalo
