@@ -3,6 +3,7 @@ Fancy:
     - sanity checks (PSF size, pixel scale > 0).
     - Welcome.py
     - Print HPC MODE ON if on.
+    - llvmlite instrutioons.
 
 Positions:
 

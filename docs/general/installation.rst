@@ -197,14 +197,24 @@ Alternatively, you could try using conda.
 
 If your conda build failed, then try pip!
 
-The libraries **numba** and **llvmlite** used for optimizing **PyAutoLens** can cause installation issues. If these
-crop up we recommend that you either try using a conda build instead of pip (or visa versa) or try to manually
-install these versions of the libraries:
+The libraries **numba** and **llvmlite** used for optimizing **PyAutoLens** have caused known installation issues. To
+circumvent this we have added the requirement that the version of llvmlite<=0.32.1 and numba<=0.47.0. However,
+if your Python / conda environment already has either library installed with a version above these, it will raise
+an error.
+
+However, **PyAutoLens** does work with these newer versions, it is simply that installing them from scratch can raise
+an error. There, if you get the following error (or something related or mentioning numba):
 
 .. code-block:: bash
 
-    pip install llvmlite<=0.32.1
-    pip install numba<=0.47.0
+    ERROR: Cannot uninstall 'llvmlite'. It is a distutils installed project and thus we cannot accurately determine
+    which files belong to it which would lead to only a partial uninstall
+
+Then install **PyAutoLens** as follows:
+
+.. code-block:: bash
+
+    pip install autolens --ignore-installed llvmlite numba
 
 If you are still having issues with installation or using **PyAutoLens** in general, please raise an issue on the
 `autolens_workspace issues page <https://github.com/Jammy2211/autolens_workspace/issues>`_ with a description of the
