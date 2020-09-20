@@ -16,7 +16,7 @@ def run(
     conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
     imaging = instrument_util.load_test_imaging(
-        data_name=module.data_name, instrument=module.instrument
+        data_name=module.dataset_name, instrument=module.instrument
     )
 
     if mask is None:
