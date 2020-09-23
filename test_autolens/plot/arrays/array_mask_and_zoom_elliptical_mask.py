@@ -11,7 +11,7 @@ imaging = instrument_util.load_test_imaging(
 )
 array = imaging.image
 
-mask = al.Mask.elliptical(
+mask = al.Mask2D.elliptical(
     shape=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius=6.0,
@@ -26,7 +26,7 @@ imaging = instrument_util.load_test_imaging(
 )
 array = imaging.image
 
-mask = al.Mask.elliptical(
+mask = al.Mask2D.elliptical(
     shape=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius=6.0,

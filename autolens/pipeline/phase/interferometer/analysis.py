@@ -1,5 +1,5 @@
 import autofit as af
-from autoarray.exc import InversionException
+from autoarray.exc import PixelizationException, InversionException, GridException
 from autofit.exc import FitException
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
@@ -87,7 +87,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                 tracer=tracer, hyper_background_noise=hyper_background_noise
             )
             return fit.figure_of_merit
-        except InversionException as e:
+        except (PixelizationException, InversionException, GridException, OverflowError) as e:
             raise FitException from e
 
     def associate_hyper_visibilities(
@@ -159,7 +159,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                     preloaded_caustics=tracer.caustics,
                 )
 
-            except Exception or IndexError or ValueError:
+            except (Exception, IndexError, ValueError):
 
                 visualizer = self.visualizer
 

@@ -290,8 +290,8 @@ class SLaM:
         )
 
         mass_tag = (
-            f"__{self.pipeline_mass.setup_mass.tag}"
-            if self.pipeline_mass.setup_mass is not None
+            f"__{self.pipeline_light.setup_mass.tag}"
+            if self.pipeline_light.setup_mass is not None
             else ""
         )
 

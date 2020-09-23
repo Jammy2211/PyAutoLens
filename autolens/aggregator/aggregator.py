@@ -1,5 +1,6 @@
 import autolens as al
 
+from autofit import exc
 from functools import partial
 
 
@@ -264,3 +265,121 @@ def fit_interferometer_from_agg_obj(
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,
     )
+
+
+def grid_search_result_as_array(aggregator, use_log_evidences=True):
+
+    grid_search_result_gen = aggregator.values("grid_search_result")
+
+    grid_search_results = list(filter(None, list(grid_search_result_gen)))
+
+    if len(grid_search_results) != 1:
+        raise exc.AggregatorException(
+            "There is more than one grid search result in the aggregator - please filter the"
+            "aggregator."
+        )
+
+    return grid_search_log_evidences_as_array_from_grid_search_result(
+        grid_search_result=grid_search_results[0], use_log_evidences=use_log_evidences
+    )
+
+
+def grid_search_subhalo_masses_as_array(aggregator):
+
+    grid_search_result_gen = aggregator.values("grid_search_result")
+
+    grid_search_results = list(filter(None, list(grid_search_result_gen)))
+
+    if len(grid_search_results) != 1:
+        raise exc.AggregatorException(
+            "There is more than one grid search result in the aggregator - please filter the"
+            "aggregator."
+        )
+
+    return grid_search_subhalo_masses_as_array_from_grid_search_result(
+        grid_search_result=grid_search_results[0]
+    )
+
+
+def grid_search_subhalo_centres_as_array(aggregator):
+
+    grid_search_result_gen = aggregator.values("grid_search_result")
+
+    grid_search_results = list(filter(None, list(grid_search_result_gen)))
+
+    if len(grid_search_results) != 1:
+        raise exc.AggregatorException(
+            "There is more than one grid search result in the aggregator - please filter the"
+            "aggregator."
+        )
+
+    return grid_search_subhalo_masses_as_array_from_grid_search_result(
+        grid_search_result=grid_search_results[0]
+    )
+
+
+def grid_search_log_evidences_as_array_from_grid_search_result(
+    grid_search_result, use_log_evidences=True
+):
+
+    if grid_search_result.no_dimensions != 2:
+        raise exc.AggregatorException(
+            "The GridSearchResult is not dimensions 2, meaning a 2D array cannot be made."
+        )
+
+    if use_log_evidences:
+        values = [
+            value
+            for values in grid_search_result.log_evidence_values
+            for value in values
+        ]
+    else:
+        values = [
+            value
+            for values in grid_search_result.max_log_likelihood_values
+            for value in values
+        ]
+
+    return al.Array.manual_yx_and_values(
+        y=[centre[0] for centre in grid_search_result.physical_centres_lists],
+        x=[centre[1] for centre in grid_search_result.physical_centres_lists],
+        values=values,
+        pixel_scales=grid_search_result.physical_step_sizes,
+        shape_2d=grid_search_result.shape,
+    )
+
+
+def grid_search_subhalo_masses_as_array_from_grid_search_result(grid_search_result,):
+
+    if grid_search_result.no_dimensions != 2:
+        raise exc.AggregatorException(
+            "The GridSearchResult is not dimensions 2, meaning a 2D array cannot be made."
+        )
+
+    masses = [
+        res.samples.median_pdf_instance.galaxies.subhalo.mass.mass_at_200
+        for results in grid_search_result.results_reshaped
+        for res in results
+    ]
+
+    return al.Array.manual_yx_and_values(
+        y=[centre[0] for centre in grid_search_result.physical_centres_lists],
+        x=[centre[1] for centre in grid_search_result.physical_centres_lists],
+        values=masses,
+        pixel_scales=grid_search_result.physical_step_sizes,
+        shape_2d=grid_search_result.shape,
+    )
+
+
+def grid_search_subhalo_centres_as_array_from_grid_search_result(grid_search_result,):
+
+    if grid_search_result.no_dimensions != 2:
+        raise exc.AggregatorException(
+            "The GridSearchResult is not dimensions 2, meaning a 2D array cannot be made."
+        )
+
+    return [
+        res.samples.median_pdf_instance.galaxies.subhalo.mass.centre
+        for results in grid_search_result.results_reshaped
+        for res in results
+    ]

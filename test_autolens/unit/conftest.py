@@ -155,7 +155,7 @@ def make_mask_7x7_1_pix():
         ]
     )
 
-    return aa.Mask.manual(mask=array, pixel_scales=1.0)
+    return aa.Mask2D.manual(mask=array, pixel_scales=1.0)
 
 
 @pytest.fixture(name="phase_dataset_7x7")

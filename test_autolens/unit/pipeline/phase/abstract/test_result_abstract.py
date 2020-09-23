@@ -207,7 +207,7 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        mask = al.Mask.unmasked(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
+        mask = al.Mask2D.unmasked(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
 
         result.analysis.masked_dataset.mask = mask
 

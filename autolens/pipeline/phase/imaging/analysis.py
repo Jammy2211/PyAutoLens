@@ -1,6 +1,6 @@
 from autoconf import conf
 from autoarray.inversion import pixelizations as pix
-from autoarray.exc import InversionException, GridException
+from autoarray.exc import PixelizationException, InversionException, GridException
 from autofit.exc import FitException
 from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
 from autolens.fit import fit
@@ -79,7 +79,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             )
 
             return fit.figure_of_merit
-        except (InversionException or GridException or OverflowError) as e:
+        except (PixelizationException, InversionException, GridException, OverflowError) as e:
             raise FitException from e
 
     def masked_imaging_fit_for_tracer(
@@ -133,7 +133,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                     settings_pixelization=settings_pixelization,
                     settings_inversion=self.settings.settings_inversion,
                 ).log_evidence
-            except (InversionException or GridException) as e:
+            except (PixelizationException, InversionException, GridException, OverflowError) as e:
                 log_evidence = None
 
             if log_evidence is not None:
@@ -165,7 +165,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                     preloaded_caustics=tracer.caustics,
                 )
 
-            except Exception or IndexError or ValueError:
+            except (Exception, IndexError, ValueError):
 
                 visualizer = self.visualizer
 

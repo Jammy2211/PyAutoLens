@@ -33,7 +33,7 @@ supplied in the workspace or as described in the installation instructions:
 
 https://pyautolens.readthedocs.io/en/latest/general/installation.html
     
-This WORKSPACE enviroment variable is used in each tutorial to determine the path to the autolens_workspace, 
+This WORKSPACE environment variable is used in each tutorial to determine the path to the autolens_workspace, 
 as shown below. 
 """
 

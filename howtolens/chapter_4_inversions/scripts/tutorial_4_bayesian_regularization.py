@@ -56,7 +56,7 @@ the next tutorial)
 # %%
 def perform_fit_with_source_galaxy(imaging, source_galaxy):
 
-    mask = al.Mask.circular_annular(
+    mask = al.Mask2D.circular_annular(
         shape_2d=imaging.shape_2d,
         pixel_scales=imaging.pixel_scales,
         sub_size=2,

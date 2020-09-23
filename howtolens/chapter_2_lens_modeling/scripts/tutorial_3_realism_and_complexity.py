@@ -67,7 +67,7 @@ We'll create and use a 2.5" _Mask_.
 """
 
 # %%
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=2.5
 )
 

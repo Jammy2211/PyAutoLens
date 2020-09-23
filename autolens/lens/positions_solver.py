@@ -480,7 +480,7 @@ def grid_square_neighbors_1d_from(shape_1d):
     For example:
 
          x x x  x x x x x x x
-         x x x  x x x x x x x      Th s  s an example mask.Mask, where:
+         x x x  x x x x x x x      Th s  s an example mask.Mask2D, where:
          x x x  x x x x x x x
          x x x  0 1 2 3 x x x      x = True (P xel  s masked and excluded from the gr d)
          x x x  4 5 6 7 x x x      o = False (P xel  s not masked and  ncluded  n the gr d)
