@@ -87,7 +87,12 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                 tracer=tracer, hyper_background_noise=hyper_background_noise
             )
             return fit.figure_of_merit
-        except (PixelizationException, InversionException, GridException, OverflowError) as e:
+        except (
+            PixelizationException,
+            InversionException,
+            GridException,
+            OverflowError,
+        ) as e:
             raise FitException from e
 
     def associate_hyper_visibilities(

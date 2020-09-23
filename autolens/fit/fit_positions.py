@@ -7,7 +7,7 @@ from autogalaxy.galaxy import galaxy as g
 class AbstractFitPositionsSourcePlane:
     def __init__(self, positions, tracer, noise_value):
         """Given a positions dataset, which is a list of positions with names that associated them to model source
-        galaxies, use a _Tracer_ to determine the traced coordinate positions in the source-plane.
+        galaxies, use a `Tracer` to determine the traced coordinate positions in the source-plane.
 
         Different children of this abstract class are available which use the traced coordinates to define a chi-squared
         value in different ways.
@@ -16,7 +16,7 @@ class AbstractFitPositionsSourcePlane:
         -----------
         positions : grids.GridCoordinates
             The (y,x) arc-second coordinates of named positions which the log_likelihood is computed using. Positions
-            are paired to galaxies in the _Tracer_ using their names.
+            are paired to galaxies in the `Tracer` using their names.
         tracer : ray_tracing.Tracer
             The object that defines the ray-tracing of the strong lens system of galaxies.
         noise_value : float

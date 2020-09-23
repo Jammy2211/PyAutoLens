@@ -3,7 +3,7 @@
 Tutorial 7: Data
 ================
 
-In this example, we'll use the 'imaging' module to simulate _Imaging_ of a strong lens made using a _Tracer_. By
+In this example, we'll use the `imaging` module to simulate `Imaging` of a strong lens made using a `Tracer`. By
 simulate, we mean that it will appear as if we had observed it using a real telescope, with this example making an
 image representative of Hubble Space Telescope imaging.
 """
@@ -16,8 +16,8 @@ import autolens.plot as aplt
 
 # %%
 """
-To simulate an image, we need to model the telescope's optics. We'll do this by convolving the image with a 
-Point-Spread Function using a _Kernel_ object, which we can simulate as a Gaussian.
+To simulate an image, we need to model the telescope`s optics. we'll do this by convolving the image with a 
+Point-Spread Function using a `Kernel` object, which we can simulate as a Gaussian.
 """
 
 # %%
@@ -25,7 +25,7 @@ psf = al.Kernel.from_gaussian(shape_2d=(11, 11), sigma=0.1, pixel_scales=0.1)
 
 # %%
 """
-To simulate _Imaging_ dataset, we use a _Grid_, like usual.
+To simulate `Imaging` dataset, we use a `Grid`, like usual.
 """
 
 # %%
@@ -33,7 +33,7 @@ grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.1, sub_size=2)
 
 # %%
 """
-Now, lets setup our lens galaxy, source galaxy and _Tracer_.
+Now, lets setup our lens galaxy, source galaxy and `Tracer`.
 """
 
 # %%
@@ -59,7 +59,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 # %%
 """
-Lets look at the _Tracer_'s image - this is the image we'll be simulating.
+Lets look at the `Tracer``s image - this is the image we'll be simulating.
 """
 
 # %%
@@ -67,9 +67,9 @@ aplt.Tracer.image(tracer=tracer, grid=grid)
 
 # %%
 """
-To Simulate the _Imaging_ data, we don't use the image plotted above. Instead, we use an image which has been generated
+To Simulate the `Imaging` data, we don`t use the image plotted above. Instead, we use an image which has been generated
 specifically for simulating an image, which pads the array it is computed on based on the shape of the PSF we
- convolve the image with. This ensures edge-effects do not degrade our simulation's PSF convolution.
+ convolve the image with. This ensures edge-effects do not degrade our simulation`s PSF convolution.
 """
 
 # %%
@@ -82,7 +82,7 @@ print(padded_image.shape)
 
 # %%
 """
-Now, to simulate the _Imaging_ data, we pass the _Tracer_ and _Grid_ to the _Imaging_ module's simulate function. This adds
+Now, to simulate the `Imaging` data, we pass the `Tracer` and `Grid` to the `Imaging` module`s simulate function. This adds
 the following effects to the image:
 
  1) Telescope optics: Using the Point Spread Function above.
@@ -115,12 +115,12 @@ Output these files to.fits files, we'll begin to analyze them in the next tutori
 
 # %%
 """
-The data path specifies where the data is output, this time in the directory 'chapter_path/data'.
+The data path specifies where the data is output, this time in the directory `chapter_path/data`.
 
 """
 
 # %%
-"""Use the WORKSPACE environment variable to determine the path to the autolens workspace."""
+"""Use the WORKSPACE environment variable to determine the path to the `autolens_workspace`."""
 
 # %%
 import os

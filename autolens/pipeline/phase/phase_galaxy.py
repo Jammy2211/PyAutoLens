@@ -165,7 +165,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         self.sub_size = sub_size
         self.pixel_scales_interp = pixel_scales_interp
 
-    def run(self, galaxy_data, mask, info=None, results=None):
+    def run(self, galaxy_data, mask, info=None, pickle_files=None, results=None):
         """
         Run this phase.
 
