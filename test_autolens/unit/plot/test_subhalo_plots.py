@@ -27,26 +27,22 @@ def test__subhalo_detection_sub_plot(
     plot_patch,
 ):
 
-    detection_array = al.Array.manual_2d(
-        array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0
-    )
+    arr = al.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
 
     aplt.Subhalo.subplot_detection_imaging(
         fit_imaging_detect=masked_imaging_fit_x2_plane_7x7,
-        detection_array=detection_array,
+        detection_array=arr,
+        mass_array=arr,
         include=include_all,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "subplot_detection_imaging.png" in plot_patch.paths
 
-    detection_array = al.Array.manual_2d(
-        array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0
-    )
-
     aplt.Subhalo.subplot_detection_imaging(
         fit_imaging_detect=masked_imaging_fit_x2_plane_inversion_7x7,
-        detection_array=detection_array,
+        detection_array=arr,
+        mass_array=arr,
         include=include_all,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(path=plot_path, format="png")),
     )

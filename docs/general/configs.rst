@@ -19,7 +19,7 @@ in your command line:
 If you find that **PyAutoLens** originally worked on your laptop, but more recently is raising config related errors,
 this is likely because your WORKSPACE variable has been reset. You can fix this by running the above command again,
 however to ensure this does not occur again I would recommend you put the command in your .bashrc file or the
-activate script of your Python virtual enviroment.
+activate script of your Python virtual environment.
 
 The configuration path can also be set manually in a script using **PyAutoConf** and the following command (the path
 to the 'output' folder where the results of a *non-linear search* are stored is also set below):
@@ -225,7 +225,7 @@ These config files are found at 'autolens_workspace/config/json_priors' and they
 variables for every model-component in a project, using .json format files (as opposed to .ini. for most config files).
 
 The autolens workspace contains example json_prior files for the 1D data fitting problem. An example entry of the
-json configs for the *sigma* parameter of the *Gaussian* class is as follows:
+json configs for the ``sigma`` parameter of the ``Gaussian`` class is as follows:
 
 .. code-block:: bash
 

@@ -9,7 +9,7 @@ imaging = instrument_util.load_test_imaging(
 
 def fit_with_offset_centre(centre):
 
-    mask = al.Mask.elliptical(
+    mask = al.Mask2D.elliptical(
         shape_2d=imaging.shape_2d,
         pixel_scales=imaging.pixel_scales,
         major_axis_radius=3.0,

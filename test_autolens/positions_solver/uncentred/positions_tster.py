@@ -20,7 +20,7 @@ from test_autolens.positions_solver import util
 import os
 
 # %%
-"""The pickle path is where the _Tracer_ and _Positions_ are output, so they can be loaded by other scripts."""
+"""The pickle path is where the `Tracer` and `Positions` are output, so they can be loaded by other scripts."""
 
 # %%
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
@@ -35,7 +35,7 @@ grid = al.Grid.uniform(
     pixel_scales=0.005,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
-"""Use a _PositionsSolver_ which uses grid upscaling."""
+"""Use a `PositionsSolver` which uses grid upscaling."""
 
 solver = al.PositionsFinder(
     grid=grid,

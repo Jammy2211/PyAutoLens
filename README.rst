@@ -123,7 +123,7 @@ analysis which fits the foreground lens galaxy's mass & the background source ga
 
     """Create a mask for the data, which we setup as a 3.0" circle."""
 
-    mask = al.Mask.circular(
+    mask = al.Mask2D.circular(
         shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
     )
 
@@ -169,13 +169,13 @@ To get started go to our `readthedocs <https://pyautolens.readthedocs.io/>`_,
 where you'll find our installation guide, a complete overview of **PyAutoLens**'s features, examples scripts and
 tutorials and detailed API documentation.
 
+Support
+-------
 
-Slack
------
+Help and support is available by
+`raising an issue on the autolens_workspace GitHub page <https://github.com/Jammy2211/autolens_workspace/issues>`_. or
+joining the **PyAutoLens** `Slack channel <https://pyautolens.slack.com/>`_, where we also provide the latest updates on
+**PyAutoLens**.
 
-We're building a **PyAutoLens** community on Slack, so you should contact us on our
-`Slack channel <https://pyautolens.slack.com/>`_ before getting started. Here, I will give you the latest updates on
-the software & discuss how best to use **PyAutoLens** for your science case.
-
-Unfortunately, Slack is invitation-only, so first send me an `email <https://github.com/Jammy2211>`_ requesting an
+Slack is invitation-only, so if you'd like to join send an `email <https://github.com/Jammy2211>`_ requesting an
 invite.

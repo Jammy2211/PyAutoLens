@@ -64,7 +64,7 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
         pixel_scales=0.2,
     )
 
-    mask = al.Mask.circular(
+    mask = al.Mask2D.circular(
         shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=2, radius=0.8
     )
 
@@ -142,7 +142,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
         pixel_scales=0.2,
     )
 
-    mask = al.Mask.circular(
+    mask = al.Mask2D.circular(
         shape_2d=simulator.image.shape_2d, pixel_scales=0.2, radius=0.8
     )
 
@@ -218,7 +218,9 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
 
     visibilities_mask = np.full(fill_value=False, shape=(7, 2))
 
-    real_space_mask = al.Mask.unmasked(shape_2d=(51, 51), pixel_scales=0.1, sub_size=2)
+    real_space_mask = al.Mask2D.unmasked(
+        shape_2d=(51, 51), pixel_scales=0.1, sub_size=2
+    )
 
     masked_interferometer = al.MaskedInterferometer(
         interferometer=interferometer,

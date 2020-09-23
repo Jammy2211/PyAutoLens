@@ -122,10 +122,29 @@ Finally, run the `welcome.py` script to get started!
 Forking / Cloning
 -----------------
 
-If fork or clone the **PyAutoLens** github repository, note that **PyAutoLens** requires a valid autolens_workspace and
-WORKSPACE environment to run (so it can find the necessary confgiuration files).
+Alternatively, you can fork or clone the **PyAutoLens** github repository and run it from the source code.
 
-Therefore, if you fork or clone the **PyAutoLens** repository, you must also clone the
+First, clone the **PyAutoLens** GitHub repository:
+
+.. code-block:: bash
+
+    https://github.com/Jammy2211/PyAutoLens
+
+Next, install the **PyAutoLens** dependencies via pip:
+
+.. code-block:: bash
+
+   cd PyAutoLens
+   pip install -r requirements.txt
+
+Include the PyAutoLens source repository in your PYTHONPATH (noting that you must replace the text '/path/to' with the
+path to the PyAutoLens directory on your computer):
+
+.. code-block:: bash
+
+   export PYTHONPATH=$PYTHONPATH:/path/to/PyAutoLens
+
+**PyAutoLens** requires a valid config to run. Therefore, clone the
 `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_:
 
 .. code-block:: bash
@@ -134,12 +153,17 @@ Therefore, if you fork or clone the **PyAutoLens** repository, you must also clo
    git clone https://github.com/Jammy2211/autolens_workspace --depth 1
    cd autolens_workspace
 
-Once your fork of **PyAutoLens** is setup, I recommend you run the `welcome.py` script in the *autolens_workspace*
-for an introduction to **PyAutoLens**.
+Next, run the `welcome.py` script to set up the configs and environment:
 
 .. code-block:: bash
 
    python3 welcome.py
+
+Finally, check the **PyAutoLens** unit tests run and pass (you may need to install pytest via `pip install pytest`):
+
+.. code-block:: bash
+
+   python3 -m pytest
 
 Environment Variables
 ---------------------

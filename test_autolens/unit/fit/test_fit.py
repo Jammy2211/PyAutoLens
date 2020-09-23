@@ -75,7 +75,7 @@ class TestFitImaging:
             )
             imaging.image[6] = 4.0
 
-            mask = al.Mask.manual(
+            mask = al.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, True, True, True],
@@ -181,7 +181,7 @@ class TestFitImaging:
             )
             imaging.image[6] = 4.0
 
-            mask = al.Mask.manual(
+            mask = al.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, True, True, True],
@@ -290,7 +290,7 @@ class TestFitImaging:
             )
             imaging.image[6] = 4.0
 
-            mask = al.Mask.manual(
+            mask = al.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, True, True, True],
@@ -398,7 +398,7 @@ class TestFitImaging:
             )
             imaging.image[5] = 5.0
 
-            mask = al.Mask.manual(
+            mask = al.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, True, True, True],
@@ -506,7 +506,7 @@ class TestFitImaging:
             )
             imaging.image[6] = 4.0
 
-            mask = al.Mask.manual(
+            mask = al.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, True, True, True],
@@ -1612,7 +1612,7 @@ class TestFitInterferometer:
 
             visibilities_mask = np.full(fill_value=False, shape=(1, 2))
 
-            real_space_mask = al.Mask.manual(
+            real_space_mask = al.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, True, True, True],
@@ -1669,7 +1669,7 @@ class TestFitInterferometer:
                 uv_wavelengths=uv_wavelengths,
             )
 
-            real_space_mask = al.Mask.unmasked(shape_2d=(1, 3), pixel_scales=1.0)
+            real_space_mask = al.Mask2D.unmasked(shape_2d=(1, 3), pixel_scales=1.0)
 
             transformer = al.TransformerDFT(
                 uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
@@ -1677,7 +1677,7 @@ class TestFitInterferometer:
 
             visibilities_mask = np.full(fill_value=False, shape=(3, 2))
 
-            real_space_mask = al.Mask.manual(
+            real_space_mask = al.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, True, True, True, True],
@@ -1778,7 +1778,7 @@ class TestFitInterferometer:
 
             visibilities_mask = np.full(fill_value=False, shape=(1, 2))
 
-            real_space_mask = al.Mask.manual(
+            real_space_mask = al.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, True, True, True, True],
