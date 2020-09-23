@@ -37,11 +37,11 @@ Here's what our image, noise-map and point-spread function look like:
   :alt: Alternative text
 
 We now need to mask the data, so that regions where there is no signal (e.g. the edges) are omitted from the fit. To do
-this we can use a *Mask* object, which for this example we'll create as a 3.0" circle.
+this we can use a *Mask2D* object, which for this example we'll create as a 3.0" circle.
 
 .. code-block:: bash
 
-    mask = al.Mask.circular(
+    mask = al.Mask2D.circular(
         shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
     )
 
@@ -50,7 +50,7 @@ this we can use a *Mask* object, which for this example we'll create as a 3.0" c
     aplt.Imaging.image(imaging=masked_imaging)
 
 Here is what our image looks like with the mask applied, where **PyAutoLens** has automatically zoomed around the
-*Mask* to make the lensed source appear bigger:
+*Mask2D* to make the lensed source appear bigger:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/masked_image.png
   :width: 400

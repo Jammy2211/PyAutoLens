@@ -55,7 +55,7 @@ Below, we choose an inner radius that cuts into our lensed source galaxy - clear
 """
 
 # %%
-mask = al.Mask.circular_annular(
+mask = al.Mask2D.circular_annular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     inner_radius=1.4,
@@ -70,7 +70,7 @@ So, lets decrease the inner radius to correct for this.
 """
 
 # %%
-mask = al.Mask.circular_annular(
+mask = al.Mask2D.circular_annular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     inner_radius=0.6,

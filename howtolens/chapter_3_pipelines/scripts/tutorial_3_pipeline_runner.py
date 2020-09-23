@@ -65,7 +65,7 @@ of its light in the central regions of the image, so lets use a circular mask.
 """
 
 # %%
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
@@ -154,7 +154,7 @@ Lets confirm this, by manually fitting the _Imaging_ data with the true input mo
 # %%
 masked_imaging = al.MaskedImaging(
     imaging=imaging,
-    mask=al.Mask.circular(
+    mask=al.Mask2D.circular(
         shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
     ),
 )

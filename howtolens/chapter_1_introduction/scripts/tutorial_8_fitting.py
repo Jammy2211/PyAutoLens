@@ -76,7 +76,7 @@ defining the (masked) sub-grid used to calculate lensing quantities from a mask.
 """
 
 # %%
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
 )
 
@@ -128,7 +128,7 @@ on.
 """
 
 # %%
-print("Mask")
+print("Mask2D")
 print(masked_imaging.mask)
 print()
 print("Masked Image:")

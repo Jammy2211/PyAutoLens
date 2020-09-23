@@ -48,7 +48,7 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.05,
 )
 
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.5
 )
 
@@ -62,7 +62,7 @@ This function fits the _Imaging_ data with a _Tracer_, returning a _FitImaging_ 
 # %%
 def perform_fit_with_lens__source_galaxy(imaging, lens_galaxy, source_galaxy):
 
-    mask = al.Mask.circular_annular(
+    mask = al.Mask2D.circular_annular(
         shape_2d=imaging.shape_2d,
         pixel_scales=imaging.pixel_scales,
         sub_size=2,
@@ -191,7 +191,7 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.05,
 )
 
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.5
 )
 
@@ -207,7 +207,7 @@ circular so that it includes the central regions of the image and lens galaxy.
 """
 
 # %%
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.5
 )
 

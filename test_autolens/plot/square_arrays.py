@@ -9,7 +9,7 @@ from test_autolens.simulators.imaging import instrument_util
 imaging = instrument_util.load_test_imaging(
     data_name="lens_light_dev_vaucouleurs", instrument="vro"
 )
-mask = al.Mask.elliptical(
+mask = al.Mask2D.elliptical(
     shape=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius=3.0,

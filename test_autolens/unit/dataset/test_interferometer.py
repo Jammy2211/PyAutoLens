@@ -79,7 +79,7 @@ class TestMaskedInterferometer:
 
         visibilities_mask = np.full(fill_value=False, shape=(19,))
 
-        real_space_mask = al.Mask.unmasked(
+        real_space_mask = al.Mask2D.unmasked(
             shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         real_space_mask[9, 9] = False
