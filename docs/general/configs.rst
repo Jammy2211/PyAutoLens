@@ -281,7 +281,7 @@ Two examples using the 1D data fitting example for the config file **label.ini**
 The **label_format.ini** config file specifies the format certain parameters are output as in output files like the
 *model.results* file.
 
-The **tags.ini** config file specifies the tag of every *SettingsPhase*, *SetupPipeline* and *SLaM* input variable,
+The **tags.ini** config file specifies the tag of every `SettingsPhase`, *SetupPipeline* and *SLaM* input variable,
 where these tags customize the output path of the non-linear search in a unique way based on how the model-fitting
 procedure is set up.
 

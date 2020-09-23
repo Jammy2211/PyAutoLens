@@ -118,7 +118,7 @@ setup = al.SetupPipeline(
 __Pipeline Creation__
 
 To create a pipeline we import it from the pipelines folder and run its `make_pipeline` function, inputting the 
-*Setup* and *SettingsPhase* above.
+*Setup* and `SettingsPhase` above.
 """
 
 # %%

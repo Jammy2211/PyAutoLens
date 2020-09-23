@@ -42,7 +42,7 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-Lets create an annular `Mask` which traces the stongly lensed source ring.
+Lets create an annular `Mask2D` which traces the stongly lensed source ring.
 """
 
 # %%
@@ -58,7 +58,7 @@ aplt.Imaging.image(imaging=imaging, mask=mask)
 
 # %%
 """
-Next, lets set the `Imaging` and `Mask` up as a `MaskedImaging` object and setup a `Tracer` using the input lens 
+Next, lets set the `Imaging` and `Mask2D` up as a `MaskedImaging` object and setup a `Tracer` using the input lens 
 galaxy model (we don`t need to provide the source`s `LightProfile`, as we`re using a `Mapper` to reconstruct it).
 """
 
@@ -146,7 +146,7 @@ aplt.Imaging.image(imaging=imaging)
 
 # %%
 """
-This code is doing all the the same as above (setup the `Mask`, `Galaxy``s `Tracer`, `Mapper`, ec.).
+This code is doing all the the same as above (setup the `Mask2D`, `Galaxy``s `Tracer`, `Mapper`, ec.).
 """
 
 # %%

@@ -63,7 +63,7 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-we'll create and use a 2.5" `Mask`.
+we'll create and use a 2.5" `Mask2D`.
 """
 
 # %%

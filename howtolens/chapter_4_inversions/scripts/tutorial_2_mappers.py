@@ -141,7 +141,7 @@ aplt.Mapper.subplot_image_and_mapper(
 Okay, so I think we can agree, `Mapper``s map things! More specifically, they map our source-plane pixels to pixels in 
 the observed image of a strong lens.
 
-Finally, lets do the same as above, but using a masked image. By applying a `Mask`, the `Mapper` will only map 
+Finally, lets do the same as above, but using a masked image. By applying a `Mask2D`, the `Mapper` will only map 
 image-pixels inside the mask. This removes the (many) image pixels at the edge of the image, where the source isn`t 
 present. These pixels also pad-out the source-plane, thus by removing them our source-plane reduces in size.
 
@@ -158,7 +158,7 @@ aplt.Mapper.subplot_image_and_mapper(
 
 # %%
 """
-Lets use an annular `Mask`, which will capture the ring-like shape of the lensed source galaxy.
+Lets use an annular `Mask2D`, which will capture the ring-like shape of the lensed source galaxy.
 """
 
 # %%
@@ -179,7 +179,7 @@ aplt.Imaging.image(imaging=imaging, mask=mask)
 
 # %%
 """
-As usual, we setup our `Imaging` and `Mask` up as a `MaskedImaging` object and create a `Tracer` using the (masked) 
+As usual, we setup our `Imaging` and `Mask2D` up as a `MaskedImaging` object and create a `Tracer` using the (masked) 
 grid.
 """
 
