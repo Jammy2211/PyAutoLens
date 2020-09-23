@@ -9,7 +9,7 @@ import autolens as al
 imaging = instrument_util.load_test_imaging(
     data_name="lens_light_dev_vaucouleurs", instrument="vro"
 )
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     radius=3.0,

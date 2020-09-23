@@ -45,7 +45,7 @@ We will ray-trace this *Grid*'s coordinates to calculate how a lens galaxy's mas
 light.
 
 For this, we need analytic functions representing light and mass distributions. **PyAutoLens** uses *Profile* objects
-to do this, for example the *EllipticalSersic* _LightProfile_ object which represents a galaxy's light distribution:
+to do this, for example the *EllipticalSersic* `LightProfile` object which represents a galaxy's light distribution:
 
 .. code-block:: bash
 
@@ -77,7 +77,7 @@ Here's how the image of the light profile appears:
   :alt: Alternative text
 
 **PyAutoLens** uses *MassProfile* objects to represent a galaxy's mass distribution, which is used to perform
-ray-tracing calculations. Below we create an *EllipticalIsothermal* _MassProfile_ and compute its convergence,
+ray-tracing calculations. Below we create an *EllipticalIsothermal* `MassProfile` and compute its convergence,
 gravitational potential and deflection angles on our Cartesian *Grid*:
 
 .. code-block:: bash

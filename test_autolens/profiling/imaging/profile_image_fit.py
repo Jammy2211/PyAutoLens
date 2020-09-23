@@ -50,7 +50,7 @@ for instrument in ["vro", "euclid", "hst", "hst_up", "ao"]:
         psf_shape_2d=psf_shape_2d,
     )
 
-    mask = al.Mask.circular(
+    mask = al.Mask2D.circular(
         shape_2d=imaging.shape_2d,
         pixel_scales=imaging.pixel_scales,
         sub_size=sub_size,

@@ -26,7 +26,7 @@ class MaskedInterferometer(interferometer.MaskedInterferometer):
         ----------
         imaging: im.Imaging
             The imaging data all in 2D (the image, noise-map, etc.)
-        real_space_mask: msk.Mask
+        real_space_mask: msk.Mask2D
             The 2D mask that is applied to the image.
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \

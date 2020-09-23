@@ -3,14 +3,14 @@
 Tutorial 3: Galaxies
 ====================
 
-In this example, we'll use the 'mass_profiles' and 'light_profiles' modules introduced previously, along with the
-'galaxy' module to create _Galaxy_ objects in __PyAutoLens__. We'll see that:
+In this example, we'll use the `mass_profiles` and `light_profiles` modules introduced previously, along with the
+`galaxy` module to create `Galaxy` objects in ``.yAutoLens__. we'll see that:
 
-1) _Galaxy_'s can be made from multiple _LightProfile_'s and _MassProfile_'s.
+1) `Galaxy``s can be made from multiple `LightProfile``s and `MassProfile``..
 
-2) By taking multiple components, the summed image / deflection angle's of the profiles are computed.
+2) By taking multiple components, the summed image / deflection angle`s of the profiles are computed.
 
-3) _Galaxy_'s have redshifts, defining where they are relative to one another in lensing calculations.
+3) `Galaxy``s have redshifts, defining where they are relative to one another in lensing calculations.
 """
 
 # %%
@@ -21,7 +21,7 @@ import autolens.plot as aplt
 
 # %%
 """
-Lets use an identical _Grid_ to the previous example.
+Lets use an identical `Grid` to the previous example.
 """
 
 # %%
@@ -29,8 +29,8 @@ grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
 
 # %%
 """
-Lets make a _Galaxy_ with an _EllipticalSersic_ _LightProfile_, by making an _EllipticalSersic_ _LightProfile_ and 
-passing it to a _Galaxy_ object.
+Lets make a `Galaxy` with an `EllipticalSersic` `LightProfile`, by making an `EllipticalSersic` `LightProfile`.and 
+passing it to a `Galaxy` object.
 """
 
 # %%
@@ -48,24 +48,24 @@ print(galaxy_with_light_profile)
 
 # %%
 """
-In the previous example, we passed _Grid_'s to the _LightProfile_ module to compute its image. We can do the exact same 
-with _Galaxy_'s to again compute the _Galaxy_'s image.
+In the previous example, we passed `Grid``s to the `LightProfile` module to compute its image. We can do the exact same 
+with `Galaxy``s to again compute the `Galaxy``s image.
 """
 
 # %%
 galaxy_image = galaxy_with_light_profile.image_from_grid(grid=grid)
 
-print("intensity of _Grid_ pixel 0:")
+print("intensity of `Grid` pixel 0:")
 print(galaxy_image.in_2d[0, 0])
-print("intensity of _Grid_ pixel 1:")
+print("intensity of `Grid` pixel 1:")
 print(galaxy_image.in_2d[0, 1])
-print("intensity of _Grid_ pixel 2:")
+print("intensity of `Grid` pixel 2:")
 print(galaxy_image.in_2d[0, 2])
 print("etc.")
 
 # %%
 """
-A galaxy _Plotter_ allows us to the plot the image, just like the _Profile_ plotters did for a _LightProfile_'s.
+A galaxy `Plotter` allows us to the plot the image, just like the `Profile` plotters did for a `LightProfile``..
 """
 
 # %%
@@ -73,7 +73,7 @@ aplt.Galaxy.image(galaxy=galaxy_with_light_profile, grid=grid)
 
 # %%
 """
-We can pass galaxies as many profiles as we like. Lets create a _Galaxy_ with three _LightProfile_'s.
+We can pass galaxies as many profiles as we like. Lets create a `Galaxy` with three `LightProfile``..
 """
 
 # %%
@@ -108,7 +108,7 @@ aplt.Galaxy.image(galaxy=galaxy_with_3_light_profiles, grid=grid)
 
 # %%
 """
-We can also plot each individual _LightProfile_ using the 'subplot' galaxy plotter.
+We can also plot each individual `LightProfile` using the `subplot` galaxy plotter.
 """
 
 # %%
@@ -116,8 +116,8 @@ aplt.Galaxy.image_subplot(galaxy=galaxy_with_3_light_profiles, grid=grid)
 
 # %%
 """
-_MassProfile_'s interact with _Galaxy_ objects in the exact same way as _LightProfile_'s. Lets create a _Galaxy_ with three 
-_SphericalIsothermal_ _MassProfile_'s. 
+_MassProfile_`s interact with `Galaxy` objects in the exact same way as `LightProfile``.. Lets create a `Galaxy` with three 
+_SphericalIsothermal_ `MassProfile``.. 
 """
 
 # %%
@@ -135,8 +135,8 @@ print(galaxy_with_3_mass_profiles)
 
 # %%
 """
-We can use a _Galaxy_ _Plotter_ to plot these deflection angles. (Deflection angles of _MassProfile_'s add together just 
-like the _LightProfile_ image's above)
+We can use a `Galaxy` `Plotter`.to plot these deflection angles. (Deflection angles of `MassProfile``s add together just 
+like the `LightProfile` image`s above)
 """
 
 # %%
@@ -146,7 +146,7 @@ aplt.Galaxy.deflections_x(galaxy=galaxy_with_3_mass_profiles, grid=grid)
 
 # %%
 """
-I wonder what 3 summed convergence maps or potential's look like ;)
+I wonder what 3 summed convergence maps or potential`s look like ;)
 """
 
 # %%
@@ -156,7 +156,7 @@ aplt.Galaxy.potential(galaxy=galaxy_with_3_mass_profiles, grid=grid)
 
 # %%
 """
-Finally, a _Galaxy_ can take both light and mass profiles, and there is no limit to how many we pass it.
+Finally, a `Galaxy` can take both light and mass profiles, and there is no limit to how many we pass it.
 """
 
 # %%
@@ -204,7 +204,7 @@ galaxy_with_many_profiles = al.Galaxy(
 
 # %%
 """
-Suffice to say, the _Galaxy_'s images, convergence, potential and deflections look pretty interesting.
+Suffice to say, the `Galaxy``s images, convergence, potential and deflections look pretty interesting.
 """
 
 # %%
@@ -220,10 +220,10 @@ aplt.Galaxy.deflections_x(galaxy=galaxy_with_many_profiles, grid=grid)
 
 # %%
 """
-And we're done. Lets finished by just thinking about one question:
+And we`re done. Lets finished by just thinking about one question:
 
- 1) We've learnt we can group profiles into _Galaxy_'s to essentially sum the contribution of each _LightProfile_ to 
- the galaxy image's intensity, or sum the contribution of each _MassProfile_ to the convergence, potential and 
+ 1) We`ve learnt we can group profiles into `Galaxy``s to essentially sum the contribution of each `LightProfile` to 
+ the galaxy image`s intensity, or sum the contribution of each `MassProfile` to the convergence, potential and 
  deflection angles. In strong lensing, there are often multiple galaxies next to one another responsible for the 
  lensing - how might we account for this?
 """

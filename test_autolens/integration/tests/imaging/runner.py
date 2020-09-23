@@ -20,7 +20,7 @@ def run(
     )
 
     if mask is None:
-        mask = al.Mask.circular(
+        mask = al.Mask2D.circular(
             shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
         )
 

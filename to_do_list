@@ -39,7 +39,7 @@ Readthedocs:
     - Advanced: - Pipelines, Aggregator, hyper mode, SLaM.
     - nbsphinx for notebooks + make API docs work.
     - Guide to model customization API.
-    - Mask / PSF issue when loading data (auto pad image).
+    - Mask2D / PSF issue when loading data (auto pad image).
 
 Workspace:
 

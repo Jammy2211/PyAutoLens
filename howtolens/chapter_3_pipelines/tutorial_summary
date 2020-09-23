@@ -1,8 +1,8 @@
-Congratulations, you can now write and use pipelines in __PyAutoLens__!
+Congratulations, you can now write and use pipelines in ``.yAutoLens__!
 
 At this point, I would like you to take a look at the 'autolens_workspace/pipelines' folder. Here, you'll find lots of
 template pipelines that perform a range of different lens model fits. In general, I would recommend that you check to
-see if a template exists for what you want to do with __PyAutoLens__, before attempting to write a pipeline from scratch.
+see if a template exists for what you want to do with ``.yAutoLens__, before attempting to write a pipeline from scratch.
 Of course, many of these templates probably require only minor tweaking to meet your scientific needs.
 
 
@@ -19,5 +19,5 @@ personal preference. Its nice to keep pipelines and runners separate, as it enco
 Before moving onto chapter 4, there's one more thing I'd like you to do. At this point, you're probably a bit bored of
 fitting simulated images. Sure, they're informative, and look pretty, but I think its time you model a real strong lens,
 Don't you? The template pipelines and runners are setup to model a real strong lens - 'slacs_1430+4105' - which comes
-distributed with __PyAutoLens__. Thus, if you run the pipeline runner, you can quickly get
+distributed with ``.yAutoLens__. Thus, if you run the pipeline runner, you can quickly get
 modeling your first real strong lens - its about time after 3 chapters of HowTolens!

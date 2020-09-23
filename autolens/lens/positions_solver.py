@@ -27,7 +27,7 @@ class AbstractPositionsSolver:
         """Remove all coordinates from a grid which are within the distance_from_mass_profile_centre attribute of any
         mass profile of the lensing object.
 
-        The _PositionFinder_ often finds multiple unphyiscal solutions near a mass profile due to the high levels of
+        The `PositionFinder` often finds multiple unphyiscal solutions near a mass profile due to the high levels of
         demagnification. These are typically not observable in real galaxies and thus may benefit from being removed
         from the PositionFiner.
 
@@ -38,7 +38,7 @@ class AbstractPositionsSolver:
         ----------
         lensing_obj : autogalaxy.LensingObject
             An object which has a deflection_from_grid method for performing lensing calculations, for example a
-            _MassProfile_, _Galaxy_, _Plane_ or _Tracer_.
+            `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
         grid : autoarray.GridCoordinatesUniform or ndarray
             A gridd of (y,x) Cartesian coordinates for which their distances to the mass profile centres are computed,
             with points within the threshold removed.
@@ -80,7 +80,7 @@ class AbstractPositionsSolver:
         Buffing and upscaling work together, so a buffer=2 and upscale=2 will produce a new 6x6 grid centred around the
         input coordinate.
 
-        The _PositionFinder_ works by locating pixels that trace closer to the source galaxy than neighboring pixels
+        The `PositionFinder` works by locating pixels that trace closer to the source galaxy than neighboring pixels
         and iteratively refining the grid to find pixels that trace close at higher and higher resolutions. This
         function is core to producing these upscaled grids.
 
@@ -129,7 +129,7 @@ class AbstractPositionsSolver:
          3) Computing their distance to the centre of the source in the source-plane.
          4) Finding pixels whose source-plane distance is lower than all 8 neighboring pixels.
 
-        The _PositionFinder_ works by locating pixels that trace closer to the source galaxy than neighboring pixels
+        The `PositionFinder` works by locating pixels that trace closer to the source galaxy than neighboring pixels
         and iteratively refining the grid to find pixels that trace close at higher and higher resolutions. This
         function is core to finding pixelsl that meet this criteria.
 
@@ -137,7 +137,7 @@ class AbstractPositionsSolver:
         ----------
         lensing_obj : autogalaxy.LensingObject
             An object which has a deflection_from_grid method for performing lensing calculations, for example a
-            _MassProfile_, _Galaxy_, _Plane_ or _Tracer_.
+            `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
         grid : autoarray.GridCoordinatesUniform or ndarray
             A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
             their neighbors are found.
@@ -183,7 +183,7 @@ class AbstractPositionsSolver:
         ----------
         lensing_obj : autogalaxy.LensingObject
             An object which has a deflection_from_grid method for performing lensing calculations, for example a
-            _MassProfile_, _Galaxy_, _Plane_ or _Tracer_.
+            `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
         grid : autoarray.GridCoordinatesUniform or ndarray
             A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
             their neighbors are found.
@@ -221,7 +221,7 @@ class PositionsFinder(AbstractPositionsSolver):
         distance_from_source_centre=None,
         distance_from_mass_profile_centre=None,
     ):
-        """Given a _LensingObject_ (e.g. a _MassProfile, _Galaxy_, _Plane_ or _Tracer_) this class uses their
+        """Given a `LensingObject` (e.g. a _MassProfile, `Galaxy`, `Plane` or _Tracer_) this class uses their
         deflections_from_grid method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
         source-centre coordinate in the source-plane.
 
@@ -242,7 +242,7 @@ class PositionsFinder(AbstractPositionsSolver):
 
           - Image pixels which do not correspond to genuine multiple images may be detected as they meet the peak
             criteria. This can occurance in certain circumstances where a non-multiple image still traces closer than its
-            8 neighbors. Depending on how the _PositionFinder_ is being used these can be removed.
+            8 neighbors. Depending on how the `PositionFinder` is being used these can be removed.
          """
 
         super(PositionsFinder, self).__init__(
@@ -273,7 +273,7 @@ class PositionsFinder(AbstractPositionsSolver):
             upscale > 1, the pixel_scales are reduced to pixel_scale / upscale_factor.
         lensing_obj : autogalaxy.LensingObject
             An object which has a deflection_from_grid method for performing lensing calculations, for example a
-            _MassProfile_, _Galaxy_, _Plane_ or _Tracer_.
+            `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
         source_plane_coordinate : (float, float)
             The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
             for.
@@ -480,7 +480,7 @@ def grid_square_neighbors_1d_from(shape_1d):
     For example:
 
          x x x  x x x x x x x
-         x x x  x x x x x x x      Th s  s an example mask.Mask, where:
+         x x x  x x x x x x x      Th s  s an example mask.Mask2D, where:
          x x x  x x x x x x x
          x x x  0 1 2 3 x x x      x = True (P xel  s masked and excluded from the gr d)
          x x x  4 5 6 7 x x x      o = False (P xel  s not masked and  ncluded  n the gr d)

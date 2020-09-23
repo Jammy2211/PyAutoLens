@@ -1,8 +1,6 @@
-from autogalaxy.aggregator import aggregator as ag_agg
 from autolens.aggregator import aggregator as agg
 
 import numpy as np
-from autoarray.plot import plotters
 from autogalaxy.plot import lensing_plotters, plane_plots, inversion_plots
 from autolens.plot import fit_imaging_plots
 from autoarray.plot import plotters
@@ -17,7 +15,11 @@ def agg_max_log_likelihood_from_aggregator(aggregator):
     return aggregator.filter(aggregator.directory.contains(search_max.paths.name))
 
 
-def subplot_detection_agg(agg_detect, agg_before, include=None, sub_plotter=None):
+def subplot_detection_agg(agg_before, agg_detect, include=None, sub_plotter=None):
+
+    fit_imaging_before = list(
+        agg.fit_imaging_generator_from_aggregator(aggregator=agg_before)
+    )[0]
 
     agg_max_log_likelihood = agg_max_log_likelihood_from_aggregator(
         aggregator=agg_detect
@@ -26,22 +28,14 @@ def subplot_detection_agg(agg_detect, agg_before, include=None, sub_plotter=None
         agg.fit_imaging_generator_from_aggregator(aggregator=agg_max_log_likelihood)
     )[0]
 
-    fit_imaging_before = list(
-        agg.fit_imaging_generator_from_aggregator(aggregator=agg_before)
-    )[0]
     max_log_likelihood_before = fit_imaging_before.figure_of_merit
 
     detection_array = (
-        ag_agg.grid_search_result_as_array(aggregator=agg_detect)
+        agg.grid_search_result_as_array(aggregator=agg_detect)
         - max_log_likelihood_before
     )
 
-    subplot_detection_imaging(
-        fit_imaging_detect=fit_imaging_detect,
-        detection_array=detection_array,
-        include=include,
-        sub_plotter=sub_plotter,
-    )
+    mass_array = agg.grid_search_subhalo_masses_as_array(aggregator=agg_detect)
 
     subplot_detection_fits(
         fit_imaging_before=fit_imaging_before,
@@ -50,40 +44,13 @@ def subplot_detection_agg(agg_detect, agg_before, include=None, sub_plotter=None
         sub_plotter=sub_plotter,
     )
 
-
-@lensing_plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
-def subplot_detection_imaging(
-    fit_imaging_detect, detection_array, include=None, sub_plotter=None
-):
-
-    number_subplots = 4
-
-    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
-
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-
-    fit_imaging_plots.image(
-        fit=fit_imaging_detect, include=include, plotter=sub_plotter
+    subplot_detection_imaging(
+        fit_imaging_detect=fit_imaging_detect,
+        detection_array=detection_array,
+        mass_array=mass_array,
+        include=include,
+        sub_plotter=sub_plotter,
     )
-
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
-
-    fit_imaging_plots.signal_to_noise_map(
-        fit=fit_imaging_detect, include=include, plotter=sub_plotter
-    )
-
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
-
-    plotters.plot_array(array=detection_array, include=include, plotter=sub_plotter)
-
-    #  sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
-
-    #  fit_imaging_plots.chi_squared_map(fit=fit_imaging_before, plotter=sub_plotter)
-
-    sub_plotter.output.subplot_to_figure()
-
-    sub_plotter.figure.close()
 
 
 @lensing_plotters.set_include_and_sub_plotter
@@ -91,24 +58,53 @@ def subplot_detection_imaging(
 def subplot_detection_fits(
     fit_imaging_before, fit_imaging_detect, include=None, sub_plotter=None
 ):
+    """
+    A subplot comparing the normalized residuals, chi-squared map and source reconstructions of the model-fits
+    before the subhalo added to the model (top row) and the subhalo fit which gives the largest increase in
+    Bayesian evidence on the subhalo detection grid search.
 
+    Parameters
+    ----------
+    fit_imaging_before : FitImaging
+        The fit of a `Tracer` not including a subhalo in the model to a `MaskedImaging` dataset (e.g. the
+        model-image, residual_map, chi_squared_map).
+    fit_imaging_detect : FitImaging
+        The fit of a `Tracer` with the subhalo detection grid's highest evidence model including a subhalo to a
+        `MaskedImaging` dataset (e.g. the  model-image, residual_map, chi_squared_map).
+    include : Include
+        Customizes what appears on the plots (e.g. critical curves, profile centres, origin, etc.).
+    sub_plotter : SubPlotter
+        Object for plotting PyAutoLens data-stuctures as subplots via Matplotlib.
+    """
     number_subplots = 6
 
     sub_plotter.open_subplot_figure(number_subplots=number_subplots)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(
+        title="Normailzed Residuals (No Subhalo)"
+    )
+
     fit_imaging_plots.normalized_residual_map(
-        fit=fit_imaging_before, include=include, plotter=sub_plotter
+        fit=fit_imaging_before, include=include, plotter=sub_plotter_detect
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(
+        title="Chi-Squared Map (No Subhalo)"
+    )
+
     fit_imaging_plots.chi_squared_map(
-        fit=fit_imaging_before, include=include, plotter=sub_plotter
+        fit=fit_imaging_before, include=include, plotter=sub_plotter_detect
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(
+        title="Source Reconstruction (No Subhalo)"
+    )
 
     source_model_on_subplot(
         fit=fit_imaging_before,
@@ -116,19 +112,31 @@ def subplot_detection_fits(
         number_subplots=6,
         subplot_index=3,
         include=include,
-        sub_plotter=sub_plotter,
+        sub_plotter=sub_plotter_detect,
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(
+        title="Normailzed Residuals (With Subhalo)"
+    )
+
     fit_imaging_plots.normalized_residual_map(
-        fit=fit_imaging_detect, include=include, plotter=sub_plotter
+        fit=fit_imaging_detect, include=include, plotter=sub_plotter_detect
+    )
+
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(
+        title="Chi-Squared Map (With Subhalo)"
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
     fit_imaging_plots.chi_squared_map(
-        fit=fit_imaging_detect, include=include, plotter=sub_plotter
+        fit=fit_imaging_detect, include=include, plotter=sub_plotter_detect
+    )
+
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(
+        title="Source Reconstruction (With Subhalo)"
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
@@ -139,8 +147,57 @@ def subplot_detection_fits(
         number_subplots=6,
         subplot_index=6,
         include=include,
-        sub_plotter=sub_plotter,
+        sub_plotter=sub_plotter_detect,
     )
+
+    sub_plotter.output.subplot_to_figure()
+
+    sub_plotter.figure.close()
+
+
+@lensing_plotters.set_include_and_sub_plotter
+@plotters.set_subplot_filename
+def subplot_detection_imaging(
+    fit_imaging_detect, detection_array, mass_array, include=None, sub_plotter=None
+):
+
+    number_subplots = 4
+
+    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
+
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(title="Image")
+
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+
+    fit_imaging_plots.image(
+        fit=fit_imaging_detect, include=include, plotter=sub_plotter_detect
+    )
+
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(
+        title="Signal-To_Noise Map"
+    )
+
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+
+    fit_imaging_plots.signal_to_noise_map(
+        fit=fit_imaging_detect, include=include, plotter=sub_plotter_detect
+    )
+
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(
+        title="Increase in Log Evidence"
+    )
+
+    plotters.plot_array(
+        array=detection_array, include=include, plotter=sub_plotter_detect
+    )
+
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(title="Subhalo Mass")
+
+    plotters.plot_array(array=mass_array, include=include, plotter=sub_plotter_detect)
 
     sub_plotter.output.subplot_to_figure()
 

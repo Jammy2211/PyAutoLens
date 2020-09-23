@@ -91,7 +91,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                     preloaded_caustics=tracer.caustics,
                 )
 
-            except Exception or IndexError or ValueError:
+            except (Exception, IndexError, ValueError):
 
                 visualizer = self.visualizer
 

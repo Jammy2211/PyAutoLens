@@ -34,7 +34,7 @@ for instrument in ["euclid", "hst", "hst_up"]:  # , 'ao']:
         data_name="lens_sie__source_smooth", instrument=instrument
     )
 
-    mask = al.Mask.circular(
+    mask = al.Mask2D.circular(
         shape_2d=imaging.shape_2d,
         pixel_scales=imaging.pixel_scales,
         sub_size=sub_size,
