@@ -64,14 +64,14 @@ print(imaging.psf)
 
 # %%
 """
-To fit an image, we first specify a `Mask`, which describes the sections of the image that we fit.
+To fit an image, we first specify a `Mask2D`, which describes the sections of the image that we fit.
 
 Typically, we want to mask regions of the image where the lens and source galaxies are not visible, for example at 
 the edges where the signal is entirely background sky and noise.
 
-For the image we simulated, a 3" circular `Mask` will do the job.
+For the image we simulated, a 3" circular `Mask2D` will do the job.
 
-A `Mask` also takes the `sub_size` parameter we are used to giving a grid. This does what it does for a `Grid` - 
+A `Mask2D` also takes the `sub_size` parameter we are used to giving a grid. This does what it does for a `Grid` - 
 defining the (masked) sub-grid used to calculate lensing quantities from a mask.
 """
 

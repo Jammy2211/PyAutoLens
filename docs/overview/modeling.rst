@@ -30,7 +30,7 @@ In the example above, we will fit our strong lens data two galaxies:
 
 The redshifts of the lens (z=0.5) and source(z=1.0) are fixed.
 
-To perform the model-fit, we create a *PhaseImaging* object and 'run' the phase by passing it the *Imaging* dataset
+To perform the model-fit, we create a `PhaseImaging` object and 'run' the phase by passing it the *Imaging* dataset
 and *Mask2D*.
 
 We also pass it a *non-linear search*, which is the algorithm used to determine the set of *LightProfile* and
@@ -47,7 +47,7 @@ maximize its *log likelihood*.
 
     result = phase.run(data=imaging, mask=mask)
 
-The *PhaseImaging* object above returned a 'result', or *Result* object. This contains the maximum log likelihood
+The `PhaseImaging` object above returned a 'result', or *Result* object. This contains the maximum log likelihood
 *Tracer* and *FitImaging*, which can easily be plotted.
 
 .. code-block:: bash

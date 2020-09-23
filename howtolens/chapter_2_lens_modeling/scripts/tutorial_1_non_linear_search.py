@@ -128,7 +128,7 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-The non-linear fit also needs a `Mask`, lets use a 3.0" circle.
+The non-linear fit also needs a `Mask2D`, lets use a 3.0" circle.
 """
 
 # %%

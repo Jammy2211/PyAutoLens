@@ -44,7 +44,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging)
 # %%
 """
 So, what is a border? In the image-plane, a border is the set of exterior pixels in a mask that are at, well, its 
-border. Lets plot the image with a circular `Mask`, and tell our `Imaging` `Plotter`.to plot the border as well.
+border. Lets plot the image with a circular `Mask2D`, and tell our `Imaging` `Plotter`.to plot the border as well.
 """
 
 # %%
@@ -58,8 +58,8 @@ aplt.Imaging.subplot_imaging(
 
 # %%
 """
-As you can see, for a circular `Mask`, the border *is* the edge of our `Mask` (the ring of black dots we`re used to 
-seeing whenever we plot a `Mask`.. For an annular `Mask`, not every pixel on the edge of the mask is necessarily a part 
+As you can see, for a circular `Mask2D`, the border *is* the edge of our `Mask2D` (the ring of black dots we`re used to 
+seeing whenever we plot a `Mask2D`.. For an annular `Mask2D`, not every pixel on the edge of the mask is necessarily a part 
 of its border!
 """
 
@@ -78,7 +78,7 @@ aplt.Imaging.subplot_imaging(
 
 # %%
 """
-Indeed, a border is *only* the pixels at the exterior edge of our `Mask`, which for the annular _Mask- above means 
+Indeed, a border is *only* the pixels at the exterior edge of our `Mask2D`, which for the annular _Mask- above means 
 non of the pixels at the inner radius = 0.8" edge are part of the border.
 
 So, what does a border actually do? To show you, we'll need to fit this image with a lens model and `Mapper` and we'll 
@@ -113,7 +113,7 @@ def perform_fit_with_source_galaxy_mask_and_border(
 
 # %%
 """
-Okay, so lets first look at our `Mapper` without using a border using our annular `Mask`.
+Okay, so lets first look at our `Mapper` without using a border using our annular `Mask2D`.
 
 First, note how we set up the border. We use a `SettingsPixelization` object, which is analogous to the 
 _SettingsMaskedImaging_ and `SettingsLens` objects we used in previous tutorials. Later, you`ll see how these 
@@ -161,7 +161,7 @@ aplt.Inversion.reconstruction(
 """
 Woah - whats happened? There are lots of extra points on our source-plane `Grid` which trace to extremely large radii 
 away from the central regions of the source-plane! These points are traced image-pixels (just like all the other points) 
-which correspond to the central image-pixels that our annular `Mask` masked but that our circular `Mask` didn`t!
+which correspond to the central image-pixels that our annular `Mask2D` masked but that our circular `Mask2D` didn`t!
 
 Lets quickly check this using a `Mapper` `Plotter`.
 """
@@ -204,7 +204,7 @@ we would see the central image.
 This is a problem for our `Pixelization`.nd `Mapper`, which in the source-plane fits these demagnified pixels like 
 any other pixels. This has two negative consequences:
 
- 1) The `Rectangular` `Pixelization`.we `overlay` over the source-plane is much larger than for the annular `Mask` 
+ 1) The `Rectangular` `Pixelization`.we `overlay` over the source-plane is much larger than for the annular `Mask2D` 
  because it has to expand to include the demagnified image-pixels. As a result, large source-pixels are used to 
  reconstruct the central regions of the source-plane (where the source galaxy is actually located), meaning we 
  reconstruct the source-galaxy at a lower effective resolution.
@@ -212,10 +212,10 @@ any other pixels. This has two negative consequences:
  2) The `Rectangular` `Pixelization`.reconstructs the flux of the demanigified image pixels using source-pixels 
  which contain *only* demagnified image pixels. However, these source-pixels *should* have other image-pixels 
  traced within them from pixels at large radii from the centre of the lens galaxy. Unfortunately, our circular 
- `Mask` masks these pixels out, meaning they do not make it to our source-plane and are omitted from the source 
+ `Mask2D` masks these pixels out, meaning they do not make it to our source-plane and are omitted from the source 
  reconstruction.
 
-Lets quickly use a larger circular `Mask` to confirm that these pixels do exist, if we don`t mask them.
+Lets quickly use a larger circular `Mask2D` to confirm that these pixels do exist, if we don`t mask them.
 """
 
 # %%
@@ -240,7 +240,7 @@ This second point is a *huge* problem, as allowing source-pixels to fit regions 
 unphysical way introduces extremely dangerous systematics into our source reconstruction and lens model analysis. 
 You can see this in the weird patterns these pixels make in the exterior regions of our source-reconstruction!
 
-Borders are the solution to this problem. We simply take the `Mask` border in the image-plane we showed above, trace 
+Borders are the solution to this problem. We simply take the `Mask2D` border in the image-plane we showed above, trace 
 it to the source-plane and relocate all traced image-pixels pixels outside this source-plane border to its edge. Lets 
 take a look.
 """
@@ -269,10 +269,10 @@ aplt.Mapper.subplot_image_and_mapper(
 This successfully addresses both of the issues above! However, you might be thinking, isn`t that a bit of a hack? Its 
 not really a physical treatment of the ray-tracing, is it?
 
-Well, you`re right. However, the *only* physical way to do this would be to use a `Mask` so large that all demangified 
-central pixels are surrounded by traced image-pixels. This would require a `Mask` so large our computer would crash, 
+Well, you`re right. However, the *only* physical way to do this would be to use a `Mask2D` so large that all demangified 
+central pixels are surrounded by traced image-pixels. This would require a `Mask2D` so large our computer would crash, 
 That`s not a good solution, thus borders provide us with a workaround, one that I`ve extensively tested and have found 
-that, provided your `Mask` isn`t too small, doesn`t lead to systematic biases.
+that, provided your `Mask2D` isn`t too small, doesn`t lead to systematic biases.
 
 Next, I`m going to quickly highlight how important borders are when modeling multiple lens galaxies. Their complex 
 mass distribution and lensing configuration often produce very nasty edge effects where image pixels not just in the 
