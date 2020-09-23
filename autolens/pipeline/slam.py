@@ -79,7 +79,7 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
             )
 
     def shear_from_previous_pipeline(self, index=0):
-        """Return the shear _PriorModel_ from a previous pipeline, where:
+        """Return the shear `PriorModel` from a previous pipeline, where:
 
         1) If the shear was included in the *Source* pipeline and *no_shear* is *False* in the *Mass* object, it is
            returned using this pipeline result as a model.
@@ -503,7 +503,7 @@ class SLaM:
         """Setup the lens model for a Mass pipeline using the previous pipeline and phase results.
 
         The lens light model is not specified by the Mass pipeline, so the Light pipelines are used to
-        determine this. This function returns a _GalaxyModel_ for the lens, where:
+        determine this. This function returns a `GalaxyModel` for the lens, where:
 
         1) The lens light model uses the light model of the Light pipeline.
         2) The lens light is returned as a model if *light_is_model* is *False, an instance if *True*.
@@ -515,7 +515,7 @@ class SLaM:
         mass : ag.MassProfile
             The mass model of the len galaxy.
         shear : ag.ExternalShear
-            The _ExternalShear_ of the lens galaxy.
+            The `ExternalShear` of the lens galaxy.
         """
 
         if not light_is_model:
@@ -544,7 +544,7 @@ class SLaM:
         """Setup the lens model for a Mass pipeline using the previous pipeline and phase results.
 
         The lens light model is not specified by the Mass pipeline, so the Light pipelines are used to
-        determine this. This function returns a _GalaxyModel_ for the lens, where:
+        determine this. This function returns a `GalaxyModel` for the lens, where:
 
         1) The lens light model uses the light model of the Light pipeline.
         2) The lens light is returned as a model if *light_is_model* is *False, an instance if *True*.
@@ -556,7 +556,7 @@ class SLaM:
         mass : ag.MassProfile
             The mass model of the len galaxy.
         shear : ag.ExternalShear
-            The _ExternalShear_ of the lens galaxy.
+            The `ExternalShear` of the lens galaxy.
         """
 
         if not light_is_model:
@@ -587,7 +587,7 @@ class SLaM:
         """Setup the lens model for a Mass pipeline using the previous pipeline and phase results.
 
         The lens light model is not specified by the Mass pipeline, so the Light pipelines are used to
-        determine this. This function returns a _GalaxyModel_ for the lens, where:
+        determine this. This function returns a `GalaxyModel` for the lens, where:
 
         1) The lens light model uses the light model of the Light pipeline.
         2) The lens light is returned as a model if *light_is_model* is *False, an instance if *True*.
@@ -599,7 +599,7 @@ class SLaM:
         mass : ag.MassProfile
             The mass model of the len galaxy.
         shear : ag.ExternalShear
-            The _ExternalShear_ of the lens galaxy.
+            The `ExternalShear` of the lens galaxy.
         """
 
         if isinstance(self.pipeline_mass.setup_light, setup.SetupLightBulgeDisk):

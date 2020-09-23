@@ -225,7 +225,7 @@ These config files are found at 'autolens_workspace/config/json_priors' and they
 variables for every model-component in a project, using .json format files (as opposed to .ini. for most config files).
 
 The autolens workspace contains example json_prior files for the 1D data fitting problem. An example entry of the
-json configs for the *sigma* parameter of the *Gaussian* class is as follows:
+json configs for the ``sigma`` parameter of the ``Gaussian`` class is as follows:
 
 .. code-block:: bash
 

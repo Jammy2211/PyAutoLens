@@ -27,9 +27,7 @@ def test__subhalo_detection_sub_plot(
     plot_patch,
 ):
 
-    arr = al.Array.manual_2d(
-        array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0
-    )
+    arr = al.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
 
     aplt.Subhalo.subplot_detection_imaging(
         fit_imaging_detect=masked_imaging_fit_x2_plane_7x7,

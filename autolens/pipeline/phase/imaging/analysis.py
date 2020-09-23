@@ -79,7 +79,12 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             )
 
             return fit.figure_of_merit
-        except (PixelizationException, InversionException, GridException, OverflowError) as e:
+        except (
+            PixelizationException,
+            InversionException,
+            GridException,
+            OverflowError,
+        ) as e:
             raise FitException from e
 
     def masked_imaging_fit_for_tracer(
@@ -133,7 +138,12 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                     settings_pixelization=settings_pixelization,
                     settings_inversion=self.settings.settings_inversion,
                 ).log_evidence
-            except (PixelizationException, InversionException, GridException, OverflowError) as e:
+            except (
+                PixelizationException,
+                InversionException,
+                GridException,
+                OverflowError,
+            ) as e:
                 log_evidence = None
 
             if log_evidence is not None:

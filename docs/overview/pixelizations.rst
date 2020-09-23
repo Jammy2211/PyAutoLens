@@ -13,7 +13,7 @@ appears, with multiple rings and clumps of light:
   :width: 400
   :alt: Alternative text
 
-We are going to fit this image with an _Inversion_, so we first create *Mask2D* and *MaskedImaging* objects:
+We are going to fit this image with an `Inversion`, so we first create *Mask2D* and *MaskedImaging* objects:
 
 .. code-block:: bash
 

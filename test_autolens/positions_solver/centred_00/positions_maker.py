@@ -18,7 +18,7 @@ import autolens.plot as aplt
 import os
 
 # %%
-"""The pickle path is where the _Tracer_ and _Positions_ are output, so they can be loaded by other scripts."""
+"""The pickle path is where the `Tracer` and `Positions` are output, so they can be loaded by other scripts."""
 
 # %%
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
@@ -55,18 +55,18 @@ mass_profile_model.centre.einstein_radius = af.UniformPrior(
 
 iters = 50
 
-"""Use a _PositionsSolver_ which does not use grid upscaling."""
+"""Use a `PositionsSolver` which does not use grid upscaling."""
 
 solver = al.PositionsFinder(grid=grid, use_upscaling=True, upscale_factor=2)
 
 for i in range(iters):
 
-    """Make a random _MassProfile_ instance from the priors defined above."""
+    """Make a random `MassProfile` instance from the priors defined above."""
 
     mass_profile = mass_profile_model.random_instance()
 
     """
-    Only the _LightProfile_ centre is used by the position solver, but a light profile is used to visalize the
+    Only the `LightProfile` centre is used by the position solver, but a light profile is used to visalize the
     lensed source.
     """
 
@@ -99,7 +99,7 @@ for i in range(iters):
         include=aplt.Include(origin=False, critical_curves=False, caustics=False),
     )
 
-    """Save the _Tracer_ and _Positions_ so they can be used for testing other _PositionsSolver_ settings."""
+    """Save the `Tracer` and `Positions` so they can be used for testing other `PositionsSolver` settings."""
 
     tracer.save(file_path=pickle_path, filename=f"tracer_{str(i)}")
     positions.save(file_path=pickle_path, filename=f"positions_{str(i)}")

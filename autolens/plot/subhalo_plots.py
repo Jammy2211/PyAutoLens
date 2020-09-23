@@ -66,11 +66,11 @@ def subplot_detection_fits(
     Parameters
     ----------
     fit_imaging_before : FitImaging
-        The fit of a _Tracer_ not including a subhalo in the model to a _MaskedImaging_ dataset (e.g. the
+        The fit of a `Tracer` not including a subhalo in the model to a `MaskedImaging` dataset (e.g. the
         model-image, residual_map, chi_squared_map).
     fit_imaging_detect : FitImaging
-        The fit of a _Tracer_ with the subhalo detection grid's highest evidence model including a subhalo to a
-        _MaskedImaging_ dataset (e.g. the  model-image, residual_map, chi_squared_map).
+        The fit of a `Tracer` with the subhalo detection grid's highest evidence model including a subhalo to a
+        `MaskedImaging` dataset (e.g. the  model-image, residual_map, chi_squared_map).
     include : Include
         Customizes what appears on the plots (e.g. critical curves, profile centres, origin, etc.).
     sub_plotter : SubPlotter
@@ -83,7 +83,7 @@ def subplot_detection_fits(
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Normailzed Residuals (No Subhalo)",
+        title="Normailzed Residuals (No Subhalo)"
     )
 
     fit_imaging_plots.normalized_residual_map(
@@ -93,7 +93,7 @@ def subplot_detection_fits(
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Chi-Squared Map (No Subhalo)",
+        title="Chi-Squared Map (No Subhalo)"
     )
 
     fit_imaging_plots.chi_squared_map(
@@ -103,7 +103,7 @@ def subplot_detection_fits(
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Source Reconstruction (No Subhalo)",
+        title="Source Reconstruction (No Subhalo)"
     )
 
     source_model_on_subplot(
@@ -118,7 +118,7 @@ def subplot_detection_fits(
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Normailzed Residuals (With Subhalo)",
+        title="Normailzed Residuals (With Subhalo)"
     )
 
     fit_imaging_plots.normalized_residual_map(
@@ -126,7 +126,7 @@ def subplot_detection_fits(
     )
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Chi-Squared Map (With Subhalo)",
+        title="Chi-Squared Map (With Subhalo)"
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
@@ -136,7 +136,7 @@ def subplot_detection_fits(
     )
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Source Reconstruction (With Subhalo)",
+        title="Source Reconstruction (With Subhalo)"
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
@@ -165,9 +165,7 @@ def subplot_detection_imaging(
 
     sub_plotter.open_subplot_figure(number_subplots=number_subplots)
 
-    sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Image",
-    )
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(title="Image")
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
@@ -176,7 +174,7 @@ def subplot_detection_imaging(
     )
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Signal-To_Noise Map",
+        title="Signal-To_Noise Map"
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
@@ -188,16 +186,16 @@ def subplot_detection_imaging(
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Increase in Log Evidence",
+        title="Increase in Log Evidence"
     )
 
-    plotters.plot_array(array=detection_array, include=include, plotter=sub_plotter_detect)
+    plotters.plot_array(
+        array=detection_array, include=include, plotter=sub_plotter_detect
+    )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
-    sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Subhalo Mass",
-    )
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(title="Subhalo Mass")
 
     plotters.plot_array(array=mass_array, include=include, plotter=sub_plotter_detect)
 

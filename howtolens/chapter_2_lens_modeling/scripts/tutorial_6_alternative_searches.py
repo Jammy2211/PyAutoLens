@@ -3,7 +3,7 @@
 Tutorial 6: Alternative Searches
 ================================
 
-Up to now, we've always used the non-linear search Dynesty and not considered the input parameters that control its
+Up to now, we`ve always used the non-linear search Dynesty and not considered the input parameters that control its
 sampling. In this tutorial, we'll consider how we can change these setting to balance finding the global maxima
 solution with fast run time, as well as other types of non-linear searches we can use to perform lens modeling.
 """
@@ -27,11 +27,11 @@ conf.instance = conf.Config(
 
 # %%
 """
-We'll use new strong lensing data, where:
+we'll use new strong lensing data, where:
 
- - The lens galaxy's _LightProfile_ is an _EllipticalSersic_.
- - The lens galaxy's _MassProfile_ is an _EllipticalIsothermal_.
- - The source galaxy's _LightProfile_ is an _EllipticalSersic_.
+ - The lens galaxy`s `LightProfile` is an `EllipticalSersic`.
+ - The lens galaxy`s `MassProfile` is an `EllipticalIsothermal`.
+ - The source galaxy`s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
@@ -50,7 +50,7 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-We'll create and use a smaller 2.0" _Mask_ again.
+we'll create and use a smaller 2.0" `Mask` again.
 """
 
 # %%
@@ -60,7 +60,7 @@ mask = al.Mask2D.circular(
 
 # %%
 """
-When plotted, the lens light's is clearly visible in the centre of the image.
+When plotted, the lens light`s is clearly visible in the centre of the image.
 """
 
 # %%
@@ -69,7 +69,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 # %%
 """
 Like in the previous tutorial, we use a_SettingsPhaseImaging_ object to specify our model-fitting procedure uses a 
-regular _Grid_.
+regular `Grid`.
 """
 
 # %%
@@ -83,7 +83,7 @@ __Nested Sampling__
 
 Lets first perform the model-fit using Dynesty, but first discuss in a bit more detail how Dynesty works.
 
-Dynesty is a 'nested sampling' algorithm. As we described in tutorial 1, it throws down a set of 'live points' in 
+Dynesty is a `nested sampling` algorithm. As we described in tutorial 1, it throws down a set of `live points` in 
 parameter space, where each live point corresponds to a lens model with a given set of parameters. These points are
 intially distributed according to our priors, hence why tuning our priors allows us to sample parameter space faster.
 
@@ -112,7 +112,7 @@ Lets perform two fits, where:
 
  - One has many live points, a low sampling efficiency and evidence tolerance, causing the non-linear search to
  take a long time to run (in fact, on my laptop, this run takes > 500000 iterations which translates to > 6 
- hours. So, I've commented the run function out to not waste your time, but feel free to uncomment it and run
+ hours. So, I`ve commented the run function out to not waste your time, but feel free to uncomment it and run
  the phase to see this for yourself!).
       
  - One has few live points, a high sampling efficiency and evidence tolerance, causing the non-linear search to
@@ -216,18 +216,18 @@ and do not provide high likelihood fits to the data, but takes many extra iterat
 error estimates (perhaps this is our final lens model fit before we publish the results in a paper), these extra
 iterations are acceptable. 
 
-However, we often don't care about the errors. For example, in the previous tutorial when linking phases, the only 
+However, we often don`t care about the errors. For example, in the previous tutorial when linking phases, the only 
 result we used from the fit performed in the first phase was the maximum log likelihood model, omitting the errors
 entirely! Its seems wasteful to use a nested sampling algorithm like Dynesty to map out the entirity of parameter
-space when we don't use this information! 
+space when we don`t use this information! 
 
-There are a class of non-linear searches called 'optimizers', which seek to optimize just one thing, the log 
+There are a class of non-linear searches called `optimizers`, which seek to optimize just one thing, the log 
 likelihood. They want to find the model that maximizes the log likelihood, with no regard for the errors, thus not 
 wasting time mapping out in intricate detail every facet of parameter space. Lets see how much faster we can find a 
 good fit to the lens data using an optimizer.
 
-We'll use the 'Particle Swarm Optimizer' PySwarms. Conceptually this works quite similar to Dynesty, it has a set of 
-points in parameter space (called 'particles') and it uses their likelihoods to determine where it thinks the higher
+we'll use the `Particle Swarm Optimizer` PySwarms. Conceptually this works quite similar to Dynesty, it has a set of 
+points in parameter space (called `particles`) and it uses their likelihoods to determine where it thinks the higher
 likelihood regions of parameter space are. 
 
 Unlike Dynesty, this algorithm requires us to specify how many iterations it should perform to find the global 
@@ -266,17 +266,17 @@ It worked, and was much faster than Dynesty!
 
 So, when should we use Dynesty and when should we use PySwarms? Its simple:
 
- - If we don't care about errors and want to get the global maxima solution as quickly as possible, we should use
+ - If we don`t care about errors and want to get the global maxima solution as quickly as possible, we should use
       PySwarms.
       
  - If we want a model with robust and precise errors, we should use Dynesty.
     
 There is one exception however, for complex models whose priors have not be well tuned or initialized by a previous 
-phase, PySwarms has a tendancy to locate a local maxima. Dynesty's slower but more complete sampling of parameter space 
-will often find the global maxima when PySwarms doesn't. So, if you're not happy with the results PySwarms is giving, 
+phase, PySwarms has a tendancy to locate a local maxima. Dynesty`s slower but more complete sampling of parameter space 
+will often find the global maxima when PySwarms doesn`t. So, if you`re not happy with the results PySwarms is giving, 
 it may be shrewd to bite-the-button on run-time and use Dynesty to get your initial lens model fit.
 
-In the next chapter, when we introduce pipelines, you'll note that are our general strategy to lens modeling is to
+In the next chapter, when we introduce pipelines, you`ll note that are our general strategy to lens modeling is to
 initialize the model-fit with Dynesty, perform intermediate phases that refine the model with PySwarms and then
 end with Dynesty for robust errors. Here, we choose our non-linear searches based on what result we want!
 """
@@ -287,7 +287,7 @@ __MCMC__
 
 For users familiar with Markov Chain Monte Carlo (MCMC) non-linear samplers, PyAutoFit supports the non-linear
 search *Emcee* (af.Emcee). We have found this to be less effective at lens modeling than Dynesty and PySwarms,
-but it is sill pretty successful. I've included an example run of Emcee below.
+but it is sill pretty successful. I`ve included an example run of Emcee below.
 """
 
 # %%
