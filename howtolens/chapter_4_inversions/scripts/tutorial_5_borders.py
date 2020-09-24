@@ -284,7 +284,7 @@ centre of mask, but anywhere in the mask, trace beyond the source-plane border.
 we'll use new strong lensing data as the previous tutorial, where:
 
  - The lens galaxy`s light is omitted.
- - There are two lens galaxies whose `MassProfile``s are `EllipticalIsothermal``..
+ - There are two lens galaxies whose `MassProfile`'s are `EllipticalIsothermal``..
  - The source galaxy`s `LightProfile` is an `EllipticalSersic`.
 """
 

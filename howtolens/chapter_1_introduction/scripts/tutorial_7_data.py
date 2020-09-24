@@ -59,7 +59,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 # %%
 """
-Lets look at the `Tracer``s image - this is the image we'll be simulating.
+Lets look at the `Tracer`'s image - this is the image we'll be simulating.
 """
 
 # %%

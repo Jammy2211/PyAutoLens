@@ -3,7 +3,7 @@ import autolens as al
 
 """
 In this pipeline, we fit the a strong lens with two lens galaxies using  two `EllipticalSersic` `LightProfile``., 
-two `EllipticalIsothermal` `MassProfile``s and a parametric `EllipticalSersic` source.
+two `EllipticalIsothermal` `MassProfile`'s and a parametric `EllipticalSersic` source.
 
 The pipeline assumes the lens galaxies are at (0.0", -1.0") and (0.0", 1.0") and is not a general pipeline
 and cannot be applied to any image of a strong lens.
@@ -32,7 +32,7 @@ Phase 2:
 
 Phase 3:
 
-    Use this lens-subtracted image to fit the source-galaxy`s light. The `MassProfile``s of the two lens galaxies
+    Use this lens-subtracted image to fit the source-galaxy`s light. The `MassProfile`'s of the two lens galaxies
     can use the results of phases 1 and 2 to initialize their priors.
 
     Lens Light: EllipticalSersic + EllipticalSersic
@@ -66,7 +66,7 @@ def make_pipeline(setup, settings):
     """
     Phase 1: Fit the left lens galaxy`s light, where we:
 
-        1) Fix the centres to (0.0, -1.0), the pixel we know the left `Galaxy``s light centre peaks.
+        1) Fix the centres to (0.0, -1.0), the pixel we know the left `Galaxy`'s light centre peaks.
     """
 
     left_lens = al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)
@@ -86,7 +86,7 @@ def make_pipeline(setup, settings):
     """
     Phase 2: Fit the lens galaxy on the right, where we:
 
-        1) Fix the centres to (0.0, 1.0), the pixel we know the right `Galaxy``s light centre peaks.
+        1) Fix the centres to (0.0, 1.0), the pixel we know the right `Galaxy`'s light centre peaks.
         2) Pass the left lens`s light model as an instance, to improve the fitting of the right galaxy.
     """
 

@@ -46,7 +46,7 @@ and open the `pdf_triangle.png` figure. The Gaussian shaped lines running down t
 
 The remaining figures, which look like contour-maps, show the maximum log likelihood regions in 2D between every
 parameter pair. We often see that two parameters are `degenerate`, whereby increasing one and decreasing the other
-leads to a similar log_likelihood value. The 2D PDF between the source-galaxy`s `LightProfile``s intensity I and
+leads to a similar log_likelihood value. The 2D PDF between the source-galaxy`s `LightProfile`'s intensity I and
 effective radius R shows such a degeneracy. This makes sense - making the source galaxy brighter and smaller is
 similar to making it fainter and bigger!
 

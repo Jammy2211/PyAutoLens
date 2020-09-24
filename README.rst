@@ -44,8 +44,8 @@ readthedocs first.
 API Overview
 ------------
 
-Lensing calculations are performed in **PyAutoLens** by building a *Tracer* object from *LightProfile*, *MassProfile*
-and *Galaxy* objects. Below, we create a simple strong lens system where a redshift 0.5 lens galaxy with an Isothermal
+Lensing calculations are performed in **PyAutoLens** by building a `Tracer` object from `LightProfile`, `MassProfile`
+and `Galaxy` objects. Below, we create a simple strong lens system where a redshift 0.5 lens galaxy with an Isothermal
 mass profile lenses a background source at redshift 1.0 with an Exponential light profile.
 
 .. code-block:: python

@@ -3,17 +3,17 @@
 Lens Modeling
 -------------
 
-We can use a *Tracer* to fit data of a strong lens and use the *Tracer*'s model-image to quantify its goodness-of-fit.
+We can use a `Tracer` to fit data of a strong lens and use the `Tracer`'s model-image to quantify its goodness-of-fit.
 Of course, when observe an image of a strong lens, we have no idea what *LightProfiles* and *MassProfiles* we should
-give our *Tracer* to best reproduce the strong lens we observed:
+give our `Tracer` to best reproduce the strong lens we observed:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/image.png
   :width: 400
   :alt: Alternative text
 
 The task of finding the right *LightProfiles* and *MassProfiles* is called *lens modeling*. To begin, we must introduce
-the *GalaxyModel* object, which behaves analogously to the *Galaxy* objects we've seen already. however, instead of
-manually inputting the parameters of the *LightProfile*'s and *MassProfile*'s, for a *GalaxyModel* these are inferred
+the *GalaxyModel* object, which behaves analogously to the `Galaxy` objects we've seen already. however, instead of
+manually inputting the parameters of the `LightProfile`'s and `MassProfile`'s, for a *GalaxyModel* these are inferred
 by fitting the strong lens data.
 
 .. code-block:: bash
@@ -25,7 +25,7 @@ by fitting the strong lens data.
 
 In the example above, we will fit our strong lens data two galaxies:
 
-    - A lens galaxy with a *EllipticalDevVaucouleurs* *LightProfile* and *EllipticalIsothermal* *MassProfile*.
+    - A lens galaxy with a *EllipticalDevVaucouleurs* `LightProfile` and *EllipticalIsothermal* `MassProfile`.
     - A source galaxy with a *EllipticalExponential* light profile.
 
 The redshifts of the lens (z=0.5) and source(z=1.0) are fixed.
@@ -33,8 +33,8 @@ The redshifts of the lens (z=0.5) and source(z=1.0) are fixed.
 To perform the model-fit, we create a `PhaseImaging` object and 'run' the phase by passing it the *Imaging* dataset
 and *Mask2D*.
 
-We also pass it a *non-linear search*, which is the algorithm used to determine the set of *LightProfile* and
-*MassProfile* parameters that best-fit our data, that is, that minimize the *residuals* and *chi-squared* values and
+We also pass it a *non-linear search*, which is the algorithm used to determine the set of `LightProfile` and
+`MassProfile` parameters that best-fit our data, that is, that minimize the *residuals* and *chi-squared* values and
 maximize its *log likelihood*.
 
 .. code-block:: bash
@@ -48,7 +48,7 @@ maximize its *log likelihood*.
     result = phase.run(data=imaging, mask=mask)
 
 The `PhaseImaging` object above returned a 'result', or *Result* object. This contains the maximum log likelihood
-*Tracer* and *FitImaging*, which can easily be plotted.
+`Tracer` and *FitImaging*, which can easily be plotted.
 
 .. code-block:: bash
 
@@ -69,7 +69,7 @@ parameter samples, log likelihood values and tools to compute the errors on the 
 contains a full description of all information contained in a *Result*.
 
 *GalaxyModel*'s can be fully customized, mkaing it simple to parameterize and fit many different lens models using any
-combination of *LightProfile*'s and *MassProfile*'s light profiles:
+combination of `LightProfile`'s and `MassProfile`'s light profiles:
 
 .. code-block:: bash
 

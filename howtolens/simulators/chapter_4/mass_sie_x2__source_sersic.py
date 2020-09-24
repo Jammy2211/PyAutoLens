@@ -72,7 +72,7 @@ simulator = al.SimulatorImaging(
 )
 
 """
-Setup the two lens galaxies with `EllipticalIsothermal` `MassProfile``s and source galaxy light (_EllipticalSersic_) 
+Setup the two lens galaxies with `EllipticalIsothermal` `MassProfile`'s and source galaxy light (_EllipticalSersic_) 
 for this simulated lens.
 
 For lens modeling, defining ellipticity in terms of the  `elliptical_comps` improves the model-fitting procedure.
@@ -81,7 +81,7 @@ However, for simulating a strong lens you may find it more intuitive to define t
 axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle phi, where phi is
 in degrees and defined counter clockwise from the positive x-axis.
 
-We can use the **__PyAutoLens__** *convert* module to determine the elliptical components from the axis-ratio and phi.
+We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and phi.
 """
 
 lens_galaxy_0 = al.Galaxy(

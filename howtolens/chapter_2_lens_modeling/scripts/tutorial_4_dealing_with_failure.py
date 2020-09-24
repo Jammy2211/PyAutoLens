@@ -140,7 +140,7 @@ lens.sersic.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
 
 # %%
 """
-Lets additionally assume that the `LightProfile``s ellipticity informs us of the `MassProfile``s ellipticity. Because 
+Lets additionally assume that the `LightProfile`'s ellipticity informs us of the `MassProfile`'s ellipticity. Because 
 this may not strictly be true (e.g. because of dark matter) we'll use a wider prior.
 """
 
@@ -256,8 +256,8 @@ whilst still keeping it fairly realistic? Maybe there are some assumptions we ca
 lens model parameters and therefore dimensionality of non-linear parameter space?
 
 Well, we can *always* make assumptions. Below, I`m going to create a phase that assumes that light-traces-mass. That 
-is, that our `LightProfile``s centre, and elliptical components are perfectly aligned with its mass. This may, or may 
-not, be a reasonable assumption, but it`ll remove 4 parameters from the lens model (the `MassProfile``s y, x, and 
+is, that our `LightProfile`'s centre, and elliptical components are perfectly aligned with its mass. This may, or may 
+not, be a reasonable assumption, but it`ll remove 4 parameters from the lens model (the `MassProfile`'s y, x, and 
 elliptical components), so its worth trying!
 """
 
@@ -317,8 +317,8 @@ The results look pretty good. Our source galaxy fits the data pretty well and we
 looks similar to the one above. However, inspection of the residuals shows that the fit wasn`t quite as good as the 
 custom-phase above.
 
-It turns out that when I simulated this image light didn`t perfectly trace mass. The `LightProfile``s elliptical 
-components were (0.333333, 0.0) whereas the `MassProfile``s were (0.25, 0.0). The quality of the fit has suffered as a 
+It turns out that when I simulated this image light didn`t perfectly trace mass. The `LightProfile`'s elliptical 
+components were (0.333333, 0.0) whereas the `MassProfile`'s were (0.25, 0.0). The quality of the fit has suffered as a 
 result and the log likelihood we inferred is lower.
 
 Herein lies the pitfalls of making assumptions - they may make your model less realistic and your fits worse! 

@@ -150,7 +150,7 @@ one another (which is controlled by the `position_threshold` parameter input int
 We can easily check the image-positions are accurate by plotting them using our `Imaging` `Plotter`.(they are the magenta 
 dots on the image).
 
-To specify these positions, we use the *GridCoordinates* object, which is used by ``.yAutoLens__ in general to specify (y,x)
+To specify these positions, we use the `GridCoordinates` object, which is used by ``.yAutoLens__ in general to specify (y,x)
 coordinates.
 """
 

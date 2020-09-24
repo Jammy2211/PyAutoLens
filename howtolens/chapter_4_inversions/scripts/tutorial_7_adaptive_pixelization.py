@@ -189,6 +189,6 @@ effectively fitting just noise. We may achieve even better solutions if the cent
 reconstructed using even more pixels. So, how do we improve on this? Well, you`ll have to wait until chapter 5, 
 when we introduce ``.yAutoLens__`s adaptive functionality, or `hyper-mode`.
 
-In the mean time, you may wish to experiment with using both Rectangular and VoronoiMagnification `Grid``s to fit 
+In the mean time, you may wish to experiment with using both Rectangular and VoronoiMagnification `Grid`'s to fit 
 lenses which can be easily achieve by changing the input pixeliation given to a pipeline.
 """

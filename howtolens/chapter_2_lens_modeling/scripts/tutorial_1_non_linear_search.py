@@ -6,7 +6,7 @@ Tutorial 1: Non-linear Search
 In this example, we`re going to find a lens model that provides a good fit to an image, without assuming any knowledge
 of what the `correct` lens model is.
 
-So, whats a `lens model`? It is the combination of `LightProfile``s and `MassProfile``s we use to represent a lens galaxy,
+So, whats a `lens model`? It is the combination of `LightProfile`'s and `MassProfile`'s we use to represent a lens galaxy,
 source galaxy and therefore the strong lens ray-tracing configuration (i.e. the `Tracer`..
 
 To begin, we have to choose the parametrization of our lens model. We don`t need to specify the values of its light
@@ -39,7 +39,7 @@ We`re going to use a non-linear search algorithm called `Dynesty`. I highly reco
 lens modeling. However, for now, lets not worry about the details of how Dynesty actually works. Instead, just
 picture that a non-linear search in ``.yAutoLens__ operates as follows:
 
- 1) Randomly guess a lens model and use its `LightProfile``s and `MassProfile``s to set up a lens galaxy, source galaxy
+ 1) Randomly guess a lens model and use its `LightProfile`'s and `MassProfile`'s to set up a lens galaxy, source galaxy
  and a `Tracer`.
 
  2) Use this `Tracer` and a `MaskedImaging` to generate a model image and compare this model image to the
@@ -141,7 +141,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 # %%
 """
 To compute a lens model, we use a `GalaxyModel`, which behaves analogously to the `Galaxy` objects we`re now used to. 
-However, whereas for a `Galaxy` we manually specified the value of every parameter of its `LightProfile``s and 
+However, whereas for a `Galaxy` we manually specified the value of every parameter of its `LightProfile`'s and 
 _MassProfile_`s, for a `GalaxyModel` these are fitted for and inferred by the non-linear search.
 
 Lets model the lens galaxy with an `SphericalIsothermal` `MassProfile`.(which is what it was simulated with).
@@ -163,7 +163,7 @@ source_galaxy_model = al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponen
 We can use a `SettingsPhaseImaging` object to customize how a `Tracer` and `FitImaging` are used to fit the `Imaging` 
 dataset. Below, we specify:
 
- - That a regular *Grid* is used to fit create the model-image when fitting the data 
+ - That a regular `Grid` is used to fit create the model-image when fitting the data 
  (see `autolens_workspace/examples/grids.py` for a description of grids).
  - The sub-grid size of this grid.
 

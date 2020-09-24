@@ -5,7 +5,7 @@ from functools import partial
 
 
 def tracer_generator_from_aggregator(aggregator):
-    """Compute a generator of *Tracer* objects from an input aggregator, which generates a list of the *Tracer* objects 
+    """Compute a generator of `Tracer` objects from an input aggregator, which generates a list of the `Tracer` objects
     for every set of results loaded in the aggregator.
 
     This is performed by mapping the *tracer_from_agg_obj* with the aggregator, which sets up each tracer using only
@@ -19,11 +19,11 @@ def tracer_generator_from_aggregator(aggregator):
 
 
 def tracer_from_agg_obj(agg_obj):
-    """Compute a *Tracer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe that
+    """Compute a `Tracer` object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe that
      it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator outputs
-     such that the function can use the *Aggregator*'s map function to to create a *Tracer* generator.
+     such that the function can use the *Aggregator*'s map function to to create a `Tracer` generator.
 
-     The *tracer* is created following the same method as the PyAutoLens *Phase* classes using an instance of the
+     The `Tracer` is created following the same method as the PyAutoLens *Phase* classes using an instance of the
      maximum log likelihood model's galaxies. These galaxies have their hyper-images added (if they were used in the
      fit) and passed into a Tracer object.
 

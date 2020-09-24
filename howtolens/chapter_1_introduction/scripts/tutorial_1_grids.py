@@ -3,7 +3,7 @@
 Tutorial 1: Grids
 =================
 
-In this example, we'll create `Grid``s of Cartesian (y,x) coordinates, representing the arc-second coordinate `Grid`
+In this example, we'll create `Grid`'s of Cartesian (y,x) coordinates, representing the arc-second coordinate `Grid`
 of an observed data-set (e.g. imaging).
 """
 
@@ -56,7 +56,7 @@ print("etc.")
 # %%
 """
 _Grid_`s in ``.yAutoLens__ are stored as both 1D and 2D NumPy arrays, because different calculations benefit from us using 
-the array in different formats. We can access both the 1D and 2D `Array``s automatically by specifying the input as a 1D 
+the array in different formats. We can access both the 1D and 2D `Array`'s automatically by specifying the input as a 1D 
 or 2D.
 """
 
@@ -192,7 +192,7 @@ print("etc.")
 Congratulations, you`ve completed your first ``.yAutoLens__ tutorial! Before moving on to the next one, experiment with 
 __PyAutoLens__ by doing the following:
 
-1) Change the pixel-scale of the `Grid``s - what happens to the Cartesian coordinates?
-2) Change the resolution of the `Grid``s - what happens Cartesian coordinates?
+1) Change the pixel-scale of the `Grid`'s - what happens to the Cartesian coordinates?
+2) Change the resolution of the `Grid`'s - what happens Cartesian coordinates?
 3) Change the sub-grid size - what do you note about the pixel-scale of sub pixels?
 """

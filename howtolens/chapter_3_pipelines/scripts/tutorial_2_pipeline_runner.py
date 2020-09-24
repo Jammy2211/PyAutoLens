@@ -8,7 +8,7 @@ Tutorial 2: Two Lens Galaxies
 Up to now, all the images we`ve fitted had one lens galaxy. However, we saw in chapter 1 that our lens plane can
 consist of multiple galaxies which each contribute to the strong lensing. Multi-galaxy systems are challenging to
 model, because they add an extra 5-10 parameters to the non-linear search and, more problematically, the degeneracies
-between the `MassProfile``s of the two galaxies can be severe.
+between the `MassProfile`'s of the two galaxies can be severe.
 
 However, we can still break their analysis down using a pipeline and give ourselves a shot at getting a good lens
 model. Here, we`re going to fit a double lens system, fitting as much about each individual lens galaxy before fitting
@@ -47,8 +47,8 @@ import autolens.plot as aplt
 """
 we'll use new strong lensing data, where:
 
- - There are two lens galaxy`s whose `LightProfile``s are both `EllipticalSersic``..
- - There are two lens galaxy`s whose `MassProfile``s are both `EllipticalIsothermal``..
+ - There are two lens galaxy`s whose `LightProfile`'s are both `EllipticalSersic``..
+ - There are two lens galaxy`s whose `MassProfile`'s are both `EllipticalIsothermal``..
  - The source galaxy`s `LightProfile` is an `EllipticalExponential`.
 """
 
@@ -113,7 +113,7 @@ So, with this in mind, we`ve written a pipeline composed of 4 phases:
 
  1) Fit the `LightProfile` of the lens galaxy on the left of the image, at coordinates (0.0", -1.0").
  2) Fit the `LightProfile` of the lens galaxy on the right of the image, at coordinates (0.0", 1.0").
- 3) Use this lens-subtracted image to fit the source-galaxy`s light. The `MassProfile``s of the two lens 
+ 3) Use this lens-subtracted image to fit the source-galaxy`s light. The `MassProfile`'s of the two lens 
  galaxies are fixed to (0.0", -1.0") and (0.0", 1.0").
  4) Fit all relevant parameters simultaneously, using priors from phases 1, 2 and 3.
 """
@@ -178,7 +178,7 @@ Once you`ve done that, come back here and we'll wrap up this tutorial.
 # %%
 """
 And, we`re done. This pipeline takes a while to run, as is the nature of multi-galaxy modeling. Nevertheless, 
-the techniques we`ve learnt above can be applied to systems with even more `Galaxy``s albeit the increases in 
+the techniques we`ve learnt above can be applied to systems with even more `Galaxy`'s albeit the increases in 
 parameters will slow down the non-linear search. Here are some more Q&A`s
 
  1) This system had two very similar lens galaxy`s with comparable amounts of light and mass. How common is this? 

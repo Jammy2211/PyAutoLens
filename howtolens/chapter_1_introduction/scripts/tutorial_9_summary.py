@@ -5,8 +5,8 @@ Tutorial 9: Summary
 
 In this chapter, you`ve learnt how create and fit strong lenses with ``.yAutoLens__. In particular, you`ve learnt:
 
- 1) ``.yAutoLens__ uses Cartesian `Grid``s of (y,x) coordinates to perform ray-tracing.
- 2) These `Grid``s are combined with light and mass profiles to compute images, convergences, potentials and
+ 1) ``.yAutoLens__ uses Cartesian `Grid`'s of (y,x) coordinates to perform ray-tracing.
+ 2) These `Grid`'s are combined with light and mass profiles to compute images, convergences, potentials and
  deflection angles.
  3) Profiles are combined to make galaxies.
  4) Collections of galaxies (at the same redshift) form a plane.
@@ -49,7 +49,7 @@ dataset_path = f"{workspace_path}/howtolens/dataset/chapter_1/"
 
 # %%
 """
-Below, we do all the steps we learned this chapter - making `Galaxy``s a tracer, fitting the data, etc.
+Below, we do all the steps we learned this chapter - making `Galaxy`'s a tracer, fitting the data, etc.
 """
 
 # %%
@@ -97,7 +97,7 @@ fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
 # %%
 """
-The fit contains our `Tracer`, which contains `Planes`, which contains `Galaxy``s which contains `Profile``.:
+The fit contains our `Tracer`, which contains `Planes`, which contains `Galaxy`'s which contains `Profile``.:
 """
 
 # %%
