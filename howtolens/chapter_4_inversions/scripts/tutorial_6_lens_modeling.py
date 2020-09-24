@@ -7,7 +7,7 @@ When modeling complex source`s with parametric profiles, we quickly entered a re
 faced with a parameter space of dimensionality N=30+ parameters. This made the model-fitting inefficient, and very
 likely to infer a local maxima.
 
-Because `Inversion``s are linear, they don`t suffer this problelm, making them a very a powerful tool for modeling
+Because `Inversion`'s are linear, they don`t suffer this problelm, making them a very a powerful tool for modeling
 strong lenses. Furthermore, they have *more* freemdom than paramwtric profiles, not relying on specific analytic
 light distributions and symmetric profile shapes, allowing us to fit more complex mass models and ask ever more
 interesting scientific questions!
@@ -116,7 +116,7 @@ are as good as the ones we saw in the last tutorial.
 
 How can an incorrect lens model provide such a fit? Well, as I`m sure you noticed, the source has been reconstructed 
 as a demagnified version of the image. Clearly, this isn`t a physical solution or a solution that we want our 
-non-linear search to find, but for `Inversion``s these solutions are real; they exist.
+non-linear search to find, but for `Inversion`'s these solutions are real; they exist.
 
 This isn`t necessarily problematic for lens modeling. Afterall, the source reconstruction above is extremely complex, 
 in that it requires a lot of pixels to fit the image accurately. Indeed, its Bayesian log evidence is much lower than 
@@ -291,7 +291,7 @@ And with that, we`re done. Finally, I`ll point out a few things about what we`ve
 the next tutorial on adaption.
 
  - The unphysical solutions above are clearly problematic. Whilst they have lower Bayesian evidences their existance 
- will still impact our inferred lens model. However, the `Pixelization``s that we used in this chapter do not 
+ will still impact our inferred lens model. However, the `Pixelization`'s that we used in this chapter do not 
  adapt to the images they are fitting, meaning the correct solutions achieve much lower Bayesian log evidence 
  values than is actually possible. Thus, once we`ve covered adaption, these issues will be resolved!
     

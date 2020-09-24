@@ -69,7 +69,7 @@ def make_pipeline(setup, settings, folders=None):
     """
     Phase 2: Fit the input pipeline `Pixelization` & `Regularization`, where we:
 
-        1) Fix the lens`s `MassProfile``s to the results of phase 1.
+        1) Fix the lens`s `MassProfile`'s to the results of phase 1.
     """
 
     source = al.GalaxyModel(
@@ -122,7 +122,7 @@ def make_pipeline(setup, settings, folders=None):
     Phase 3: Fit the lens`s mass using the input pipeline `Pixelization` & `Regularization`, where we:
 
         1) Fix the source `Inversion` parameters to the results of the extended `Inversion` phase of phase 2.
-        2) Set priors on the lens galaxy `MassProfile``s using the results of phase 1.
+        2) Set priors on the lens galaxy `MassProfile`'s using the results of phase 1.
     """
 
     phase3 = al.PhaseImaging(

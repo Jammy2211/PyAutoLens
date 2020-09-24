@@ -3,8 +3,8 @@
 Tutorial 5: Ray Tracing
 =======================
 
-In the last tutorial, our use of `Plane``s was a bit clunky. We manually had to input `Grid``s to trace them, and keep
-track of which `Grid``s were the image-plane`s and which were the source planes. It was easy to make mistakes!
+In the last tutorial, our use of `Plane`'s was a bit clunky. We manually had to input `Grid`'s to trace them, and keep
+track of which `Grid`'s were the image-plane`s and which were the source planes. It was easy to make mistakes!
 
 Fotunately, in ``.yAutoLens__, you won`t actually spend much hands-on time with the `Plane` objects. Instead, you`ll
 primarily use the `ray-tracing` module, which we'll cover in this example. Lets look at how easy it is to setup the
@@ -65,7 +65,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 # %%
 """
-This `Tracer` is composed of a list of planes, in this case two `Plane``s (the image and source plane).
+This `Tracer` is composed of a list of planes, in this case two `Plane`'s (the image and source plane).
 """
 
 # %%
@@ -88,11 +88,11 @@ print(tracer.source_plane)
 # %%
 """
 The most convenient part of the `Tracer` is we can use it to create fully `ray-traced` images, without manually 
-setting up the `Plane``s to do this. The function below does the following
+setting up the `Plane`'s to do this. The function below does the following
 
 1) Using the lens-galaxy`s `MassProfile`, the deflection angle of every image-plane `Grid` coordinate is computed.
 2) These deflection angles are used to trace every image-plane coordinate to a source-plane coordinate.
-3) The light of each traced source-plane coordinate is evaluated using the source-plane `Galaxy``s `LightProfile`.
+3) The light of each traced source-plane coordinate is evaluated using the source-plane `Galaxy`'s `LightProfile`.
 """
 
 # %%
@@ -243,7 +243,7 @@ aplt.Tracer.convergence(tracer=tracer, grid=image_plane_grid)
 # %%
 """
 Before we finish, you might be wondering `why do both the image-plane and `Tracer` have the attributes convergence / 
-potential / deflection angles, when the two are identical`. Afterall, only `MassProfile``s contribute to these
+potential / deflection angles, when the two are identical`. Afterall, only `MassProfile`'s contribute to these
 quantities, and only the image-plane has galaxies with measureable  `MassProfile``.! There are two reasons:
 
 Convenience: 

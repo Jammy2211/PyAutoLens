@@ -43,7 +43,7 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-Now, lets set up our `Grid``s (using the image above).
+Now, lets set up our `Grid`'s (using the image above).
 """
 
 # %%
@@ -109,7 +109,7 @@ aplt.Mapper.subplot_image_and_mapper(
 # %%
 """
 That`s nice, and we can see the mappings, but it isn`t really what we want to know, is it? We really want to go the 
-other way, and see how our source-pixels map to the image. This is where `Mapper``s come into their own, as they let us 
+other way, and see how our source-pixels map to the image. This is where `Mapper`'s come into their own, as they let us 
 map all the points in a given source-pixel back to the image. Lets map source pixel 313, the central source-pixel, 
 to the image.
 """
@@ -138,7 +138,7 @@ aplt.Mapper.subplot_image_and_mapper(
 
 # %%
 """
-Okay, so I think we can agree, `Mapper``s map things! More specifically, they map our source-plane pixels to pixels in 
+Okay, so I think we can agree, `Mapper`'s map things! More specifically, they map our source-plane pixels to pixels in 
 the observed image of a strong lens.
 
 Finally, lets do the same as above, but using a masked image. By applying a `Mask2D`, the `Mapper` will only map 

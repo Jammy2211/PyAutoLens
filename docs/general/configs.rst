@@ -94,7 +94,7 @@ a way that does not need a grid to be input.
 The calculation grid is the homogenous grid used to calculate all lensing quantities of this nature. It is computed
 as follows:
 
-1) Draw a rectangular 'bounding box' around the *MassProfile*'s convergence profile, where the four side of the
+1) Draw a rectangular 'bounding box' around the `MassProfile`'s convergence profile, where the four side of the
    the box are at threshold values of convergence.
 
 2) Use a grid of this box to compute the desired lensing quantity (e.g. the critical curve).
@@ -293,13 +293,13 @@ grids
 
 **interpolate.ini**
 
-The *GridInterpolate* class speeds up the calculation of lensing quantities such as the potential or deflection angles
+The `GridInterpolate` class speeds up the calculation of lensing quantities such as the potential or deflection angles
 by computing them on a grid of reduced resolution and interpolating the results to a grid at the native resolution of
 the data. This is important for certain mass profiles, where the calculations require computationally expensive
 numerical integration.
 
-The *interpolate.ini* specifies for every *LightProfile* and *MassProfile* in **PyAutoLens** whether, when a
-*GridInterpolate* object is passed into a from grid method (e.g deflections_from_grid) the calculation should be
+The *interpolate.ini* specifies for every `LightProfile` and `MassProfile` in **PyAutoLens** whether, when a
+`GridInterpolate` object is passed into a from grid method (e.g deflections_from_grid) the calculation should be
 performed using interpolation or by computing every value on the grid explicitly at native resolution.
 
 The default *interpolate.ini* config file supplied with the **PyAutoLens** workspace specifies *False* for every
@@ -308,7 +308,7 @@ which does (and therefore can see the calculation sped ups by factors of > x10).
 
 **radial_minimum.ini**
 
-The calculation of many quantities from *LightProfile*'s and *MassProfile's*, for example their image, convergence
+The calculation of many quantities from `LightProfile`'s and *MassProfile's*, for example their image, convergence
 or deflection angles are ill-defined at (y,x) coordinates (0.0, 0.0). This can lead **PyAutoLens** to crash if not
 handled carefully.
 

@@ -350,7 +350,7 @@ priors we saw in phase 1 (which are typically broad UniformPriors). Instead, it 
  - The mean values are the median PDF results of every parameter in phase 1.
  - Many sigma values are the errors computed at 3.0 sigma confidence of every parameter in phase 1.
  - Other sigma values are higher than the errors computed at 3.0 sigma confidence. These instead use the value 
- specified in the `width_modifier` field of the `Profile``s entry in the `json_config` files (we will discuss
+ specified in the `width_modifier` field of the `Profile`'s entry in the `json_config` files (we will discuss
  why this is used in a moment).
 
 Thus, much like the manual GaussianPriors I specified above, we have set up the phase with GaussianPriors centred on

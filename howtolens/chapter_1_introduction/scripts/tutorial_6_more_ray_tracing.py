@@ -22,7 +22,7 @@ from astropy import cosmology
 
 # %%
 """
-To begin, lets setup the `Grid``s we `ll ray-trace using. Lets do something crazy, and use a higher resolution `Grid` 
+To begin, lets setup the `Grid`'s we `ll ray-trace using. Lets do something crazy, and use a higher resolution `Grid` 
 then before and set the sub `Grid` size to 4x4 per pixel!
 
 Every pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
@@ -204,7 +204,7 @@ We can next plot the tracer`s `Profile` image, which is compute as follows:
 
  1) First, using the image-plane `Grid`, the images of the lens galaxy and its satellite are computed.
 
- 2) Using the `MassProfile``s of the lens and satellite, their deflection angles are computed.
+ 2) Using the `MassProfile`'s of the lens and satellite, their deflection angles are computed.
 
  3) These deflection angles are summed, such that the deflection of light due to every `MassProfile` and both the lens 
  galaxy and its satellite is computed.
@@ -219,7 +219,7 @@ aplt.Tracer.image(tracer=tracer, grid=grid)
 
 # %%
 """
-As we did previously, we can extract the `Grid``s of each plane and inspect the source-plane grid.
+As we did previously, we can extract the `Grid`'s of each plane and inspect the source-plane grid.
 """
 
 # %%

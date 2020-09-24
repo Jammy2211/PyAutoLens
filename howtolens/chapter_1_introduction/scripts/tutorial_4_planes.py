@@ -3,11 +3,11 @@
 Tutorial 4: Planes
 ==================
 
-We`ve learnt how to make galaxy objects out of `LightProfile``s and `MassProfile``.. Now, we'll use these galaxies to
+We`ve learnt how to make galaxy objects out of `LightProfile`'s and `MassProfile``.. Now, we'll use these galaxies to
 make a strong-gravitational lens.
 
 For newcomers to lensing, a strong gravitational lens is a system where two (or more) galaxies align perfectly down our
-line of sight, such that the foreground `Galaxy``s mass (represented as `MassProfile``.) deflects the light (represented
+line of sight, such that the foreground `Galaxy`'s mass (represented as `MassProfile``.) deflects the light (represented
 as `LightProfile``.) of the background source galaxy(s).
 
 When the alignment is just right and the lens is just massive enough, the background source galaxy appears multiple
@@ -37,7 +37,7 @@ Observer                  Image-Plane               Source-Plane
 # %%
 """
 As an observer, we don`t see the source`s true appearance (e.g. a round blob of light). Instead, we only observe its 
-light after it is deflected and lensed by the foreground `Galaxy``s mass. In this exercise, we'll make a source galaxy 
+light after it is deflected and lensed by the foreground `Galaxy`'s mass. In this exercise, we'll make a source galaxy 
 image whose light has been deflected by a lens galaxy.
 
 In the schematic above, we used the terms `Image-Plane` and `Source-Plane`. In lensing speak, a `plane` is a 
@@ -47,7 +47,7 @@ collection of galaxies at the same redshift (that is, parallel to one another do
 This means we can sum the convergences, potentials and deflection angles of their `MassProfile``..
 
 - If two or more source galaxies are at the same redshift in the source-plane, their light is ray-traced in the same 
-way. Therefore, when determining their lensed images, we can sum the lensed images of each `Galaxy``s `LightProfile``..
+way. Therefore, when determining their lensed images, we can sum the lensed images of each `Galaxy`'s `LightProfile``..
 
 So, lets do it - lets use the `plane` module in AutoLens to create a strong lensing system like the one pictured above. 
 For simplicity, we'll assume 1 lens galaxy and 1 source galaxy.
@@ -71,7 +71,7 @@ image_plane_grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_s
 
 # %%
 """
-Whereas before we called our `Galaxy``s things like `galaxy_with_light_profile`, lets now refer to them by their role 
+Whereas before we called our `Galaxy`'s things like `galaxy_with_light_profile`, lets now refer to them by their role 
 in lensing, e.g. `lens_galaxy` and `source_galaxy`.
 """
 
@@ -96,17 +96,17 @@ image_plane = al.Plane(galaxies=[lens_galaxy])
 
 # %%
 """
-Just like we did with `Galaxy``s we can compute quantities from the `Plane` by passing it a `Grid`.
+Just like we did with `Galaxy`'s we can compute quantities from the `Plane` by passing it a `Grid`.
 """
 
 # %%
 deflections = image_plane.deflections_from_grid(grid=image_plane_grid)
 
-print("deflection-angles of `Plane``s `Grid` pixel 0:")
+print("deflection-angles of `Plane`'s `Grid` pixel 0:")
 print(deflections.in_2d[0, 0, 0])
 print(deflections.in_2d[0, 0, 0])
 
-print("deflection-angles of `Plane``s `Grid` pixel 1:")
+print("deflection-angles of `Plane`'s `Grid` pixel 1:")
 print(deflections.in_2d[0, 1, 1])
 print(deflections.in_2d[0, 1, 1])
 
@@ -149,7 +149,7 @@ source_plane = al.Plane(galaxies=[source_galaxy])
 
 # %%
 """
-Lets inspect our `Grid``s - I bet our source-plane isn`t the boring uniform `Grid` we plotted in the first tutorial!
+Lets inspect our `Grid`'s - I bet our source-plane isn`t the boring uniform `Grid` we plotted in the first tutorial!
 """
 
 # %%
@@ -180,7 +180,7 @@ aplt.Plane.plane_grid(
 
 # %%
 """
-We can also plot both `Plane``s next to one another, and highlight specific points. This means we can see how different 
+We can also plot both `Plane`'s next to one another, and highlight specific points. This means we can see how different 
 image pixels map to the source-plane (and visa versa).
 
 (We are inputting the indexes of the `Grid` into `indexes` - the first set of indexes go from 0 -> 50, which is the top 
@@ -300,7 +300,7 @@ In particular, try:
  2) Change the SphericalIsothermal `MassProfile` to an `EllipticalIsothermal` `MassProfile`.and set its axis_ratio to 0.8. 
  What happens to the number of source images?
 
- 3) As discussed at the beginning, `Plane``s can be composed of multiple galaxies. Make an the image-plane with two 
+ 3) As discussed at the beginning, `Plane`'s can be composed of multiple galaxies. Make an the image-plane with two 
  galaxies and see how multi-galaxy lensing leads to crazy source images. Also try making a source-plane with two 
  galaxies!
 

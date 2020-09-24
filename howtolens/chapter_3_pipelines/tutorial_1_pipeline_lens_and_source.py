@@ -76,7 +76,7 @@ def make_pipeline(setup, settings):
     )
 
     """
-    Phase 2: Fit the lens`s `MassProfile``s and source galaxy`s light, where we:
+    Phase 2: Fit the lens`s `MassProfile`'s and source galaxy`s light, where we:
 
         1) Fix the foreground lens light subtraction to the lens galaxy light model from phase 1.
         2) Set priors on the centre of the lens galaxy`s `MassProfile` by linking them to those inferred for 

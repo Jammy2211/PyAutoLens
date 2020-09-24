@@ -227,7 +227,7 @@ that best-fit the image *including* the penalty term due to comparing neighborin
 However, determining the regularization_coefficient that maximizes the Bayesian log evidence remains a non-linear 
 problem and this becomes part of our non-linear search. The Bayesian log evidence also depends on the source resolution 
 which means the pixel-grid resolution may also be part of our non-linear search. Nevertheless, this is only 3 
-parameters - there were 30+ when using `LightProfile``s to represent the source!
+parameters - there were 30+ when using `LightProfile`'s to represent the source!
 
 Here are a few questions for you to think about.
 
