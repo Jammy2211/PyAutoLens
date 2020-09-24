@@ -84,4 +84,4 @@ from .pipeline.phase.interferometer.phase import PhaseInterferometer
 from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 
-__version__ = '1.6.1'
+__version__ = '1.6.2'
