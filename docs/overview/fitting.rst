@@ -4,7 +4,7 @@ Fitting Data
 ------------
 
 `Tracer` objects represent a strong lensing system, allowing us to create an image of how the lens and source
-`Galaxy`'s. Now, lets use a `Tracer` to fit *Imaging* data of a strong lens, which we begin by loading from .fits
+`Galaxy`'s. Now, lets use a `Tracer` to fit *Imaging* ``data`` of a strong lens, which we begin by loading from .fits
 files as an *Imaging* object:
 
 .. code-block:: bash
@@ -22,7 +22,7 @@ files as an *Imaging* object:
     aplt.Imaging.noise_map(imaging=imaging)
     aplt.Imaging.psf(imaging=imaging)
 
-Here's what our image, noise-map and point-spread function look like:
+Here's what our image, ``noise_map`` and point-spread function look like:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/image.png
   :width: 400
@@ -80,7 +80,7 @@ with the PSF of our dataset:
   :width: 400
   :alt: Alternative text
 
-The *FitImaging* object does a lot more than just create the model-image, it also subtracts this image from the data to
+The *FitImaging* object does a lot more than just create the model-image, it also subtracts this image from the ``data`` to
 produce a residual-map and weight these residuals by the noise to compute a chi-squared-map, both of which we can plot:
 
 .. code-block:: bash
@@ -120,6 +120,6 @@ This requires lens modeling, which uses a non-linear search algorithm to fit man
 This model-fitting is handled by our project **PyAutoFit**, a probablistic programming language for non-linear model
 fitting. Below, we setup our model as *GalaxyModel* objects, which repesent the galaxies we fit to our data:
 
-If you are unfamilar data and model fitting, and unsure what terms like 'residuals', 'chi-sqaured' or 'likelihood' mean,
+If you are unfamilar ``data`` and model fitting, and unsure what terms like 'residuals', 'chi-sqaured' or 'likelihood' mean,
 we'll explain all in chapter 1 of the **HowToLens** lecture series. Checkout the
 `tutorials <https://pyautolens.readthedocs.io/en/latest/tutorials/howtolens.html>`_ section of the readthedocs!

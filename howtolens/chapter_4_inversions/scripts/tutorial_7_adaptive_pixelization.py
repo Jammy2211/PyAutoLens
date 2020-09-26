@@ -22,9 +22,9 @@ print("Workspace Path: ", workspace_path)
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy`s light is omitted.
- - The lens galaxy`s `MassProfile` is an `EllipticalIsothermal`.
- - The source galaxy`s `LightProfile` is an `EllipticalSersic`.
+ - The lens `Galaxy`'s light is omitted.
+ - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
@@ -86,7 +86,7 @@ Okay, so lets think about the `Rectangular` `Pixelization`. Is this the optimal 
 there features in the source-plane that arn`t ideal? How do you think we could do a better job?
 
 Well, given we`re doing a whole tutorial on using a different `Pixelization`.o this grid, you`ve probably guessed that
-it isn`t optimal. Infact, its pretty rubbish, and not a `Pixelization`.e should actually want to model any lenses with!
+it isn't optimal. Infact, its pretty rubbish, and not a `Pixelization`.e should actually want to model any lenses with!
 
 So what is wrong with the grid? Well, lets think about the source reconstruction.
 """
@@ -187,7 +187,7 @@ are formed.
 However, this `VoronoiMagnification` `Pixelization`.is still far from optimal. There are lots of source-pixels 
 effectively fitting just noise. We may achieve even better solutions if the central regions of the source were 
 reconstructed using even more pixels. So, how do we improve on this? Well, you`ll have to wait until chapter 5, 
-when we introduce ``.yAutoLens__`s adaptive functionality, or `hyper-mode`.
+when we introduce **PyAutoLens**`s adaptive functionality, or `hyper-mode`.
 
 In the mean time, you may wish to experiment with using both Rectangular and VoronoiMagnification `Grid`'s to fit 
 lenses which can be easily achieve by changing the input pixeliation given to a pipeline.

@@ -3,7 +3,7 @@
 Tutorial 6: Alternative Searches
 ================================
 
-Up to now, we`ve always used the non-linear search Dynesty and not considered the input parameters that control its
+Up to now, we've always used the non-linear search Dynesty and not considered the input parameters that control its
 sampling. In this tutorial, we'll consider how we can change these setting to balance finding the global maxima
 solution with fast run time, as well as other types of non-linear searches we can use to perform lens modeling.
 """
@@ -29,9 +29,9 @@ conf.instance = conf.Config(
 """
 we'll use new strong lensing data, where:
 
- - The lens galaxy`s `LightProfile` is an `EllipticalSersic`.
- - The lens galaxy`s `MassProfile` is an `EllipticalIsothermal`.
- - The source galaxy`s `LightProfile` is an `EllipticalSersic`.
+ - The lens `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
+ - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
@@ -216,10 +216,10 @@ and do not provide high likelihood fits to the data, but takes many extra iterat
 error estimates (perhaps this is our final lens model fit before we publish the results in a paper), these extra
 iterations are acceptable. 
 
-However, we often don`t care about the errors. For example, in the previous tutorial when linking phases, the only 
+However, we often don't care about the errors. For example, in the previous tutorial when linking phases, the only 
 result we used from the fit performed in the first phase was the maximum log likelihood model, omitting the errors
 entirely! Its seems wasteful to use a nested sampling algorithm like Dynesty to map out the entirity of parameter
-space when we don`t use this information! 
+space when we don't use this information! 
 
 There are a class of non-linear searches called `optimizers`, which seek to optimize just one thing, the log 
 likelihood. They want to find the model that maximizes the log likelihood, with no regard for the errors, thus not 
@@ -266,7 +266,7 @@ It worked, and was much faster than Dynesty!
 
 So, when should we use Dynesty and when should we use PySwarms? Its simple:
 
- - If we don`t care about errors and want to get the global maxima solution as quickly as possible, we should use
+ - If we don't care about errors and want to get the global maxima solution as quickly as possible, we should use
       PySwarms.
       
  - If we want a model with robust and precise errors, we should use Dynesty.

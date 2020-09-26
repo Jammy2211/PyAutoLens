@@ -3,21 +3,21 @@
 Tutorial 3: Realism and Complexity
 ==================================
 
-Up to now, we`ve fitted some fairly crude and unrealistic lens models. For example, we`ve modeled the lens galaxy`s
-mass as a sphere. Given most lens galaxies are `elliptical`s we should probably model their mass as elliptical! We`ve
-also omitted the lens galaxy`s light, which typically outshines the source galaxy.
+Up to now, we've fitted some fairly crude and unrealistic lens models. For example, we've modeled the lens `Galaxy`'s
+mass as a sphere. Given most lens galaxies are `elliptical`s we should probably model their mass as elliptical! We've
+also omitted the lens `Galaxy`'s light, which typically outshines the source galaxy.
 
 In this example, we'll start using a more realistic lens model.
 
 In my experience, the simplest lens model (e.g. that has the fewest parameters) that provides a good fit to real
 strong lenses is as follows:
 
- 1) An _EllipticalSersic `LightProfile` for the lens galaxy`s light.
- 2) A `EllipticalIsothermal` (SIE) `MassProfile` for the lens galaxy`s mass.
- 3) An `EllipticalExponential` `LightProfile`.for the source-galaxy`s light (to be honest, this is too simple,
+ 1) An _EllipticalSersic `LightProfile` for the lens `Galaxy`'s light.
+ 2) A `EllipticalIsothermal` (SIE) `MassProfile` for the lens `Galaxy`'s mass.
+ 3) An `EllipticalExponential` `LightProfile`.for the source-`Galaxy`'s light (to be honest, this is too simple,
  but lets worry about that later).
 
-This has a total of 18 non-linear parameters, which is over double the number of parameters we`ve fitted up to now.
+This has a total of 18 non-linear parameters, which is over double the number of parameters we've fitted up to now.
 In future exercises, we'll fit even more complex models, with some 20-30+ non-linear parameters.
 """
 
@@ -42,9 +42,9 @@ conf.instance = conf.Config(
 """
 we'll use new strong lensing data, where:
 
- - The lens galaxy`s `LightProfile` is an `EllipticalSersic`.
- - The lens galaxy`s `MassProfile` is an `EllipticalIsothermal`.
- - The source galaxy`s `LightProfile` is an `EllipticalExponential`.
+ - The lens `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
+ - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The source `Galaxy`'s `LightProfile` is an `EllipticalExponential`.
 """
 
 # %%
@@ -199,13 +199,13 @@ print("Likelihood of Local Model:")
 # %%
 """
 In this example, we intentionally made our non-linear search fail, by using so few live points it had no hope of 
-sampling parameter space thoroughly. For modeling real lenses we wouldn`t do this on purpose, but the risk of inferring 
+sampling parameter space thoroughly. For modeling real lenses we wouldn't do this on purpose, but the risk of inferring 
 a local maxima is still very real, especially as we make our lens model more complex.
 
 Lets think about `complexity`. As we make our lens model more realistic, we also made it more complex. For this 
 tutorial, our non-linear parameter space went from 7 dimensions to 18. This means there was a much larger `volume` of 
 parameter space to search. As this volume grows, there becomes a higher chance that our non-linear search gets lost 
-and infers a local maxima, especially if we don`t set it up with enough live points!
+and infers a local maxima, especially if we don't set it up with enough live points!
 
 At its core, lens modeling is all about learning how to get a non-linear search to find the global maxima region of 
 parameter space, even when the lens model is extremely complex.

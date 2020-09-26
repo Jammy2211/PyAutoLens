@@ -55,7 +55,7 @@ of real instruments such as the Hubble Space Telescope, Euclid and ALMA.
 Dataset
 -------
 
-The folder where data for your model-fitting problem is stored. Example data created using the simulators are
+The folder where ``data`` for your model-fitting problem is stored. Example ``data`` created using the simulators are
 provided with the workspace.
 
 Output
@@ -66,7 +66,7 @@ The folder where the model-fitting results of your model-fitting problem are sto
 Preprocess
 ----------
 
-Example scripts and tutorials on how to preprocess CCD imaging and interferometer data before analysing it with
+Example scripts and tutorials on how to preprocess CCD imaging and interferometer ``data`` before analysing it with
 **PyAutoLens**. These includes scripts covering the image formats and units, computing a noise-map, creating the
 PSF and setting up masks for the data.
 

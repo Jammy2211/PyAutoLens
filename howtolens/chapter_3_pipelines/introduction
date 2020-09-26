@@ -1,4 +1,4 @@
-You are now familiar with ``.yAutoLens__ and have a clear understanding of lens modeling. In this chapter, we'll
+You are now familiar with **PyAutoLens** and have a clear understanding of lens modeling. In this chapter, we'll
 introduce pipelines, a concept we mentioned many times in the previous chapter. Pipelines allow us to generically link
 phases together, so that we can seamlessly navigate the complex non-linear parameter spaces that come when fitting
 realistic lens models.

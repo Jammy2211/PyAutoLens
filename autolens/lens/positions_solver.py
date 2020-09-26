@@ -69,7 +69,8 @@ class AbstractPositionsSolver:
     def grid_buffed_and_upscaled_around_coordinate_from(
         self, coordinate, pixel_scales, buffer, upscale_factor
     ):
-        """ For an input (y,x) Catersian coordinate create a buffed and upscaled square grid of (y,x) coordinates where:
+        """
+    For an input (y,x) Catersian coordinate create a buffed and upscaled square grid of (y,x) coordinates where:
 
         - The new grid of coordinates are buffed. For example, if buffer=1, the new grid will correspond to a 3x3 grid
           of coordinates centred on the input (y,x) value with spacings defined by the input pixel_scales.
@@ -167,7 +168,8 @@ class AbstractPositionsSolver:
     def grid_within_distance_of_source_plane_centre(
         self, lensing_obj, source_plane_coordinate, grid, distance
     ):
-        """ For an input grid of (y,x) coordinates, remove all coordinates that do not trace within a threshold distance
+        """
+    For an input grid of (y,x) coordinates, remove all coordinates that do not trace within a threshold distance
         of the source-plane centre. This is performed by:
 
          1) Computing the deflection angle of every (y,x) coordinate on the grid using the input lensing object.
@@ -399,7 +401,8 @@ def grid_remove_duplicates(grid):
 def grid_buffed_around_coordinate_from(
     coordinate, pixel_scales, buffer, upscale_factor=1
 ):
-    """From an input 1D grid, return a 1D buffed grid where (y,x) coordinates are added next to all grid pixels whose
+    """
+    From an input 1D grid, return a 1D buffed grid where (y,x) coordinates are added next to all grid pixels whose
     neighbors in the 8 neighboring directions were masked and not included in the grid.
 
     This is performed by determining the 1D grid's mask in 2D, adding the entries to the 2D mask to the eight
@@ -407,7 +410,7 @@ def grid_buffed_around_coordinate_from(
 
     Parameters
     ----------
-    grid_1d : ndarray
+    grid_1d : np.ndarray
         The irregular 1D grid of (y,x) coordinates over which a square uniform grid is overlaid.
     pixel_scales : (float, float)
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
@@ -472,7 +475,8 @@ def pair_coordinate_to_closest_pixel_on_grid(coordinate, grid_1d):
 
 @decorator_util.jit()
 def grid_square_neighbors_1d_from(shape_1d):
-    """From a (y,x) grid of coordinates, determine the 8 neighors of every coordinate on the grid which has 8
+    """
+    From a (y,x) grid of coordinates, determine the 8 neighors of every coordinate on the grid which has 8
     neighboring (y,x) coordinates.
 
     Neighbor indexes use the 1D index of the pixel on the masked grid counting from the top-left right and down.
@@ -482,8 +486,8 @@ def grid_square_neighbors_1d_from(shape_1d):
          x x x  x x x x x x x
          x x x  x x x x x x x      Th s  s an example mask.Mask2D, where:
          x x x  x x x x x x x
-         x x x  0 1 2 3 x x x      x = True (P xel  s masked and excluded from the gr d)
-         x x x  4 5 6 7 x x x      o = False (P xel  s not masked and  ncluded  n the gr d)
+         x x x  0 1 2 3 x x x      x = ``True`` (P xel  s masked and excluded from the gr d)
+         x x x  4 5 6 7 x x x      o = ``False`` (P xel  s not masked and  ncluded  n the gr d)
          x x x  8 9 10 11 x x x
          x x x  x x x x x x x
          x x x  x x x x x x x
@@ -496,12 +500,12 @@ def grid_square_neighbors_1d_from(shape_1d):
     grid_neighbors_1d[0,:] = [0, 1, 2, 4, 6, 8, 9, 10]
     grid_neighbors_1d[1,:] = [1, 2, 3, 5, 7, 9, 10, 11]
 
-    The other pixels will be included in the grid_neighbors_1d array, but correspond to False entries in
+    The other pixels will be included in the grid_neighbors_1d array, but correspond to ``False`` entries in
     grid_has_neighbors and be omitted from calculations that use the neighbor array.
 
     Parameters
     ----------
-    shape_1d : ndarray
+    shape_1d : np.ndarray
         The irregular 1D grid of (y,x) coordinates over which a square uniform grid is overlaid.
     pixel_scales : (float, float)
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
@@ -545,14 +549,14 @@ def grid_peaks_from(distance_1d, grid_1d, neighbors, has_neighbors):
 
     Parameters
     ----------
-    distance_1d : ndarray
+    distance_1d : np.ndarray
         The distance of every (y,x) grid coordinate to the centre of the source in the source-plane.
-    grid_1d : ndarray
+    grid_1d : np.ndarray
         The irregular 1D grid of (y,x) coordinates whose distances to the source are compared.
-    neighbors : ndarray
+    neighbors : np.ndarray
         A 2D array of shape [pixels, 8] giving the 1D index of every grid pixel to its 8 neighboring pixels.
-    has_neighbors : ndarray
-        An array of bools, where True means a pixel has 8 neighbors and False means it has less than 8 and is not
+    has_neighbors : np.ndarray
+        An array of bools, where ``True`` means a pixel has 8 neighbors and ``False`` means it has less than 8 and is not
         compared to the source distance.
     """
     peaks_list = []

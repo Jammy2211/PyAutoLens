@@ -20,9 +20,9 @@ print("Workspace Path: ", workspace_path)
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy`s light is omitted.
- - The lens galaxy`s `MassProfile` is an `EllipticalIsothermal`.
- - The source galaxy`s `LightProfile` is an `EllipticalSersic`.
+ - The lens `Galaxy`'s light is omitted.
+ - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
@@ -197,7 +197,7 @@ aplt.Tracer.deflections_x(tracer=fit.tracer, grid=fit.grid)
 """
 This means that our central image pixels are highly demagnified, tracing to extremely large values in the source plane! 
 
-Physically, this isn`t a problem, it just means that we don`t see a `central image` in most strong lenses as light-rays 
+Physically, this isn't a problem, it just means that we don't see a `central image` in most strong lenses as light-rays 
 which trace through the centre of the lens are demagnified. However, if the lens galaxy had a cored mass distribution 
 we would see the central image.
 
@@ -215,7 +215,7 @@ any other pixels. This has two negative consequences:
  `Mask2D` masks these pixels out, meaning they do not make it to our source-plane and are omitted from the source 
  reconstruction.
 
-Lets quickly use a larger circular `Mask2D` to confirm that these pixels do exist, if we don`t mask them.
+Lets quickly use a larger circular `Mask2D` to confirm that these pixels do exist, if we don't mask them.
 """
 
 # %%
@@ -266,15 +266,15 @@ aplt.Mapper.subplot_image_and_mapper(
 
 # %%
 """
-This successfully addresses both of the issues above! However, you might be thinking, isn`t that a bit of a hack? Its 
+This successfully addresses both of the issues above! However, you might be thinking, isn't that a bit of a hack? Its 
 not really a physical treatment of the ray-tracing, is it?
 
 Well, you`re right. However, the *only* physical way to do this would be to use a `Mask2D` so large that all demangified 
 central pixels are surrounded by traced image-pixels. This would require a `Mask2D` so large our computer would crash, 
 That`s not a good solution, thus borders provide us with a workaround, one that I`ve extensively tested and have found 
-that, provided your `Mask2D` isn`t too small, doesn`t lead to systematic biases.
+that, provided your `Mask2D` isn't too small, doesn`t lead to systematic biases.
 
-Next, I`m going to quickly highlight how important borders are when modeling multiple lens galaxies. Their complex 
+Next, I'm going to quickly highlight how important borders are when modeling multiple lens galaxies. Their complex 
 mass distribution and lensing configuration often produce very nasty edge effects where image pixels not just in the 
 centre of mask, but anywhere in the mask, trace beyond the source-plane border.
 """
@@ -283,9 +283,9 @@ centre of mask, but anywhere in the mask, trace beyond the source-plane border.
 """
 we'll use new strong lensing data as the previous tutorial, where:
 
- - The lens galaxy`s light is omitted.
+ - The lens `Galaxy`'s light is omitted.
  - There are two lens galaxies whose `MassProfile`'s are `EllipticalIsothermal``..
- - The source galaxy`s `LightProfile` is an `EllipticalSersic`.
+ - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
@@ -357,7 +357,7 @@ def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 # %%
 """
 Now, lets fit this image using the input model and perform the source reconstruction without a border. As you can see, 
-we get many demagnified image pixels which trace well beyond our source-plane border if we don`t relocate them!
+we get many demagnified image pixels which trace well beyond our source-plane border if we don't relocate them!
 """
 
 # %%
@@ -394,7 +394,7 @@ aplt.Inversion.reconstruction(
 Multi-galaxy modeling is rife for border effects and if you have multiple lens galaxies I heartily recommend you pay 
 a close eye to your source-plane borders!
 
-Before we end,I want to quickly highlight that care must be taken when choosing the size of your mask. If you don`t 
+Before we end,I want to quickly highlight that care must be taken when choosing the size of your mask. If you don't 
 choose a big enough mask, the border won`t be able to relocate all of the demanigified image pixels to the border edge.
 """
 
@@ -457,7 +457,7 @@ aplt.Inversion.reconstruction(
 # %%
 """
 And with that, borders are done. In truth, borders should pretty much take care of themselves when you`re using 
-__PyAutoLens__ and you probably won`t think about them much. However, as I showed above, if you don`t choose a large enough 
+__PyAutoLens__ and you probably won`t think about them much. However, as I showed above, if you don't choose a large enough 
 mask things can go wrong - thus, its important you know what borders are, so you can look out for this potential 
 source of systematics!
 """

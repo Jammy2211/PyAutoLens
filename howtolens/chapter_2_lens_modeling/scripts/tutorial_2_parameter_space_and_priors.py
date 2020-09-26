@@ -22,18 +22,18 @@ This function has 3 parameters, x, y and z. The mappings between x, y and z and 
 space, albeit now in 3 dimensions. Nevertheless, one could still picture this parameter space as some 3 dimensional
 curved surface.
 
-The process of computing a log likelihood in ``.yAutoLens__ can be visualized in exactly the same way. We have a set of
-lens model parameters, which we input into ``.yAutoLens__`s `log_likelihood function`. Now, this log likelihood function
-isn`t something that we can write down analytically and its inherently non-linear. But, nevertheless, it is a function;
+The process of computing a log likelihood in **PyAutoLens** can be visualized in exactly the same way. We have a set of
+lens model parameters, which we input into **PyAutoLens**`s `log_likelihood function`. Now, this log likelihood function
+isn't something that we can write down analytically and its inherently non-linear. But, nevertheless, it is a function;
 if we put the same set of lens model parameters into it, we'll compute the same log likelihood.
 
 We can write our log_likelihood function as follows (using x_mp, y_mp, I_lp etc. as short-hand notation for the
 _MassProfile_ and `LightProfile` parameters):
 
-f(x_mp, y_mp, R_mp, x_lp, y_lp, I_lp, R_lp) = a log likelihood from ``.yAutoLens__`s `Tracer` and `FitImaging` objects.
+f(x_mp, y_mp, R_mp, x_lp, y_lp, I_lp, R_lp) = a log likelihood from **PyAutoLens**`s `Tracer` and `FitImaging` objects.
 
 The point is, like we did for the simple functions above, we again have a parameter space! It can`t be written
-down analytically and its undoubtedly very complex and non-linear. Fortunately, we`ve already learnt how to search
+down analytically and its undoubtedly very complex and non-linear. Fortunately, we've already learnt how to search
 it, and find the solutions which maximize our log_likelihood function!
 
 Lets inspect the results of the last tutorial`s non-linear search. We`re going to look at what are called `probably
@@ -46,12 +46,12 @@ and open the `pdf_triangle.png` figure. The Gaussian shaped lines running down t
 
 The remaining figures, which look like contour-maps, show the maximum log likelihood regions in 2D between every
 parameter pair. We often see that two parameters are `degenerate`, whereby increasing one and decreasing the other
-leads to a similar log_likelihood value. The 2D PDF between the source-galaxy`s `LightProfile`'s intensity I and
+leads to a similar log_likelihood value. The 2D PDF between the source-`Galaxy`'s `LightProfile`'s intensity I and
 effective radius R shows such a degeneracy. This makes sense - making the source galaxy brighter and smaller is
 similar to making it fainter and bigger!
 
-So, how does ``.yAutoLens__ know where to look in parameter space? A parameter, say, the Einstein Radius, could in
-principle take any value between negative and positive infinity. ``.yAutoLens__ must of told it to only search regions of
+So, how does **PyAutoLens** know where to look in parameter space? A parameter, say, the Einstein Radius, could in
+principle take any value between negative and positive infinity. **PyAutoLens** must of told it to only search regions of
 parameter space with `reasonable` values (i.e. Einstein radii of around 1"-3").
 
 These are our `priors` - which define where we tell the non-linear search to search parameter space. These tutorials
@@ -109,8 +109,8 @@ conf.instance = conf.Config(
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy`s `MassProfile` is a *SphericalIsothermal*.
- - The source galaxy`s `LightProfile` is a *SphericalExponential*.
+ - The lens `Galaxy`'s `MassProfile` is a *SphericalIsothermal*.
+ - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 """
 
 # %%
@@ -151,9 +151,9 @@ source = al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential)
 # %%
 """
 To change priors, we use the `prior` module of PyAutoFit (imported as af). These priors link our `GalaxyModel` to the 
-non-linear search. Thus, it tells ``.yAutoLens__ where to search non-linear parameter space.
+non-linear search. Thus, it tells **PyAutoLens** where to search non-linear parameter space.
 
-These two lines change the centre of the lens galaxy`s `MassProfile` to UniformPriors around the coordinates 
+These two lines change the centre of the lens `Galaxy`'s `MassProfile` to UniformPriors around the coordinates 
 (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the centre of emission of the lens 
 _Galaxy_`s light.
 
@@ -166,7 +166,7 @@ lens.mass.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 
 # %%
 """
-Lets also change the prior on the lens galaxy`s einstein radius to a GaussianPrior centred on 1.4". For real lens 
+Lets also change the prior on the lens `Galaxy`'s einstein radius to a GaussianPrior centred on 1.4". For real lens 
 modeling, this might be done by visually estimating the radius the lens`s arcs / ring appear.
 """
 

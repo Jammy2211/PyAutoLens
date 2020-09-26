@@ -23,7 +23,7 @@ grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
 
 # %%
 """
-Next, lets create a `LightProfile` using the `light_profiles` module, which in ``.yAutoLens__ is imported as `lp` for 
+Next, lets create a `LightProfile` using the `light_profiles` module, which in **PyAutoLens** is imported as `lp` for 
 conciseness. we'll use an `EllipticalSersic` function, which is an analytic function often use to depict galaxies.
 
 (If you are unsure what the `elliptical_comps` are, I`ll give a description of them at the end of the tutorial.)
@@ -57,7 +57,7 @@ light_image = sersic_light_profile.image_from_grid(grid=grid)
 
 # %%
 """
-Much like the `Grid` objects in the previous tutorials, these functions return ``.yAutoLens__ `Array` objects which are 
+Much like the `Grid` objects in the previous tutorials, these functions return **PyAutoLens** `Array` objects which are 
 accessible in both 2D and 1D.
 """
 
@@ -95,9 +95,9 @@ print(light_image.in_1d_binned[0])
 
 # %%
 """
-If you find these 2D and 1D `Array`'s confusing - I wouldn`t worry about it. From here on, we'll pretty much just use 
+If you find these 2D and 1D `Array`'s confusing - I wouldn't worry about it. From here on, we'll pretty much just use 
 these `Array`'s as they returned to us from functions and not think about if they should be in 2D or 1D. Nevertheless, 
-its important that you understand ``.yAutoLens__ offers these 2D and 1D representations - as it`ll help us later when we 
+its important that you understand **PyAutoLens** offers these 2D and 1D representations - as it`ll help us later when we 
 cover fititng lens data!
 
 We can use a `Profile` `Plotter`.to plot this image.
@@ -165,7 +165,7 @@ aplt.MassProfile.deflections_x(mass_profile=sis_mass_profile, grid=grid)
 
 # %%
 """
-_MassProfile_`s have a range of other properties that are used for lensing calculations, a couple of which we`ve plotted 
+`MassProfile`'s have a range of other properties that are used for lensing calculations, a couple of which we've plotted 
 images of below:
 
    - Convergence: The surface mass density of the `MassProfile` in dimensionless units which are convenient for 
@@ -173,7 +173,7 @@ images of below:
    - Potential: The gravitational of the `MassProfile` again in convenient dimensionless units.
    - Magnification: Describes how much brighter each image-pixel appears due to focusing of light rays by the `MassProfile`.
 
-Extracting `Array`'s of these quantities from ``.yAutoLens__ is exactly the same as for the image and deflection angles above.
+Extracting `Array`'s of these quantities from **PyAutoLens** is exactly the same as for the image and deflection angles above.
 """
 
 # %%
@@ -197,7 +197,7 @@ aplt.MassProfile.magnification(mass_profile=sis_mass_profile, grid=grid)
 
 # %%
 """
-Congratulations, you`ve completed your second ``.yAutoLens__ tutorial! Before moving on to the next one, experiment with 
+Congratulations, you`ve completed your second **PyAutoLens** tutorial! Before moving on to the next one, experiment with 
 __PyAutoLens__ by doing the following:
 
 1) Change the `LightProfile`'s effective radius and Sersic index - how does the image`s appearance change?

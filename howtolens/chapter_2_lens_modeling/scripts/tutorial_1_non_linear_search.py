@@ -9,12 +9,12 @@ of what the `correct` lens model is.
 So, whats a `lens model`? It is the combination of `LightProfile`'s and `MassProfile`'s we use to represent a lens galaxy,
 source galaxy and therefore the strong lens ray-tracing configuration (i.e. the `Tracer`..
 
-To begin, we have to choose the parametrization of our lens model. We don`t need to specify the values of its light
+To begin, we have to choose the parametrization of our lens model. We don't need to specify the values of its light
 and mass profiles (e.g. the centre, einstein_radius, etc.) - only the profiles themselves. In this example,
 we'll use the following lens model:
 
- 1) A `SphericalIsothermal` Sphere (SIS) for the lens galaxy`s mass.
- 2) A `SphericalExponential` `LightProfile`.for the source-galaxy`s light.
+ 1) A `SphericalIsothermal` Sphere (SIS) for the lens `Galaxy`'s mass.
+ 2) A `SphericalExponential` `LightProfile`.for the source-`Galaxy`'s light.
 
 I`ll let you into a secret - this is the same lens model used to simulate the `Imaging` data we`re going to fit and
 we`re going to infer the actual parameters I used!
@@ -37,7 +37,7 @@ being a successful lens modeler.
 
 We`re going to use a non-linear search algorithm called `Dynesty`. I highly recommend it, and find its great for
 lens modeling. However, for now, lets not worry about the details of how Dynesty actually works. Instead, just
-picture that a non-linear search in ``.yAutoLens__ operates as follows:
+picture that a non-linear search in **PyAutoLens** operates as follows:
 
  1) Randomly guess a lens model and use its `LightProfile`'s and `MassProfile`'s to set up a lens galaxy, source galaxy
  and a `Tracer`.
@@ -62,11 +62,11 @@ import autolens.plot as aplt
 You`re going to see a line like the one below (with `conf.instance =`) in every tutorial this chapter. This sets the
 following two properties:
 
- - The path to the configuration files used by ``.yAutoLens__, some of which configure the non-linear search. You need 
+ - The path to the configuration files used by **PyAutoLens**, some of which configure the non-linear search. You need 
    to give the path to your autolens_workspace, so the configuration files in the workspace are used (e.g. 
    `/path/to/autolens_workspace/config`). 
 
- - The path to the ``.yAutoLens__ output folder, which is where the results of the non-linear search are written to 
+ - The path to the **PyAutoLens** output folder, which is where the results of the non-linear search are written to 
    on your hard-disk, alongside visualization and other properties of the fit 
    (e.g. `/path/to/autolens_workspace/output/howtolens`)
 
@@ -95,8 +95,8 @@ we simulate strong lens data, checkout the scripts in the folder `autolens_works
 
 The strong lens in this image was generated using:
 
- - The lens galaxy`s `MassProfile` is a *SphericalIsothermal*.
- - The source galaxy`s `LightProfile` is a *SphericalExponential*.
+ - The lens `Galaxy`'s `MassProfile` is a *SphericalIsothermal*.
+ - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 
 Below, you`ll notice the command:
 
@@ -142,7 +142,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 """
 To compute a lens model, we use a `GalaxyModel`, which behaves analogously to the `Galaxy` objects we`re now used to. 
 However, whereas for a `Galaxy` we manually specified the value of every parameter of its `LightProfile`'s and 
-_MassProfile_`s, for a `GalaxyModel` these are fitted for and inferred by the non-linear search.
+`MassProfile`'s, for a `GalaxyModel` these are fitted for and inferred by the non-linear search.
 
 Lets model the lens galaxy with an `SphericalIsothermal` `MassProfile`.(which is what it was simulated with).
 """
@@ -218,7 +218,7 @@ command on your command line or via your IDE (if you are using one).
 
 The non-linear search outputs all results to your hard-disk, thus if it runs and finishes in the script, you can then
 run the Jupyter notebook cell and immediately load the result. This is how we recommend all non-linear searches are 
-performed in ``.yAutoLens__ and is therefore a good habit to get into. In these tutorials, we have commented the 
+performed in **PyAutoLens** and is therefore a good habit to get into. In these tutorials, we have commented the 
 `phase.run` command below in every cell to remind you that you should go to the tutorial script in the 
 `chapter_2_lens_modeling/scripts` folder, uncomment the line and run the entire script!
 """
@@ -239,7 +239,7 @@ print("Dynesty has finished run - you may now continue the notebook.")
 Now this is running you should checkout the `autolens_workspace/output` folder.
 
 This is where the results of the phase are written to your hard-disk (in the `1_non_linear_search` folder). When its 
-completed, images and output will also appear in this folder, meaning that you don`t need to keep running Python 
+completed, images and output will also appear in this folder, meaning that you don't need to keep running Python 
 code to see the result.
 
 In fact, even when a phase is running, it outputs the the current maximum log likelihood results of the lens model 
@@ -268,11 +268,11 @@ The best-fit solution (i.e. the maximum log likelihood) is stored in the `result
 
 # %%
 """
-The fit looks good and we`ve therefore found a model close to the one I used to simulate the image with (you can 
+The fit looks good and we've therefore found a model close to the one I used to simulate the image with (you can 
 confirm this yourself if you want, by comparing the inferred parameters to those found in the script
 `autolens_workspace/howtolens/simulators/mass_sis__source_exp.py`).
 
-And with that, we`re done - you`ve successfully modeled your first strong lens with ``.yAutoLens__! Before moving onto the 
+And with that, we`re done - you`ve successfully modeled your first strong lens with **PyAutoLens**! Before moving onto the 
 next tutorial, I want you to think about the following:
 
  1) a non-linear search is often said to search a `non-linear parameter-space` - why is the term parameter-space 

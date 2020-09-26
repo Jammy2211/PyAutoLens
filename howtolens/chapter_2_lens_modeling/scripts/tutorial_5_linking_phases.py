@@ -3,7 +3,7 @@
 Tutorial 5: Linking Phases
 ==========================
 
-So, we`ve learnt that if our parameter space is too complex, our non-linear search might fail to find the global
+So, we've learnt that if our parameter space is too complex, our non-linear search might fail to find the global
 maximum solution. However, we also learnt how to ensure this doesn`t happen, by:
 
  1) Tuning our priors to the strong lens we`re fitting.
@@ -26,7 +26,7 @@ The model we infer above will therefore be a lot less realistic. But it doesn`t 
 we`re going to relax these assumptions and get back our more realistic lens model. The beauty is that, by running the
 first phase, we can use its results to tune the priors of our second phase. For example:
 
- 1) The first phase should give us a pretty good idea of the lens galaxy`s light and mass profiles, for example its
+ 1) The first phase should give us a pretty good idea of the lens `Galaxy`'s light and mass profiles, for example its
  intensity, effective radius and einstein radius.
 
  2) It should also give us a pretty good fit to the lensed source galaxy. This means we'll already know where in
@@ -56,9 +56,9 @@ conf.instance = conf.Config(
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy`s `LightProfile` is an `EllipticalSersic`.
- - The lens galaxy`s `MassProfile` is an `EllipticalIsothermal`.
- - The source galaxy`s `LightProfile` is an `EllipticalExponential`.
+ - The lens `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
+ - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The source `Galaxy`'s `LightProfile` is an `EllipticalExponential`.
 """
 
 # %%
@@ -106,7 +106,7 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 
 # %%
 """
-As we`ve eluded to before, one can look at an image and immediately identify the centre of the lens galaxy. It`s 
+As we've eluded to before, one can look at an image and immediately identify the centre of the lens galaxy. It`s 
 that bright blob of light in the middle! Given that we know we`re going to make the lens model more complex in the 
 next phase, lets take a more liberal approach than before and fix the lens centre to (y,x) = (0.0", 0.0").
 """
@@ -139,7 +139,7 @@ lens.mass.elliptical_comps = lens.sersic.elliptical_comps
 # %%
 """
 Now, you might be thinking, doesn`t this prevent our phase from generalizing to other strong lenses? What if the 
-centre of their lens galaxy isn`t at (0.0", 0.0")?
+centre of their lens galaxy isn't at (0.0", 0.0")?
 
 Well, this is true if our dataset reduction centres the lens galaxy somewhere else. But we get to choose where we 
 centre it when we make the image. Therefore, I`d recommend you always centre the lens galaxy at the same location, 
@@ -208,7 +208,7 @@ source = al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential)
 # %%
 """
 What I`ve done below is looked at the results of phase 1 and manually specified a prior for every parameter. If a 
-parameter was fixed in the previous phase, its prior is based around the previous value. Don`t worry about the sigma 
+parameter was fixed in the previous phase, its prior is based around the previous value. Don't worry about the sigma 
 values for now, I`ve chosen values that I know will ensure reasonable sampling, but we'll cover this later.
 """
 
@@ -318,9 +318,9 @@ priors.
 
 You`re probably thinking though that there is one huge, giant, glaring flaw in all of this that I`ve not mentioned. 
 Phase 2 can`t be generalized to another lens - it`s priors are tuned to the image we fitted. If we had a lot of lenses, 
-we`d have to write a new phase2 for every single one. This isn`t ideal, is it?
+we`d have to write a new phase2 for every single one. This isn't ideal, is it?
 
-Fortunately, we can pass priors in ``.yAutoLens__ without specifying the specific values, using what we call promises. The
+Fortunately, we can pass priors in **PyAutoLens** without specifying the specific values, using what we call promises. The
 code below sets up phase2 with priors fully linked, but without specifying each individual prior!
 """
 
@@ -415,7 +415,7 @@ phase_2_pass = al.PhaseImaging(
 
 # %%
 """
-Don`t worry too much about whether you fully understand the prior passing API yet, as this will be a key subject in
+Don't worry too much about whether you fully understand the prior passing API yet, as this will be a key subject in
 chapter 3 when we consider pipelines. Furthermore, in the `autolens_workspace/pipelines` directly you`ll find
 numerous example pipelines that give examples of how to perform prior passing for many common lens models. 
 
@@ -446,7 +446,7 @@ By invoking the `model` attribute, the prioris passed following 3 rules:
 
  The idea here is simple. We want a value of sigma that gives a GaussianPrior wide enough to search a broad 
  region of parameter space, so that the lens model can change if a better solution is nearby. However, we want it 
- to be narrow enough that we don`t search too much of parameter space, as this will be slow or risk leading us 
+ to be narrow enough that we don't search too much of parameter space, as this will be slow or risk leading us 
  into an incorrect solution! A natural choice is the errors of the parameter from the previous phase.
        
  Unfortunately, this doesn`t always work. Lens modeling is prone to an effect called `over-fitting` where we 
@@ -472,7 +472,7 @@ There are two ways a value is specified using the priors/width file:
 
 We use absolute and relative values for different parameters, depending on their properties. For example, using the 
 relative value of a parameter like the `Profile` centre makes no sense. If our lens galaxy is centred at (0.0, 0.0), 
-the relative error will always be tiny and thus poorly defined. Therefore, the default configs in ``.yAutoLens__ use 
+the relative error will always be tiny and thus poorly defined. Therefore, the default configs in **PyAutoLens** use 
 absolute errors on the centre.
 
 However, there are parameters where using an absolute value does not make sense. Intensity is a good example of this. 
@@ -500,13 +500,13 @@ you should not need to change these values to get lens modeling to work proficie
 
 __EXAMPLE__
 
-Lets go through an example using a real parameter. Lets say in phase 1 we fit the lens galaxy`s light with an 
+Lets go through an example using a real parameter. Lets say in phase 1 we fit the lens `Galaxy`'s light with an 
 elliptical Sersic profile, and we estimate that its sersic index is equal to 4.0 +- 2.0 where the error value of 2.0 
 was computed at 3.0 sigma confidence. To pass this as a prior to phase 2, we would write:
 
  lens.sersic.sersic_index = phase1.result.model.lens.sersic.sersic_index
 
-The prior on the lens galaxy`s sersic `LightProfile` in phase 2 would thus be a GaussianPrior, with mean=4.0 and 
+The prior on the lens `Galaxy`'s sersic `LightProfile` in phase 2 would thus be a GaussianPrior, with mean=4.0 and 
 sigma=2.0. If we had used a sigma value of 1.0 to compute the error, which reduced the estimate from 4.0 +- 2.0 to 
 4.0 +- 1.0, the sigma of the Gaussian prior would instead be 1.0. 
 

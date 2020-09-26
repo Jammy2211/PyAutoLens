@@ -21,9 +21,9 @@ print("Workspace Path: ", workspace_path)
 """
 we'll use new strong lensing data, where:
 
- - The lens galaxy`s light is omitted.
- - The lens galaxy`s `MassProfile` is an `EllipticalIsothermal`.
- - The source galaxy`s `LightProfile` is an `EllipticalSersic`.
+ - The lens `Galaxy`'s light is omitted.
+ - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
@@ -54,7 +54,7 @@ grid = al.Grid.uniform(
 # %%
 """
 Our `Tracer` will use the same lens galaxy and source galaxy that we used to Simulate the `Imaging` data (although, 
-becuase we`re modeling the source with a pixel-grid, we don`t need to supply its `LightProfile`..
+becuase we`re modeling the source with a pixel-grid, we don't need to supply its `LightProfile`..
 """
 
 # %%
@@ -108,7 +108,7 @@ aplt.Mapper.subplot_image_and_mapper(
 
 # %%
 """
-That`s nice, and we can see the mappings, but it isn`t really what we want to know, is it? We really want to go the 
+That`s nice, and we can see the mappings, but it isn't really what we want to know, is it? We really want to go the 
 other way, and see how our source-pixels map to the image. This is where `Mapper`'s come into their own, as they let us 
 map all the points in a given source-pixel back to the image. Lets map source pixel 313, the central source-pixel, 
 to the image.
@@ -142,7 +142,7 @@ Okay, so I think we can agree, `Mapper`'s map things! More specifically, they ma
 the observed image of a strong lens.
 
 Finally, lets do the same as above, but using a masked image. By applying a `Mask2D`, the `Mapper` will only map 
-image-pixels inside the mask. This removes the (many) image pixels at the edge of the image, where the source isn`t 
+image-pixels inside the mask. This removes the (many) image pixels at the edge of the image, where the source isn't 
 present. These pixels also pad-out the source-plane, thus by removing them our source-plane reduces in size.
 
 Lets just have a quick look at these edges pixels:
@@ -230,7 +230,7 @@ aplt.Mapper.subplot_image_and_mapper(
 
 # %%
 """
-Great - tutorial 2 down! We`ve learnt about `Mapper``., which map things, and we used them to understand how the image 
+Great - tutorial 2 down! We've learnt about `Mapper``., which map things, and we used them to understand how the image 
 and source plane map to one another. Your exercises are:
 
  1) Change the einstein radius of the lens galaxy in small increments (e.g. einstein radius 1.6" -> 1.55"). As the 
@@ -239,7 +239,7 @@ and source plane map to one another. Your exercises are:
     
  2) Incrementally increase the axis ratio of the lens`s `MassProfile` to 1.0. What happens to quadruple imaging?
     
- 3) Now, finally, think - how is all of this going to help us actually model lenses? We`ve said we`re going to 
+ 3) Now, finally, think - how is all of this going to help us actually model lenses? We've said we`re going to 
  reconstruct our source galaxies on the pixel-grid. So, how does knowing how each pixel maps to the image actually 
  help us? If you`ve not got any bright ideas, then worry not - that exactly what we`re going to cover in the next 
  tutorial.

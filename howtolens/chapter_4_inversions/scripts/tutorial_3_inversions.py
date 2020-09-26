@@ -3,7 +3,7 @@
 Tutorial 3: Inversions
 ======================
 
-We`ve covered `Mapper``., which, if I haven`t emphasised it enough yet, map things. Now, we`re going to look at how we
+We've covered `Mapper``., which, if I haven`t emphasised it enough yet, map things. Now, we`re going to look at how we
 can use these `Mapper`'s (which map things) to reconstruct the source galaxy - I hope you`re excited!
 """
 
@@ -21,9 +21,9 @@ print("Workspace Path: ", workspace_path)
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy`s light is omitted.
- - The lens galaxy`s `MassProfile` is an `EllipticalIsothermal`.
- - The source galaxy`s `LightProfile` is an `EllipticalSersic`.
+ - The lens `Galaxy`'s light is omitted.
+ - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
@@ -59,7 +59,7 @@ aplt.Imaging.image(imaging=imaging, mask=mask)
 # %%
 """
 Next, lets set the `Imaging` and `Mask2D` up as a `MaskedImaging` object and setup a `Tracer` using the input lens 
-galaxy model (we don`t need to provide the source`s `LightProfile`, as we`re using a `Mapper` to reconstruct it).
+galaxy model (we don't need to provide the source`s `LightProfile`, as we`re using a `Mapper` to reconstruct it).
 """
 
 # %%
@@ -122,7 +122,7 @@ aplt.Inversion.reconstruction(
 
 # %%
 """
-And there we have it, we`ve successfully reconstructed, or, *inverted*, our source using the mapper`s rectangular 
+And there we have it, we've successfully reconstructed, or, *inverted*, our source using the mapper`s rectangular 
 grid. Whilst this source was simple (a blob of light in the centre of the source-plane), `Inversion`'s come into their 
 own when fitting sources with complex morphologies. Infact, given we`re having so much fun inverting things, lets 
 invert a really complex source!
@@ -193,8 +193,8 @@ aplt.Inversion.reconstruction(
 Pretty great, huh? If you ran the complex source pipeline, you`ll remember that getting a model image that looked that 
 good simply *was not possible*. With an `Inversion`, we can do it with ease and without fitting 30+ parameters!
 
-Lets discuss how an `Inversion` actually works. The explanation I give below is overly-simplified. I`m avoiding the 
-technical details of how an `Inversion` *actually* works. To be good at lens modeling you don`t need to understand the 
+Lets discuss how an `Inversion` actually works. The explanation I give below is overly-simplified. I'm avoiding the 
+technical details of how an `Inversion` *actually* works. To be good at lens modeling you don't need to understand the 
 nitty-gritty details of linear inversions, you just need an instinct for how to use them as a tool to model lenses.
 
 Nevertheless, I know a lot of you hate `black-boxes`, or have an interest in linear algrebra. If you`re that way 
@@ -231,7 +231,7 @@ set of simultaneous linear equations. This process is called a `linear inversion
 
 There are three more things about a linear `Inversion` that are worth knowing:
 
- 1) We`ve discussed the image sub-grid before, which splits each image-pixel into a sub-pixel. If a sub-grid is 
+ 1) We've discussed the image sub-grid before, which splits each image-pixel into a sub-pixel. If a sub-grid is 
  used, it is the mapping between every sub-pixel and source-pixel that is computed and used to perform the 
  `Inversion`. This prevents aliasing effects degrading the image reconstruction, and, as a rule of thumb, I 
  would suggest you use sub-gridding of degree 2x2.
@@ -275,5 +275,5 @@ And, we`re done, here are a few questions to get you thinking about `Inversion``
  galaxy? What happens if you reduce the `regularization_coefficient` above to zero?
 
  2) The exterior pixels in the `Rectangular` `Grid`.have no image-pixels in them. However, they are still given a 
- reconstructed flux. If this value isn`t` coming from a util to an image-pixel, where is it be coming from?
+ reconstructed flux. If this value isn't` coming from a util to an image-pixel, where is it be coming from?
 """

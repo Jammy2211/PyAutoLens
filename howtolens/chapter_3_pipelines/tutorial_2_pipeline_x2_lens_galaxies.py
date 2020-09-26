@@ -2,7 +2,7 @@ import autofit as af
 import autolens as al
 
 """
-In this pipeline, we fit the a strong lens with two lens galaxies using  two `EllipticalSersic` `LightProfile``., 
+In this pipeline, we fit the a strong lens with two lens galaxies using  two `EllipticalSersic` `LightProfile`'s, 
 two `EllipticalIsothermal` `MassProfile`'s and a parametric `EllipticalSersic` source.
 
 The pipeline assumes the lens galaxies are at (0.0", -1.0") and (0.0", 1.0") and is not a general pipeline
@@ -32,7 +32,7 @@ Phase 2:
 
 Phase 3:
 
-    Use this lens-subtracted image to fit the source-galaxy`s light. The `MassProfile`'s of the two lens galaxies
+    Use this lens-subtracted image to fit the source-`Galaxy`'s light. The `MassProfile`'s of the two lens galaxies
     can use the results of phases 1 and 2 to initialize their priors.
 
     Lens Light: EllipticalSersic + EllipticalSersic
@@ -64,7 +64,7 @@ def make_pipeline(setup, settings):
     setup.folders.append(setup.tag)
 
     """
-    Phase 1: Fit the left lens galaxy`s light, where we:
+    Phase 1: Fit the left lens `Galaxy`'s light, where we:
 
         1) Fix the centres to (0.0, -1.0), the pixel we know the left `Galaxy`'s light centre peaks.
     """
@@ -142,7 +142,7 @@ def make_pipeline(setup, settings):
     )
 
     """
-    Phase 4: Fit both lens galaxy`s light and mass profiles, as well as the source-galaxy, simultaneously, where we:
+    Phase 4: Fit both lens `Galaxy`'s light and mass profiles, as well as the source-galaxy, simultaneously, where we:
     
         1) Use the results of phases 1 and 2 to initialize the lens light models.
         2) Use the results of phase 3 to initialize the lens mass and source light models.

@@ -23,7 +23,7 @@ plot module.
    import autolens as al
    import autolens.plot as aplt
 
-To describe the deflection of light due to the lens galaxy's mass, **PyAutoLens** uses `Grid` data structures, which
+To describe the deflection of light due to the lens galaxy's mass, **PyAutoLens** uses `Grid` ``data`` structures, which
 are two-dimensional Cartesian grids of (y,x) coordinates. Below, we make and plot a uniform Cartesian `Grid` (the
 pixel-scale describes the conversion from pixel units to arc-seconds):
 

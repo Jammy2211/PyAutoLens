@@ -59,7 +59,7 @@ def make_pipeline(setup, settings):
     setup.folders.append(setup.tag)
 
     """
-    Phase 1: Fit only the lens galaxy`s light, where we:
+    Phase 1: Fit only the lens `Galaxy`'s light, where we:
 
         1) Set priors on the lens galaxy (y,x) centre such that we assume the image is centred around the lens galaxy.
 
@@ -76,17 +76,17 @@ def make_pipeline(setup, settings):
     )
 
     """
-    Phase 2: Fit the lens`s `MassProfile`'s and source galaxy`s light, where we:
+    Phase 2: Fit the lens`s `MassProfile`'s and source `Galaxy`'s light, where we:
 
         1) Fix the foreground lens light subtraction to the lens galaxy light model from phase 1.
-        2) Set priors on the centre of the lens galaxy`s `MassProfile` by linking them to those inferred for 
+        2) Set priors on the centre of the lens `Galaxy`'s `MassProfile` by linking them to those inferred for 
            the `LightProfile` in phase 1.
            
-    In phase 2, we fit the source-galaxy`s light. Thus, we want to fix the lens light model to the model inferred
+    In phase 2, we fit the source-`Galaxy`'s light. Thus, we want to fix the lens light model to the model inferred
     in phase 1, ensuring the image we fit is lens subtracted. We do this below by passing the lens light as an
  `instance` object, a trick we use in nearly all pipelines!
 
-    By passing an `instance`, we are telling ``.yAutoLens__ that we want it to pass the maximum log likelihood result of
+    By passing an `instance`, we are telling **PyAutoLens** that we want it to pass the maximum log likelihood result of
     that phase and use those parameters as fixed values in the model. The model parameters passed as an `instance` are
     not free parameters fitted for by the non-linear search, thus this reduces the dimensionality of the non-linear 
     search making model-fitting faster and more reliable. 

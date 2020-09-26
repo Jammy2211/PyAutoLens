@@ -3,7 +3,7 @@
 Tutorial 7: Masking and Positions
 =================================
 
-We`ve learnt nearly all the tools we need to model strong lenses, so I`m now going to quickly cover how you should
+We've learnt nearly all the tools we need to model strong lenses, so I'm now going to quickly cover how you should
 choose your mask. I`ll also show you another neat trick to improve the speed and accuracy of your non-linear search.
 """
 
@@ -28,8 +28,8 @@ conf.instance = conf.Config(
 """
 we'll use the same strong lensing data as tutorials 1 & 2, where:
 
- - The lens galaxy`s `MassProfile` is a *SphericalIsothermal*.
- - The source galaxy`s `LightProfile` is a *SphericalExponential*.
+ - The lens `Galaxy`'s `MassProfile` is a *SphericalIsothermal*.
+ - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 """
 
 # %%
@@ -51,7 +51,7 @@ imaging = al.Imaging.from_fits(
 When it comes to determining an appropriate mask for this image, the best approach is to set up a `Mask2D` and pass it 
 to a `Imaging` plotter. You can then check visually if the mask is an appropriate size or not. 
 
-Below, we choose an inner radius that cuts into our lensed source galaxy - clearly this isn`t a good mask.
+Below, we choose an inner radius that cuts into our lensed source galaxy - clearly this isn't a good mask.
 """
 
 # %%
@@ -116,21 +116,21 @@ bigger mask? a smaller mask?
 When it comes to masking, we are essentially balancing run-speed and accuracy. If speed wasn`t a consideration, 
 bigger masks would *always* be better, for two reasons:
 
-1) The lensed source galaxy may have very faint emission that when you look at the plot above you don`t notice. 
+1) The lensed source galaxy may have very faint emission that when you look at the plot above you don't notice. 
  Overly aggressive masking risks you masking out some of that light, data which would better constrain your 
  lens model!
     
  2) When you fit an image with a model image the fit is performed only within the masked region. Outside of the 
  masked region it is possible that the model image produces some source-galaxy light in a region of the image 
- where it isn`t actually observed. If this region is masked, the poor fit in this region won`t reduce the model`s 
+ where it isn't actually observed. If this region is masked, the poor fit in this region won`t reduce the model`s 
  log likelihood.
 
-As you use ``.yAutoLens__ more you will get a feel for how fast an analysis will run given a certain image resolution, 
+As you use **PyAutoLens** more you will get a feel for how fast an analysis will run given a certain image resolution, 
 lens model complexity, non-linear search priors / setup, etc. As you develop this intuition, I would recommend you 
 always aim to use masks as big as possible which still give a reasonable run-speed. Aggressive masking will get your 
 code running fast - but it could lead you to infer an incorrect lens model!
 
-If you are fitting the foreground lens galaxy`s light you pretty much have no choice but to use a large circular 
+If you are fitting the foreground lens `Galaxy`'s light you pretty much have no choice but to use a large circular 
 mask anyway, as you`ll need to capture the lens`s extended emission. Chances are this will encompass the entire 
 source galaxy.
 """
@@ -138,7 +138,7 @@ source galaxy.
 # %%
 """
 We can also manually specify a set of image-pixels correspondin to the multiple images of the source-galaxy(s). 
-During the analysis, ``.yAutoLens__ will first check that these pixels trace within a specified arc-second threshold of 
+During the analysis, **PyAutoLens** will first check that these pixels trace within a specified arc-second threshold of 
 one another (which is controlled by the `position_threshold` parameter input into a phase). This provides two benefits:
 
  1) The analysis runs faster as the non-linear search avoids searching regions of parameter space where the 
@@ -150,7 +150,7 @@ one another (which is controlled by the `position_threshold` parameter input int
 We can easily check the image-positions are accurate by plotting them using our `Imaging` `Plotter`.(they are the magenta 
 dots on the image).
 
-To specify these positions, we use the `GridCoordinates` object, which is used by ``.yAutoLens__ in general to specify (y,x)
+To specify these positions, we use the `GridCoordinates` object, which is used by **PyAutoLens** in general to specify (y,x)
 coordinates.
 """
 
@@ -301,7 +301,7 @@ And that completes our final tutorial in this chapter! At this point, I recommen
 positions for a specific strong lens and output them so they can be loaded before an analysis.
 
 When we cover pipelines next, you`ll see that pipelines allow us to use a custom mask and set of positions for each 
-lens we model. So, although we have to draw the masks and positions for each lens in a sample, once we`ve done that 
+lens we model. So, although we have to draw the masks and positions for each lens in a sample, once we've done that 
 we can fit all lenses with one standardized pipeline!
 
 There are two things you should bare in mind in terms of masking and positions:
@@ -316,5 +316,5 @@ There are two things you should bare in mind in terms of masking and positions:
  give the analysis correspond to different parts of the source, you may remove the *correct lens model*. In my 
  experience, as long as you keep the threshold above ~0.5" you`ll be fine.
 
-And with that, we`ve completed the chapter.
+And with that, we've completed the chapter.
 """

@@ -4,7 +4,7 @@ Chapter 5: Hyper Mode
 In chapter 5, we use **hyper-mode** to adapt our lens models to the specific strong lens we are fitting.
 
 Due to memory limitations on our readthedocs, whereas previous chapters were built to display on the readthedocs we have
-omitted this for chapter 5, instead linking directly to them on the *autolens_workspace* GitHub.
+omitted this for chapter 5, instead linking directly to them on the ``autolens_workspace`` GitHub.
 
 The chapter contains the following tutorials:
 

@@ -4,8 +4,8 @@ import autolens as al
 """
 This script simulates `Imaging` of a strong lens where:
 
- - The lens galaxy`s `MassProfile` is a *SphericalIsothermal*.
- - The source galaxy`s `LightProfile` is a *SphericalExponential*.
+ - The lens `Galaxy`'s `MassProfile` is a *SphericalIsothermal*.
+ - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 
 This dataset is used in chapter 2, tutorials 1-3.
 """
@@ -71,7 +71,7 @@ simulator = al.SimulatorImaging(
 )
 
 """
-Setup the lens galaxy`s mass (SIE+Shear) and source galaxy light (elliptical Sersic) for this simulated lens.
+Setup the lens `Galaxy`'s mass (SIE+Shear) and source galaxy light (elliptical Sersic) for this simulated lens.
 
 For lens modeling, defining ellipticity in terms of the  `elliptical_comps` improves the model-fitting procedure.
 

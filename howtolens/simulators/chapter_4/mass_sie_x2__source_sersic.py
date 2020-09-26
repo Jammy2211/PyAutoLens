@@ -5,8 +5,8 @@ import autolens.plot as aplt
 """
 This script simulates `Imaging` of a strong lens where:
 
- - The lens galaxy`s `MassProfile` is a *SphericalIsothermal*.
- - The source galaxy`s `LightProfile` is a *SphericalExponential*.
+ - The lens `Galaxy`'s `MassProfile` is a *SphericalIsothermal*.
+ - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 
 This dataset is used in chapter 2, tutorials 1-3.
 """

@@ -16,15 +16,15 @@ This guide installs **PyAutoLens** with the following dependencies:
 
 **PyAutoGalaxy** https://github.com/Jammy2211/PyAutoGalaxy
 
-**PyMultiNest** http://johannesbuchner.github.io/pymultinest-tutorial/install.html
+*``PyMultiNest``* http://johannesbuchner.github.io/pymultinest-tutorial/install.html
 
 **pyquad** https://github.com/AshKelly/pyquad
 
-**Dynesty** https://github.com/joshspeagle/dynesty
+*``dynesty``* https://github.com/joshspeagle/dynesty
 
-**emcee** https://github.com/dfm/emcee
+*``emcee``* https://github.com/dfm/emcee
 
-**PySwarms** https://github.com/ljvmiranda921/pyswarms
+*``PySwarms``* https://github.com/ljvmiranda921/pyswarms
 
 **astropy** https://www.astropy.org/
 
@@ -119,16 +119,16 @@ Finally, run the `welcome.py` script to get started!
 
    python3 welcome.py
 
-Forking / Cloning
+Cloning / Forking
 -----------------
 
-Alternatively, you can fork or clone the **PyAutoLens** github repository and run it from the source code.
+You can clone (or fork) the **PyAutoLens** github repository and run it from the source code.
 
-First, clone the **PyAutoLens** GitHub repository:
+First, clone (or fork) the **PyAutoLens** GitHub repository:
 
 .. code-block:: bash
 
-    https://github.com/Jammy2211/PyAutoLens
+    git clone https://github.com/Jammy2211/PyAutoLens
 
 Next, install the **PyAutoLens** dependencies via pip:
 
@@ -137,15 +137,15 @@ Next, install the **PyAutoLens** dependencies via pip:
    cd PyAutoLens
    pip install -r requirements.txt
 
-Include the PyAutoLens source repository in your PYTHONPATH (noting that you must replace the text '/path/to' with the
-path to the PyAutoLens directory on your computer):
+Include the **PyAutoLens** source repository in your PYTHONPATH (noting that you must replace the text
+``/path/to`` with the path to the **PyAutoLens** directory on your computer):
 
 .. code-block:: bash
 
    export PYTHONPATH=$PYTHONPATH:/path/to/PyAutoLens
 
 **PyAutoLens** requires a valid config to run. Therefore, clone the
-`autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_:
+`autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ which contains the config files:
 
 .. code-block:: bash
 
@@ -159,18 +159,20 @@ Next, run the `welcome.py` script to set up the configs and environment:
 
    python3 welcome.py
 
-Finally, check the **PyAutoLens** unit tests run and pass (you may need to install pytest via `pip install pytest`):
+Finally, check the **PyAutoLens** unit tests run and pass (you may need to install pytest via
+``pip install pytest``):
 
 .. code-block:: bash
 
+    cd /path/to/PyAutoLens
    python3 -m pytest
 
 Environment Variables
 ---------------------
 
-**PyAutoLens** uses an environment variable called WORKSPACE to know where the 'autolens_workspace' folder is located.
-This is used to locate config files and output results. It should automatically be detected and set in the `welcome.py`
-script, but if something goes wrong you can set it manually using the command:
+**PyAutoLens** uses an environment variable called WORKSPACE to know where the 'autolens_workspace' folder is
+located. This is used to locate config files and output results. It should automatically be detected and set in
+the `welcome.py` script, but if something goes wrong you can set it manually using the command:
 
 .. code-block:: bash
 

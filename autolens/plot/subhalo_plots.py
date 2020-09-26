@@ -4,7 +4,8 @@ import numpy as np
 from autogalaxy.plot import lensing_plotters, plane_plots, inversion_plots
 from autolens.plot import fit_imaging_plots
 from autoarray.plot import plotters
-
+import os
+import shutil
 
 def agg_max_log_likelihood_from_aggregator(aggregator):
 
@@ -13,6 +14,27 @@ def agg_max_log_likelihood_from_aggregator(aggregator):
     index = np.argmax(log_likelihoods)
     search_max = list(filter(None, aggregator.values("search")))[index]
     return aggregator.filter(aggregator.directory.contains(search_max.paths.name))
+
+
+def copy_pickle_files_to_agg_max(agg_max_log_likelihood):
+
+    search_before = list(agg_max_log_likelihood.values("search"))
+    pickle_path_before = search_before[0].paths.pickle_path
+    pickle_path_grid_search = pickle_path_before.rsplit("/", 1)[0]
+    pickle_path_grid_search = pickle_path_grid_search.rsplit("/", 1)[0]
+    pickle_path_grid_search = pickle_path_grid_search.rsplit("/", 1)[0]
+    pickle_path_grid_search = pickle_path_grid_search.rsplit("/", 1)[0]
+    pickle_path_grid_search = pickle_path_grid_search.rsplit("/", 1)[0]
+
+    pickle_path_grid_search = f"{pickle_path_grid_search}/pickles"
+
+    src_files = os.listdir(pickle_path_grid_search)
+    for file_name in src_files:
+        full_file_name = os.path.join(pickle_path_grid_search, file_name)
+        if os.path.isfile(full_file_name):
+            shutil.copy(full_file_name, pickle_path_before)
+
+    os.remove(f"{pickle_path_before}/grid_search_result.pickle")
 
 
 def subplot_detection_agg(agg_before, agg_detect, include=None, sub_plotter=None):
@@ -24,6 +46,9 @@ def subplot_detection_agg(agg_before, agg_detect, include=None, sub_plotter=None
     agg_max_log_likelihood = agg_max_log_likelihood_from_aggregator(
         aggregator=agg_detect
     )
+
+    copy_pickle_files_to_agg_max(agg_max_log_likelihood=agg_max_log_likelihood)
+
     fit_imaging_detect = list(
         agg.fit_imaging_generator_from_aggregator(aggregator=agg_max_log_likelihood)
     )[0]

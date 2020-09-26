@@ -160,8 +160,8 @@ class SetupMassTotal(setup.SetupMassTotal):
 
         This changes the setup folder as follows:
 
-        no_shear = False -> setup__with_shear
-        no_shear = True -> setup___no_shear
+        no_shear = ``False`` -> setup__with_shear
+        no_shear = ``True`` -> setup___no_shear
         """
         if not self.no_shear:
             return "__" + conf.instance.setup_tag.get("mass", "with_shear")
@@ -260,8 +260,8 @@ class SetupMassLightDark(setup.SetupMassLightDark):
 
         This changes the setup folder as follows:
 
-        no_shear = False -> setup__with_shear
-        no_shear = True -> setup___no_shear
+        no_shear = ``False`` -> setup__with_shear
+        no_shear = ``True`` -> setup___no_shear
         """
         if not self.no_shear:
             return "__" + conf.instance.setup_tag.get("mass", "with_shear")

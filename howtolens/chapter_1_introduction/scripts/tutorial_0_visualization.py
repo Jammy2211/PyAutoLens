@@ -3,9 +3,9 @@
 Tutorial 0: Visualization
 =========================
 
-In this tutorial, we'll cover visualization in ``.yAutoLens__ and make sure images display properly on your computer.
+In this tutorial, we'll cover visualization in **PyAutoLens** and make sure images display properly on your computer.
 
-First, lets load an image of a (simulated) strong lens. Don`t worry too much about what the code below is doing as it
+First, lets load an image of a (simulated) strong lens. Don't worry too much about what the code below is doing as it
 will be covered in a later tutorial.
 """
 
@@ -23,7 +23,7 @@ The tutorials need to know the path to your autolens_workspace folder, in order 
  - Load example data.
  - Output the results of models fits to your hard-disk. 
     
-If you don`t have an autolens_workspace (perhaps you cloned / forked the **PyAutoLens** GitHub repository?) you can
+If you don't have an autolens_workspace (perhaps you cloned / forked the **PyAutoLens** GitHub repository?) you can
 download it here:
  
  ttps://github.com/Jammy2211/autolens_workspace
@@ -79,7 +79,7 @@ aplt.Imaging.image(imaging=imaging)
 """
 Does the figure display correctly on your computer screen? 
 
-If not, you can customize a number of matplotlib setup options using a Plotter object in ``.yAutoLens__.
+If not, you can customize a number of matplotlib setup options using a Plotter object in **PyAutoLens**.
 """
 
 # %%
@@ -104,13 +104,13 @@ Many matplotlib options can be customized, but for now we`re only concerned with
 your Jupter Notebooks. However, for future reference, a descrition of all options can be found in the file 
 `autolens_workspace/plot/mat_objs.py`.
 
-Ideally, we wouldn`t need to specify a new `Plotter` every time we plot an image we make, especially as you`ll be 
+Ideally, we wouldn't need to specify a new `Plotter` every time we plot an image we make, especially as you`ll be 
 changing the same option to the same value over and over again (e.g. the figsize). Fortunately, the default values 
-used by ``.yAutoLens__ can be fully customized.
+used by **PyAutoLens** can be fully customized.
 
 Checkout the the file `autolens_workspace/config/visualize/figures.ini`.
 
-All default matplotlib values used by ``.yAutoLens__ are here. There`s lots, so lets only focus on whats important for 
+All default matplotlib values used by **PyAutoLens** are here. There`s lots, so lets only focus on whats important for 
 displaying figures correctly:
 
 [figures] -> figsize
@@ -119,13 +119,13 @@ displaying figures correctly:
 
 [ticks] -> ysize, xsize
 
-Don`t worry about all the other options listed in this file for now, as they`ll make a lot more sense once you are 
-familiar with ``.yAutoLens__.
+Don't worry about all the other options listed in this file for now, as they`ll make a lot more sense once you are 
+familiar with **PyAutoLens**.
 
 (Note that you will need to reset your Juypter notebook server for these changes to take effect, so make sure you 
 have the right values using the function above beforehand!)
 
-In addition to individual `figures` which use a `plotter` to plot them, ``.yAutoLens__ also plots `subplots` using a 
+In addition to individual `figures` which use a `plotter` to plot them, **PyAutoLens** also plots `subplots` using a 
 `sub_plotter`. Lets plot a subplot of our `Imaging` data:
 """
 
@@ -169,7 +169,7 @@ Throughout the ``.owToLens__ lecture series you`ll see lots more objects that ca
 Just like the matplotlib setup, you can customize what does and does not appear on figures by default using the 
 config file `autolens_workspace/config/visualize/general.ini`
 
-Great! Hopefully, visualization in ``.yAutoLens__ is displaying nicely for us to get on with the ``.owToLens__ lecture series.
+Great! Hopefully, visualization in **PyAutoLens** is displaying nicely for us to get on with the ``.owToLens__ lecture series.
 """
 
 # %%

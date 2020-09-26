@@ -81,7 +81,7 @@ mask = al.Mask2D.circular(
 )
 
 print(mask)  # 1 = True, which means the pixel is masked. Edge pixels are indeed masked.
-print(mask[48:53, 48:53])  # Whereas central pixels are False and therefore unmasked.
+print(mask[48:53, 48:53])  # Whereas central pixels are ``False`` and therefore unmasked.
 
 # %%
 """
@@ -97,7 +97,7 @@ aplt.Imaging.image(imaging=imaging, mask=mask)
 The `mask` automatically `zooms` our plot around the masked region only - meaning that if our image is very large, we 
 focus-in on the lens and source galaxies.
 
-You`ll see this is an option for pretty much every `Plotter` in ``.yAutoLens__, and is something we'll do often throughout 
+You`ll see this is an option for pretty much every `Plotter` in **PyAutoLens**, and is something we'll do often throughout 
 the tutorials.
 """
 
@@ -232,7 +232,7 @@ fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 # %%
 """
 We can print the fit`s attributes. As usual, we can choose whether to return the fits in 2d or 1d, and in 2d if we 
-don`t specify where we'll get all zeros, as the edges were masked:
+don't specify where we'll get all zeros, as the edges were masked:
 """
 
 # %%
@@ -318,7 +318,7 @@ chapters for setting up many different aspects of a **PyAutoLens** fit, so take 
 # %%
 """
 We used the same `Tracer` to create and fit the image, giving an excellent fit. The residual-map and chi-squared-map, 
-show no signs of the source-galaxy`s light present, indicating a good fit. This solution will translate to one of the 
+show no signs of the source-`Galaxy`'s light present, indicating a good fit. This solution will translate to one of the 
 highest-log_likelihood solutions possible.
 
 Lets change the `Tracer`, so that it`s near the correct solution, but slightly off. Below, we slightly offset the lens 
@@ -417,7 +417,7 @@ print(fit.log_likelihood)
 
 # %%
 """
-Congratulations, you`ve fitted your first strong lens with ``.yAutoLens__! Perform the following exercises:
+Congratulations, you`ve fitted your first strong lens with **PyAutoLens**! Perform the following exercises:
 
  1) In this example, we `knew` the correct solution, because we simulated the lens ourselves. In the real Universe, 
  we have no idea what the correct solution is. How would you go about finding the correct solution? Could you find a 

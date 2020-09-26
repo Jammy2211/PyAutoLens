@@ -4353,7 +4353,7 @@ class TestDecorators:
         assert deflections[4, 0] == deflections_sub_8[4, 0]
 
     def test__grid_interp_in__interps_based_on_intepolate_config(self):
-        # False in interpolate.ini
+        # ``False`` in interpolate.ini
 
         mask = al.Mask2D.manual(
             mask=[
