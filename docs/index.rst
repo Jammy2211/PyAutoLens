@@ -19,17 +19,19 @@ Strong lensing provides astronomers with an invaluable tool to study a diverse r
 the discovery of many hundreds of new strong lenses, however the modeling of a strong lens is historically a
 time-intensive process that requires significant human intervention to perform, restricting the scope of any scientific
 analysis. In the next decade of order `one hundred thousand` strong lenses will be discovered by surveys such as
-Euclid, the Vera Rubin Observatory and Square Kilometer Array. **PyAutoLens** is open source software which automates
-the lens modeling process and is accessible to the entire scientific community.
+Euclid, the Vera Rubin Observatory and Square Kilometer Array.
+
+**PyAutoLens** is open source software aiming to automate the lens modeling process and make strong lensing
+accessible to the entire scientific community.
 
 How does PyAutoLens Work?
 =========================
 
-A gravitational lens system can be quickly assembled from abstracted objects. A ``Galaxy`` object contains one or
+A strong lens system can be quickly assembled from abstracted objects. A ``Galaxy`` object contains one or
 more ``LightProfile``'s and ``MassProfile``'s, which represent its two dimensional distribution of starlight and mass.
 ``Galaxy``’s lie at a particular distance (redshift) from the observer, and are grouped into ``Plane``'s. Raytracing
-through multiple ``Plane``'s is achieved by passing them to a `Tracer` with an `astropy` Cosmology. By passing these
-objects a `Grid` strong lens sightlines are computed, including multi-plane ray-tracing. All of these
+through multiple ``Plane``'s is achieved by passing them to a ``Tracer`` with an ``astropy`` Cosmology. By passing
+these objects a ``Grid`` strong lens sightlines are computed, including multi-plane ray-tracing. All of these
 objects are extensible, making it straightforward to compose highly customized lensing system. The example code
 below shows this in action:
 
@@ -83,8 +85,8 @@ below shows this in action:
 
     aplt.Tracer.image(tracer=tracer, grid=grid)
 
-To perform lens modeling, `PyAutoLens` adopts the probabilistic programming
-language `PyAutoFit <https://github.com/rhayes777/PyAutoFit>`_. **PyAutoFi** allows users to compose a
+To perform lens modeling, **PyAutoLens** adopts the probabilistic programming
+language `PyAutoFit <https://github.com/rhayes777/PyAutoFit>`_. **PyAutoFit** allows users to compose a
 lens model from ``LightProfile``, ``MassProfile`` and ``Galaxy`` objects, customize the model parameterization and
 fit it to data via a non-linear search (e.g. `dynesty <https://github.com/joshspeagle/dynesty>`_,
 `emcee <https://github.com/dfm/emcee>`_ or `PySwarms <https://pyswarms.readthedocs.io/en/latest/>`_). The example
@@ -157,7 +159,7 @@ Getting Started
 
 To get started, users can check-out the **PyAutoLens**'s rich feature-set by going through the `overview` section
 of our readthedocs. This illustrates the API for all of **PyAutoLens**'s core features, including how to simulate
-strong lens datasets, recontructing the lensed source galaxy on adaptive pixel-grids and fitting interferometer
+strong lens datasets, reconstructing the lensed source galaxy on adaptive pixel-grids and fitting interferometer
 datasets.
 
 For new **PyAutoLens** users, we recommend they start by

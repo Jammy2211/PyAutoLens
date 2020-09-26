@@ -2,7 +2,6 @@ import autofit as af
 import autogalaxy as ag
 from astropy import cosmology as cosmo
 from autolens.pipeline.phase import dataset
-from autogalaxy.pipeline.phase.imaging.phase import PhaseAttributes as AgPhaseAttributes
 from autolens.dataset import imaging
 from autolens.pipeline.phase.settings import SettingsPhaseImaging
 from autolens.pipeline.phase.imaging.analysis import Analysis
@@ -57,14 +56,6 @@ class PhaseImaging(dataset.PhaseDataset):
         self.hyper_background_noise = hyper_background_noise
 
         self.is_hyper_phase = False
-
-    def make_phase_attributes(self, analysis):
-        return PhaseAttributes(
-            cosmology=self.cosmology,
-            positions=analysis.masked_dataset.positions,
-            hyper_model_image=analysis.hyper_model_image,
-            hyper_galaxy_image_path_dict=analysis.hyper_galaxy_image_path_dict,
-        )
 
     def make_analysis(self, dataset, mask, results=None):
         """
@@ -164,16 +155,3 @@ class PhaseImaging(dataset.PhaseDataset):
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
 
             phase_info.close()
-
-
-class PhaseAttributes(AgPhaseAttributes):
-    def __init__(
-        self, cosmology, positions, hyper_model_image, hyper_galaxy_image_path_dict
-    ):
-        super().__init__(
-            cosmology=cosmology,
-            hyper_model_image=hyper_model_image,
-            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-        )
-
-        self.positions = positions

@@ -1,8 +1,5 @@
 import autofit as af
 from astropy import cosmology as cosmo
-from autogalaxy.pipeline.phase.interferometer.phase import (
-    PhaseAttributes as AgPhaseAttributes,
-)
 from autolens.dataset import interferometer
 from autolens.pipeline.phase import dataset
 from autolens.pipeline.phase.settings import SettingsPhaseInterferometer
@@ -100,15 +97,6 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         return analysis
 
-    def make_phase_attributes(self, analysis):
-        return PhaseAttributes(
-            cosmology=self.cosmology,
-            real_space_mask=self.real_space_mask,
-            positions=analysis.masked_dataset.positions,
-            hyper_model_image=analysis.hyper_model_image,
-            hyper_galaxy_image_path_dict=analysis.hyper_galaxy_image_path_dict,
-        )
-
     def output_phase_info(self):
 
         file_phase_info = "{}/{}".format(self.search.paths.output_path, "phase.info")
@@ -128,23 +116,3 @@ class PhaseInterferometer(dataset.PhaseDataset):
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
 
             phase_info.close()
-
-
-class PhaseAttributes(AgPhaseAttributes):
-    def __init__(
-        self,
-        cosmology,
-        real_space_mask,
-        positions,
-        hyper_model_image,
-        hyper_galaxy_image_path_dict,
-    ):
-
-        super().__init__(
-            cosmology=cosmology,
-            real_space_mask=real_space_mask,
-            hyper_model_image=hyper_model_image,
-            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-        )
-
-        self.positions = positions

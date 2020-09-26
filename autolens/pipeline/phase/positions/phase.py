@@ -1,7 +1,7 @@
 import autofit as af
 from astropy import cosmology as cosmo
 from autogalaxy.pipeline.phase import abstract
-from autogalaxy.pipeline.phase.imaging.phase import PhaseAttributes as AgPhaseAttributes
+from autogalaxy.pipeline.phase.imaging.phase import Attributes as AgAttributes
 from autolens.pipeline.phase.settings import SettingsPhasePositions
 from autolens.pipeline.phase.positions.analysis import Analysis
 from autolens.pipeline.phase.positions.result import Result
@@ -49,8 +49,8 @@ class PhasePositions(abstract.AbstractPhase):
 
         self.solver = solver
 
-    def make_phase_attributes(self, analysis):
-        return PhaseAttributes(cosmology=self.cosmology)
+    def make_attributes(self, analysis):
+        return Attributes(cosmology=self.cosmology)
 
     def make_analysis(self, positions, imaging=None, results=None):
         """
@@ -100,6 +100,6 @@ class PhasePositions(abstract.AbstractPhase):
             phase_info.close()
 
 
-class PhaseAttributes(AgPhaseAttributes):
+class Attributes(AgAttributes):
     def __init__(self, cosmology):
         super().__init__(cosmology=cosmology)
