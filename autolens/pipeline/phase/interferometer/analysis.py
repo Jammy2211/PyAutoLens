@@ -3,6 +3,7 @@ from autoarray.exc import PixelizationException, InversionException, GridExcepti
 from autofit.exc import FitException
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
+from autogalaxy.pipeline.phase.interferometer.analysis import Attributes as AgAttributes
 from autolens.fit import fit
 from autolens.pipeline import visualizer
 from autolens.pipeline.phase.dataset import analysis as analysis_dataset
@@ -20,6 +21,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     ):
 
         super(Analysis, self).__init__(
+            masked_dataset=masked_interferometer,
             settings=settings,
             cosmology=cosmology,
             results=results,
@@ -34,8 +36,6 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
             hyper_model_image=self.hyper_model_image,
         )
-
-        self.masked_dataset = masked_interferometer
 
         result = ag_analysis.last_result_with_use_as_hyper_dataset(results=results)
 
@@ -176,3 +176,32 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             tracer=fit.tracer, during_analysis=during_analysis
         )
         visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)
+
+    def make_attributes(self):
+        return Attributes(
+            cosmology=self.cosmology,
+            real_space_mask=self.masked_dataset.real_space_mask,
+            positions=self.masked_dataset.positions,
+            hyper_model_image=self.hyper_model_image,
+            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
+        )
+
+
+class Attributes(AgAttributes):
+    def __init__(
+        self,
+        cosmology,
+        real_space_mask,
+        positions,
+        hyper_model_image,
+        hyper_galaxy_image_path_dict,
+    ):
+
+        super().__init__(
+            cosmology=cosmology,
+            real_space_mask=real_space_mask,
+            hyper_model_image=hyper_model_image,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+        )
+
+        self.positions = positions

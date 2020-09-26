@@ -166,9 +166,11 @@ a simple analysis which fits the foreground lens galaxy's mass & the background 
 Getting Started
 ---------------
 
-To get started go to our `readthedocs <https://pyautolens.readthedocs.io/>`_,
-where you'll find our installation guide, a complete overview of **PyAutoLens**'s features, examples
-scripts and tutorials and detailed API documentation.
+To get started checkout our `readthedocs <https://pyautolens.readthedocs.io/>`_,
+where you'll find the installation guide, a complete overview of **PyAutoLens**'s features, examples
+scripts and tutorials, detailed API documentation and
+the `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
+on which introduces new users to strong gravitational lensing with **PyAutoLens**.
 
 Support
 -------

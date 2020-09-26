@@ -7,6 +7,7 @@ from autoarray.plot import plotters
 import os
 import shutil
 
+
 def agg_max_log_likelihood_from_aggregator(aggregator):
 
     samples = list(filter(None, aggregator.values("samples")))
