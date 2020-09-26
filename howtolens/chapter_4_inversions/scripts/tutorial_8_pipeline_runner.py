@@ -44,9 +44,9 @@ import autolens.plot as aplt
 """
 we'll use strong lensing data, where:
 
- - The lens galaxy`s light is omitted.
- - The lens galaxy`s `MassProfile` is an `EllipticalIsothermal`.
- - The source galaxy`s `LightProfile` is four `EllipticalSersic``..
+ - The lens `Galaxy`'s light is omitted.
+ - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The source `Galaxy`'s `LightProfile` is four `EllipticalSersic``..
 """
 
 # %%

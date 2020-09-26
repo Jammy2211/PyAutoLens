@@ -62,8 +62,8 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
 
         This changes the setup folder as follows:
 
-        light_is_model = False -> setup__
-        light_is_model = True -> setup___light_is_model
+        light_is_model = ``False`` -> setup__
+        light_is_model = ``True`` -> setup___light_is_model
         """
         if not self.light_is_model:
             return ""
@@ -81,9 +81,9 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
     def shear_from_previous_pipeline(self, index=0):
         """Return the shear `PriorModel` from a previous pipeline, where:
 
-        1) If the shear was included in the *Source* pipeline and *no_shear* is *False* in the *Mass* object, it is
+        1) If the shear was included in the *Source* pipeline and *no_shear* is ``False`` in the *Mass* object, it is
            returned using this pipeline result as a model.
-        2) If the shear was not included in the *Source* pipeline and *no_shear* is *False* in the *Mass* object, it is
+        2) If the shear was not included in the *Source* pipeline and *no_shear* is ``False`` in the *Mass* object, it is
             returned as a new *ExternalShear* PriorModel.
         3) If *no_shear* is *True* in the *Mass* object, it is returned as None and omitted from the lens model.
         """
@@ -706,7 +706,7 @@ class SLaM:
         ----------
         source_is_model : bool
             If *True* the source is returned as a *model* where the parameters are fitted for using priors of the
-            phase result it is loaded from. If *False*, it is an instance of that phase's result.
+            phase result it is loaded from. If ``False``, it is an instance of that phase's result.
         index : integer
             The index (counting backwards from this phase) of the phase result used to setup the source.
         """

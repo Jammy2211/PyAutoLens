@@ -3,7 +3,7 @@
 Lens Modeling
 -------------
 
-We can use a `Tracer` to fit data of a strong lens and use the `Tracer`'s model-image to quantify its goodness-of-fit.
+We can use a `Tracer` to fit ``data`` of a strong lens and use the `Tracer`'s model-image to quantify its goodness-of-fit.
 Of course, when observe an image of a strong lens, we have no idea what *LightProfiles* and *MassProfiles* we should
 give our `Tracer` to best reproduce the strong lens we observed:
 
@@ -23,7 +23,7 @@ by fitting the strong lens data.
     )
     source_galaxy_model = al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalExponential)
 
-In the example above, we will fit our strong lens data two galaxies:
+In the example above, we will fit our strong lens ``data`` two galaxies:
 
     - A lens galaxy with a *EllipticalDevVaucouleurs* `LightProfile` and *EllipticalIsothermal* `MassProfile`.
     - A source galaxy with a *EllipticalExponential* light profile.
@@ -47,7 +47,7 @@ maximize its *log likelihood*.
 
     result = phase.run(data=imaging, mask=mask)
 
-The `PhaseImaging` object above returned a 'result', or *Result* object. This contains the maximum log likelihood
+The `PhaseImaging` object above returned a 'result', or ``Result`` object. This contains the maximum log likelihood
 `Tracer` and *FitImaging*, which can easily be plotted.
 
 .. code-block:: bash
@@ -64,9 +64,9 @@ low chi-squared values:
   :width: 600
   :alt: Alternative text
 
-In fact, this *Result* object contains the full posterior information of our *non-linear* search, including all
+In fact, this ``Result`` object contains the full posterior information of our ``NonLinearSearch``, including all
 parameter samples, log likelihood values and tools to compute the errors on the lens model. The autolens_workspace
-contains a full description of all information contained in a *Result*.
+contains a full description of all information contained in a ``Result``.
 
 *GalaxyModel*'s can be fully customized, mkaing it simple to parameterize and fit many different lens models using any
 combination of `LightProfile`'s and `MassProfile`'s light profiles:
@@ -91,7 +91,7 @@ combination of `LightProfile`'s and `MassProfile`'s light profiles:
 
     lens_galaxy_model.mass.einstein_radius > 1.0
 
-The above fit used the *non-linear search* *Dynesty*, but **PyAutoLens** supports many other methods and their
+The above fit used the *non-linear search* ``dynesty``, but **PyAutoLens** supports many other methods and their
 setting can be easily customized:
 
 .. code-block:: bash
@@ -117,7 +117,7 @@ fitting techniques to be straightforwardly integrated into scientific modeling s
 are interested in developing your own software to perform advanced model-fitting!
 
 Chapters 2 and 3 **HowToLens** lecture series give a comprehensive description of lens modeling, including a
-description of what a *non-linear search* is and strategies to fit complex lens model to data in efficient and robust
+description of what a *non-linear search* is and strategies to fit complex lens model to ``data`` in efficient and robust
 way.
 
 

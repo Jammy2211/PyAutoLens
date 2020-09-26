@@ -5,7 +5,8 @@ from functools import partial
 
 
 def tracer_generator_from_aggregator(aggregator):
-    """Compute a generator of `Tracer` objects from an input aggregator, which generates a list of the `Tracer` objects
+    """
+    Returns a generator of `Tracer` objects from an input aggregator, which generates a list of the `Tracer` objects
     for every set of results loaded in the aggregator.
 
     This is performed by mapping the *tracer_from_agg_obj* with the aggregator, which sets up each tracer using only
@@ -19,7 +20,8 @@ def tracer_generator_from_aggregator(aggregator):
 
 
 def tracer_from_agg_obj(agg_obj):
-    """Compute a `Tracer` object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe that
+    """
+    Returns a `Tracer` object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe that
      it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator outputs
      such that the function can use the *Aggregator*'s map function to to create a `Tracer` generator.
 
@@ -53,7 +55,8 @@ def tracer_from_agg_obj(agg_obj):
 
 
 def masked_imaging_generator_from_aggregator(aggregator, settings_masked_imaging=None):
-    """Compute a generator of *MaskedImaging* objects from an input aggregator, which generates a list of the 
+    """
+    Returns a generator of *MaskedImaging* objects from an input aggregator, which generates a list of the
     *MaskedImaging* objects for every set of results loaded in the aggregator.
 
     This is performed by mapping the *masked_imaging_from_agg_obj* with the aggregator, which sets up each masked
@@ -71,7 +74,8 @@ def masked_imaging_generator_from_aggregator(aggregator, settings_masked_imaging
 
 
 def masked_imaging_from_agg_obj(agg_obj, settings_masked_imaging=None):
-    """Compute a *MaskedImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe 
+    """
+    Returns a *MaskedImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe
      that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator 
      outputs such that the function can use the *Aggregator*'s map function to to create a *MaskedImaging* generator.
 
@@ -98,7 +102,8 @@ def fit_imaging_generator_from_aggregator(
     settings_pixelization=None,
     settings_inversion=None,
 ):
-    """Compute a generator of *FitImaging* objects from an input aggregator, which generates a list of the 
+    """
+    Returns a generator of *FitImaging* objects from an input aggregator, which generates a list of the
     *FitImaging* objects for every set of results loaded in the aggregator.
 
     This is performed by mapping the *fit_imaging_from_agg_obj* with the aggregator, which sets up each fit using
@@ -125,7 +130,8 @@ def fit_imaging_from_agg_obj(
     settings_pixelization=None,
     settings_inversion=None,
 ):
-    """Compute a *FitImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe 
+    """
+    Returns a *FitImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe
      that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator 
      outputs such that the function can use the *Aggregator*'s map function to to create a *FitImaging* generator.
 
@@ -158,7 +164,8 @@ def fit_imaging_from_agg_obj(
 def masked_interferometer_generator_from_aggregator(
     aggregator, settings_masked_interferometer=None
 ):
-    """Compute a generator of *MaskedInterferometer* objects from an input aggregator, which generates a list of the 
+    """
+    Returns a generator of *MaskedInterferometer* objects from an input aggregator, which generates a list of the
     *MaskedInterferometer* objects for every set of results loaded in the aggregator.
 
     This is performed by mapping the *masked_interferometer_from_agg_obj* with the aggregator, which sets up each masked
@@ -177,7 +184,8 @@ def masked_interferometer_generator_from_aggregator(
 
 
 def masked_interferometer_from_agg_obj(agg_obj, settings_masked_interferometer=None):
-    """Compute a *MaskedInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to 
+    """
+    Returns a *MaskedInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to
     describe that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's 
     generator outputs such that the function can use the *Aggregator*'s map function to to create a 
     *MaskedInterferometer* generator.
@@ -209,7 +217,8 @@ def fit_interferometer_generator_from_aggregator(
     settings_pixelization=None,
     settings_inversion=None,
 ):
-    """Compute a *FitInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to 
+    """
+    Returns a *FitInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to
     describe that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's 
     generator outputs such that the function can use the *Aggregator*'s map function to to create a *FitInterferometer* 
     generator.
@@ -237,7 +246,8 @@ def fit_interferometer_from_agg_obj(
     settings_pixelization=None,
     settings_inversion=None,
 ):
-    """Compute a generator of *FitInterferometer* objects from an input aggregator, which generates a list of the 
+    """
+    Returns a generator of *FitInterferometer* objects from an input aggregator, which generates a list of the
     *FitInterferometer* objects for every set of results loaded in the aggregator.
 
     This is performed by mapping the *fit_interferometer_from_agg_obj* with the aggregator, which sets up each fit

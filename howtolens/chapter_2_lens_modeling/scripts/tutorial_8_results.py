@@ -153,7 +153,7 @@ location `autolens_workspace/advanced`aggregator`. Here, you`ll learn how to:
       plots of the probability density function of parameters in 1D and 2D.
  - Reproduce visualizations of results, such as a tracer`s images or the fit to a lens dataset.
 
-Even if you are only modeling a small sample of lenses, if you anticipate using ``.yAutoLens__ for the long-term I 
+Even if you are only modeling a small sample of lenses, if you anticipate using **PyAutoLens** for the long-term I 
 strongly recommend you begin using the aggregator to inspect and analyse your result. This is because it makes it 
 simple to perform all analyse in a Jupyter notebook, which as you already know is a flexible and versatile way to check 
 results and make figures.

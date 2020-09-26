@@ -4,7 +4,7 @@ Tutorial 1: Pixelizations
 =========================
 
 To begin chapter 4, we'll begin by learning about `Pixelization``., which we apply to a source-plane to reconstruct a
-source-galaxy`s light.
+source-`Galaxy`'s light.
 """
 
 # %%
@@ -37,7 +37,7 @@ source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[1]
 """
 Next, lets set up a `Pixelization`.sing the `pixelization` module, which is imported as `pix` for short.
 
-There are multiple `Pixelization`'s available in ``.yAutoLens__. For now, we'll keep it simple and use a uniform 
+There are multiple `Pixelization`'s available in **PyAutoLens**. For now, we'll keep it simple and use a uniform 
 rectangular grid. As usual, the grid`s `shape` defines its (y,x) dimensions.
 """
 

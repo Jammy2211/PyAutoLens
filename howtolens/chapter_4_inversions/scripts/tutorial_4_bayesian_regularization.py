@@ -7,7 +7,7 @@ So, we can use an `Inversion` to reconstruct an image. Furthermore, this reconst
 likelihood solution. And, when we inspect the fit, we see residuals indicative of a good fit.
 
 Everything sounds pretty good, doesn`t it? You`re probably thinking, why are there more tutorials? We can use
-_Inversion_s now, don`t ruin it! Well, there is a problem - which I hid from you in the last tutorial, which we'll
+_Inversion_s now, don't ruin it! Well, there is a problem - which I hid from you in the last tutorial, which we'll
 cover now.
 """
 
@@ -25,9 +25,9 @@ print("Workspace Path: ", workspace_path)
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy`s light is omitted.
- - The lens galaxy`s `MassProfile` is an `EllipticalIsothermal`.
- - The source galaxy`s `LightProfile` is an `EllipticalSersic`.
+ - The lens `Galaxy`'s light is omitted.
+ - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
@@ -130,7 +130,7 @@ This adds a `penalty term` to the log likelihood of an `Inversion` which is the 
 reconstructed fluxes of every source-pixel pair multiplied by the regularization_coefficient. By setting the 
 regularization coefficient to zero, we set this penalty term to zero, meaning that `Regularization`.s omitted.
 
-Why do we need to regularize our solution? Well, we just saw why - if we don`t apply this smoothing, we `over-fit` 
+Why do we need to regularize our solution? Well, we just saw why - if we don't apply this smoothing, we `over-fit` 
 the image. More specifically, we over-fit the noise in the image, which is what the large flux values located at
 the exteriors of the source reconstruction are doing. Think about it, if your sole aim is to maximize the log 
 likelihood, the best way to do this is to fit *everything* accurately, including the noise.
@@ -189,7 +189,7 @@ For this, we invoke the `Bayesian Evidence`, which quantifies the goodness of th
 
  - First, it requires that the residuals of the fit are consistent with Gaussian noise (which is the noise expected 
  in the `Imaging`.. If this Gaussian pattern is not visible in the residuals, the noise must have been over-fitted. 
- Thus, the Bayesian log evidence decreases. Obviously, if the image is poorly fitted, the residuals don`t appear 
+ Thus, the Bayesian log evidence decreases. Obviously, if the image is poorly fitted, the residuals don't appear 
  Gaussian either, but the poor fit will lead to a decrease in Bayesian log evidence decreases all the same!
 
  - This leaves us with a large number of solutions which all fit the data equally well (e.g., to the noise level). 
@@ -255,7 +255,7 @@ aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
- 2) Can you think of any other ways we might increase the log evidence even further? If not - don`t worry. but 
- you`ll learn that ``.yAutoLens__ actually adapts its source reconstructions to the properties of the image that it is 
+ 2) Can you think of any other ways we might increase the log evidence even further? If not - don't worry. but 
+ you`ll learn that **PyAutoLens** actually adapts its source reconstructions to the properties of the image that it is 
  fitting, so as to objectively maximize the log evidence!
 """

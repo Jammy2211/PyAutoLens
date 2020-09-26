@@ -4,9 +4,9 @@ Tutorial 9: Need For Speed
 ==========================
 
 We can now model strong lenses. We can balance complexity and realism to ensure that we infer a good lens model. And
-we can do this to make the analysis run faster. However, we always need to be wary of run-time. If we don`t craft our
+we can do this to make the analysis run faster. However, we always need to be wary of run-time. If we don't craft our
 phases carefully, we could spend days, or longer, modeling just one image. In this exercise, we'll get thinking about
-what determines the length of time a ``.yAutoLens__ analysis takes, and how one might speed it up.
+what determines the length of time a **PyAutoLens** analysis takes, and how one might speed it up.
 
 __Searching Non-linear Parameter Space__
 
@@ -22,20 +22,20 @@ Every operation AutoLens performs to fit a lens takes time. Every `LightProfile`
 deflection angle. Convolving a model-image with a PSF can take a huge amount of time. As anyone who`s written code
 before knows, the better the algorithm is written, the fast it`ll run.
 
-I often get asked, given that ``.yAutoLens__ is written in Python, isn`t it really slow? Afterall, Python is notoriously
-slow. Well, no, it isn`t. We use a library called `Numba`, that allows us to recompile our Python functions into C
-functions before ``.yAutoLens__ runs. This gives us C-like speed, but in Python code. If you`ve got your own code that needs
+I often get asked, given that **PyAutoLens** is written in Python, isn't it really slow? Afterall, Python is notoriously
+slow. Well, no, it isn't. We use a library called `Numba`, that allows us to recompile our Python functions into C
+functions before **PyAutoLens** runs. This gives us C-like speed, but in Python code. If you`ve got your own code that needs
 speeding up, I strongly recommend that you look up Numba:
 
 http://numba.pydata.org/
 
-We`ve worked very hard to `Profile` every line of code in ``.yAutoLens__ and we`re confident its as fast, if not faster,
+We've worked very hard to `Profile` every line of code in **PyAutoLens** and we`re confident its as fast, if not faster,
 than any code written in C. In fact, we know this - I wrote the original version of AutoLens in Fortran (bless my
-poor soul) and we timed it against ``.yAutoLens__. After invoking the magic of Numba, ``.yAutoLens__ ran 3 times faster than
+poor soul) and we timed it against **PyAutoLens**. After invoking the magic of Numba, **PyAutoLens** ran 3 times faster than
 the Fortran code - I felt pretty smug at that point.
 
 We probably arn`t going to see much more of speed-up via optimization then. Of course, if you`d like to prove me
-wrong, go for it - I`ll buy you a beer at a conference someday if you can optimize any function in ``.yAutoLens__ better
+wrong, go for it - I`ll buy you a beer at a conference someday if you can optimize any function in **PyAutoLens** better
 than me!
 
 __Data Quantity__
@@ -47,10 +47,10 @@ PSF. The larger that PSF is, the more convolution operations we have to perform 
 In the previous exercises, we used images with a pixel scale of 0.1". I sneakily chose this value cause its fairly
 low resolution. Most Hubble images have a pixel scale of 0.05", which is four times the number of pixels! Some
 telescopes observe at scales of 0.03" or, dare I say it, 0.01". At these resolutions things can run *really* slow,
-if we don`t think carefully about run speed beforehand.
+if we don't think carefully about run speed beforehand.
 
 Of course, there are ways that we can reduce the number of image-pixels we fit. That`s what masking does. If we
-mask out more of the image, we'll fit fewer pixels and ``.yAutoLens__ will run faster. Alternatively, we could `bin-up`
+mask out more of the image, we'll fit fewer pixels and **PyAutoLens** will run faster. Alternatively, we could `bin-up`
 the image, converting it from say a 0.03" image to a 0.06" image. We lose information, but the code runs faster. We
 could trim our PSF to a smaller size, at the risk of modeling our telescope optics worse.
 
@@ -60,16 +60,16 @@ lens model which fits the data reasonably well, why bother fitting all the image
 phase, right?
 
 Herein lies the beauty behind the pipelines I will introduce in chapter 3. Not only can we tune their navigation of
-non-linear parameter space to be fast, we can  freely butcher our data to make ``.yAutoLens__ run even faster! In the
+non-linear parameter space to be fast, we can  freely butcher our data to make **PyAutoLens** run even faster! In the
 last phase, we'll fit the complete, unbutchered data-set, so yeah it might take a while to run, but at that point
-we`ve tuned our lens model priors so much the phase should still run reasonably fast.
+we've tuned our lens model priors so much the phase should still run reasonably fast.
 
 Therefore, there are no exercises in this tutorial and no code to run. Instead, I just want you to think about how
 you might write a pipeline to perform the following analyses:
 
- 1) The only thing you care about is the highly magnified source-galaxy. You don`t care about the lens galaxy`s
+ 1) The only thing you care about is the highly magnified source-galaxy. You don't care about the lens `Galaxy`'s
  `LightProfile`, and its `MassProfile` is only a means to ultimately study the unlensed source. Can you subtract the
- lens galaxy`s light and then discard it in every phase afterwards?
+ lens `Galaxy`'s light and then discard it in every phase afterwards?
 
  2) There are 2 lens galaxies responsible for lensing the background source. That means, there are twice as many
  lens galaxy parameters. Can you setup phases that fit each galaxy individiually, before fitting them jointly?

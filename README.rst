@@ -10,16 +10,16 @@ like this one:
 Installation
 ------------
 
-**PyAutoLens** requires Python 3.6+ and you can install it via pip or conda (see
+**PyAutoLens** requires Python 3.6+ and you can install it via ``pip`` or ``conda`` (see
 `this link <https://pyautolens.readthedocs.io/en/latest/general/installation.html#installation-with-conda>`_
-for conda instructions).
+for ``conda`` instructions).
 
 .. code-block:: bash
 
     pip install autolens
 
-Next, clone the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_, which includes **PyAutoLens**
-configuration files, example scripts and more!
+Next, clone the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_, which includes
+**PyAutoLens** configuration files, example scripts and more!
 
 .. code-block:: bash
 
@@ -27,26 +27,27 @@ configuration files, example scripts and more!
    git clone https://github.com/Jammy2211/autolens_workspace --depth 1
    cd autolens_workspace
 
-Finally, run *welcome.py* in the *autolens_workspace* to get started!
+Finally, run ``welcome.py`` in the ``autolens_workspace`` to get started!
 
 .. code-block:: bash
 
    python3 welcome.py
 
-If your installation had an error, please check the
+If your installation had an error, check the
 `troubleshooting section <https://pyautolens.readthedocs.io/en/latest/general/installation.html#trouble-shooting>`_ on
 our readthedocs.
 
-If you would prefer to Fork / Clone the **PyAutoLens** GitHub repo, please read the
+If you would prefer to Fork or Clone the **PyAutoLens** GitHub repo, checkout the
 `cloning section <https://pyautolens.readthedocs.io/en/latest/general/installation.html#forking-cloning>`_ on our
-readthedocs first.
+readthedocs.
 
 API Overview
 ------------
 
-Lensing calculations are performed in **PyAutoLens** by building a `Tracer` object from `LightProfile`, `MassProfile`
-and `Galaxy` objects. Below, we create a simple strong lens system where a redshift 0.5 lens galaxy with an Isothermal
-mass profile lenses a background source at redshift 1.0 with an Exponential light profile.
+Lensing calculations are performed in **PyAutoLens** by building a ``Tracer`` object from ``LightProfile``,
+``MassProfile`` and ``Galaxy`` objects. Below, we create a simple strong lens system where a redshift 0.5
+lens ``Galaxy`` with an Isothermal ``MassProfile`` lenses a background source at redshift 1.0 with an
+Exponential ``LightProfile``.
 
 .. code-block:: python
 
@@ -98,8 +99,8 @@ mass profile lenses a background source at redshift 1.0 with an Exponential ligh
 
     aplt.Tracer.image(tracer=tracer, grid=grid)
 
-With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple
-analysis which fits the foreground lens galaxy's mass & the background source galaxy's light.
+With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates
+a simple analysis which fits the foreground lens galaxy's mass & the background source galaxy's light.
 
 .. code-block:: python
 
@@ -155,7 +156,7 @@ analysis which fits the foreground lens galaxy's mass & the background source ga
     )
 
     """
-    We pass the imaging data and mask to the phase, thereby fitting it with the lens
+    We pass the imaging `data` and `mask` to the phase, thereby fitting it with the lens
     model & plot the resulting fit.
     """
 
@@ -166,13 +167,13 @@ Getting Started
 ---------------
 
 To get started go to our `readthedocs <https://pyautolens.readthedocs.io/>`_,
-where you'll find our installation guide, a complete overview of **PyAutoLens**'s features, examples scripts and
-tutorials and detailed API documentation.
+where you'll find our installation guide, a complete overview of **PyAutoLens**'s features, examples
+scripts and tutorials and detailed API documentation.
 
 Support
 -------
 
-Help and support is available by
+Support for installation issues, help with lens modeling and using **PyAutoLens** is available by
 `raising an issue on the autolens_workspace GitHub page <https://github.com/Jammy2211/autolens_workspace/issues>`_. or
 joining the **PyAutoLens** `Slack channel <https://pyautolens.slack.com/>`_, where we also provide the latest updates on
 **PyAutoLens**.

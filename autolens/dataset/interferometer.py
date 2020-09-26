@@ -96,18 +96,18 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
         Parameters
         ----------
         name
-        image : ndarray
+        image : np.ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
         pixel_scales: float
             The scale of each pixel in arc seconds
-        exposure_time_map : ndarray
+        exposure_time_map : np.ndarray
             An arrays representing the effective exposure time of each pixel.
         psf: PSF
             An arrays describing the PSF the simulated image is blurred with.
-        background_sky_map : ndarray
+        background_sky_map : np.ndarray
             The value of background sky in every image pixel (electrons per second).
         add_noise: Bool
-            If True poisson noise_maps is simulated and added to the image, based on the total counts in each image
+            If ``True`` poisson noise_maps is simulated and added to the image, based on the total counts in each image
             pixel
         noise_seed: int
             A seed for random noise_maps generation

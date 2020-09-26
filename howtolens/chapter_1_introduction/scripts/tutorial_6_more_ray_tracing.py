@@ -133,7 +133,7 @@ aplt.Galaxy.deflections_x(
 # %%
 """
 Now, lets make two source galaxies at redshift 1.0. Lets not use the terms `light` and `mass` to setup the light and 
-_MassProfile_`s. Instead, lets use more descriptive names of what we think each component represents ( e.g. a `bulge` 
+`MassProfile`'s. Instead, lets use more descriptive names of what we think each component represents ( e.g. a `bulge` 
 and `disk`).
 """
 
@@ -189,7 +189,7 @@ Now lets pass our 4 galaxies to the ray_tracing module, which means the followin
 
  1) Using the galaxy redshift`s, and image-plane and source-plane will be created with the appopriate galaxies.
 
-Note that we`ve also supplied the `Tracer` below with a Planck15 cosmology.
+Note that we've also supplied the `Tracer` below with a Planck15 cosmology.
 """
 
 # %%
@@ -257,7 +257,7 @@ aplt.Tracer.subplot_tracer(tracer=tracer, grid=grid, sub_plotter=sub_plotter)
 # %%
 """
 In the previous example, we saw that the `Tracer` had attributes we plotted (e.g. convergence, potential, etc.). Now 
-we`ve input a cosmology and galaxy redshifts, the `Tracer` has attributes associated with its cosmology.
+we've input a cosmology and galaxy redshifts, the `Tracer` has attributes associated with its cosmology.
 """
 
 # %%
@@ -290,7 +290,7 @@ print(
 
 # %%
 """
-And with that, we`ve completed tutorial 6. Try the following:
+And with that, we've completed tutorial 6. Try the following:
 
  1) By changing the lens and source galaxy redshifts, does the image of the `Tracer` change at all?
 
