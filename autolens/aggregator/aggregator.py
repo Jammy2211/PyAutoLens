@@ -35,19 +35,19 @@ def tracer_from_agg_obj(agg_obj):
         A PyAutoFit aggregator's PhaseOutput object containing the generators of the results of PyAutoLens model-fits.
     """
     samples = agg_obj.samples
-    phase_attributes = agg_obj.phase_attributes
+    attributes = agg_obj.attributes
     max_log_likelihood_instance = samples.max_log_likelihood_instance
     galaxies = max_log_likelihood_instance.galaxies
 
-    if phase_attributes.hyper_galaxy_image_path_dict is not None:
+    if attributes.hyper_galaxy_image_path_dict is not None:
 
         for (
             galaxy_path,
             galaxy,
         ) in max_log_likelihood_instance.path_instance_tuples_for_class(al.Galaxy):
-            if galaxy_path in phase_attributes.hyper_galaxy_image_path_dict:
-                galaxy.hyper_model_image = phase_attributes.hyper_model_image
-                galaxy.hyper_galaxy_image = phase_attributes.hyper_galaxy_image_path_dict[
+            if galaxy_path in attributes.hyper_galaxy_image_path_dict:
+                galaxy.hyper_model_image = attributes.hyper_model_image
+                galaxy.hyper_galaxy_image = attributes.hyper_galaxy_image_path_dict[
                     galaxy_path
                 ]
 
@@ -206,7 +206,7 @@ def masked_interferometer_from_agg_obj(agg_obj, settings_masked_interferometer=N
     return al.MaskedInterferometer(
         interferometer=agg_obj.dataset,
         visibilities_mask=agg_obj.mask,
-        real_space_mask=agg_obj.phase_attributes.real_space_mask,
+        real_space_mask=agg_obj.attributes.real_space_mask,
         settings=settings_masked_interferometer,
     )
 

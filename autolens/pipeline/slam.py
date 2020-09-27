@@ -99,7 +99,7 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
 class SLaM:
     def __init__(
         self,
-        folders: [str] = None,
+        path_prefix: str = None,
         redshift_lens: float = 0.5,
         redshift_source: float = 1.0,
         setup_hyper: ag_setup.SetupHyper = None,
@@ -113,9 +113,8 @@ class SLaM:
 
         Parameters
         ----------
-        folders : [str] or None
-            A list of folders that the output of the pipeline are output into before the pipeline name, tags and
-            phase folders.
+        path_prefix : str or None
+            The prefix of folders between the output path of the pipeline and the pipeline name, tags and phase folders.
         redshift_lens : float
             The redshift of the lens galaxy used by the pipeline for converting arc-seconds to kpc, masses to solMass,
             etc.
@@ -126,7 +125,7 @@ class SLaM:
             The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
         """
 
-        self.folders = folders
+        self.path_prefix = path_prefix
         self.redshift_lens = redshift_lens
         self.redshift_source = redshift_source
 

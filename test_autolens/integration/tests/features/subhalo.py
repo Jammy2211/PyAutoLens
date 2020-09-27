@@ -8,7 +8,7 @@ data_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
-def make_pipeline(name, folders, search=af.DynestyStatic()):
+def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
 
@@ -26,7 +26,7 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
-        folders=folders,
+        path_prefix=path_prefix,
         galaxies=dict(lens=lens, source=source),
         search=search,
         settings=al.SettingsPhaseImaging(),
@@ -49,7 +49,7 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
 
     phase2 = GridPhase(
         phase_name="phase_2",
-        folders=folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=af.last.instance.galaxies.lens,
             subhalo=subhalo,
@@ -62,7 +62,7 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
 
     phase3 = al.PhaseImaging(
         phase_name="phase_3__subhalo_refine",
-        folders=folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=af.last[-1].model.galaxies.lens,
             subhalo=phase2.result.model.galaxies.subhalo,

@@ -110,7 +110,7 @@ setup_source = al.SetupSourceInversion(
 )
 
 setup = al.SetupPipeline(
-    folders=["c4_t8_inversion"], setup_mass=setup_mass, setup_source=setup_source
+    path_prefix="c4_t8_inversion", setup_mass=setup_mass, setup_source=setup_source
 )
 
 # %%

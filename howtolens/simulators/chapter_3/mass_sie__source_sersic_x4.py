@@ -35,12 +35,10 @@ dataset_name = "mass_sie__source_sersic_x4"
 Create the path where the dataset will be output, which in this case is:
 `/autolens_workspace/howtolens/dataset/chapter_2/lens_sis__source_sersic_x5/`
 """
-dataset_path = af.util.create_path(
-    path=workspace_path, folders=["howtolens", "dataset", dataset_type, dataset_name]
-)
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 """
-For simulating an image of a strong lens, we recommend using a GridIterate object. This represents a grid of (y,x) 
+For simulating an image of a strong lens, we recommend using a GridIterate object. This represents a grid of $(y,x)$ 
 coordinates like an ordinary Grid, but when the light-profile`s image is evaluated below (using the Tracer) the 
 sub-size of the grid is iteratively increased (in steps of 2, 4, 8, 16, 24) until the input fractional accuracy of 
 99.99% is met.

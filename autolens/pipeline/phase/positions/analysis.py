@@ -12,19 +12,10 @@ import copy
 
 class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     def __init__(
-        self,
-        positions,
-        solver,
-        imaging,
-        cosmology,
-        image_path=None,
-        results=None,
-        log_likelihood_cap=None,
+        self, positions, solver, imaging, cosmology, image_path=None, results=None
     ):
 
-        super().__init__(
-            cosmology=cosmology, results=results, log_likelihood_cap=log_likelihood_cap
-        )
+        super().__init__(cosmology=cosmology, results=results)
 
         self.solver = solver
 

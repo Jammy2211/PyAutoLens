@@ -108,7 +108,7 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 """
 As we've eluded to before, one can look at an image and immediately identify the centre of the lens galaxy. It`s 
 that bright blob of light in the middle! Given that we know we`re going to make the lens model more complex in the 
-next phase, lets take a more liberal approach than before and fix the lens centre to (y,x) = (0.0", 0.0").
+next phase, lets take a more liberal approach than before and fix the lens centre to $(y,x)$ = (0.0", 0.0").
 """
 
 # %%
