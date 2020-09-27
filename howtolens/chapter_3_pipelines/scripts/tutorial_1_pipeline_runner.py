@@ -154,17 +154,17 @@ is True, the pipeline`s output paths are `tagged` with the string `no_shear`.
 This means you can run the same pipeline on the same data twice (with and without shear) and the results will go
 to different output folders and thus not clash with one another!
 
-The `folders` below specify the path the pipeline results are written 
+The `path_prefix` belows specify the path the pipeline results are written 
 
  `autolens_workspace/howtolens/output/c3_t1_lens_and_source/pipeline__light_and_source`
 
-The redshift of the lens and source galaxies are also input (see `examples/model/customimze/redshift.py`) for a 
+The redshift of the lens and source galaxies are also input (see `examples/model/customize/redshift.py`) for a 
 description of what inputting redshifts into **PyAutoLens** does.
 """
 
 # %%
 setup = al.SetupPipeline(
-    folders=["c3_t1_lens_and_source"],
+    path_prefix="c3_t1_lens_and_source",
     redshift_lens=0.5,
     redshift_source=1.0,
     setup_mass=setup_mass,
@@ -181,10 +181,6 @@ To create a `Pipeline`, we call a `make_pipeline` function, which is written in 
     
 Before we check it out, lets get the pipeline running, by importing the script, running the `make_pipeline` function
 to create the `Pipeline` object and calling that objects `run` function.
-
-The `folders` below specify the path the pipeline results are written to, which is:
-
- `autolens_workspace/output/howtolens/c3_t1_lens_and_source/pipeline_name/setup_tag/phase_name/settings_tag`
 """
 
 # %%

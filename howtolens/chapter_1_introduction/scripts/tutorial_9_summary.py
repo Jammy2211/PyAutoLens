@@ -5,7 +5,7 @@ Tutorial 9: Summary
 
 In this chapter, you`ve learnt how create and fit strong lenses with **PyAutoLens**. In particular, you`ve learnt:
 
- 1) **PyAutoLens** uses Cartesian `Grid`'s of (y,x) coordinates to perform ray-tracing.
+ 1) **PyAutoLens** uses Cartesian `Grid`'s of $(y,x)$ coordinates to perform ray-tracing.
  2) These `Grid`'s are combined with light and mass profiles to compute images, convergences, potentials and
  deflection angles.
  3) Profiles are combined to make galaxies.

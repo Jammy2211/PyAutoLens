@@ -92,7 +92,6 @@ class PhaseInterferometer(dataset.PhaseDataset):
             cosmology=self.cosmology,
             image_path=self.search.paths.image_path,
             results=results,
-            log_likelihood_cap=self.settings.log_likelihood_cap,
         )
 
         return analysis
