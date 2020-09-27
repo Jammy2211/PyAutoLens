@@ -42,7 +42,7 @@ def run(
 
     module.make_pipeline(
         name=test_name,
-        folders=[module.test_type, test_name],
+        path_prefix=[module.test_type, test_name],
         real_space_mask=real_space_mask,
         search=search,
     ).run(dataset=interferometer, mask=visibilities_mask)

@@ -36,7 +36,7 @@ Phase 3:
 """
 
 
-def make_pipeline(setup, settings, folders=None):
+def make_pipeline(setup, settings):
 
     ### SETUP PIPELINE AND PHASE NAMES, TAGS AND PATHS ###
 
@@ -49,12 +49,11 @@ def make_pipeline(setup, settings, folders=None):
         2) The `Pixelization` and `Regularization` scheme of the pipeline (fitted in phases 3 & 4).
     """
 
-    setup.folders.append(pipeline_name)
-    setup.folders.append(setup.tag)
+    path_prefix = f"{setup.path_prefix}/{pipeline_name}/{setup.tag}"
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1__mass_sie__source_sersic",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
@@ -95,7 +94,7 @@ def make_pipeline(setup, settings, folders=None):
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2__source_inversion_initialize",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
@@ -127,7 +126,7 @@ def make_pipeline(setup, settings, folders=None):
 
     phase3 = al.PhaseImaging(
         phase_name="phase_3__lens_sie__source_inversion",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase1.result.model.galaxies.lens.mass

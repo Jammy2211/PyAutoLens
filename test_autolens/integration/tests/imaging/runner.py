@@ -27,7 +27,7 @@ def run(
     info = {"Test": 100}
 
     module.make_pipeline(
-        name=test_name, folders=[module.test_type, test_name], search=search
+        name=test_name, path_prefix=[module.test_type, test_name], search=search
     ).run(dataset=imaging, mask=mask, info=info)
 
 

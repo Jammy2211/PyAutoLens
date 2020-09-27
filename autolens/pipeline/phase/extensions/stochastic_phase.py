@@ -115,6 +115,7 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
             results=results,
             info=info,
             pickle_files=pickle_files,
+            log_likelihood_cap=log_likelihood_cap,
         )
 
         self.save_stochastic_log_evidences(

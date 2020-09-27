@@ -454,7 +454,7 @@ class SetupSubhalo:
 class SetupPipeline(setup.SetupPipeline):
     def __init__(
         self,
-        folders: [str] = None,
+        path_prefix: str = None,
         redshift_lens: float = 0.5,
         redshift_source: float = 1.0,
         setup_hyper: setup.SetupHyper = None,
@@ -464,7 +464,8 @@ class SetupPipeline(setup.SetupPipeline):
         setup_smbh: setup.SetupSMBH = None,
         subhalo: SetupSubhalo = None,
     ):
-        """The setup of a pipeline, which controls how PyAutoGalaxy template pipelines runs, for example controlling
+        """
+        The setup of a ``Pipeline``, which controls how **PyAutoLens** template pipelines runs, for example controlling
         assumptions about the bulge-disk model or the model used to fit the source galaxy.
 
         Users can write their own pipelines which do not use or require the *SetupPipeline* class.
@@ -475,9 +476,8 @@ class SetupPipeline(setup.SetupPipeline):
 
         Parameters
         ----------
-        folders : [str] or None
-            A list of folders that the output of the pipeline are output into before the pipeline name, tags and
-            phase folders.
+        path_prefix : str or None
+            The prefix of folders between the output path of the pipeline and the pipeline name, tags and phase folders.
         redshift_lens : float
             The redshift of the lens galaxy used by the pipeline for converting arc-seconds to kpc, masses to solMass,
             etc.
@@ -499,7 +499,7 @@ class SetupPipeline(setup.SetupPipeline):
         """
 
         super().__init__(
-            folders=folders,
+            path_prefix=path_prefix,
             redshift_source=redshift_source,
             setup_hyper=setup_hyper,
             setup_source=setup_source,

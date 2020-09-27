@@ -102,6 +102,13 @@ __Pipeline_Setup_And_Tagging__:
 For this pipeline the pipeline setup customizes:
 
  - If there is an `ExternalShear` in the mass model or not.
+ 
+The `path_prefix` belows specify the path the pipeline results are written 
+
+ `autolens_workspace/howtolens/output/c3_t3_complex_source/pipeline__light_and_source`
+
+The redshift of the lens and source galaxies are also input (see `examples/model/customize/redshift.py`) for a 
+description of what inputting redshifts into **PyAutoLens** does.
 """
 
 # %%
@@ -109,7 +116,7 @@ setup_mass = al.SetupMassTotal(no_shear=False)
 setup_source = al.SetupSourceSersic()
 
 setup = al.SetupPipeline(
-    folders=["c3_t3_complex_source"],
+    path_prefix="c3_t3_complex_source",
     redshift_lens=0.5,
     redshift_source=1.0,
     setup_mass=setup_mass,
@@ -127,7 +134,7 @@ To create a `Pipeline`, we call a `make_pipeline` function, which is written in 
 Before we check it out, lets get the pipeline running, by importing the script, running the `make_pipeline` function
 to create the `Pipeline` object and calling that objects `run` function.
 
-The `folders` below specify the path the pipeline results are written to, which is:
+The `path_prefix` below specifies the path the pipeline results are written to, which is:
 
  `autolens_workspace/output/howtolens/c3_t3_complex_source/pipeline_name/setup_tag/phase_name/settings_tag`
 """

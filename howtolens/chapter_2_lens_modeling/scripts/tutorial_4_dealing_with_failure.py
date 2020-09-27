@@ -7,7 +7,7 @@ In the last tutorial we showed how our non-linear search can potentially fail, a
 In this tutorial, we`re going to learn how to stop this and infer the globally maximal lens model.
 
 In the previous tutorial, when we inferred a local maxima we knew that we had done so. For modeling a real lens,
-we do not know the `true` lens model and it iss often  unclear if a solution is a global or local maximma. The tricks
+we do not know the *true* lens model and it iss often  unclear if a solution is a global or local maximma. The tricks
 we learn in this tutorial are therefore equally important for verifying that a solution does indeed appear to be the
 global maxima.
 """
@@ -98,7 +98,7 @@ correct model. I`ve also let you know what we`re changing the priors from (as in
 we'll call our lens and source galaxies `lens` and `source` this time, for shorter more readable code.
 
 In a later tutorial, we'll cover non-linear search approaches that are different to Dynesty, where one provides the
-non-linear search with a `starting point` where it samples parameter space. In a similar fashion to prior tuning,
+non-linear search with a *starting point* where it samples parameter space. In a similar fashion to prior tuning,
 giving these searches a good starting point will increase the chances of us finding the global maxima.
 """
 
@@ -109,7 +109,7 @@ lens = al.GalaxyModel(
 
 # %%
 """
-By default, the prior on the (y,x) coordinates of a `LightProfile` / `MassProfile` is a GaussianPrior with mean 0.0" and 
+By default, the prior on the $(y,x)$ coordinates of a `LightProfile` / `MassProfile` is a GaussianPrior with mean 0.0" and 
 sigma "1.0. However, visual inspection of our strong lens image tells us that its clearly around x = 0.0" and y = 0.0", 
 so lets reduce where non-linear search looks for these parameters.
 """
@@ -122,7 +122,7 @@ lens.mass.centre.centre_1 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
 
 # %%
 """
-By default, the elliptical components of the of our lens `Galaxy`'s elliptical `LightProfile` are UniformPriors 
+By default, the elliptical components of the of our lens `Galaxy`'s elliptical `LightProfile` are `UniformPriors` 
 between -1.0 and 1.0, corresponding to the full range of possible ellipses with axis-ratio from 0.0 to 1.0 and 
 position angles from 0.0 to 180.0 degrees.
 

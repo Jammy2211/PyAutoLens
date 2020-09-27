@@ -60,8 +60,7 @@ def make_pipeline(setup, settings):
 
     pipeline_name = "pipeline__x2_galaxies"
 
-    setup.folders.append(pipeline_name)
-    setup.folders.append(setup.tag)
+    path_prefix = f"{setup.path_prefix}/{pipeline_name}/{setup.tag}"
 
     """
     Phase 1: Fit the left lens `Galaxy`'s light, where we:
@@ -75,7 +74,7 @@ def make_pipeline(setup, settings):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1__left_lens_light",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             left_lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)
         ),
@@ -96,7 +95,7 @@ def make_pipeline(setup, settings):
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2__right_lens_light",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             left_lens=phase1.result.instance.galaxies.left_lens, right_lens=right_lens
         ),
@@ -132,7 +131,7 @@ def make_pipeline(setup, settings):
 
     phase3 = al.PhaseImaging(
         phase_name="phase_3__lens_x2_sie__source_exp",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             left_lens=left_lens,
             right_lens=right_lens,
@@ -203,7 +202,7 @@ def make_pipeline(setup, settings):
 
     phase4 = al.PhaseImaging(
         phase_name="phase_4__light_sersic_x2__mass_sie_x2__source_exp",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             left_lens=left_lens,
             right_lens=right_lens,

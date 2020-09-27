@@ -56,8 +56,7 @@ def make_pipeline(setup, settings):
 
     pipeline_name = "pipeline__complex_source"
 
-    setup.folders.append(pipeline_name)
-    setup.folders.append(setup.tag)
+    path_prefix = f"{setup.path_prefix}/{pipeline_name}/{setup.tag}"
 
     """
     Phase 1: Initialize the lens`s mass model using a simple source.
@@ -68,7 +67,7 @@ def make_pipeline(setup, settings):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1__mass_sie__source_x1_sersic",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source=al.GalaxyModel(redshift=1.0, sersic_0=al.lp.EllipticalSersic),
@@ -85,7 +84,7 @@ def make_pipeline(setup, settings):
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2__mass_sie__source_sersic_x2",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
@@ -104,7 +103,7 @@ def make_pipeline(setup, settings):
 
     phase3 = al.PhaseImaging(
         phase_name="phase_3__mass_sie__source_sersic_x3",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase2.result.model.galaxies.lens.mass
@@ -124,7 +123,7 @@ def make_pipeline(setup, settings):
 
     phase4 = al.PhaseImaging(
         phase_name="phase_4__mass_sie__source_sersic_x4",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase3.result.model.galaxies.lens.mass
