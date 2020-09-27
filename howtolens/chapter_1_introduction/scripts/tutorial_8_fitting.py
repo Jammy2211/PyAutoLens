@@ -81,7 +81,9 @@ mask = al.Mask2D.circular(
 )
 
 print(mask)  # 1 = True, which means the pixel is masked. Edge pixels are indeed masked.
-print(mask[48:53, 48:53])  # Whereas central pixels are ``False`` and therefore unmasked.
+print(
+    mask[48:53, 48:53]
+)  # Whereas central pixels are ``False`` and therefore unmasked.
 
 # %%
 """

@@ -46,8 +46,8 @@ def make_pipeline(setup, settings):
     pipeline_name = "pipeline__light_and_source"
 
     """
-    A pipelines takes the `folders` as input, which together with the pipeline name specify the path structure 
-    of the output. In the pipeline runner we pass the folders ["howtolens", c3_t1_lens_and_source], making the
+    A pipelines takes the `path_prefix` as input, which together with the `pipeline_name` specifies the path structure 
+    of the output. In the pipeline runner we pass the `path_prefix` f"howtolens/c3_t1_lens_and_source", making the
     output of this pipeline `autolens_workspace/output/howtolens/c3_t1_lens_and_source/pipeline__light_and_source`.
 
     The output path is also tagged according to the `SetupPipeline`, in an analagous fashion to how the 
@@ -55,13 +55,12 @@ def make_pipeline(setup, settings):
     in the mass model, and the pipeline is tagged accordingly.
     """
 
-    setup.folders.append(pipeline_name)
-    setup.folders.append(setup.tag)
+    path_prefix = f"{setup.path_prefix}/{pipeline_name}/{setup.tag}"
 
     """
     Phase 1: Fit only the lens `Galaxy`'s light, where we:
 
-        1) Set priors on the lens galaxy (y,x) centre such that we assume the image is centred around the lens galaxy.
+        1) Set priors on the lens galaxy $(y,x)$ centre such that we assume the image is centred around the lens galaxy.
 
     We create the phase using the same notation as in chapter 2. Note how we are using the `fast` `Dynesty` settings
     covered in chapter 2.
@@ -69,7 +68,7 @@ def make_pipeline(setup, settings):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1__light_sersic",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)),
         settings=settings,
         search=af.DynestyStatic(n_live_points=30, evidence_tolerance=5.0),
@@ -100,7 +99,7 @@ def make_pipeline(setup, settings):
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2__mass_sie__source_sersic",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -124,7 +123,7 @@ def make_pipeline(setup, settings):
 
     phase3 = al.PhaseImaging(
         phase_name="phase_3__light_sersic__mass_sie__source_sersic",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,

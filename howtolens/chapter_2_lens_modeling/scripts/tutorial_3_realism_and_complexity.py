@@ -202,8 +202,8 @@ In this example, we intentionally made our non-linear search fail, by using so f
 sampling parameter space thoroughly. For modeling real lenses we wouldn't do this on purpose, but the risk of inferring 
 a local maxima is still very real, especially as we make our lens model more complex.
 
-Lets think about `complexity`. As we make our lens model more realistic, we also made it more complex. For this 
-tutorial, our non-linear parameter space went from 7 dimensions to 18. This means there was a much larger `volume` of 
+Lets think about *complexity*. As we make our lens model more realistic, we also made it more complex. For this 
+tutorial, our non-linear parameter space went from 7 dimensions to 18. This means there was a much larger *volume* of 
 parameter space to search. As this volume grows, there becomes a higher chance that our non-linear search gets lost 
 and infers a local maxima, especially if we don't set it up with enough live points!
 

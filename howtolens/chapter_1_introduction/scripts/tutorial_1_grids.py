@@ -3,7 +3,7 @@
 Tutorial 1: Grids
 =================
 
-In this example, we'll create `Grid`'s of Cartesian (y,x) coordinates, representing the arc-second coordinate `Grid`
+In this example, we'll create `Grid`'s of Cartesian $(y,x)$ coordinates, representing the arc-second coordinate `Grid`
 of an observed data-set (e.g. imaging).
 """
 
@@ -15,7 +15,7 @@ import autolens.plot as aplt
 
 # %%
 """
-In **PyAutoLens**, a `Grid` is a set of two-dimensional (y,x) coordinates (in arc-seconds) that are deflected and traced by 
+In **PyAutoLens**, a `Grid` is a set of two-dimensional $(y,x)$ coordinates (in arc-seconds) that are deflected and traced by 
 a strong lensing system.
 
 This coordinate `Grid` is aligned with the image we analyze, such that each coordinate on a  `Grid` maps to the centre 
@@ -117,7 +117,7 @@ pixel 1
               
               I         I
               
-              I         I  o = (y,x) centre of
+              I         I  o = $(y,x)$ centre of
               
  y = 2.475"   I    o    I       `Grid` coordinate.
  
@@ -134,7 +134,7 @@ Sub-pixels 1, 2, 3 & 4
                
               I         I
               
-              I  o   o  I  o = (y,x) centre of sub
+              I  o   o  I  o = $(y,x)$ centre of sub
               
  y = 2.475"   I         I       `Grid` coordinates.
  
