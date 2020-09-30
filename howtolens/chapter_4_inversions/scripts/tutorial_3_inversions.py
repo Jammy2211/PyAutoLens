@@ -46,7 +46,7 @@ Lets create an annular _Mask_ which traces the stongly lensed source ring.
 """
 
 # %%
-mask = al.Mask.circular_annular(
+mask = al.Mask2D.circular_annular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     sub_size=1,
@@ -151,7 +151,7 @@ This code is doing all the the same as above (setup the _Mask_, _Galaxy_'s _Trac
 
 # %%
 
-mask = al.Mask.circular_annular(
+mask = al.Mask2D.circular_annular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     sub_size=1,

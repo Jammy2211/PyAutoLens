@@ -132,7 +132,7 @@ The non-linear fit also needs a _Mask_, lets use a 3.0" circle.
 """
 
 # %%
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 

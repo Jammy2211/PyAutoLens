@@ -42,7 +42,7 @@ source_galaxy = al.Galaxy(
     regularization=al.reg.Constant(coefficient=10.0),
 )
 
-mask = al.Mask.circular(shape_2d=(256, 256), pixel_scales=0.05, sub_size=1, radius=3.0)
+mask = al.Mask2D.circular(shape_2d=(256, 256), pixel_scales=0.05, sub_size=1, radius=3.0)
 
 masked_interferometer = al.MaskedInterferometer(
     interferometer=interferometer,

@@ -133,7 +133,7 @@ We'll create and use a 3.0" _Mask_ again.
 """
 
 # %%
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 

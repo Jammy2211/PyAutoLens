@@ -2959,7 +2959,7 @@ class TestAbstractTracerData:
                 pixel_scales=1.0,
             )
 
-            mask = al.Mask.manual(
+            mask = al.Mask2D.manual(
                 mask=np.array(
                     [[True, True, True], [True, False, True], [True, True, True]]
                 ),
@@ -4195,7 +4195,7 @@ class TestRegression:
 class TestDecorators:
     def test__grid_iterate_in__iterates_array_result_correctly(self, gal_x1_lp):
 
-        mask = al.Mask.manual(
+        mask = al.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -4250,7 +4250,7 @@ class TestDecorators:
         self, gal_x1_lp
     ):
 
-        mask = al.Mask.manual(
+        mask = al.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -4297,7 +4297,7 @@ class TestDecorators:
 
     def test__grid_iterate_in__iterates_grid_result_correctly(self, gal_x1_mp):
 
-        mask = al.Mask.manual(
+        mask = al.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -4355,7 +4355,7 @@ class TestDecorators:
     def test__grid_interp_in__interps_based_on_intepolate_config(self):
         # False in interpolate.ini
 
-        mask = al.Mask.manual(
+        mask = al.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],

@@ -68,7 +68,7 @@ source_galaxy = al.Galaxy(
     regularization=al.reg.Constant(coefficient=10.0),
 )
 
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=real_space_shape_2d,
     pixel_scales=real_space_pixel_scales,
     sub_size=real_space_sub_size,

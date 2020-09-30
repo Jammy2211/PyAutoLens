@@ -17,7 +17,7 @@ We are going to fit this image with an _Inversion_, so we first create *Mask* an
 
 .. code-block:: bash
 
-   mask = al.Mask.circular(
+   mask = al.Mask2D.circular(
       shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.6
     )
 
