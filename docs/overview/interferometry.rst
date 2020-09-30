@@ -37,7 +37,7 @@ _Tracer_, which when we fit it to data data in the uv-plane is mapped to Fourier
 
 .. code-block:: bash
 
-    real_space_mask = al.Mask.circular(
+    real_space_mask = al.Mask2D.circular(
         shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
     )
 

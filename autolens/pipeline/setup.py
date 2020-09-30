@@ -445,7 +445,7 @@ class SetupSubhalo:
 
             return (
                 "__"
-                + conf.instance.setup_tag.get("subhalo", "mass_at_200")
+                + conf.instance["notation"]["setup_tags"]["subhalo"]["mass_at_200"]
                 + "_"
                 + "{0:.1e}".format(self.subhalo_instance.mass_at_200)
             )

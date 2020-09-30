@@ -162,7 +162,7 @@ Lets use an annular _Mask_, which will capture the ring-like shape of the lensed
 """
 
 # %%
-mask = al.Mask.circular_annular(
+mask = al.Mask2D.circular_annular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     inner_radius=1.0,

@@ -48,7 +48,7 @@ border. Lets plot the image with a circular _Mask_, and tell our _Imaging_ _Plot
 """
 
 # %%
-mask_circular = al.Mask.circular(
+mask_circular = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.5
 )
 
@@ -64,7 +64,7 @@ of its border!
 """
 
 # %%
-mask_annular = al.Mask.circular_annular(
+mask_annular = al.Mask2D.circular_annular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     sub_size=2,
@@ -219,7 +219,7 @@ Lets quickly use a larger circular _Mask_ to confirm that these pixels do exist,
 """
 
 # %%
-mask_circular_large = al.Mask.circular(
+mask_circular_large = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=4.0
 )
 
@@ -309,7 +309,7 @@ effects of the border in a moment.
 """
 
 # %%
-mask_circular = al.Mask.circular(
+mask_circular = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.8
 )
 
@@ -400,7 +400,7 @@ choose a big enough mask, the border won't be able to relocate all of the demani
 
 # %%
 
-mask_circular = al.Mask.circular(
+mask_circular = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.5
 )
 fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
@@ -413,7 +413,7 @@ aplt.Inversion.reconstruction(
     inversion=fit.inversion, include=aplt.Include(inversion_grid=True, border=True)
 )
 
-mask_circular = al.Mask.circular(
+mask_circular = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.7
 )
 fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
@@ -427,7 +427,7 @@ aplt.Inversion.reconstruction(
 )
 
 
-mask_circular = al.Mask.circular(
+mask_circular = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.9
 )
 fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
@@ -441,7 +441,7 @@ aplt.Inversion.reconstruction(
 )
 
 
-mask_circular = al.Mask.circular(
+mask_circular = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=3.1
 )
 fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(

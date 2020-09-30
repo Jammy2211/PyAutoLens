@@ -40,7 +40,7 @@ real_space_shape_2d = (real_space_shape, real_space_shape)
 real_space_pixels = real_space_shape_2d[0] * real_space_shape_2d[1]
 real_space_pixel_scales = 0.05
 
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=real_space_shape_2d,
     pixel_scales=real_space_pixel_scales,
     sub_size=1,

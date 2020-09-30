@@ -41,7 +41,7 @@ this we can use a *Mask* object, which for this example we'll create as a 3.0" c
 
 .. code-block:: bash
 
-    mask = al.Mask.circular(
+    mask = al.Mask2D.circular(
         shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
     )
 

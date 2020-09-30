@@ -47,7 +47,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(redshift=1.0, light=al.lp.EllipticalSersic(intensity=1.0))
 
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=real_space_shape_2d,
     pixel_scales=real_space_pixel_scales,
     sub_size=real_space_sub_size,

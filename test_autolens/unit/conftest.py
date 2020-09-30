@@ -1,5 +1,12 @@
+from os import path
+from os.path import dirname, realpath
+
+import numpy as np
+import pytest
+
+import autoarray as aa
 import autolens as al
-from test_autogalaxy.unit.conftest import *
+from autoconf import conf
 from test_autolens import mock
 
 directory = path.dirname(path.realpath(__file__))
@@ -155,7 +162,7 @@ def make_mask_7x7_1_pix():
         ]
     )
 
-    return aa.Mask.manual(mask=array, pixel_scales=1.0)
+    return aa.Mask2D.manual(mask=array, pixel_scales=1.0)
 
 
 @pytest.fixture(name="phase_dataset_7x7")
