@@ -59,18 +59,18 @@ class SetupHyper(setup.SetupHyper):
         if not self.hyper_galaxies:
             return ""
 
-        hyper_galaxies_tag = conf.instance.setup_tag.get("hyper", "hyper_galaxies")
+        hyper_galaxies_tag = conf.instance["notation"]["setup_tags"]["hyper"]["hyper_galaxies"]
 
         if self.hyper_galaxies_lens:
             hyper_galaxies_lens_tag = (
-                f"_{conf.instance.setup_tag.get('hyper', 'hyper_galaxies_lens')}"
+                f"_{conf.instance['notation']['setup_tags']['hyper']['hyper_galaxies_lens']}"
             )
         else:
             hyper_galaxies_lens_tag = ""
 
         if self.hyper_galaxies_source:
             hyper_galaxies_source_tag = (
-                f"_{conf.instance.setup_tag.get('hyper', 'hyper_galaxies_source')}"
+                f"_{conf.instance['notation']['setup_tags']['hyper']['hyper_galaxies_source']}"
             )
         else:
             hyper_galaxies_source_tag = ""
@@ -164,15 +164,15 @@ class SetupMassTotal(setup.SetupMassTotal):
         no_shear = True -> setup___no_shear
         """
         if not self.no_shear:
-            return "__" + conf.instance.setup_tag.get("mass", "with_shear")
-        return "__" + conf.instance.setup_tag.get("mass", "no_shear")
+            return "__" + conf.instance["notation"]["setup_tags"]["mass"]["with_shear"]
+        return "__" + conf.instance["notation"]["setup_tags"]["mass"]["no_shear"]
 
     @property
     def tag(self):
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
         return (
-            f"{conf.instance.setup_tag.get('mass', 'mass')}[{self.model_type}{self.mass_profile_tag}"
+            f"{conf.instance['notation']['setup_tags']['mass']['mass']}[{self.model_type}{self.mass_profile_tag}"
             f"{self.no_shear_tag}"
             f"{self.mass_centre_tag}]"
         )
@@ -245,7 +245,7 @@ class SetupMassLightDark(setup.SetupMassLightDark):
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
         return (
-            f"{conf.instance.setup_tag.get('mass', 'mass')}[{self.model_type}"
+            f"{conf.instance['notation']['setup_tags']['mass']['mass']}[{self.model_type}"
             f"{self.mass_centre_tag}"
             f"{self.no_shear_tag}"
             f"{self.mass_to_light_tag}"
@@ -264,8 +264,8 @@ class SetupMassLightDark(setup.SetupMassLightDark):
         no_shear = True -> setup___no_shear
         """
         if not self.no_shear:
-            return "__" + conf.instance.setup_tag.get("mass", "with_shear")
-        return "__" + conf.instance.setup_tag.get("mass", "no_shear")
+            return "__" + conf.instance["notation"]["setup_tags"]["mass"]["with_shear"]
+        return "__" + conf.instance["notation"]["setup_tags"]["mass"]["no_shear"]
 
     @property
     def mass_centre_tag(self):
@@ -285,7 +285,7 @@ class SetupMassLightDark(setup.SetupMassLightDark):
         x = "{0:.2f}".format(self.mass_centre[1])
         return (
             "__"
-            + conf.instance.setup_tag.get("mass", "mass_centre")
+            + conf.instance["notation"]["setup_tags"]["mass"]["mass_centre"]
             + "_("
             + y
             + ","
@@ -378,7 +378,7 @@ class SetupSubhalo:
     @property
     def tag(self):
         return (
-            f"{conf.instance.setup_tag.get('subhalo', 'subhalo')}[{self.model_type}"
+            f"{conf.instance['notation']['setup_tags']['subhalo']['subhalo']}[{self.model_type}"
             f"{self.mass_is_model_tag}"
             f"{self.source_is_model_tag}"
             f"{self.grid_size_tag}"
@@ -389,14 +389,14 @@ class SetupSubhalo:
     @property
     def mass_is_model_tag(self):
         if self.mass_is_model:
-            return f"__{conf.instance.setup_tag.get('subhalo', 'mass_is_model')}"
-        return f"__{conf.instance.setup_tag.get('subhalo', 'mass_is_instance')}"
+            return f"__{conf.instance['notation']['setup_tags']['subhalo']['mass_is_model']}"
+        return f"__{conf.instance['notation']['setup_tags']['subhalo']['mass_is_instance']}"
 
     @property
     def source_is_model_tag(self):
         if self.source_is_model:
-            return f"__{conf.instance.setup_tag.get('subhalo', 'source_is_model')}"
-        return f"__{conf.instance.setup_tag.get('subhalo', 'source_is_instance')}"
+            return f"__{conf.instance['notation']['setup_tags']['subhalo']['source_is_model']}"
+        return f"__{conf.instance['notation']['setup_tags']['subhalo']['source_is_instance']}"
 
     @property
     def subhalo_centre_tag(self):
@@ -416,7 +416,7 @@ class SetupSubhalo:
             x = "{0:.2f}".format(self.subhalo_instance.centre[1])
             return (
                 "__"
-                + conf.instance.setup_tag.get("subhalo", "subhalo_centre")
+                + conf.instance["notation"]["setup_tags"]["subhalo"]["subhalo_centre"]
                 + "_("
                 + y
                 + ","
@@ -426,7 +426,7 @@ class SetupSubhalo:
 
     @property
     def grid_size_tag(self):
-        return f"__{conf.instance.setup_tag.get('subhalo', 'grid_size')}_{str(self.grid_size)}"
+        return f"__{conf.instance['notation']['setup_tags']['subhalo']['grid_size']}_{str(self.grid_size)}"
 
     @property
     def subhalo_mass_at_200_tag(self):
@@ -516,7 +516,7 @@ class SetupPipeline(setup.SetupPipeline):
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
 
-        setup_tag = conf.instance.setup_tag.get("pipeline", "pipeline")
+        setup_tag = conf.instance["notation"]["setup_tags"]["pipeline"]["pipeline"]
         hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
         source_tag = (
             f"__{self.setup_source.tag}" if self.setup_source is not None else ""

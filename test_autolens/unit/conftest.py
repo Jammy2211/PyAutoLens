@@ -6,10 +6,11 @@ directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "config"), path.join(directory, "pipeline/output")
-    )
+def set_config_path(request):
+    if dirname(realpath(__file__)) in str(request.module):
+        conf.instance = conf.Config(
+            path.join(directory, "config"), path.join(directory, "pipeline/output")
+        )
 
 
 ############

@@ -1,7 +1,9 @@
 import os
+from os.path import dirname, realpath
+
+import pytest
 
 import autolens.plot as aplt
-import pytest
 from autoconf import conf
 
 directory = os.path.dirname(os.path.realpath(__file__))
@@ -13,16 +15,16 @@ def make_fit_imaging_plotter_setup():
 
 
 @pytest.fixture(autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        os.path.join(directory, "files/plotter"), os.path.join(directory, "output")
-    )
+def set_config_path(request):
+    if dirname(realpath(__file__)) in str(request.module):
+        conf.instance = conf.Config(
+            os.path.join(directory, "files/plotter"), os.path.join(directory, "output")
+        )
 
 
 def test__fit_quantities_are_output(
-    masked_imaging_fit_x2_plane_7x7, include_all, plot_path, plot_patch
+        masked_imaging_fit_x2_plane_7x7, include_all, plot_path, plot_patch
 ):
-
     aplt.FitImaging.image(
         fit=masked_imaging_fit_x2_plane_7x7,
         include=include_all,
@@ -81,9 +83,8 @@ def test__fit_quantities_are_output(
 
 
 def test__fit_sub_plot(
-    masked_imaging_fit_x2_plane_7x7, include_all, plot_path, plot_patch
+        masked_imaging_fit_x2_plane_7x7, include_all, plot_path, plot_patch
 ):
-
     aplt.FitImaging.subplot_fit_imaging(
         fit=masked_imaging_fit_x2_plane_7x7,
         include=include_all,
@@ -94,13 +95,12 @@ def test__fit_sub_plot(
 
 
 def test__subtracted_image_of_plane_is_output(
-    masked_imaging_fit_x1_plane_7x7,
-    masked_imaging_fit_x2_plane_7x7,
-    include_all,
-    plot_path,
-    plot_patch,
+        masked_imaging_fit_x1_plane_7x7,
+        masked_imaging_fit_x2_plane_7x7,
+        include_all,
+        plot_path,
+        plot_patch,
 ):
-
     aplt.FitImaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
@@ -130,13 +130,12 @@ def test__subtracted_image_of_plane_is_output(
 
 
 def test__model_image_of_plane_is_output(
-    masked_imaging_fit_x1_plane_7x7,
-    masked_imaging_fit_x2_plane_7x7,
-    include_all,
-    plot_path,
-    plot_patch,
+        masked_imaging_fit_x1_plane_7x7,
+        masked_imaging_fit_x2_plane_7x7,
+        include_all,
+        plot_path,
+        plot_patch,
 ):
-
     aplt.FitImaging.model_image_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
@@ -166,9 +165,8 @@ def test__model_image_of_plane_is_output(
 
 
 def test_subplot_fit_imaging_is_output(
-    masked_imaging_fit_x2_plane_7x7, include_all, plot_path, plot_patch
+        masked_imaging_fit_x2_plane_7x7, include_all, plot_path, plot_patch
 ):
-
     aplt.FitImaging.subplot_fit_imaging(
         fit=masked_imaging_fit_x2_plane_7x7,
         include=include_all,
@@ -179,13 +177,12 @@ def test_subplot_fit_imaging_is_output(
 
 
 def test__subplot_of_plane(
-    masked_imaging_fit_x1_plane_7x7,
-    masked_imaging_fit_x2_plane_7x7,
-    include_all,
-    plot_path,
-    plot_patch,
+        masked_imaging_fit_x1_plane_7x7,
+        masked_imaging_fit_x2_plane_7x7,
+        include_all,
+        plot_path,
+        plot_patch,
 ):
-
     aplt.FitImaging.subplot_of_plane(
         fit=masked_imaging_fit_x1_plane_7x7,
         plane_index=0,
@@ -232,13 +229,12 @@ def test__subplot_of_plane(
 
 
 def test__fit_individuals__source_and_lens__dependent_on_input(
-    masked_imaging_fit_x1_plane_7x7,
-    masked_imaging_fit_x2_plane_7x7,
-    include_all,
-    plot_path,
-    plot_patch,
+        masked_imaging_fit_x1_plane_7x7,
+        masked_imaging_fit_x2_plane_7x7,
+        include_all,
+        plot_path,
+        plot_patch,
 ):
-
     aplt.FitImaging.individuals(
         fit=masked_imaging_fit_x1_plane_7x7,
         plot_image=True,
