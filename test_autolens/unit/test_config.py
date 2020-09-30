@@ -14,7 +14,7 @@ class MockClass:
 
 @pytest.fixture(name="label_config")
 def make_label_config():
-    return conf.instance.label
+    return conf.instance["label"]
 
 
 class TestLabel:
