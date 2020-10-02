@@ -32,7 +32,7 @@ dataset_type = "chapter_3"
 dataset_name = "light_sersic_x2__mass_sie_x2__source_exp"
 
 """
-Create the path where the dataset will be output, which in this case is:
+        Returns the path where the dataset will be output, which in this case is:
 `/autolens_workspace/howtolens/dataset/chapter_3/light_sersic_x2__mass_sie_x2__source_exp/`
 """
 dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"

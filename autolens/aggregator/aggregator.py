@@ -359,7 +359,7 @@ def grid_search_log_evidences_as_array_from_grid_search_result(
     )
 
 
-def grid_search_subhalo_masses_as_array_from_grid_search_result(grid_search_result,):
+def grid_search_subhalo_masses_as_array_from_grid_search_result(grid_search_result):
 
     if grid_search_result.no_dimensions != 2:
         raise exc.AggregatorException(
@@ -381,7 +381,7 @@ def grid_search_subhalo_masses_as_array_from_grid_search_result(grid_search_resu
     )
 
 
-def grid_search_subhalo_centres_as_array_from_grid_search_result(grid_search_result,):
+def grid_search_subhalo_centres_as_array_from_grid_search_result(grid_search_result):
 
     if grid_search_result.no_dimensions != 2:
         raise exc.AggregatorException(

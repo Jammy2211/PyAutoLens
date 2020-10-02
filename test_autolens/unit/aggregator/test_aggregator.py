@@ -199,6 +199,7 @@ def test__fit_interferometer_generator_from_aggregator(
 class MockResult:
     def __init__(self, log_likelihood):
         self.log_likelihood = log_likelihood
+        self.log_evidence_values = log_likelihood
         self.model = log_likelihood
 
 

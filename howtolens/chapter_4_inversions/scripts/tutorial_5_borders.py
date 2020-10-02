@@ -395,7 +395,7 @@ Multi-galaxy modeling is rife for border effects and if you have multiple lens g
 a close eye to your source-plane borders!
 
 Before we end,I want to quickly highlight that care must be taken when choosing the size of your mask. If you don't 
-choose a big enough mask, the border won`t be able to relocate all of the demanigified image pixels to the border edge.
+choose a big enough mask, the border won't be able to relocate all of the demanigified image pixels to the border edge.
 """
 
 # %%
@@ -457,7 +457,7 @@ aplt.Inversion.reconstruction(
 # %%
 """
 And with that, borders are done. In truth, borders should pretty much take care of themselves when you`re using 
-__PyAutoLens__ and you probably won`t think about them much. However, as I showed above, if you don't choose a large enough 
+__PyAutoLens__ and you probably won't think about them much. However, as I showed above, if you don't choose a large enough 
 mask things can go wrong - thus, its important you know what borders are, so you can look out for this potential 
 source of systematics!
 """

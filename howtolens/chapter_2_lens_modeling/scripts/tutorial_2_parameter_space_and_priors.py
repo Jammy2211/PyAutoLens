@@ -227,7 +227,7 @@ non-linear parameter space! Luckily, we`re going to keep thinking about this in 
 you`re not feeling too confident yet, you will be soon!
 
 Before continuing to the next tutorial, I want you think about whether anything could go wrong when we search a 
-non-linear parameter space. Is it possible that we won`t find the highest log likelihood lens model? Why might this be?
+non-linear parameter space. Is it possible that we won't find the highest log likelihood lens model? Why might this be?
 
 Try and list 3 reasons why this might happen. In the next tutorial, we'll learn about just that - failure!
 """

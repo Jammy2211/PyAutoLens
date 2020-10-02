@@ -6,7 +6,7 @@ Tutorial 5: Ray Tracing
 In the last tutorial, our use of `Plane`'s was a bit clunky. We manually had to input `Grid`'s to trace them, and keep
 track of which `Grid`'s were the image-plane`s and which were the source planes. It was easy to make mistakes!
 
-Fotunately, in **PyAutoLens**, you won`t actually spend much hands-on time with the `Plane` objects. Instead, you`ll
+Fotunately, in **PyAutoLens**, you won't actually spend much hands-on time with the `Plane` objects. Instead, you`ll
 primarily use the `ray-tracing` module, which we'll cover in this example. Lets look at how easy it is to setup the
 same lens-plane + source-plane strong lens configuration as the previous tutorial, but with a lot less lines of code!
 """
@@ -174,7 +174,7 @@ aplt.Tracer.subplot_tracer(tracer=tracer, grid=image_plane_grid)
 
 # %%
 """
-Just like for a plane, these quantities attributes can be computed by passing a `Grid` (converted to 2D NumPy arrays
+Just like for a plane, these quantities attributes can be computed by passing a `Grid` (converted to 2D ndarrays
 the same dimensions as our input grid!).
 """
 
