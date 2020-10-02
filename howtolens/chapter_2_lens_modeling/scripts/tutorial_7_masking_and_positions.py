@@ -122,7 +122,7 @@ bigger masks would *always* be better, for two reasons:
     
  2) When you fit an image with a model image the fit is performed only within the masked region. Outside of the 
  masked region it is possible that the model image produces some source-galaxy light in a region of the image 
- where it isn't actually observed. If this region is masked, the poor fit in this region won`t reduce the model`s 
+ where it isn't actually observed. If this region is masked, the poor fit in this region won't reduce the model`s 
  log likelihood.
 
 As you use **PyAutoLens** more you will get a feel for how fast an analysis will run given a certain image resolution, 

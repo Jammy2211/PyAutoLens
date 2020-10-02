@@ -91,7 +91,7 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
 
     def from_tracer_and_grid(self, tracer, grid, name=None):
         """
-        Create a realistic simulated image by applying effects to a plain simulated image.
+        Returns a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------

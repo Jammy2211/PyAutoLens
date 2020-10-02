@@ -198,7 +198,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
     def make_analysis(self, galaxy_data, mask, results=None):
         """
-        Create an lens object. Also calls the prior passing and masked_imaging modifying
+        Returns an lens object. Also calls the prior passing and masked_imaging modifying
         functions to allow child classes to change the behaviour of the phase.
 
         Parameters

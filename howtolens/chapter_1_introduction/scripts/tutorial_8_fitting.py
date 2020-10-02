@@ -88,7 +88,7 @@ print(
 # %%
 """
 We can use an `Imaging` `Plotter`.to compare the mask and the image - this is useful if we really want to `tailor` a 
-mask to the lensed source`s light (which in this example, we won`t).
+mask to the lensed source`s light (which in this example, we won't).
 """
 
 # %%

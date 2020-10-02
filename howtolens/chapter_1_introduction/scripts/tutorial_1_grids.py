@@ -55,7 +55,7 @@ print("etc.")
 
 # %%
 """
-_Grid_`s in **PyAutoLens** are stored as both 1D and 2D NumPy arrays, because different calculations benefit from us using 
+_Grid_`s in **PyAutoLens** are stored as both 1D and 2D ndarrays, because different calculations benefit from us using 
 the array in different formats. We can access both the 1D and 2D `Array`'s automatically by specifying the input as a 1D 
 or 2D.
 """

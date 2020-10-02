@@ -61,7 +61,7 @@ def make_pipeline(setup, settings):
     """
     Phase 1: Initialize the lens`s mass model using a simple source.
     
-    This won`t fit the complicated structure of the source, but it`ll give us a reasonable estimate of the
+    This won't fit the complicated structure of the source, but it`ll give us a reasonable estimate of the
     einstein radius and the other lens-mass parameters.
     """
 

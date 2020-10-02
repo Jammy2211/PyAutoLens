@@ -210,7 +210,7 @@ Model fits using a non-linear search can take a long time to run. Whilst the fit
 ~10 minutes, later tutorials will take upwards of hours! This is fine, afterall lens modeling is an inherently 
 computationally expensive exercise, but does make going through these tutorials problematic.
 
-Furthermore, in a Jupyter notebook, if you run the non-linear search (using the phase.run command below) you won`t 
+Furthermore, in a Jupyter notebook, if you run the non-linear search (using the phase.run command below) you won't 
 be able to continue the notebook until it has finished. For this reason, we recommend that you run the non-linear
 search in these tutorials not via your Juypter notebook, but instead by running the tutorial script found in the
 `chapter_2_lens_modeling/scripts` folder. This can be run either using the `python3 tutoial_1_non_linear_search.py` 

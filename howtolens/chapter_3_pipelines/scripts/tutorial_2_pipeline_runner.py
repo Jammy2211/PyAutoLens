@@ -194,7 +194,7 @@ simpler profiles (e.g. spherical profiles). So yes, multi-galaxy systems can oft
 
  2) It got pretty confusing passing all those priors towards the end of the pipeline there, didn`t it?
 
-It does get confusing, I won`t lie. This is why we made galaxies named objects - so that we could call them the 
+It does get confusing, I won't lie. This is why we made galaxies named objects - so that we could call them the 
 `left_lens` and `right_lens`. It still requires caution when writing the pipeline, but goes to show that if you name 
 your galaxies sensibly you should be able to avoid errors, or spot them quickly when you make them.
 """
