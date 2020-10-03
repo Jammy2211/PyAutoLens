@@ -19,7 +19,7 @@ def make_label_config():
 
 class TestLabel:
     def test_basic(self, label_config):
-        assert label_config.label("centre_0") == "x"
+        assert label_config.label("centre_0") == "y"
         assert label_config.label("redshift") == "z"
 
     def test_escaped(self, label_config):

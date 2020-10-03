@@ -4,7 +4,7 @@ Tutorial 7: Masking and Positions
 =================================
 
 We've learnt nearly all the tools we need to model strong lenses, so I'm now going to quickly cover how you should
-choose your mask. I'll also show you another neat trick to improve the speed and accuracy of your non-linear search.
+choose your mask. I`ll also show you another neat trick to improve the speed and accuracy of your non-linear search.
 """
 
 # %%
@@ -26,10 +26,10 @@ conf.instance = conf.Config(
 
 # %%
 """
-We'll use the same strong lensing data as tutorials 1 & 2, where:
+we'll use the same strong lensing data as tutorials 1 & 2, where:
 
- - The lens galaxy's _MassProfile_ is a *SphericalIsothermal*.
- - The source galaxy's _LightProfile_ is a *SphericalExponential*.
+ - The lens `Galaxy`'s `MassProfile` is a *SphericalIsothermal*.
+ - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 """
 
 # %%
@@ -48,8 +48,8 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-When it comes to determining an appropriate mask for this image, the best approach is to set up a _Mask_ and pass it 
-to a _Imaging_ plotter. You can then check visually if the mask is an appropriate size or not. 
+When it comes to determining an appropriate mask for this image, the best approach is to set up a `Mask2D` and pass it 
+to a `Imaging` plotter. You can then check visually if the mask is an appropriate size or not. 
 
 Below, we choose an inner radius that cuts into our lensed source galaxy - clearly this isn't a good mask.
 """
@@ -82,7 +82,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 # %%
 """
 Like in the previous tutorial, we use a_SettingsPhaseImaging_ object to specify our model-fitting procedure uses a 
-regular _Grid_.
+regular `Grid`.
 """
 
 # %%
@@ -113,7 +113,7 @@ phase_with_custom_mask = al.PhaseImaging(
 So, our mask encompasses the lensed source galaxy. However, is this really the right sized mask? Do we want a 
 bigger mask? a smaller mask?
 
-When it comes to masking, we are essentially balancing run-speed and accuracy. If speed wasn't a consideration, 
+When it comes to masking, we are essentially balancing run-speed and accuracy. If speed wasn`t a consideration, 
 bigger masks would *always* be better, for two reasons:
 
 1) The lensed source galaxy may have very faint emission that when you look at the plot above you don't notice. 
@@ -122,24 +122,24 @@ bigger masks would *always* be better, for two reasons:
     
  2) When you fit an image with a model image the fit is performed only within the masked region. Outside of the 
  masked region it is possible that the model image produces some source-galaxy light in a region of the image 
- where it isn't actually observed. If this region is masked, the poor fit in this region won't reduce the model's 
+ where it isn't actually observed. If this region is masked, the poor fit in this region won't reduce the model`s 
  log likelihood.
 
-As you use __PyAutoLens__ more you will get a feel for how fast an analysis will run given a certain image resolution, 
+As you use **PyAutoLens** more you will get a feel for how fast an analysis will run given a certain image resolution, 
 lens model complexity, non-linear search priors / setup, etc. As you develop this intuition, I would recommend you 
 always aim to use masks as big as possible which still give a reasonable run-speed. Aggressive masking will get your 
 code running fast - but it could lead you to infer an incorrect lens model!
 
-If you are fitting the foreground lens galaxy's light you pretty much have no choice but to use a large circular 
-mask anyway, as you'll need to capture the lens's extended emission. Chances are this will encompass the entire 
+If you are fitting the foreground lens `Galaxy`'s light you pretty much have no choice but to use a large circular 
+mask anyway, as you`ll need to capture the lens`s extended emission. Chances are this will encompass the entire 
 source galaxy.
 """
 
 # %%
 """
 We can also manually specify a set of image-pixels correspondin to the multiple images of the source-galaxy(s). 
-During the analysis, __PyAutoLens__ will first check that these pixels trace within a specified arc-second threshold of 
-one another (which is controlled by the 'position_threshold' parameter input into a phase). This provides two benefits:
+During the analysis, **PyAutoLens** will first check that these pixels trace within a specified arc-second threshold of 
+one another (which is controlled by the `position_threshold` parameter input into a phase). This provides two benefits:
 
  1) The analysis runs faster as the non-linear search avoids searching regions of parameter space where the 
  mass-model is clearly not accurate.
@@ -147,10 +147,10 @@ one another (which is controlled by the 'position_threshold' parameter input int
  2) By removing these solutions, a global-maximum solution may be reached instead of a local-maxima. This is 
  because removing the incorrect mass models makes the non-linear parameter space less complex.
 
-We can easily check the image-positions are accurate by plotting them using our _Imaging_ _Plotter_ (they are the magenta 
+We can easily check the image-positions are accurate by plotting them using our `Imaging` `Plotter`.(they are the magenta 
 dots on the image).
 
-To specify these positions, we use the *GridCoordinates* object, which is used by __PyAutoLens__ in general to specify (y,x)
+To specify these positions, we use the `GridCoordinates` object, which is used by **PyAutoLens** in general to specify (y,x)
 coordinates.
 """
 
@@ -164,9 +164,9 @@ aplt.Imaging.subplot_imaging(imaging=imaging, positions=positions)
 
 # %%
 """
-For the positions to be used in a Phase, we associate them with the _Imaging_ data.
+For the positions to be used in a Phase, we associate them with the `Imaging` data.
  
-We also pass the _SettingsPhaseImaging_ a new object, _SettingsLens_. This includes the *position_threshold* used 
+We also pass the `SettingsPhaseImaging` a new object, `SettingsLens`. This includes the *position_threshold* used 
 during modeling to resample inaccurate mass models.
 """
 
@@ -254,7 +254,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, positions=positions)
 
 # %%
 """
-Again, we pass the positions into our _Imaging_ data and set a positions threshold to run the phase.
+Again, we pass the positions into our `Imaging` data and set a positions threshold to run the phase.
 """
 
 # %%
@@ -297,10 +297,10 @@ print("Dynesty has finished run - you may now continue the notebook.")
 # %%
 """
 And that completes our final tutorial in this chapter! At this point, I recommend that you checkout the 
-'autolens_workspace/preprocess section of the workspace. This includes tools which allow you create custom masks and 
+`autolens_workspace/preprocess section of the workspace. This includes tools which allow you create custom masks and 
 positions for a specific strong lens and output them so they can be loaded before an analysis.
 
-When we cover pipelines next, you'll see that pipelines allow us to use a custom mask and set of positions for each 
+When we cover pipelines next, you`ll see that pipelines allow us to use a custom mask and set of positions for each 
 lens we model. So, although we have to draw the masks and positions for each lens in a sample, once we've done that 
 we can fit all lenses with one standardized pipeline!
 
@@ -308,13 +308,13 @@ There are two things you should bare in mind in terms of masking and positions:
 
  1) Customizing the mask and positions for the analysis of one strong lens gets the analysis running fast and can 
  provide accurate non-linear sampling. However, for a large sample of lenses, customizing the mask and positions 
- will begin to take a lot of time. If you're willing to put that time and effort in, great, but these solutions 
+ will begin to take a lot of time. If you`re willing to put that time and effort in, great, but these solutions 
  *do not* scale-up to large samples of lenses.
     
  2) A word of warning - be *extremely* careful when using positions, especially if it is unclear if the lensed 
- source galaxy has one or multiple source's of light. If your position threshold is small and the positions you 
+ source galaxy has one or multiple source`s of light. If your position threshold is small and the positions you 
  give the analysis correspond to different parts of the source, you may remove the *correct lens model*. In my 
- experience, as long as you keep the threshold above ~0.5" you'll be fine.
+ experience, as long as you keep the threshold above ~0.5" you`ll be fine.
 
 And with that, we've completed the chapter.
 """

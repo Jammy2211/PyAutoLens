@@ -2,14 +2,14 @@ import autofit as af
 import autolens as al
 
 """
-In this pipeline, we fit the a strong lens using an _EllipticalIsothermal_ _MassProfile_ and a source composed of 4 
-parametric _EllipticalSersic_'s.
+In this pipeline, we fit the a strong lens using an `EllipticalIsothermal` `MassProfile`.and a source composed of 4 
+parametric `EllipticalSersic``..
 
 The pipeline is four phases:
 
 Phase 1:
 
-    Fit the _EllipticalIsothermal_ mass model and the first _EllipticalSersic_ light profile of the source.
+    Fit the `EllipticalIsothermal` mass model and the first `EllipticalSersic` light profile of the source.
 
     Lens Light: None
     Lens Mass: None
@@ -19,31 +19,31 @@ Phase 1:
 
 Phase 2:
 
-    Add the second _EllipticalSersic_ to the source model.
+    Add the second `EllipticalSersic` to the source model.
 
     Lens Light: None
     Lens Mass: EllipticalIsothermal
-    Source Light: _EllipticalSersic_ + EllipticalSersic
+    Source Light: `EllipticalSersic` + EllipticalSersic
     Prior Passing: Lens Mass (model -> phase 1), Source Light (model -> phase 1).
     Notes: Uses the previous mass model and source model to initialize the non-linear search.
 
 Phase 3:
 
-    Add the third _EllipticalSersic_ to the source model.
+    Add the third `EllipticalSersic` to the source model.
 
     Lens Light: None
     Lens Mass: EllipticalIsothermal
-    Source Light: _EllipticalSersic_ + _EllipticalSersic_ + EllipticalSersic
+    Source Light: `EllipticalSersic` + `EllipticalSersic` + EllipticalSersic
     Prior Passing: Lens Mass (model -> phase 2), Source Light (model -> phase 2).
     Notes: Uses the previous mass model and source model to initialize the non-linear search.
 
 Phase 4:
 
-    Add the fourth _EllipticalSersic_ to the source model.
+    Add the fourth `EllipticalSersic` to the source model.
 
     Lens Light: None
     Lens Mass: EllipticalIsothermal
-    Source Light: _EllipticalSersic_ + _EllipticalSersic_ + _EllipticalSersic_ + EllipticalSersic
+    Source Light: `EllipticalSersic` + `EllipticalSersic` + `EllipticalSersic` + EllipticalSersic
     Prior Passing: Lens Mass (model -> phase 3), Source Light (model -> phase 3).
     Notes: Uses the previous mass model and source model to initialize the non-linear search.
 
@@ -56,19 +56,18 @@ def make_pipeline(setup, settings):
 
     pipeline_name = "pipeline__complex_source"
 
-    setup.folders.append(pipeline_name)
-    setup.folders.append(setup.tag)
+    path_prefix = f"{setup.path_prefix}/{pipeline_name}/{setup.tag}"
 
     """
-    Phase 1: Initialize the lens's mass model using a simple source.
+    Phase 1: Initialize the lens`s mass model using a simple source.
     
-    This won't fit the complicated structure of the source, but it'll give us a reasonable estimate of the
+    This won't fit the complicated structure of the source, but it`ll give us a reasonable estimate of the
     einstein radius and the other lens-mass parameters.
     """
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1__mass_sie__source_x1_sersic",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source=al.GalaxyModel(redshift=1.0, sersic_0=al.lp.EllipticalSersic),
@@ -79,13 +78,13 @@ def make_pipeline(setup, settings):
 
     """
     Phase 1: Add a second source component, using the previous model as the initialization on the lens / source
-             parameters. We'll vary the parameters of the lens mass model and first source galaxy component during the 
+             parameters. we'll vary the parameters of the lens mass model and first source galaxy component during the 
              fit.
     """
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2__mass_sie__source_sersic_x2",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
@@ -104,7 +103,7 @@ def make_pipeline(setup, settings):
 
     phase3 = al.PhaseImaging(
         phase_name="phase_3__mass_sie__source_sersic_x3",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase2.result.model.galaxies.lens.mass
@@ -124,7 +123,7 @@ def make_pipeline(setup, settings):
 
     phase4 = al.PhaseImaging(
         phase_name="phase_4__mass_sie__source_sersic_x4",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase3.result.model.galaxies.lens.mass

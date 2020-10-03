@@ -19,12 +19,7 @@ print("psf shape = " + str(psf_shape_2d) + "\n")
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     light=al.lp.EllipticalSersic(
-        centre=(0.0, 0.0),
-        axis_ratio=0.9,
-        phi=45.0,
-        intensity=0.5,
-        effective_radius=0.8,
-        sersic_index=4.0,
+        centre=(0.0, 0.0), intensity=0.5, effective_radius=0.8, sersic_index=4.0
     ),
     mass=al.mp.EllipticalIsothermal(
         centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
@@ -45,9 +40,7 @@ source_galaxy = al.Galaxy(
 for instrument in ["vro", "euclid", "hst", "hst_up", "ao"]:
 
     imaging = instrument_util.load_test_imaging(
-        data_name="lens_sie__source_smooth",
-        instrument=instrument,
-        psf_shape_2d=psf_shape_2d,
+        data_name="lens_sie__source_smooth", instrument=instrument
     )
 
     mask = al.Mask2D.circular(

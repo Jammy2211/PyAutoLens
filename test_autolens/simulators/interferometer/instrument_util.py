@@ -10,7 +10,8 @@ test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def simulator_from_instrument(instrument):
-    """Determine the pixel scale from an instrument based on real observations.
+    """
+    Returns the pixel scale from an instrument based on real observations.
 
     These options are representative of VRO, Euclid, HST, over-sampled HST and Adaptive Optics image.
 

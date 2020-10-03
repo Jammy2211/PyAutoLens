@@ -3,7 +3,7 @@
 Tutorial 8: Results
 ===================
 
-Once a phase has completed running, it results a 'Result' object, which in the previous tutorials we used to plot
+Once a phase has completed running, it results a `Result` object, which in the previous tutorials we used to plot
 the maximum log likelihood fit of the modoel-fits. Lets take a more detailed look at what else the results contains.
 """
 
@@ -32,7 +32,7 @@ conf.instance = conf.Config(
 
 # %%
 """
-Lets reperform the model-fit from tutorial 1 to get a results object, provided you didn't delete the results on
+Lets reperform the model-fit from tutorial 1 to get a results object, provided you didn`t delete the results on
 your hard-disk this should simply reload them into this Pythons script.
 """
 
@@ -80,7 +80,7 @@ a fast way to visualize the result.
 
 # %%
 """
-The result contains a lot more information about the model-fit. For example, its _Samples_ object contains the complete
+The result contains a lot more information about the model-fit. For example, its `Samples` object contains the complete
 set of non-linear search samples, for example every set of parameters evaluated, their log likelihoods and so on,
 which are used for computing information about the model-fit such as the error on every parameter.
 """
@@ -90,11 +90,11 @@ which are used for computing information about the model-fit such as the error o
 
 # %%
 """
-However, we are not going into any more detail on the result variable in this tutorial, or in the __HowToLens__ lectures.
+However, we are not going into any more detail on the result variable in this tutorial, or in the ``.owToLens__ lectures.
 
 A comprehensive description of the results can be found at the following script:
 
- 'autolens_workspace/examples/model/result.py'
+ `autolens_workspace/examples/model/result.py`
 
 """
 
@@ -107,10 +107,10 @@ Alternatively, we can return the results from the phase.run() method and manipul
 
 However, imagine your dataset is large and consists of many images of strong lenses. You analyse each image 
 individually using the same phase, producing a large set of results on your hard disk corresponding to the full sample.
-That will be a lot of paths and directories to navigate! At some point, there'll be too many results for it to be
+That will be a lot of paths and directories to navigate! At some point, there`ll be too many results for it to be
 a sensible use of your time to analyse the results by sifting through the outputs on your hard disk.
 
-PyAutoFit's aggregator tool allows us to load results in a Python script or, more impotantly, a Jupyter notebook.
+PyAutoFit`s aggregator tool allows us to load results in a Python script or, more impotantly, a Jupyter notebook.
 All we have to do is point the aggregator to the output directory from which we want to load results, which in this c
 ase will be the results of the first non-linear search of this chapter.
 """
@@ -146,18 +146,18 @@ print(samples[0].max_log_likelihood_vector)
 """
 Again, we won't go into any more detail on the aggregator in this tutorial. For those of you modeling large samples of
 lenses for who the tool will prove useful, checkout the full set of aggregator tutorials which can be found at the 
-location 'autolens_workspace/advanced'aggregator'. Here, you'll learn how to:
+location `autolens_workspace/advanced`aggregator`. Here, you`ll learn how to:
 
  - Use the aggregator to filter out results given a phase name or input string.
  - Use the Samples to produce many different results from the fit, including error estimates on parameters and 
       plots of the probability density function of parameters in 1D and 2D.
- - Reproduce visualizations of results, such as a tracer's images or the fit to a lens dataset.
+ - Reproduce visualizations of results, such as a tracer`s images or the fit to a lens dataset.
 
-Even if you are only modeling a small sample of lenses, if you anticipate using __PyAutoLens__ for the long-term I 
+Even if you are only modeling a small sample of lenses, if you anticipate using **PyAutoLens** for the long-term I 
 strongly recommend you begin using the aggregator to inspect and analyse your result. This is because it makes it 
 simple to perform all analyse in a Jupyter notebook, which as you already know is a flexible and versatile way to check 
 results and make figures.
 
-In HowToLelens, the main purpose of this tutorial was to make sure that you are aware of the aggregator's existance, 
+In HowToLelens, the main purpose of this tutorial was to make sure that you are aware of the aggregator`s existance, 
 and now you are!
 """

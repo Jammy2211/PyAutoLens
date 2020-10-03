@@ -3,16 +3,16 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-This script simulates _Imaging_ of a strong lens where:
+This script simulates `Imaging` of a strong lens where:
 
- - The lens galaxy's _MassProfile_ is a *SphericalIsothermal*.
- - The source galaxy's _LightProfile_ is a *SphericalExponential*.
+ - The lens `Galaxy`'s `MassProfile` is a *SphericalIsothermal*.
+ - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 
 This dataset is used in chapter 2, tutorials 1-3.
 """
 
 # %%
-"""Use the WORKSPACE environment variable to determine the path to the autolens workspace."""
+"""Use the WORKSPACE environment variable to determine the path to the `autolens_workspace`."""
 
 # %%
 import os
@@ -21,27 +21,25 @@ workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 """
-The 'dataset_type' describes the type of data being simulated (in this case, _Imaging_ data) and 'dataset_name' 
+The `dataset_type` describes the type of data being simulated (in this case, `Imaging` data) and `dataset_name` 
 gives it a descriptive name. They define the folder the dataset is output to on your hard-disk:
 
- - The image will be output to '/autolens_workspace/dataset/dataset_type/dataset_name/image.fits'.
- - The noise-map will be output to '/autolens_workspace/dataset/dataset_type/dataset_name/lens_name/noise_map.fits'.
- - The psf will be output to '/autolens_workspace/dataset/dataset_type/dataset_name/psf.fits'.
+ - The image will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/image.fits`.
+ - The noise-map will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/lens_name/noise_map.fits`.
+ - The psf will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/psf.fits`.
 """
 dataset_type = "chapter_4"
 dataset_name = "mass_sie__source_sersic_x5"
 
 """
-Create the path where the dataset will be output, which in this case is:
-'/autolens_workspace/howtolens/dataset/chapter_2/lens_sis__source_sersic_x5/'
+        Returns the path where the dataset will be output, which in this case is:
+`/autolens_workspace/howtolens/dataset/chapter_2/lens_sis__source_sersic_x5/`
 """
-dataset_path = af.util.create_path(
-    path=workspace_path, folders=["howtolens", "dataset", dataset_type, dataset_name]
-)
+dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
 
 """
-For simulating an image of a strong lens, we recommend using a GridIterate object. This represents a grid of (y,x) 
-coordinates like an ordinary Grid, but when the light-profile's image is evaluated below (using the Tracer) the 
+For simulating an image of a strong lens, we recommend using a GridIterate object. This represents a grid of $(y,x)$ 
+coordinates like an ordinary Grid, but when the light-profile`s image is evaluated below (using the Tracer) the 
 sub-size of the grid is iteratively increased (in steps of 2, 4, 8, 16, 24) until the input fractional accuracy of 
 99.99% is met.
 
@@ -61,7 +59,7 @@ psf = al.Kernel.from_gaussian(
 )
 
 """
-To simulate the _Imaging_ dataset we first create a simulator, which defines the expoosure time, background sky,
+To simulate the `Imaging` dataset we first create a simulator, which defines the expoosure time, background sky,
 noise levels and psf of the dataset that is simulated.
 """
 simulator = al.SimulatorImaging(
@@ -72,15 +70,15 @@ simulator = al.SimulatorImaging(
 )
 
 """
-Setup the lens galaxy's mass (SIE+Shear) and source galaxy light (elliptical Sersic) for this simulated lens.
+Setup the lens `Galaxy`'s mass (SIE+Shear) and source galaxy light (elliptical Sersic) for this simulated lens.
 
-For lens modeling, defining ellipticity in terms of the  'elliptical_comps' improves the model-fitting procedure.
+For lens modeling, defining ellipticity in terms of the  `elliptical_comps` improves the model-fitting procedure.
 
 However, for simulating a strong lens you may find it more intuitive to define the elliptical geometry using the 
 axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle phi, where phi is
 in degrees and defined counter clockwise from the positive x-axis.
 
-We can use the **__PyAutoLens__** *convert* module to determine the elliptical components from the axis-ratio and phi.
+We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and phi.
 """
 
 lens_galaxy = al.Galaxy(
@@ -156,7 +154,7 @@ source_galaxy_5 = al.Galaxy(
     ),
 )
 
-"""Use these galaxies to setup a tracer, which will generate the image for the simulated _Imaging_ dataset."""
+"""Use these galaxies to setup a tracer, which will generate the image for the simulated `Imaging` dataset."""
 tracer = al.Tracer.from_galaxies(
     galaxies=[
         lens_galaxy,
@@ -184,9 +182,9 @@ imaging.output_to_fits(
 )
 
 """
-Pickle the _Tracer_ in the dataset folder, ensuring the true _Tracer_ is safely stored and available if we need to 
+Pickle the `Tracer` in the dataset folder, ensuring the true `Tracer` is safely stored and available if we need to 
 check how the dataset was simulated in the future. 
 
-This will also be accessible via the _Aggregator_ if a model-fit is performed using the dataset.
+This will also be accessible via the `Aggregator` if a model-fit is performed using the dataset.
 """
 tracer.save(file_path=dataset_path, filename="true_tracer")

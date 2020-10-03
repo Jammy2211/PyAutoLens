@@ -4,6 +4,8 @@ from autoconf import conf
 import pytest
 from matplotlib import pyplot
 
+from test_autoarray.conftest import *
+from test_autogalaxy.conftest import *
 
 @pytest.fixture(name="general_config", autouse=True)
 def make_general_config():
