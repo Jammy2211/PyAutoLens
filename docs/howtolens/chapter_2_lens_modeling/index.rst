@@ -29,7 +29,7 @@ The chapter contains the following tutorials:
 - Using different non-linear searches to sample parameter space.
 
 `Tutorial 7: Masking and Positions <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_2_lens_modeling/tutorial_7_masking_and_positions.html>`_
-- How to mask and mark positions on your data to improve the lens model.
+- How to mask and mark positions on your ``data`` to improve the lens model.
 
 `Tutorial 8: Results <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_2_lens_modeling/tutorial_8_results.html>`_
 - Overview of the results available after successfully fitting a lens model.

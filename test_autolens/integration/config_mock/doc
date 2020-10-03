@@ -14,7 +14,7 @@ Default:
 
 Limit:
 
-    The limits between which a parameter may be sampled. For example, the axis_ratio of light and _MassProfile_'s has
+    The limits between which a parameter may be sampled. For example, the axis_ratio of light and `MassProfile`'s has
     limits 0.0 -> 1.0 to prevent unphysical models.
 
 Width:
@@ -63,5 +63,5 @@ Subplots:
 
 ### Radial Minimum ###
 
-    _MassProfile_'s which use numerical integration to compute deflection angles can break for numerical values very near
+    `MassProfile`'s which use numerical integration to compute deflection angles can break for numerical values very near
     (0.0, 0.0). The values in radial minimum specify to what precision values of (0.0, 0.0) and adjusted to prevent this.

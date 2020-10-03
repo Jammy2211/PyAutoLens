@@ -19,7 +19,7 @@ class MaskedImaging(imaging.MaskedImaging):
         ----------
         imaging: im.Imaging
             The imaging data all in 2D (the image, noise-map, PSF, etc.)
-        mask: msk.Mask
+        mask: msk.Mask2D
             The 2D mask that is applied to the image.
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
@@ -84,23 +84,23 @@ class SimulatorImaging(imaging.SimulatorImaging):
 
     def from_tracer_and_grid(self, tracer, grid, name=None):
         """
-        Create a realistic simulated image by applying effects to a plain simulated image.
+        Returns a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
         name
-        image : ndarray
+        image : np.ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
         pixel_scales: float
             The scale of each pixel in arc seconds
-        exposure_time_map : ndarray
+        exposure_time_map : np.ndarray
             An arrays representing the effective exposure time of each pixel.
         psf: PSF
             An arrays describing the PSF the simulated image is blurred with.
-        background_sky_map : ndarray
+        background_sky_map : np.ndarray
             The value of background sky in every image pixel (electrons per second).
         add_noise: Bool
-            If True poisson noise_maps is simulated and added to the image, based on the total counts in each image
+            If ``True`` poisson noise_maps is simulated and added to the image, based on the total counts in each image
             pixel
         noise_seed: int
             A seed for random noise_maps generation

@@ -8,15 +8,15 @@ sampling that parameter on the grid. For example, if a parameter has UniformPrio
 0.1 means the GridSearch will perform 10 non-linear searches where this parameters UniformPriors are in steps of
 0.0 to 1.0, 1.0 to 2.0, 2.0 to 3.0, etc.
 
-The *GridSearch* supports parallelization, whereby a GridSearch can be set off for every available CPU on your
+The `GridSearch` supports parallelization, whereby a GridSearch can be set off for every available CPU on your
 hard-disk. This follows a farmer-worker design, requiring 1 'master CPU' to farm out jobs to the other CPUs available.
 
-*GridSearch* use requires use of the phase API and is not yet fully documented (it will be a part of HowToFit chapter
+`GridSearch` use requires use of the phase API and is not yet fully documented (it will be a part of HowToFit chapter
 2). Therefore users who wish to use this feature now should directly contain us on SLACK for support.
 
 [general]
     number_of_cores -> int
-        The number of cores over which a parallel *GridSearch* is performed is parallel functionality is turned on.
+        The number of cores over which a parallel `GridSearch` is performed is parallel functionality is turned on.
         This figure includes 1 CPU which is used as the farmer to send out tasks to other CPUs.
     step_size -> float
         The step size between every grid-search parameter in unit values of a UniformPrior. For example, if a parameter

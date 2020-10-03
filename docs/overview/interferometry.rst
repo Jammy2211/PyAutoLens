@@ -3,7 +3,7 @@
 Interferometry
 --------------
 
-Alongside CCD imaging data, **PyAutoLens** supports the modeling of interferometer data from submillimeter and radio
+Alongside CCD imaging data, **PyAutoLens** supports the modeling of interferometer ``data`` from submillimeter and radio
 observatories. The dataset is fitted directly in the uv-plane, circumventing issues that arise when fitting a 'dirty
 image' such as correlated noise. To begin, we load an interferometer dataset from fits files:
 
@@ -33,7 +33,7 @@ like (these are representative of an ALMA dataset with ~ 1 million visibilities)
 
 Although interferometer lens modeling is performed in the uv-plane and therefore Fourier space, we still need to define
 a 'real-space mask'. This mask defines the grid on which the image of the lensed source galaxy is computed via a
-_Tracer_, which when we fit it to data data in the uv-plane is mapped to Fourier space.
+_Tracer_, which when we fit it to ``data`` data in the uv-plane is mapped to Fourier space.
 
 .. code-block:: bash
 
@@ -120,7 +120,7 @@ To show the fit to the real and imaginary visibilities, we plot the residuals an
   :width: 400
   :alt: Alternative text
 
-Interferometer data can also be modeled using pixelized source's, which again perform the source reconstruction by
+Interferometer ``data`` can also be modeled using pixelized source's, which again perform the source reconstruction by
 directly fitting the visibilities in the uv-plane. The source reconstruction is visualized in real space:
 
 Computing this source recontruction would be extremely inefficient if **PyAutoLens** used a traditional approach to

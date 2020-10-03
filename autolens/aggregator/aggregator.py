@@ -1,10 +1,12 @@
 import autolens as al
 
+from autofit import exc
 from functools import partial
 
 
 def tracer_generator_from_aggregator(aggregator):
-    """Compute a generator of *Tracer* objects from an input aggregator, which generates a list of the *Tracer* objects 
+    """
+    Returns a generator of `Tracer` objects from an input aggregator, which generates a list of the `Tracer` objects
     for every set of results loaded in the aggregator.
 
     This is performed by mapping the *tracer_from_agg_obj* with the aggregator, which sets up each tracer using only
@@ -18,11 +20,12 @@ def tracer_generator_from_aggregator(aggregator):
 
 
 def tracer_from_agg_obj(agg_obj):
-    """Compute a *Tracer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe that
+    """
+    Returns a `Tracer` object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe that
      it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator outputs
-     such that the function can use the *Aggregator*'s map function to to create a *Tracer* generator.
+     such that the function can use the *Aggregator*'s map function to to create a `Tracer` generator.
 
-     The *tracer* is created following the same method as the PyAutoLens *Phase* classes using an instance of the
+     The `Tracer` is created following the same method as the PyAutoLens *Phase* classes using an instance of the
      maximum log likelihood model's galaxies. These galaxies have their hyper-images added (if they were used in the
      fit) and passed into a Tracer object.
 
@@ -32,19 +35,19 @@ def tracer_from_agg_obj(agg_obj):
         A PyAutoFit aggregator's PhaseOutput object containing the generators of the results of PyAutoLens model-fits.
     """
     samples = agg_obj.samples
-    phase_attributes = agg_obj.phase_attributes
+    attributes = agg_obj.attributes
     max_log_likelihood_instance = samples.max_log_likelihood_instance
     galaxies = max_log_likelihood_instance.galaxies
 
-    if phase_attributes.hyper_galaxy_image_path_dict is not None:
+    if attributes.hyper_galaxy_image_path_dict is not None:
 
         for (
             galaxy_path,
             galaxy,
         ) in max_log_likelihood_instance.path_instance_tuples_for_class(al.Galaxy):
-            if galaxy_path in phase_attributes.hyper_galaxy_image_path_dict:
-                galaxy.hyper_model_image = phase_attributes.hyper_model_image
-                galaxy.hyper_galaxy_image = phase_attributes.hyper_galaxy_image_path_dict[
+            if galaxy_path in attributes.hyper_galaxy_image_path_dict:
+                galaxy.hyper_model_image = attributes.hyper_model_image
+                galaxy.hyper_galaxy_image = attributes.hyper_galaxy_image_path_dict[
                     galaxy_path
                 ]
 
@@ -52,7 +55,8 @@ def tracer_from_agg_obj(agg_obj):
 
 
 def masked_imaging_generator_from_aggregator(aggregator, settings_masked_imaging=None):
-    """Compute a generator of *MaskedImaging* objects from an input aggregator, which generates a list of the 
+    """
+    Returns a generator of *MaskedImaging* objects from an input aggregator, which generates a list of the
     *MaskedImaging* objects for every set of results loaded in the aggregator.
 
     This is performed by mapping the *masked_imaging_from_agg_obj* with the aggregator, which sets up each masked
@@ -70,7 +74,8 @@ def masked_imaging_generator_from_aggregator(aggregator, settings_masked_imaging
 
 
 def masked_imaging_from_agg_obj(agg_obj, settings_masked_imaging=None):
-    """Compute a *MaskedImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe 
+    """
+    Returns a *MaskedImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe
      that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator 
      outputs such that the function can use the *Aggregator*'s map function to to create a *MaskedImaging* generator.
 
@@ -97,7 +102,8 @@ def fit_imaging_generator_from_aggregator(
     settings_pixelization=None,
     settings_inversion=None,
 ):
-    """Compute a generator of *FitImaging* objects from an input aggregator, which generates a list of the 
+    """
+    Returns a generator of *FitImaging* objects from an input aggregator, which generates a list of the
     *FitImaging* objects for every set of results loaded in the aggregator.
 
     This is performed by mapping the *fit_imaging_from_agg_obj* with the aggregator, which sets up each fit using
@@ -124,7 +130,8 @@ def fit_imaging_from_agg_obj(
     settings_pixelization=None,
     settings_inversion=None,
 ):
-    """Compute a *FitImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe 
+    """
+    Returns a *FitImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe
      that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator 
      outputs such that the function can use the *Aggregator*'s map function to to create a *FitImaging* generator.
 
@@ -157,7 +164,8 @@ def fit_imaging_from_agg_obj(
 def masked_interferometer_generator_from_aggregator(
     aggregator, settings_masked_interferometer=None
 ):
-    """Compute a generator of *MaskedInterferometer* objects from an input aggregator, which generates a list of the 
+    """
+    Returns a generator of *MaskedInterferometer* objects from an input aggregator, which generates a list of the
     *MaskedInterferometer* objects for every set of results loaded in the aggregator.
 
     This is performed by mapping the *masked_interferometer_from_agg_obj* with the aggregator, which sets up each masked
@@ -176,7 +184,8 @@ def masked_interferometer_generator_from_aggregator(
 
 
 def masked_interferometer_from_agg_obj(agg_obj, settings_masked_interferometer=None):
-    """Compute a *MaskedInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to 
+    """
+    Returns a *MaskedInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to
     describe that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's 
     generator outputs such that the function can use the *Aggregator*'s map function to to create a 
     *MaskedInterferometer* generator.
@@ -197,7 +206,7 @@ def masked_interferometer_from_agg_obj(agg_obj, settings_masked_interferometer=N
     return al.MaskedInterferometer(
         interferometer=agg_obj.dataset,
         visibilities_mask=agg_obj.mask,
-        real_space_mask=agg_obj.phase_attributes.real_space_mask,
+        real_space_mask=agg_obj.attributes.real_space_mask,
         settings=settings_masked_interferometer,
     )
 
@@ -208,7 +217,8 @@ def fit_interferometer_generator_from_aggregator(
     settings_pixelization=None,
     settings_inversion=None,
 ):
-    """Compute a *FitInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to 
+    """
+    Returns a *FitInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to
     describe that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's 
     generator outputs such that the function can use the *Aggregator*'s map function to to create a *FitInterferometer* 
     generator.
@@ -236,7 +246,8 @@ def fit_interferometer_from_agg_obj(
     settings_pixelization=None,
     settings_inversion=None,
 ):
-    """Compute a generator of *FitInterferometer* objects from an input aggregator, which generates a list of the 
+    """
+    Returns a generator of *FitInterferometer* objects from an input aggregator, which generates a list of the
     *FitInterferometer* objects for every set of results loaded in the aggregator.
 
     This is performed by mapping the *fit_interferometer_from_agg_obj* with the aggregator, which sets up each fit
@@ -264,3 +275,121 @@ def fit_interferometer_from_agg_obj(
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,
     )
+
+
+def grid_search_result_as_array(aggregator, use_log_evidences=True):
+
+    grid_search_result_gen = aggregator.values("grid_search_result")
+
+    grid_search_results = list(filter(None, list(grid_search_result_gen)))
+
+    if len(grid_search_results) != 1:
+        raise exc.AggregatorException(
+            "There is more than one grid search result in the aggregator - please filter the"
+            "aggregator."
+        )
+
+    return grid_search_log_evidences_as_array_from_grid_search_result(
+        grid_search_result=grid_search_results[0], use_log_evidences=use_log_evidences
+    )
+
+
+def grid_search_subhalo_masses_as_array(aggregator):
+
+    grid_search_result_gen = aggregator.values("grid_search_result")
+
+    grid_search_results = list(filter(None, list(grid_search_result_gen)))
+
+    if len(grid_search_results) != 1:
+        raise exc.AggregatorException(
+            "There is more than one grid search result in the aggregator - please filter the"
+            "aggregator."
+        )
+
+    return grid_search_subhalo_masses_as_array_from_grid_search_result(
+        grid_search_result=grid_search_results[0]
+    )
+
+
+def grid_search_subhalo_centres_as_array(aggregator):
+
+    grid_search_result_gen = aggregator.values("grid_search_result")
+
+    grid_search_results = list(filter(None, list(grid_search_result_gen)))
+
+    if len(grid_search_results) != 1:
+        raise exc.AggregatorException(
+            "There is more than one grid search result in the aggregator - please filter the"
+            "aggregator."
+        )
+
+    return grid_search_subhalo_masses_as_array_from_grid_search_result(
+        grid_search_result=grid_search_results[0]
+    )
+
+
+def grid_search_log_evidences_as_array_from_grid_search_result(
+    grid_search_result, use_log_evidences=True
+):
+
+    if grid_search_result.no_dimensions != 2:
+        raise exc.AggregatorException(
+            "The GridSearchResult is not dimensions 2, meaning a 2D array cannot be made."
+        )
+
+    if use_log_evidences:
+        values = [
+            value
+            for values in grid_search_result.log_evidence_values
+            for value in values
+        ]
+    else:
+        values = [
+            value
+            for values in grid_search_result.max_log_likelihood_values
+            for value in values
+        ]
+
+    return al.Array.manual_yx_and_values(
+        y=[centre[0] for centre in grid_search_result.physical_centres_lists],
+        x=[centre[1] for centre in grid_search_result.physical_centres_lists],
+        values=values,
+        pixel_scales=grid_search_result.physical_step_sizes,
+        shape_2d=grid_search_result.shape,
+    )
+
+
+def grid_search_subhalo_masses_as_array_from_grid_search_result(grid_search_result):
+
+    if grid_search_result.no_dimensions != 2:
+        raise exc.AggregatorException(
+            "The GridSearchResult is not dimensions 2, meaning a 2D array cannot be made."
+        )
+
+    masses = [
+        res.samples.median_pdf_instance.galaxies.subhalo.mass.mass_at_200
+        for results in grid_search_result.results_reshaped
+        for res in results
+    ]
+
+    return al.Array.manual_yx_and_values(
+        y=[centre[0] for centre in grid_search_result.physical_centres_lists],
+        x=[centre[1] for centre in grid_search_result.physical_centres_lists],
+        values=masses,
+        pixel_scales=grid_search_result.physical_step_sizes,
+        shape_2d=grid_search_result.shape,
+    )
+
+
+def grid_search_subhalo_centres_as_array_from_grid_search_result(grid_search_result):
+
+    if grid_search_result.no_dimensions != 2:
+        raise exc.AggregatorException(
+            "The GridSearchResult is not dimensions 2, meaning a 2D array cannot be made."
+        )
+
+    return [
+        res.samples.median_pdf_instance.galaxies.subhalo.mass.centre
+        for results in grid_search_result.results_reshaped
+        for res in results
+    ]

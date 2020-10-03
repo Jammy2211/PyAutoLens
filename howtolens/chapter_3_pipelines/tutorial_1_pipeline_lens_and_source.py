@@ -4,8 +4,8 @@ import autolens as al
 """
 All pipelines begin with a comment describing the pipeline and a phase-by-phase description of what it does.
 
-In this pipeline, we fit the a strong lens using an _EllipticalSersic_ _LightProfile_, _EllipticalIsothermal_ 
-_MassProfile_ and parametric _EllipticalSersic_ source.
+In this pipeline, we fit the a strong lens using an `EllipticalSersic` `LightProfile`, `EllipticalIsothermal` 
+_MassProfile_ and parametric `EllipticalSersic` source.
 
 The pipeline is three phases:
 
@@ -21,7 +21,7 @@ Phase 1:
 
 Phase 2:
 
-    Fit the lens mass model and source _LightProfile_.
+    Fit the lens mass model and source `LightProfile`.
     
     Lens Light: EllipticalSersic
     Lens Mass: EllipticalIsothermal + ExternalShear
@@ -46,48 +46,47 @@ def make_pipeline(setup, settings):
     pipeline_name = "pipeline__light_and_source"
 
     """
-    A pipelines takes the 'folders' as input, which together with the pipeline name specify the path structure 
-    of the output. In the pipeline runner we pass the folders ["howtolens", c3_t1_lens_and_source], making the
-    output of this pipeline 'autolens_workspace/output/howtolens/c3_t1_lens_and_source/pipeline__light_and_source'.
+    A pipelines takes the `path_prefix` as input, which together with the `pipeline_name` specifies the path structure 
+    of the output. In the pipeline runner we pass the `path_prefix` f"howtolens/c3_t1_lens_and_source", making the
+    output of this pipeline `autolens_workspace/output/howtolens/c3_t1_lens_and_source/pipeline__light_and_source`.
 
-    The output path is also tagged according to the _SetupPipeline_, in an analagous fashion to how the 
-    _SettingsPhaseImaging_ tagged the output paths of phases. In this example, we do not use an _ExternalShear_
+    The output path is also tagged according to the `SetupPipeline`, in an analagous fashion to how the 
+    `SettingsPhaseImaging` tagged the output paths of phases. In this example, we do not use an _ExternalShear_
     in the mass model, and the pipeline is tagged accordingly.
     """
 
-    setup.folders.append(pipeline_name)
-    setup.folders.append(setup.tag)
+    path_prefix = f"{setup.path_prefix}/{pipeline_name}/{setup.tag}"
 
     """
-    Phase 1: Fit only the lens galaxy's light, where we:
+    Phase 1: Fit only the lens `Galaxy`'s light, where we:
 
-        1) Set priors on the lens galaxy (y,x) centre such that we assume the image is centred around the lens galaxy.
+        1) Set priors on the lens galaxy $(y,x)$ centre such that we assume the image is centred around the lens galaxy.
 
-    We create the phase using the same notation as in chapter 2. Note how we are using the 'fast' _Dynesty_ settings
+    We create the phase using the same notation as in chapter 2. Note how we are using the `fast` `Dynesty` settings
     covered in chapter 2.
     """
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1__light_sersic",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)),
         settings=settings,
         search=af.DynestyStatic(n_live_points=30, evidence_tolerance=5.0),
     )
 
     """
-    Phase 2: Fit the lens's _MassProfile_'s and source galaxy's light, where we:
+    Phase 2: Fit the lens`s `MassProfile`'s and source `Galaxy`'s light, where we:
 
         1) Fix the foreground lens light subtraction to the lens galaxy light model from phase 1.
-        2) Set priors on the centre of the lens galaxy's _MassProfile_ by linking them to those inferred for 
-           the _LightProfile_ in phase 1.
+        2) Set priors on the centre of the lens `Galaxy`'s `MassProfile` by linking them to those inferred for 
+           the `LightProfile` in phase 1.
            
-    In phase 2, we fit the source-galaxy's light. Thus, we want to fix the lens light model to the model inferred
+    In phase 2, we fit the source-`Galaxy`'s light. Thus, we want to fix the lens light model to the model inferred
     in phase 1, ensuring the image we fit is lens subtracted. We do this below by passing the lens light as an
- 'instance' object, a trick we use in nearly all pipelines!
+ `instance` object, a trick we use in nearly all pipelines!
 
-    By passing an 'instance', we are telling __PyAutoLens__ that we want it to pass the maximum log likelihood result of
-    that phase and use those parameters as fixed values in the model. The model parameters passed as an 'instance' are
+    By passing an `instance`, we are telling **PyAutoLens** that we want it to pass the maximum log likelihood result of
+    that phase and use those parameters as fixed values in the model. The model parameters passed as an `instance` are
     not free parameters fitted for by the non-linear search, thus this reduces the dimensionality of the non-linear 
     search making model-fitting faster and more reliable. 
      
@@ -100,7 +99,7 @@ def make_pipeline(setup, settings):
 
     phase2 = al.PhaseImaging(
         phase_name="phase_2__mass_sie__source_sersic",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -116,15 +115,15 @@ def make_pipeline(setup, settings):
     """
     Phase 3: Fit simultaneously the lens and source galaxies, where we:
 
-        1) Set the lens's light, mass, and source's light using the results of phases 1 and 2.
+        1) Set the lens`s light, mass, and source`s light using the results of phases 1 and 2.
         
-    As in chapter 2, we can use the 'model' attribute to do this. Our _Dynesty_ search now uses slower and more 
+    As in chapter 2, we can use the `model` attribute to do this. Our `Dynesty` search now uses slower and more 
     thorough settings than the previous phases, to ensure we robustly quantify the errors.
     """
 
     phase3 = al.PhaseImaging(
         phase_name="phase_3__light_sersic__mass_sie__source_sersic",
-        folders=setup.folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,

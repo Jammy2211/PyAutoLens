@@ -2,6 +2,7 @@ from autoarray import preprocess
 from autoarray import Mask2D
 from autoarray.dataset.imaging import Imaging
 from autoarray.dataset.interferometer import Interferometer
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
 from autoarray.inversion import pixelizations as pix, regularization as reg
 from autoarray.inversion.pixelizations import SettingsPixelization
@@ -80,5 +81,4 @@ from .pipeline.phase.interferometer.phase import PhaseInterferometer
 from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 
-
-__version__ = "1.5.13"
+__version__ = "1.6.3"

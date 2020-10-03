@@ -149,30 +149,6 @@ class TestMakeAnalysis:
         assert instance.galaxies[1].redshift == 0.2
         assert instance.hyper_background_noise.noise_scale == 0.3
 
-    def test__log_likelihood_cap(self, interferometer_7, mask_7x7):
-        lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
-        )
-
-        phase_imaging_7x7 = al.PhaseInterferometer(
-            galaxies=dict(lens=lens_galaxy),
-            settings=al.SettingsPhaseInterferometer(
-                settings_masked_interferometer=al.SettingsMaskedInterferometer(
-                    sub_size=1
-                ),
-                log_likelihood_cap=100.0,
-            ),
-            search=mock.MockSearch("test_phase", ),
-            real_space_mask=mask_7x7,
-        )
-
-        analysis = phase_imaging_7x7.make_analysis(
-            dataset=interferometer_7, mask=mask_7x7, results=mock.MockResults()
-        )
-
-        assert analysis.log_likelihood_cap == 100.0
-
-
 class TestHyperMethods:
     def test__phase_is_extended_with_hyper_phases__sets_up_hyper_images(
             self, interferometer_7, mask_7x7

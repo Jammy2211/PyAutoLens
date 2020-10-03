@@ -1,7 +1,6 @@
 Fancy:
 
     - sanity checks (PSF size, pixel scale > 0).
-    - Welcome.py
     - Print HPC MODE ON if on.
 
 Positions:
@@ -22,7 +21,7 @@ Model Fitting:
 
 Features:
 
-    - Stochastic mode
+    - Stochastic mode, clean up with feature on github.
     - PyLops.
     - Sanity checks on priors, e.g. intensity and effective radius, size of PSF up to 21x21.
     - Self calibration.
@@ -36,9 +35,8 @@ Readthedocs:
 
     - Data description in General section.
     - Advanced: - Pipelines, Aggregator, hyper mode, SLaM.
-    - nbsphinx for notebooks + make API docs work.
     - Guide to model customization API.
-    - Mask / PSF issue when loading data (auto pad image).
+    - Mask2D / PSF issue when loading data (auto pad image).
 
 Workspace:
 
@@ -53,8 +51,6 @@ Optimization:
 
 Refactor:
 
-    - Move some of MaskedDataset options to a FitOptions class.
-    - Unit tests for FitGalaxy Visualizer + Galaxy fitting in general.
     - Homogenize all units of autolens internally, removing types and documenting units with al.convert.
 
 Bugs:

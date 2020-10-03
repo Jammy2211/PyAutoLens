@@ -10,9 +10,7 @@ class TestTags:
         settings = al.SettingsLens(positions_threshold=None)
         assert settings.positions_threshold_tag == "pos_off"
         settings = al.SettingsLens(positions_threshold=1.0)
-        assert settings.positions_threshold_tag == "pos_1.00"
-        settings = al.SettingsLens(positions_threshold=2.56)
-        assert settings.positions_threshold_tag == "pos_2.56"
+        assert settings.positions_threshold_tag == "pos_on"
 
     def test__tag(self):
 
@@ -21,7 +19,7 @@ class TestTags:
             auto_positions_factor=2.56,
             auto_positions_minimum_threshold=0.5,
         )
-        assert settings.tag == "lens[pos_1.00]"
+        assert settings.tag == "lens[pos_on]"
 
 
 class TestCheckPositionsTrace:

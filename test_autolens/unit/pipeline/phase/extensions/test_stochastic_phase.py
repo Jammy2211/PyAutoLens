@@ -15,7 +15,7 @@ class MockPhase:
     def __init__(self):
         self.phase_name = "phase_name"
         self.paths = autofit.non_linear.paths.Paths(
-            name=self.phase_name, path_prefix="phase_path", folders=("",), tag=""
+            name=self.phase_name, path_prefix="phase_path", tag=""
         )
         self.search = mock.MockSearch(paths=self.paths)
         self.model = af.ModelMapper()
