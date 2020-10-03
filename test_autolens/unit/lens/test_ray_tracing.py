@@ -2607,8 +2607,8 @@ class TestAbstractTracerLensing:
     class TestContributionMap:
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
 
-            hyper_model_image = al.Array.manual_2d([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = al.Array.manual_2d([[1.0, 5.0, 8.0]])
+            hyper_model_image = al.Array.manual_2d(array=[[2.0, 4.0, 10.0]], pixel_scales=1.0)
+            hyper_galaxy_image = al.Array.manual_2d(array=[[1.0, 5.0, 8.0]], pixel_scales=1.0)
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
@@ -3261,7 +3261,7 @@ class TestAbstractTracerData:
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
                     value=1,
-                    grid=al.Grid.manual_2d([[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)),
+                    grid=al.Grid.manual_2d(grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -3291,7 +3291,7 @@ class TestAbstractTracerData:
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
                     value=1,
-                    grid=al.Grid.manual_2d([[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)),
+                    grid=al.Grid.manual_2d(grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -3313,7 +3313,7 @@ class TestAbstractTracerData:
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
                     value=1,
-                    grid=al.Grid.manual_2d([[[1.0, 1.0]]], pixel_scales=(1.0, 1.0)),
+                    grid=al.Grid.manual_2d(grid=[[[1.0, 1.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -3322,7 +3322,7 @@ class TestAbstractTracerData:
                 redshift=2.0,
                 pixelization=mock_inv.MockPixelization(
                     value=1,
-                    grid=al.Grid.manual_2d([[[2.0, 2.0]]], pixel_scales=(1.0, 1.0)),
+                    grid=al.Grid.manual_2d(grid=[[[2.0, 2.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -3499,10 +3499,10 @@ class TestAbstractTracerData:
     class TestHyperNoiseMap:
         def test__hyper_noise_maps_of_planes(self, sub_grid_7x7):
 
-            noise_map_1d = al.Array.manual_2d([[5.0, 3.0, 1.0]])
+            noise_map_1d = al.Array.manual_2d(array=[[5.0, 3.0, 1.0]], pixel_scales=1.0)
 
-            hyper_model_image = al.Array.manual_2d([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = al.Array.manual_2d([[1.0, 5.0, 8.0]])
+            hyper_model_image = al.Array.manual_2d(array=[[2.0, 4.0, 10.0]], pixel_scales=1.0)
+            hyper_galaxy_image = al.Array.manual_2d(array=[[1.0, 5.0, 8.0]], pixel_scales=1.0)
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
