@@ -1,7 +1,5 @@
 import autofit as af
 
-from test_autogalaxy.mock import MockSearch, MockSamples
-
 
 class MockResult(af.MockResult):
     def __init__(
