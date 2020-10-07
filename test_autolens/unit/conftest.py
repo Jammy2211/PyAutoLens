@@ -75,19 +75,9 @@ def make_masked_interferometer_7_grid(
     )
 
 
-@pytest.fixture(name="plane_7x7")
-def make_plane_7x7(gal_x1_lp_x1_mp):
-    return al.Plane(galaxies=[gal_x1_lp_x1_mp])
-
-
 @pytest.fixture(name="gal_x1_mp")
 def make_gal_x1_mp():
     return mock.make_gal_x1_mp()
-
-
-@pytest.fixture(name="phase_imaging_7x7")
-def make_phase_imaging_7x7():
-    return mock.make_phase_imaging_7x7()
 
 
 @pytest.fixture(name="imaging_7x7")
@@ -133,11 +123,6 @@ def make_positions_7x7():
 @pytest.fixture(name="transformer_7x7_7")
 def make_transformer_7x7_7():
     return mock.make_transformer_7x7_7()
-
-
-@pytest.fixture(name="blurring_grid_7x7")
-def make_blurring_grid_7x7():
-    return mock.make_blurring_grid_7x7()
 
 
 # Ray Tracing #
@@ -238,21 +223,6 @@ def make_masked_interferometer_fit_x2_plane_inversion_7x7(
     )
 
 
-@pytest.fixture(name="mask_7x7_1_pix")
-def make_mask_7x7_1_pix():
-    return mock.make_mask_7x7_1_pix()
-
-
-@pytest.fixture(name="phase_dataset_7x7")
-def make_phase_data(mask_7x7):
-    return al.PhaseDataset(search=mock.MockSearch("test_phase", ))
-
-
-@pytest.fixture(name="phase_imaging_7x7")
-def make_phase_imaging_7x7():
-    return al.PhaseImaging(search=mock.MockSearch("test_phase", ))
-
-
 @pytest.fixture(name="phase_interferometer_7")
 def make_phase_interferometer_7(mask_7x7):
     return al.PhaseInterferometer(
@@ -283,11 +253,6 @@ def make_visibilities_7():
 @pytest.fixture(name="noise_map_7x2")
 def make_noise_map_7():
     return aa.mock.make_noise_map_7()
-
-
-@pytest.fixture(name="uv_wavelengths_7x2")
-def make_uv_wavelengths_7():
-    return aa.mock.make_uv_wavelengths_7()
 
 
 @pytest.fixture(name="blurring_grid_7x7")
