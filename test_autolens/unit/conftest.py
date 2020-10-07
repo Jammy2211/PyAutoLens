@@ -243,3 +243,46 @@ def make_psf_3x3():
 @pytest.fixture(name="convolver_7x7")
 def make_convolver_7x7():
     return mock.make_convolver_7x7()
+
+
+@pytest.fixture(name="visibilities_7x2")
+def make_visibilities_7():
+    return aa.mock.make_visibilities_7()
+
+
+@pytest.fixture(name="noise_map_7x2")
+def make_noise_map_7():
+    return aa.mock.make_noise_map_7()
+
+
+@pytest.fixture(name="uv_wavelengths_7x2")
+def make_uv_wavelengths_7():
+    return aa.mock.make_uv_wavelengths_7()
+
+
+@pytest.fixture(name="blurring_grid_7x7")
+def make_blurring_grid_7x7(blurring_mask_7x7):
+    return aa.Grid.from_mask(mask=blurring_mask_7x7)
+
+
+@pytest.fixture(name="blurring_mask_7x7")
+def make_blurring_mask_7x7():
+    return aa.mock.make_blurring_mask_7x7()
+
+
+@pytest.fixture(name="grid_7x7")
+def make_grid_7x7():
+    return aa.Grid.from_mask(mask=make_mask_7x7())
+
+
+@pytest.fixture(name="hyper_galaxy_image_0_7x7")
+def make_hyper_galaxy_image_0_7x7():
+    return mock.make_hyper_galaxy_image_0_7x7()
+
+@pytest.fixture(name="hyper_model_image_7x7")
+def make_hyper_model_image_7x7():
+    return mock.make_hyper_model_image_7x7()
+
+@pytest.fixture(name="image_7x7")
+def make_image_7x7():
+    return mock.make_image_7x7()
