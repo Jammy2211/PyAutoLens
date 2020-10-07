@@ -240,6 +240,16 @@ def make_psf_3x3():
     return mock.make_psf_3x3()
 
 
+@pytest.fixture(name="phase_imaging_7x7")
+def make_phase_imaging_7x7():
+    return mock.make_phase_imaging_7x7()
+
+
+@pytest.fixture(name="mask_7x7_1_pix")
+def make_mask_7x7_1_pix():
+    return mock.make_mask_7x7_1_pix()
+
+
 @pytest.fixture(name="convolver_7x7")
 def make_convolver_7x7():
     return mock.make_convolver_7x7()
