@@ -2,8 +2,8 @@ Congratulations, you've completed the second chapter of the **PyAutoLens** tutor
 
 In this chapter, you learnt:
 
-1) What a non-linear search is.
-2) How to use a non-linear search to sample the parametric space of a lens model.
+1) What a `NonLinearSearch` is.
+2) How to use a `NonLinearSearch` to sample the parametric space of a lens model.
 3) How the priors we give parameters specify our search of this parameter space.
 4) How one must carefully balance complexity and realism when fitting a model to a data-set.
 5) The importance of factoring in run-speed when modeling a lens, and tricks to speed up the analysis.

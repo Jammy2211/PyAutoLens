@@ -126,7 +126,7 @@ bigger masks would *always* be better, for two reasons:
  log likelihood.
 
 As you use **PyAutoLens** more you will get a feel for how fast an analysis will run given a certain image resolution, 
-lens model complexity, non-linear search priors / setup, etc. As you develop this intuition, I would recommend you 
+lens model complexity, `NonLinearSearch` priors / setup, etc. As you develop this intuition, I would recommend you 
 always aim to use masks as big as possible which still give a reasonable run-speed. Aggressive masking will get your 
 code running fast - but it could lead you to infer an incorrect lens model!
 
@@ -141,7 +141,7 @@ We can also manually specify a set of image-pixels correspondin to the multiple 
 During the analysis, **PyAutoLens** will first check that these pixels trace within a specified arc-second threshold of 
 one another (which is controlled by the `position_threshold` parameter input into a phase). This provides two benefits:
 
- 1) The analysis runs faster as the non-linear search avoids searching regions of parameter space where the 
+ 1) The analysis runs faster as the `NonLinearSearch` avoids searching regions of parameter space where the 
  mass-model is clearly not accurate.
     
  2) By removing these solutions, a global-maximum solution may be reached instead of a local-maxima. This is 

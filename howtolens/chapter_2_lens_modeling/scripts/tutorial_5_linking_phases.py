@@ -3,7 +3,7 @@
 Tutorial 5: Linking Phases
 ==========================
 
-So, we've learnt that if our parameter space is too complex, our non-linear search might fail to find the global
+So, we've learnt that if our parameter space is too complex, our `NonLinearSearch` might fail to find the global
 maximum solution. However, we also learnt how to ensure this doesn`t happen, by:
 
  1) Tuning our priors to the strong lens we`re fitting.
@@ -20,7 +20,7 @@ model inferred in the first phase to the priors of the second phase`s lens model
 
 Our first phase will make the same light-traces-mass assumption we made in the previous tutorial. We saw that this
 gives a reasonable lens model. However, we'll make a couple of extra simplifying assumptions, to really try and bring
-our lens model complexity down and get the non-linear search running fast.
+our lens model complexity down and get the `NonLinearSearch` running fast.
 
 The model we infer above will therefore be a lot less realistic. But it doesn`t matter, because in the second phase
 we`re going to relax these assumptions and get back our more realistic lens model. The beauty is that, by running the
@@ -194,7 +194,7 @@ And indeed, we get a reasonably good model and fit to the data - in a much short
 Now all we need to do is look at the results of phase 1 and tune our priors in phase 2 to those result. Lets setup 
 a custom phase that does exactly that.
 
-GaussianPriors are a nice way to do this. They tell the non-linear search where to look, but leave open the 
+GaussianPriors are a nice way to do this. They tell the `NonLinearSearch` where to look, but leave open the 
 possibility that there might be a better solution nearby. In contrast, UniformPriors put hard limits on what values a 
 parameter can or can`t take. It makes it more likely we'll accidently cut-out the global maxima solution.
 """
@@ -451,7 +451,7 @@ By invoking the `model` attribute, the prioris passed following 3 rules:
        
  Unfortunately, this doesn`t always work. Lens modeling is prone to an effect called `over-fitting` where we 
  underestimate the errors on our lens model parameters. This is especially true when we take the shortcuts in 
- early phases - fast non-linear search settings, simplified lens models, etc.
+ early phases - fast `NonLinearSearch` settings, simplified lens models, etc.
     
  Therefore, the `width_modifier` in the json config files are our fallback. If the error on a parameter is 
  suspiciously small, we instead use the value specified in the widths file. These values are chosen based on 
@@ -480,7 +480,7 @@ The intensity of an image depends on its unit_label, S/N, galaxy brightness, etc
 that one can use to generically link the intensity of any two proflies. Thus, it makes more sense to link them using 
 the relative value from a previous phase.
 
-We can customize how priors are passed from the results of a phase and non-linear search by inputting to the search 
+We can customize how priors are passed from the results of a phase and `NonLinearSearch` by inputting to the search 
 a PriorPasser object:
 """
 

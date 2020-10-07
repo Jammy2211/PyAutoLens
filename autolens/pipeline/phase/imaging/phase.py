@@ -75,7 +75,7 @@ class PhaseImaging(dataset.PhaseDataset):
         Returns
         -------
         lens : Analysis
-            An lens object that the non-linear search calls to determine the fit of a set of values
+            An lens object that the `NonLinearSearch` calls to determine the fit of a set of values
         """
 
         masked_imaging = imaging.MaskedImaging(

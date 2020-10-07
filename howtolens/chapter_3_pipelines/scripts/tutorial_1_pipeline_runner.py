@@ -6,7 +6,7 @@ Tutorial 1: Lens and Source
 ===========================
 
 As discussed in chapter 2, an effective strategy for modeling strong lenses is to break the model-fitting procedure
-down into a series of phases, linking the results of the phases to guide the non-linear search as to where to
+down into a series of phases, linking the results of the phases to guide the `NonLinearSearch` as to where to
 sample parameter space. In this chapter, we'll cover `Pipeline`'s, which provide a powerful means by which to
 link together many phases.
 
@@ -28,7 +28,7 @@ in this tutorial, using a pipeline composed of a modest 3 phases:
  2) Fit the source-`Galaxy`'s light (and therefore lens `Galaxy`'s mass), ignoring the len`s light.
  3) Fit both simultaneously, using these results to initialize our starting location in parameter space.
 
-Of course, given that we do not care for the errors in phases 1 and 2, we will set up our non-linear search to perform
+Of course, given that we do not care for the errors in phases 1 and 2, we will set up our `NonLinearSearch` to perform
 sampling as fast as possible!
 """
 

@@ -11,7 +11,7 @@ the autofit_workspace and run them from there (where these comments are removed)
 The chapter contains the following tutorials:
 
 `Tutorial 1: <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_2_lens_modeling/tutorial_1_non_linear_search.html>`_
-- How a non-linear search is used to fit a lens model.
+- How a `NonLinearSearch` is used to fit a lens model.
 
 `Tutorial 2: Parameter Space And Priors <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_2_lens_modeling/tutorial_2_parameter_space_and_priors.html>`_
 - The Concepts of a parameter space and priors.

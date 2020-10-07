@@ -3,7 +3,7 @@
 Tutorial 6: Alternative Searches
 ================================
 
-Up to now, we've always used the non-linear search Dynesty and not considered the input parameters that control its
+Up to now, we've always used the `NonLinearSearch` Dynesty and not considered the input parameters that control its
 sampling. In this tutorial, we'll consider how we can change these setting to balance finding the global maxima
 solution with fast run time, as well as other types of non-linear searches we can use to perform lens modeling.
 """
@@ -110,12 +110,12 @@ evidence_tolerance : float
 
 Lets perform two fits, where:
 
- - One has many live points, a low sampling efficiency and evidence tolerance, causing the non-linear search to
+ - One has many live points, a low sampling efficiency and evidence tolerance, causing the `NonLinearSearch` to
  take a long time to run (in fact, on my laptop, this run takes > 500000 iterations which translates to > 6 
  hours. So, I`ve commented the run function out to not waste your time, but feel free to uncomment it and run
  the phase to see this for yourself!).
       
- - One has few live points, a high sampling efficiency and evidence tolerance, causing the non-linear search to
+ - One has few live points, a high sampling efficiency and evidence tolerance, causing the `NonLinearSearch` to
  converge and end quicker.
 """
 

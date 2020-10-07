@@ -70,7 +70,7 @@ class PhasePositions(abstract.AbstractPhase):
         Returns
         -------
         lens : Analysis
-            An lens object that the non-linear search calls to determine the fit of a set of values
+            An lens object that the `NonLinearSearch` calls to determine the fit of a set of values
         """
 
         self.output_phase_info()
