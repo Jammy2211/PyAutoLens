@@ -17,12 +17,7 @@ def make_ray_tracing_plotter_setup():
     )
 
 
-@pytest.fixture(autouse=True)
-def set_config_path(request):
-    if dirname(realpath(__file__)) in str(request.module):
-        conf.instance = conf.Config(
-            os.path.join(directory, "files/plotter"), os.path.join(directory, "output")
-        )
+
 
 
 def test__all_individual_plotters(
