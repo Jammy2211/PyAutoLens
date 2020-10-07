@@ -15,18 +15,18 @@ reporting it including:
 * Any details about your Python environment.
 * Detailed steps to reproduce the bug.
 
-### Propose New Non-linear Search or Features
+### Propose New `NonLinearSearch` or Features
 
 The best way to send feedback is to open an issue at
 https://github.com/Jammy2211/PyAutoLens
 with tag *enhancement*.
 
-If you are proposing a new non-linear search or a new feature:
+If you are proposing a new `NonLinearSearch` or a new feature:
 
 * Explain in detail how it should work.
 * Keep the scope as narrow as possible, to make it easier to implement.
 
-### Implement Non-linear Search or Features
+### Implement `NonLinearSearch` or Features
 Look through the Git issues for operator or feature requests.
 Anything tagged with *enhancement* is open to whoever wants to
 implement it.

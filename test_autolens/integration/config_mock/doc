@@ -48,7 +48,7 @@ Subplots:
 
 ### Non-Linear ###
 
-    Customize the default non-linear search setup used by PyAutoLens.
+    Customize the default `NonLinearSearch` setup used by PyAutoLens.
 
 
 ### Label ###

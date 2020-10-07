@@ -11,8 +11,7 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
     grid = al.GridIterate.uniform(shape_2d=(11, 11), pixel_scales=0.2)
 
     psf = al.Kernel.manual_2d(
-        array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]],
-        pixel_scales=0.2,
+        array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]], pixel_scales=0.2
     )
 
     lens_galaxy = al.Galaxy(
@@ -29,7 +28,9 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     simulator = al.SimulatorImaging(
-        exposure_time_map=al.Array.full(fill_value=300.0, shape_2d=grid.shape_2d, pixel_scales=0.2),
+        exposure_time_map=al.Array.full(
+            fill_value=300.0, shape_2d=grid.shape_2d, pixel_scales=0.2
+        ),
         psf=psf,
         background_sky_map=al.Array.zeros(shape_2d=grid.shape_2d, pixel_scales=0.2),
         add_noise=False,
@@ -108,7 +109,9 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     simulator = al.SimulatorImaging(
-        exposure_time_map=al.Array.full(fill_value=300.0, shape_2d=grid.shape_2d, pixel_scales=0.2),
+        exposure_time_map=al.Array.full(
+            fill_value=300.0, shape_2d=grid.shape_2d, pixel_scales=0.2
+        ),
         psf=psf,
         background_sky_map=al.Array.zeros(shape_2d=grid.shape_2d, pixel_scales=0.2),
         add_noise=False,
@@ -184,7 +187,9 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     simulator = al.SimulatorInterferometer(
         uv_wavelengths=np.ones(shape=(7, 2)),
         transformer_class=al.TransformerDFT,
-        exposure_time_map=al.Array.full(fill_value=300.0, shape_2d=grid.shape_2d, pixel_scales=0.2),
+        exposure_time_map=al.Array.full(
+            fill_value=300.0, shape_2d=grid.shape_2d, pixel_scales=0.2
+        ),
         background_sky_map=al.Array.zeros(shape_2d=grid.shape_2d, pixel_scales=0.2),
         noise_if_add_noise_false=1.0,
         noise_sigma=None,

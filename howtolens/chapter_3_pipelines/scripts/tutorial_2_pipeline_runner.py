@@ -7,7 +7,7 @@ Tutorial 2: Two Lens Galaxies
 
 Up to now, all the images we've fitted had one lens galaxy. However, we saw in chapter 1 that our lens plane can
 consist of multiple galaxies which each contribute to the strong lensing. Multi-galaxy systems are challenging to
-model, because they add an extra 5-10 parameters to the non-linear search and, more problematically, the degeneracies
+model, because they add an extra 5-10 parameters to the `NonLinearSearch` and, more problematically, the degeneracies
 between the `MassProfile`'s of the two galaxies can be severe.
 
 However, we can still break their analysis down using a pipeline and give ourselves a shot at getting a good lens

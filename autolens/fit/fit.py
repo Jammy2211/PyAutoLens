@@ -75,7 +75,10 @@ class FitImaging(aa_fit.FitImaging):
             model_image = self.blurred_image + inversion.mapped_reconstructed_image
 
         super().__init__(
-            masked_imaging=masked_imaging, model_image=model_image, inversion=inversion
+            masked_imaging=masked_imaging,
+            model_image=model_image,
+            inversion=inversion,
+            use_mask_in_fit=False,
         )
 
     @property
@@ -215,6 +218,7 @@ class FitInterferometer(aa_fit.FitInterferometer):
             masked_interferometer=masked_interferometer,
             model_visibilities=model_visibilities,
             inversion=inversion,
+            use_mask_in_fit=False,
         )
 
     @property

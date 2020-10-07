@@ -32,12 +32,12 @@ combinations of parameters that gave higher log_likelihood solutions previously.
 provided a good fit to the data, another set with similar values probably will too.
 
 This is called a `non-linear search` and its a fairly common problem faced by scientists. Over the next few tutorials,
-we`re going to really get our heads around the concept of a non-linear search - intuition which will prove crucial to
+we`re going to really get our heads around the concept of a `NonLinearSearch` - intuition which will prove crucial to
 being a successful lens modeler.
 
-We`re going to use a non-linear search algorithm called `Dynesty`. I highly recommend it, and find its great for
+We`re going to use a `NonLinearSearch` called `Dynesty`. I highly recommend it, and find its great for
 lens modeling. However, for now, lets not worry about the details of how Dynesty actually works. Instead, just
-picture that a non-linear search in **PyAutoLens** operates as follows:
+picture that a `NonLinearSearch` in **PyAutoLens** operates as follows:
 
  1) Randomly guess a lens model and use its `LightProfile`'s and `MassProfile`'s to set up a lens galaxy, source galaxy
  and a `Tracer`.
@@ -66,7 +66,7 @@ following two properties:
    to give the path to your autolens_workspace, so the configuration files in the workspace are used (e.g. 
    `/path/to/autolens_workspace/config`). 
 
- - The path to the **PyAutoLens** output folder, which is where the results of the non-linear search are written to 
+ - The path to the **PyAutoLens** output folder, which is where the results of the `NonLinearSearch` are written to 
    on your hard-disk, alongside visualization and other properties of the fit 
    (e.g. `/path/to/autolens_workspace/output/howtolens`)
 
@@ -182,8 +182,8 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 
 # %%
 """
-To fit the galaxy models above via a non-linear search (in this case, Dynesty) we use a `PhaseImaging` object. Phases
-bring together the model, non-linear search and data, in order to perform a model-fit and thus infer a lens model.
+To fit the galaxy models above via a `NonLinearSearch` (in this case, Dynesty) we use a `PhaseImaging` object. Phases
+bring together the model, `NonLinearSearch` and data, in order to perform a model-fit and thus infer a lens model.
 
 (Just like we could give profiles descriptive names, like `light`, `bulge` and `disk`, we can do the exact same 
 thing with the phase`s galaxies. This is good practise - as once we start using complex lens models, you could 
@@ -204,19 +204,19 @@ phase = al.PhaseImaging(
 
 # %%
 """
-To run the phase, we pass it the data we`re going to fit a lens model to and the non-linear search begins!
+To run the phase, we pass it the data we`re going to fit a lens model to and the `NonLinearSearch` begins!
 
-Model fits using a non-linear search can take a long time to run. Whilst the fit in this tutorial should take of order 
+Model fits using a `NonLinearSearch` can take a long time to run. Whilst the fit in this tutorial should take of order 
 ~10 minutes, later tutorials will take upwards of hours! This is fine, afterall lens modeling is an inherently 
 computationally expensive exercise, but does make going through these tutorials problematic.
 
-Furthermore, in a Jupyter notebook, if you run the non-linear search (using the phase.run command below) you won't 
+Furthermore, in a Jupyter notebook, if you run the `NonLinearSearch` (using the phase.run command below) you won't 
 be able to continue the notebook until it has finished. For this reason, we recommend that you run the non-linear
 search in these tutorials not via your Juypter notebook, but instead by running the tutorial script found in the
 `chapter_2_lens_modeling/scripts` folder. This can be run either using the `python3 tutoial_1_non_linear_search.py` 
 command on your command line or via your IDE (if you are using one).
 
-The non-linear search outputs all results to your hard-disk, thus if it runs and finishes in the script, you can then
+The `NonLinearSearch` outputs all results to your hard-disk, thus if it runs and finishes in the script, you can then
 run the Jupyter notebook cell and immediately load the result. This is how we recommend all non-linear searches are 
 performed in **PyAutoLens** and is therefore a good habit to get into. In these tutorials, we have commented the 
 `phase.run` command below in every cell to remind you that you should go to the tutorial script in the 
@@ -259,7 +259,7 @@ you`ll see:
  5) The `output.log` file, where all Python interpreter output is directed.
 
 The best-fit solution (i.e. the maximum log likelihood) is stored in the `results`, which we can plot as per usual 
-(you must wait for the non-linear search to finish before you can get the `results` variable). we'll discuss the 
+(you must wait for the `NonLinearSearch` to finish before you can get the `results` variable). we'll discuss the 
 `results` returned by a phase in detail at the end of the chapter.
 """
 
@@ -275,12 +275,12 @@ confirm this yourself if you want, by comparing the inferred parameters to those
 And with that, we`re done - you`ve successfully modeled your first strong lens with **PyAutoLens**! Before moving onto the 
 next tutorial, I want you to think about the following:
 
- 1) a non-linear search is often said to search a `non-linear parameter-space` - why is the term parameter-space 
+ 1) a `NonLinearSearch` is often said to search a `non-linear parameter-space` - why is the term parameter-space 
  used?
 
  2) Why is this parameter space `non-linear`?
 
- 3) Initially, the non-linear search randomly guesses the values of the parameters. However, it shouldn`t `know` 
+ 3) Initially, the `NonLinearSearch` randomly guesses the values of the parameters. However, it shouldn`t `know` 
  what reasonable values for a parameter are. For example, it doesn`t know that a reasonable Einstein radius is 
  between 0.0" and 4.0"). How does it know what are reasonable values of parameters to guess?
 """

@@ -47,10 +47,10 @@ A description of the general.ini config.
         user and the large number of files output by PyAutoLens can exceed this limit. By removing files the
         number of files is restricted only to the .zip files.
     skip_completed -> bool
-        If True, and if the results of a non-linear search were completed in a previous run, then all processing steps
-        performed at the end of the non-linear search (e.g. output of sample results, visualization, etc.) are skipped.
+        If True, and if the results of a `NonLinearSearch` were completed in a previous run, then all processing steps
+        performed at the end of the `NonLinearSearch` (e.g. output of sample results, visualization, etc.) are skipped.
 
-        If False, they are repeated, which can be used for updating visualization or the non-linear search pickles
+        If False, they are repeated, which can be used for updating visualization or the `NonLinearSearch` pickles
         to a new version of PyAutoFit / PyAutoLens.
 
 [numba]
@@ -135,7 +135,7 @@ A description of the general.ini config.
 
     inversion_pixel_limit_overall -> int
 
-        The maximum number of pixels that may be assumed for an inversion during a non-linear search fit.
+        The maximum number of pixels that may be assumed for an inversion during a `NonLinearSearch` fit.
 
 [hyper]
 
