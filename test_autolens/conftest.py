@@ -1,17 +1,23 @@
-import os
+from os import path
+from os.path import dirname, realpath
 
-from autoconf import conf
 import pytest
 from matplotlib import pyplot
 
+from autofit import conf
 
-@pytest.fixture(name="general_config", autouse=True)
-def make_general_config():
-    directory = os.path.dirname(os.path.realpath(__file__))
-    config_path = f"{directory}/integration/config"
-    plotting_config_path = f"{config_path}/plotting/"
-    conf.instance.general = conf.NamedConfig(plotting_config_path + "general.ini")
-    conf.instance.config_path = config_path
+directory = dirname(realpath(__file__))
+
+
+@pytest.fixture(
+    name="config",
+    autouse=True
+)
+def set_config_path():
+    conf.instance = conf.Config(
+        path.join(directory, "config"), path.join(directory, "pipeline/output")
+    )
+    return conf.instance
 
 
 class PlotPatch:

@@ -18,10 +18,8 @@ class PhaseImaging(dataset.PhaseDataset):
     Analysis = Analysis
     Result = Result
 
-    @af.convert_paths
     def __init__(
         self,
-        paths,
         *,
         search,
         galaxies=None,
@@ -45,7 +43,6 @@ class PhaseImaging(dataset.PhaseDataset):
         """
 
         super().__init__(
-            paths,
             search=search,
             settings=settings,
             galaxies=galaxies,

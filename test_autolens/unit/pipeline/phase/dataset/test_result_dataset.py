@@ -3,7 +3,7 @@ from os import path
 import autolens as al
 import numpy as np
 import pytest
-from test_autolens import mock
+from autolens import mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -20,9 +20,8 @@ class TestResult:
     ):
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
-            search=mock.MockSearch(samples=samples_with_result),
+                        galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
+            search=mock.MockSearch("test_phase", samples=samples_with_result),
             settings=al.SettingsPhaseImaging(
                 settings_masked_imaging=al.SettingsMaskedImaging(sub_size=2)
             ),
@@ -39,7 +38,7 @@ class TestResult:
     ):
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase", search=mock.MockSearch(samples=samples_with_result)
+             search=mock.MockSearch("test_phase", samples=samples_with_result)
         )
 
         result = phase_imaging_7x7.run(
@@ -49,9 +48,8 @@ class TestResult:
         assert result.positions == None
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
-            search=mock.MockSearch(samples=samples_with_result),
+                        galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
+            search=mock.MockSearch("test_phase", samples=samples_with_result),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(positions_threshold=1.0)
             ),
@@ -80,9 +78,8 @@ class TestResult:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            settings=al.SettingsPhaseImaging(),
-            search=mock.MockSearch(samples=samples),
+                        settings=al.SettingsPhaseImaging(),
+            search=mock.MockSearch("test_phase", samples=samples),
         )
 
         result = phase_imaging_7x7.run(
@@ -106,9 +103,8 @@ class TestResult:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            settings=al.SettingsPhaseImaging(),
-            search=mock.MockSearch(samples=samples),
+                        settings=al.SettingsPhaseImaging(),
+            search=mock.MockSearch("test_phase", samples=samples),
         )
 
         result = phase_imaging_7x7.run(
@@ -128,9 +124,8 @@ class TestResult:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2",
-            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
-            search=mock.MockSearch(samples=samples),
+                        galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
+            search=mock.MockSearch("test_phase_2", samples=samples),
         )
 
         result = phase_imaging_7x7.run(
@@ -153,10 +148,9 @@ class TestResult:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2",
-            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
+                        galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
             settings=al.SettingsPhaseImaging(),
-            search=mock.MockSearch(samples=samples),
+            search=mock.MockSearch("test_phase_2", samples=samples),
         )
 
         result = phase_imaging_7x7.run(
