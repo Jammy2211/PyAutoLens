@@ -2,7 +2,7 @@ import autofit as af
 import autofit.non_linear.paths
 import autolens as al
 import pytest
-from test_autolens import mock
+from autolens import mock
 
 
 class MockMetaDataset:

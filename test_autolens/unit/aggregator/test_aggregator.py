@@ -4,10 +4,7 @@ from os import path
 import autofit as af
 import autolens as al
 import pytest
-from test_autolens import mock
-
-import numpy as np
-import pickle
+from autolens import mock
 
 directory = path.dirname(path.realpath(__file__))
 

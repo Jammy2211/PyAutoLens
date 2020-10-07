@@ -4,7 +4,7 @@ import pytest
 
 import autoarray as aa
 import autolens as al
-from test_autolens import mock
+from autolens import mock
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -49,7 +49,17 @@ def make_plane_7x7(gal_x1_lp_x1_mp):
     return al.Plane(galaxies=[gal_x1_lp_x1_mp])
 
 
+@pytest.fixture(name="gal_x1_mp")
+def make_gal_x1_mp():
+    return mock.make_gal_x1_mp()
+
+
 # Ray Tracing #
+
+
+@pytest.fixture(name="sub_grid_7x7_simple")
+def make_sub_grid_7x7_simple():
+    return mock.make_sub_grid_7x7_simple()
 
 
 @pytest.fixture(name="tracer_x1_plane_7x7")
