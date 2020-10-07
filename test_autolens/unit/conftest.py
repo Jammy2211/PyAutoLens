@@ -6,6 +6,7 @@ import pytest
 import autoarray as aa
 import autolens as al
 from autoarray import MaskedInterferometer, SettingsMaskedInterferometer, TransformerNUFFT
+from autoconf import conf
 from autolens import mock
 
 directory = path.dirname(path.realpath(__file__))
@@ -16,6 +17,17 @@ directory = path.dirname(path.realpath(__file__))
 ############
 
 # Lens Datasets #
+
+
+@pytest.fixture(
+    name="config",
+    autouse=True
+)
+def set_config_path():
+    conf.instance = conf.Config(
+        path.join(directory, "../config"), path.join(directory, "../pipeline/output")
+    )
+    return conf.instance
 
 
 @pytest.fixture(name="masked_imaging_7x7")
