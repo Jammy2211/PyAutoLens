@@ -1,23 +1,12 @@
 from os import path
-from os.path import dirname, realpath
 
-import numpy as np
 import pytest
 
 import autoarray as aa
 import autolens as al
-from autoconf import conf
 from test_autolens import mock
 
 directory = path.dirname(path.realpath(__file__))
-
-
-@pytest.fixture(autouse=True)
-def set_config_path(request):
-    if dirname(realpath(__file__)) in str(request.module):
-        conf.instance = conf.Config(
-            path.join(directory, "config"), path.join(directory, "pipeline/output")
-        )
 
 
 ############
@@ -37,13 +26,8 @@ def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
 
 
 @pytest.fixture(name="masked_interferometer_7")
-def make_masked_interferometer_7(interferometer_7, mask_7x7, visibilities_mask_7x2):
-    return al.MaskedInterferometer(
-        interferometer=interferometer_7,
-        visibilities_mask=visibilities_mask_7x2,
-        real_space_mask=mask_7x7,
-        settings=al.SettingsMaskedInterferometer(transformer_class=aa.TransformerNUFFT),
-    )
+def make_masked_interferometer_7():
+    return aa.mock.make_masked_interferometer_7()
 
 
 @pytest.fixture(name="masked_interferometer_7_grid")
@@ -58,9 +42,6 @@ def make_masked_interferometer_7_grid(
             grid_class=aa.Grid, sub_size=1, transformer_class=aa.TransformerDFT
         ),
     )
-
-
-# Plane #
 
 
 @pytest.fixture(name="plane_7x7")
@@ -136,6 +117,11 @@ def make_masked_interferometer_fit_x2_plane_7x7(
     )
 
 
+@pytest.fixture(name="sub_grid_7x7")
+def make_sub_grid_7x7():
+    return aa.mock.make_sub_grid_7x7()
+
+
 @pytest.fixture(name="masked_interferometer_fit_x2_plane_inversion_7x7")
 def make_masked_interferometer_fit_x2_plane_inversion_7x7(
         masked_interferometer_7, tracer_x2_plane_inversion_7x7
@@ -148,21 +134,7 @@ def make_masked_interferometer_fit_x2_plane_inversion_7x7(
 
 @pytest.fixture(name="mask_7x7_1_pix")
 def make_mask_7x7_1_pix():
-    # noinspection PyUnusedLocal
-
-    array = np.array(
-        [
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, False, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-        ]
-    )
-
-    return aa.Mask2D.manual(mask=array, pixel_scales=1.0)
+    return aa.mock.make_mask_7x7_1_pix()
 
 
 @pytest.fixture(name="phase_dataset_7x7")
