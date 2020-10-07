@@ -27,7 +27,7 @@ def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
 
 @pytest.fixture(name="masked_interferometer_7")
 def make_masked_interferometer_7():
-    return aa.mock.make_masked_interferometer_7()
+    return mock.make_masked_interferometer_7()
 
 
 @pytest.fixture(name="masked_interferometer_7_grid")
@@ -61,12 +61,12 @@ def make_phase_imaging_7x7():
 
 @pytest.fixture(name="imaging_7x7")
 def make_imaging_7x7():
-    return aa.mock.make_imaging_7x7()
+    return mock.make_imaging_7x7()
 
 
 @pytest.fixture(name="sub_mask_7x7")
 def make_sub_mask_7x7():
-    return aa.mock.make_sub_mask_7x7()
+    return mock.make_sub_mask_7x7()
 
 
 @pytest.fixture(name="lp_0")
@@ -91,7 +91,22 @@ def make_masked_interferometer_fit_x1_plane_7(masked_interferometer_7):
 
 @pytest.fixture(name="mask_7x7")
 def make_mask_7x7():
-    return aa.mock.make_mask_7x7()
+    return mock.make_mask_7x7()
+
+
+@pytest.fixture(name="positions_7x7")
+def make_positions_7x7():
+    return mock.make_positions_7x7()
+
+
+@pytest.fixture(name="transformer_7x7_7")
+def make_transformer_7x7_7():
+    return mock.make_transformer_7x7_7()
+
+
+@pytest.fixture(name="blurring_grid_7x7")
+def make_blurring_grid_7x7():
+    return mock.make_blurring_grid_7x7()
 
 
 # Ray Tracing #
@@ -169,7 +184,7 @@ def make_masked_interferometer_fit_x2_plane_7x7(
 
 @pytest.fixture(name="sub_grid_7x7")
 def make_sub_grid_7x7():
-    return aa.mock.make_sub_grid_7x7()
+    return mock.make_sub_grid_7x7()
 
 
 @pytest.fixture(name="masked_interferometer_fit_x2_plane_inversion_7x7")
@@ -184,7 +199,7 @@ def make_masked_interferometer_fit_x2_plane_inversion_7x7(
 
 @pytest.fixture(name="mask_7x7_1_pix")
 def make_mask_7x7_1_pix():
-    return aa.mock.make_mask_7x7_1_pix()
+    return mock.make_mask_7x7_1_pix()
 
 
 @pytest.fixture(name="phase_dataset_7x7")
@@ -202,3 +217,18 @@ def make_phase_interferometer_7(mask_7x7):
     return al.PhaseInterferometer(
         search=mock.MockSearch("test_phase", ), real_space_mask=mask_7x7
     )
+
+
+@pytest.fixture(name="grid_iterate_7x7")
+def make_grid_iterate_7x7():
+    return mock.make_grid_iterate_7x7()
+
+
+@pytest.fixture(name="psf_3x3")
+def make_psf_3x3():
+    return mock.make_psf_3x3()
+
+
+@pytest.fixture(name="convolver_7x7")
+def make_convolver_7x7():
+    return mock.make_convolver_7x7()
