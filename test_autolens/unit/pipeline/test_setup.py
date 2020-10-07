@@ -61,6 +61,16 @@ class TestSetupMass:
         assert setup.no_shear_tag == "__no_shear"
 
 
+class TestSetupSource:
+    def test__tag_ang_type(self):
+
+        setup = al.SetupSource()
+
+        assert setup.model_type == "sersic"
+        assert setup.tag == "source[sersic]"
+
+
+
 class TestSetupSubhalo:
     def test__mass_is_model_tag(self):
 
@@ -156,7 +166,7 @@ class TestSetupPipeline:
             pixelization=al.pix.Rectangular, regularization=al.reg.Constant
         )
 
-        setup_light = al.SetupLightBulgeDisk(light_centre=(1.0, 2.0))
+        setup_light = al.SetupLight(light_centre=(1.0, 2.0))
 
         setup_mass = al.SetupMassLightDark(mass_centre=(3.0, 4.0), no_shear=True)
 

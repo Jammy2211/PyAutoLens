@@ -16,9 +16,9 @@ class AbstractSLaMPipeline:
 class SLaMPipelineSourceParametric(AbstractSLaMPipeline):
     def __init__(
         self,
-        setup_light: setup.SetupLightBulgeDisk = setup.SetupLightBulgeDisk(),
+        setup_light: setup.SetupLight = setup.SetupLight(),
         setup_mass: setup.SetupMassTotal = setup.SetupMassTotal(),
-        setup_source: ag_setup.SetupSourceSersic = ag_setup.SetupSourceSersic(),
+        setup_source: ag_setup.SetupSource = ag_setup.SetupSource(),
     ):
 
         super().__init__(
@@ -36,7 +36,7 @@ class SLaMPipelineSourceInversion(AbstractSLaMPipeline):
 
 class SLaMPipelineLight(AbstractSLaMPipeline):
     def __init__(
-        self, setup_light: setup.SetupLightBulgeDisk = setup.SetupLightBulgeDisk()
+        self, setup_light: setup.SetupLight = setup.SetupLight()
     ):
 
         super().__init__(setup_source=None, setup_light=setup_light, setup_mass=None)
@@ -133,8 +133,8 @@ class SLaM:
 
         self.pipeline_source_parametric = pipeline_source_parametric
 
-        if self.pipeline_source_parametric.setup_mass.mass_profile is None:
-            self.pipeline_source_parametric.setup_mass.mass_profile = (
+        if self.pipeline_source_parametric.setup_mass.mass_prior_model is None:
+            self.pipeline_source_parametric.setup_mass.mass_prior_model = (
                 ag.mp.EllipticalIsothermal
             )
 
@@ -178,7 +178,7 @@ class SLaM:
                     self.pipeline_source_inversion.setup_source
                 )
 
-            if isinstance(self.pipeline_mass.setup_light, ag_setup.SetupLightBulgeDisk):
+            if isinstance(self.pipeline_mass.setup_light, ag_setup.SetupLight):
 
                 self.pipeline_mass.setup_mass.disk_as_sersic = (
                     self.pipeline_mass.setup_light.disk_as_sersic
@@ -601,7 +601,7 @@ class SLaM:
             The `ExternalShear` of the lens galaxy.
         """
 
-        if isinstance(self.pipeline_mass.setup_light, setup.SetupLightBulgeDisk):
+        if isinstance(self.pipeline_mass.setup_light, setup.SetupLight):
 
             return self._lens_from_light_bulge_disk_pipeline_for_mass_pipeline(
                 mass=mass, shear=shear, light_is_model=self.pipeline_mass.light_is_model
@@ -667,10 +667,10 @@ class SLaM:
                 redshift=self.redshift_source,
                 pixelization=af.last[
                     index
-                ].hyper_combined.instance.galaxies.source.pixelization,
+                ].hyper_combined.instance.galaxies.source.pixelization_prior_model,
                 regularization=af.last[
                     index
-                ].hyper_combined.model.galaxies.source.regularization,
+                ].hyper_combined.model.galaxies.source.regularization_prior_model,
             )
 
         else:
@@ -679,10 +679,10 @@ class SLaM:
                 redshift=self.redshift_source,
                 pixelization=af.last[
                     index
-                ].hyper_combined.instance.galaxies.source.pixelization,
+                ].hyper_combined.instance.galaxies.source.pixelization_prior_model,
                 regularization=af.last[
                     index
-                ].hyper_combined.instance.galaxies.source.regularization,
+                ].hyper_combined.instance.galaxies.source.regularization_prior_model,
                 hyper_galaxy=hyper_galaxy,
             )
 
