@@ -13,11 +13,11 @@ appears, with multiple rings and clumps of light:
   :width: 400
   :alt: Alternative text
 
-We are going to fit this image with an _Inversion_, so we first create *Mask* and *MaskedImaging* objects:
+We are going to fit this image with an `Inversion`, so we first create *Mask2D* and *MaskedImaging* objects:
 
 .. code-block:: bash
 
-   mask = al.Mask.circular(
+   mask = al.Mask2D.circular(
       shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.6
     )
 
@@ -36,7 +36,7 @@ Below, we use a *Rectangular* pixelization with resolution 40 x 40 and *Constant
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
-To fit the data, we simply pass this source-galaxy into a *Tracer* (complete with lens galaxy mass model). The
+To fit the data, we simply pass this source-galaxy into a `Tracer` (complete with lens galaxy mass model). The
 *FitImaging* object will automatically use the source galaxy's *Pixelization* and *Regularization* to reconstruct
 the lensed source's light using the _Inversion_:
 
@@ -53,7 +53,7 @@ Here is what our reconstructed source galaxy looks like:
   :alt: Alternative text
 
 Note how the source reconstruction is irregular and has multiple clumps of light - these features would be difficult
-to represent using *LightProfile*'s!
+to represent using `LightProfile`'s!
 
 The source reconstruction can be mapped back to the image-plane, to produce a reconstructed image:
 

@@ -1,31 +1,26 @@
 from autoconf import conf
 from autoarray.inversion import pixelizations as pix
-from autoarray.exc import InversionException, GridException
+from autoarray.exc import PixelizationException, InversionException, GridException
 from autofit.exc import FitException
 from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
 from autolens.fit import fit
 from autolens.pipeline import visualizer
 from autolens.pipeline.phase.dataset import analysis as analysis_dataset
+from autogalaxy.pipeline.phase.imaging.analysis import Attributes as AgAttributes
 
 import copy
 
 
 class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
     def __init__(
-        self,
-        masked_imaging,
-        settings,
-        cosmology,
-        image_path=None,
-        results=None,
-        log_likelihood_cap=None,
+        self, masked_imaging, settings, cosmology, image_path=None, results=None
     ):
 
         super().__init__(
+            masked_dataset=masked_imaging,
             settings=settings,
             cosmology=cosmology,
             results=results,
-            log_likelihood_cap=log_likelihood_cap,
         )
 
         self.visualizer = visualizer.PhaseImagingVisualizer(
@@ -36,8 +31,6 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
             hyper_model_image=self.hyper_model_image,
         )
-
-        self.masked_dataset = masked_imaging
 
     @property
     def masked_imaging(self):
@@ -79,7 +72,12 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             )
 
             return fit.figure_of_merit
-        except (InversionException or GridException or OverflowError) as e:
+        except (
+            PixelizationException,
+            InversionException,
+            GridException,
+            OverflowError,
+        ) as e:
             raise FitException from e
 
     def masked_imaging_fit_for_tracer(
@@ -133,7 +131,12 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                     settings_pixelization=settings_pixelization,
                     settings_inversion=self.settings.settings_inversion,
                 ).log_evidence
-            except (InversionException or GridException) as e:
+            except (
+                PixelizationException,
+                InversionException,
+                GridException,
+                OverflowError,
+            ) as e:
                 log_evidence = None
 
             if log_evidence is not None:
@@ -165,7 +168,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                     preloaded_caustics=tracer.caustics,
                 )
 
-            except Exception or IndexError or ValueError:
+            except (Exception, IndexError, ValueError):
 
                 visualizer = self.visualizer
 
@@ -192,3 +195,24 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                 max_log_evidence=fit.log_evidence,
                 during_analysis=during_analysis,
             )
+
+    def make_attributes(self):
+        return Attributes(
+            cosmology=self.cosmology,
+            positions=self.masked_dataset.positions,
+            hyper_model_image=self.hyper_model_image,
+            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
+        )
+
+
+class Attributes(AgAttributes):
+    def __init__(
+        self, cosmology, positions, hyper_model_image, hyper_galaxy_image_path_dict
+    ):
+        super().__init__(
+            cosmology=cosmology,
+            hyper_model_image=hyper_model_image,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+        )
+
+        self.positions = positions

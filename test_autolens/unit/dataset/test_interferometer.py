@@ -79,7 +79,7 @@ class TestMaskedInterferometer:
 
         visibilities_mask = np.full(fill_value=False, shape=(19,))
 
-        real_space_mask = al.Mask.unmasked(
+        real_space_mask = al.Mask2D.unmasked(
             shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         real_space_mask[9, 9] = False
@@ -135,8 +135,8 @@ class TestSimulatorInterferometer:
 
         simulator = al.SimulatorInterferometer(
             uv_wavelengths=np.ones(shape=(7, 2)),
-            exposure_time_map=al.Array.full(fill_value=10000.0, shape_2d=grid.shape_2d),
-            background_sky_map=al.Array.full(fill_value=100.0, shape_2d=grid.shape_2d),
+            exposure_time_map=al.Array.full(fill_value=10000.0, shape_2d=grid.shape_2d, pixel_scales=0.05),
+            background_sky_map=al.Array.full(fill_value=100.0, shape_2d=grid.shape_2d, pixel_scales=0.05),
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -171,8 +171,8 @@ class TestSimulatorInterferometer:
 
         simulator = al.SimulatorInterferometer(
             uv_wavelengths=np.ones(shape=(7, 2)),
-            exposure_time_map=al.Array.full(fill_value=10000.0, shape_2d=grid.shape_2d),
-            background_sky_map=al.Array.full(fill_value=100.0, shape_2d=grid.shape_2d),
+            exposure_time_map=al.Array.full(fill_value=10000.0, shape_2d=grid.shape_2d, pixel_scales=0.05),
+            background_sky_map=al.Array.full(fill_value=100.0, shape_2d=grid.shape_2d, pixel_scales=0.05),
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -220,8 +220,8 @@ class TestSimulatorInterferometer:
 
         simulator = al.SimulatorInterferometer(
             uv_wavelengths=np.ones(shape=(7, 2)),
-            exposure_time_map=al.Array.full(fill_value=10000.0, shape_2d=grid.shape_2d),
-            background_sky_map=al.Array.full(fill_value=100.0, shape_2d=grid.shape_2d),
+            exposure_time_map=al.Array.full(fill_value=10000.0, shape_2d=grid.shape_2d, pixel_scales=0.05),
+            background_sky_map=al.Array.full(fill_value=100.0, shape_2d=grid.shape_2d, pixel_scales=0.05),
             noise_sigma=0.1,
             noise_seed=1,
         )

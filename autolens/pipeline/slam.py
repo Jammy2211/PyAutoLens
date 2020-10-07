@@ -62,8 +62,8 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
 
         This changes the setup folder as follows:
 
-        light_is_model = False -> setup__
-        light_is_model = True -> setup___light_is_model
+        light_is_model = ``False`` -> setup__
+        light_is_model = ``True`` -> setup___light_is_model
         """
         if not self.light_is_model:
             return ""
@@ -79,11 +79,11 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
             )
 
     def shear_from_previous_pipeline(self, index=0):
-        """Return the shear _PriorModel_ from a previous pipeline, where:
+        """Return the shear `PriorModel` from a previous pipeline, where:
 
-        1) If the shear was included in the *Source* pipeline and *no_shear* is *False* in the *Mass* object, it is
+        1) If the shear was included in the *Source* pipeline and *no_shear* is ``False`` in the *Mass* object, it is
            returned using this pipeline result as a model.
-        2) If the shear was not included in the *Source* pipeline and *no_shear* is *False* in the *Mass* object, it is
+        2) If the shear was not included in the *Source* pipeline and *no_shear* is ``False`` in the *Mass* object, it is
             returned as a new *ExternalShear* PriorModel.
         3) If *no_shear* is *True* in the *Mass* object, it is returned as None and omitted from the lens model.
         """
@@ -99,7 +99,7 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
 class SLaM:
     def __init__(
         self,
-        folders: [str] = None,
+        path_prefix: str = None,
         redshift_lens: float = 0.5,
         redshift_source: float = 1.0,
         setup_hyper: ag_setup.SetupHyper = None,
@@ -113,9 +113,8 @@ class SLaM:
 
         Parameters
         ----------
-        folders : [str] or None
-            A list of folders that the output of the pipeline are output into before the pipeline name, tags and
-            phase folders.
+        path_prefix : str or None
+            The prefix of folders between the output path of the pipeline and the pipeline name, tags and phase folders.
         redshift_lens : float
             The redshift of the lens galaxy used by the pipeline for converting arc-seconds to kpc, masses to solMass,
             etc.
@@ -126,7 +125,7 @@ class SLaM:
             The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
         """
 
-        self.folders = folders
+        self.path_prefix = path_prefix
         self.redshift_lens = redshift_lens
         self.redshift_source = redshift_source
 
@@ -290,8 +289,8 @@ class SLaM:
         )
 
         mass_tag = (
-            f"__{self.pipeline_mass.setup_mass.tag}"
-            if self.pipeline_mass.setup_mass is not None
+            f"__{self.pipeline_light.setup_mass.tag}"
+            if self.pipeline_light.setup_mass is not None
             else ""
         )
 
@@ -503,7 +502,7 @@ class SLaM:
         """Setup the lens model for a Mass pipeline using the previous pipeline and phase results.
 
         The lens light model is not specified by the Mass pipeline, so the Light pipelines are used to
-        determine this. This function returns a _GalaxyModel_ for the lens, where:
+        determine this. This function returns a `GalaxyModel` for the lens, where:
 
         1) The lens light model uses the light model of the Light pipeline.
         2) The lens light is returned as a model if *light_is_model* is *False, an instance if *True*.
@@ -515,7 +514,7 @@ class SLaM:
         mass : ag.MassProfile
             The mass model of the len galaxy.
         shear : ag.ExternalShear
-            The _ExternalShear_ of the lens galaxy.
+            The `ExternalShear` of the lens galaxy.
         """
 
         if not light_is_model:
@@ -544,7 +543,7 @@ class SLaM:
         """Setup the lens model for a Mass pipeline using the previous pipeline and phase results.
 
         The lens light model is not specified by the Mass pipeline, so the Light pipelines are used to
-        determine this. This function returns a _GalaxyModel_ for the lens, where:
+        determine this. This function returns a `GalaxyModel` for the lens, where:
 
         1) The lens light model uses the light model of the Light pipeline.
         2) The lens light is returned as a model if *light_is_model* is *False, an instance if *True*.
@@ -556,7 +555,7 @@ class SLaM:
         mass : ag.MassProfile
             The mass model of the len galaxy.
         shear : ag.ExternalShear
-            The _ExternalShear_ of the lens galaxy.
+            The `ExternalShear` of the lens galaxy.
         """
 
         if not light_is_model:
@@ -587,7 +586,7 @@ class SLaM:
         """Setup the lens model for a Mass pipeline using the previous pipeline and phase results.
 
         The lens light model is not specified by the Mass pipeline, so the Light pipelines are used to
-        determine this. This function returns a _GalaxyModel_ for the lens, where:
+        determine this. This function returns a `GalaxyModel` for the lens, where:
 
         1) The lens light model uses the light model of the Light pipeline.
         2) The lens light is returned as a model if *light_is_model* is *False, an instance if *True*.
@@ -599,7 +598,7 @@ class SLaM:
         mass : ag.MassProfile
             The mass model of the len galaxy.
         shear : ag.ExternalShear
-            The _ExternalShear_ of the lens galaxy.
+            The `ExternalShear` of the lens galaxy.
         """
 
         if isinstance(self.pipeline_mass.setup_light, setup.SetupLightBulgeDisk):
@@ -706,7 +705,7 @@ class SLaM:
         ----------
         source_is_model : bool
             If *True* the source is returned as a *model* where the parameters are fitted for using priors of the
-            phase result it is loaded from. If *False*, it is an instance of that phase's result.
+            phase result it is loaded from. If ``False``, it is an instance of that phase's result.
         index : integer
             The index (counting backwards from this phase) of the phase result used to setup the source.
         """

@@ -6,7 +6,7 @@ Tutorial 6: More Ray Tracing
 In this example, we'll reinforce what we learnt about ray-tracing in the last tutorial and introduce the following
 new concepts:
 
-1) That a _Tracer_ can be given any number of galaxies.
+1) That a `Tracer` can be given any number of galaxies.
 
 2) That by specifying redshifts and a cosmology, our results are converted to physical unit_label of
 kiloparsecs (kpc).
@@ -22,12 +22,12 @@ from astropy import cosmology
 
 # %%
 """
-To begin, lets setup the _Grid_'s we 'll ray-trace using. Lets do something crazy, and use a higher resolution _Grid_ 
-then before and set the sub _Grid_ size to 4x4 per pixel!
+To begin, lets setup the `Grid`'s we `ll ray-trace using. Lets do something crazy, and use a higher resolution `Grid` 
+then before and set the sub `Grid` size to 4x4 per pixel!
 
 Every pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
 
-Lets also stop calling it the 'image_plane_grid', and just remember from now on our 'grid' is in the image-plane.
+Lets also stop calling it the `image_plane_grid`, and just remember from now on our `grid` is in the image-plane.
 """
 
 # %%
@@ -44,15 +44,15 @@ print(grid.sub_shape_1d)
 
 # %%
 """
-Next, lets setup a lens galaxy. In the previous tutorial, we set up each _Profile_ one line at a time. This made code 
+Next, lets setup a lens galaxy. In the previous tutorial, we set up each `Profile` one line at a time. This made code 
 long and cumbersome to read. This time we'll setup easy galaxy using one block of code. 
  
 
-We'll also give the lens galaxy some attributes we didn't in the last tutorial:
+we'll also give the lens galaxy some attributes we didn`t in the last tutorial:
 
- 1) A _LightProfile_, meaning its light will appear in the image.
+ 1) A `LightProfile`, meaning its light will appear in the image.
  2) An external shear, which accounts for the deflection of light due to line-of-sight structures.
- 3) A redshift, which the _Tracer_ will use to convert arc second coordinates to kpc.
+ 3) A redshift, which the `Tracer` will use to convert arc second coordinates to kpc.
 """
 
 # %%
@@ -105,7 +105,7 @@ aplt.Galaxy.image(
 
 # %%
 """
-And their deflection angles - note that the satellite doesn't contribute as much to the deflections.
+And their deflection angles - note that the satellite doesn`t contribute as much to the deflections.
 """
 
 # %%
@@ -132,9 +132,9 @@ aplt.Galaxy.deflections_x(
 
 # %%
 """
-Now, lets make two source galaxies at redshift 1.0. Lets not use the terms 'light' and 'mass' to setup the light and 
-_MassProfile_'s. Instead, lets use more descriptive names of what we think each component represents ( e.g. a 'bulge' 
-and 'disk').
+Now, lets make two source galaxies at redshift 1.0. Lets not use the terms `light` and `mass` to setup the light and 
+`MassProfile`'s. Instead, lets use more descriptive names of what we think each component represents ( e.g. a `bulge` 
+and `disk`).
 """
 
 # %%
@@ -187,9 +187,9 @@ aplt.Galaxy.image(
 """
 Now lets pass our 4 galaxies to the ray_tracing module, which means the following will occur:
 
- 1) Using the galaxy redshift's, and image-plane and source-plane will be created with the appopriate galaxies.
+ 1) Using the galaxy redshift`s, and image-plane and source-plane will be created with the appopriate galaxies.
 
-Note that we've also supplied the _Tracer_ below with a Planck15 cosmology.
+Note that we've also supplied the `Tracer` below with a Planck15 cosmology.
 """
 
 # %%
@@ -200,13 +200,13 @@ tracer = al.Tracer.from_galaxies(
 
 # %%
 """
-We can next plot the tracer's _Profile_ image, which is compute as follows:
+We can next plot the tracer`s `Profile` image, which is compute as follows:
 
- 1) First, using the image-plane _Grid_, the images of the lens galaxy and its satellite are computed.
+ 1) First, using the image-plane `Grid`, the images of the lens galaxy and its satellite are computed.
 
- 2) Using the _MassProfile_'s of the lens and satellite, their deflection angles are computed.
+ 2) Using the `MassProfile`'s of the lens and satellite, their deflection angles are computed.
 
- 3) These deflection angles are summed, such that the deflection of light due to every _MassProfile_ and both the lens 
+ 3) These deflection angles are summed, such that the deflection of light due to every `MassProfile` and both the lens 
  galaxy and its satellite is computed.
 
  4) These deflection angles are used to trace every image-grid coordinate to a source-plane coordinate.
@@ -219,7 +219,7 @@ aplt.Tracer.image(tracer=tracer, grid=grid)
 
 # %%
 """
-As we did previously, we can extract the _Grid_'s of each plane and inspect the source-plane grid.
+As we did previously, we can extract the `Grid`'s of each plane and inspect the source-plane grid.
 """
 
 # %%
@@ -233,7 +233,7 @@ aplt.Plane.plane_grid(
 
 # %%
 """
-We can zoom in on the 'centre' of the source-plane.
+We can zoom in on the `centre` of the source-plane.
 """
 
 # %%
@@ -246,7 +246,7 @@ aplt.Plane.plane_grid(
 
 # %%
 """
-Lets plot the lensing quantities again. Note that, because we supplied our galaxies with redshifts and our _Tracer_ with 
+Lets plot the lensing quantities again. Note that, because we supplied our galaxies with redshifts and our `Tracer` with 
 a cosmology, our unit can be converted to kiloparsecs! (This cell can take a bit of time to run)
 """
 
@@ -256,8 +256,8 @@ aplt.Tracer.subplot_tracer(tracer=tracer, grid=grid, sub_plotter=sub_plotter)
 
 # %%
 """
-In the previous example, we saw that the _Tracer_ had attributes we plotted (e.g. convergence, potential, etc.). Now 
-we've input a cosmology and galaxy redshifts, the _Tracer_ has attributes associated with its cosmology.
+In the previous example, we saw that the `Tracer` had attributes we plotted (e.g. convergence, potential, etc.). Now 
+we've input a cosmology and galaxy redshifts, the `Tracer` has attributes associated with its cosmology.
 """
 
 # %%
@@ -292,11 +292,11 @@ print(
 """
 And with that, we've completed tutorial 6. Try the following:
 
- 1) By changing the lens and source galaxy redshifts, does the image of the _Tracer_ change at all?
+ 1) By changing the lens and source galaxy redshifts, does the image of the `Tracer` change at all?
 
  2) What happens to the cosmological quantities as you change these redshifts? Do you remember enough of your 
        cosmology lectures to predict how quantities like the angular diameter distance change as a function of redshift?
 
- 3) The _Tracer_ has a small delay in being computed, whereas other tracers were almost instant. What do you think 
+ 3) The `Tracer` has a small delay in being computed, whereas other tracers were almost instant. What do you think 
     is the cause of this slow-down?
 """

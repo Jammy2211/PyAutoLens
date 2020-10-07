@@ -38,9 +38,7 @@ class SettingsLens:
 
         if self.positions_threshold is None:
             return conf.instance.settings_tag.get("lens", "no_positions_threshold")
-        return conf.instance.settings_tag.get(
-            "lens", "positions_threshold"
-        ) + "_{0:.2f}".format(self.positions_threshold)
+        return conf.instance.settings_tag.get("lens", "positions_threshold")
 
     def check_positions_trace_within_threshold_via_tracer(self, positions, tracer):
 

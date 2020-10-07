@@ -155,13 +155,13 @@ class SetupMassTotal(setup.SetupMassTotal):
 
     @property
     def no_shear_tag(self):
-        """Generate a tag if an _ExternalShear_ is included in the mass model of the pipeline  are
+        """Generate a tag if an `ExternalShear` is included in the mass model of the pipeline  are
         fixedto a previous estimate, or varied during the analysis, to customize pipeline output paths..
 
         This changes the setup folder as follows:
 
-        no_shear = False -> setup__with_shear
-        no_shear = True -> setup___no_shear
+        no_shear = ``False`` -> setup__with_shear
+        no_shear = ``True`` -> setup___no_shear
         """
         if not self.no_shear:
             return "__" + conf.instance.setup_tag.get("mass", "with_shear")
@@ -214,13 +214,13 @@ class SetupMassLightDark(setup.SetupMassLightDark):
             If True, and the mass model is a decomposed single light and dark matter model (e.g. EllipticalSersic +
             SphericalNFW), the centre of the light and dark matter profiles are aligned.
         constant_mass_to_light_ratio : bool
-            If True, and the mass model consists of multiple _LightProfile_ and _MassProfile_ coomponents, the
+            If True, and the mass model consists of multiple `LightProfile` and `MassProfile` coomponents, the
             mass-to-light ratio's of all components are fixed to one shared value.
         bulge_mass_to_light_ratio_gradient : bool
-            If True, the bulge _EllipticalSersic_ component of the mass model is altered to include a gradient in its
+            If True, the bulge `EllipticalSersic` component of the mass model is altered to include a gradient in its
             mass-to-light ratio conversion.
         disk_mass_to_light_ratio_gradient : bool
-            If True, the bulge _EllipticalExponential_ component of the mass model is altered to include a gradient in
+            If True, the bulge `EllipticalExponential` component of the mass model is altered to include a gradient in
             its mass-to-light ratio conversion.
         align_light_mass_centre : bool
             If True, and the mass model is a bulge and dark matter modoel (e.g. EllipticalSersic + SphericalNFW),
@@ -255,13 +255,13 @@ class SetupMassLightDark(setup.SetupMassLightDark):
 
     @property
     def no_shear_tag(self):
-        """Generate a tag if an _ExternalShear_ is included in the mass model of the pipeline  are
+        """Generate a tag if an `ExternalShear` is included in the mass model of the pipeline  are
         fixedto a previous estimate, or varied during the analysis, to customize pipeline output paths..
 
         This changes the setup folder as follows:
 
-        no_shear = False -> setup__with_shear
-        no_shear = True -> setup___no_shear
+        no_shear = ``False`` -> setup__with_shear
+        no_shear = ``True`` -> setup___no_shear
         """
         if not self.no_shear:
             return "__" + conf.instance.setup_tag.get("mass", "with_shear")
@@ -308,7 +308,7 @@ class SetupSourceInversion(setup.SetupSourceInversion):
         inversion_pixels_fixed: float = None,
     ):
         """The setup of the source modeling of a pipeline, which controls how PyAutoGalaxy template pipelines runs,
-        for example controlling the _Pixelization_ and _Regularization_ used by a source model which uses an
+        for example controlling the `Pixelization` and `Regularization` used by a source model which uses an
         _Inversion_.
 
         Users can write their own pipelines which do not use or require the *SetupSource* class.
@@ -320,13 +320,13 @@ class SetupSourceInversion(setup.SetupSourceInversion):
         Parameters
         ----------
         pixelization : pix.Pixelization or None
-           If the pipeline uses an _Inversion_ to reconstruct the galaxy's light, this determines the
+           If the pipeline uses an `Inversion` to reconstruct the galaxy's light, this determines the
            *Pixelization* used.
         regularization : reg.Regularization or None
-           If the pipeline uses an _Inversion_ to reconstruct the galaxy's light, this determines the
+           If the pipeline uses an `Inversion` to reconstruct the galaxy's light, this determines the
            *Regularization* scheme used.
         inversion_pixels_fixed : float
-            The fixed number of source pixels used by a _Pixelization_ class that takes as input a fixed number of
+            The fixed number of source pixels used by a `Pixelization` class that takes as input a fixed number of
             pixels.
         """
 
@@ -454,7 +454,7 @@ class SetupSubhalo:
 class SetupPipeline(setup.SetupPipeline):
     def __init__(
         self,
-        folders: [str] = None,
+        path_prefix: str = None,
         redshift_lens: float = 0.5,
         redshift_source: float = 1.0,
         setup_hyper: setup.SetupHyper = None,
@@ -464,7 +464,8 @@ class SetupPipeline(setup.SetupPipeline):
         setup_smbh: setup.SetupSMBH = None,
         subhalo: SetupSubhalo = None,
     ):
-        """The setup of a pipeline, which controls how PyAutoGalaxy template pipelines runs, for example controlling
+        """
+        The setup of a ``Pipeline``, which controls how **PyAutoLens** template pipelines runs, for example controlling
         assumptions about the bulge-disk model or the model used to fit the source galaxy.
 
         Users can write their own pipelines which do not use or require the *SetupPipeline* class.
@@ -475,9 +476,8 @@ class SetupPipeline(setup.SetupPipeline):
 
         Parameters
         ----------
-        folders : [str] or None
-            A list of folders that the output of the pipeline are output into before the pipeline name, tags and
-            phase folders.
+        path_prefix : str or None
+            The prefix of folders between the output path of the pipeline and the pipeline name, tags and phase folders.
         redshift_lens : float
             The redshift of the lens galaxy used by the pipeline for converting arc-seconds to kpc, masses to solMass,
             etc.
@@ -499,7 +499,7 @@ class SetupPipeline(setup.SetupPipeline):
         """
 
         super().__init__(
-            folders=folders,
+            path_prefix=path_prefix,
             redshift_source=redshift_source,
             setup_hyper=setup_hyper,
             setup_source=setup_source,

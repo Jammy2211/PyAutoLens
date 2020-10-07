@@ -24,7 +24,7 @@ def run(
     conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
     interferometer = instrument_util.load_test_interferometer(
-        data_name=module.data_name, instrument=module.instrument
+        data_name=module.dataset_name, instrument=module.instrument
     )
 
     pixel_scales = ag_instrument_util.pixel_scale_from_instrument(
@@ -32,7 +32,7 @@ def run(
     )
     grid = ag_instrument_util.grid_from_instrument(instrument=module.instrument)
 
-    real_space_mask = al.Mask.circular(
+    real_space_mask = al.Mask2D.circular(
         shape_2d=grid.shape_2d, pixel_scales=pixel_scales, radius=2.0
     )
 
@@ -42,7 +42,7 @@ def run(
 
     module.make_pipeline(
         name=test_name,
-        folders=[module.test_type, test_name],
+        path_prefix=[module.test_type, test_name],
         real_space_mask=real_space_mask,
         search=search,
     ).run(dataset=interferometer, mask=visibilities_mask)

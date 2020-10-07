@@ -2607,8 +2607,8 @@ class TestAbstractTracerLensing:
     class TestContributionMap:
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
 
-            hyper_model_image = al.Array.manual_2d([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = al.Array.manual_2d([[1.0, 5.0, 8.0]])
+            hyper_model_image = al.Array.manual_2d(array=[[2.0, 4.0, 10.0]], pixel_scales=1.0)
+            hyper_galaxy_image = al.Array.manual_2d(array=[[1.0, 5.0, 8.0]], pixel_scales=1.0)
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
@@ -2959,7 +2959,7 @@ class TestAbstractTracerData:
                 pixel_scales=1.0,
             )
 
-            mask = al.Mask.manual(
+            mask = al.Mask2D.manual(
                 mask=np.array(
                     [[True, True, True], [True, False, True], [True, True, True]]
                 ),
@@ -3261,7 +3261,7 @@ class TestAbstractTracerData:
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
                     value=1,
-                    grid=al.Grid.manual_2d([[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)),
+                    grid=al.Grid.manual_2d(grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -3291,7 +3291,7 @@ class TestAbstractTracerData:
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
                     value=1,
-                    grid=al.Grid.manual_2d([[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)),
+                    grid=al.Grid.manual_2d(grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -3313,7 +3313,7 @@ class TestAbstractTracerData:
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
                     value=1,
-                    grid=al.Grid.manual_2d([[[1.0, 1.0]]], pixel_scales=(1.0, 1.0)),
+                    grid=al.Grid.manual_2d(grid=[[[1.0, 1.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -3322,7 +3322,7 @@ class TestAbstractTracerData:
                 redshift=2.0,
                 pixelization=mock_inv.MockPixelization(
                     value=1,
-                    grid=al.Grid.manual_2d([[[2.0, 2.0]]], pixel_scales=(1.0, 1.0)),
+                    grid=al.Grid.manual_2d(grid=[[[2.0, 2.0]]], pixel_scales=(1.0, 1.0)),
                 ),
                 regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
             )
@@ -3499,10 +3499,10 @@ class TestAbstractTracerData:
     class TestHyperNoiseMap:
         def test__hyper_noise_maps_of_planes(self, sub_grid_7x7):
 
-            noise_map_1d = al.Array.manual_2d([[5.0, 3.0, 1.0]])
+            noise_map_1d = al.Array.manual_2d(array=[[5.0, 3.0, 1.0]], pixel_scales=1.0)
 
-            hyper_model_image = al.Array.manual_2d([[2.0, 4.0, 10.0]])
-            hyper_galaxy_image = al.Array.manual_2d([[1.0, 5.0, 8.0]])
+            hyper_model_image = al.Array.manual_2d(array=[[2.0, 4.0, 10.0]], pixel_scales=1.0)
+            hyper_galaxy_image = al.Array.manual_2d(array=[[1.0, 5.0, 8.0]], pixel_scales=1.0)
 
             hyper_galaxy_0 = al.HyperGalaxy(contribution_factor=5.0)
             hyper_galaxy_1 = al.HyperGalaxy(contribution_factor=10.0)
@@ -4195,7 +4195,7 @@ class TestRegression:
 class TestDecorators:
     def test__grid_iterate_in__iterates_array_result_correctly(self, gal_x1_lp):
 
-        mask = al.Mask.manual(
+        mask = al.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -4250,7 +4250,7 @@ class TestDecorators:
         self, gal_x1_lp
     ):
 
-        mask = al.Mask.manual(
+        mask = al.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -4297,7 +4297,7 @@ class TestDecorators:
 
     def test__grid_iterate_in__iterates_grid_result_correctly(self, gal_x1_mp):
 
-        mask = al.Mask.manual(
+        mask = al.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -4353,9 +4353,9 @@ class TestDecorators:
         assert deflections[4, 0] == deflections_sub_8[4, 0]
 
     def test__grid_interp_in__interps_based_on_intepolate_config(self):
-        # False in interpolate.ini
+        # ``False`` in interpolate.ini
 
-        mask = al.Mask.manual(
+        mask = al.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],

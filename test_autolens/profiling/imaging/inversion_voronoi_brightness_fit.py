@@ -34,7 +34,7 @@ for instrument in ["euclid", "hst", "hst_up"]:  # , 'ao']:
         data_name="lens_sie__source_smooth", instrument=instrument
     )
 
-    mask = al.Mask.circular(
+    mask = al.Mask2D.circular(
         shape_2d=imaging.shape_2d,
         pixel_scales=imaging.pixel_scales,
         sub_size=sub_size,
@@ -121,9 +121,8 @@ for instrument in ["euclid", "hst", "hst_up"]:  # , 'ao']:
 
     start = time.time()
     for i in range(repeats):
-        curvature_matrix = al.util.inversion.curvature_matrix_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=blurred_mapping_matrix,
-            noise_map=masked_imaging.noise_map,
+        curvature_matrix = al.util.inversion.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix, noise_map=masked_imaging.noise_map
         )
     diff = time.time() - start
     print("Time to compute curvature matrix = {}".format(diff / repeats))
@@ -143,6 +142,16 @@ for instrument in ["euclid", "hst", "hst_up"]:  # , 'ao']:
         curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
     diff = time.time() - start
     print("Time to compute curvature reguarization Matrix = {}".format(diff / repeats))
+
+    start = time.time()
+    for i in range(repeats):
+        preconditioner_matrix = al.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
+            mapping_matrix=mapping_matrix,
+            preconditioner_noise_normalization=1.0,
+            regularization_matrix=regularization_matrix,
+        )
+    diff = time.time() - start
+    print("Time to compute preconditioner matrix = {}".format(diff / repeats))
 
     start = time.time()
     for i in range(repeats):

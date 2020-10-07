@@ -3,8 +3,8 @@
 Tutorial 3: Inversions
 ======================
 
-We've covered _Mapper_'s, which, if I haven't emphasised it enough yet, map things. Now, we're going to look at how we
-can use these _Mapper_'s (which map things) to reconstruct the source galaxy - I hope you're excited!
+We've covered `Mapper``., which, if I haven`t emphasised it enough yet, map things. Now, we`re going to look at how we
+can use these `Mapper`'s (which map things) to reconstruct the source galaxy - I hope you`re excited!
 """
 
 # %%
@@ -19,11 +19,11 @@ print("Workspace Path: ", workspace_path)
 
 # %%
 """
-We'll use the same strong lensing data as the previous tutorial, where:
+we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens galaxy's light is omitted.
- - The lens galaxy's _MassProfile_ is an _EllipticalIsothermal_.
- - The source galaxy's _LightProfile_ is an _EllipticalSersic_.
+ - The lens `Galaxy`'s light is omitted.
+ - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
@@ -42,11 +42,11 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-Lets create an annular _Mask_ which traces the stongly lensed source ring.
+Lets create an annular `Mask2D` which traces the stongly lensed source ring.
 """
 
 # %%
-mask = al.Mask.circular_annular(
+mask = al.Mask2D.circular_annular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     sub_size=1,
@@ -58,8 +58,8 @@ aplt.Imaging.image(imaging=imaging, mask=mask)
 
 # %%
 """
-Next, lets set the _Imaging_ and _Mask_ up as a _MaskedImaging_ object and setup a _Tracer_ using the input lens 
-galaxy model (we don't need to provide the source's _LightProfile_, as we're using a _Mapper_ to reconstruct it).
+Next, lets set the `Imaging` and `Mask2D` up as a `MaskedImaging` object and setup a `Tracer` using the input lens 
+galaxy model (we don't need to provide the source`s `LightProfile`, as we`re using a `Mapper` to reconstruct it).
 """
 
 # %%
@@ -80,7 +80,7 @@ source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=masked_imaging.
 
 # %%
 """
-We'll use another rectangular _Pixelization_ and _Mapper_ to perform the reconstruction.
+we'll use another rectangular `Pixelization` and `Mapper` to perform the reconstruction.
 """
 
 # %%
@@ -96,8 +96,8 @@ aplt.Mapper.subplot_image_and_mapper(
 
 # %%
 """
-And now, finally, we're going to use our _Mapper_ to invert the image using an _Inversion_. I'll explain how this 
-works in a second - but lets just go ahead and use the _Inversion_ first. (Ignore the 'regularization' input below for 
+And now, finally, we`re going to use our `Mapper` to invert the image using an `Inversion`. I`ll explain how this 
+works in a second - but lets just go ahead and use the `Inversion` first. (Ignore the `regularization` input below for 
 now, we'll cover this in the next tutorial).
 """
 
@@ -110,7 +110,7 @@ inversion = al.Inversion(
 
 # %%
 """
-Our _Inversion_ has a reconstructed image and _Pixeilzation_, whcih we can plot using an _Inversion_ plotter
+Our `Inversion` has a reconstructed image and `Pixeilzation`, whcih we can plot using an `Inversion` plotter
 """
 
 # %%
@@ -122,9 +122,9 @@ aplt.Inversion.reconstruction(
 
 # %%
 """
-And there we have it, we've successfully reconstructed, or, *inverted*, our source using the mapper's rectangular 
-grid. Whilst this source was simple (a blob of light in the centre of the source-plane), _Inversion_'s come into their 
-own when fitting sources with complex morphologies. Infact, given we're having so much fun inverting things, lets 
+And there we have it, we've successfully reconstructed, or, *inverted*, our source using the mapper`s rectangular 
+grid. Whilst this source was simple (a blob of light in the centre of the source-plane), `Inversion`'s come into their 
+own when fitting sources with complex morphologies. Infact, given we`re having so much fun inverting things, lets 
 invert a really complex source!
 """
 
@@ -146,12 +146,12 @@ aplt.Imaging.image(imaging=imaging)
 
 # %%
 """
-This code is doing all the the same as above (setup the _Mask_, _Galaxy_'s _Tracer_, _Mapper_, ec.).
+This code is doing all the the same as above (setup the `Mask2D`, `Galaxy`'s `Tracer`, `Mapper`, ec.).
 """
 
 # %%
 
-mask = al.Mask.circular_annular(
+mask = al.Mask2D.circular_annular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     sub_size=1,
@@ -190,14 +190,14 @@ aplt.Inversion.reconstruction(
 
 # %%
 """
-Pretty great, huh? If you ran the complex source pipeline, you'll remember that getting a model image that looked that 
-good simply *was not possible*. With an _Inversion_, we can do it with ease and without fitting 30+ parameters!
+Pretty great, huh? If you ran the complex source pipeline, you`ll remember that getting a model image that looked that 
+good simply *was not possible*. With an `Inversion`, we can do it with ease and without fitting 30+ parameters!
 
-Lets discuss how an _Inversion_ actually works. The explanation I give below is overly-simplified. I'm avoiding the 
-technical details of how an _Inversion_ *actually* works. To be good at lens modeling you don't need to understand the 
+Lets discuss how an `Inversion` actually works. The explanation I give below is overly-simplified. I'm avoiding the 
+technical details of how an `Inversion` *actually* works. To be good at lens modeling you don't need to understand the 
 nitty-gritty details of linear inversions, you just need an instinct for how to use them as a tool to model lenses.
 
-Nevertheless, I know a lot of you hate 'black-boxes', or have an interest in linear algrebra. If you're that way 
+Nevertheless, I know a lot of you hate `black-boxes`, or have an interest in linear algrebra. If you`re that way 
 inclined, then checkout the documentation of the autolens source code for more information. In particular, you should 
 look at the following functions in the project PyAutoArray:
 
@@ -206,7 +206,7 @@ autoarray.opterators.convolution.convolve_mapping_matrix
 autoarray.opterators.inversions.regularization.Regularization
 autoarray.opterators.inversions.inversions.Inversion
 
-To begin, lets consider some random mappings between our mapper's source-pixels and the image.
+To begin, lets consider some random mappings between our mapper`s source-pixels and the image.
 """
 
 # %%
@@ -219,7 +219,7 @@ aplt.Mapper.subplot_image_and_mapper(
 
 # %%
 """
-These mappings are known before the _Inversion_, which means pre-inversion we know two key pieces of information:
+These mappings are known before the `Inversion`, which means pre-inversion we know two key pieces of information:
 
  1) The mappings between every source-pixel and sets of image-pixels.
  2) The flux values in every observed image-pixel, which are the values we want to fit successfully.
@@ -227,23 +227,23 @@ These mappings are known before the _Inversion_, which means pre-inversion we kn
 It turns out that with these two pieces of information we can linearly solve for the set of source-pixel fluxes that 
 best-fit (e.g. maximize the log likelihood of) our observed image. Essentially, we set up the mapping between source and 
 image pixels as a large matrix and solve for the source-pixel fluxes in an analogous fashion to how you would solve a 
-set of simultaneous linear equations. This process is called a 'linear inversion'.
+set of simultaneous linear equations. This process is called a `linear inversion`.
 
-There are three more things about a linear _Inversion_ that are worth knowing:
+There are three more things about a linear `Inversion` that are worth knowing:
 
  1) We've discussed the image sub-grid before, which splits each image-pixel into a sub-pixel. If a sub-grid is 
  used, it is the mapping between every sub-pixel and source-pixel that is computed and used to perform the 
- _Inversion_. This prevents aliasing effects degrading the image reconstruction, and, as a rule of thumb, I 
+ `Inversion`. This prevents aliasing effects degrading the image reconstruction, and, as a rule of thumb, I 
  would suggest you use sub-gridding of degree 2x2.
 
- 2) When fitting using _LightProfile_'s we discussed how a 'model_image' was generated by blurring them with the 
- data's PSF. A similar blurring operation is incorporated into the _Inversion_, such that the reconstructed 
+ 2) When fitting using `LightProfile`'s we discussed how a `model_image` was generated by blurring them with the 
+ data`s PSF. A similar blurring operation is incorporated into the `Inversion`, such that the reconstructed 
  image and source fully account for the telescope optics and effect of the PSF.
 
- 3) The inversion's solution is regularized. But wait, that's what we'll cover in the next tutorial!
+ 3) The inversion`s solution is regularized. But wait, that`s what we'll cover in the next tutorial!
 
-Finally, let me show you how easy it is to fit an image with an _Inversion_ using a _FitImaging_ oboject. Instead of 
-giving the source galaxy a _LightProfile_, we give it a _Pixelization_and _Regularization_, and pass it to a _Tracer_.
+Finally, let me show you how easy it is to fit an image with an `Inversion` using a `FitImaging` oboject. Instead of 
+giving the source galaxy a `LightProfile`, we give it a `Pixelization`.nd `Regularization`, and pass it to a `Tracer`.
 """
 
 # %%
@@ -257,8 +257,8 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 # %%
 """
-Then, like before, we pass the _MaskedImaging_ and _Tracer_ to a _FitImaging_ object. Indeed, we see some 
-pretty good looking residuals - we're certainly fitting the lensed source accurately!
+Then, like before, we pass the `MaskedImaging` and `Tracer` to a `FitImaging` object. Indeed, we see some 
+pretty good looking residuals - we`re certainly fitting the lensed source accurately!
 """
 
 # %%
@@ -268,12 +268,12 @@ aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
-And, we're done, here are a few questions to get you thinking about _Inversion_'s:
+And, we`re done, here are a few questions to get you thinking about `Inversion``.:
 
- 1) The _Inversion_ provides the maximum log likelihood solution to the observed image. Is there a problem with seeking 
- the 'best-fit'? Is there a risk that we're going to fit other things in the image than just the lensed source 
- galaxy? What happens if you reduce the 'regularization_coefficient' above to zero?
+ 1) The `Inversion` provides the maximum log likelihood solution to the observed image. Is there a problem with seeking 
+ the `best-fit`? Is there a risk that we`re going to fit other things in the image than just the lensed source 
+ galaxy? What happens if you reduce the `regularization_coefficient` above to zero?
 
- 2) The exterior pixels in the _Rectangular_ _Grid_ have no image-pixels in them. However, they are still given a 
- reconstructed flux. If this value isn't' coming from a util to an image-pixel, where is it be coming from?
+ 2) The exterior pixels in the `Rectangular` `Grid`.have no image-pixels in them. However, they are still given a 
+ reconstructed flux. If this value isn't` coming from a util to an image-pixel, where is it be coming from?
 """

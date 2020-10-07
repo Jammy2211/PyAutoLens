@@ -1,6 +1,8 @@
-from autogalaxy.aggregator.aggregator import grid_search_result_as_array
-from autogalaxy.aggregator.aggregator import (
-    grid_search_result_as_array_from_grid_search_result,
+from autolens.aggregator.aggregator import grid_search_result_as_array
+from autolens.aggregator.aggregator import (
+    grid_search_log_evidences_as_array_from_grid_search_result,
+    grid_search_subhalo_masses_as_array_from_grid_search_result,
+    grid_search_subhalo_centres_as_array_from_grid_search_result,
 )
 from autolens.aggregator.aggregator import fit_imaging_from_agg_obj
 from autolens.aggregator.aggregator import (

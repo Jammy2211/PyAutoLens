@@ -11,7 +11,7 @@ imaging = instrument_util.load_test_imaging(
 )
 array = imaging.image
 
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     radius=5.0,
@@ -24,7 +24,7 @@ imaging = instrument_util.load_test_imaging(
 )
 array = imaging.image
 
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d,
     pixel_scales=imaging.pixel_scales,
     radius=5.0,

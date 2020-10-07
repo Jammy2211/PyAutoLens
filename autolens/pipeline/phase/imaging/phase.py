@@ -2,7 +2,6 @@ import autofit as af
 import autogalaxy as ag
 from astropy import cosmology as cosmo
 from autolens.pipeline.phase import dataset
-from autogalaxy.pipeline.phase.imaging.phase import PhaseAttributes as AgPhaseAttributes
 from autolens.dataset import imaging
 from autolens.pipeline.phase.settings import SettingsPhaseImaging
 from autolens.pipeline.phase.imaging.analysis import Analysis
@@ -58,23 +57,15 @@ class PhaseImaging(dataset.PhaseDataset):
 
         self.is_hyper_phase = False
 
-    def make_phase_attributes(self, analysis):
-        return PhaseAttributes(
-            cosmology=self.cosmology,
-            positions=analysis.masked_dataset.positions,
-            hyper_model_image=analysis.hyper_model_image,
-            hyper_galaxy_image_path_dict=analysis.hyper_galaxy_image_path_dict,
-        )
-
     def make_analysis(self, dataset, mask, results=None):
         """
-        Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
+        Returns an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
         positions
-        mask: Mask
+        mask: Mask2D
             The default masks passed in by the pipeline
         dataset: im.Imaging
             An masked_imaging that has been masked
@@ -99,7 +90,6 @@ class PhaseImaging(dataset.PhaseDataset):
             cosmology=self.cosmology,
             image_path=self.search.paths.image_path,
             results=results,
-            log_likelihood_cap=self.settings.log_likelihood_cap,
         )
 
         return analysis
@@ -164,16 +154,3 @@ class PhaseImaging(dataset.PhaseDataset):
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
 
             phase_info.close()
-
-
-class PhaseAttributes(AgPhaseAttributes):
-    def __init__(
-        self, cosmology, positions, hyper_model_image, hyper_galaxy_image_path_dict
-    ):
-        super().__init__(
-            cosmology=cosmology,
-            hyper_model_image=hyper_model_image,
-            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-        )
-
-        self.positions = positions

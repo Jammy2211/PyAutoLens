@@ -358,7 +358,7 @@ def model_image_of_plane(fit, plane_index, include=None, plotter=None):
 
 @lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def image(fit, include=None, plotter=None):
+def image(fit, array_overlay=None, include=None, plotter=None):
     """Plot the image of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -384,6 +384,7 @@ def image(fit, include=None, plotter=None):
         ),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
         include_origin=include.origin,
+        array_overlay=array_overlay,
     )
 
 
