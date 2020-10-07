@@ -1,11 +1,10 @@
 from os import path
 
 import autolens as al
-from autolens import exc
+from autolens import exc, mock
 import pytest
 from astropy import cosmology as cosmo
 from autolens.fit.fit import FitInterferometer
-from test_autolens import mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
