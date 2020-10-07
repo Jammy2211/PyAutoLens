@@ -1,5 +1,6 @@
 from os import path
 
+import numpy as np
 import pytest
 
 import autoarray as aa
@@ -162,6 +163,16 @@ def make_masked_imaging_fit_x2_plane_inversion_7x7(
     return al.FitImaging(
         masked_imaging=masked_imaging_7x7, tracer=tracer_x2_plane_inversion_7x7
     )
+
+
+@pytest.fixture(name="interferometer_7")
+def make_interferometer_7():
+    return mock.make_interferometer_7()
+
+
+@pytest.fixture(name="visibilities_mask_7x2")
+def make_visibilities_mask_7x2():
+    return np.full(fill_value=False, shape=(7, 2))
 
 
 @pytest.fixture(name="masked_interferometer_fit_x1_plane_7x7")
