@@ -5,6 +5,7 @@ import pytest
 
 import autoarray as aa
 import autolens as al
+from autoarray import MaskedInterferometer, SettingsMaskedInterferometer, TransformerNUFFT
 from autolens import mock
 
 directory = path.dirname(path.realpath(__file__))
@@ -28,7 +29,24 @@ def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
 
 @pytest.fixture(name="masked_interferometer_7")
 def make_masked_interferometer_7():
-    return mock.make_masked_interferometer_7()
+    return MaskedInterferometer(
+        interferometer=mock.make_interferometer_7(),
+        visibilities_mask=mock.make_visibilities_mask_7x2(),
+        real_space_mask=mock.make_mask_7x7(),
+        settings=SettingsMaskedInterferometer(
+            sub_size=1, transformer_class=TransformerNUFFT
+        ),
+    )
+
+
+@pytest.fixture(name="samples_with_result")
+def make_samples_with_result():
+    return mock.make_samples_with_result()
+
+
+@pytest.fixture(name="noise_map_7x7")
+def make_noise_map_7x7():
+    return mock.make_noise_map_7x7()
 
 
 @pytest.fixture(name="masked_interferometer_7_grid")
@@ -272,17 +290,24 @@ def make_blurring_mask_7x7():
 
 @pytest.fixture(name="grid_7x7")
 def make_grid_7x7():
-    return aa.Grid.from_mask(mask=make_mask_7x7())
+    return aa.Grid.from_mask(mask=mock.make_mask_7x7())
 
 
 @pytest.fixture(name="hyper_galaxy_image_0_7x7")
 def make_hyper_galaxy_image_0_7x7():
     return mock.make_hyper_galaxy_image_0_7x7()
 
+
 @pytest.fixture(name="hyper_model_image_7x7")
 def make_hyper_model_image_7x7():
     return mock.make_hyper_model_image_7x7()
 
+
 @pytest.fixture(name="image_7x7")
 def make_image_7x7():
     return mock.make_image_7x7()
+
+
+@pytest.fixture(name="hyper_galaxy_image_path_dict_7x7")
+def make_hyper_galaxy_image_path_dict_7x7():
+    return mock.make_hyper_galaxy_image_path_dict_7x7()

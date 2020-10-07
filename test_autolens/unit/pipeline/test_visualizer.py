@@ -1,7 +1,6 @@
 import os
 import shutil
 from os import path
-from os.path import dirname, realpath
 
 import pytest
 
@@ -20,11 +19,11 @@ def make_visualizer_plotter_setup():
 
 
 @pytest.fixture(autouse=True)
-def set_config_path(request):
-    if dirname(realpath(__file__)) in str(request.module):
-        conf.instance = conf.Config(
-            path.join(directory, "files/plotter"), path.join(directory, "output")
-        )
+def set_config_path():
+    conf.instance = conf.instance.push(
+        path.join(directory, "files/plotter")
+    )
+    conf.instance.output_path = path.join(directory, "output")
 
 
 class TestAbstractPhaseVisualizer:
@@ -268,7 +267,6 @@ class TestPhaseInterferometerVisualizer:
     def test__visualizes_interferometer_using_configs(
             self,
             masked_interferometer_7,
-            general_config,
             include_all,
             plot_path,
             plot_patch,
