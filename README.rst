@@ -146,7 +146,7 @@ a simple analysis which fits the foreground lens galaxy's mass & the background 
 
     """
     To perform the analysis we set up a phase, which takes our galaxy models & fits
-    their parameters using a non-linear search (in this case, Dynesty).
+    their parameters using a `NonLinearSearch` (in this case, Dynesty).
     """
 
     phase = al.PhaseImaging(

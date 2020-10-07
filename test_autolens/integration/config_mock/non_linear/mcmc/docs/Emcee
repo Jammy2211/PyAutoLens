@@ -2,7 +2,7 @@
     nwalkers -> int
         The number of walkers in the ensemble used to sample parameter space.
     nsteps -> int
-        The number of steps that must be taken by every walker. The non-linear search will thus run for nwalkers *
+        The number of steps that must be taken by every walker. The `NonLinearSearch` will thus run for nwalkers *
         nsteps iterations.
 
 [initialize]

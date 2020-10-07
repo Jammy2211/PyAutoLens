@@ -81,7 +81,7 @@ a fast way to visualize the result.
 # %%
 """
 The result contains a lot more information about the model-fit. For example, its `Samples` object contains the complete
-set of non-linear search samples, for example every set of parameters evaluated, their log likelihoods and so on,
+set of `NonLinearSearch` samples, for example every set of parameters evaluated, their log likelihoods and so on,
 which are used for computing information about the model-fit such as the error on every parameter.
 """
 # print(result.samples)
@@ -112,7 +112,7 @@ a sensible use of your time to analyse the results by sifting through the output
 
 PyAutoFit`s aggregator tool allows us to load results in a Python script or, more impotantly, a Jupyter notebook.
 All we have to do is point the aggregator to the output directory from which we want to load results, which in this c
-ase will be the results of the first non-linear search of this chapter.
+ase will be the results of the first `NonLinearSearch` of this chapter.
 """
 
 # %%

@@ -3,7 +3,7 @@
 Tutorial 6: Lens Modeling
 =========================
 
-When modeling complex source`s with parametric profiles, we quickly entered a regime where our non-linear search was
+When modeling complex source`s with parametric profiles, we quickly entered a regime where our `NonLinearSearch` was
 faced with a parameter space of dimensionality N=30+ parameters. This made the model-fitting inefficient, and very
 likely to infer a local maxima.
 
@@ -156,7 +156,7 @@ print(correct_fit.log_evidence)
 The log evidence *is* lower. However, the difference in log evidence isn't *that large*. This is going to be a problem 
 for the non-linear search, as its going to see *a lot* of solutions with really high log evidence value. Furthermore, 
 these solutions occupy a *large volumne* of parameter space (e.g. everywhere the lens model that is wrong). This makes 
-it easy for the non-linear search to get lost searching through these unphysical solutions and, unfortunately, infer an 
+it easy for the `NonLinearSearch` to get lost searching through these unphysical solutions and, unfortunately, infer an 
 incorrect lens model (e.g. a local maxima).
 
 There is no simple fix for this. The reality is that for an `Inversion` these solutions exist. This is how phase 

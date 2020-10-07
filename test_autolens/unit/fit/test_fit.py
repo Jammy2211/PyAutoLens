@@ -77,10 +77,10 @@ class TestFitImaging:
 
             mask = al.Mask2D.manual(
                 mask=[
-                        [True, True, True, True],
-                        [True, False, False, True],
-                        [True, True, True, True],
-                    ],
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ],
                 pixel_scales=1.0,
             )
 
@@ -181,10 +181,10 @@ class TestFitImaging:
 
             mask = al.Mask2D.manual(
                 mask=[
-                        [True, True, True, True],
-                        [True, False, False, True],
-                        [True, True, True, True],
-                    ],
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ],
                 pixel_scales=1.0,
             )
 
@@ -288,10 +288,10 @@ class TestFitImaging:
 
             mask = al.Mask2D.manual(
                 mask=[
-                        [True, True, True, True],
-                        [True, False, False, True],
-                        [True, True, True, True],
-                    ],
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ],
                 pixel_scales=1.0,
             )
 
@@ -394,10 +394,10 @@ class TestFitImaging:
 
             mask = al.Mask2D.manual(
                 mask=[
-                        [True, True, True, True],
-                        [True, False, False, True],
-                        [True, True, True, True],
-                    ],
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ],
                 pixel_scales=1.0,
             )
 

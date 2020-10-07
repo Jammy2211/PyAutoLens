@@ -3,7 +3,7 @@
 Tutorial 4: Dealing With Failure
 ================================
 
-In the last tutorial we showed how our non-linear search can potentially fail, and infer a local maxima solution.
+In the last tutorial we showed how our `NonLinearSearch` can potentially fail, and infer a local maxima solution.
 In this tutorial, we`re going to learn how to stop this and infer the globally maximal lens model.
 
 In the previous tutorial, when we inferred a local maxima we knew that we had done so. For modeling a real lens,
@@ -86,18 +86,18 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 """
 __Approach 1: Prior Tuning__
 
-First, we`re going to try giving our non-linear search a helping hand. Lets think about our priors, they`re telling 
-the non-linear search where to look in parameter space. If we tell it to look in the right place (that is, 
+First, we`re going to try giving our `NonLinearSearch` a helping hand. Lets think about our priors, they`re telling 
+the `NonLinearSearch` where to look in parameter space. If we tell it to look in the right place (that is, 
 *tune* our priors), it might find the best-fit lens model.
 
 We've already seen that we can fully customize priors in **PyAutoLens**, so lets do it. I`ve set up a custom phase 
-below and specified a new set of priors that'll give the non-linear search a much better chance if inferring the 
+below and specified a new set of priors that'll give the `NonLinearSearch` a much better chance if inferring the 
 correct model. I`ve also let you know what we`re changing the priors from (as initially specified by the 
 `config/priors/default` config files.)
 
 we'll call our lens and source galaxies `lens` and `source` this time, for shorter more readable code.
 
-In a later tutorial, we'll cover non-linear search approaches that are different to Dynesty, where one provides the
+In a later tutorial, we'll cover `NonLinearSearch` approaches that are different to Dynesty, where one provides the
 non-linear search with a *starting point* where it samples parameter space. In a similar fashion to prior tuning,
 giving these searches a good starting point will increase the chances of us finding the global maxima.
 """
@@ -111,7 +111,7 @@ lens = al.GalaxyModel(
 """
 By default, the prior on the $(y,x)$ coordinates of a `LightProfile` / `MassProfile` is a GaussianPrior with mean 0.0" and 
 sigma "1.0. However, visual inspection of our strong lens image tells us that its clearly around x = 0.0" and y = 0.0", 
-so lets reduce where non-linear search looks for these parameters.
+so lets reduce where `NonLinearSearch` looks for these parameters.
 """
 
 # %%
@@ -199,7 +199,7 @@ source = al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential)
 
 # %%
 """
-We can now create this custom phase and run it. Our non-linear search will now start by sampling higher likelihood 
+We can now create this custom phase and run it. Our `NonLinearSearch` will now start by sampling higher likelihood 
 regions of parameter space, given our improved and more informed priors.
 """
 
@@ -223,7 +223,7 @@ print("Dynesty has finished run - you may now continue the notebook.")
 
 # %%
 """
-Bam! We get a good model, which indeed corresponds to the global maxima. By giving our non-linear search a helping hand
+Bam! We get a good model, which indeed corresponds to the global maxima. By giving our `NonLinearSearch` a helping hand
 and informing it of where to sample parameter space, we can increase the odds that we find the global maxima solution.
 """
 
@@ -238,11 +238,11 @@ Before moving onto the next approach, lets think about the advantages and disadv
 Advantages: 
 
  - We find the maximum log likelihood solution in parameter space.
- - The phase took less time to run because the non-linear search explored less of parameter space.
+ - The phase took less time to run because the `NonLinearSearch` explored less of parameter space.
 
 Disadvantages: 
 
- - If we specified a prior incorrectly the non-linear search would begin and therefore end at an incorrect solution.
+ - If we specified a prior incorrectly the `NonLinearSearch` would begin and therefore end at an incorrect solution.
  - Our phase was tailored to this specific strong lens. If we want to fit a large sample of lenses we`d 
  have to write a custom phase for every single one - this would take up a lot of our time!
 """
@@ -288,7 +288,7 @@ lens.mass.elliptical_comps = lens.sersic.elliptical_comps
 
 # %%
 """
-Again, we create this phase and run it. The non-linear search now has a less complex parameter space to search.
+Again, we create this phase and run it. The `NonLinearSearch` now has a less complex parameter space to search.
 """
 
 # %%
@@ -339,10 +339,10 @@ Disadvantages:
 """
 __Approach 3: Look Harder__
 
-In approaches 1 and 2 we extended our non-linear search an olive branch and helped it find the highest log likelihood 
+In approaches 1 and 2 we extended our `NonLinearSearch` an olive branch and helped it find the highest log likelihood 
 regions of parameter space. In approach 3 ,we`re going to tell it to just `look harder`.
 
-Basically, every non-linear search algorithm has a set of parameters that govern how thoroughly it searches parameter 
+Basically, every `NonLinearSearch` has a set of parameters that govern how thoroughly it searches parameter 
 space. The more thoroughly it looks, the more likely it is that it`ll find the global maximum lens model. However, 
 the search will also take longer - and we don't want it to take too long to get us a result!
 
@@ -353,7 +353,7 @@ lets list the advantages and disadvantages of simply adjusting the non-linear se
 
 Advantages:
 
- - Its easy to setup, we simply change parameter of the non-linear search like n_live_points.
+ - Its easy to setup, we simply change parameter of the `NonLinearSearch` like n_live_points.
     
  - It generalizes to any strong lens.
  
