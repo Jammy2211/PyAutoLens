@@ -95,28 +95,28 @@ A description of the general.ini visualization config.
         
     light_profile_centres -> bool
 
-        If True, the centre of all _LightProfile_'s are plotted on figures which have have _LightProfile_(s) available,
+        If True, the centre of all `LightProfile`'s are plotted on figures which have have _LightProfile_(s) available,
         such as the images of galaxies, planes, tracers and fits.
         
         The light_profile_centres appearance is specified by the [light_profile_centres] section of the 
         'figures.ini' and 'subplots.ini' configs.
 
-        If there are multiple galaxies with _LightProfile_'s in a plane or tracer, _LightProfile_ centres of the same
+        If there are multiple galaxies with `LightProfile`'s in a plane or tracer, `LightProfile` centres of the same
         galaxy are colored the same according to the 'colors' specified in the configs above. By default, this color
-        wheel matches the _MassProfile_ centres so that light and _MassProfile_ centres of the same galaxies are colored
+        wheel matches the `MassProfile` centres so that light and `MassProfile` centres of the same galaxies are colored
         the same.
         
     mass_profile_centres -> bool
 
-        If True, the centre of all _MassProfile_'s are plotted on figures which have have _MassProfile_(s) available,
+        If True, the centre of all `MassProfile`'s are plotted on figures which have have _MassProfile_(s) available,
         such as the images of galaxies, planes, tracers and fits.
         
         The mass_profile_centres appearance is specified by the [mass_profile_centres] section of the 
         'figures.ini' and 'subplots.ini' configs.
 
-        If there are multiple galaxies with _MassProfile_'s in a plane or tracer, _MassProfile_ centres of the same
+        If there are multiple galaxies with `MassProfile`'s in a plane or tracer, `MassProfile` centres of the same
         galaxy are colored the same according to the 'colors' specified in the configs above. By default, this color
-        wheel matches the _LightProfile_ centres so that light and _MassProfile_ centres of the same galaxies are colored
+        wheel matches the `LightProfile` centres so that light and `MassProfile` centres of the same galaxies are colored
         the same.
         
     inversion_pixelization_grid -> bool

@@ -3,18 +3,18 @@
 Tutorial 3: Realism and Complexity
 ==================================
 
-Up to now, we've fitted some fairly crude and unrealistic lens models. For example, we've modeled the lens galaxy's
-mass as a sphere. Given most lens galaxies are 'elliptical's we should probably model their mass as elliptical! We've
-also omitted the lens galaxy's light, which typically outshines the source galaxy.
+Up to now, we've fitted some fairly crude and unrealistic lens models. For example, we've modeled the lens `Galaxy`'s
+mass as a sphere. Given most lens galaxies are `elliptical`s we should probably model their mass as elliptical! We've
+also omitted the lens `Galaxy`'s light, which typically outshines the source galaxy.
 
 In this example, we'll start using a more realistic lens model.
 
 In my experience, the simplest lens model (e.g. that has the fewest parameters) that provides a good fit to real
 strong lenses is as follows:
 
- 1) An _EllipticalSersic _LightProfile_ for the lens galaxy's light.
- 2) A _EllipticalIsothermal_ (SIE) _MassProfile_ for the lens galaxy's mass.
- 3) An _EllipticalExponential_ _LightProfile_ for the source-galaxy's light (to be honest, this is too simple,
+ 1) An _EllipticalSersic `LightProfile` for the lens `Galaxy`'s light.
+ 2) A `EllipticalIsothermal` (SIE) `MassProfile` for the lens `Galaxy`'s mass.
+ 3) An `EllipticalExponential` `LightProfile`.for the source-`Galaxy`'s light (to be honest, this is too simple,
  but lets worry about that later).
 
 This has a total of 18 non-linear parameters, which is over double the number of parameters we've fitted up to now.
@@ -40,11 +40,11 @@ conf.instance = conf.Config(
 
 # %%
 """
-We'll use new strong lensing data, where:
+we'll use new strong lensing data, where:
 
- - The lens galaxy's _LightProfile_ is an _EllipticalSersic_.
- - The lens galaxy's _MassProfile_ is an _EllipticalIsothermal_.
- - The source galaxy's _LightProfile_ is an _EllipticalExponential_.
+ - The lens `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
+ - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The source `Galaxy`'s `LightProfile` is an `EllipticalExponential`.
 """
 
 # %%
@@ -63,17 +63,17 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-We'll create and use a 2.5" _Mask_.
+we'll create and use a 2.5" `Mask2D`.
 """
 
 # %%
-mask = al.Mask.circular(
+mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=2.5
 )
 
 # %%
 """
-When plotted, the lens light's is clearly visible in the centre of the image.
+When plotted, the lens light`s is clearly visible in the centre of the image.
 """
 
 # %%
@@ -82,7 +82,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 # %%
 """
 Like in the previous tutorial, we use a_SettingsPhaseImaging_ object to specify our model-fitting procedure uses a 
-regular _Grid_.
+regular `Grid`.
 """
 
 # %%
@@ -126,7 +126,7 @@ print("Dynesty has finished run - you may now continue the notebook.")
 
 # %%
 """
-And lets look at the fit to the _Imaging_ data, which as we are used to fits the data brilliantly!
+And lets look at the fit to the `Imaging` data, which as we are used to fits the data brilliantly!
 """
 
 # %%
@@ -137,17 +137,17 @@ And lets look at the fit to the _Imaging_ data, which as we are used to fits the
 Up to now, all of our non-linear searches have been successes. They find a lens model that provides a visibly good fit
 to the data, minimizing the residuals and inferring a high log likelihood value. 
 
-These solutions are called 'global' maxima, they correspond to the highest likelihood regions of the entirity of 
+These solutions are called `global` maxima, they correspond to the highest likelihood regions of the entirity of 
 parameter space. There are no other lens models in parameter space that would give higher likelihoods - this is the
 model we wants to always infer!
 
 However, non-linear searches may not always successfully locate the global maxima lens models. They may instead infer 
-a 'local maxima', a solution which has a high log likelihood value relative to the lens models near it in parameter 
-space, but whose log likelihood is significantly below the 'global' maxima solution somewhere else in parameter space. 
+a `local maxima`, a solution which has a high log likelihood value relative to the lens models near it in parameter 
+space, but whose log likelihood is significantly below the `global` maxima solution somewhere else in parameter space. 
 
 Inferring such solutions is essentially a failure of our non-linear search and it is something we do not want to
-happen! Lets infer a local maxima, by reducing the number of 'live points' Dynesty uses to map out parameter space.
-We're going to use so few that it has no hope of locating the global maxima, ultimating finding and inferring a local 
+happen! Lets infer a local maxima, by reducing the number of `live points` Dynesty uses to map out parameter space.
+We`re going to use so few that it has no hope of locating the global maxima, ultimating finding and inferring a local 
 maxima instead.
 """
 
@@ -176,7 +176,7 @@ print("Dynesty has finished run - you may now continue the notebook.")
 
 # %%
 """
-And lets look at the fit to the _Imaging_ data, which is clearly worse than our original fit above.
+And lets look at the fit to the `Imaging` data, which is clearly worse than our original fit above.
 """
 
 # %%
@@ -202,15 +202,15 @@ In this example, we intentionally made our non-linear search fail, by using so f
 sampling parameter space thoroughly. For modeling real lenses we wouldn't do this on purpose, but the risk of inferring 
 a local maxima is still very real, especially as we make our lens model more complex.
 
-Lets think about 'complexity'. As we make our lens model more realistic, we also made it more complex. For this 
-tutorial, our non-linear parameter space went from 7 dimensions to 18. This means there was a much larger 'volume' of 
+Lets think about *complexity*. As we make our lens model more realistic, we also made it more complex. For this 
+tutorial, our non-linear parameter space went from 7 dimensions to 18. This means there was a much larger *volume* of 
 parameter space to search. As this volume grows, there becomes a higher chance that our non-linear search gets lost 
 and infers a local maxima, especially if we don't set it up with enough live points!
 
 At its core, lens modeling is all about learning how to get a non-linear search to find the global maxima region of 
 parameter space, even when the lens model is extremely complex.
 
-And with that, we're done. In the next exercise, we'll learn how to deal with failure and begin thinking about how we 
+And with that, we`re done. In the next exercise, we'll learn how to deal with failure and begin thinking about how we 
 can ensure our non-linear search finds the global-maximum log likelihood solution. Before that, think about 
 the following:
 

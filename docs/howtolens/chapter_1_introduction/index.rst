@@ -27,10 +27,10 @@ The chapter contains the following tutorials:
 - Advanced strong lens ray-tracing.
 
 `Tutorial 7: Data <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_1_introduction/tutorial_7_data.html>`_
-- Loading and inspecting telescope imaging data of a strong lens.
+- Loading and inspecting telescope imaging ``data`` of a strong lens.
 
 `Tutorial 8: Fitting <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_1_introduction/tutorial_8_fittingn.html>`_
-- Fitting data with a strong lens model.
+- Fitting ``data`` with a strong lens model.
 
 `Tutorial 9: Summary <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_1_introduction/tutorial_9_summary.html>`_
 - A summary of the chapter.

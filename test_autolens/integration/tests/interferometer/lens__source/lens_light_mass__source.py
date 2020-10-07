@@ -8,11 +8,11 @@ data_name = "lens_sie__source_smooth"
 instrument = "sma"
 
 
-def make_pipeline(name, folders, real_space_mask, search=af.DynestyStatic()):
+def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic()):
 
     phase1 = al.PhaseInterferometer(
         phase_name="phase_1",
-        folders=folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,

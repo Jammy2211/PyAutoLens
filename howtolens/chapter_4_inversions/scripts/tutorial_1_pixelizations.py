@@ -3,8 +3,8 @@
 Tutorial 1: Pixelizations
 =========================
 
-To begin chapter 4, we'll begin by learning about _Pixelization_'s, which we apply to a source-plane to reconstruct a
-source-galaxy's light.
+To begin chapter 4, we'll begin by learning about `Pixelization``., which we apply to a source-plane to reconstruct a
+source-`Galaxy`'s light.
 """
 
 # %%
@@ -15,8 +15,8 @@ import autolens.plot as aplt
 
 # %%
 """
-Lets setup a lensed source-plane grid, using a lens galaxy and _Tracer_ (our source galaxy doesn't have a 
-_LightProfile_,as we're going to reconstruct its light using a pixelization).
+Lets setup a lensed source-plane grid, using a lens galaxy and `Tracer` (our source galaxy doesn`t have a 
+_LightProfile_,as we`re going to reconstruct its light using a pixelization).
 """
 
 # %%
@@ -35,10 +35,10 @@ source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[1]
 
 # %%
 """
-Next, lets set up a _Pixelization_using the 'pixelization' module, which is imported as 'pix' for short.
+Next, lets set up a `Pixelization`.sing the `pixelization` module, which is imported as `pix` for short.
 
-There are multiple _Pixelization_'s available in __PyAutoLens__. For now, we'll keep it simple and use a uniform 
-rectangular grid. As usual, the grid's 'shape' defines its (y,x) dimensions.
+There are multiple `Pixelization`'s available in **PyAutoLens**. For now, we'll keep it simple and use a uniform 
+rectangular grid. As usual, the grid`s `shape` defines its $(y,x)$ dimensions.
 """
 
 # %%
@@ -46,9 +46,9 @@ rectangular = al.pix.Rectangular(shape=(25, 25))
 
 # %%
 """
-By itself, a _Pixelization_doesn't tell us much. It has no _Grid_ of coordinates, no image, and nothing which tells it 
-about the lens we're fitting. This information comes when we use the _Pixelization_to set up a _Mapper_. We'll use 
-the (traced) source-plane _Grid_ to set up this mapper.
+By itself, a `Pixelization`.oesn`t tell us much. It has no `Grid` of coordinates, no image, and nothing which tells it 
+about the lens we`re fitting. This information comes when we use the `Pixelization`.o set up a `Mapper`. we'll use 
+the (traced) source-plane `Grid` to set up this mapper.
 """
 
 # %%
@@ -56,7 +56,7 @@ mapper = rectangular.mapper_from_grid_and_sparse_grid(grid=source_plane_grid)
 
 # %%
 """
-This _Mapper_ is a 'RectangularMapper' - every _Pixelization_ generates it owns mapper.
+This `Mapper` is a `RectangularMapper` - every `Pixelization` generates it owns mapper.
 """
 
 # %%
@@ -64,9 +64,9 @@ print(type(mapper))
 
 # %%
 """
-By plotting our mapper, we now see our _Pixelization_. Its a fairly boring _Grid_ of rectangular pixels.
+By plotting our mapper, we now see our `Pixelization`. Its a fairly boring `Grid` of rectangular pixels.
 
-(we'll cover what the 'inversion' means in a later tutorial).
+(we'll cover what the `inversion` means in a later tutorial).
 """
 
 # %%
@@ -80,7 +80,7 @@ aplt.MapperObj(
 
 # %%
 """
-However, the _Mapper_ does contain lots of interesting information about our _Pixelization_, for example its 
+However, the `Mapper` does contain lots of interesting information about our `Pixelization`, for example its 
 pixelization_grid tells us where the pixel centers are located.
 """
 
@@ -95,7 +95,7 @@ print("etc.")
 
 # %%
 """
-Infact, we can plot these centre on our _Grid_ - to make it look slightly less boring!
+Infact, we can plot these centre on our `Grid` - to make it look slightly less boring!
 """
 
 # %%
@@ -109,7 +109,7 @@ aplt.MapperObj(
 
 # %%
 """
-The _Mapper_ also has the (source-plane) _Grid_ that we passed when we set it up. Lets check they're the same.
+The `Mapper` also has the (source-plane) `Grid` that we passed when we set it up. Lets check they`re the same.
 """
 
 # %%
@@ -123,7 +123,7 @@ print("etc.")
 
 # %%
 """
-We can over-lay the _Grid_ on top. Its starting to look a bit less boring now!
+We can over-lay the `Grid` on top. Its starting to look a bit less boring now!
 """
 
 # %%
@@ -137,7 +137,7 @@ aplt.MapperObj(
 
 # %%
 """
-Finally, the mapper's pixeliation_grid has lots of information about the _Pixelization_, for example, the arc-second 
+Finally, the mapper`s pixeliation_grid has lots of information about the `Pixelization`, for example, the arc-second 
 size and dimensions.
 """
 
@@ -148,13 +148,13 @@ print(mapper.pixelization_grid.scaled_minima)
 
 # %%
 """
-And with that, we're done. This was a relatively gentle overview of _Pixelization_'s, but one that was hopefully easy 
+And with that, we`re done. This was a relatively gentle overview of `Pixelization``., but one that was hopefully easy 
 to follow. Think about the following questions before moving on to the next tutorial:
 
  1) Look at how the source-grid coordinates are distributed over the rectangular pixel-grid. Are these points 
- distributed evenly over the rectangular grid's pixels? Do some pixels have a lot more grid-points inside of them? 
+ distributed evenly over the rectangular grid`s pixels? Do some pixels have a lot more grid-points inside of them? 
  Do some pixels have no grid-points in them?
 
- 2) The rectangular pixelization's edges are aligned with the most exterior coordinates of the source-grid. This is 
+ 2) The rectangular pixelization`s edges are aligned with the most exterior coordinates of the source-grid. This is 
  intentional - why do you think this is?
 """

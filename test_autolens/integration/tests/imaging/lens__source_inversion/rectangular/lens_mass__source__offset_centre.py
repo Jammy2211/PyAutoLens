@@ -8,7 +8,7 @@ data_name = "lens_sie__source_smooth__offset_centre"
 instrument = "euclid"
 
 
-def make_pipeline(name, folders, search=af.DynestyStatic()):
+def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     mass = af.PriorModel(al.mp.EllipticalIsothermal)
 
@@ -23,7 +23,7 @@ def make_pipeline(name, folders, search=af.DynestyStatic()):
 
     phase1 = al.PhaseImaging(
         phase_name="phase_1",
-        folders=folders,
+        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=mass),
             source=al.GalaxyModel(

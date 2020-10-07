@@ -19,7 +19,7 @@ in your command line:
 If you find that **PyAutoLens** originally worked on your laptop, but more recently is raising config related errors,
 this is likely because your WORKSPACE variable has been reset. You can fix this by running the above command again,
 however to ensure this does not occur again I would recommend you put the command in your .bashrc file or the
-activate script of your Python virtual enviroment.
+activate script of your Python virtual environment.
 
 The configuration path can also be set manually in a script using **PyAutoConf** and the following command (the path
 to the 'output' folder where the results of a *non-linear search* are stored is also set below):
@@ -94,7 +94,7 @@ a way that does not need a grid to be input.
 The calculation grid is the homogenous grid used to calculate all lensing quantities of this nature. It is computed
 as follows:
 
-1) Draw a rectangular 'bounding box' around the *MassProfile*'s convergence profile, where the four side of the
+1) Draw a rectangular 'bounding box' around the `MassProfile`'s convergence profile, where the four side of the
    the box are at threshold values of convergence.
 
 2) Use a grid of this box to compute the desired lensing quantity (e.g. the critical curve).
@@ -224,8 +224,8 @@ json_priors
 These config files are found at 'autolens_workspace/config/json_priors' and they contain the default priors and related
 variables for every model-component in a project, using .json format files (as opposed to .ini. for most config files).
 
-The autolens workspace contains example json_prior files for the 1D data fitting problem. An example entry of the
-json configs for the *sigma* parameter of the *Gaussian* class is as follows:
+The autolens workspace contains example json_prior files for the 1D ``data`` fitting problem. An example entry of the
+json configs for the ``sigma`` parameter of the ``Gaussian`` class is as follows:
 
 .. code-block:: bash
 
@@ -266,7 +266,7 @@ notation
 
 The notation configs define the labels of every model-component parameter and its derived quantities, which are
 used when visualizing results (for example labeling the axis of the PDF triangle plots output by a non-linear search).
-Two examples using the 1D data fitting example for the config file **label.ini** are:
+Two examples using the 1D ``data`` fitting example for the config file **label.ini** are:
 
 [label]
     centre_0 -> str
@@ -281,7 +281,7 @@ Two examples using the 1D data fitting example for the config file **label.ini**
 The **label_format.ini** config file specifies the format certain parameters are output as in output files like the
 *model.results* file.
 
-The **tags.ini** config file specifies the tag of every *SettingsPhase*, *SetupPipeline* and *SLaM* input variable,
+The **tags.ini** config file specifies the tag of every `SettingsPhase`, *SetupPipeline* and *SLaM* input variable,
 where these tags customize the output path of the non-linear search in a unique way based on how the model-fitting
 procedure is set up.
 
@@ -293,22 +293,22 @@ grids
 
 **interpolate.ini**
 
-The *GridInterpolate* class speeds up the calculation of lensing quantities such as the potential or deflection angles
+The `GridInterpolate` class speeds up the calculation of lensing quantities such as the potential or deflection angles
 by computing them on a grid of reduced resolution and interpolating the results to a grid at the native resolution of
 the data. This is important for certain mass profiles, where the calculations require computationally expensive
 numerical integration.
 
-The *interpolate.ini* specifies for every *LightProfile* and *MassProfile* in **PyAutoLens** whether, when a
-*GridInterpolate* object is passed into a from grid method (e.g deflections_from_grid) the calculation should be
+The *interpolate.ini* specifies for every `LightProfile` and `MassProfile` in **PyAutoLens** whether, when a
+`GridInterpolate` object is passed into a from grid method (e.g deflections_from_grid) the calculation should be
 performed using interpolation or by computing every value on the grid explicitly at native resolution.
 
-The default *interpolate.ini* config file supplied with the **PyAutoLens** workspace specifies *False* for every
+The default *interpolate.ini* config file supplied with the **PyAutoLens** workspace specifies ``False`` for every
 profile that does not require numerical integration (and therefore is fast to compute) and *True* for every profile
 which does (and therefore can see the calculation sped ups by factors of > x10).
 
 **radial_minimum.ini**
 
-The calculation of many quantities from *LightProfile*'s and *MassProfile's*, for example their image, convergence
+The calculation of many quantities from `LightProfile`'s and *MassProfile's*, for example their image, convergence
 or deflection angles are ill-defined at (y,x) coordinates (0.0, 0.0). This can lead **PyAutoLens** to crash if not
 handled carefully.
 

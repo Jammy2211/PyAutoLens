@@ -37,7 +37,7 @@ for instrument in ["vro", "euclid", "hst", "hst_up"]:  # , 'ao']:
         data_name="lens_sie__source_smooth", instrument=instrument
     )
 
-    mask = al.Mask.circular(
+    mask = al.Mask2D.circular(
         shape_2d=imaging.shape_2d,
         pixel_scales=imaging.pixel_scales,
         sub_size=sub_size,
@@ -102,9 +102,8 @@ for instrument in ["vro", "euclid", "hst", "hst_up"]:  # , 'ao']:
             image=masked_imaging.image,
             noise_map=masked_imaging.noise_map,
         )
-        curvature_matrix = al.util.inversion.curvature_matrix_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=blurred_mapping_matrix,
-            noise_map=masked_imaging.noise_map,
+        curvature_matrix = al.util.inversion.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix, noise_map=masked_imaging.noise_map
         )
         regularization_matrix = al.util.regularization.constant_regularization_matrix_from(
             coefficient=1.0,

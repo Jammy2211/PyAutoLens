@@ -102,7 +102,7 @@ A description of the general.ini config.
     The calculation grid is the homogenous grid used to calculate all lensing quantities of this nature. It is computed
     as follows:
 
-    1) Draw a rectangular 'bounding box' around the _MassProfile_'s convergence profile, where the four side of the
+    1) Draw a rectangular 'bounding box' around the `MassProfile`'s convergence profile, where the four side of the
        the box are at threshold values of convergence.
 
     2) Use a grid of this box to compute the desired lensing quantity (e.g. the critical curve).

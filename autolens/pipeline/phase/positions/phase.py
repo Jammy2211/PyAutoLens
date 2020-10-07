@@ -1,7 +1,7 @@
 import autofit as af
 from astropy import cosmology as cosmo
 from autogalaxy.pipeline.phase import abstract
-from autogalaxy.pipeline.phase.imaging.phase import PhaseAttributes as AgPhaseAttributes
+from autogalaxy.pipeline.phase.imaging.phase import Attributes as AgAttributes
 from autolens.pipeline.phase.settings import SettingsPhasePositions
 from autolens.pipeline.phase.positions.analysis import Analysis
 from autolens.pipeline.phase.positions.result import Result
@@ -49,18 +49,18 @@ class PhasePositions(abstract.AbstractPhase):
 
         self.solver = solver
 
-    def make_phase_attributes(self, analysis):
-        return PhaseAttributes(cosmology=self.cosmology)
+    def make_attributes(self, analysis):
+        return Attributes(cosmology=self.cosmology)
 
     def make_analysis(self, positions, imaging=None, results=None):
         """
-        Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
+        Returns an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
         positions
-        mask: Mask
+        mask: Mask2D
             The default masks passed in by the pipeline
         dataset: im.Imaging
             An masked_imaging that has been masked
@@ -100,6 +100,6 @@ class PhasePositions(abstract.AbstractPhase):
             phase_info.close()
 
 
-class PhaseAttributes(AgPhaseAttributes):
+class Attributes(AgAttributes):
     def __init__(self, cosmology):
         super().__init__(cosmology=cosmology)

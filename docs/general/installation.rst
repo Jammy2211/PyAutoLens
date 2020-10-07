@@ -16,15 +16,15 @@ This guide installs **PyAutoLens** with the following dependencies:
 
 **PyAutoGalaxy** https://github.com/Jammy2211/PyAutoGalaxy
 
-**PyMultiNest** http://johannesbuchner.github.io/pymultinest-tutorial/install.html
+*``PyMultiNest``* http://johannesbuchner.github.io/pymultinest-tutorial/install.html
 
 **pyquad** https://github.com/AshKelly/pyquad
 
-**Dynesty** https://github.com/joshspeagle/dynesty
+*``dynesty``* https://github.com/joshspeagle/dynesty
 
-**emcee** https://github.com/dfm/emcee
+*``emcee``* https://github.com/dfm/emcee
 
-**PySwarms** https://github.com/ljvmiranda921/pyswarms
+*``PySwarms``* https://github.com/ljvmiranda921/pyswarms
 
 **astropy** https://www.astropy.org/
 
@@ -119,14 +119,33 @@ Finally, run the `welcome.py` script to get started!
 
    python3 welcome.py
 
-Forking / Cloning
+Cloning / Forking
 -----------------
 
-If fork or clone the **PyAutoLens** github repository, note that **PyAutoLens** requires a valid autolens_workspace and
-WORKSPACE environment to run (so it can find the necessary confgiuration files).
+You can clone (or fork) the **PyAutoLens** github repository and run it from the source code.
 
-Therefore, if you fork or clone the **PyAutoLens** repository, you must also clone the
-`autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_:
+First, clone (or fork) the **PyAutoLens** GitHub repository:
+
+.. code-block:: bash
+
+    git clone https://github.com/Jammy2211/PyAutoLens
+
+Next, install the **PyAutoLens** dependencies via pip:
+
+.. code-block:: bash
+
+   cd PyAutoLens
+   pip install -r requirements.txt
+
+Include the **PyAutoLens** source repository in your PYTHONPATH (noting that you must replace the text
+``/path/to`` with the path to the **PyAutoLens** directory on your computer):
+
+.. code-block:: bash
+
+   export PYTHONPATH=$PYTHONPATH:/path/to/PyAutoLens
+
+**PyAutoLens** requires a valid config to run. Therefore, clone the
+`autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ which contains the config files:
 
 .. code-block:: bash
 
@@ -134,19 +153,26 @@ Therefore, if you fork or clone the **PyAutoLens** repository, you must also clo
    git clone https://github.com/Jammy2211/autolens_workspace --depth 1
    cd autolens_workspace
 
-Once your fork of **PyAutoLens** is setup, I recommend you run the `welcome.py` script in the *autolens_workspace*
-for an introduction to **PyAutoLens**.
+Next, run the `welcome.py` script to set up the configs and environment:
 
 .. code-block:: bash
 
    python3 welcome.py
 
+Finally, check the **PyAutoLens** unit tests run and pass (you may need to install pytest via
+``pip install pytest``):
+
+.. code-block:: bash
+
+    cd /path/to/PyAutoLens
+   python3 -m pytest
+
 Environment Variables
 ---------------------
 
-**PyAutoLens** uses an environment variable called WORKSPACE to know where the 'autolens_workspace' folder is located.
-This is used to locate config files and output results. It should automatically be detected and set in the `welcome.py`
-script, but if something goes wrong you can set it manually using the command:
+**PyAutoLens** uses an environment variable called WORKSPACE to know where the 'autolens_workspace' folder is
+located. This is used to locate config files and output results. It should automatically be detected and set in
+the `welcome.py` script, but if something goes wrong you can set it manually using the command:
 
 .. code-block:: bash
 
@@ -197,14 +223,24 @@ Alternatively, you could try using conda.
 
 If your conda build failed, then try pip!
 
-The libraries **numba** and **llvmlite** used for optimizing **PyAutoLens** can cause installation issues. If these
-crop up we recommend that you either try using a conda build instead of pip (or visa versa) or try to manually
-install these versions of the libraries:
+The libraries **numba** and **llvmlite** used for optimizing **PyAutoLens** have caused known installation issues. To
+circumvent this we have added the requirement that the version of llvmlite<=0.32.1 and numba<=0.47.0. However,
+if your Python / conda environment already has either library installed with a version above these, it will raise
+an error.
+
+However, **PyAutoLens** does work with these newer versions, it is simply that installing them from scratch can raise
+an error. There, if you get the following error (or something related or mentioning numba):
 
 .. code-block:: bash
 
-    pip install llvmlite<=0.32.1
-    pip install numba<=0.47.0
+    ERROR: Cannot uninstall 'llvmlite'. It is a distutils installed project and thus we cannot accurately determine
+    which files belong to it which would lead to only a partial uninstall
+
+Then install **PyAutoLens** as follows:
+
+.. code-block:: bash
+
+    pip install autolens --ignore-installed llvmlite numba
 
 If you are still having issues with installation or using **PyAutoLens** in general, please raise an issue on the
 `autolens_workspace issues page <https://github.com/Jammy2211/autolens_workspace/issues>`_ with a description of the
