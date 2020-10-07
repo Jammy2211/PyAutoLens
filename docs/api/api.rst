@@ -291,11 +291,11 @@ Lens Modeling
    :toctree: generated/
 
     SetupHyper
-    SetupLightSersic
-    SetupLightBulgeDisk
+    SetupLight
+    SetupLight
     SetupMassTotal
     SetupMassLightDark
-    SetupSourceSersic
+    SetupSource
     SetupSourceInversion
     SetupSMBH
     SetupSubhalo

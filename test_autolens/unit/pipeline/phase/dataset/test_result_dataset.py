@@ -89,8 +89,8 @@ class TestResult:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        assert isinstance(result.pixelization, al.pix.VoronoiMagnification)
-        assert result.pixelization.shape == (2, 3)
+        assert isinstance(result.pixelization_prior_model, al.pix.VoronoiMagnification)
+        assert result.pixelization_prior_model.shape == (2, 3)
 
         lens = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
         source = al.Galaxy(
@@ -115,8 +115,8 @@ class TestResult:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        assert isinstance(result.pixelization, al.pix.VoronoiBrightnessImage)
-        assert result.pixelization.pixels == 6
+        assert isinstance(result.pixelization_prior_model, al.pix.VoronoiBrightnessImage)
+        assert result.pixelization_prior_model.pixels == 6
 
     def test__results_of_phase_include_pixelization_grid__available_as_property(
         self, imaging_7x7, mask_7x7

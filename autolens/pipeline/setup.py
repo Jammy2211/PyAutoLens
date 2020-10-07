@@ -2,7 +2,7 @@ import autofit as af
 from autoconf import conf
 from autogalaxy.pipeline import setup
 from autoarray.inversion import pixelizations as pix, regularization as reg
-from autogalaxy.profiles import mass_profiles as mp, light_and_mass_profiles as lmp
+from autogalaxy.profiles import light_profiles as lp, mass_profiles as mp, light_and_mass_profiles as lmp
 from autolens import exc
 
 
@@ -80,7 +80,7 @@ class SetupHyper(setup.SetupHyper):
         )
 
 
-class SetupLightBulgeDisk(setup.SetupLightBulgeDisk):
+class SetupLight(setup.SetupLight):
     def __init__(
         self,
         light_centre: (float, float) = None,
@@ -128,7 +128,7 @@ class SetupLightBulgeDisk(setup.SetupLightBulgeDisk):
 class SetupMassTotal(setup.SetupMassTotal):
     def __init__(
         self,
-        mass_profile: mp.MassProfile = None,
+        mass_prior_model: mp.MassProfile = None,
         no_shear=False,
         mass_centre: (float, float) = None,
     ):
@@ -149,7 +149,7 @@ class SetupMassTotal(setup.SetupMassTotal):
            non-linear search.
         """
 
-        super().__init__(mass_profile=mass_profile, mass_centre=mass_centre)
+        super().__init__(mass_prior_model=mass_prior_model, mass_centre=mass_centre)
 
         self.no_shear = no_shear
 
@@ -172,7 +172,7 @@ class SetupMassTotal(setup.SetupMassTotal):
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
         return (
-            f"{conf.instance.setup_tag.get('mass', 'mass')}[{self.model_type}{self.mass_profile_tag}"
+            f"{conf.instance.setup_tag.get('mass', 'mass')}[{self.model_type}{self.mass_prior_model_tag}"
             f"{self.no_shear_tag}"
             f"{self.mass_centre_tag}]"
         )
@@ -300,11 +300,57 @@ class SetupMassLightDark(setup.SetupMassLightDark):
             return af.PriorModel(mp.ExternalShear)
 
 
-class SetupSourceInversion(setup.SetupSourceInversion):
+class SetupSource(setup.SetupLight):
+    def __init__(self,
+                 bulge_prior_model : af.PriorModel = af.PriorModel(lp.EllipticalSersic),
+        disk_prior_model: af.PriorModel = af.PriorModel(lp.EllipticalExponential),
+        envelope_prior_model: af.PriorModel = None,
+        light_centre: (float, float) = None,
+        align_bulge_disk_centre: bool = False,
+        align_bulge_disk_elliptical_comps: bool = False):
+        """
+        The setup of the light modeling in a pipeline, which controls how PyAutoGalaxy template pipelines runs, for
+        example controlling assumptions about the bulge-disk model.
+
+        Users can write their own pipelines which do not use or require the *SetupLight* class.
+
+        This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
+        scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
+        different models to a dataset in a structured path format.
+
+        Parameters
+        ----------
+        bulge_prior_model : af.PriorModel
+            The `LightProfile` `PriorModel` used to represent the light distribution of a bulge.
+        disk_prior_model : af.PriorModel
+            The `LightProfile` `PriorModel` used to represent the light distribution of a disk.
+        envelope_prior_model : af.PriorModel
+            The `LightProfile` `PriorModel` used to represent the light distribution of a envelope.
+        light_centre : (float, float) or None
+           If input, a fixed (y,x) centre of the galaxy is used for the light profile model which is not treated as a
+            free parameter by the non-linear search.
+        align_bulge_disk_centre : bool or None
+            If a bulge + disk light model (e.g. EllipticalSersic + EllipticalExponential) is used to fit the galaxy,
+            *True* will align the centre of the bulge and disk components and not fit them separately.
+        align_bulge_disk_elliptical_comps : bool or None
+            If a bulge + disk light model (e.g. EllipticalSersic + EllipticalExponential) is used to fit the galaxy,
+            *True* will align the elliptical components the bulge and disk components and not fit them separately.
+        """
+
+        super().__init__(bulge_prior_model=bulge_prior_model, disk_prior_model=disk_prior_model,
+                         envelope_prior_model=envelope_prior_model, light_centre=light_centre,
+                         align_bulge_disk_centre=align_bulge_disk_centre, align_bulge_disk_elliptical_comps=align_bulge_disk_elliptical_comps)
+
+    @property
+    def component_tag(self):
+        return conf.instance.setup_tag.get('source', 'source')
+
+
+class SetupSourceInversion(setup.SetupLightInversion):
     def __init__(
-        self,
-        pixelization: pix.Pixelization = None,
-        regularization: reg.Regularization = None,
+            self,
+        pixelization_prior_model: af.PriorModel(pix.Pixelization) = None,
+        regularization_prior_model: af.PriorModel(reg.Regularization) = None,
         inversion_pixels_fixed: float = None,
     ):
         """The setup of the source modeling of a pipeline, which controls how PyAutoGalaxy template pipelines runs,
@@ -331,11 +377,14 @@ class SetupSourceInversion(setup.SetupSourceInversion):
         """
 
         super().__init__(
-            pixelization=pixelization,
-            regularization=regularization,
+            pixelization_prior_model=pixelization_prior_model,
+            regularization_prior_model=regularization_prior_model,
             inversion_pixels_fixed=inversion_pixels_fixed,
         )
 
+    @property
+    def component_tag(self):
+        return conf.instance.setup_tag.get('source', 'source')
 
 class SetupSubhalo:
     def __init__(
@@ -488,7 +537,7 @@ class SetupPipeline(setup.SetupPipeline):
             The setup of the hyper analysis if used (e.g. hyper-galaxy noise scaling).
         setup_source : SetupSourceInversion
             The setup of the source analysis (e.g. the _Pixelization and _Regularization used).
-        setup_light : SetupLightBulgeDisk
+        setup_light : SetupLight
             The setup of the light profile modeling (e.g. for bulge-disk models if they are geometrically aligned).
         setup_mass : SetupMassTotal or SetupMassLightDark
             The setup of the mass modeling (e.g. if a constant mass to light ratio is used).

@@ -172,11 +172,11 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
     @property
     def pixelizations_of_planes(self):
-        return [plane.pixelization for plane in self.planes]
+        return [plane.pixelization_prior_model for plane in self.planes]
 
     @property
     def regularizations_of_planes(self):
-        return [plane.regularization for plane in self.planes]
+        return [plane.regularization_prior_model for plane in self.planes]
 
     @property
     def hyper_galaxy_image_of_planes_with_pixelizations(self):

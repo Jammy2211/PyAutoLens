@@ -116,7 +116,7 @@ __Pipeline_Setup__:
 
 Pipelines can contain `Setup` objects, which customize how different aspects of the model are fitted. 
 
-First, we create a `SetupLightSersic` which customizes:
+First, we create a `SetupLight` which customizes:
 
  - If the centre of the lens light profile is manually input and fixed for modeling.
 
@@ -124,7 +124,7 @@ In this example we do not fix the centre of the `EllipticalSersic` light model t
 """
 
 # %%
-setup_light = al.SetupLightSersic(light_centre=None)
+setup_light = al.SetupLight(light_centre=None)
 
 # %%
 """
@@ -138,11 +138,11 @@ setup_mass = al.SetupMassTotal(no_shear=False)
 
 # %%
 """
-Next, we create a `SetupSourceSersic` which does not customize the pipeline behaviour except for tagging (see below).
+Next, we create a `SetupSource` which does not customize the pipeline behaviour except for tagging (see below).
 """
 
 # %%
-setup_source = al.SetupSourceSersic()
+setup_source = al.SetupSource()
 
 """
 _Pipeline Tagging_

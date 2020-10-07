@@ -45,8 +45,8 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase1.results.settings_inversion.instance.galaxies.source.pixelization,
-                regularization=phase1.results.settings_inversion.instance.galaxies.source.regularization,
+                pixelization=phase1.results.settings_inversion.instance.galaxies.source.pixelization_prior_model,
+                regularization=phase1.results.settings_inversion.instance.galaxies.source.regularization_prior_model,
             ),
         ),
         search=search,
