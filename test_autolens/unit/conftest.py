@@ -54,6 +54,46 @@ def make_gal_x1_mp():
     return mock.make_gal_x1_mp()
 
 
+@pytest.fixture(name="phase_imaging_7x7")
+def make_phase_imaging_7x7():
+    return mock.make_phase_imaging_7x7()
+
+
+@pytest.fixture(name="imaging_7x7")
+def make_imaging_7x7():
+    return aa.mock.make_imaging_7x7()
+
+
+@pytest.fixture(name="sub_mask_7x7")
+def make_sub_mask_7x7():
+    return aa.mock.make_sub_mask_7x7()
+
+
+@pytest.fixture(name="lp_0")
+def make_lp_0():
+    return mock.make_lp_0()
+
+
+@pytest.fixture(name="gal_x1_lp")
+def make_gal_x1_lp():
+    return mock.make_gal_x1_lp()
+
+
+@pytest.fixture(name="include_all")
+def make_include_all():
+    return mock.make_include_all()
+
+
+@pytest.fixture(name="fit_interferometer_7")
+def make_masked_interferometer_fit_x1_plane_7(masked_interferometer_7):
+    return mock.make_masked_interferometer_fit_x1_plane_7()
+
+
+@pytest.fixture(name="mask_7x7")
+def make_mask_7x7():
+    return aa.mock.make_mask_7x7()
+
+
 # Ray Tracing #
 
 
