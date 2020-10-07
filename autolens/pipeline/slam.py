@@ -68,7 +68,7 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
         if not self.light_is_model:
             return ""
         elif self.light_is_model:
-            return f"__{conf.instance.setup_tag.get('pipeline', 'light_is_model')}"
+            return f"__{conf.instance['notation']['setup_tags']['pipeline']['light_is_model']}"
 
     @property
     def smbh_prior_model(self):
@@ -197,7 +197,7 @@ class SLaM:
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
 
-        setup_tag = conf.instance.setup_tag.get("source", "source")
+        setup_tag = conf.instance["notation"]["setup_tags"]["source"]["source"]
         hyper_tag = (
             f"__{self.setup_hyper.tag_no_fixed}" if self.setup_hyper is not None else ""
         )
@@ -230,7 +230,7 @@ class SLaM:
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
 
-        setup_tag = conf.instance.setup_tag.get("source", "source")
+        setup_tag = conf.instance["notation"]["setup_tags"]["source"]["source"]
         hyper_tag = (
             f"__{self.setup_hyper.tag_no_fixed}" if self.setup_hyper is not None else ""
         )
@@ -270,7 +270,7 @@ class SLaM:
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
 
-        setup_tag = conf.instance.setup_tag.get("light", "light")
+        setup_tag = conf.instance["notation"]["setup_tags"]["light"]["light"]
         hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
 
         if hyper_tag == "__":
@@ -301,7 +301,7 @@ class SLaM:
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
 
-        setup_tag = conf.instance.setup_tag.get("mass", "mass")
+        setup_tag = conf.instance["notation"]["setup_tags"]["mass"]["mass"]
         hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
 
         if hyper_tag == "__":
