@@ -123,7 +123,7 @@ Python-only code base runs efficiently.
 To perform lens modeling, `PyAutoLens` adopts the probabilistic programming 
 language `PyAutoFit` [@PyAutoFit] (https://github.com/rhayes777/PyAutoFit). `PyAutoFit` allows users to compose a 
 lens model from `LightProfile`, `MassProfile` and `Galaxy` objects, customize the model parameterization and fit it to 
-data via a non-linear search (e.g. `Dynesty` [@Dynesty], `Emcee` [@emcee], `PySwarms` [@pyswarms]). By composing a 
+data via a `NonLinearSearch` (e.g. `Dynesty` [@Dynesty], `Emcee` [@emcee], `PySwarms` [@pyswarms]). By composing a 
 lens model with a `Pixelization` and `Regularizaion` object, the background source's light is modeled using a 
 rectangular grid or Voronoi mesh that accounts for irregular galaxy morphologies which a `LightProile` cannot 
 accurately capture. Lensed quasar and supernovae datasets can be fitted using a `PointSource`, which uses positions 

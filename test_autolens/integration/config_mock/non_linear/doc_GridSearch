@@ -1,6 +1,6 @@
-the GridSearch non-linear search allows one to set off a grid-search of non-linear searches, whereby one or more
+the GridSearch `NonLinearSearch` allows one to set off a grid-search of non-linear searches, whereby one or more
 parameters are sampled in 'sliced' uniform prioros with all other model parameters treated as free parameters. Thus,
-one could view it as a classic grid search's approach to non-linear sampling, but using many non-linear search to do
+one could view it as a classic grid search's approach to non-linear sampling, but using many `NonLinearSearch` to do
 this.
 
 For every parameter on the GridSearch's grid, a step size is input describing steps in UniformPriors taken over

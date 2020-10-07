@@ -7,8 +7,8 @@ and its what we wrote **PyAutoLens** to do.
 
 At the end of tutorials you will understand:
 
-1) The concept of a non-linear search and non-linear parameter space.
-2) How to perform a non-linear search with **PyAutoLens** to fit a lens model.
+1) The concept of a `NonLinearSearch` and non-linear parameter space.
+2) How to perform a `NonLinearSearch` with **PyAutoLens** to fit a lens model.
 3) The trade-off between realism and complexity when choosing a lens model.
 4) Why an incorrect lens model may be inferred and how to prevent this from happening.
 5) The challenges that are involved in inferred a robust lens model in a computationally reasonable run-time.

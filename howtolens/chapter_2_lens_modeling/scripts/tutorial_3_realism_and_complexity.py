@@ -145,7 +145,7 @@ However, non-linear searches may not always successfully locate the global maxim
 a `local maxima`, a solution which has a high log likelihood value relative to the lens models near it in parameter 
 space, but whose log likelihood is significantly below the `global` maxima solution somewhere else in parameter space. 
 
-Inferring such solutions is essentially a failure of our non-linear search and it is something we do not want to
+Inferring such solutions is essentially a failure of our `NonLinearSearch` and it is something we do not want to
 happen! Lets infer a local maxima, by reducing the number of `live points` Dynesty uses to map out parameter space.
 We`re going to use so few that it has no hope of locating the global maxima, ultimating finding and inferring a local 
 maxima instead.
@@ -186,7 +186,7 @@ And lets look at the fit to the `Imaging` data, which is clearly worse than our 
 """
 Finally, just to be sure we hit a local maxima, lets compare the maximum log likelihood values of the two results 
 
-The local maxima value is significantly lower, confirming that our non-linear search simply failed to locate lens 
+The local maxima value is significantly lower, confirming that our `NonLinearSearch` simply failed to locate lens 
 models which fit the data better when it searched parameter space.
 """
 
@@ -198,26 +198,26 @@ print("Likelihood of Local Model:")
 
 # %%
 """
-In this example, we intentionally made our non-linear search fail, by using so few live points it had no hope of 
+In this example, we intentionally made our `NonLinearSearch` fail, by using so few live points it had no hope of 
 sampling parameter space thoroughly. For modeling real lenses we wouldn't do this on purpose, but the risk of inferring 
 a local maxima is still very real, especially as we make our lens model more complex.
 
 Lets think about *complexity*. As we make our lens model more realistic, we also made it more complex. For this 
 tutorial, our non-linear parameter space went from 7 dimensions to 18. This means there was a much larger *volume* of 
-parameter space to search. As this volume grows, there becomes a higher chance that our non-linear search gets lost 
+parameter space to search. As this volume grows, there becomes a higher chance that our `NonLinearSearch` gets lost 
 and infers a local maxima, especially if we don't set it up with enough live points!
 
-At its core, lens modeling is all about learning how to get a non-linear search to find the global maxima region of 
+At its core, lens modeling is all about learning how to get a `NonLinearSearch` to find the global maxima region of 
 parameter space, even when the lens model is extremely complex.
 
 And with that, we`re done. In the next exercise, we'll learn how to deal with failure and begin thinking about how we 
-can ensure our non-linear search finds the global-maximum log likelihood solution. Before that, think about 
+can ensure our `NonLinearSearch` finds the global-maximum log likelihood solution. Before that, think about 
 the following:
 
  1) When you look at an image of a strong lens, do you get a sense of roughly what values certain lens model 
  parameters are?
     
- 2) The non-linear search failed because parameter space was too complex. Could we make it less complex, whilst 
+ 2) The `NonLinearSearch` failed because parameter space was too complex. Could we make it less complex, whilst 
  still keeping our lens model fairly realistic?
     
  3) The source galaxy in this example had only 7 non-linear parameters. Real source galaxies may have multiple 

@@ -3,8 +3,8 @@
 Tutorial 2: Parameter Space and Priors
 ======================================
 
-In the previous example, we used a non-linear search to infer the best-fit lens model of imaging-imaging of a strong
-lens. In this example, we'll get a deeper intuition of how a non-linear search works.
+In the previous example, we used a `NonLinearSearch` to infer the best-fit lens model of imaging-imaging of a strong
+lens. In this example, we'll get a deeper intuition of how a `NonLinearSearch` works.
 
 First, I want to develop the idea of a `parameter space`. Lets think of a function, like the simple function below:
 
@@ -54,7 +54,7 @@ So, how does **PyAutoLens** know where to look in parameter space? A parameter, 
 principle take any value between negative and positive infinity. **PyAutoLens** must of told it to only search regions of
 parameter space with `reasonable` values (i.e. Einstein radii of around 1"-3").
 
-These are our `priors` - which define where we tell the non-linear search to search parameter space. These tutorials
+These are our `priors` - which define where we tell the `NonLinearSearch` to search parameter space. These tutorials
 use two types of prior:
 
 UniformPrior:
