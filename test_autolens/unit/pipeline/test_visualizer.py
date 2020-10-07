@@ -21,8 +21,8 @@ def make_visualizer_plotter_setup():
 @pytest.fixture(
     autouse=True
 )
-def push_config(plot_path):
-    conf.instance = conf.instance.push(
+def push_config(plot_path, config):
+    conf.instance = config.push(
         f"{directory}/config"
     )
     conf.instance.output_path = plot_path
