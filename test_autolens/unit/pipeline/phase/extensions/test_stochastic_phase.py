@@ -2,7 +2,7 @@ import autofit as af
 import autofit.non_linear.paths
 import autolens as al
 import pytest
-from test_autolens import mock
+from autolens import mock
 
 
 class MockMetaDataset:
@@ -45,7 +45,7 @@ def make_stochastic():
     )
 
 
-class TestStochasticPhase:
+class _TestStochasticPhase:
     def test__stochastic_result(self, imaging_7x7, stochastic):
 
         results = mock.MockResults(stochastic_log_evidences=[1.0, 1.0, 2.0])
@@ -84,9 +84,8 @@ class TestStochasticPhase:
         galaxy = al.Galaxy(mass=al.mp.SphericalIsothermal(), redshift=1.0)
 
         phase = al.PhaseImaging(
-            phase_name="test_phase",
             galaxies=dict(galaxy=galaxy),
-            search=af.DynestyStatic(n_live_points=1),
+            search=af.DynestyStatic(phase_name="test_phase", n_live_points=1),
             settings=al.SettingsPhaseImaging(bin_up_factor=2),
         )
 

@@ -14,9 +14,9 @@ If on super computer:
 """
 
 try:
-    nopython = conf.instance.general.get("numba", "nopython", bool)
-    cache = conf.instance.general.get("numba", "cache", bool)
-    parallel = conf.instance.general.get("numba", "parallel", bool)
+    nopython = conf.instance["general"]["numba"]["nopython"]
+    cache = conf.instance["general"]["numba"]["cache"]
+    parallel = conf.instance["general"]["numba"]["parallel"]
 except Exception:
     nopython = True
     cache = True
