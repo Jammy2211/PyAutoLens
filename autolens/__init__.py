@@ -1,8 +1,5 @@
-from autolens.conf import check_workspace_path
-
-check_workspace_path()
-
 from autoarray import preprocess
+from autoarray import Mask2D
 from autoarray.dataset.imaging import Imaging
 from autoarray.dataset.interferometer import Interferometer
 from autoarray.mask.mask_2d import Mask2D

@@ -1,9 +1,10 @@
 import os
-from autoconf import conf
-import autolens as al
+
 import numpy as np
 import pytest
-from test_autolens import mock
+
+import autolens as al
+from autolens import mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -14,21 +15,12 @@ pytestmark = pytest.mark.filterwarnings(
 directory = os.path.dirname(os.path.realpath(__file__))
 
 
-@pytest.fixture(scope="session", autouse=True)
-def do_something():
-    print("{}/config/".format(directory))
-
-    conf.instance = conf.Config("{}/config/".format(directory))
-
-
 class TestTracer:
     def test__max_log_likelihood_tracer_available_as_result(
-        self, imaging_7x7, mask_7x7, samples_with_result
+            self, imaging_7x7, mask_7x7, samples_with_result
     ):
-
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2",
-            search=mock.MockSearch(samples=samples_with_result),
+            search=mock.MockSearch("test_phase_2", samples=samples_with_result),
         )
 
         result = phase_dataset_7x7.run(
@@ -40,9 +32,8 @@ class TestTracer:
         assert result.max_log_likelihood_tracer.galaxies[1].light.intensity == 2.0
 
     def test__max_log_likelihood_tracer_source_light_profile_centres_correct(
-        self, imaging_7x7, mask_7x7
+            self, imaging_7x7, mask_7x7
     ):
-
         lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
 
         source = al.Galaxy(
@@ -54,7 +45,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+            search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -78,7 +69,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+            search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -95,7 +86,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+            search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -105,7 +96,7 @@ class TestTracer:
         assert result.source_plane_light_profile_centres == []
 
     def test__max_log_likelihood_tracer_source_inversion_centres_correct(
-        self, imaging_7x7, mask_7x7
+            self, imaging_7x7, mask_7x7
     ):
         lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
 
@@ -120,7 +111,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+            search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -141,7 +132,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+            search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -151,7 +142,7 @@ class TestTracer:
         assert result.source_plane_inversion_centres == []
 
     def test__max_log_likelihood_tracer_source_centres_correct(
-        self, imaging_7x7, mask_7x7
+            self, imaging_7x7, mask_7x7
     ):
         lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
         source = al.Galaxy(
@@ -166,7 +157,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+            search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
@@ -176,7 +167,7 @@ class TestTracer:
         assert result.source_plane_centres.in_list == [[(9.0, 8.0), (0.0, 0.0)]]
 
     def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_centres_and_separations(
-        self, imaging_7x7, mask_7x7
+            self, imaging_7x7, mask_7x7
     ):
         lens = al.Galaxy(
             redshift=0.5,
@@ -200,7 +191,7 @@ class TestTracer:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         phase_dataset_7x7 = al.PhaseImaging(
-            phase_name="test_phase_2", search=mock.MockSearch(samples=samples)
+            search=mock.MockSearch("test_phase_2", samples=samples)
         )
 
         result = phase_dataset_7x7.run(
