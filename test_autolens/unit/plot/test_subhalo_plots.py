@@ -14,11 +14,11 @@ def make_fit_imaging_plotter_setup():
 
 
 def test__subhalo_detection_sub_plot(
-        masked_imaging_fit_x2_plane_7x7,
-        masked_imaging_fit_x2_plane_inversion_7x7,
-        include_all,
-        plot_path,
-        plot_patch,
+    masked_imaging_fit_x2_plane_7x7,
+    masked_imaging_fit_x2_plane_inversion_7x7,
+    include_all,
+    plot_path,
+    plot_patch,
 ):
     arr = al.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
 
@@ -44,11 +44,11 @@ def test__subhalo_detection_sub_plot(
 
 
 def test__subhalo_detection_fits(
-        masked_imaging_fit_x2_plane_7x7,
-        masked_imaging_fit_x2_plane_inversion_7x7,
-        include_all,
-        plot_path,
-        plot_patch,
+    masked_imaging_fit_x2_plane_7x7,
+    masked_imaging_fit_x2_plane_inversion_7x7,
+    include_all,
+    plot_path,
+    plot_patch,
 ):
     aplt.Subhalo.subplot_detection_fits(
         fit_imaging_before=masked_imaging_fit_x2_plane_7x7,

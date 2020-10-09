@@ -4,9 +4,33 @@ from autoconf import conf
 from autogalaxy.pipeline import setup as ag_setup
 from autolens.pipeline import setup
 
+from typing import Union
 
 class AbstractSLaMPipeline:
-    def __init__(self, setup_light, setup_mass, setup_source):
+    def __init__(self, setup_light : Union[ag_setup.SetupLightParametric, ag_setup.SetupLightInversion],
+                 setup_mass: Union[setup.SetupMassTotal, setup.SetupMassLightDark],
+                 setup_source : Union[setup.SetupSourceParametric, setup.SetupSourceInversion]):
+        """
+        Abstract class for storing a `SLaMPipeline` object, which contains the `Setup` objects for a given Source,
+        Light and Mass (SLaM) pipeline.
+
+        The SLaM pipelines are template pipelines used by PyAutoLens (see `autolens_workspace/slam`) which break the
+        model-fitting of a strong lens down into the following 3+ linked pipelines:
+
+        1) Source: Obtain an accurate source model (using parametric `LightProfile`'s and / or an `Inversion`.
+        2) Light: Obtain an accurate lens light model (using parametric `LightProfile`'s).
+        3) Mass: Obtain an accurate mass model (using a `MassProfile` representing the total mass distribution or
+           decomposed `MassProfile`'s representing the light and dark matter).
+
+        Parameters
+        ----------
+        setup_light : SetupLightParametric
+            The setup of the light profile modeling (e.g. for bulge-disk models if they are geometrically aligned).
+        setup_mass : SetupMassTotal or SetupMassLightDark
+            The setup of the mass modeling (e.g. if a constant mass to light ratio is used).
+        setup_source : SetupSourceParametric or SetupSourceInversion
+            The setup of the source analysis (e.g. the `LightProfile`, `Pixelization` or `Regularization` used).
+        """
 
         self.setup_light = setup_light
         self.setup_mass = setup_mass
@@ -16,10 +40,19 @@ class AbstractSLaMPipeline:
 class SLaMPipelineSourceParametric(AbstractSLaMPipeline):
     def __init__(
         self,
-        setup_light: setup.SetupLight = setup.SetupLight(),
-        setup_mass: setup.SetupMassTotal = setup.SetupMassTotal(),
-        setup_source: ag_setup.SetupSource = ag_setup.SetupSource(),
+        setup_light: ag_setup.SetupLightParametric = None,
+        setup_mass: setup.SetupMassTotal = None,
+        setup_source: setup.SetupSourceParametric = None,
     ):
+
+        if setup_light is None:
+            setup_light = ag_setup.SetupLightParametric()
+
+        if setup_mass is None:
+            setup_mass = setup.SetupMassTotal()
+
+        if setup_source is None:
+            setup_source = setup.SetupSourceParametric()
 
         super().__init__(
             setup_light=setup_light, setup_mass=setup_mass, setup_source=setup_source
@@ -27,17 +60,19 @@ class SLaMPipelineSourceParametric(AbstractSLaMPipeline):
 
 
 class SLaMPipelineSourceInversion(AbstractSLaMPipeline):
-    def __init__(
-        self, setup_source: setup.SetupSourceInversion = setup.SetupSourceInversion()
-    ):
+    def __init__(self, setup_source: setup.SetupSourceInversion = None):
+
+        if setup_source is None:
+            setup_source = setup.SetupSourceInversion()
 
         super().__init__(setup_light=None, setup_mass=None, setup_source=setup_source)
 
 
 class SLaMPipelineLight(AbstractSLaMPipeline):
-    def __init__(
-        self, setup_light: setup.SetupLight = setup.SetupLight()
-    ):
+    def __init__(self, setup_light: ag_setup.SetupLightParametric = None):
+
+        if setup_light is None:
+            setup_light = ag_setup.SetupLightParametric()
 
         super().__init__(setup_source=None, setup_light=setup_light, setup_mass=None)
 
@@ -45,10 +80,13 @@ class SLaMPipelineLight(AbstractSLaMPipeline):
 class SLaMPipelineMass(AbstractSLaMPipeline):
     def __init__(
         self,
-        setup_mass: ag_setup.AbstractSetupMass = setup.SetupMassTotal(),
+        setup_mass: ag_setup.AbstractSetupMass = None,
         setup_smbh: ag_setup.SetupSMBH = None,
         light_is_model=True,
     ):
+
+        if setup_mass is None:
+            setup_mass = setup.SetupMassTotal()
 
         super().__init__(setup_source=None, setup_light=None, setup_mass=setup_mass)
 
@@ -56,11 +94,11 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
         self.light_is_model = light_is_model
 
     @property
-    def light_is_model_tag(self):
+    def light_is_model_tag(self) -> str:
         """Generate a tag for if the lens light of the pipeline and / or phase are fixed to a previous estimate,
         or varied during he analysis, to customize phase names.
 
-        This changes the setup folder as follows:
+        For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
 
         light_is_model = ``False`` -> setup__
         light_is_model = ``True`` -> setup___light_is_model
@@ -85,7 +123,7 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
            returned using this pipeline result as a model.
         2) If the shear was not included in the *Source* pipeline and *no_shear* is ``False`` in the *Mass* object, it is
             returned as a new *ExternalShear* PriorModel.
-        3) If *no_shear* is *True* in the *Mass* object, it is returned as None and omitted from the lens model.
+        3) If *no_shear* is `True` in the *Mass* object, it is returned as None and omitted from the lens model.
         """
         if not self.setup_mass.no_shear:
             if af.last[index].model.galaxies.lens.shear is not None:
@@ -178,7 +216,9 @@ class SLaM:
                     self.pipeline_source_inversion.setup_source
                 )
 
-            if isinstance(self.pipeline_mass.setup_light, ag_setup.SetupLight):
+            if isinstance(
+                self.pipeline_mass.setup_light, ag_setup.SetupLightParametric
+            ):
 
                 self.pipeline_mass.setup_mass.disk_as_sersic = (
                     self.pipeline_mass.setup_light.disk_as_sersic
@@ -193,7 +233,7 @@ class SLaM:
         self.setup_subhalo = setup_subhalo
 
     @property
-    def source_parametric_tag(self):
+    def source_parametric_tag(self) -> str:
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
 
@@ -226,7 +266,7 @@ class SLaM:
         return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
 
     @property
-    def source_inversion_tag(self):
+    def source_inversion_tag(self) -> str:
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
 
@@ -260,13 +300,13 @@ class SLaM:
         return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
 
     @property
-    def source_tag(self):
+    def source_tag(self) -> str:
         if self.pipeline_source_inversion is None:
             return self.source_parametric_tag
         return self.source_inversion_tag
 
     @property
-    def light_tag(self):
+    def light_tag(self) -> str:
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
 
@@ -297,7 +337,7 @@ class SLaM:
         return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
 
     @property
-    def mass_tag(self):
+    def mass_tag(self) -> str:
         """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
         """
 
@@ -505,7 +545,7 @@ class SLaM:
         determine this. This function returns a `GalaxyModel` for the lens, where:
 
         1) The lens light model uses the light model of the Light pipeline.
-        2) The lens light is returned as a model if *light_is_model* is *False, an instance if *True*.
+        2) The lens light is returned as a model if *light_is_model* is *False, an instance if `True`.
 
         Parameters
         ----------
@@ -546,7 +586,7 @@ class SLaM:
         determine this. This function returns a `GalaxyModel` for the lens, where:
 
         1) The lens light model uses the light model of the Light pipeline.
-        2) The lens light is returned as a model if *light_is_model* is *False, an instance if *True*.
+        2) The lens light is returned as a model if *light_is_model* is *False, an instance if `True`.
 
         Parameters
         ----------
@@ -589,7 +629,7 @@ class SLaM:
         determine this. This function returns a `GalaxyModel` for the lens, where:
 
         1) The lens light model uses the light model of the Light pipeline.
-        2) The lens light is returned as a model if *light_is_model* is *False, an instance if *True*.
+        2) The lens light is returned as a model if *light_is_model* is *False, an instance if `True`.
 
         Parameters
         ----------
@@ -601,7 +641,7 @@ class SLaM:
             The `ExternalShear` of the lens galaxy.
         """
 
-        if isinstance(self.pipeline_mass.setup_light, setup.SetupLight):
+        if isinstance(self.pipeline_mass.setup_light, setup.SetupLightParametric):
 
             return self._lens_from_light_bulge_disk_pipeline_for_mass_pipeline(
                 mass=mass, shear=shear, light_is_model=self.pipeline_mass.light_is_model
@@ -667,10 +707,10 @@ class SLaM:
                 redshift=self.redshift_source,
                 pixelization=af.last[
                     index
-                ].hyper_combined.instance.galaxies.source.pixelization_prior_model,
+                ].hyper_combined.instance.galaxies.source.pixelization,
                 regularization=af.last[
                     index
-                ].hyper_combined.model.galaxies.source.regularization_prior_model,
+                ].hyper_combined.model.galaxies.source.regularization,
             )
 
         else:
@@ -679,10 +719,10 @@ class SLaM:
                 redshift=self.redshift_source,
                 pixelization=af.last[
                     index
-                ].hyper_combined.instance.galaxies.source.pixelization_prior_model,
+                ].hyper_combined.instance.galaxies.source.pixelization,
                 regularization=af.last[
                     index
-                ].hyper_combined.instance.galaxies.source.regularization_prior_model,
+                ].hyper_combined.instance.galaxies.source.regularization,
                 hyper_galaxy=hyper_galaxy,
             )
 
@@ -704,7 +744,7 @@ class SLaM:
         Parameters
         ----------
         source_is_model : bool
-            If *True* the source is returned as a *model* where the parameters are fitted for using priors of the
+            If `True` the source is returned as a *model* where the parameters are fitted for using priors of the
             phase result it is loaded from. If ``False``, it is an instance of that phase's result.
         index : integer
             The index (counting backwards from this phase) of the phase result used to setup the source.

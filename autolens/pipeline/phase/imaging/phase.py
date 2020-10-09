@@ -43,10 +43,7 @@ class PhaseImaging(dataset.PhaseDataset):
         """
 
         super().__init__(
-            search=search,
-            settings=settings,
-            galaxies=galaxies,
-            cosmology=cosmology,
+            search=search, settings=settings, galaxies=galaxies, cosmology=cosmology
         )
 
         self.hyper_image_sky = hyper_image_sky

@@ -31,7 +31,7 @@ from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
 from autogalaxy.galaxy.galaxy_data import GalaxyData
 from autogalaxy.galaxy.galaxy_model import GalaxyModel
 from autogalaxy.hyper import hyper_data
-from autogalaxy.pipeline.setup import SetupLight, SetupSource, SetupSMBH
+from autogalaxy.pipeline.setup import SetupLightParametric, SetupSMBH
 from autogalaxy.pipeline.phase.extensions import CombinedHyperPhase
 from autogalaxy.pipeline.phase.extensions import HyperGalaxyPhase
 from autogalaxy.pipeline.phase.extensions.hyper_galaxy_phase import HyperGalaxyPhase
@@ -61,8 +61,8 @@ from .lens.positions_solver import PositionsFinder
 from .pipeline.setup import (
     SetupPipeline,
     SetupHyper,
+    SetupSourceParametric,
     SetupSourceInversion,
-    SetupLight,
     SetupMassTotal,
     SetupMassLightDark,
     SetupSubhalo,

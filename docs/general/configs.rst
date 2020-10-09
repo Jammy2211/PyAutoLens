@@ -303,7 +303,7 @@ The *interpolate.ini* specifies for every `LightProfile` and `MassProfile` in **
 performed using interpolation or by computing every value on the grid explicitly at native resolution.
 
 The default *interpolate.ini* config file supplied with the **PyAutoLens** workspace specifies ``False`` for every
-profile that does not require numerical integration (and therefore is fast to compute) and *True* for every profile
+profile that does not require numerical integration (and therefore is fast to compute) and `True` for every profile
 which does (and therefore can see the calculation sped ups by factors of > x10).
 
 **radial_minimum.ini**

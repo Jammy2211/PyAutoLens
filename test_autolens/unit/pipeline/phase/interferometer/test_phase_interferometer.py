@@ -18,7 +18,7 @@ directory = os.path.dirname(os.path.realpath(__file__))
 
 class TestMakeAnalysis:
     def test__masked_interferometer__settings_inputs_are_used_in_masked_interferometer(
-            self, interferometer_7, mask_7x7
+        self, interferometer_7, mask_7x7
     ):
         phase_interferometer_7 = al.PhaseInterferometer(
             settings=al.SettingsPhaseInterferometer(
@@ -33,24 +33,24 @@ class TestMakeAnalysis:
                 ),
                 settings_inversion=al.SettingsInversion(use_linear_operators=True),
             ),
-            search=mock.MockSearch("phase_interferometer_7", ),
+            search=mock.MockSearch("phase_interferometer_7"),
             real_space_mask=mask_7x7,
         )
 
         assert (
-                phase_interferometer_7.settings.settings_masked_interferometer.sub_size == 3
+            phase_interferometer_7.settings.settings_masked_interferometer.sub_size == 3
         )
         assert (
-                phase_interferometer_7.settings.settings_masked_interferometer.signal_to_noise_limit
-                == 1.0
+            phase_interferometer_7.settings.settings_masked_interferometer.signal_to_noise_limit
+            == 1.0
         )
         assert phase_interferometer_7.settings.settings_pixelization.use_border == False
         assert (
-                phase_interferometer_7.settings.settings_pixelization.is_stochastic == True
+            phase_interferometer_7.settings.settings_pixelization.is_stochastic == True
         )
         assert (
-                phase_interferometer_7.settings.settings_inversion.use_linear_operators
-                == True
+            phase_interferometer_7.settings.settings_inversion.use_linear_operators
+            == True
         )
 
         analysis = phase_interferometer_7.make_analysis(
@@ -71,7 +71,7 @@ class TestMakeAnalysis:
                     transformer_class=al.TransformerDFT,
                 )
             ),
-            search=mock.MockSearch("phase_interferometer_7", ),
+            search=mock.MockSearch("phase_interferometer_7"),
             real_space_mask=mask_7x7,
         )
 
@@ -86,7 +86,7 @@ class TestMakeAnalysis:
         assert isinstance(analysis.masked_dataset.transformer, al.TransformerDFT)
 
     def test__masks_visibilities_and_noise_map_correctly(
-            self, phase_interferometer_7, interferometer_7, visibilities_mask_7x2
+        self, phase_interferometer_7, interferometer_7, visibilities_mask_7x2
     ):
         analysis = phase_interferometer_7.make_analysis(
             dataset=interferometer_7,
@@ -95,14 +95,14 @@ class TestMakeAnalysis:
         )
 
         assert (
-                analysis.masked_interferometer.visibilities == interferometer_7.visibilities
+            analysis.masked_interferometer.visibilities == interferometer_7.visibilities
         ).all()
         assert (
-                analysis.masked_interferometer.noise_map == interferometer_7.noise_map
+            analysis.masked_interferometer.noise_map == interferometer_7.noise_map
         ).all()
 
     def test__phase_info_is_made(
-            self, phase_interferometer_7, interferometer_7, visibilities_mask_7x2
+        self, phase_interferometer_7, interferometer_7, visibilities_mask_7x2
     ):
         phase_interferometer_7.make_analysis(
             dataset=interferometer_7,
@@ -127,9 +127,9 @@ class TestMakeAnalysis:
         assert sub_size == "Sub-grid size = 2 \n"
         assert positions_threshold == "Positions Threshold = None \n"
         assert (
-                cosmology
-                == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, '
-                   "Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n"
+            cosmology
+            == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, '
+            "Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n"
         )
 
     def test__phase_can_receive_hyper_image_and_noise_maps(self, mask_7x7):
@@ -139,7 +139,7 @@ class TestMakeAnalysis:
                 lens1=al.GalaxyModel(redshift=al.Redshift),
             ),
             hyper_background_noise=al.hyper_data.HyperBackgroundNoise,
-            search=mock.MockSearch("test_phase", ),
+            search=mock.MockSearch("test_phase"),
             real_space_mask=mask_7x7,
         )
 
@@ -149,9 +149,10 @@ class TestMakeAnalysis:
         assert instance.galaxies[1].redshift == 0.2
         assert instance.hyper_background_noise.noise_scale == 0.3
 
+
 class TestHyperMethods:
     def test__phase_is_extended_with_hyper_phases__sets_up_hyper_images(
-            self, interferometer_7, mask_7x7
+        self, interferometer_7, mask_7x7
     ):
         galaxies = af.ModelInstance()
         galaxies.lens = al.Galaxy(redshift=0.5)
@@ -189,7 +190,7 @@ class TestHyperMethods:
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, hyper_galaxy=al.HyperGalaxy)
             ),
-            search=mock.MockSearch("test_phase", ),
+            search=mock.MockSearch("test_phase"),
             real_space_mask=mask_7x7,
         )
 
@@ -202,25 +203,25 @@ class TestHyperMethods:
         )
 
         assert (
-                analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].in_2d
-                == np.ones((3, 3))
+            analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].in_2d
+            == np.ones((3, 3))
         ).all()
 
         assert (
-                analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].in_2d
-                == 2.0 * np.ones((3, 3))
+            analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].in_2d
+            == 2.0 * np.ones((3, 3))
         ).all()
 
         assert (analysis.hyper_model_image.in_2d == 3.0 * np.ones((3, 3))).all()
 
         assert (
-                analysis.hyper_galaxy_visibilities_path_dict[("galaxies", "lens")]
-                == 4.0 * np.ones((7, 2))
+            analysis.hyper_galaxy_visibilities_path_dict[("galaxies", "lens")]
+            == 4.0 * np.ones((7, 2))
         ).all()
 
         assert (
-                analysis.hyper_galaxy_visibilities_path_dict[("galaxies", "source")]
-                == 5.0 * np.ones((7, 2))
+            analysis.hyper_galaxy_visibilities_path_dict[("galaxies", "source")]
+            == 5.0 * np.ones((7, 2))
         ).all()
 
         assert (analysis.hyper_model_visibilities == 6.0 * np.ones((7, 2))).all()

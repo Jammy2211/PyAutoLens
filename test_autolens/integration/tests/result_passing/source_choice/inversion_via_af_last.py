@@ -24,7 +24,7 @@ def source_with_previous_model_or_instance():
     model fitting.
     """
 
-    if af.last.model.galaxies.source.pixelization_prior_model is None:
+    if af.last.model.galaxies.source.pixelization is None:
 
         return al.GalaxyModel(
             redshift=af.last.instance.galaxies.source.redshift,
@@ -35,8 +35,8 @@ def source_with_previous_model_or_instance():
 
         return al.GalaxyModel(
             redshift=af.last.instance.galaxies.source.redshift,
-            pixelization=af.last.hyper_combined.instance.galaxies.source.pixelization_prior_model,
-            regularization=af.last.hyper_combined.instance.galaxies.source.regularization_prior_model,
+            pixelization=af.last.hyper_combined.instance.galaxies.source.pixelization,
+            regularization=af.last.hyper_combined.instance.galaxies.source.regularization,
         )
 
 
