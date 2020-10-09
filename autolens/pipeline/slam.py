@@ -1,6 +1,7 @@
 import autofit as af
 import autogalaxy as ag
 from autoconf import conf
+from autoarray.inversion import pixelizations as pix, regularization as reg
 from autogalaxy.profiles import mass_profiles as mp
 from autogalaxy.pipeline import setup as ag_setup
 from autolens.pipeline import setup
@@ -11,9 +12,9 @@ from typing import Union
 class AbstractSLaMPipeline:
     def __init__(
         self,
-        setup_light: Union[ag_setup.SetupLightParametric, ag_setup.SetupLightInversion],
-        setup_mass: Union[setup.SetupMassTotal, setup.SetupMassLightDark],
-        setup_source: Union[setup.SetupSourceParametric, setup.SetupSourceInversion],
+        setup_light: Union[ag_setup.SetupLightParametric, ag_setup.SetupLightInversion] = None,
+        setup_mass: Union[setup.SetupMassTotal, setup.SetupMassLightDark] = None,
+        setup_source: Union[setup.SetupSourceParametric, setup.SetupSourceInversion] = None,
     ):
         """
         Abstract class for storing a `SLaMPipeline` object, which contains the `Setup` objects for a given Source,
@@ -112,7 +113,7 @@ class SLaMPipelineSourceInversion(AbstractSLaMPipeline):
             The setup of the source analysis (e.g. the `LightProfile`, `Pixelization` or `Regularization` used).
         """
         if setup_source is None:
-            setup_source = setup.SetupSourceInversion()
+            setup_source = setup.SetupSourceInversion(pixelization_prior_model=pix.Rectangular, regularization_prior_model=reg.Constant)
 
         super().__init__(setup_source=setup_source)
 
@@ -143,7 +144,7 @@ class SLaMPipelineLightParametric(AbstractSLaMPipeline):
         if setup_light is None:
             setup_light = ag_setup.SetupLightParametric()
 
-        super().__init__(setup_source=None, setup_light=setup_light, setup_mass=None)
+        super().__init__(setup_light=setup_light)
 
 
 class SLaMPipelineMass(AbstractSLaMPipeline):
@@ -180,7 +181,7 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
         if setup_mass is None:
             setup_mass = setup.SetupMassTotal()
 
-        super().__init__(setup_source=None, setup_mass=setup_mass, setup_light=None)
+        super().__init__(setup_mass=setup_mass)
 
         self.setup_smbh = setup_smbh
         self.light_is_model = light_is_model
