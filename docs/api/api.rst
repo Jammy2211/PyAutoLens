@@ -309,7 +309,7 @@ Lens Modeling
    SLaM
    SLaMPipelineSourceParametric
    SLaMPipelineSourceInversion
-   SLaMPipelineLight
+   SLaMPipelineLightParametric
    SLaMPipelineMass
 
 ---------

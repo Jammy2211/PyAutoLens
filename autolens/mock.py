@@ -2,6 +2,7 @@ from autogalaxy.mock import *
 
 import autolens as al
 
+
 class MockResult(af.MockResult):
     def __init__(
         self,

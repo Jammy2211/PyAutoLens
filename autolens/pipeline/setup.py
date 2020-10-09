@@ -318,7 +318,7 @@ class AbstractSetupMass:
 
         For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
 
-        no_shear = ``False`` -> setup__with_shear
+        no_shear = `False` -> setup__with_shear
         no_shear = ``True`` -> setup___no_shear
         """
         if not self.no_shear:
@@ -495,11 +495,11 @@ class SetupSourceParametric(setup.SetupLightParametric):
 
         Parameters
         ----------
-        bulge_prior_model : af.PriorModel
+        bulge_prior_model : af.PriorModel(lp.LightProfile)
             The `LightProfile` `PriorModel` used to represent the light distribution of a bulge.
-        disk_prior_model : af.PriorModel
+        disk_prior_model : af.PriorModel(lp.LightProfile)
             The `LightProfile` `PriorModel` used to represent the light distribution of a disk.
-        envelope_prior_model : af.PriorModel
+        envelope_prior_model : af.PriorModel(lp.LightProfile)
             The `LightProfile` `PriorModel` used to represent the light distribution of a envelope.
         light_centre : (float, float) or None
            If input, a fixed (y,x) centre of the galaxy is used for the light profile model which is not treated as a

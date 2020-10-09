@@ -37,3 +37,43 @@ class TestSLaMPipelineMass:
         assert isinstance(
             pipeline_mass.shear_from_previous_pipeline(), af.AbstractPromise
         )
+
+
+class TestSLaM:
+    def test__source_parametric_tag(self):
+
+        slam = al.SLaM(
+            pipeline_source_parametric=al.SLaMPipelineSourceParametric(),
+            pipeline_mass=al.SLaMPipelineMass(),
+        )
+
+        assert (
+            slam.source_parametric_tag == f"source__"
+            f"mass[total__sie__with_shear]__"
+            f"source[parametric__bulge_sersic__disk_exp]"
+        )
+
+        pipeline_source_parametric = al.SLaMPipelineSourceParametric(
+            setup_light=al.SetupLightParametric(
+                bulge_prior_model=al.lp.SphericalExponential, disk_prior_model=None
+            ),
+            setup_mass=al.SetupMassTotal(
+                mass_prior_model=al.mp.EllipticalPowerLaw, mass_centre=(0.0, 0.0)
+            ),
+            setup_source=al.SetupSourceParametric(
+                bulge_prior_model=al.lp.SphericalDevVaucouleurs
+            ),
+        )
+
+        slam = al.SLaM(
+            pipeline_source_parametric=pipeline_source_parametric,
+            pipeline_light_parametric=al.SLaMPipelineLightParametric(),
+            pipeline_mass=al.SLaMPipelineMass(),
+        )
+
+        assert (
+            slam.source_parametric_tag == f"source__"
+            f"light[parametric__bulge_exp_sph]__"
+            f"mass[total__power_law__with_shear__mass_centre_(0.00,0.00)]__"
+            f"source[parametric__bulge_dev_sph__disk_exp]"
+        )
