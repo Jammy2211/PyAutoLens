@@ -137,9 +137,9 @@ description of what inputting redshifts into **PyAutoLens** does.
 """
 
 # %%
-setup_light = al.SetupLight()
+setup_light = al.SetupLightParametric()
 setup_mass = al.SetupMassTotal(no_shear=False)
-setup_source = al.SetupSource()
+setup_source = al.SetupSourceParametric()
 
 setup = al.SetupPipeline(
     path_prefix="c3_t2_x2_galaxies",

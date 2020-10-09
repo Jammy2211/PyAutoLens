@@ -1,27 +1,28 @@
 from autogalaxy.mock import *
 
+import autolens as al
 
 class MockResult(af.MockResult):
     def __init__(
-            self,
-            samples=None,
-            instance=None,
-            model=None,
-            analysis=None,
-            search=None,
-            mask=None,
-            model_image=None,
-            max_log_likelihood_tracer=None,
-            hyper_galaxy_image_path_dict=None,
-            hyper_model_image=None,
-            hyper_galaxy_visibilities_path_dict=None,
-            hyper_model_visibilities=None,
-            pixelization=None,
-            positions=None,
-            updated_positions=None,
-            updated_positions_threshold=None,
-            stochastic_log_evidences=None,
-            use_as_hyper_dataset=False,
+        self,
+        samples=None,
+        instance=None,
+        model=None,
+        analysis=None,
+        search=None,
+        mask=None,
+        model_image=None,
+        max_log_likelihood_tracer=None,
+        hyper_galaxy_image_path_dict=None,
+        hyper_model_image=None,
+        hyper_galaxy_visibilities_path_dict=None,
+        hyper_model_visibilities=None,
+        pixelization=None,
+        positions=None,
+        updated_positions=None,
+        updated_positions_threshold=None,
+        stochastic_log_evidences=None,
+        use_as_hyper_dataset=False,
     ):
         super().__init__(
             samples=samples,
@@ -62,25 +63,25 @@ class MockResult(af.MockResult):
 
 class MockResults(af.ResultsCollection):
     def __init__(
-            self,
-            samples=None,
-            instance=None,
-            model=None,
-            analysis=None,
-            search=None,
-            mask=None,
-            model_image=None,
-            max_log_likelihood_tracer=None,
-            hyper_galaxy_image_path_dict=None,
-            hyper_model_image=None,
-            hyper_galaxy_visibilities_path_dict=None,
-            hyper_model_visibilities=None,
-            pixelization=None,
-            positions=None,
-            updated_positions=None,
-            updated_positions_threshold=None,
-            stochastic_log_evidences=None,
-            use_as_hyper_dataset=False,
+        self,
+        samples=None,
+        instance=None,
+        model=None,
+        analysis=None,
+        search=None,
+        mask=None,
+        model_image=None,
+        max_log_likelihood_tracer=None,
+        hyper_galaxy_image_path_dict=None,
+        hyper_model_image=None,
+        hyper_galaxy_visibilities_path_dict=None,
+        hyper_model_visibilities=None,
+        pixelization=None,
+        positions=None,
+        updated_positions=None,
+        updated_positions_threshold=None,
+        stochastic_log_evidences=None,
+        use_as_hyper_dataset=False,
     ):
         """
         A collection of results from previous phases. Results can be obtained using an index or the name of the phase
@@ -139,3 +140,13 @@ class MockResults(af.ResultsCollection):
 
     def __len__(self):
         return len(self.__result_list)
+
+
+def make_phase_imaging_7x7():
+    return al.PhaseImaging(search=MockSearch(phase_name="test_phase"))
+
+
+def make_phase_interferometer_7():
+    return al.PhaseInterferometer(
+        search=MockSearch(phase_name="test_phase"), real_space_mask=make_mask_7x7()
+    )

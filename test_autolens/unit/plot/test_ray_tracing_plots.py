@@ -17,16 +17,13 @@ def make_ray_tracing_plotter_setup():
     )
 
 
-
-
-
 def test__all_individual_plotters(
-        tracer_x2_plane_7x7,
-        sub_grid_7x7,
-        mask_7x7,
-        include_all,
-        ray_tracing_plotter_path,
-        plot_patch,
+    tracer_x2_plane_7x7,
+    sub_grid_7x7,
+    mask_7x7,
+    include_all,
+    ray_tracing_plotter_path,
+    plot_patch,
 ):
     aplt.Tracer.image(
         tracer=tracer_x2_plane_7x7,
@@ -115,7 +112,7 @@ def test__all_individual_plotters(
 
 
 def test__tracer_sub_plot_output(
-        tracer_x2_plane_7x7, sub_grid_7x7, include_all, ray_tracing_plotter_path, plot_patch
+    tracer_x2_plane_7x7, sub_grid_7x7, include_all, ray_tracing_plotter_path, plot_patch
 ):
     aplt.Tracer.subplot_tracer(
         tracer=tracer_x2_plane_7x7,
@@ -130,7 +127,7 @@ def test__tracer_sub_plot_output(
 
 
 def test__tracer_individuals__dependent_on_input(
-        tracer_x2_plane_7x7, sub_grid_7x7, include_all, ray_tracing_plotter_path, plot_patch
+    tracer_x2_plane_7x7, sub_grid_7x7, include_all, ray_tracing_plotter_path, plot_patch
 ):
     aplt.Tracer.individual(
         tracer=tracer_x2_plane_7x7,

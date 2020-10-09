@@ -14,8 +14,8 @@ class Result(result.Result, ag_result.Result):
     @property
     def pixelization(self):
         for galaxy in self.max_log_likelihood_fit.tracer.galaxies:
-            if galaxy.pixelization_prior_model is not None:
-                return galaxy.pixelization_prior_model
+            if galaxy.pixelization is not None:
+                return galaxy.pixelization
 
     @property
     def max_log_likelihood_pixelization_grids_of_planes(self):

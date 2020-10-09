@@ -72,11 +72,11 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
 
             self.galaxies.lens = results.from_phase("phase_1").model.galaxies.lens
 
-            self.galaxies.source.pixelization_prior_model = (
-                results.last.inversion.instance.galaxies.source.pixelization_prior_model
+            self.galaxies.source.pixelization = (
+                results.last.inversion.instance.galaxies.source.pixelization
             )
-            self.galaxies.source.regularization_prior_model = (
-                results.last.inversion.instance.galaxies.source.regularization_prior_model
+            self.galaxies.source.regularization = (
+                results.last.inversion.instance.galaxies.source.regularization
             )
 
     phase3 = InversionPhase(

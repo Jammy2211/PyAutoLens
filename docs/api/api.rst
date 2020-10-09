@@ -291,11 +291,11 @@ Lens Modeling
    :toctree: generated/
 
     SetupHyper
-    SetupLight
-    SetupLight
+    SetupLightParametric
+    SetupLightParametric
     SetupMassTotal
     SetupMassLightDark
-    SetupSource
+    SetupSourceParametric
     SetupSourceInversion
     SetupSMBH
     SetupSubhalo
