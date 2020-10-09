@@ -70,7 +70,7 @@ from .pipeline.setup import (
 from .pipeline.slam import (
     SLaMPipelineSourceParametric,
     SLaMPipelineSourceInversion,
-    SLaMPipelineLight,
+    SLaMPipelineLightParametric,
     SLaMPipelineMass,
     SLaM,
 )

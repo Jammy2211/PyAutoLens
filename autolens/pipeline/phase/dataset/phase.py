@@ -145,10 +145,7 @@ class PhaseDataset(dataset.PhaseDataset):
             and self.pixelization is not None
             and not self.pixelization_is_model
         ):
-            if (
-                self.pixelization.__class__
-                is results.last.pixelization.__class__
-            ):
+            if self.pixelization.__class__ is results.last.pixelization.__class__:
                 if hasattr(results.last, "hyper_combined"):
                     return (
                         results.last.hyper_combined.max_log_likelihood_pixelization_grids_of_planes

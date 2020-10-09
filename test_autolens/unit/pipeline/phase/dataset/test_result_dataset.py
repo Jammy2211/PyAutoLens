@@ -111,9 +111,7 @@ class TestResult:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        assert isinstance(
-            result.pixelization, al.pix.VoronoiBrightnessImage
-        )
+        assert isinstance(result.pixelization, al.pix.VoronoiBrightnessImage)
         assert result.pixelization.pixels == 6
 
     def test__results_of_phase_include_pixelization_grid__available_as_property(
