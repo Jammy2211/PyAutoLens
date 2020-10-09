@@ -48,7 +48,8 @@ class TestSLaM:
         )
 
         assert (
-            slam.source_parametric_tag == f"source__"
+            slam.source_parametric_tag ==
+            f"source__"
             f"mass[total__sie__with_shear]__"
             f"source[parametric__bulge_sersic__disk_exp]"
         )
@@ -72,8 +73,53 @@ class TestSLaM:
         )
 
         assert (
-            slam.source_parametric_tag == f"source__"
+            slam.source_parametric_tag ==
+            f"source__"
             f"light[parametric__bulge_exp_sph]__"
             f"mass[total__power_law__with_shear__mass_centre_(0.00,0.00)]__"
             f"source[parametric__bulge_dev_sph__disk_exp]"
+        )
+
+    def test__source_inversion_tag(self):
+
+        slam = al.SLaM(
+            pipeline_source_parametric=al.SLaMPipelineSourceParametric(),
+            pipeline_source_inversion=al.SLaMPipelineSourceInversion(),
+            pipeline_mass=al.SLaMPipelineMass(),
+        )
+
+        print(slam.source_inversion_tag)
+
+        assert (
+            slam.source_inversion_tag ==
+            f"source__"
+            f"mass[total__sie__with_shear]__"
+            f"source[inversion__pix_rect__reg_const]"
+        )
+
+        pipeline_source_parametric = al.SLaMPipelineSourceParametric(
+            setup_light=al.SetupLightParametric(
+                bulge_prior_model=al.lp.SphericalExponential, disk_prior_model=None
+            ),
+            setup_mass=al.SetupMassTotal(
+                mass_prior_model=al.mp.EllipticalPowerLaw, mass_centre=(0.0, 0.0)
+            ),
+            setup_source=al.SetupSourceParametric(
+                bulge_prior_model=al.lp.SphericalDevVaucouleurs
+            ),
+        )
+
+        slam = al.SLaM(
+            pipeline_source_parametric=pipeline_source_parametric,
+            pipeline_source_inversion=al.SLaMPipelineSourceInversion(setup_source=al.SetupSourceInversion(pixelization_prior_model=al.pix.VoronoiMagnification, regularization_prior_model=al.reg.AdaptiveBrightness)),
+            pipeline_light_parametric=al.SLaMPipelineLightParametric(),
+            pipeline_mass=al.SLaMPipelineMass(),
+        )
+
+        assert (
+            slam.source_inversion_tag ==
+            f"source__"
+            f"light[parametric__bulge_exp_sph]__"
+            f"mass[total__power_law__with_shear__mass_centre_(0.00,0.00)]__"
+            f"source[inversion__pix_voro_mag__reg_adapt_bright]"
         )
