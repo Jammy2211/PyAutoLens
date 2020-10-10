@@ -29,9 +29,9 @@ class SettingsLens:
         """Generate a positions threshold tag, to customize phase names based on the threshold that positions are required \
         to trace within one another.
 
-        This changes the phase name 'phase_name' as follows:
+        This changes the phase name 'name' as follows:
 
-        positions_threshold = 1 -> phase_name
+        positions_threshold = 1 -> name
         positions_threshold = 2 -> phase_name_positions_threshold_2
         positions_threshold = 2 -> phase_name_positions_threshold_2
         """

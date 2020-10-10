@@ -25,7 +25,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     source.light.sersic_index = af.UniformPrior(lower_limit=0.9, upper_limit=1.1)
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1",
+        name="phase_1",
         path_prefix=path_prefix,
         galaxies=dict(lens=lens, source=source),
         search=search,
@@ -48,7 +48,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     subhalo.mass.centre_1 = af.UniformPrior(lower_limit=-2.5, upper_limit=2.5)
 
     phase2 = GridPhase(
-        phase_name="phase_2",
+        name="phase_2",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=af.last.instance.galaxies.lens,
@@ -61,7 +61,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     )
 
     phase3 = al.PhaseImaging(
-        phase_name="phase_3__subhalo_refine",
+        name="phase_3__subhalo_refine",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=af.last[-1].model.galaxies.lens,

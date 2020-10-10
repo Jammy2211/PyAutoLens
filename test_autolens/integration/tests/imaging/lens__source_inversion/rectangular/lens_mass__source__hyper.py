@@ -17,7 +17,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     mass.einstein_radius = 1.6
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1",
+        name="phase_1",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=mass),
@@ -37,7 +37,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     phase1.extend_with_multiple_hyper_phases(hyper_galaxies_search=True)
 
     phase2 = al.PhaseImaging(
-        phase_name="phase_2",
+        name="phase_2",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(

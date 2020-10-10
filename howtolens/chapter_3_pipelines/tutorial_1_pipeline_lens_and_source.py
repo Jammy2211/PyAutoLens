@@ -67,7 +67,7 @@ def make_pipeline(setup, settings):
     """
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1__light_sersic",
+        name="phase_1__light_sersic",
         path_prefix=path_prefix,
         galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)),
         settings=settings,
@@ -98,7 +98,7 @@ def make_pipeline(setup, settings):
     mass.centre_1 = phase1.result.model.galaxies.lens.sersic.centre_1
 
     phase2 = al.PhaseImaging(
-        phase_name="phase_2__mass_sie__source_sersic",
+        name="phase_2__mass_sie__source_sersic",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -122,7 +122,7 @@ def make_pipeline(setup, settings):
     """
 
     phase3 = al.PhaseImaging(
-        phase_name="phase_3__light_sersic__mass_sie__source_sersic",
+        name="phase_3__light_sersic__mass_sie__source_sersic",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(

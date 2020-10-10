@@ -158,7 +158,7 @@ Now lets create the phase.
 
 # %%
 phase1 = al.PhaseImaging(
-    phase_name="phase_t5_linking_phases_1",
+    name="phase_t5_linking_phases_1",
     settings=settings,
     galaxies=dict(lens=lens, source=source),
     search=af.DynestyStatic(n_live_points=40),
@@ -285,7 +285,7 @@ than we`re used to - I didn`t have to edit the config files to get this phase to
 
 # %%
 phase2 = al.PhaseImaging(
-    phase_name="phase_t5_linking_phases_2",
+    name="phase_t5_linking_phases_2",
     settings=settings,
     galaxies=dict(lens=lens, source=source),
     search=af.DynestyStatic(n_live_points=40),
@@ -326,7 +326,7 @@ code below sets up phase2 with priors fully linked, but without specifying each 
 
 # %%
 phase_2_pass = al.PhaseImaging(
-    phase_name="phase_t5_linking_phases_2_pass",
+    name="phase_t5_linking_phases_2_pass",
     settings=settings,
     galaxies=dict(
         lens=phase1_result.model.galaxies.lens,
@@ -405,7 +405,7 @@ We now create and run the phase, using the lens ``.alaxyModel__ we created above
 
 # %%
 phase_2_pass = al.PhaseImaging(
-    phase_name="phase_t5_linking_phases_2_pass_individual",
+    name="phase_t5_linking_phases_2_pass_individual",
     settings=settings,
     galaxies=dict(lens=lens, source=phase1_result.model.galaxies.source),
     search=af.DynestyStatic(n_live_points=40),

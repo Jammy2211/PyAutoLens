@@ -200,7 +200,7 @@ output of the non-linear search, you`ll see that the priors have indeed been cha
 
 # %%
 phase = al.PhaseImaging(
-    phase_name="phase_t2_custom_priors",
+    name="phase_t2_custom_priors",
     settings=settings,
     galaxies=dict(lens=lens, source=source),
     search=af.DynestyStatic(n_live_points=40),

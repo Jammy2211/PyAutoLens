@@ -97,7 +97,7 @@ Now we create our phase as usual, remember that we pass the mask to the run func
 
 # %%
 phase_with_custom_mask = al.PhaseImaging(
-    phase_name="phase_t7_with_custom_mask",
+    name="phase_t7_with_custom_mask",
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
@@ -193,7 +193,7 @@ We can then tell our phase to use these positions in the analysis.
 
 # %%
 phase_with_positions = al.PhaseImaging(
-    phase_name="phase_t7_with_positions",
+    name="phase_t7_with_positions",
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
@@ -273,7 +273,7 @@ settings = al.SettingsPhaseImaging(
 )
 
 phase_with_x2_positions = al.PhaseImaging(
-    phase_name="phase_t7_with_x2_positions",
+    name="phase_t7_with_x2_positions",
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),

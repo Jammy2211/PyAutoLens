@@ -43,7 +43,7 @@ def source_with_previous_model_or_instance():
 def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1",
+        name="phase_1",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
@@ -72,7 +72,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     source = source_with_previous_model_or_instance()
 
     phase2 = al.PhaseImaging(
-        phase_name="phase_2",
+        name="phase_2",
         path_prefix=path_prefix,
         galaxies=dict(lens=phase1.result.model.galaxies.lens, source=source),
         sub_size=1,

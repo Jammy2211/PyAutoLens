@@ -17,7 +17,7 @@
 #     def add_phase(self, phase):
 #         model = phase.model.populate(self)
 #         self.add(
-#             phase.phase_name, MockResult(model, model.instance_from_prior_medians())
+#             phase.name, MockResult(model, model.instance_from_prior_medians())
 #         )
 #
 #
@@ -77,7 +77,7 @@
 #     lens.bulge.centre = lens.disk.centre
 #
 #     return al.PhaseImaging(
-#         phase_name="phase_1", galaxies=dict(lens=lens), search=af.DynestyStatic()
+#         name="phase_1", galaxies=dict(lens=lens), search=af.DynestyStatic()
 #     )
 #
 #
@@ -91,7 +91,7 @@
 # def make_phase_2(phase1):
 #
 #     return al.PhaseImaging(
-#         phase_name="phase_2",
+#         name="phase_2",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens,
@@ -132,7 +132,7 @@
 #     lens.bulge.centre = lens.disk.centre
 #
 #     return al.PhaseImaging(
-#         phase_name="phase_3",
+#         name="phase_3",
 #         galaxies=dict(
 #             lens=lens,
 #             source=al.GalaxyModel(
@@ -156,7 +156,7 @@
 # def make_phase_4(phase2, phase3):
 #
 #     return al.PhaseImaging(
-#         phase_name="phase_4",
+#         name="phase_4",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens,
@@ -186,7 +186,7 @@
 # def make_phase_5():
 #
 #     return al.PhaseImaging(
-#         phase_name="phase_5",
+#         name="phase_5",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens,
@@ -216,7 +216,7 @@
 # def make_phase_6(phase5):
 #
 #     return al.PhaseImaging(
-#         phase_name="phase_6",
+#         name="phase_6",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens,
@@ -247,7 +247,7 @@
 # def make_phase_7(phase6):
 #
 #     return al.PhaseImaging(
-#         phase_name="phase_7",
+#         name="phase_7",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens,
@@ -292,7 +292,7 @@
 #     )
 #
 #     return al.PhaseImaging(
-#         phase_name="phase_8",
+#         name="phase_8",
 #         galaxies=dict(
 #             lens=lens,
 #             source=al.GalaxyModel(

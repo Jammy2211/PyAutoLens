@@ -121,7 +121,7 @@ Lets perform two fits, where:
 
 # %%
 phase_slow = al.PhaseImaging(
-    phase_name="phase_t6_slow",
+    name="phase_t6_slow",
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(
@@ -166,7 +166,7 @@ Now lets run the phase with fast setting, so we can compare the total number of 
 
 # %%
 phase_fast = al.PhaseImaging(
-    phase_name="phase_t6_fast",
+    name="phase_t6_fast",
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(
@@ -237,7 +237,7 @@ iterations is n_particles * iters. Lets try a total of ? iterations, a factor ? 
 
 # %%
 phase_pso = al.PhaseImaging(
-    phase_name="phase_t7_pso",
+    name="phase_t7_pso",
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(
@@ -292,7 +292,7 @@ but it is sill pretty successful. I`ve included an example run of Emcee below.
 
 # %%
 phase_mcmc = al.PhaseImaging(
-    phase_name="phase_t7_mcmc",
+    name="phase_t7_mcmc",
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(

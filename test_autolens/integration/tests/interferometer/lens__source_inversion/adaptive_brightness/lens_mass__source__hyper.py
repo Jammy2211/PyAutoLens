@@ -14,7 +14,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
             self.galaxies.source.light.sersic_index = af.UniformPrior(3.9, 4.1)
 
     phase1 = Phase1(
-        phase_name="phase_1",
+        name="phase_1",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -36,7 +36,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
         include_background_noise=True,
     )
     phase2 = al.PhaseInterferometer(
-        phase_name="phase_2_weighted_regularization",
+        name="phase_2_weighted_regularization",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -68,7 +68,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
     )
 
     phase3 = al.PhaseInterferometer(
-        phase_name="phase_3",
+        name="phase_3",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(

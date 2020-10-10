@@ -144,7 +144,7 @@ code below shows how to setup and fit a lens model to a dataset:
 
     phase = al.PhaseImaging(
         galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
-        phase_name="example/phase_example",
+        name="example/phase_example",
         search=af.DynestyStatic(n_live_points=50),
     )
 

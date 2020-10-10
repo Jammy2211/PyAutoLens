@@ -12,9 +12,13 @@ from typing import Union
 class AbstractSLaMPipeline:
     def __init__(
         self,
-        setup_light: Union[ag_setup.SetupLightParametric, ag_setup.SetupLightInversion] = None,
+        setup_light: Union[
+            ag_setup.SetupLightParametric, ag_setup.SetupLightInversion
+        ] = None,
         setup_mass: Union[setup.SetupMassTotal, setup.SetupMassLightDark] = None,
-        setup_source: Union[setup.SetupSourceParametric, setup.SetupSourceInversion] = None,
+        setup_source: Union[
+            setup.SetupSourceParametric, setup.SetupSourceInversion
+        ] = None,
     ):
         """
         Abstract class for storing a `SLaMPipeline` object, which contains the `Setup` objects for a given Source,
@@ -113,7 +117,10 @@ class SLaMPipelineSourceInversion(AbstractSLaMPipeline):
             The setup of the source analysis (e.g. the `LightProfile`, `Pixelization` or `Regularization` used).
         """
         if setup_source is None:
-            setup_source = setup.SetupSourceInversion(pixelization_prior_model=pix.Rectangular, regularization_prior_model=reg.Constant)
+            setup_source = setup.SetupSourceInversion(
+                pixelization_prior_model=pix.Rectangular,
+                regularization_prior_model=reg.Constant,
+            )
 
         super().__init__(setup_source=setup_source)
 

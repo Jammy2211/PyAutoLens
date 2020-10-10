@@ -11,7 +11,7 @@ instrument = "vro"
 def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1",
+        name="phase_1",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -30,7 +30,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     phase1.search.evidence_tolerance = 10.0
 
     phase2 = al.PhaseImaging(
-        phase_name="phase_2",
+        name="phase_2",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=phase1.result.instance.galaxies.lens,
@@ -53,7 +53,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     )
 
     phase3 = al.PhaseImaging(
-        phase_name="phase_3",
+        name="phase_3",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=phase1.result.model.galaxies.lens,

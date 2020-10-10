@@ -52,7 +52,7 @@ def make_pipeline(setup, settings):
     path_prefix = f"{setup.path_prefix}/{pipeline_name}/{setup.tag}"
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1__mass_sie__source_sersic",
+        name="phase_1__mass_sie__source_sersic",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
@@ -93,7 +93,7 @@ def make_pipeline(setup, settings):
     )
 
     phase2 = al.PhaseImaging(
-        phase_name="phase_2__source_inversion_initialize",
+        name="phase_2__source_inversion_initialize",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -125,7 +125,7 @@ def make_pipeline(setup, settings):
     """
 
     phase3 = al.PhaseImaging(
-        phase_name="phase_3__lens_sie__source_inversion",
+        name="phase_3__lens_sie__source_inversion",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(

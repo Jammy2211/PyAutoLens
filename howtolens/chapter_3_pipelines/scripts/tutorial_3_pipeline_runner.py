@@ -136,7 +136,7 @@ to create the `Pipeline` object and calling that objects `run` function.
 
 The `path_prefix` below specifies the path the pipeline results are written to, which is:
 
- `autolens_workspace/output/howtolens/c3_t3_complex_source/pipeline_name/setup_tag/phase_name/settings_tag`
+ `autolens_workspace/output/howtolens/c3_t3_complex_source/pipeline_name/setup_tag/name/settings_tag`
 """
 
 # %%
