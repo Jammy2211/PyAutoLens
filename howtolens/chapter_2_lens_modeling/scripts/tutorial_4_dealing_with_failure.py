@@ -205,7 +205,7 @@ regions of parameter space, given our improved and more informed priors.
 
 # %%
 phase = al.PhaseImaging(
-    phase_name="phase_t4_custom_priors",
+    name="phase_t4_custom_priors",
     settings=settings,
     galaxies=dict(lens=lens, source=source),
     search=af.DynestyStatic(n_live_points=50),
@@ -293,7 +293,7 @@ Again, we create this phase and run it. The `NonLinearSearch` now has a less com
 
 # %%
 phase_light_traces_mass = al.PhaseImaging(
-    phase_name="phase_t4_light_traces_mass",
+    name="phase_t4_light_traces_mass",
     settings=settings,
     galaxies=dict(lens=lens, source=source),
     search=af.DynestyStatic(n_live_points=40),

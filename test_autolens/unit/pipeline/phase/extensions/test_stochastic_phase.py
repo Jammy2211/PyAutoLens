@@ -13,9 +13,9 @@ class MockMetaDataset:
 
 class MockPhase:
     def __init__(self):
-        self.phase_name = "phase_name"
+        self.name = "name"
         self.paths = autofit.non_linear.paths.Paths(
-            name=self.phase_name, path_prefix="phase_path", tag=""
+            name=self.name, path_prefix="phase_path", tag=""
         )
         self.search = mock.MockSearch(paths=self.paths)
         self.model = af.ModelMapper()
@@ -85,7 +85,7 @@ class _TestStochasticPhase:
 
         phase = al.PhaseImaging(
             galaxies=dict(galaxy=galaxy),
-            search=af.DynestyStatic(phase_name="test_phase", n_live_points=1),
+            search=af.DynestyStatic(name="test_phase", n_live_points=1),
             settings=al.SettingsPhaseImaging(bin_up_factor=2),
         )
 

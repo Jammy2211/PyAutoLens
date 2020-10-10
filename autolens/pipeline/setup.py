@@ -399,9 +399,9 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
     def __init__(
         self,
         no_shear=False,
-        bulge_prior_model: af.PriorModel = lmp.EllipticalSersic,
-        disk_prior_model: af.PriorModel = lmp.EllipticalExponential,
-        envelope_prior_model: af.PriorModel = None,
+        bulge_prior_model: af.PriorModel(lmp.LightMassProfile) = lmp.EllipticalSersic,
+        disk_prior_model: af.PriorModel(lmp.LightMassProfile) = lmp.EllipticalExponential,
+        envelope_prior_model: af.PriorModel(lmp.LightMassProfile) = None,
         mass_centre: (float, float) = None,
         constant_mass_to_light_ratio: bool = False,
         align_bulge_dark_centre: bool = False,
@@ -421,11 +421,11 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
          ----------
          no_shear : bool
             If `True` the `ExternalShear` `PriorModel` is omitted from the galaxy model.
-         bulge_prior_model : af.PriorModel
+         bulge_prior_model : af.PriorModel or al.lmp.LightMassProfile
              The `LightProfile` `PriorModel` used to represent the light distribution of a bulge.
-         disk_prior_model : af.PriorModel
+         disk_prior_model : af.PriorModel(al.lmp.LightMassProfile)
              The `LightProfile` `PriorModel` used to represent the light distribution of a disk.
-         envelope_prior_model : af.PriorModel
+         envelope_prior_model : af.PriorModel(al.lmp.LightMassProfile)
              The `LightProfile` `PriorModel` used to represent the light distribution of a envelope.
          mass_centre : (float, float)
             If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
@@ -467,6 +467,7 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
             f"{self.disk_prior_model_tag}"
             f"{self.envelope_prior_model_tag}"
             f"{self.constant_mass_to_light_ratio_tag}"
+            f"{self.dark_prior_model_tag}"
             f"{self.no_shear_tag}"
             f"{self.mass_centre_tag}"
             f"{self.align_bulge_dark_centre_tag}]"
@@ -686,7 +687,7 @@ class SetupSubhalo(setup.AbstractSetup):
         if self.subhalo_prior_model is None:
             return ""
 
-        return f"{conf.instance['notation']['setup_tags']['mass_prior_model'][self.subhalo_prior_model.name]}"
+        return f"{conf.instance['notation']['prior_model_tags']['mass'][self.subhalo_prior_model.name]}"
 
     @property
     def mass_is_model_tag(self) -> str:

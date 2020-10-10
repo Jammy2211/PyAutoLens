@@ -22,7 +22,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
     pixelization.shape_1 = 20.0
 
     phase1 = al.PhaseInterferometer(
-        phase_name="phase_1",
+        name="phase_1",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=mass),
@@ -41,7 +41,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
     phase1 = phase1.extend_with_inversion_phase()
 
     phase2 = al.PhaseInterferometer(
-        phase_name="phase_2",
+        name="phase_2",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(

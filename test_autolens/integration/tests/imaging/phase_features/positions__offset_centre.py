@@ -18,7 +18,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
             self.galaxies.source.light.centre_1 = af.GaussianPrior(mean=4.0, sigma=0.1)
 
     phase1 = LensPhase(
-        phase_name="phase_1",
+        name="phase_1",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),

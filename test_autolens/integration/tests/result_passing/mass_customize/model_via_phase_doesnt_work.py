@@ -17,7 +17,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     mass.centre.centre_1 = 0.0
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1",
+        name="phase_1",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=mass),
@@ -40,7 +40,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     lens.mass.centre.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.05)
 
     phase2 = al.PhaseImaging(
-        phase_name="phase_2",
+        name="phase_2",
         path_prefix=path_prefix,
         galaxies=dict(lens=lens, source=phase1.result.model.galaxies.source),
         sub_size=1,

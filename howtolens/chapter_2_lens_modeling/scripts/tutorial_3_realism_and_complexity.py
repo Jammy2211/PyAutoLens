@@ -97,7 +97,7 @@ Now lets fit the dataset using a phase.
 
 # %%
 phase = al.PhaseImaging(
-    phase_name="phase_t3_realism_and_complexity",
+    name="phase_t3_realism_and_complexity",
     settings=settings,
     galaxies=dict(
         lens_galaxy=al.GalaxyModel(
@@ -153,7 +153,7 @@ maxima instead.
 
 # %%
 phase = al.PhaseImaging(
-    phase_name="phase_t3_realism_and_complexity__local_maxima",
+    name="phase_t3_realism_and_complexity__local_maxima",
     settings=settings,
     galaxies=dict(
         lens_galaxy=al.GalaxyModel(

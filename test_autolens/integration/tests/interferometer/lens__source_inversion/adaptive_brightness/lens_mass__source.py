@@ -11,7 +11,7 @@ instrument = "sma"
 def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic()):
 
     phase1 = al.PhaseInterferometer(
-        phase_name="phase_1",
+        name="phase_1",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
@@ -22,7 +22,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
     )
 
     phase2 = al.PhaseInterferometer(
-        phase_name="phase_2_weighted_regularization",
+        name="phase_2_weighted_regularization",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -45,7 +45,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
     phase2.search.facc = 0.8
 
     phase3 = al.PhaseInterferometer(
-        phase_name="phase_3",
+        name="phase_3",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -68,7 +68,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
     phase3.search.facc = 0.8
 
     phase4 = al.PhaseInterferometer(
-        phase_name="phase_4_weighted_regularization",
+        name="phase_4_weighted_regularization",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(

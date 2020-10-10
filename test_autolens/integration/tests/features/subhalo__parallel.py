@@ -40,7 +40,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     subhalo.mass.centre_1 = af.UniformPrior(lower_limit=-2.5, upper_limit=2.5)
 
     phase1 = GridPhase(
-        phase_name="phase_1",
+        name="phase_1",
         path_prefix=path_prefix,
         galaxies=dict(lens=lens, subhalo=subhalo, source=source),
         search=search,

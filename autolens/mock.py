@@ -144,10 +144,10 @@ class MockResults(af.ResultsCollection):
 
 
 def make_phase_imaging_7x7():
-    return al.PhaseImaging(search=MockSearch(phase_name="test_phase"))
+    return al.PhaseImaging(search=MockSearch(name="test_phase"))
 
 
 def make_phase_interferometer_7():
     return al.PhaseInterferometer(
-        search=MockSearch(phase_name="test_phase"), real_space_mask=make_mask_7x7()
+        search=MockSearch(name="test_phase"), real_space_mask=make_mask_7x7()
     )

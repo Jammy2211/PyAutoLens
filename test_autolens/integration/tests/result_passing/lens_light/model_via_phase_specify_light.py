@@ -11,7 +11,7 @@ instrument = "vro"
 def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1",
+        name="phase_1",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -34,7 +34,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     # We can be sure this works, because the paramete space of phase2 is the same as phase1 (N = 16).
 
     phase2 = al.PhaseImaging(
-        phase_name="phase_2",
+        name="phase_2",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(

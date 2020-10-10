@@ -41,7 +41,7 @@ maximize its *log likelihood*.
 
     phase = al.PhaseImaging(
         galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
-        phase_name="phase_example",
+        name="phase_example",
         search=af.DynestyStatic(),
     )
 
