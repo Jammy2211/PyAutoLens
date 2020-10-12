@@ -31,7 +31,7 @@ to the 'output' folder where the results of a *non-linear search* are stored is 
     workspace_path = "/path/to/user/autolens_workspace"
 
     conf.instance = conf.Config(
-        config_path=f"{workspace_path}/config", output_path=f"{workspace_path}/output"
+        config_path=f"config", output_path=f"output"
     )
 
 This manual setting of the config files is used in every example script in the autolens workspace *example* folder,

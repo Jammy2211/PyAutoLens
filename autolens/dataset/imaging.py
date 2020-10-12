@@ -1,7 +1,9 @@
 import copy
 
 from autoarray.dataset import imaging
+from autoarray.structures import arrays
 from autoarray.structures import grids
+from autoarray.structures import kernel
 from autogalaxy.dataset import imaging as im
 from autolens.lens import ray_tracing
 
@@ -46,38 +48,47 @@ class MaskedImaging(imaging.MaskedImaging):
 class SimulatorImaging(imaging.SimulatorImaging):
     def __init__(
         self,
-        psf,
-        exposure_time_map,
-        background_sky_map=None,
-        renormalize_psf=True,
-        add_noise=True,
-        noise_if_add_noise_false=0.1,
-        noise_seed=-1,
+        exposure_time: float,
+        background_sky_level: float = 0.0,
+        psf: kernel.Kernel = None,
+        renormalize_psf: bool = True,
+        read_noise: float = None,
+        add_poisson_noise: bool = True,
+        noise_if_add_noise_false: float = 0.1,
+        noise_seed: int = -1,
     ):
         """A class representing a Imaging observation, using the shape of the image, the pixel scale,
         psf, exposure time, etc.
 
         Parameters
         ----------
-        shape_2d : (int, int)
-            The shape of the observation. Note that we do not simulator a full Imaging frame (e.g. 2000 x 2000 pixels for \
-            Hubble imaging), but instead just a cut-out around the strong lens.
-        pixel_scales : float
-            The size of each pixel in arc seconds.
-        psf : PSF
+        psf : Kernel
             An arrays describing the PSF kernel of the image.
-        exposure_time_map : float
-            The exposure time of an observation using this data.
-        background_sky_map : float
-            The level of the background sky of an observationg using this data.
+        exposure_time : float
+            The exposure time of the simulated imaging.
+        background_sky_level : float
+            The level of the background sky of the simulated imaging.
+        renormalize_psf : bool
+            If `True`, the PSF kernel is renormalized so all values sum to 1.0.
+        read_noise : float
+            The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with
+            sigma equal to the value `read_noise`.
+        add_poisson_noise : bool
+            Whether Poisson noise corresponding to photon count statistics on the imaging observation is added.
+        noise_if_add_noise_false : float
+            If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives
+            the value of noise assigned to every pixel in the noise-map.
+        noise_seed : int
+            The random seed used to add random noise, where -1 corresponds to a random seed every run.
         """
 
         super(SimulatorImaging, self).__init__(
             psf=psf,
-            exposure_time_map=exposure_time_map,
-            background_sky_map=background_sky_map,
+            exposure_time=exposure_time,
+            background_sky_level=background_sky_level,
             renormalize_psf=renormalize_psf,
-            add_noise=add_noise,
+            read_noise=read_noise,
+            add_poisson_noise=add_poisson_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,
         )
@@ -99,7 +110,7 @@ class SimulatorImaging(imaging.SimulatorImaging):
             An arrays describing the PSF the simulated image is blurred with.
         background_sky_map : np.ndarray
             The value of background sky in every image pixel (electrons per second).
-        add_noise: Bool
+        add_poisson_noise: Bool
             If ``True`` poisson noise_maps is simulated and added to the image, based on the total counts in each image
             pixel
         noise_seed: int
@@ -110,24 +121,9 @@ class SimulatorImaging(imaging.SimulatorImaging):
             grid=grid, psf_shape_2d=self.psf.shape_2d
         )
 
-        if self.psf is not None:
+        imaging = self.from_image(image=image.in_1d_binned, name=name)
 
-            simulator = copy.deepcopy(self)
-            simulator.exposure_time_map = self.exposure_time_map.padded_from_kernel_shape(
-                kernel_shape_2d=self.psf.shape_2d
-            )
-
-            if self.background_sky_map is not None:
-
-                simulator.background_sky_map = self.background_sky_map.padded_from_kernel_shape(
-                    kernel_shape_2d=self.psf.shape_2d
-                )
-
-        else:
-
-            simulator = self
-
-        return simulator.from_image(image=image.in_1d_binned, name=name)
+        return imaging.trimmed_after_convolution_from(kernel_shape=self.psf.shape_2d)
 
     def from_galaxies_and_grid(self, galaxies, grid, name=None):
         """Simulate imaging data for this data, as follows:

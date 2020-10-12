@@ -50,19 +50,22 @@ class TestSLaM:
         assert (
             slam.source_parametric_tag == f"source__"
             f"mass[total__sie__with_shear]__"
-            f"source[parametric__bulge_sersic__disk_exp]"
+            f"source[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre]"
         )
         assert slam.source_parametric_tag == slam.source_tag
 
         pipeline_source_parametric = al.SLaMPipelineSourceParametric(
             setup_light=al.SetupLightParametric(
-                bulge_prior_model=al.lp.SphericalExponential, disk_prior_model=None
+                bulge_prior_model=al.lp.SphericalExponential,
+                disk_prior_model=None,
+                align_bulge_disk_centre=False,
             ),
             setup_mass=al.SetupMassTotal(
                 mass_prior_model=al.mp.EllipticalPowerLaw, mass_centre=(0.0, 0.0)
             ),
             setup_source=al.SetupSourceParametric(
-                bulge_prior_model=al.lp.SphericalDevVaucouleurs
+                bulge_prior_model=al.lp.SphericalDevVaucouleurs,
+                align_bulge_disk_centre=False,
             ),
         )
 
@@ -123,7 +126,7 @@ class TestSLaM:
 
         assert (
             slam.source_inversion_tag == f"source__"
-            f"light[parametric__bulge_exp_sph]__"
+            f"light[parametric__bulge_exp_sph__align_bulge_disk_centre]__"
             f"mass[total__power_law__with_shear__centre_(0.00,0.00)]__"
             f"source[inversion__pix_voro_mag__reg_adapt_bright]"
         )
@@ -139,14 +142,16 @@ class TestSLaM:
 
         assert (
             slam.light_parametric_tag == f"light__"
-            f"light[parametric__bulge_sersic__disk_exp]__"
+            f"light[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre]__"
             f"mass[total__sie__with_shear]__"
-            f"source[parametric__bulge_sersic__disk_exp]"
+            f"source[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre]"
         )
 
         pipeline_source_parametric = al.SLaMPipelineSourceParametric(
             setup_light=al.SetupLightParametric(
-                bulge_prior_model=al.lp.SphericalExponential, disk_prior_model=None
+                bulge_prior_model=al.lp.SphericalExponential,
+                disk_prior_model=None,
+                align_bulge_disk_centre=False,
             ),
             setup_mass=al.SetupMassTotal(
                 mass_prior_model=al.mp.EllipticalPowerLaw, mass_centre=(0.0, 0.0)
@@ -167,6 +172,7 @@ class TestSLaM:
             setup_light=al.SetupLightParametric(
                 bulge_prior_model=al.lp.SphericalDevVaucouleurs,
                 disk_prior_model=al.lp.SphericalExponential,
+                align_bulge_disk_centre=False,
                 light_centre=(0.0, 0.0),
             )
         )
@@ -195,14 +201,16 @@ class TestSLaM:
 
         assert (
             slam.mass_tag == f"mass__"
-            f"light[parametric__bulge_sersic__disk_exp]__"
+            f"light[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre]__"
             f"mass[total__power_law__with_shear]__"
-            f"source[parametric__bulge_sersic__disk_exp]"
+            f"source[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre]"
         )
 
         pipeline_source_parametric = al.SLaMPipelineSourceParametric(
             setup_light=al.SetupLightParametric(
-                bulge_prior_model=al.lp.SphericalExponential, disk_prior_model=None
+                bulge_prior_model=al.lp.SphericalExponential,
+                disk_prior_model=None,
+                align_bulge_disk_centre=False,
             ),
             setup_mass=al.SetupMassTotal(
                 mass_prior_model=al.mp.EllipticalPowerLaw, mass_centre=(0.0, 0.0)
@@ -223,13 +231,16 @@ class TestSLaM:
             setup_light=al.SetupLightParametric(
                 bulge_prior_model=al.lp.SphericalDevVaucouleurs,
                 disk_prior_model=al.lp.SphericalExponential,
+                align_bulge_disk_centre=False,
                 light_centre=(0.0, 0.0),
             )
         )
 
         pipeline_mass = al.SLaMPipelineMass(
             setup_mass=al.SetupMassLightDark(
-                bulge_prior_model=al.lmp.EllipticalSersicRadialGradient))
+                bulge_prior_model=al.lmp.EllipticalSersicRadialGradient
+            )
+        )
 
         slam = al.SLaM(
             pipeline_source_parametric=pipeline_source_parametric,

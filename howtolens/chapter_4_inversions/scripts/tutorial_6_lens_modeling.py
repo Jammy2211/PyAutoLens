@@ -19,7 +19,7 @@ That`s what we are going to cover in this tutorial.
 # %%
 #%matplotlib inline
 
-from howtolens.simulators.chapter_4 import mass_sie__source_sersic
+from howtolens.simulators.chapter_4 import mass_sie__source_bulge
 import autolens as al
 import autolens.plot as aplt
 import os
@@ -38,8 +38,8 @@ we'll use the same strong lensing data as the previous tutorial, where:
 
 # %%
 dataset_type = "chapter_4"
-dataset_name = "mass_sie__source_sersic__2"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_name = "mass_sie__source_bulge__2"
+dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -166,8 +166,8 @@ an `Inversion` in the next phase, our mass model starts in the correct regions o
 sampling these incorrect solutions.
 
 Its not ideal, but its also not a big problem. Furthermore, `LightProfile`'ss run faster computationally than 
-_Inversion_`s, so breaking down the lens modeling procedure in this way is actually a lot faster than starting with an
-_Inversion_ anyway!
+`Inversion`'s, so breaking down the lens modeling procedure in this way is actually a lot faster than starting with an
+`Inversion` anyway!
 """
 
 # %%
@@ -178,11 +178,11 @@ source using an `Inversion`. To do this, all we have to do is give the lens gala
 """
 
 # %%
-from howtolens.simulators.chapter_4 import light_sersic__mass_sie__source_sersic
+from howtolens.simulators.chapter_4 import light_sersic__mass_sie__source_bulge
 
 dataset_type = "chapter_4"
-dataset_name = "light_sersic__mass_sie__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_name = "light_sersic__mass_sie__source_bulge"
+dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -248,7 +248,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 # %%
 """
 This fit now subtracts the lens `Galaxy`'s light from the image and fits the resulting source-only image with the 
-_Inversion_. When we plot the image, a new panel on the sub-plot appears showing the model image of the lens galaxy.
+`Inversion`. When we plot the image, a new panel on the sub-plot appears showing the model image of the lens galaxy.
 """
 
 # %%

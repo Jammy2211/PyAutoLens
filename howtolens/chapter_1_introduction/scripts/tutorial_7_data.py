@@ -92,10 +92,10 @@ the following effects to the image:
 
 # %%
 simulator = al.SimulatorImaging(
-    exposure_time_map=al.Array.full(fill_value=300.0, shape_2d=grid.shape_2d),
+    exposure_time=300.0,
     psf=psf,
-    background_sky_map=al.Array.full(fill_value=0.1, shape_2d=grid.shape_2d),
-    add_noise=True,
+    background_sky_level=0.1,
+    add_poisson_noise=True,
 )
 
 imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
@@ -117,18 +117,7 @@ Output these files to.fits files, we'll begin to analyze them in the next tutori
 """
 The data path specifies where the data is output, this time in the directory `chapter_path/data`.
 
-"""
-
-# %%
-"""Use the WORKSPACE environment variable to determine the path to the `autolens_workspace`."""
-
-# %%
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-dataset_path = f"{workspace_path}/howtolens/dataset/chapter_1"
+"""dataset_path = f"howtolens/dataset/chapter_1"
 print("Dataset Path: ", dataset_path)
 
 # %%

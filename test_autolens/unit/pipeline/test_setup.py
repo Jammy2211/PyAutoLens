@@ -79,7 +79,10 @@ class TestSetupSource:
 
         setup = al.SetupSourceParametric()
 
-        assert setup.tag == "source[parametric__bulge_sersic__disk_exp]"
+        assert (
+            setup.tag
+            == "source[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre]"
+        )
 
 
 class TestSetupSubhalo:
@@ -203,7 +206,7 @@ class TestSetupPipeline:
 
         assert (
             setup.tag == "setup__"
-            "light[parametric__bulge_sersic__disk_exp__centre_(1.00,2.00)]__"
+            "light[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre__centre_(1.00,2.00)]__"
             "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_sph_ludlow__no_shear__centre_(3.00,4.00)]__"
             "source[inversion__pix_rect__reg_const]"
         )

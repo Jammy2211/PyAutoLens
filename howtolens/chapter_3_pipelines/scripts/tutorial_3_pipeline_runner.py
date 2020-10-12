@@ -25,8 +25,7 @@ workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
+    config_path=f"howtolens/config", output_path=f"howtolens/output"
 )
 
 # %%
@@ -45,11 +44,11 @@ we'll use new strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_3 import mass_sie__source_sersic_x4
+from howtolens.simulators.chapter_3 import mass_sie__source_bulge_x4
 
 dataset_type = "chapter_3"
-dataset_name = "mass_sie__source_sersic_x4"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_name = "mass_sie__source_bulge_x4"
+dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",

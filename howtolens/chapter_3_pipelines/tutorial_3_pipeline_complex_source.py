@@ -83,7 +83,7 @@ def make_pipeline(setup, settings):
     """
 
     phase2 = al.PhaseImaging(
-        name="phase_2__mass_sie__source_sersic_x2",
+        name="phase_2__mass_sie__source_bulge_x2",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -102,7 +102,7 @@ def make_pipeline(setup, settings):
     """Phase 3: Same again, but with 3 source galaxy components."""
 
     phase3 = al.PhaseImaging(
-        name="phase_3__mass_sie__source_sersic_x3",
+        name="phase_3__mass_sie__source_bulge_x3",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -122,7 +122,7 @@ def make_pipeline(setup, settings):
     """Phase 4: And one more for luck!"""
 
     phase4 = al.PhaseImaging(
-        name="phase_4__mass_sie__source_sersic_x4",
+        name="phase_4__mass_sie__source_bulge_x4",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(

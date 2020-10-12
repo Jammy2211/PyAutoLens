@@ -92,10 +92,3 @@ Aggregator (Advanced)
 Manipulate large suites of modeling results via Jupyter notebooks, using **PyAutoFit**'s in-built results database tools.
 
 See `here <https://pyautolens.readthedocs.io/en/latest/advanced/aggregator.html>`_ for an overview.
-
-Hyper (Advanced)
-----------------
-
-Example scripts for using **PyAutoLens**'s hyper-mode.
-
-See `here <https://pyautolens.readthedocs.io/en/latest/advanced/hyper_mode.html>`_ for an overview.

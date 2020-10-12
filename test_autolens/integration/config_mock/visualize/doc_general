@@ -95,7 +95,7 @@ A description of the general.ini visualization config.
         
     light_profile_centres -> bool
 
-        If True, the centre of all `LightProfile`'s are plotted on figures which have have _LightProfile_(s) available,
+        If True, the centre of all `LightProfile`'s are plotted on figures which have have `LightProfile`(s) available,
         such as the images of galaxies, planes, tracers and fits.
         
         The light_profile_centres appearance is specified by the [light_profile_centres] section of the 

@@ -135,12 +135,8 @@ class TestSimulatorInterferometer:
 
         simulator = al.SimulatorInterferometer(
             uv_wavelengths=np.ones(shape=(7, 2)),
-            exposure_time_map=al.Array.full(
-                fill_value=10000.0, shape_2d=grid.shape_2d, pixel_scales=0.05
-            ),
-            background_sky_map=al.Array.full(
-                fill_value=100.0, shape_2d=grid.shape_2d, pixel_scales=0.05
-            ),
+            exposure_time=10000.0,
+            background_sky_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -175,12 +171,8 @@ class TestSimulatorInterferometer:
 
         simulator = al.SimulatorInterferometer(
             uv_wavelengths=np.ones(shape=(7, 2)),
-            exposure_time_map=al.Array.full(
-                fill_value=10000.0, shape_2d=grid.shape_2d, pixel_scales=0.05
-            ),
-            background_sky_map=al.Array.full(
-                fill_value=100.0, shape_2d=grid.shape_2d, pixel_scales=0.05
-            ),
+            exposure_time=10000.0,
+            background_sky_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -228,12 +220,8 @@ class TestSimulatorInterferometer:
 
         simulator = al.SimulatorInterferometer(
             uv_wavelengths=np.ones(shape=(7, 2)),
-            exposure_time_map=al.Array.full(
-                fill_value=10000.0, shape_2d=grid.shape_2d, pixel_scales=0.05
-            ),
-            background_sky_map=al.Array.full(
-                fill_value=100.0, shape_2d=grid.shape_2d, pixel_scales=0.05
-            ),
+            exposure_time=10000.0,
+            background_sky_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )

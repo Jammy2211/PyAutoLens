@@ -7,7 +7,7 @@ So, we can use an `Inversion` to reconstruct an image. Furthermore, this reconst
 likelihood solution. And, when we inspect the fit, we see residuals indicative of a good fit.
 
 Everything sounds pretty good, doesn`t it? You`re probably thinking, why are there more tutorials? We can use
-_Inversion_s now, don't ruin it! Well, there is a problem - which I hid from you in the last tutorial, which we'll
+`Inversion`s now, don't ruin it! Well, there is a problem - which I hid from you in the last tutorial, which we'll
 cover now.
 """
 
@@ -31,11 +31,11 @@ we'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_4 import mass_sie__source_sersic
+from howtolens.simulators.chapter_4 import mass_sie__source_bulge
 
 dataset_type = "chapter_4"
-dataset_name = "mass_sie__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_name = "mass_sie__source_bulge"
+dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",

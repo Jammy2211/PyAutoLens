@@ -102,7 +102,7 @@ class TestMakeAnalysis:
 
     def test__masked_imaging__signal_to_noise_limit(self, imaging_7x7, mask_7x7_1_pix):
 
-        imaging_snr_limit = imaging_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
+        imaging_snr_limit = imaging_7x7.signal_to_noise_limited_from(
             signal_to_noise_limit=1.0
         )
 
@@ -128,7 +128,7 @@ class TestMakeAnalysis:
         ).all()
 
     def test__masked_imaging_is_binned_up(self, imaging_7x7, mask_7x7_1_pix):
-        binned_up_imaging = imaging_7x7.binned_from_bin_up_factor(bin_up_factor=2)
+        binned_up_imaging = imaging_7x7.binned_up_from(bin_up_factor=2)
 
         binned_up_mask = mask_7x7_1_pix.binned_mask_from_bin_up_factor(bin_up_factor=2)
 

@@ -48,8 +48,7 @@ workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
+    config_path=f"howtolens/config", output_path=f"howtolens/output"
 )
 
 # %%
@@ -66,7 +65,7 @@ from howtolens.simulators.chapter_2 import light_sersic__mass_sie__source_exp
 
 dataset_type = "chapter_2"
 dataset_name = "light_sersic__mass_sie__source_exp"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",

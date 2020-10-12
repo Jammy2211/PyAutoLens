@@ -44,8 +44,7 @@ workspace_path = os.environ["WORKSPACE"]
 print("Workspace Path: ", workspace_path)
 
 conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
+    config_path=f"howtolens/config", output_path=f"howtolens/output"
 )
 
 # %%
@@ -71,7 +70,7 @@ from howtolens.simulators.chapter_3 import light_sersic__mass_sie__source_exp
 
 dataset_type = "chapter_3"
 dataset_name = "light_sersic__mass_sie__source_exp"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -114,7 +113,7 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 """
 __Pipeline_Setup__:
 
-Pipelines can contain `Setup` objects, which customize how different aspects of the model are fitted. 
+Pipelines use `Setup` objects to customize how different aspects of the model are fitted. 
 
 First, we create a `SetupLightParametric` which customizes:
 

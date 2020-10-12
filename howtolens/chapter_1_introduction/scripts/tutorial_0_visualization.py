@@ -38,21 +38,12 @@ as shown below.
 """
 
 # %%
-"""Use the WORKSPACE environment variable to determine the path to the `autolens_workspace`."""
-
-# %%
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-# %%
 """
 The dataset path specifies where the dataset is located, this time in the directory `chapter_path/dataset`
 """
 
 # %%
-dataset_path = f"{workspace_path}/howtolens/dataset/chapter_1"
+dataset_path = f"howtolens/dataset/chapter_1"
 
 # %%
 """

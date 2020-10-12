@@ -488,20 +488,20 @@ class SLaM:
             bulge_prior_model.centre = af.last[index].model.galaxies.lens.bulge.centre
 
             if bulge_prior_model.cls is lp.EllipticalLightProfile:
-            
+
                 bulge_prior_model.elliptical_comps = af.last[
                     index
                 ].model.galaxies.lens.bulge.elliptical_comps
-                
+
             bulge_prior_model.intensity = af.last[
                 index
             ].model.galaxies.lens.bulge.intensity
             bulge_prior_model.effective_radius = af.last[
                 index
             ].model.galaxies.lens.bulge.effective_radius
-            
+
             if bulge_prior_model.cls is lp.EllipticalSersic:
-                
+
                 bulge_prior_model.sersic_index = af.last[
                     index
                 ].model.galaxies.lens.bulge.sersic_index
@@ -510,28 +510,28 @@ class SLaM:
             bulge_prior_model.centre = af.last[
                 index
             ].instance.galaxies.lens.bulge.centre
-            
+
             if bulge_prior_model.cls is lp.EllipticalLightProfile:
-            
+
                 bulge_prior_model.elliptical_comps = af.last[
                     index
                 ].instance.galaxies.lens.bulge.elliptical_comps
-                
+
             bulge_prior_model.intensity = af.last[
                 index
             ].instance.galaxies.lens.bulge.intensity
             bulge_prior_model.effective_radius = af.last[
                 index
             ].instance.galaxies.lens.bulge.effective_radius
-            
+
             if bulge_prior_model.cls is mp.EllipticalSersic:
-            
+
                 bulge_prior_model.sersic_index = af.last[
                     index
                 ].instance.galaxies.lens.bulge.sersic_index
 
     def link_disk_light_and_mass_prior_model_from_light_pipeline(
-            self, disk_is_model=True, index=0
+        self, disk_is_model=True, index=0
     ):
         """
         Pass the disk `PriorModel` as a `model` or `instance` from a `Light` pipeline to a light and dark
@@ -577,9 +577,7 @@ class SLaM:
                 ].model.galaxies.lens.disk.sersic_index
         else:
 
-            disk_prior_model.centre = af.last[
-                index
-            ].instance.galaxies.lens.disk.centre
+            disk_prior_model.centre = af.last[index].instance.galaxies.lens.disk.centre
 
             if disk_prior_model.cls is lp.EllipticalLightProfile:
                 disk_prior_model.elliptical_comps = af.last[
@@ -599,7 +597,7 @@ class SLaM:
                 ].instance.galaxies.lens.disk.sersic_index
 
     def link_envelope_light_and_mass_prior_model_from_light_pipeline(
-            self, envelope_is_model=True, index=0
+        self, envelope_is_model=True, index=0
     ):
         """
         Pass the envelope `PriorModel` as a `model` or `instance` from a `Light` pipeline to a light and dark
@@ -625,7 +623,9 @@ class SLaM:
 
         if envelope_is_model:
 
-            envelope_prior_model.centre = af.last[index].model.galaxies.lens.envelope.centre
+            envelope_prior_model.centre = af.last[
+                index
+            ].model.galaxies.lens.envelope.centre
 
             if envelope_prior_model.cls is lp.EllipticalLightProfile:
                 envelope_prior_model.elliptical_comps = af.last[
@@ -667,7 +667,7 @@ class SLaM:
                 ].instance.galaxies.lens.envelope.sersic_index
 
     def lens_from_light_parametric_pipeline_for_mass_total_pipeline(
-        self, mass : af.PriorModel, shear : af.PriorModel, light_is_model : bool
+        self, mass: af.PriorModel, shear: af.PriorModel, light_is_model: bool
     ) -> ag.GalaxyModel:
         """Setup the lens model for a `Mass` pipeline using the previous `Light` pipeline and phase results.
 
@@ -716,7 +716,7 @@ class SLaM:
                 hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
             )
 
-    def lens_for_subhalo_pipeline(self, index : int=0) -> ag.GalaxyModel:
+    def lens_for_subhalo_pipeline(self, index: int = 0) -> ag.GalaxyModel:
         """
         Pass the lens `PriorModel` as a `model` or `instance` from the `MassPipeline` to the `SubhaloPipeline`.
 
@@ -749,7 +749,9 @@ class SLaM:
                 hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
             )
 
-    def _source_parametric_from_previous_pipeline(self, source_is_model : bool=True, index : int=0) -> ag.GalaxyModel:
+    def _source_parametric_from_previous_pipeline(
+        self, source_is_model: bool = True, index: int = 0
+    ) -> ag.GalaxyModel:
         """
          Pass a parametric source `PriorModel` as a `model` or `instance` from a previous pipeline.
 
@@ -790,7 +792,9 @@ class SLaM:
                 hyper_galaxy=hyper_galaxy,
             )
 
-    def _source_inversion_from_previous_pipeline(self, source_is_model : bool=False, index : int=0) -> ag.GalaxyModel:
+    def _source_inversion_from_previous_pipeline(
+        self, source_is_model: bool = False, index: int = 0
+    ) -> ag.GalaxyModel:
         """
          Pass an inversion source `PriorModel` as a `model` or `instance` from a previous pipeline.
 
@@ -836,7 +840,9 @@ class SLaM:
                 hyper_galaxy=hyper_galaxy,
             )
 
-    def source_from_previous_pipeline(self, source_is_model : bool=False, index : int=0) -> ag.GalaxyModel:
+    def source_from_previous_pipeline(
+        self, source_is_model: bool = False, index: int = 0
+    ) -> ag.GalaxyModel:
         """
         Setup the source model using the previous pipeline and phase results.
 

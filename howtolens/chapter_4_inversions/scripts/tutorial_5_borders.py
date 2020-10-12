@@ -26,11 +26,11 @@ we'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_4 import mass_sie__source_sersic__2
+from howtolens.simulators.chapter_4 import mass_sie__source_bulge__2
 
 dataset_type = "chapter_4"
-dataset_name = "mass_sie__source_sersic__2"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_name = "mass_sie__source_bulge__2"
+dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -289,11 +289,11 @@ we'll use new strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_4 import mass_sie_x2__source_sersic
+from howtolens.simulators.chapter_4 import mass_sie_x2__source_bulge
 
 dataset_type = "chapter_4"
-dataset_name = "mass_sie_x2__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_name = "mass_sie_x2__source_bulge"
+dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",

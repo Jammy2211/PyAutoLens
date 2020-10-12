@@ -116,7 +116,7 @@ class PhaseImaging(dataset.PhaseDataset):
 
         return StochasticPhase(
             phase=self,
-            search=stochastic_search,
+            hyper_search=stochastic_search,
             model_classes=tuple(model_classes),
             histogram_samples=histogram_samples,
             histogram_bins=histogram_bins,

@@ -41,7 +41,9 @@ def make_stochastic():
         return mock.MockResult()
 
     return al.StochasticPhase(
-        phase=normal_phase, search=mock.MockSearch(), model_classes=(al.mp.MassProfile,)
+        phase=normal_phase,
+        hyper_search=mock.MockSearch(),
+        model_classes=(al.mp.MassProfile,),
     )
 
 

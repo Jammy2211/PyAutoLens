@@ -16,7 +16,7 @@ import autolens.plot as aplt
 # %%
 """
 Lets setup a lensed source-plane grid, using a lens galaxy and `Tracer` (our source galaxy doesn`t have a 
-_LightProfile_,as we`re going to reconstruct its light using a pixelization).
+`LightProfile`,as we`re going to reconstruct its light using a pixelization).
 """
 
 # %%

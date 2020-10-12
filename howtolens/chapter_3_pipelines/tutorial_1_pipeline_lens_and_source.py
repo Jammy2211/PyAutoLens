@@ -51,7 +51,7 @@ def make_pipeline(setup, settings):
     output of this pipeline `autolens_workspace/output/howtolens/c3_t1_lens_and_source/pipeline__light_and_source`.
 
     The output path is also tagged according to the `SetupPipeline`, in an analagous fashion to how the 
-    `SettingsPhaseImaging` tagged the output paths of phases. In this example, we do not use an _ExternalShear_
+    `SettingsPhaseImaging` tagged the output paths of phases. In this example, we do not use an `ExternalShear`
     in the mass model, and the pipeline is tagged accordingly.
     """
 
@@ -98,7 +98,7 @@ def make_pipeline(setup, settings):
     mass.centre_1 = phase1.result.model.galaxies.lens.sersic.centre_1
 
     phase2 = al.PhaseImaging(
-        name="phase_2__mass_sie__source_sersic",
+        name="phase_2__mass_sie__source_bulge",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -122,7 +122,7 @@ def make_pipeline(setup, settings):
     """
 
     phase3 = al.PhaseImaging(
-        name="phase_3__light_sersic__mass_sie__source_sersic",
+        name="phase_3__light_sersic__mass_sie__source_bulge",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(

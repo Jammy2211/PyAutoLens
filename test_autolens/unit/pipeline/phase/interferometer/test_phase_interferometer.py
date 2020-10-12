@@ -21,6 +21,7 @@ class TestMakeAnalysis:
         self, interferometer_7, mask_7x7
     ):
         phase_interferometer_7 = al.PhaseInterferometer(
+            search=mock.MockSearch("phase_interferometer_7"),
             settings=al.SettingsPhaseInterferometer(
                 settings_masked_interferometer=al.SettingsMaskedInterferometer(
                     grid_class=al.Grid,
@@ -33,7 +34,6 @@ class TestMakeAnalysis:
                 ),
                 settings_inversion=al.SettingsInversion(use_linear_operators=True),
             ),
-            search=mock.MockSearch("phase_interferometer_7"),
             real_space_mask=mask_7x7,
         )
 

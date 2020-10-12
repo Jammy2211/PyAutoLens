@@ -39,7 +39,7 @@ print(lens_galaxy)
 
 # %%
 """
-And for our source galaxy, the same `SphericalSersic` _LightProfile_
+And for our source galaxy, the same `SphericalSersic` `LightProfile`
 """
 
 # %%
