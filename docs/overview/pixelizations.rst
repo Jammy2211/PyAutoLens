@@ -4,9 +4,9 @@ Pixelizations
 -------------
 
 **PyAutoLens** can reconstruct the light of the strong lensed source-galaxy using a pixel-grid, using a process
-called an _Inversion_.
+called an `Inversion`.
 
-Lets use a *Pixelization* to reconstruct the source-galaxy of the image below, noting how complex the lensed source
+Lets use a `Pixelization` to reconstruct the source-galaxy of the image below, noting how complex the lensed source
 appears, with multiple rings and clumps of light:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/pixelizations/image.png
@@ -23,8 +23,8 @@ We are going to fit this image with an `Inversion`, so we first create *Mask2D* 
 
    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
-To reconstruct the source using a pixel-grid, we simply pass it the *Pixelization* class we want to reconstruct its
-light using. We also pass a *Regularization* scheme which describes our prior on how much we smooth the reconstruction.
+To reconstruct the source using a pixel-grid, we simply pass it the `Pixelization` class we want to reconstruct its
+light using. We also pass a `Regularization` scheme which describes our prior on how much we smooth the reconstruction.
 
 Below, we use a *Rectangular* pixelization with resolution 40 x 40 and *Constant* regularizaton scheme:
 
@@ -37,8 +37,8 @@ Below, we use a *Rectangular* pixelization with resolution 40 x 40 and *Constant
     )
 
 To fit the data, we simply pass this source-galaxy into a `Tracer` (complete with lens galaxy mass model). The
-*FitImaging* object will automatically use the source galaxy's *Pixelization* and *Regularization* to reconstruct
-the lensed source's light using the _Inversion_:
+*FitImaging* object will automatically use the source galaxy's `Pixelization` and `Regularization` to reconstruct
+the lensed source's light using the `Inversion`:
 
 .. code-block:: bash
 
@@ -82,6 +82,6 @@ This was a brief overview of *Inversions* with **PyAutoLens**. There is a lot mo
 here, which is covered in chapters 4 and 5 of the **HowToLens**, specifically:
 
     - How the source reconstruction determines the flux-values of the source it reconstructs.
-    - The Bayesian framework employed to choose the approrpriate level of *Regularization* and avoid overfitting noise.
-    - Unphysical lens model solutions that often arise when using an _Inversion_.
-    - Advanced *Pixelization* and *Regularization* schemes that adapt to the source galaxy being reconstructed.
+    - The Bayesian framework employed to choose the approrpriate level of `Regularization` and avoid overfitting noise.
+    - Unphysical lens model solutions that often arise when using an `Inversion`.
+    - Advanced `Pixelization` and `Regularization` schemes that adapt to the source galaxy being reconstructed.

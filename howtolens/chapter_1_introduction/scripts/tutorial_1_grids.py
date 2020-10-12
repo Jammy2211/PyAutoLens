@@ -20,7 +20,7 @@ a strong lensing system.
 
 This coordinate `Grid` is aligned with the image we analyze, such that each coordinate on a  `Grid` maps to the centre 
 of each image-pixel. Lets make a `Grid` using 100 x 100 pixels, with a pixel scale (arcsecond-to-pixel conversion 
-factor) of 0.05", giving us a a 5" x 5" grid.
+factor) of 0.05", giving us a 5" x 5" grid.
 """
 
 # %%

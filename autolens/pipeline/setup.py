@@ -400,7 +400,9 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
         self,
         no_shear=False,
         bulge_prior_model: af.PriorModel(lmp.LightMassProfile) = lmp.EllipticalSersic,
-        disk_prior_model: af.PriorModel(lmp.LightMassProfile) = lmp.EllipticalExponential,
+        disk_prior_model: af.PriorModel(
+            lmp.LightMassProfile
+        ) = lmp.EllipticalExponential,
         envelope_prior_model: af.PriorModel(lmp.LightMassProfile) = None,
         mass_centre: (float, float) = None,
         constant_mass_to_light_ratio: bool = False,
@@ -481,7 +483,7 @@ class SetupSourceParametric(setup.SetupLightParametric):
         disk_prior_model: af.PriorModel(lp.LightProfile) = lp.EllipticalExponential,
         envelope_prior_model: af.PriorModel(lp.LightProfile) = None,
         light_centre: (float, float) = None,
-        align_bulge_disk_centre: bool = False,
+        align_bulge_disk_centre: bool = True,
         align_bulge_disk_elliptical_comps: bool = False,
     ):
         """
@@ -547,7 +549,7 @@ class SetupSourceInversion(setup.SetupLightInversion):
     ):
         """
         The setup of the inversion source modeling of a pipeline, which controls how PyAutoGalaxy template pipelines run,
-        for example controlling the `Pixelization` and `Regularization` used by the _Inversion_.
+        for example controlling the `Pixelization` and `Regularization` used by the `Inversion`.
 
         Users can write their own pipelines which do not use or require the `SetupLightInversion` class.
 

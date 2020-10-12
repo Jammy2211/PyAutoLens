@@ -5,7 +5,7 @@ Tutorial 8: Pipeline
 
 To illustrate lens modeling using an `Inversion` and `Pipeline`, we'll go back to the complex source model-fit that we
 performed in tutorial 3 of chapter 3. This time, as you`ve probably guessed, we'll fit the complex source using an
-_Inversion_.
+`Inversion`.
 
 we'll begin by modeling the source with a `LightProfile`, to initialize the mass model and avoid the unphysical
 solutions discussed in tutorial 6. we'll then switch to an `Inversion`.
@@ -29,8 +29,7 @@ Use this path to explicitly set the config path and output path.
 
 # %%
 conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
+    config_path=f"howtolens/config", output_path=f"howtolens/output"
 )
 
 # %%
@@ -50,11 +49,11 @@ we'll use strong lensing data, where:
 """
 
 # %%
-from howtolens.simulators.chapter_4 import mass_sie__source_sersic_x4
+from howtolens.simulators.chapter_4 import mass_sie__source_bulge_x4
 
 dataset_type = "chapter_4"
-dataset_name = "mass_sie__source_sersic_x4"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_name = "mass_sie__source_bulge_x4"
+dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -118,7 +117,7 @@ setup = al.SetupPipeline(
 __Pipeline Creation__
 
 To create a pipeline we import it from the pipelines folder and run its `make_pipeline` function, inputting the 
-*Setup* and `SettingsPhase` above.
+`Setup` and `SettingsPhase` above.
 """
 
 # %%

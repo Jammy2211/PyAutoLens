@@ -17,7 +17,7 @@ counts of the signal:
         exposure_time_map=al.Array.full(fill_value=300.0, shape_2d=grid.shape_2d),
         background_sky_map=al.Array.full(fill_value=0.1, shape_2d=grid.shape_2d),
         psf=psf,
-        add_noise=True,
+        add_poisson_noise=True,
     )
 
 Once we have a simulator, we can use it to create an imaging dataset (an image, noise-map, PSF) by pasing it a tracer

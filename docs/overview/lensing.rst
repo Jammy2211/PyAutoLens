@@ -64,7 +64,7 @@ of the `LightProfile`:
 
     image = sersic_light_profile.image_from_grid(grid=grid)
 
-The plot module provides convenience methods for plotting properties of objects, like the image of a _LightProfile_:
+The plot module provides convenience methods for plotting properties of objects, like the image of a `LightProfile`:
 
 .. code-block:: bash
 

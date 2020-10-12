@@ -31,21 +31,12 @@ we'll need the path to the chapter in this tutorial to load the dataset from you
 """
 
 # %%
-"""Use the WORKSPACE environment variable to determine the path to the `autolens_workspace`."""
-
-# %%
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-# %%
 """
 The data path specifies where the data was output in the last tutorial, which is the directory `chapter_path/data`
 """
 
 # %%
-dataset_path = f"{workspace_path}/howtolens/dataset/chapter_1/"
+dataset_path = f"howtolens/dataset/chapter_1/"
 
 # %%
 """
