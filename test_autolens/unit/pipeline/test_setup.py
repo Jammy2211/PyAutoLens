@@ -65,13 +65,13 @@ class TestSetupHyper:
 
 
 class TestSetupMass:
-    def test__no_shear_tag(self):
+    def test__with_shear_tag(self):
 
-        setup_mass = al.SetupMassLightDark(no_shear=False)
-        assert setup_mass.no_shear_tag == "__with_shear"
+        setup_mass = al.SetupMassLightDark(with_shear=True)
+        assert setup_mass.with_shear_tag == "__with_shear"
 
-        setup_mass = al.SetupMassLightDark(no_shear=True)
-        assert setup_mass.no_shear_tag == "__no_shear"
+        setup_mass = al.SetupMassLightDark(with_shear=False)
+        assert setup_mass.with_shear_tag == "__with_shear"
 
 
 class TestSetupSource:
@@ -198,7 +198,7 @@ class TestSetupPipeline:
 
         setup_light = al.SetupLightParametric(light_centre=(1.0, 2.0))
 
-        setup_mass = al.SetupMassLightDark(mass_centre=(3.0, 4.0), no_shear=True)
+        setup_mass = al.SetupMassLightDark(mass_centre=(3.0, 4.0), with_shear=False)
 
         setup = al.SetupPipeline(
             setup_source=setup_source, setup_light=setup_light, setup_mass=setup_mass
@@ -207,7 +207,7 @@ class TestSetupPipeline:
         assert (
             setup.tag == "setup__"
             "light[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre__centre_(1.00,2.00)]__"
-            "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_sph_ludlow__no_shear__centre_(3.00,4.00)]__"
+            "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_sph_ludlow__with_shear__centre_(3.00,4.00)]__"
             "source[inversion__pix_rect__reg_const]"
         )
 
