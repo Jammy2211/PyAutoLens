@@ -103,7 +103,7 @@ For this pipeline the pipeline setup customizes and tags:
 """
 
 # %%
-setup_mass = al.SetupMassTotal(no_shear=False)
+setup_mass = al.SetupMassTotal(with_shear=True)
 setup_source = al.SetupSourceInversion(
     pixelization=al.pix.VoronoiMagnification, regularization=al.reg.Constant
 )

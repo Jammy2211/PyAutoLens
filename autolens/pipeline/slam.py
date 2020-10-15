@@ -219,19 +219,17 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
     def shear_from_previous_pipeline(self, index=0):
         """Return the shear `PriorModel` from a previous pipeline, where:
 
-        1) If the shear was included in the *Source* pipeline and `no_shear` is `False` in the `Mass` object, it is
+        1) If the shear was included in the *Source* pipeline and `with_shear` is `False` in the `Mass` object, it is
            returned using this pipeline result as a model.
-        2) If the shear was not included in the *Source* pipeline and *no_shear* is `False` in the `Mass` object, 
+        2) If the shear was not included in the *Source* pipeline and *with_shear* is `False` in the `Mass` object,
             it is returned as a new *ExternalShear* PriorModel.
-        3) If `no_shear` is `True` in the `Mass` object, it is returned as None and omitted from the lens model.
+        3) If `with_shear` is `True` in the `Mass` object, it is returned as None and omitted from the lens model.
         """
-        if not self.setup_mass.no_shear:
+        if self.setup_mass.with_shear:
             if af.last[index].model.galaxies.lens.shear is not None:
                 return af.last[index].model.galaxies.lens.shear
             else:
                 return ag.mp.ExternalShear
-        else:
-            return None
 
 
 class SLaM:

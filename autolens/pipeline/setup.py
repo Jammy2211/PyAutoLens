@@ -309,26 +309,26 @@ class SetupHyper(setup.SetupHyper):
 
 class AbstractSetupMass:
 
-    no_shear = None
+    with_shear = None
 
     @property
-    def no_shear_tag(self) -> str:
+    def with_shear_tag(self) -> str:
         """Generate a tag if an `ExternalShear` is included in the mass model of the pipeline  are
         fixedto a previous estimate, or varied during the analysis, to customize pipeline output paths..
 
         For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
 
-        no_shear = `False` -> setup__with_shear
-        no_shear = ``True`` -> setup___no_shear
+        with_shear = `False` -> setup__with_shear
+        with_shear = ``True`` -> setup___with_shear
         """
-        if not self.no_shear:
+        if not self.with_shear:
             return f"__{conf.instance['notation']['setup_tags']['mass']['with_shear']}"
-        return f"__{conf.instance['notation']['setup_tags']['mass']['no_shear']}"
+        return f"__{conf.instance['notation']['setup_tags']['mass']['with_shear']}"
 
     @property
     def shear_prior_model(self) -> af.PriorModel:
-        """For a SLaM source pipeline, determine the shear model from the no_shear setting."""
-        if not self.no_shear:
+        """For a SLaM source pipeline, determine the shear model from the with_shear setting."""
+        if self.with_shear:
             return af.PriorModel(mp.ExternalShear)
 
 
@@ -336,7 +336,7 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
     def __init__(
         self,
         mass_prior_model: af.PriorModel(mp.MassProfile) = mp.EllipticalPowerLaw,
-        no_shear=False,
+        with_shear=True,
         mass_centre: (float, float) = None,
         align_light_mass_centre: bool = False,
     ):
@@ -356,7 +356,7 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
         mass_prior_model : af.PriorModel(mp.MassProfile)
             The `MassProfile` fitted by the `Pipeline` (the pipeline must specifically use this option to use this
             mass profile)
-        no_shear : bool
+        with_shear : bool
             If `True` the `ExternalShear` `PriorModel` is omitted from the galaxy model.
         mass_centre : (float, float) or None
            If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
@@ -372,7 +372,7 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
             align_light_mass_centre=align_light_mass_centre,
         )
 
-        self.no_shear = no_shear
+        self.with_shear = with_shear
 
     @property
     def tag(self) -> str:
@@ -389,7 +389,7 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
         return (
             f"{self.component_name}[total"
             f"{self.mass_prior_model_tag}"
-            f"{self.no_shear_tag}"
+            f"{self.with_shear_tag}"
             f"{self.mass_centre_tag}"
             f"{self.align_light_mass_centre_tag}]"
         )
@@ -398,7 +398,7 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
 class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
     def __init__(
         self,
-        no_shear=False,
+        with_shear=True,
         bulge_prior_model: af.PriorModel(lmp.LightMassProfile) = lmp.EllipticalSersic,
         disk_prior_model: af.PriorModel(
             lmp.LightMassProfile
@@ -421,7 +421,7 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
 
          Parameters
          ----------
-         no_shear : bool
+         with_shear : bool
             If `True` the `ExternalShear` `PriorModel` is omitted from the galaxy model.
          bulge_prior_model : af.PriorModel or al.lmp.LightMassProfile
              The `LightProfile` `PriorModel` used to represent the light distribution of a bulge.
@@ -448,7 +448,7 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
             align_bulge_dark_centre=align_bulge_dark_centre,
         )
 
-        self.no_shear = no_shear
+        self.with_shear = with_shear
 
     @property
     def tag(self):
@@ -470,7 +470,7 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
             f"{self.envelope_prior_model_tag}"
             f"{self.constant_mass_to_light_ratio_tag}"
             f"{self.dark_prior_model_tag}"
-            f"{self.no_shear_tag}"
+            f"{self.with_shear_tag}"
             f"{self.mass_centre_tag}"
             f"{self.align_bulge_dark_centre_tag}]"
         )
