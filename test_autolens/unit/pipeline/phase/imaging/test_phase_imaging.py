@@ -1,9 +1,11 @@
 from os import path
 
-import autofit as af
-import autolens as al
 import numpy as np
 import pytest
+
+import autofit as af
+import autolens as al
+from autofit.mapper.prior.prior import TuplePrior
 from autolens import mock
 
 pytestmark = pytest.mark.filterwarnings(
@@ -17,7 +19,6 @@ directory = path.dirname(path.realpath(__file__))
 
 class TestPhase:
     def test__extend_with_hyper_and_pixelizations(self):
-
         phase = al.PhaseImaging(search=mock.MockSearch())
 
         phase_extended = phase.extend_with_stochastic_phase()
@@ -42,9 +43,8 @@ class TestPhase:
 
 class TestMakeAnalysis:
     def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
-        self, imaging_7x7, mask_7x7
+            self, imaging_7x7, mask_7x7
     ):
-
         phase_imaging_7x7 = al.PhaseImaging(
             settings=al.SettingsPhaseImaging(
                 settings_masked_imaging=al.SettingsMaskedImaging(
@@ -64,8 +64,8 @@ class TestMakeAnalysis:
 
         assert phase_imaging_7x7.settings.settings_masked_imaging.sub_size == 3
         assert (
-            phase_imaging_7x7.settings.settings_masked_imaging.signal_to_noise_limit
-            == 1.0
+                phase_imaging_7x7.settings.settings_masked_imaging.signal_to_noise_limit
+                == 1.0
         )
         assert phase_imaging_7x7.settings.settings_masked_imaging.bin_up_factor == 2
         assert phase_imaging_7x7.settings.settings_masked_imaging.psf_shape_2d == (3, 3)
@@ -101,7 +101,6 @@ class TestMakeAnalysis:
         assert analysis.masked_dataset.grid.sub_steps == [2]
 
     def test__masked_imaging__signal_to_noise_limit(self, imaging_7x7, mask_7x7_1_pix):
-
         imaging_snr_limit = imaging_7x7.signal_to_noise_limited_from(
             signal_to_noise_limit=1.0
         )
@@ -119,12 +118,12 @@ class TestMakeAnalysis:
             dataset=imaging_7x7, mask=mask_7x7_1_pix, results=mock.MockResults()
         )
         assert (
-            analysis.masked_dataset.image.in_2d
-            == imaging_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
+                analysis.masked_dataset.image.in_2d
+                == imaging_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
         ).all()
         assert (
-            analysis.masked_dataset.noise_map.in_2d
-            == imaging_snr_limit.noise_map.in_2d * np.invert(mask_7x7_1_pix)
+                analysis.masked_dataset.noise_map.in_2d
+                == imaging_snr_limit.noise_map.in_2d * np.invert(mask_7x7_1_pix)
         ).all()
 
     def test__masked_imaging_is_binned_up(self, imaging_7x7, mask_7x7_1_pix):
@@ -143,22 +142,21 @@ class TestMakeAnalysis:
             dataset=imaging_7x7, mask=mask_7x7_1_pix, results=mock.MockResults()
         )
         assert (
-            analysis.masked_dataset.image.in_2d
-            == binned_up_imaging.image.in_2d * np.invert(binned_up_mask)
+                analysis.masked_dataset.image.in_2d
+                == binned_up_imaging.image.in_2d * np.invert(binned_up_mask)
         ).all()
 
         assert (
-            analysis.masked_dataset.psf == (1.0 / 9.0) * binned_up_imaging.psf
+                analysis.masked_dataset.psf == (1.0 / 9.0) * binned_up_imaging.psf
         ).all()
         assert (
-            analysis.masked_dataset.noise_map.in_2d
-            == binned_up_imaging.noise_map.in_2d * np.invert(binned_up_mask)
+                analysis.masked_dataset.noise_map.in_2d
+                == binned_up_imaging.noise_map.in_2d * np.invert(binned_up_mask)
         ).all()
 
         assert (analysis.masked_dataset.mask == binned_up_mask).all()
 
     def test__grid_classes_input__used_in_masked_imaging(self, imaging_7x7, mask_7x7):
-
         phase_imaging_7x7 = al.PhaseImaging(
             search=mock.MockSearch(),
             settings=al.SettingsPhaseImaging(
@@ -216,19 +214,19 @@ class TestMakeAnalysis:
         assert analysis.masked_imaging.grid_inversion.pixel_scales_interp == (0.1, 0.1)
 
     def test__masks_image_and_noise_map_correctly(
-        self, phase_imaging_7x7, imaging_7x7, mask_7x7
+            self, phase_imaging_7x7, imaging_7x7, mask_7x7
     ):
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
         assert (
-            analysis.masked_imaging.image.in_2d
-            == imaging_7x7.image.in_2d * np.invert(mask_7x7)
+                analysis.masked_imaging.image.in_2d
+                == imaging_7x7.image.in_2d * np.invert(mask_7x7)
         ).all()
         assert (
-            analysis.masked_imaging.noise_map.in_2d
-            == imaging_7x7.noise_map.in_2d * np.invert(mask_7x7)
+                analysis.masked_imaging.noise_map.in_2d
+                == imaging_7x7.noise_map.in_2d * np.invert(mask_7x7)
         ).all()
 
     def test___phase_info_is_made(self, phase_imaging_7x7, imaging_7x7, mask_7x7):
@@ -255,9 +253,9 @@ class TestMakeAnalysis:
         assert psf_shape_2d == "PSF shape = None \n"
         assert positions_threshold == "Positions Threshold = None \n"
         assert (
-            cosmology
-            == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, '
-            "Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n"
+                cosmology
+                == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, '
+                   "Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n"
         )
 
 
@@ -281,9 +279,8 @@ class TestExtensions:
         assert instance.hyper_background_noise.noise_scale == 0.4
 
     def test__extend_with_hyper_phases__sets_up_hyper_dataset_from_results(
-        self, imaging_7x7, mask_7x7
+            self, imaging_7x7, mask_7x7
     ):
-
         galaxies = af.ModelInstance()
         galaxies.lens = al.Galaxy(redshift=0.5)
         galaxies.source = al.Galaxy(redshift=1.0)
@@ -319,19 +316,18 @@ class TestExtensions:
         )
 
         assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].in_2d
-            == np.ones((3, 3))
+                analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].in_2d
+                == np.ones((3, 3))
         ).all()
 
         assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].in_2d
-            == 2.0 * np.ones((3, 3))
+                analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].in_2d
+                == 2.0 * np.ones((3, 3))
         ).all()
 
         assert (analysis.hyper_model_image.in_2d == 3.0 * np.ones((3, 3))).all()
 
     def test__extend_with_stochastic_phase__sets_up_model_correctly(self):
-
         galaxies = af.ModelInstance()
         galaxies.lens = al.Galaxy(
             redshift=0.5,
@@ -350,7 +346,7 @@ class TestExtensions:
 
         model = phase_extended.make_model(instance=galaxies)
 
-        assert isinstance(model.lens.mass.centre, af.prior.TuplePrior)
+        assert isinstance(model.lens.mass.centre, TuplePrior)
         assert not isinstance(model.lens.light.intensity, af.PriorModel)
         assert not isinstance(model.source.pixelization.pixels, af.PriorModel)
         assert not isinstance(
@@ -361,7 +357,7 @@ class TestExtensions:
 
         model = phase_extended.make_model(instance=galaxies)
 
-        assert isinstance(model.lens.mass.centre, af.prior.TuplePrior)
+        assert isinstance(model.lens.mass.centre, TuplePrior)
         assert isinstance(model.lens.light.intensity, af.PriorModel)
         assert not isinstance(model.source.pixelization.pixels, af.UniformPrior)
         assert not isinstance(
@@ -372,7 +368,7 @@ class TestExtensions:
 
         model = phase_extended.make_model(instance=galaxies)
 
-        assert isinstance(model.lens.mass.centre, af.prior.TuplePrior)
+        assert isinstance(model.lens.mass.centre, TuplePrior)
         assert not isinstance(model.lens.light.intensity, af.PriorModel)
         assert isinstance(model.source.pixelization.pixels, af.UniformPrior)
         assert not isinstance(
@@ -383,7 +379,7 @@ class TestExtensions:
 
         model = phase_extended.make_model(instance=galaxies)
 
-        assert isinstance(model.lens.mass.centre, af.prior.TuplePrior)
+        assert isinstance(model.lens.mass.centre, TuplePrior)
         assert not isinstance(model.lens.light.intensity, af.PriorModel)
         assert not isinstance(model.source.pixelization.pixels, af.UniformPrior)
         assert isinstance(
