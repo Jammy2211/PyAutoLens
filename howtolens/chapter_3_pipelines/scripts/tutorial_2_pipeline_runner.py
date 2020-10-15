@@ -137,7 +137,7 @@ description of what inputting redshifts into **PyAutoLens** does.
 
 # %%
 setup_light = al.SetupLightParametric()
-setup_mass = al.SetupMassTotal(no_shear=False)
+setup_mass = al.SetupMassTotal(with_shear=True)
 setup_source = al.SetupSourceParametric()
 
 setup = al.SetupPipeline(
