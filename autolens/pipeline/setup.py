@@ -338,7 +338,7 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
         mass_prior_model: af.PriorModel(mp.MassProfile) = mp.EllipticalPowerLaw,
         with_shear=True,
         mass_centre: (float, float) = None,
-        align_light_mass_centre: bool = False,
+        align_bulge_mass_centre: bool = False,
     ):
         """
         The setup of the mass modeling in a pipeline for `MassProfile`'s representing the total (e.g. stars + dark
@@ -361,7 +361,7 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
         mass_centre : (float, float) or None
            If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
            non-linear search.
-        align_light_mass_centre : bool
+        align_bulge_mass_centre : bool
             If `True` and the galaxy model has both a light and mass component, the function 
             `align_centre_of_mass_to_light` can be used to align their centres.
         """
@@ -369,7 +369,7 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
         super().__init__(
             mass_prior_model=mass_prior_model,
             mass_centre=mass_centre,
-            align_light_mass_centre=align_light_mass_centre,
+            align_bulge_mass_centre=align_bulge_mass_centre,
         )
 
         self.with_shear = with_shear
@@ -391,7 +391,7 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
             f"{self.mass_prior_model_tag}"
             f"{self.with_shear_tag}"
             f"{self.mass_centre_tag}"
-            f"{self.align_light_mass_centre_tag}]"
+            f"{self.align_bulge_mass_centre_tag}]"
         )
 
 
