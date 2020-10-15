@@ -81,4 +81,8 @@ from .pipeline.phase.interferometer.phase import PhaseInterferometer
 from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 
+from autoconf import conf
+
+conf.instance.register(__file__)
+
 __version__ = "1.6.3"
