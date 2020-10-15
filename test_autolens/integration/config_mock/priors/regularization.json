@@ -1,0 +1,58 @@
+{
+    "Constant": {
+        "coefficient": {
+            "type": "LogUniform",
+            "lower_limit": 1e-06,
+            "upper_limit": 1e6,
+            "width_modifier": {
+                "type": "Relative",
+                "value": 0.5
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        }
+    },
+    "AdaptiveBrightness": {
+        "inner_coefficient": {
+            "type": "LogUniform",
+            "lower_limit": 1e-06,
+            "upper_limit": 1e6,
+            "width_modifier": {
+                "type": "Relative",
+                "value": 0.5
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        },
+        "outer_coefficient": {
+            "type": "LogUniform",
+            "lower_limit": 1e-06,
+            "upper_limit": 1e6,
+            "width_modifier": {
+                "type": "Relative",
+                "value": 0.5
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        },
+        "signal_scale": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 1.0,
+            "width_modifier": {
+                "type": "Relative",
+                "value": 0.2
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        }
+    }
+}

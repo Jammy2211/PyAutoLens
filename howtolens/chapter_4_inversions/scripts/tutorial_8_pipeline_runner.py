@@ -28,8 +28,8 @@ Use this path to explicitly set the config path and output path.
 """
 
 # %%
-conf.instance = conf.Config(
-    config_path=f"howtolens/config", output_path=f"howtolens/output"
+conf.instance.push(
+f"howtolens/config", output_path=f"howtolens/output"
 )
 
 # %%

@@ -1,0 +1,21 @@
+{
+    "MockPixelization": {
+        "number_clusters": {
+            "type": "Uniform",
+            "lower_limit": 1.0,
+            "upper_limit": 100.0
+        },
+        "regularization_coefficient": {
+            "type": "Uniform",
+            "lower_limit": 1.0,
+            "upper_limit": 1.0
+        }
+    },
+    "MockInstrumentation": {
+        "param": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 1.0
+        }
+    }
+}
