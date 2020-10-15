@@ -133,7 +133,7 @@ This pipeline also uses a `SetupMass`, which customizes:
 """
 
 # %%
-setup_mass = al.SetupMassTotal(no_shear=False)
+setup_mass = al.SetupMassTotal(with_shear=True)
 
 # %%
 """
@@ -147,8 +147,8 @@ setup_source = al.SetupSourceParametric()
 _Pipeline Tagging_
 
 The `Setup` objects are input into a `SetupPipeline` object, which is passed into the pipeline and used to customize
-the analysis depending on the setup. This includes tagging the output path of a pipeline. For example, if `no_shear` 
-is True, the pipeline`s output paths are `tagged` with the string `no_shear`.
+the analysis depending on the setup. This includes tagging the output path of a pipeline. For example, if `with_shear` 
+is True, the pipeline`s output paths are `tagged` with the string `with_shear`.
 
 This means you can run the same pipeline on the same data twice (with and without shear) and the results will go
 to different output folders and thus not clash with one another!
