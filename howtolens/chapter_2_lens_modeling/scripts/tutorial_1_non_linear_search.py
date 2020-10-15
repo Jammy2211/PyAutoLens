@@ -72,8 +72,8 @@ following two properties:
 
 (These will work autommatically if the WORKSPACE environment variable was set up correctly during installation. 
 Nevertheless, setting the paths explicitly within the code is good practise.
-"""conf.instance = conf.Config(
-    config_path=f"howtolens/config",
+"""conf.instance.push(
+f"howtolens/config",
     output_path=f"howtolens/output",
 )
 

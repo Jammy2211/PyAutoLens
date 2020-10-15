@@ -13,7 +13,7 @@ def run(
     test_path = "{}/../..".format(os.path.dirname(os.path.realpath(__file__)))
     output_path = f"{test_path}/output/imaging"
     config_path = f"{test_path}/{config_folder}"
-    conf.instance = conf.Config(config_path=config_path, output_path=output_path)
+    conf.instance.push(config_path, output_path=output_path)
 
     imaging = instrument_util.load_test_imaging(
         data_name=module.dataset_name, instrument=module.instrument
