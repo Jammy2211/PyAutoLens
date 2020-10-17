@@ -36,36 +36,30 @@ first phase, we can use its results to tune the priors of our second phase. For 
 # %%
 #%matplotlib inline
 
-import numpy as np
+from pyprojroot import here
 
-from autoconf import conf
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
+import numpy as np
 import autolens as al
 import autolens.plot as aplt
 import autofit as af
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-conf.instance.push(
-f"howtolens/config", output_path=f"howtolens/output"
-)
 
 # %%
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
  - The lens `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is an `EllipticalExponential`.
 """
 
 # %%
-from howtolens.simulators.chapter_2 import light_sersic__mass_sie__source_exp
-
 dataset_type = "chapter_2"
 dataset_name = "light_sersic__mass_sie__source_exp"
-dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -94,7 +88,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 
 # %%
 """
-Like in the previous tutorial, we use a_SettingsPhaseImaging_ object to specify our model-fitting procedure uses a 
+Like in the previous tutorial, we use a `SettingsPhaseImaging` object to specify our model-fitting procedure uses a 
 regular `Grid`.
 """
 
@@ -112,10 +106,10 @@ next phase, lets take a more liberal approach than before and fix the lens centr
 
 # %%
 lens = al.GalaxyModel(
-    redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+    redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
 )
 
-source = al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential)
+source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential)
 
 # %%
 """
@@ -124,8 +118,8 @@ removed from non-linear parameter space and always fixed to that value. Pretty n
 """
 
 # %%
-lens.sersic.centre_0 = 0.0
-lens.sersic.centre_1 = 0.0
+lens.bulge.centre_0 = 0.0
+lens.bulge.centre_1 = 0.0
 lens.mass.centre_0 = 0.0
 lens.mass.centre_1 = 0.0
 
@@ -133,7 +127,7 @@ lens.mass.centre_1 = 0.0
 """
 Lets use the same approach of making the ellipticity of the mass trace that of the sersic.
 """
-lens.mass.elliptical_comps = lens.sersic.elliptical_comps
+lens.mass.elliptical_comps = lens.bulge.elliptical_comps
 
 # %%
 """
@@ -148,7 +142,7 @@ We also discussed that the Sersic index of most lens galaxies is around 4. Lets 
 """
 
 # %%
-lens.sersic.sersic_index = 4.0
+lens.bulge.sersic_index = 4.0
 
 # %%
 """
@@ -157,10 +151,11 @@ Now lets create the phase.
 
 # %%
 phase1 = al.PhaseImaging(
-    name="phase_t5_linking_phases_1",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t5_linking_phases_1", n_live_points=40
+    ),
     settings=settings,
     galaxies=dict(lens=lens, source=source),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
 # %%
@@ -200,9 +195,9 @@ parameter can or can`t take. It makes it more likely we'll accidently cut-out th
 
 # %%
 lens = al.GalaxyModel(
-    redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+    redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
 )
-source = al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential)
+source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential)
 
 # %%
 """
@@ -215,25 +210,25 @@ values for now, I`ve chosen values that I know will ensure reasonable sampling, 
 
 """LENS LIGHT PRIORS"""
 
-lens.sersic.centre.centre_0 = af.GaussianPrior(
+lens.bulge.centre.centre_0 = af.GaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-np.inf, upper_limit=np.inf
 )
-lens.sersic.centre.centre_1 = af.GaussianPrior(
+lens.bulge.centre.centre_1 = af.GaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-np.inf, upper_limit=np.inf
 )
-lens.sersic.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
+lens.bulge.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
     mean=0.33333, sigma=0.15, lower_limit=-1.0, upper_limit=1.0
 )
-lens.sersic.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
+lens.bulge.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
     mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
 )
-lens.sersic.intensity = af.GaussianPrior(
+lens.bulge.intensity = af.GaussianPrior(
     mean=0.02, sigma=0.01, lower_limit=0.0, upper_limit=np.inf
 )
-lens.sersic.effective_radius = af.GaussianPrior(
+lens.bulge.effective_radius = af.GaussianPrior(
     mean=0.62, sigma=0.2, lower_limit=0.0, upper_limit=np.inf
 )
-lens.sersic.sersic_index = af.GaussianPrior(
+lens.bulge.sersic_index = af.GaussianPrior(
     mean=4.0, sigma=2.0, lower_limit=0.0, upper_limit=np.inf
 )
 
@@ -257,22 +252,22 @@ lens.mass.einstein_radius = af.GaussianPrior(
 
 """SOURCE LIGHT PRIORS"""
 
-source.sersic.centre.centre_0 = af.GaussianPrior(
+source.bulge.centre.centre_0 = af.GaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-np.inf, upper_limit=np.inf
 )
-source.sersic.centre.centre_1 = af.GaussianPrior(
+source.bulge.centre.centre_1 = af.GaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-np.inf, upper_limit=np.inf
 )
-source.sersic.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
+source.bulge.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
     mean=0.0, sigma=0.15, lower_limit=-1.0, upper_limit=1.0
 )
-source.sersic.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
+source.bulge.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
     mean=-0.33333, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
 )
-source.sersic.intensity = af.GaussianPrior(
+source.bulge.intensity = af.GaussianPrior(
     mean=0.14, sigma=0.05, lower_limit=0.0, upper_limit=np.inf
 )
-source.sersic.effective_radius = af.GaussianPrior(
+source.bulge.effective_radius = af.GaussianPrior(
     mean=0.27, sigma=0.2, lower_limit=0.0, upper_limit=np.inf
 )
 
@@ -284,10 +279,11 @@ than we`re used to - I didn`t have to edit the config files to get this phase to
 
 # %%
 phase2 = al.PhaseImaging(
-    name="phase_t5_linking_phases_2",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t5_linking_phases_2", n_live_points=40
+    ),
     settings=settings,
     galaxies=dict(lens=lens, source=source),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
 print(
@@ -324,17 +320,20 @@ code below sets up phase2 with priors fully linked, but without specifying each 
 """
 
 # %%
-phase_2_pass = al.PhaseImaging(
-    name="phase_t5_linking_phases_2_pass",
+phase2_pass = al.PhaseImaging(
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens",
+        name="phase_t5_linking_phases_2_pass",
+        n_live_points=40,
+    ),
     settings=settings,
     galaxies=dict(
         lens=phase1_result.model.galaxies.lens,
         source=phase1_result.model.galaxies.source,
     ),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
-# # phase_2_pass.run(dataset=imaging, mask=mask)
+# # phase[2]_pass.run(dataset=imaging, mask=mask)
 
 # %%
 """
@@ -365,9 +364,9 @@ In fact, the individual components of the ``.alaxyModel__ class have been ``.rio
 """
 
 # %%
-print(lens.sersic)
+print(lens.bulge)
 print(lens.mass)
-print(source.sersic)
+print(source.bulge)
 
 # %%
 """
@@ -381,10 +380,10 @@ component and then passing the priors of each individual parameter.
 sersic = af.PriorModel(al.lp.EllipticalSersic)
 
 sersic.elliptical_comps.elliptical_comps = (
-    phase1_result.model.galaxies.lens.sersic.elliptical_comps
+    phase1_result.model.galaxies.lens.bulge.elliptical_comps
 )
-sersic.intensity = phase1_result.model.galaxies.lens.sersic.intensity
-sersic.effective_radius = phase1_result.model.galaxies.lens.sersic.effective_radius
+sersic.intensity = phase1_result.model.galaxies.lens.bulge.intensity
+sersic.effective_radius = phase1_result.model.galaxies.lens.bulge.effective_radius
 
 """LENS MASS PRIORS"""
 
@@ -395,7 +394,7 @@ lens.mass.elliptical_comps.elliptical_comps = (
 )
 lens.mass.einstein_radius = phase1_result.model.galaxies.lens.mass.einstein_radius
 
-lens = al.GalaxyModel(redshift=0.5, sersic=sersic, mass=mass)
+lens = al.GalaxyModel(redshift=0.5, bulge=sersic, mass=mass)
 
 # %%
 """
@@ -403,14 +402,17 @@ We now create and run the phase, using the lens ``.alaxyModel__ we created above
 """
 
 # %%
-phase_2_pass = al.PhaseImaging(
-    name="phase_t5_linking_phases_2_pass_individual",
+phase2_pass = al.PhaseImaging(
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens",
+        name="phase_t5_linking_phases_2_pass_individual",
+        n_live_points=40,
+    ),
     settings=settings,
     galaxies=dict(lens=lens, source=phase1_result.model.galaxies.source),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
-# # phase_2_pass.run(dataset=imaging, mask=mask)
+# # phase[2]_pass.run(dataset=imaging, mask=mask)
 
 # %%
 """
@@ -440,7 +442,7 @@ By invoking the `model` attribute, the prioris passed following 3 rules:
  3) The sigma of the Gaussian will use the maximum of two values: 
    
  (i) the 1D error of the parameter computed at an input sigma value (default sigma=3.0).
- (ii) The value specified for the profile in the `config/json_priors/*.json` config file`s `width_modifer` 
+ (ii) The value specified for the profile in the `config/priors/*.json` config file`s `width_modifer` 
  field (check these files out now).
 
  The idea here is simple. We want a value of sigma that gives a GaussianPrior wide enough to search a broad 
@@ -503,14 +505,14 @@ Lets go through an example using a real parameter. Lets say in phase 1 we fit th
 elliptical Sersic profile, and we estimate that its sersic index is equal to 4.0 +- 2.0 where the error value of 2.0 
 was computed at 3.0 sigma confidence. To pass this as a prior to phase 2, we would write:
 
- lens.sersic.sersic_index = phase1.result.model.lens.sersic.sersic_index
+ lens.bulge.sersic_index = phase1.result.model.lens.bulge.sersic_index
 
 The prior on the lens `Galaxy`'s sersic `LightProfile` in phase 2 would thus be a GaussianPrior, with mean=4.0 and 
 sigma=2.0. If we had used a sigma value of 1.0 to compute the error, which reduced the estimate from 4.0 +- 2.0 to 
 4.0 +- 1.0, the sigma of the Gaussian prior would instead be 1.0. 
 
 If the error on the Sersic index in phase 1 had been really small, lets say, 0.01, we would instead use the value of the 
-Sersic index width in the json_priors config file to set sigma instead. In this case, the prior config file specifies 
+Sersic index width in the priors config file to set sigma instead. In this case, the prior config file specifies 
 that we use an "Absolute" value of 0.8 to link this prior. Thus, the GaussianPrior in phase 2 would have a mean=4.0 and 
 sigma=0.8.
 

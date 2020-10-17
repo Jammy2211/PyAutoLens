@@ -7,15 +7,15 @@ Simulating Lenses
 and train neural networks to recognise and analyse images of strong lenses.
 
 Simulating strong lenses begins by creating a *SimulatorImaging* object, which represents how a image is acquired and
-processed when on a telescope CCD. This includes accounting for the exposoure time in determinie the signal to noise,
+processed when on a telescope CCD. This includes accounting for the exposure time in determine the signal to noise,
 blurring the ``data`` due to the telescope optics, the background sky during taking the exposure and noise due to Poisson
 counts of the signal:
 
 .. code-block:: bash
 
     simulator = al.SimulatorImaging(
-        exposure_time_map=al.Array.full(fill_value=300.0, shape_2d=grid.shape_2d),
-        background_sky_map=al.Array.full(fill_value=0.1, shape_2d=grid.shape_2d),
+        exposure_time=300.0,
+        background_sky_level=1.0,
         psf=psf,
         add_poisson_noise=True,
     )
@@ -41,7 +41,7 @@ Here is what our dataset looks like:
   :width: 400
   :alt: Alternative text
 
-The *``autolens_workspace``* includes example simulators for various existing and upcoming telescopes, for example the
+The ``autolens_workspace`` includes example simulators for various existing and upcoming telescopes, for example the
 Vera Rubin Observatry, Euclid, the Hubble Space Telescope and Keck Adaptive Optics Imaging. Below, we show what the
 image above looks like for these different instruments.
 

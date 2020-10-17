@@ -5,11 +5,13 @@ import autolens.plot as aplt
 """
 This script simulates `Imaging` of a strong lens where:
 
- - The lens `Galaxy`'s `MassProfile` is a *SphericalIsothermal*.
+ - The lens total mass distribution is a *SphericalIsothermal*.
  - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 
 This dataset is used in chapter 2, tutorials 1-3.
-""" """
+"""
+
+"""
 The `dataset_type` describes the type of data being simulated (in this case, `Imaging` data) and `dataset_name` 
 gives it a descriptive name. They define the folder the dataset is output to on your hard-disk:
 
@@ -24,7 +26,7 @@ dataset_name = "light_sersic_x2__mass_sie_x2__source_exp"
 Returns the path where the dataset will be output, which in this case is:
 `/autolens_workspace/howtolens/dataset/chapter_3/light_sersic_x2__mass_sie_x2__source_exp/`
 """
-dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 """
 For simulating an image of a strong lens, we recommend using a GridIterate object. This represents a grid of $(y,x)$ 
@@ -48,7 +50,7 @@ psf = al.Kernel.from_gaussian(
 )
 
 """
-To simulate the `Imaging` dataset we first create a simulator, which defines the expoosure time, background sky,
+To simulate the `Imaging` dataset we first create a simulator, which defines the exposure time, background sky,
 noise levels and psf of the dataset that is simulated.
 """
 simulator = al.SimulatorImaging(
@@ -69,7 +71,7 @@ We can use the **PyAutoLens** `convert` module to determine the elliptical compo
 
 lens_galaxy_0 = al.Galaxy(
     redshift=0.5,
-    sersic=al.lp.EllipticalSersic(
+    bulge=al.lp.EllipticalSersic(
         centre=(0.0, -1.0),
         elliptical_comps=(0.25, 0.1),
         intensity=0.1,
@@ -83,7 +85,7 @@ lens_galaxy_0 = al.Galaxy(
 
 lens_galaxy_1 = al.Galaxy(
     redshift=0.5,
-    sersic=al.lp.EllipticalSersic(
+    bulge=al.lp.EllipticalSersic(
         centre=(0.0, 1.0),
         elliptical_comps=(0.0, 0.1),
         intensity=0.1,
@@ -97,7 +99,7 @@ lens_galaxy_1 = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    sersic=al.lp.SphericalExponential(
+    bulge=al.lp.SphericalExponential(
         centre=(0.05, 0.15), intensity=0.2, effective_radius=0.5
     ),
 )

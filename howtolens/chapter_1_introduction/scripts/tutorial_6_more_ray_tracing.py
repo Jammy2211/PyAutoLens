@@ -15,6 +15,12 @@ kiloparsecs (kpc).
 # %%
 #%matplotlib inline
 
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
 
@@ -58,7 +64,7 @@ we'll also give the lens galaxy some attributes we didn`t in the last tutorial:
 # %%
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    sersic=al.lp.SphericalSersic(
+    bulge=al.lp.SphericalSersic(
         centre=(0.0, 0.0), intensity=2.0, effective_radius=0.5, sersic_index=2.5
     ),
     mass=al.mp.EllipticalIsothermal(
@@ -77,7 +83,7 @@ Lets also create a small satellite galaxy nearby the lens galaxy and at the same
 # %%
 lens_satellite = al.Galaxy(
     redshift=0.5,
-    sersic=al.lp.SphericalDevVaucouleurs(
+    bulge=al.lp.SphericalDevVaucouleurs(
         centre=(1.0, 0.0), intensity=2.0, effective_radius=0.2
     ),
     mass=al.mp.SphericalIsothermal(centre=(1.0, 0.0), einstein_radius=0.4),

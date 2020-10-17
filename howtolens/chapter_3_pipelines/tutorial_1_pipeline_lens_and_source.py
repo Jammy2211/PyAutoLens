@@ -5,7 +5,7 @@ import autolens as al
 All pipelines begin with a comment describing the pipeline and a phase-by-phase description of what it does.
 
 In this pipeline, we fit the a strong lens using an `EllipticalSersic` `LightProfile`, `EllipticalIsothermal` 
-_MassProfile_ and parametric `EllipticalSersic` source.
+`MassProfile` and parametric `EllipticalSersic` source.
 
 The pipeline is three phases:
 
@@ -67,18 +67,18 @@ def make_pipeline(setup, settings):
     """
 
     phase1 = al.PhaseImaging(
-        name="phase_1__light_sersic",
-        path_prefix=path_prefix,
-        galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)),
+        search=af.DynestyStatic(
+            name="phase[1]_light[bulge]", n_live_points=30, evidence_tolerance=5.0
+        ),
+        galaxies=dict(lens=al.GalaxyModel(redshift=0.5, bulge=al.lp.EllipticalSersic)),
         settings=settings,
-        search=af.DynestyStatic(n_live_points=30, evidence_tolerance=5.0),
     )
 
     """
     Phase 2: Fit the lens`s `MassProfile`'s and source `Galaxy`'s light, where we:
 
         1) Fix the foreground lens light subtraction to the lens galaxy light model from phase 1.
-        2) Set priors on the centre of the lens `Galaxy`'s `MassProfile` by linking them to those inferred for 
+        2) Set priors on the centre of the lens total mass distribution by linking them to those inferred for 
            the `LightProfile` in phase 1.
            
     In phase 2, we fit the source-`Galaxy`'s light. Thus, we want to fix the lens light model to the model inferred
@@ -94,22 +94,24 @@ def make_pipeline(setup, settings):
     """
 
     mass = af.PriorModel(al.mp.EllipticalIsothermal)
-    mass.centre_0 = phase1.result.model.galaxies.lens.sersic.centre_0
-    mass.centre_1 = phase1.result.model.galaxies.lens.sersic.centre_1
+    mass.centre_0 = phase1.result.model.galaxies.lens.bulge.centre_0
+    mass.centre_1 = phase1.result.model.galaxies.lens.bulge.centre_1
 
     phase2 = al.PhaseImaging(
-        name="phase_2__mass_sie__source_bulge",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(
+            name="phase[2]_mass[sie]_source[bulge]",
+            n_live_points=50,
+            evidence_tolerance=5.0,
+        ),
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                sersic=phase1.result.instance.galaxies.lens.sersic,
+                bulge=phase1.result.instance.galaxies.lens.bulge,
                 mass=mass,
             ),
-            source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
         ),
         settings=settings,
-        search=af.DynestyStatic(n_live_points=50, evidence_tolerance=5.0),
     )
 
     """
@@ -122,20 +124,20 @@ def make_pipeline(setup, settings):
     """
 
     phase3 = al.PhaseImaging(
-        name="phase_3__light_sersic__mass_sie__source_bulge",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(
+            name="phase[3]_light[bulge]_mass[sie]_source[bulge]", n_live_points=100
+        ),
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
-                sersic=phase1.result.model.galaxies.lens.sersic,
+                bulge=phase1.result.model.galaxies.lens.bulge,
                 mass=phase2.result.model.galaxies.lens.mass,
             ),
             source=al.GalaxyModel(
-                redshift=1.0, sersic=phase2.result.model.galaxies.source.sersic
+                redshift=1.0, bulge=phase2.result.model.galaxies.source.bulge
             ),
         ),
         settings=settings,
-        search=af.DynestyStatic(n_live_points=100),
     )
 
-    return al.PipelineDataset(pipeline_name, phase1, phase2, phase3)
+    return al.PipelineDataset(pipeline_name, path_prefix, phase1, phase2, phase3)

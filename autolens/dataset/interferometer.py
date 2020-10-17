@@ -107,7 +107,7 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
         background_sky_map : np.ndarray
             The value of background sky in every image pixel (electrons per second).
         add_poisson_noise: Bool
-            If ``True`` poisson noise_maps is simulated and added to the image, based on the total counts in each image
+            If `True` poisson noise_maps is simulated and added to the image, based on the total counts in each image
             pixel
         noise_seed: int
             A seed for random noise_maps generation

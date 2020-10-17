@@ -4,14 +4,14 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_both__source_adaptive_brightness__hyper"
-data_name = "lens_light__source_smooth"
+dataset_name = "lens_light__source_smooth"
 instrument = "vro"
 
 
 def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase1 = al.PhaseImaging(
-        name="phase_1",
+        name="phase[1]",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -30,7 +30,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     phase1.search.evidence_tolerance = 10.0
 
     phase2 = al.PhaseImaging(
-        name="phase_2",
+        name="phase[2]",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=phase1.result.instance.galaxies.lens,
@@ -53,7 +53,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     )
 
     phase3 = al.PhaseImaging(
-        name="phase_3",
+        name="phase[3]",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=phase1.result.model.galaxies.lens,
@@ -71,7 +71,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
         hyper_galaxies_search=True, include_inversion=True
     )
 
-    return al.PipelineDataset(name, phase1, phase2, phase3)
+    return al.PipelineDataset(name, path_prefix, phase1, phase2, phase3)
 
 
 if __name__ == "__main__":

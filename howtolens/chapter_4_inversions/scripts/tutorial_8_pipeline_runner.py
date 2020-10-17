@@ -11,31 +11,15 @@ we'll begin by modeling the source with a `LightProfile`, to initialize the mass
 solutions discussed in tutorial 6. we'll then switch to an `Inversion`.
 """
 
-""" AUTOFIT + CONFIG SETUP """
-
 # %%
 #%matplotlib inline
 
-from autoconf import conf
-import os
+from pyprojroot import here
 
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
 
-# %%
-"""
-Use this path to explicitly set the config path and output path.
-"""
-
-# %%
-conf.instance.push(
-f"howtolens/config", output_path=f"howtolens/output"
-)
-
-# %%
-""" AUTOLENS + DATA SETUP """
-
-# %%
 import autolens as al
 import autolens.plot as aplt
 
@@ -44,16 +28,14 @@ import autolens.plot as aplt
 we'll use strong lensing data, where:
 
  - The lens `Galaxy`'s light is omitted.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is four `EllipticalSersic``..
 """
 
 # %%
-from howtolens.simulators.chapter_4 import mass_sie__source_bulge_x4
-
 dataset_type = "chapter_4"
-dataset_name = "mass_sie__source_bulge_x4"
-dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_name = "mass_sie__source_sersic_x4"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -105,11 +87,14 @@ For this pipeline the pipeline setup customizes and tags:
 # %%
 setup_mass = al.SetupMassTotal(with_shear=True)
 setup_source = al.SetupSourceInversion(
-    pixelization=al.pix.VoronoiMagnification, regularization=al.reg.Constant
+    pixelization_prior_model=al.pix.VoronoiMagnification,
+    regularization_prior_model=al.reg.Constant,
 )
 
 setup = al.SetupPipeline(
-    path_prefix="c4_t8_inversion", setup_mass=setup_mass, setup_source=setup_source
+    path_prefix="howtolens/c4_t8_inversion",
+    setup_mass=setup_mass,
+    setup_source=setup_source,
 )
 
 # %%
@@ -121,7 +106,7 @@ To create a pipeline we import it from the pipelines folder and run its `make_pi
 """
 
 # %%
-from howtolens.chapter_4_inversions import tutorial_8_pipeline
+from autolens_workspace.howtolens.chapter_4_inversions import tutorial_8_pipeline
 
 pipeline_inversion = tutorial_8_pipeline.make_pipeline(setup=setup, settings=settings)
 

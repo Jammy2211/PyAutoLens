@@ -144,8 +144,8 @@ Gaussian noise to the visibilities:
 
     simulator = al.SimulatorInterferometer(
         uv_wavelengths=uv_wavelengths,
-        exposure_time_map=al.Array.full(fill_value=100.0, shape_2d=grid.shape_2d),
-        background_sky_map=al.Array.full(fill_value=1.0, shape_2d=grid.shape_2d),
+        exposure_time=300.0,
+        background_sky_level=1.0,
         noise_sigma=0.01,
     )
 

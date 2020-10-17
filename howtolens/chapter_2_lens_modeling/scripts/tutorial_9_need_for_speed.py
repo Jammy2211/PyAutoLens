@@ -14,11 +14,11 @@ The more complex your parameter space (e.g. the more parameters), the longer it 
 priors, the longer it takes to search. The more detailed your non-linear search, the longer it takes. Performing fast
 and efficient lens requires us to parameterize and search initial simple non-linear parameterizes, gradually increasing
 the complexity of the model whilst exploiting prior linking to keep the run times fast. This will be the main topic of
-chapter 3 of the ``.owToLens__ lectures.
+chapter 3 of the **HowToLens** lectures.
 
 __Algorithmic Optimization__
 
-Every operation AutoLens performs to fit a lens takes time. Every `LightProfile` intensity. Every _MassProfile_
+Every operation AutoLens performs to fit a lens takes time. Every `LightProfile` intensity. Every `MassProfile`
 deflection angle. Convolving a model-image with a PSF can take a huge amount of time. As anyone who`s written code
 before knows, the better the algorithm is written, the fast it`ll run.
 

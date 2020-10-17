@@ -17,25 +17,38 @@ import autolens.plot as aplt
 
 # %%
 """
-The tutorials need to know the path to your autolens_workspace folder, in order to:
+PyAutoLens assumes the working directory is `/path/to/autolens_workspace/` on your hard-disk. This is so that it can:
  
- - Load configuration settings from the config files.
- - Load example data.
- - Output the results of models fits to your hard-disk. 
+ - Load configuration settings from config files in the `autolens_workspace/config` folder.
+ - Load example data from the `autolens_workspace/dataset` folder.
+ - Output the results of models fits to your hard-disk to the `autolens/output` folder. 
     
 If you don't have an autolens_workspace (perhaps you cloned / forked the **PyAutoLens** GitHub repository?) you can
 download it here:
  
- ttps://github.com/Jammy2211/autolens_workspace
+ https://github.com/Jammy2211/autolens_workspace
 
-Make sure to set up your WORKSPACE environment variable correctly, using either the "setup_environment.py" script 
-supplied in the workspace or as described in the installation instructions:
-
-https://pyautolens.readthedocs.io/en/latest/general/installation.html
-    
-This WORKSPACE environment variable is used in each tutorial to determine the path to the autolens_workspace, 
-as shown below. 
+At the top of every tutorial notebook, you'll see the following cell. This cell uses the project `pyprojroot` to
+locate the path to the workspace on your computer and use it to set the working directory of the notebook.
 """
+
+# %%
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
+# %%
+"""
+If the printed working directory does not match the workspace path on your computer, you can manually set it
+as follows (the example below shows the path I would use on my laptop. The code is commented out so you do not
+use this path in this tutorial!
+"""
+# %%
+# workspace_path = "/home/jammy/PycharmProjects/PyAuto/autolens_workspace"
+# #%cd $workspace_path
+# print(f"Working Directory has been set to `{workspace_path}`")
 
 # %%
 """
@@ -43,7 +56,7 @@ The dataset path specifies where the dataset is located, this time in the direct
 """
 
 # %%
-dataset_path = f"howtolens/dataset/chapter_1"
+dataset_path = f"dataset/howtolens/chapter_1"
 
 # %%
 """
@@ -155,12 +168,12 @@ aplt.Imaging.image(imaging=imaging, plotter=plotter, include=aplt.Include(origin
 
 # %%
 """
-Throughout the ``.owToLens__ lecture series you`ll see lots more objects that can include on figures.
+Throughout the **HowToLens** lecture series you`ll see lots more objects that can include on figures.
 
 Just like the matplotlib setup, you can customize what does and does not appear on figures by default using the 
 config file `autolens_workspace/config/visualize/general.ini`
 
-Great! Hopefully, visualization in **PyAutoLens** is displaying nicely for us to get on with the ``.owToLens__ lecture series.
+Great! Hopefully, visualization in **PyAutoLens** is displaying nicely for us to get on with the **HowToLens** lecture series.
 """
 
 # %%

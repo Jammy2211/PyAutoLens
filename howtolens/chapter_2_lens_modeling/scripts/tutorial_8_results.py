@@ -8,26 +8,17 @@ the maximum log likelihood fit of the modoel-fits. Lets take a more detailed loo
 """
 
 # %%
-from autoconf import conf
-import autofit as af
+#%matplotlib inline
+
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-# %%
-"""
-Use this path to explicitly set the config path and output path, with the latter corresponding to the specific path
-the results of the phase 1 tutorial were output too.
-"""
-
-# %%
-conf.instance.push(
-f"howtolens/config", output_path=f"howtolens/output"
-)
-
+import autofit as af
 
 # %%
 """
@@ -38,7 +29,7 @@ your hard-disk this should simply reload them into this Pythons script.
 # %%
 dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp"
-dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -52,15 +43,16 @@ mask = al.Mask2D.circular(
 )
 
 phase = al.PhaseImaging(
-    name="phase_t1_non_linear_search",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t1_non_linear_search", n_live_points=40
+    ),
     settings=al.SettingsPhaseImaging(
         settings_masked_imaging=al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
     ),
     galaxies=dict(
         lens_galaxy=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
-        source_galaxy=al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential),
+        source_galaxy=al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential),
     ),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
 # result =  phase.run(dataset=imaging, mask=mask)
@@ -89,7 +81,7 @@ which are used for computing information about the model-fit such as the error o
 
 # %%
 """
-However, we are not going into any more detail on the result variable in this tutorial, or in the ``.owToLens__ lectures.
+However, we are not going into any more detail on the result variable in this tutorial, or in the **HowToLens** lectures.
 
 A comprehensive description of the results can be found at the following script:
 

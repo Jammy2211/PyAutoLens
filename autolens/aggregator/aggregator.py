@@ -25,7 +25,7 @@ def tracer_from_agg_obj(agg_obj):
      it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator outputs
      such that the function can use the *Aggregator*'s map function to to create a `Tracer` generator.
 
-     The `Tracer` is created following the same method as the PyAutoLens *Phase* classes using an instance of the
+     The `Tracer` is created following the same method as the PyAutoLens `Phase` classes using an instance of the
      maximum log likelihood model's galaxies. These galaxies have their hyper-images added (if they were used in the
      fit) and passed into a Tracer object.
 
@@ -79,7 +79,7 @@ def masked_imaging_from_agg_obj(agg_obj, settings_masked_imaging=None):
      that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator 
      outputs such that the function can use the *Aggregator*'s map function to to create a *MaskedImaging* generator.
 
-     The *MaskedImaging* is created following the same method as the PyAutoLens *Phase* classes, including using the
+     The *MaskedImaging* is created following the same method as the PyAutoLens `Phase` classes, including using the
      *meta_dataset* instance output by the phase to load inputs of the *MaskedImaging* (e.g. psf_shape_2d). 
 
     Parameters
@@ -103,8 +103,8 @@ def fit_imaging_generator_from_aggregator(
     settings_inversion=None,
 ):
     """
-    Returns a generator of *FitImaging* objects from an input aggregator, which generates a list of the
-    *FitImaging* objects for every set of results loaded in the aggregator.
+    Returns a generator of `FitImaging` objects from an input aggregator, which generates a list of the
+    `FitImaging` objects for every set of results loaded in the aggregator.
 
     This is performed by mapping the *fit_imaging_from_agg_obj* with the aggregator, which sets up each fit using
     only generators ensuring that manipulating the fits of large sets of results is done in a memory efficient way.
@@ -131,11 +131,11 @@ def fit_imaging_from_agg_obj(
     settings_inversion=None,
 ):
     """
-    Returns a *FitImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe
+    Returns a `FitImaging` object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe
      that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator 
-     outputs such that the function can use the *Aggregator*'s map function to to create a *FitImaging* generator.
+     outputs such that the function can use the *Aggregator*'s map function to to create a `FitImaging` generator.
 
-     The *FitImaging* is created following the same method as the PyAutoLens *Phase* classes. 
+     The `FitImaging` is created following the same method as the PyAutoLens `Phase` classes.
 
     Parameters
     ----------
@@ -190,7 +190,7 @@ def masked_interferometer_from_agg_obj(agg_obj, settings_masked_interferometer=N
     generator outputs such that the function can use the *Aggregator*'s map function to to create a 
     *MaskedInterferometer* generator.
 
-    The *MaskedInterferometer* is created following the same method as the PyAutoLens *Phase* classes, including 
+    The *MaskedInterferometer* is created following the same method as the PyAutoLens `Phase` classes, including
     using the *meta_dataset* instance output by the phase to load inputs of the *MaskedInterferometer* 
     (e.g. psf_shape_2d). 
 
@@ -223,7 +223,7 @@ def fit_interferometer_generator_from_aggregator(
     generator outputs such that the function can use the *Aggregator*'s map function to to create a *FitInterferometer* 
     generator.
 
-    The *FitInterferometer* is created following the same method as the PyAutoLens *Phase* classes. 
+    The *FitInterferometer* is created following the same method as the PyAutoLens `Phase` classes.
 
     Parameters
     ----------

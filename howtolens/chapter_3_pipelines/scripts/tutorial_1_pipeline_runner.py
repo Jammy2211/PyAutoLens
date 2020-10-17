@@ -1,4 +1,6 @@
-""""""
+"""
+
+"""
 
 # %%
 """
@@ -33,25 +35,13 @@ sampling as fast as possible!
 """
 
 # %%
-""" AUTOFIT + CONFIG SETUP """
-
-# %%
 #%matplotlib inline
-from autoconf import conf
-import os
 
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
+from pyprojroot import here
 
-conf.instance.push(
-f"howtolens/config", output_path=f"howtolens/output"
-)
-
-# %%
-""" AUTOLENS + DATA SETUP """
-
-# %%
-#%matplotlib inline
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
 
 import autolens as al
 import autolens.plot as aplt
@@ -61,16 +51,14 @@ import autolens.plot as aplt
 we'll use strong lensing data, where:
 
  - The lens `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is an `EllipticalExponential`.
 """
 
 # %%
-from howtolens.simulators.chapter_3 import light_sersic__mass_sie__source_exp
-
 dataset_type = "chapter_3"
 dataset_name = "light_sersic__mass_sie__source_exp"
-dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -150,7 +138,7 @@ The `Setup` objects are input into a `SetupPipeline` object, which is passed int
 the analysis depending on the setup. This includes tagging the output path of a pipeline. For example, if `with_shear` 
 is True, the pipeline`s output paths are `tagged` with the string `with_shear`.
 
-This means you can run the same pipeline on the same data twice (with and without shear) and the results will go
+This means you can run the same pipeline on the same data twice (e.g. with and without shear) and the results will go
 to different output folders and thus not clash with one another!
 
 The `path_prefix` belows specify the path the pipeline results are written 
@@ -163,7 +151,7 @@ description of what inputting redshifts into **PyAutoLens** does.
 
 # %%
 setup = al.SetupPipeline(
-    path_prefix="c3_t1_lens_and_source",
+    path_prefix="howtolens/c3_t1_lens_and_source",
     redshift_lens=0.5,
     redshift_source=1.0,
     setup_mass=setup_mass,
@@ -183,7 +171,9 @@ to create the `Pipeline` object and calling that objects `run` function.
 """
 
 # %%
-from howtolens.chapter_3_pipelines import tutorial_1_pipeline_lens_and_source
+from autolens_workspace.howtolens.chapter_3_pipelines import (
+    tutorial_1_pipeline_lens_and_source,
+)
 
 pipeline_lens_and_source = tutorial_1_pipeline_lens_and_source.make_pipeline(
     setup=setup, settings=settings

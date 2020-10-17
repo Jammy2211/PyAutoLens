@@ -16,15 +16,15 @@ This guide installs **PyAutoLens** with the following dependencies:
 
 **PyAutoGalaxy** https://github.com/Jammy2211/PyAutoGalaxy
 
-*``PyMultiNest``* http://johannesbuchner.github.io/pymultinest-tutorial/install.html
+**PyMultiNest** http://johannesbuchner.github.io/pymultinest-tutorial/install.html
 
 **pyquad** https://github.com/AshKelly/pyquad
 
-*``dynesty``* https://github.com/joshspeagle/dynesty
+**dynesty** https://github.com/joshspeagle/dynesty
 
-*``emcee``* https://github.com/dfm/emcee
+**emcee** https://github.com/dfm/emcee
 
-*``PySwarms``* https://github.com/ljvmiranda921/pyswarms
+**PySwarms** https://github.com/ljvmiranda921/pyswarms
 
 **astropy** https://www.astropy.org/
 
@@ -47,8 +47,8 @@ The simplest way to install **PyAutoLens** is via pip:
 
     pip install autolens
 
-Clone autolens workspace & set WORKSPACE environment model ('--depth 1' clones only the most recent branch on the
-autolens_workspace, reducing the download size):
+Clone ``autolens workspace`` (``--depth 1`` clones only the most recent branch on the autolens_workspace, reducing the
+download size):
 
 .. code-block:: bash
 
@@ -56,7 +56,7 @@ autolens_workspace, reducing the download size):
    git clone https://github.com/Jammy2211/autolens_workspace --depth 1
    cd autolens_workspace
 
-Finally, run the `welcome.py` script to get started!
+Run the `welcome.py` script to get started!
 
 .. code-block:: bash
 
@@ -87,8 +87,8 @@ Install autolens:
 
     pip install autolens
 
-Clone autolens workspace & set WORKSPACE environment model ('--depth 1' clones only the most recent branch on the
-autolens_workspace, reducing the download size):
+Clone the ``autolens workspace`` (``--depth 1`` clones only the most recent branch on the autolens_workspace, reducing
+the download size):
 
 .. code-block:: bash
 
@@ -96,24 +96,7 @@ autolens_workspace, reducing the download size):
    git clone https://github.com/Jammy2211/autolens_workspace --depth 1
    cd autolens_workspace
 
-We will import files from the autolens_workspace as if it were a Python module. To do this in conda, we need to
-create a .pth file in our conda enviroments site-packages folder. In your browser or on the command line find your
-site packages folder:
-
-.. code-block:: bash
-
-   cd /home/usr/anaconda3/envs/autolens/lib/python3.7/site-packages/
-
-Now create a .pth file via a text editor and put the path to your autolens_workspace in the file and save
-
-NOTE: As shown below, the path in the .pth file points to the directory containing the 'autolens_workspace' folder
-but does not contain the 'autolens_workspace' in PYTHONPATH itself!
-
-.. code-block:: bash
-
-   /path/on/your/computer/you/want/to/put/the
-
-Finally, run the `welcome.py` script to get started!
+Run the `welcome.py` script to get started!
 
 .. code-block:: bash
 
@@ -144,21 +127,6 @@ Include the **PyAutoLens** source repository in your PYTHONPATH (noting that you
 
    export PYTHONPATH=$PYTHONPATH:/path/to/PyAutoLens
 
-**PyAutoLens** requires a valid config to run. Therefore, clone the
-`autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ which contains the config files:
-
-.. code-block:: bash
-
-   cd /path/on/your/computer/you/want/to/put/the/autolens_workspace
-   git clone https://github.com/Jammy2211/autolens_workspace --depth 1
-   cd autolens_workspace
-
-Next, run the `welcome.py` script to set up the configs and environment:
-
-.. code-block:: bash
-
-   python3 welcome.py
-
 Finally, check the **PyAutoLens** unit tests run and pass (you may need to install pytest via
 ``pip install pytest``):
 
@@ -167,26 +135,26 @@ Finally, check the **PyAutoLens** unit tests run and pass (you may need to insta
     cd /path/to/PyAutoLens
    python3 -m pytest
 
-Environment Variables
----------------------
+Current Working Directory
+-------------------------
 
-**PyAutoLens** uses an environment variable called WORKSPACE to know where the 'autolens_workspace' folder is
-located. This is used to locate config files and output results. It should automatically be detected and set in
-the `welcome.py` script, but if something goes wrong you can set it manually using the command:
-
-.. code-block:: bash
-
-    export WORKSPACE=/path/on/your/computer/where/you/cloned/the/autolens_workspace
-
-The autolens_workspace imports modules within the workspace to use them, meaning the path to the workspace must be
-included in the PYTHONPATH. Your PYTHONPATH can be manual set using the command below.
-
-NOTE: As shown below, the PYTHONPATH points to the directory containing the 'autolens_workspace' folder but does not
-contain the 'autolens_workspace' in PYTHONPATH itself!
+**PyAutoLens** scripts assume that the ``autolens_workspace`` directory is the Python working directory. This means
+that, when you run an example script, you should run it from the ``autolens_workspace`` as follows:
 
 .. code-block:: bash
 
-    export PYTHONPATH=/path/on/your/computer/you/want/to/put/the/.
+    cd path/to/autolens_workspace (if you are not already in the autolens_workspace).
+    python3 examples/model/beginner/mass_total__source_parametric.py
+
+The reasons for this are so that **PyAutoLens** can:
+
+ - Load configuration settings from config files in the ``autolens_workspace/config`` folder.
+ - Load example data from the ``autolens_workspace/dataset`` folder.
+ - Output the results of models fits to your hard-disk to the ``autolens/output`` folder.
+ - Import modules from the ``autolens_workspace``, for example ``from autolens_workspace.transdimensional import pipelines``.
+
+If you have any errors relating to importing modules, loading data or outputting results it is likely because you
+are not running the script with the ``autolens_workspace`` as the working directory!
 
 Matplotlib Backend
 ------------------
