@@ -1,4 +1,6 @@
-""""""
+"""
+
+"""
 
 # %%
 """
@@ -6,7 +8,7 @@ Tutorial 1: Lens and Source
 ===========================
 
 As discussed in chapter 2, an effective strategy for modeling strong lenses is to break the model-fitting procedure
-down into a series of phases, linking the results of the phases to guide the non-linear search as to where to
+down into a series of phases, linking the results of the phases to guide the `NonLinearSearch` as to where to
 sample parameter space. In this chapter, we'll cover `Pipeline`'s, which provide a powerful means by which to
 link together many phases.
 
@@ -28,31 +30,18 @@ in this tutorial, using a pipeline composed of a modest 3 phases:
  2) Fit the source-`Galaxy`'s light (and therefore lens `Galaxy`'s mass), ignoring the len`s light.
  3) Fit both simultaneously, using these results to initialize our starting location in parameter space.
 
-Of course, given that we do not care for the errors in phases 1 and 2, we will set up our non-linear search to perform
+Of course, given that we do not care for the errors in phases 1 and 2, we will set up our `NonLinearSearch` to perform
 sampling as fast as possible!
 """
 
 # %%
-""" AUTOFIT + CONFIG SETUP """
-
-# %%
 #%matplotlib inline
-from autoconf import conf
-import os
 
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
+from pyprojroot import here
 
-conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
-)
-
-# %%
-""" AUTOLENS + DATA SETUP """
-
-# %%
-#%matplotlib inline
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
 
 import autolens as al
 import autolens.plot as aplt
@@ -62,16 +51,14 @@ import autolens.plot as aplt
 we'll use strong lensing data, where:
 
  - The lens `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is an `EllipticalExponential`.
 """
 
 # %%
-from howtolens.simulators.chapter_3 import light_sersic__mass_sie__source_exp
-
 dataset_type = "chapter_3"
 dataset_name = "light_sersic__mass_sie__source_exp"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -114,9 +101,9 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 """
 __Pipeline_Setup__:
 
-Pipelines can contain `Setup` objects, which customize how different aspects of the model are fitted. 
+Pipelines use `Setup` objects to customize how different aspects of the model are fitted. 
 
-First, we create a `SetupLightSersic` which customizes:
+First, we create a `SetupLightParametric` which customizes:
 
  - If the centre of the lens light profile is manually input and fixed for modeling.
 
@@ -124,7 +111,7 @@ In this example we do not fix the centre of the `EllipticalSersic` light model t
 """
 
 # %%
-setup_light = al.SetupLightSersic(light_centre=None)
+setup_light = al.SetupLightParametric(light_centre=None)
 
 # %%
 """
@@ -134,24 +121,24 @@ This pipeline also uses a `SetupMass`, which customizes:
 """
 
 # %%
-setup_mass = al.SetupMassTotal(no_shear=False)
+setup_mass = al.SetupMassTotal(with_shear=True)
 
 # %%
 """
-Next, we create a `SetupSourceSersic` which does not customize the pipeline behaviour except for tagging (see below).
+Next, we create a `SetupSourceParametric` which does not customize the pipeline behaviour except for tagging (see below).
 """
 
 # %%
-setup_source = al.SetupSourceSersic()
+setup_source = al.SetupSourceParametric()
 
 """
 _Pipeline Tagging_
 
 The `Setup` objects are input into a `SetupPipeline` object, which is passed into the pipeline and used to customize
-the analysis depending on the setup. This includes tagging the output path of a pipeline. For example, if `no_shear` 
-is True, the pipeline`s output paths are `tagged` with the string `no_shear`.
+the analysis depending on the setup. This includes tagging the output path of a pipeline. For example, if `with_shear` 
+is True, the pipeline`s output paths are `tagged` with the string `with_shear`.
 
-This means you can run the same pipeline on the same data twice (with and without shear) and the results will go
+This means you can run the same pipeline on the same data twice (e.g. with and without shear) and the results will go
 to different output folders and thus not clash with one another!
 
 The `path_prefix` belows specify the path the pipeline results are written 
@@ -164,7 +151,7 @@ description of what inputting redshifts into **PyAutoLens** does.
 
 # %%
 setup = al.SetupPipeline(
-    path_prefix="c3_t1_lens_and_source",
+    path_prefix="howtolens/c3_t1_lens_and_source",
     redshift_lens=0.5,
     redshift_source=1.0,
     setup_mass=setup_mass,
@@ -184,7 +171,9 @@ to create the `Pipeline` object and calling that objects `run` function.
 """
 
 # %%
-from howtolens.chapter_3_pipelines import tutorial_1_pipeline_lens_and_source
+from autolens_workspace.howtolens.chapter_3_pipelines import (
+    tutorial_1_pipeline_lens_and_source,
+)
 
 pipeline_lens_and_source = tutorial_1_pipeline_lens_and_source.make_pipeline(
     setup=setup, settings=settings

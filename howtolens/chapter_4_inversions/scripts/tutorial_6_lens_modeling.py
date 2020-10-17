@@ -3,7 +3,7 @@
 Tutorial 6: Lens Modeling
 =========================
 
-When modeling complex source`s with parametric profiles, we quickly entered a regime where our non-linear search was
+When modeling complex source`s with parametric profiles, we quickly entered a regime where our `NonLinearSearch` was
 faced with a parameter space of dimensionality N=30+ parameters. This made the model-fitting inefficient, and very
 likely to infer a local maxima.
 
@@ -19,27 +19,28 @@ That`s what we are going to cover in this tutorial.
 # %%
 #%matplotlib inline
 
-from howtolens.simulators.chapter_4 import mass_sie__source_sersic
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
 
 # %%
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
  - The lens `Galaxy`'s light is omitted.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
 dataset_type = "chapter_4"
 dataset_name = "mass_sie__source_sersic__2"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -156,7 +157,7 @@ print(correct_fit.log_evidence)
 The log evidence *is* lower. However, the difference in log evidence isn't *that large*. This is going to be a problem 
 for the non-linear search, as its going to see *a lot* of solutions with really high log evidence value. Furthermore, 
 these solutions occupy a *large volumne* of parameter space (e.g. everywhere the lens model that is wrong). This makes 
-it easy for the non-linear search to get lost searching through these unphysical solutions and, unfortunately, infer an 
+it easy for the `NonLinearSearch` to get lost searching through these unphysical solutions and, unfortunately, infer an 
 incorrect lens model (e.g. a local maxima).
 
 There is no simple fix for this. The reality is that for an `Inversion` these solutions exist. This is how phase 
@@ -166,8 +167,8 @@ an `Inversion` in the next phase, our mass model starts in the correct regions o
 sampling these incorrect solutions.
 
 Its not ideal, but its also not a big problem. Furthermore, `LightProfile`'ss run faster computationally than 
-_Inversion_`s, so breaking down the lens modeling procedure in this way is actually a lot faster than starting with an
-_Inversion_ anyway!
+`Inversion`'s, so breaking down the lens modeling procedure in this way is actually a lot faster than starting with an
+`Inversion` anyway!
 """
 
 # %%
@@ -178,11 +179,9 @@ source using an `Inversion`. To do this, all we have to do is give the lens gala
 """
 
 # %%
-from howtolens.simulators.chapter_4 import light_sersic__mass_sie__source_sersic
-
 dataset_type = "chapter_4"
 dataset_name = "light_sersic__mass_sie__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -219,7 +218,7 @@ As I said above, performing this fit is the same as usual, we just give the lens
 # %%
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    sersic=al.lp.SphericalSersic(
+    bulge=al.lp.SphericalSersic(
         centre=(0.0, 0.0), intensity=0.2, effective_radius=0.8, sersic_index=4.0
     ),
     mass=al.mp.EllipticalIsothermal(
@@ -248,7 +247,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 # %%
 """
 This fit now subtracts the lens `Galaxy`'s light from the image and fits the resulting source-only image with the 
-_Inversion_. When we plot the image, a new panel on the sub-plot appears showing the model image of the lens galaxy.
+`Inversion`. When we plot the image, a new panel on the sub-plot appears showing the model image of the lens galaxy.
 """
 
 # %%
@@ -268,7 +267,7 @@ lens `Galaxy`'s light accurately (below, I`ve increased the lens galaxy intensit
 # %%
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    sersic=al.lp.SphericalSersic(
+    bulge=al.lp.SphericalSersic(
         centre=(0.0, 0.0), intensity=0.3, effective_radius=0.8, sersic_index=4.0
     ),
     mass=al.mp.EllipticalIsothermal(

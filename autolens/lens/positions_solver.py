@@ -486,8 +486,8 @@ def grid_square_neighbors_1d_from(shape_1d):
          x x x  x x x x x x x
          x x x  x x x x x x x      Th s  s an example mask.Mask2D, where:
          x x x  x x x x x x x
-         x x x  0 1 2 3 x x x      x = ``True`` (P xel  s masked and excluded from the gr d)
-         x x x  4 5 6 7 x x x      o = ``False`` (P xel  s not masked and  ncluded  n the gr d)
+         x x x  0 1 2 3 x x x      x = `True` (P xel  s masked and excluded from the gr d)
+         x x x  4 5 6 7 x x x      o = `False` (P xel  s not masked and  ncluded  n the gr d)
          x x x  8 9 10 11 x x x
          x x x  x x x x x x x
          x x x  x x x x x x x
@@ -500,7 +500,7 @@ def grid_square_neighbors_1d_from(shape_1d):
     grid_neighbors_1d[0,:] = [0, 1, 2, 4, 6, 8, 9, 10]
     grid_neighbors_1d[1,:] = [1, 2, 3, 5, 7, 9, 10, 11]
 
-    The other pixels will be included in the grid_neighbors_1d array, but correspond to ``False`` entries in
+    The other pixels will be included in the grid_neighbors_1d array, but correspond to `False` entries in
     grid_has_neighbors and be omitted from calculations that use the neighbor array.
 
     Parameters
@@ -556,7 +556,7 @@ def grid_peaks_from(distance_1d, grid_1d, neighbors, has_neighbors):
     neighbors : np.ndarray
         A 2D array of shape [pixels, 8] giving the 1D index of every grid pixel to its 8 neighboring pixels.
     has_neighbors : np.ndarray
-        An array of bools, where ``True`` means a pixel has 8 neighbors and ``False`` means it has less than 8 and is not
+        An array of bools, where `True` means a pixel has 8 neighbors and `False` means it has less than 8 and is not
         compared to the source distance.
     """
     peaks_list = []

@@ -90,7 +90,7 @@ below shows this in action:
 To perform lens modeling, **PyAutoLens** adopts the probabilistic programming
 language `PyAutoFit <https://github.com/rhayes777/PyAutoFit>`_. **PyAutoFit** allows users to compose a
 lens model from ``LightProfile``, ``MassProfile`` and ``Galaxy`` objects, customize the model parameterization and
-fit it to data via a non-linear search (e.g. `dynesty <https://github.com/joshspeagle/dynesty>`_,
+fit it to data via a `NonLinearSearch` (e.g. `dynesty <https://github.com/joshspeagle/dynesty>`_,
 `emcee <https://github.com/dfm/emcee>`_ or `PySwarms <https://pyswarms.readthedocs.io/en/latest/>`_). The example
 code below shows how to setup and fit a lens model to a dataset:
 
@@ -139,12 +139,12 @@ code below shows how to setup and fit a lens model to a dataset:
 
     """
     To perform the analysis we set up a phase, which takes our galaxy models & fits
-    their parameters using a non-linear search (in this case, Dynesty).
+    their parameters using a `NonLinearSearch` (in this case, Dynesty).
     """
 
     phase = al.PhaseImaging(
         galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
-        phase_name="example/phase_example",
+        name="example/phase_example",
         search=af.DynestyStatic(n_live_points=50),
     )
 

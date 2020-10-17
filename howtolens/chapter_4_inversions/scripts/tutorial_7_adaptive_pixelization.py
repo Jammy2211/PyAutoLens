@@ -11,28 +11,29 @@ want to do that? Lets take another quick look at the rectangular grid..
 # %%
 #%matplotlib inline
 
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
-import os
 
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
 
 # %%
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
  - The lens `Galaxy`'s light is omitted.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
-from howtolens.simulators.chapter_4 import mass_sie__source_sersic
-
 dataset_type = "chapter_4"
 dataset_name = "mass_sie__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",

@@ -4,14 +4,14 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "phase_features"
 test_name = "pixel_scales_interp"
-data_name = "lens_sie__source_smooth"
+dataset_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
 def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1",
+        name="phase[1]",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalPowerLaw),
@@ -25,7 +25,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     phase1.search.n_live_points = 60
     phase1.search.facc = 0.8
 
-    return al.PipelineDataset(name, phase1)
+    return al.PipelineDataset(name, path_prefix, phase1)
 
 
 if __name__ == "__main__":

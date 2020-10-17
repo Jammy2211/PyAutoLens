@@ -8,8 +8,8 @@ repeats = 1
 
 workspace_path = "/home/jammy/PycharmProjects/PyAuto/autolens_workspace"
 dataset_type = "interferometer"
-dataset_name = "mass_sie__source_sersic"
-dataset_path = f"{workspace_path}/dataset/{dataset_type}/{dataset_name}"
+dataset_name = "mass_sie__source_bulge"
+dataset_path = f"dataset/{dataset_type}/{dataset_name}"
 
 interferometer = al.Interferometer.from_fits(
     visibilities_path=f"{dataset_path}/visibilities.fits",

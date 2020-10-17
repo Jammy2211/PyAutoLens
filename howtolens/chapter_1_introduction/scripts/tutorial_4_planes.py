@@ -56,6 +56,12 @@ For simplicity, we'll assume 1 lens galaxy and 1 source galaxy.
 # %%
 #%matplotlib inline
 
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
 
@@ -84,7 +90,7 @@ light_profile = al.lp.SphericalSersic(
     centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=1.0
 )
 
-source_galaxy = al.Galaxy(redshift=1.0, sersic=light_profile)
+source_galaxy = al.Galaxy(redshift=1.0, bulge=light_profile)
 
 # %%
 """

@@ -1,10 +1,10 @@
 from os import path
 
-import autolens as al
 import numpy as np
 import pytest
-from autolens import exc
-from test_autolens import mock
+
+import autolens as al
+from autolens import exc, mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -28,8 +28,7 @@ class TestMakeAnalysis:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(positions_threshold=0.2)
             ),
@@ -57,14 +56,12 @@ class TestMakeAnalysis:
         # If position threshold is input (not None) and but no positions are supplied, raise an error
 
         with pytest.raises(exc.PhaseException):
-
             imaging_7x7 = al.Imaging(
                 image=image_7x7, noise_map=noise_map_7x7, positions=None
             )
 
             phase_imaging_7x7 = al.PhaseImaging(
-                phase_name="test_phase",
-                search=mock.MockSearch(),
+                search=mock.MockSearch("test_phase"),
                 settings=al.SettingsPhaseImaging(
                     settings_lens=al.SettingsLens(positions_threshold=0.2)
                 ),
@@ -92,7 +89,6 @@ class TestMakeAnalysis:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
             galaxies=[lens_galaxy, source_galaxy],
             settings=al.SettingsPhaseImaging(
                 settings_masked_imaging=al.SettingsMaskedImaging(
@@ -100,7 +96,7 @@ class TestMakeAnalysis:
                 ),
                 settings_pixelization=al.SettingsPixelization(use_border=True),
             ),
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -118,7 +114,6 @@ class TestMakeAnalysis:
         assert fit.inversion.mapper.grid[4][1] == pytest.approx(-3.699999, 1.0e-2)
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
             galaxies=[lens_galaxy, source_galaxy],
             settings=al.SettingsPhaseImaging(
                 settings_masked_imaging=al.SettingsMaskedImaging(
@@ -126,7 +121,7 @@ class TestMakeAnalysis:
                 ),
                 settings_pixelization=al.SettingsPixelization(use_border=False),
             ),
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
         )
 
         analysis = phase_imaging_7x7.make_analysis(
@@ -161,8 +156,7 @@ class TestAutoPositions:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(positions_threshold=0.1)
             ),
@@ -187,8 +181,7 @@ class TestAutoPositions:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(
                     positions_threshold=0.2, auto_positions_factor=2.0
@@ -215,8 +208,7 @@ class TestAutoPositions:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(
                     positions_threshold=0.2, auto_positions_factor=2.0
@@ -247,8 +239,7 @@ class TestAutoPositions:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(
                     positions_threshold=0.2, auto_positions_factor=1.0
@@ -284,8 +275,7 @@ class TestAutoPositions:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(
                     positions_threshold=0.2, auto_positions_factor=2.0
@@ -319,8 +309,7 @@ class TestAutoPositions:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(positions_threshold=0.1)
             ),
@@ -354,8 +343,7 @@ class TestAutoPositions:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(positions_threshold=0.1)
             ),
@@ -381,8 +369,7 @@ class TestAutoPositions:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(
                     positions_threshold=0.1, auto_positions_factor=1.0
@@ -410,8 +397,7 @@ class TestAutoPositions:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(
                     positions_threshold=0.2, auto_positions_factor=3.0
@@ -441,8 +427,7 @@ class TestAutoPositions:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(
                     positions_threshold=0.2,
@@ -472,8 +457,7 @@ class TestAutoPositions:
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
-            phase_name="test_phase",
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(auto_positions_factor=1.0)
             ),

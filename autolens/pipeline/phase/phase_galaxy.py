@@ -129,7 +129,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
     def __init__(
         self,
-        phase_name,
+        name,
         search,
         folders=tuple(),
         galaxies=None,
@@ -153,9 +153,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
             The side length of the subgrid
         """
 
-        super(PhaseGalaxy, self).__init__(
-            phase_name=phase_name, folders=folders, search=search
-        )
+        super(PhaseGalaxy, self).__init__(name=name, folders=folders, search=search)
         self.cosmology = cosmology
         self.use_image = use_image
         self.use_convergence = use_convergence
@@ -198,7 +196,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
 
     def make_analysis(self, galaxy_data, mask, results=None):
         """
-        Create an lens object. Also calls the prior passing and masked_imaging modifying
+        Returns an lens object. Also calls the prior passing and masked_imaging modifying
         functions to allow child classes to change the behaviour of the phase.
 
         Parameters
@@ -212,7 +210,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
         Returns
         -------
         lens: Analysis
-            An lens object that the non-linear search calls to determine the fit of a
+            An lens object that the `NonLinearSearch` calls to determine the fit of a
              set of values
         """
 

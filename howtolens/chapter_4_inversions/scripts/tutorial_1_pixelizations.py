@@ -10,13 +10,19 @@ source-`Galaxy`'s light.
 # %%
 #%matplotlib inline
 
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
 
 # %%
 """
 Lets setup a lensed source-plane grid, using a lens galaxy and `Tracer` (our source galaxy doesn`t have a 
-_LightProfile_,as we`re going to reconstruct its light using a pixelization).
+`LightProfile`,as we`re going to reconstruct its light using a pixelization).
 """
 
 # %%

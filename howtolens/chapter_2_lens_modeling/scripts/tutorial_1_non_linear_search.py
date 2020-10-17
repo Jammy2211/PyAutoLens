@@ -32,12 +32,12 @@ combinations of parameters that gave higher log_likelihood solutions previously.
 provided a good fit to the data, another set with similar values probably will too.
 
 This is called a `non-linear search` and its a fairly common problem faced by scientists. Over the next few tutorials,
-we`re going to really get our heads around the concept of a non-linear search - intuition which will prove crucial to
+we`re going to really get our heads around the concept of a `NonLinearSearch` - intuition which will prove crucial to
 being a successful lens modeler.
 
-We`re going to use a non-linear search algorithm called `Dynesty`. I highly recommend it, and find its great for
+We`re going to use a `NonLinearSearch` called `Dynesty`. I highly recommend it, and find its great for
 lens modeling. However, for now, lets not worry about the details of how Dynesty actually works. Instead, just
-picture that a non-linear search in **PyAutoLens** operates as follows:
+picture that a `NonLinearSearch` in **PyAutoLens** operates as follows:
 
  1) Randomly guess a lens model and use its `LightProfile`'s and `MassProfile`'s to set up a lens galaxy, source galaxy
  and a `Tracer`.
@@ -52,7 +52,12 @@ picture that a non-linear search in **PyAutoLens** operates as follows:
 # %%
 #%matplotlib inline
 
-from autoconf import conf
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autofit as af  # <- This library is used for non-linear fitting.
 import autolens as al
 import autolens.plot as aplt
@@ -66,7 +71,7 @@ following two properties:
    to give the path to your autolens_workspace, so the configuration files in the workspace are used (e.g. 
    `/path/to/autolens_workspace/config`). 
 
- - The path to the **PyAutoLens** output folder, which is where the results of the non-linear search are written to 
+ - The path to the **PyAutoLens** output folder, which is where the results of the `NonLinearSearch` are written to 
    on your hard-disk, alongside visualization and other properties of the fit 
    (e.g. `/path/to/autolens_workspace/output/howtolens`)
 
@@ -75,49 +80,23 @@ Nevertheless, setting the paths explicitly within the code is good practise.
 """
 
 # %%
-"""Use the WORKSPACE environment variable to determine the path to the `autolens_workspace`."""
-
-# %%
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
-)
-
-# %%
 """
 Lets loads the `Imaging` dataset we'll fit a lens model with using a non-linear search. If you are interested in how
 we simulate strong lens data, checkout the scripts in the folder `autolens_workspace/howtolens/simulators`.
 
 The strong lens in this image was generated using:
 
- - The lens `Galaxy`'s `MassProfile` is a *SphericalIsothermal*.
+ - The lens total mass distribution is a *SphericalIsothermal*.
  - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 
-Below, you`ll notice the command:
-
- `from howtolens.simulators.chapter_2 import mass_sis__source_exp`
-    
-This will crop up in nearly every tutorial from here on. This imports the simulator for the dataset we fit in the 
-tutorial, simulating the data and placing it in the folder:
-
- `autolens_workspace/howtolens/dataset/chapter_2/mass_sis__source_exp`    
-    
-To see how the `Imaging` dataset is simulated, feel free to checkout the simulators in the folder:
-
- `autolens_workspace/howtolens/simmulators`
+This dataset (and all datasets used in tutorials from here are on) are stored and loaded from the 
+`autolens_workspace/dataset/howtolens` folder.
 """
 
 # %%
-from howtolens.simulators.chapter_2 import mass_sis__source_exp
-
 dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -156,7 +135,7 @@ Lets model the source galaxy with a spherical exponential `LightProfile` (again,
 """
 
 # %%
-source_galaxy_model = al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential)
+source_galaxy_model = al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential)
 
 # %%
 """
@@ -168,7 +147,7 @@ dataset. Below, we specify:
  - The sub-grid size of this grid.
 
 These settings are passed to `SettingsPhaseImaging` via a `SettingsMaskedImaging` object, which in the previous chapter
-we saw could be used to customize how the `MaskedImaging` was setup. All settings passed to a _SettingsPhaseImaging_
+we saw could be used to customize how the `MaskedImaging` was setup. All settings passed to a `SettingsPhaseImaging`
 object are passed in this way, thus the settings we input into a phase are categorized based on what they change.
 
 You`ll note that the output folder of non-linear seach results has been `tagged` with these phase settings. we'll 
@@ -182,41 +161,46 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 
 # %%
 """
-To fit the galaxy models above via a non-linear search (in this case, Dynesty) we use a `PhaseImaging` object. Phases
-bring together the model, non-linear search and data, in order to perform a model-fit and thus infer a lens model.
+To fit the galaxy models above via a `NonLinearSearch` (in this case, Dynesty) we use a `PhaseImaging` object. Phases
+bring together the model, `NonLinearSearch` and data, in order to perform a model-fit and thus infer a lens model.
 
 (Just like we could give profiles descriptive names, like `light`, `bulge` and `disk`, we can do the exact same 
 thing with the phase`s galaxies. This is good practise - as once we start using complex lens models, you could 
 potentially have a lot of galaxies - and this is the best way to keep track of them!).
 
-You`ll note that we also pass the non-linear `search` `DynestyStatic` to this phase, specifying some input parameters
-(n_live_points). we'll cover what these do in a later tutorial. You`ll also note that the output path of the results 
-are `tagged` with some of these settings.
+You`ll note that we also pass the `NonLinearSearch` the following:
+ 
+ - Input parameters like `n_live_points` and `walks` controlling how it samples parameter space. we'll cover what 
+   these do in a later tutorial.  The results full output path are `tagged` depending on these settings.
+ - A `path_prefix` which tells the search to output its results in the folder `autolens_workspace/output/howtolens/`. 
+ - A `name`, which gives the search a name and means the full output path is 
+   `autolens_workspace/output/howtolens/phase_t1_non_linear_search`. 
 """
 
 # %%
 phase = al.PhaseImaging(
-    phase_name="phase_t1_non_linear_search",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t1_non_linear_search", n_live_points=40
+    ),
     settings=settings,
     galaxies=dict(lens_galaxy=lens_galaxy_model, source_galaxy=source_galaxy_model),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
 # %%
 """
-To run the phase, we pass it the data we`re going to fit a lens model to and the non-linear search begins!
+To run the phase, we pass it the data we`re going to fit a lens model to and the `NonLinearSearch` begins!
 
-Model fits using a non-linear search can take a long time to run. Whilst the fit in this tutorial should take of order 
+Model fits using a `NonLinearSearch` can take a long time to run. Whilst the fit in this tutorial should take of order 
 ~10 minutes, later tutorials will take upwards of hours! This is fine, afterall lens modeling is an inherently 
 computationally expensive exercise, but does make going through these tutorials problematic.
 
-Furthermore, in a Jupyter notebook, if you run the non-linear search (using the phase.run command below) you won`t 
+Furthermore, in a Jupyter notebook, if you run the `NonLinearSearch` (using the phase.run command below) you won't 
 be able to continue the notebook until it has finished. For this reason, we recommend that you run the non-linear
 search in these tutorials not via your Juypter notebook, but instead by running the tutorial script found in the
 `chapter_2_lens_modeling/scripts` folder. This can be run either using the `python3 tutoial_1_non_linear_search.py` 
 command on your command line or via your IDE (if you are using one).
 
-The non-linear search outputs all results to your hard-disk, thus if it runs and finishes in the script, you can then
+The `NonLinearSearch` outputs all results to your hard-disk, thus if it runs and finishes in the script, you can then
 run the Jupyter notebook cell and immediately load the result. This is how we recommend all non-linear searches are 
 performed in **PyAutoLens** and is therefore a good habit to get into. In these tutorials, we have commented the 
 `phase.run` command below in every cell to remind you that you should go to the tutorial script in the 
@@ -259,7 +243,7 @@ you`ll see:
  5) The `output.log` file, where all Python interpreter output is directed.
 
 The best-fit solution (i.e. the maximum log likelihood) is stored in the `results`, which we can plot as per usual 
-(you must wait for the non-linear search to finish before you can get the `results` variable). we'll discuss the 
+(you must wait for the `NonLinearSearch` to finish before you can get the `results` variable). we'll discuss the 
 `results` returned by a phase in detail at the end of the chapter.
 """
 
@@ -275,12 +259,12 @@ confirm this yourself if you want, by comparing the inferred parameters to those
 And with that, we`re done - you`ve successfully modeled your first strong lens with **PyAutoLens**! Before moving onto the 
 next tutorial, I want you to think about the following:
 
- 1) a non-linear search is often said to search a `non-linear parameter-space` - why is the term parameter-space 
+ 1) a `NonLinearSearch` is often said to search a `non-linear parameter-space` - why is the term parameter-space 
  used?
 
- 2) Why is this parameter space `non-linear`?
+ 2) Why is this parameter space 'non-linear'?
 
- 3) Initially, the non-linear search randomly guesses the values of the parameters. However, it shouldn`t `know` 
+ 3) Initially, the `NonLinearSearch` randomly guesses the values of the parameters. However, it shouldn`t `know` 
  what reasonable values for a parameter are. For example, it doesn`t know that a reasonable Einstein radius is 
  between 0.0" and 4.0"). How does it know what are reasonable values of parameters to guess?
 """

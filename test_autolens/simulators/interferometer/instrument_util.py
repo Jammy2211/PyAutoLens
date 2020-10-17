@@ -34,10 +34,12 @@ def simulator_from_instrument(instrument):
             noise_sigma=0.01,
         )
     else:
-        raise ValueError("An invalid data_name resolution was entered - ", instrument)
+        raise ValueError(
+            "An invalid dataset_name resolution was entered - ", instrument
+        )
 
 
-def simulate_interferometer_from_instrument(instrument, data_name, galaxies):
+def simulate_interferometer_from_instrument(instrument, dataset_name, galaxies):
 
     # Simulate the imaging data, remembering that we use a special image which ensures edge-effects don't
     # degrade our modeling of the telescope optics (e.al. the PSF convolution).
@@ -54,9 +56,7 @@ def simulate_interferometer_from_instrument(instrument, data_name, galaxies):
     # Now, lets output this simulated interferometer-simulator to the test_autoarray/simulator folder.
     test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
 
-    dataset_path = af.util.create_path(
-        path=test_path, folders=["dataset", "interferometer", data_name, instrument]
-    )
+    dataset_path = f"dataset/interferometer/{dataset_name}/{instrument}"
 
     interferometer.output_to_fits(
         visibilities_path=f"{dataset_path}/visibilities.fits",
@@ -90,11 +90,9 @@ def simulate_interferometer_from_instrument(instrument, data_name, galaxies):
     )
 
 
-def load_test_interferometer(data_name, instrument):
+def load_test_interferometer(dataset_name, instrument):
 
-    dataset_path = af.util.create_path(
-        path=test_path, folders=["dataset", "interferometer", data_name, instrument]
-    )
+    dataset_path = f"dataset/interferometer/{dataset_name}/{instrument}"
 
     return al.Interferometer.from_fits(
         visibilities_path=f"{dataset_path}/visibilities.fits",

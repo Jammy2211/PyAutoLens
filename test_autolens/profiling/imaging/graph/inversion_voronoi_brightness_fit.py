@@ -34,7 +34,7 @@ memory_use = []
 for instrument in ["vro", "euclid", "hst", "hst_up"]:  # , 'ao']:
 
     imaging = instrument_util.load_test_imaging(
-        data_name="lens_sie__source_smooth", instrument=instrument
+        dataset_name="lens_sie__source_smooth", instrument=instrument
     )
 
     mask = al.Mask2D.circular(
@@ -102,9 +102,8 @@ for instrument in ["vro", "euclid", "hst", "hst_up"]:  # , 'ao']:
             image=masked_imaging.image,
             noise_map=masked_imaging.noise_map,
         )
-        curvature_matrix = al.util.inversion.curvature_matrix_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=blurred_mapping_matrix,
-            noise_map=masked_imaging.noise_map,
+        curvature_matrix = al.util.inversion.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix, noise_map=masked_imaging.noise_map
         )
         regularization_matrix = al.util.regularization.constant_regularization_matrix_from(
             coefficient=1.0,

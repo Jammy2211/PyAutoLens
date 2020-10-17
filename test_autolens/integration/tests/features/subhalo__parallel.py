@@ -4,7 +4,7 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "grid_search"
 test_name = "multinest_grid_subhalo__parallel"
-data_name = "lens_sie__source_smooth"
+dataset_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
@@ -40,7 +40,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     subhalo.mass.centre_1 = af.UniformPrior(lower_limit=-2.5, upper_limit=2.5)
 
     phase1 = GridPhase(
-        phase_name="phase_1",
+        name="phase[1]",
         path_prefix=path_prefix,
         galaxies=dict(lens=lens, subhalo=subhalo, source=source),
         search=search,
@@ -48,7 +48,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
         number_of_steps=2,
     )
 
-    return al.PipelineDataset(name, phase1)
+    return al.PipelineDataset(name, path_prefix, phase1)
 
 
 if __name__ == "__main__":

@@ -61,19 +61,21 @@ def make_pipeline(setup, settings):
     """
     Phase 1: Initialize the lens`s mass model using a simple source.
     
-    This won`t fit the complicated structure of the source, but it`ll give us a reasonable estimate of the
+    This won't fit the complicated structure of the source, but it`ll give us a reasonable estimate of the
     einstein radius and the other lens-mass parameters.
     """
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1__mass_sie__source_x1_sersic",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(
+            name="phase[1]__mass[sie]__source_x1[bulge]",
+            n_live_points=40,
+            evidence_tolerance=5.0,
+        ),
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
-            source=al.GalaxyModel(redshift=1.0, sersic_0=al.lp.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, bulge_0=al.lp.EllipticalSersic),
         ),
         settings=settings,
-        search=af.DynestyStatic(n_live_points=40, evidence_tolerance=5.0),
     )
 
     """
@@ -83,61 +85,69 @@ def make_pipeline(setup, settings):
     """
 
     phase2 = al.PhaseImaging(
-        phase_name="phase_2__mass_sie__source_sersic_x2",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(
+            name="phase[2]_mass[sie]_source_x2[bulge]",
+            n_live_points=40,
+            evidence_tolerance=5.0,
+        ),
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                sersic_0=phase1.result.model.galaxies.source.sersic_0,
-                sersic_1=al.lp.EllipticalSersic,
+                bulge_0=phase1.result.model.galaxies.source.bulge_0,
+                bulge_1=al.lp.EllipticalSersic,
             ),
         ),
         settings=settings,
-        search=af.DynestyStatic(n_live_points=40, evidence_tolerance=5.0),
     )
 
     """Phase 3: Same again, but with 3 source galaxy components."""
 
     phase3 = al.PhaseImaging(
-        phase_name="phase_3__mass_sie__source_sersic_x3",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(
+            name="phase[3]_mass[sie]_source_x3[bulge]",
+            n_live_points=50,
+            evidence_tolerance=5.0,
+        ),
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase2.result.model.galaxies.lens.mass
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                sersic_0=phase2.result.model.galaxies.source.sersic_0,
-                sersic_1=phase2.result.model.galaxies.source.sersic_1,
-                sersic_2=al.lp.EllipticalSersic,
+                bulge_0=phase2.result.model.galaxies.source.bulge_0,
+                bulge_1=phase2.result.model.galaxies.source.bulge_1,
+                bulge_2=al.lp.EllipticalSersic,
             ),
         ),
         settings=settings,
-        search=af.DynestyStatic(n_live_points=50, evidence_tolerance=5.0),
     )
 
     """Phase 4: And one more for luck!"""
 
     phase4 = al.PhaseImaging(
-        phase_name="phase_4__mass_sie__source_sersic_x4",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(
+            name="phase[4]_mass[sie]_source_x4[bulge]",
+            n_live_points=50,
+            evidence_tolerance=0.3,
+        ),
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase3.result.model.galaxies.lens.mass
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                sersic_0=phase3.result.model.galaxies.source.sersic_0,
-                sersic_1=phase3.result.model.galaxies.source.sersic_1,
-                sersic_2=phase3.result.model.galaxies.source.sersic_2,
-                sersic_3=al.lp.EllipticalSersic,
+                bulge_0=phase3.result.model.galaxies.source.bulge_0,
+                bulge_1=phase3.result.model.galaxies.source.bulge_1,
+                bulge_2=phase3.result.model.galaxies.source.bulge_2,
+                bulge_3=al.lp.EllipticalSersic,
             ),
         ),
         settings=settings,
-        search=af.DynestyStatic(n_live_points=50, evidence_tolerance=0.3),
     )
 
-    return al.PipelineDataset(pipeline_name, phase1, phase2, phase3, phase4)
+    return al.PipelineDataset(
+        pipeline_name, path_prefix, phase1, phase2, phase3, phase4
+    )

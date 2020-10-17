@@ -15,22 +15,13 @@ regime of 30-40+ parameters in our non-linear search. Even with a pipeline, that
 """
 
 # %%
-""" AUTOFIT + CONFIG SETUP """
-
-# %%
-from autoconf import conf
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
-)
-
-# %%
 #%matplotlib inline
+
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
 
 import autolens as al
 import autolens.plot as aplt
@@ -40,16 +31,14 @@ import autolens.plot as aplt
 we'll use new strong lensing data, where:
 
  - The lens `Galaxy`'s light is omitted.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is four `EllipticalSersic``..
 """
 
 # %%
-from howtolens.simulators.chapter_3 import mass_sie__source_sersic_x4
-
 dataset_type = "chapter_3"
 dataset_name = "mass_sie__source_sersic_x4"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -112,11 +101,11 @@ description of what inputting redshifts into **PyAutoLens** does.
 """
 
 # %%
-setup_mass = al.SetupMassTotal(no_shear=False)
-setup_source = al.SetupSourceSersic()
+setup_mass = al.SetupMassTotal(with_shear=True)
+setup_source = al.SetupSourceParametric()
 
 setup = al.SetupPipeline(
-    path_prefix="c3_t3_complex_source",
+    path_prefix="howtolens/c3_t3_complex_source",
     redshift_lens=0.5,
     redshift_source=1.0,
     setup_mass=setup_mass,
@@ -136,11 +125,13 @@ to create the `Pipeline` object and calling that objects `run` function.
 
 The `path_prefix` below specifies the path the pipeline results are written to, which is:
 
- `autolens_workspace/output/howtolens/c3_t3_complex_source/pipeline_name/setup_tag/phase_name/settings_tag`
+ `autolens_workspace/output/howtolens/c3_t3_complex_source/pipeline_name/setup_tag/name/settings_tag`
 """
 
 # %%
-from howtolens.chapter_3_pipelines import tutorial_3_pipeline_complex_source
+from autolens_workspace.howtolens.chapter_3_pipelines import (
+    tutorial_3_pipeline_complex_source,
+)
 
 pipeline_complex_source = tutorial_3_pipeline_complex_source.make_pipeline(
     setup=setup, settings=settings
@@ -175,7 +166,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy_0 = al.Galaxy(
     redshift=1.0,
-    sersic=al.lp.EllipticalSersic(
+    bulge=al.lp.EllipticalSersic(
         centre=(0.1, 0.1),
         elliptical_comps=(0.0, 0.1),
         intensity=0.2,
@@ -186,7 +177,7 @@ source_galaxy_0 = al.Galaxy(
 
 source_galaxy_1 = al.Galaxy(
     redshift=1.0,
-    sersic=al.lp.EllipticalSersic(
+    bulge=al.lp.EllipticalSersic(
         centre=(-0.25, 0.25),
         elliptical_comps=(0.0, 0.15),
         intensity=0.1,
@@ -197,7 +188,7 @@ source_galaxy_1 = al.Galaxy(
 
 source_galaxy_2 = al.Galaxy(
     redshift=1.0,
-    sersic=al.lp.EllipticalSersic(
+    bulge=al.lp.EllipticalSersic(
         centre=(0.45, -0.35),
         elliptical_comps=(0.0, 0.222222),
         intensity=0.03,
@@ -208,7 +199,7 @@ source_galaxy_2 = al.Galaxy(
 
 source_galaxy_3 = al.Galaxy(
     redshift=1.0,
-    sersic=al.lp.EllipticalSersic(
+    bulge=al.lp.EllipticalSersic(
         centre=(-0.05, -0.0),
         elliptical_comps=(0.0, 0.15),
         intensity=0.03,

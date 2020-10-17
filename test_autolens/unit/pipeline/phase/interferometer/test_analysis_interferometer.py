@@ -1,11 +1,10 @@
 from os import path
 
 import autolens as al
-from autolens import exc
+from autolens import exc, mock
 import pytest
 from astropy import cosmology as cosmo
 from autolens.fit.fit import FitInterferometer
-from test_autolens import mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -23,7 +22,6 @@ class TestLogLikelihoodFunction:
         interferometer_7.positions = al.GridCoordinates([[(1.0, 100.0), (200.0, 2.0)]])
 
         phase_interferometer_7 = al.PhaseInterferometer(
-            phase_name="test_phase",
             real_space_mask=mask_7x7,
             galaxies=dict(
                 lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
@@ -32,7 +30,7 @@ class TestLogLikelihoodFunction:
             settings=al.SettingsPhaseInterferometer(
                 settings_lens=al.SettingsLens(positions_threshold=0.01)
             ),
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
         )
 
         analysis = phase_interferometer_7.make_analysis(
@@ -51,12 +49,11 @@ class TestFit:
         self, interferometer_7, mask_7x7, visibilities_mask_7x2, samples_with_result
     ):
         phase_interferometer_7 = al.PhaseInterferometer(
-            phase_name="test_phase",
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
                 source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
             ),
-            search=mock.MockSearch(samples=samples_with_result),
+            search=mock.MockSearch("test_phase", samples=samples_with_result),
             real_space_mask=mask_7x7,
         )
 
@@ -76,7 +73,6 @@ class TestFit:
         )
 
         phase_interferometer_7 = al.PhaseInterferometer(
-            phase_name="test_phase",
             galaxies=dict(lens=lens_galaxy),
             cosmology=cosmo.FLRW,
             settings=al.SettingsPhaseInterferometer(
@@ -84,7 +80,7 @@ class TestFit:
                     sub_size=2
                 )
             ),
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             real_space_mask=mask_7x7,
         )
 
@@ -120,7 +116,6 @@ class TestFit:
         )
 
         phase_interferometer_7 = al.PhaseInterferometer(
-            phase_name="test_phase",
             galaxies=dict(lens=lens_galaxy),
             hyper_background_noise=hyper_background_noise,
             settings=al.SettingsPhaseInterferometer(
@@ -128,7 +123,7 @@ class TestFit:
                     sub_size=4
                 )
             ),
-            search=mock.MockSearch(),
+            search=mock.MockSearch("test_phase"),
             real_space_mask=mask_7x7,
         )
 

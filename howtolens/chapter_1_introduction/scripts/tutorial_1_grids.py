@@ -10,6 +10,12 @@ of an observed data-set (e.g. imaging).
 # %%
 #%matplotlib inline
 
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
 
@@ -20,7 +26,7 @@ a strong lensing system.
 
 This coordinate `Grid` is aligned with the image we analyze, such that each coordinate on a  `Grid` maps to the centre 
 of each image-pixel. Lets make a `Grid` using 100 x 100 pixels, with a pixel scale (arcsecond-to-pixel conversion 
-factor) of 0.05", giving us a a 5" x 5" grid.
+factor) of 0.05", giving us a 5" x 5" grid.
 """
 
 # %%
@@ -55,7 +61,7 @@ print("etc.")
 
 # %%
 """
-_Grid_`s in **PyAutoLens** are stored as both 1D and 2D NumPy arrays, because different calculations benefit from us using 
+_Grid_`s in **PyAutoLens** are stored as both 1D and 2D ndarrays, because different calculations benefit from us using 
 the array in different formats. We can access both the 1D and 2D `Array`'s automatically by specifying the input as a 1D 
 or 2D.
 """

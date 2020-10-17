@@ -66,9 +66,9 @@ class Result(dataset.Result):
         A dictionary associating 1D hyper_galaxies galaxy images with their names.
         """
 
-        hyper_minimum_percent = conf.instance.general.get(
-            "hyper", "hyper_minimum_percent", float
-        )
+        hyper_minimum_percent = conf.instance["general"]["hyper"][
+            "hyper_minimum_percent"
+        ]
 
         hyper_galaxy_image_path_dict = {}
 

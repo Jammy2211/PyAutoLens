@@ -35,7 +35,7 @@ class MaskedInterferometer(interferometer.MaskedInterferometer):
             Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
             used to speed up the non-linear sampling.
         pixel_scales_interp : float
-            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
+            If `True`, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
             interpolated to the grid, sub and blurring grids.
         inversion_pixel_limit : int or None
             The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
@@ -54,8 +54,8 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
     def __init__(
         self,
         uv_wavelengths,
-        exposure_time_map,
-        background_sky_map,
+        exposure_time: float,
+        background_sky_level: float = 0.0,
         transformer_class=transformer.TransformerDFT,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
@@ -81,8 +81,8 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
 
         super(SimulatorInterferometer, self).__init__(
             uv_wavelengths=uv_wavelengths,
-            exposure_time_map=exposure_time_map,
-            background_sky_map=background_sky_map,
+            exposure_time=exposure_time,
+            background_sky_level=background_sky_level,
             transformer_class=transformer_class,
             noise_sigma=noise_sigma,
             noise_if_add_noise_false=noise_if_add_noise_false,
@@ -91,7 +91,7 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
 
     def from_tracer_and_grid(self, tracer, grid, name=None):
         """
-        Create a realistic simulated image by applying effects to a plain simulated image.
+        Returns a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
@@ -106,8 +106,8 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
             An arrays describing the PSF the simulated image is blurred with.
         background_sky_map : np.ndarray
             The value of background sky in every image pixel (electrons per second).
-        add_noise: Bool
-            If ``True`` poisson noise_maps is simulated and added to the image, based on the total counts in each image
+        add_poisson_noise: Bool
+            If `True` poisson noise_maps is simulated and added to the image, based on the total counts in each image
             pixel
         noise_seed: int
             A seed for random noise_maps generation
