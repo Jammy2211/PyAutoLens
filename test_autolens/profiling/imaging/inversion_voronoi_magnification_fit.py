@@ -37,7 +37,7 @@ source_galaxy = al.Galaxy(
 for instrument in ["vro", "euclid", "hst", "hst_up"]:  # , 'ao']:
 
     imaging = instrument_util.load_test_imaging(
-        data_name="lens_sie__source_smooth",
+        dataset_name="lens_sie__source_smooth",
         instrument=instrument,
         psf_shape_2d=psf_shape_2d,
     )
@@ -109,9 +109,8 @@ for instrument in ["vro", "euclid", "hst", "hst_up"]:  # , 'ao']:
 
     start = time.time()
     for i in range(repeats):
-        curvature_matrix = al.util.inversion.curvature_matrix_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=blurred_mapping_matrix,
-            noise_map=masked_imaging.noise_map,
+        curvature_matrix = al.util.inversion.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix, noise_map=masked_imaging.noise_map
         )
     diff = time.time() - start
     print("Time to compute curvature matrix = {}".format(diff / repeats))

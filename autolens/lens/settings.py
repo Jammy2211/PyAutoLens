@@ -20,7 +20,7 @@ class SettingsLens:
     @property
     def tag(self):
         return (
-            f"{conf.instance.settings_tag.get('lens', 'lens')}["
+            f"{conf.instance['notation']['settings_tags']['lens']['lens']}["
             f"{self.positions_threshold_tag}]"
         )
 
@@ -29,16 +29,20 @@ class SettingsLens:
         """Generate a positions threshold tag, to customize phase names based on the threshold that positions are required \
         to trace within one another.
 
-        This changes the phase name 'phase_name' as follows:
+        This changes the phase name 'name' as follows:
 
-        positions_threshold = 1 -> phase_name
+        positions_threshold = 1 -> name
         positions_threshold = 2 -> phase_name_positions_threshold_2
         positions_threshold = 2 -> phase_name_positions_threshold_2
         """
 
         if self.positions_threshold is None:
-            return conf.instance.settings_tag.get("lens", "no_positions_threshold")
-        return conf.instance.settings_tag.get("lens", "positions_threshold")
+            return conf.instance["notation"]["settings_tags"]["lens"][
+                "no_positions_threshold"
+            ]
+        return conf.instance["notation"]["settings_tags"]["lens"][
+            "positions_threshold"
+        ] + "_{0:.2f}".format(self.positions_threshold)
 
     def check_positions_trace_within_threshold_via_tracer(self, positions, tracer):
 

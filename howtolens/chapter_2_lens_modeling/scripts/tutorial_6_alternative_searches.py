@@ -3,7 +3,7 @@
 Tutorial 6: Alternative Searches
 ================================
 
-Up to now, we've always used the non-linear search Dynesty and not considered the input parameters that control its
+Up to now, we've always used the `NonLinearSearch` Dynesty and not considered the input parameters that control its
 sampling. In this tutorial, we'll consider how we can change these setting to balance finding the global maxima
 solution with fast run time, as well as other types of non-linear searches we can use to perform lens modeling.
 """
@@ -11,35 +11,29 @@ solution with fast run time, as well as other types of non-linear searches we ca
 # %%
 #%matplotlib inline
 
-from autoconf import conf
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
 import autofit as af
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
-)
 
 # %%
 """
 we'll use new strong lensing data, where:
 
  - The lens `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
-from howtolens.simulators.chapter_2 import light_sersic__mass_sie__source_sersic
-
 dataset_type = "chapter_2"
 dataset_name = "light_sersic__mass_sie__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -68,7 +62,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 
 # %%
 """
-Like in the previous tutorial, we use a_SettingsPhaseImaging_ object to specify our model-fitting procedure uses a 
+Like in the previous tutorial, we use a `SettingsPhaseImaging` object to specify our model-fitting procedure uses a 
 regular `Grid`.
 """
 
@@ -110,26 +104,30 @@ evidence_tolerance : float
 
 Lets perform two fits, where:
 
- - One has many live points, a low sampling efficiency and evidence tolerance, causing the non-linear search to
+ - One has many live points, a low sampling efficiency and evidence tolerance, causing the `NonLinearSearch` to
  take a long time to run (in fact, on my laptop, this run takes > 500000 iterations which translates to > 6 
  hours. So, I`ve commented the run function out to not waste your time, but feel free to uncomment it and run
  the phase to see this for yourself!).
       
- - One has few live points, a high sampling efficiency and evidence tolerance, causing the non-linear search to
+ - One has few live points, a high sampling efficiency and evidence tolerance, causing the `NonLinearSearch` to
  converge and end quicker.
 """
 
 # %%
 phase_slow = al.PhaseImaging(
-    phase_name="phase_t6_slow",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens",
+        name="phase_t6_slow",
+        n_live_points=150,
+        evidence_tolerance=0.8,
+    ),
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(
-            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
+        source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
     ),
-    search=af.DynestyStatic(n_live_points=150, evidence_tolerance=0.8),
 )
 
 # %%
@@ -166,15 +164,16 @@ Now lets run the phase with fast setting, so we can compare the total number of 
 
 # %%
 phase_fast = al.PhaseImaging(
-    phase_name="phase_t6_fast",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t6_fast", n_live_points=30
+    ),
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(
-            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
+        source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
     ),
-    search=af.DynestyStatic(n_live_points=30),
 )
 
 # %%
@@ -237,15 +236,16 @@ iterations is n_particles * iters. Lets try a total of ? iterations, a factor ? 
 
 # %%
 phase_pso = al.PhaseImaging(
-    phase_name="phase_t7_pso",
+    search=af.PySwarmsLocal(
+        path_prefix=f"howtolens", name="phase_t6_pso", n_particles=50, iters=1000
+    ),
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(
-            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
+        source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
     ),
-    search=af.PySwarmsLocal(n_particles=50, iters=1000),
 )
 
 print(
@@ -292,15 +292,16 @@ but it is sill pretty successful. I`ve included an example run of Emcee below.
 
 # %%
 phase_mcmc = al.PhaseImaging(
-    phase_name="phase_t7_mcmc",
+    search=af.Emcee(
+        path_prefix=f"howtolens", name="phase_t6_mcmc", nwalkers=50, nsteps=1000
+    ),
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(
-            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
+        source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
     ),
-    search=af.Emcee(nwalkers=50, nsteps=1000),
 )
 
 print(

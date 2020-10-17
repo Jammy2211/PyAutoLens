@@ -2,7 +2,7 @@ import autolens as al
 import numpy as np
 import pytest
 from autoarray.inversion import inversions
-from test_autogalaxy.mock import MockLightProfile
+from autogalaxy.mock import MockLightProfile
 
 
 class TestFitImaging:
@@ -64,25 +64,23 @@ class TestFitImaging:
             # Thus the chi squared is 4.0**2.0 + 3.0**2.0 = 25.0
 
             psf = al.Kernel.manual_2d(
-                array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+                array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]],
                 pixel_scales=1.0,
             )
 
             imaging = al.Imaging(
-                image=5.0 * al.Array.ones(shape_2d=(3, 4)),
+                image=5.0 * al.Array.ones(shape_2d=(3, 4), pixel_scales=1.0),
                 psf=psf,
-                noise_map=al.Array.ones(shape_2d=(3, 4)),
+                noise_map=al.Array.ones(shape_2d=(3, 4), pixel_scales=1.0),
             )
             imaging.image[6] = 4.0
 
             mask = al.Mask2D.manual(
-                mask=np.array(
-                    [
-                        [True, True, True, True],
-                        [True, False, False, True],
-                        [True, True, True, True],
-                    ]
-                ),
+                mask=[
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ],
                 pixel_scales=1.0,
             )
 
@@ -169,26 +167,24 @@ class TestFitImaging:
             # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
 
             psf = al.Kernel.manual_2d(
-                array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
+                array=[[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]],
                 pixel_scales=1.0,
                 renormalize=False,
             )
 
             imaging = al.Imaging(
-                image=5.0 * al.Array.ones(shape_2d=(3, 4)),
+                image=5.0 * al.Array.ones(shape_2d=(3, 4), pixel_scales=1.0),
                 psf=psf,
-                noise_map=al.Array.ones(shape_2d=(3, 4)),
+                noise_map=al.Array.ones(shape_2d=(3, 4), pixel_scales=1.0),
             )
             imaging.image[6] = 4.0
 
             mask = al.Mask2D.manual(
-                mask=np.array(
-                    [
-                        [True, True, True, True],
-                        [True, False, False, True],
-                        [True, True, True, True],
-                    ]
-                ),
+                mask=[
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ],
                 pixel_scales=1.0,
             )
 
@@ -279,25 +275,23 @@ class TestFitImaging:
             # This reduces the chi squared to 2.0 instead of 4.0
 
             psf = al.Kernel.manual_2d(
-                array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]])),
+                array=[[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]],
                 pixel_scales=1.0,
             )
 
             imaging = al.Imaging(
-                image=5.0 * al.Array.ones(shape_2d=(3, 4)),
+                image=5.0 * al.Array.ones(shape_2d=(3, 4), pixel_scales=1.0),
                 psf=psf,
-                noise_map=al.Array.ones(shape_2d=(3, 4)),
+                noise_map=al.Array.ones(shape_2d=(3, 4), pixel_scales=1.0),
             )
             imaging.image[6] = 4.0
 
             mask = al.Mask2D.manual(
-                mask=np.array(
-                    [
-                        [True, True, True, True],
-                        [True, False, False, True],
-                        [True, True, True, True],
-                    ]
-                ),
+                mask=[
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ],
                 pixel_scales=1.0,
             )
 
@@ -315,8 +309,8 @@ class TestFitImaging:
                 hyper_galaxy=al.HyperGalaxy(
                     contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
                 ),
-                hyper_model_image=al.Array.ones(shape_2d=(1, 2)),
-                hyper_galaxy_image=al.Array.ones(shape_2d=(1, 2)),
+                hyper_model_image=al.Array.ones(shape_2d=(1, 2), pixel_scales=1.0),
+                hyper_galaxy_image=al.Array.ones(shape_2d=(1, 2), pixel_scales=1.0),
                 hyper_minimum_value=0.0,
             )
 
@@ -387,25 +381,23 @@ class TestFitImaging:
         def test__hyper_image_changes_background_sky__reflected_in_likelihood(self):
 
             psf = al.Kernel.manual_2d(
-                array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+                array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]],
                 pixel_scales=1.0,
             )
 
             imaging = al.Imaging(
-                image=al.Array.full(fill_value=4.0, shape_2d=(3, 4)),
+                image=al.Array.full(fill_value=4.0, shape_2d=(3, 4), pixel_scales=1.0),
                 psf=psf,
-                noise_map=al.Array.ones(shape_2d=(3, 4)),
+                noise_map=al.Array.ones(shape_2d=(3, 4), pixel_scales=1.0),
             )
             imaging.image[5] = 5.0
 
             mask = al.Mask2D.manual(
-                mask=np.array(
-                    [
-                        [True, True, True, True],
-                        [True, False, False, True],
-                        [True, True, True, True],
-                    ]
-                ),
+                mask=[
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ],
                 pixel_scales=1.0,
             )
 
@@ -495,14 +487,14 @@ class TestFitImaging:
         ):
 
             psf = al.Kernel.manual_2d(
-                array=(np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])),
+                array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]],
                 pixel_scales=1.0,
             )
 
             imaging = al.Imaging(
-                image=5.0 * al.Array.ones(shape_2d=(3, 4)),
+                image=5.0 * al.Array.ones(shape_2d=(3, 4), pixel_scales=1.0),
                 psf=psf,
-                noise_map=al.Array.ones(shape_2d=(3, 4)),
+                noise_map=al.Array.ones(shape_2d=(3, 4), pixel_scales=1.0),
             )
             imaging.image[6] = 4.0
 
@@ -1151,8 +1143,8 @@ class TestFitImaging:
                 redshift=0.5,
                 pixelization=pix,
                 regularization=reg,
-                hyper_model_image=al.Array.ones(shape_2d=(3, 3)),
-                hyper_galaxy_image=al.Array.ones(shape_2d=(3, 3)),
+                hyper_model_image=al.Array.ones(shape_2d=(3, 3), pixel_scales=1.0),
+                hyper_galaxy_image=al.Array.ones(shape_2d=(3, 3), pixel_scales=1.0),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
@@ -1382,8 +1374,8 @@ class TestFitImaging:
                 hyper_galaxy=al.HyperGalaxy(
                     contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
                 ),
-                hyper_model_image=al.Array.ones(shape_2d=(3, 3)),
-                hyper_galaxy_image=al.Array.ones(shape_2d=(3, 3)),
+                hyper_model_image=al.Array.ones(shape_2d=(3, 3), pixel_scales=1.0),
+                hyper_galaxy_image=al.Array.ones(shape_2d=(3, 3), pixel_scales=1.0),
                 hyper_minimum_value=0.0,
             )
 
@@ -2208,8 +2200,8 @@ class TestFitInterferometer:
                 redshift=0.5,
                 pixelization=pix,
                 regularization=reg,
-                hyper_model_image=al.Array.ones(shape_2d=(3, 3)),
-                hyper_galaxy_image=al.Array.ones(shape_2d=(3, 3)),
+                hyper_model_image=al.Array.ones(shape_2d=(3, 3), pixel_scales=1.0),
+                hyper_galaxy_image=al.Array.ones(shape_2d=(3, 3), pixel_scales=1.0),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])

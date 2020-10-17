@@ -14,7 +14,7 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
     def __init__(
         self,
         phase: abstract.AbstractPhase,
-        search,
+        hyper_search,
         model_classes=tuple(),
         histogram_samples=100,
         histogram_bins=10,
@@ -30,7 +30,7 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         super().__init__(
             phase=phase,
-            search=search,
+            hyper_search=hyper_search,
             model_classes=model_classes,
             hyper_name="stochastic",
         )

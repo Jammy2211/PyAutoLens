@@ -4,7 +4,7 @@ from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_both__source_rectangular"
-data_name = "lens_bulge__source_smooth"
+dataset_name = "lens_bulge__source_smooth"
 instrument = "sma"
 
 
@@ -22,7 +22,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
     pixelization.shape_1 = 20.0
 
     phase1 = al.PhaseInterferometer(
-        phase_name="phase_1",
+        name="phase[1]",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -40,7 +40,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
     phase1.search.n_live_points = 60
     phase1.search.facc = 0.8
 
-    return al.PipelineDataset(name, phase1)
+    return al.PipelineDataset(name, path_prefix, phase1)
 
 
 if __name__ == "__main__":

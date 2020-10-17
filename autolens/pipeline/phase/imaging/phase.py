@@ -18,10 +18,8 @@ class PhaseImaging(dataset.PhaseDataset):
     Analysis = Analysis
     Result = Result
 
-    @af.convert_paths
     def __init__(
         self,
-        paths,
         *,
         search,
         galaxies=None,
@@ -45,11 +43,7 @@ class PhaseImaging(dataset.PhaseDataset):
         """
 
         super().__init__(
-            paths,
-            search=search,
-            settings=settings,
-            galaxies=galaxies,
-            cosmology=cosmology,
+            search=search, settings=settings, galaxies=galaxies, cosmology=cosmology
         )
 
         self.hyper_image_sky = hyper_image_sky
@@ -59,7 +53,7 @@ class PhaseImaging(dataset.PhaseDataset):
 
     def make_analysis(self, dataset, mask, results=None):
         """
-        Create an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
+        Returns an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
@@ -75,7 +69,7 @@ class PhaseImaging(dataset.PhaseDataset):
         Returns
         -------
         lens : Analysis
-            An lens object that the non-linear search calls to determine the fit of a set of values
+            An lens object that the `NonLinearSearch` calls to determine the fit of a set of values
         """
 
         masked_imaging = imaging.MaskedImaging(
@@ -122,7 +116,7 @@ class PhaseImaging(dataset.PhaseDataset):
 
         return StochasticPhase(
             phase=self,
-            search=stochastic_search,
+            hyper_search=stochastic_search,
             model_classes=tuple(model_classes),
             histogram_samples=histogram_samples,
             histogram_bins=histogram_bins,

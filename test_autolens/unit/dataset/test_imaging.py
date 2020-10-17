@@ -65,17 +65,22 @@ class TestSimulatorImaging:
 
         simulator = al.SimulatorImaging(
             psf=psf,
-            exposure_time_map=al.Array.full(fill_value=10000.0, shape_2d=grid.shape_2d),
-            background_sky_map=al.Array.full(fill_value=100.0, shape_2d=grid.shape_2d),
-            add_noise=True,
-            noise_seed=1,
+            exposure_time=10000.0,
+            background_sky_level=100.0,
+            add_poisson_noise=False,
         )
 
         imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
-        assert (imaging.image.in_2d == imaging.image.in_2d).all()
-        assert (imaging.psf == imaging.psf).all()
-        assert (imaging.noise_map == imaging.noise_map).all()
+        imaging_via_image = simulator.from_image(
+            image=tracer.image_from_grid(grid=grid)
+        )
+
+        assert imaging.shape_2d == (20, 20)
+        assert imaging.image.in_2d[0, 0] != imaging_via_image.image.in_2d[0, 0]
+        assert imaging.image.in_2d[10, 10] == imaging_via_image.image.in_2d[10, 10]
+        assert (imaging.psf == imaging_via_image.psf).all()
+        assert (imaging.noise_map == imaging_via_image.noise_map).all()
 
     def test__from_deflections_and_galaxies__same_as_calculation_using_tracer(self):
 
@@ -95,10 +100,9 @@ class TestSimulatorImaging:
 
         simulator = al.SimulatorImaging(
             psf=psf,
-            exposure_time_map=al.Array.full(fill_value=10000.0, shape_2d=grid.shape_2d),
-            background_sky_map=al.Array.full(fill_value=100.0, shape_2d=grid.shape_2d),
-            add_noise=True,
-            noise_seed=1,
+            exposure_time=10000.0,
+            background_sky_level=100.0,
+            add_poisson_noise=False,
         )
 
         imaging = simulator.from_deflections_and_galaxies(
@@ -110,6 +114,7 @@ class TestSimulatorImaging:
             image=tracer.image_from_grid(grid=grid)
         )
 
+        assert imaging.shape_2d == (20, 20)
         assert (imaging.image.in_2d == imaging_via_image.image.in_2d).all()
         assert (imaging.psf == imaging_via_image.psf).all()
         assert (imaging.noise_map == imaging_via_image.noise_map).all()
@@ -140,9 +145,9 @@ class TestSimulatorImaging:
 
         simulator = al.SimulatorImaging(
             psf=psf,
-            exposure_time_map=al.Array.full(fill_value=10000.0, shape_2d=grid.shape_2d),
-            background_sky_map=al.Array.full(fill_value=100.0, shape_2d=grid.shape_2d),
-            add_noise=True,
+            exposure_time=10000.0,
+            background_sky_level=100.0,
+            add_poisson_noise=True,
             noise_seed=1,
         )
 
@@ -156,6 +161,7 @@ class TestSimulatorImaging:
             image=tracer.image_from_grid(grid=grid)
         )
 
-        assert (imaging.image == imaging_via_image.image).all()
+        assert imaging.shape_2d == (11, 11)
+        assert (imaging.image.in_2d == imaging_via_image.image.in_2d).all()
         assert (imaging.psf == imaging_via_image.psf).all()
-        assert imaging.noise_map == imaging_via_image.noise_map
+        assert (imaging.noise_map == imaging_via_image.noise_map).all()

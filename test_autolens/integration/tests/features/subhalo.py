@@ -4,7 +4,7 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "grid_search"
 test_name = "multinest_grid__subhalo"
-data_name = "lens_sie__source_smooth"
+dataset_name = "lens_sie__source_smooth"
 instrument = "vro"
 
 
@@ -25,7 +25,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     source.light.sersic_index = af.UniformPrior(lower_limit=0.9, upper_limit=1.1)
 
     phase1 = al.PhaseImaging(
-        phase_name="phase_1",
+        name="phase[1]",
         path_prefix=path_prefix,
         galaxies=dict(lens=lens, source=source),
         search=search,
@@ -48,7 +48,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     subhalo.mass.centre_1 = af.UniformPrior(lower_limit=-2.5, upper_limit=2.5)
 
     phase2 = GridPhase(
-        phase_name="phase_2",
+        name="phase[2]",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=af.last.instance.galaxies.lens,
@@ -61,7 +61,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     )
 
     phase3 = al.PhaseImaging(
-        phase_name="phase_3__subhalo_refine",
+        name="phase_3__subhalo_refine",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=af.last[-1].model.galaxies.lens,
@@ -72,7 +72,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
         search=af.DynestyStatic(),
     )
 
-    return al.PipelineDataset(name, phase1, phase2, phase3)
+    return al.PipelineDataset(name, path_prefix, phase1, phase2, phase3)
 
 
 if __name__ == "__main__":

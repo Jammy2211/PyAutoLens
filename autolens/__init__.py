@@ -1,8 +1,5 @@
-from autolens.conf import check_workspace_path
-
-check_workspace_path()
-
 from autoarray import preprocess
+from autoarray import Mask2D
 from autoarray.dataset.imaging import Imaging
 from autoarray.dataset.interferometer import Interferometer
 from autoarray.mask.mask_2d import Mask2D
@@ -34,7 +31,7 @@ from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
 from autogalaxy.galaxy.galaxy_data import GalaxyData
 from autogalaxy.galaxy.galaxy_model import GalaxyModel
 from autogalaxy.hyper import hyper_data
-from autogalaxy.pipeline.setup import SetupLightSersic, SetupSourceSersic, SetupSMBH
+from autogalaxy.pipeline.setup import SetupLightParametric, SetupSMBH
 from autogalaxy.pipeline.phase.extensions import CombinedHyperPhase
 from autogalaxy.pipeline.phase.extensions import HyperGalaxyPhase
 from autogalaxy.pipeline.phase.extensions.hyper_galaxy_phase import HyperGalaxyPhase
@@ -64,8 +61,8 @@ from .lens.positions_solver import PositionsFinder
 from .pipeline.setup import (
     SetupPipeline,
     SetupHyper,
+    SetupSourceParametric,
     SetupSourceInversion,
-    SetupLightBulgeDisk,
     SetupMassTotal,
     SetupMassLightDark,
     SetupSubhalo,
@@ -73,7 +70,7 @@ from .pipeline.setup import (
 from .pipeline.slam import (
     SLaMPipelineSourceParametric,
     SLaMPipelineSourceInversion,
-    SLaMPipelineLight,
+    SLaMPipelineLightParametric,
     SLaMPipelineMass,
     SLaM,
 )
@@ -84,4 +81,8 @@ from .pipeline.phase.interferometer.phase import PhaseInterferometer
 from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 
-__version__ = '1.6.3'
+from autoconf import conf
+
+conf.instance.register(__file__)
+
+__version__ = '1.7.0'

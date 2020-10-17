@@ -38,7 +38,9 @@ def copy_pickle_files_to_agg_max(agg_max_log_likelihood):
     os.remove(f"{pickle_path_before}/grid_search_result.pickle")
 
 
-def subplot_detection_agg(agg_before, agg_detect, include=None, sub_plotter=None):
+def subplot_detection_agg(
+    agg_before, agg_detect, use_log_evidences=True, include=None, sub_plotter=None
+):
 
     fit_imaging_before = list(
         agg.fit_imaging_generator_from_aggregator(aggregator=agg_before)
@@ -54,12 +56,17 @@ def subplot_detection_agg(agg_before, agg_detect, include=None, sub_plotter=None
         agg.fit_imaging_generator_from_aggregator(aggregator=agg_max_log_likelihood)
     )[0]
 
-    max_log_likelihood_before = fit_imaging_before.figure_of_merit
+    if use_log_evidences:
+        figure_of_merit_before = list(agg_before.values("samples"))[0].log_evidence
+    else:
+        figure_of_merit_before = fit_imaging_before.figure_of_merit
 
     detection_array = (
-        agg.grid_search_result_as_array(aggregator=agg_detect)
-        - max_log_likelihood_before
-    )
+        agg.grid_search_result_as_array(
+            aggregator=agg_detect, use_log_evidences=use_log_evidences
+        )
+        - figure_of_merit_before,
+    )[0]
 
     mass_array = agg.grid_search_subhalo_masses_as_array(aggregator=agg_detect)
 
@@ -200,7 +207,7 @@ def subplot_detection_imaging(
     )
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Signal-To_Noise Map"
+        title="Signal-To-Noise Map"
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)

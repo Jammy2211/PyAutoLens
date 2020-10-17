@@ -1,3 +1,4 @@
+import autofit as af
 import autolens as al
 
 
@@ -23,45 +24,80 @@ class TestSetupHyper:
         assert setup.hyper_galaxies_tag == "galaxies_lens_source"
         assert setup.hyper_galaxy_names == ["lens", "source"]
 
-    def test__hyper_tag(self):
+    def test__hyper_fixed_after_source(self):
 
-        setup = al.SetupHyper(hyper_image_sky=False, hyper_background_noise=False)
+        hyper = al.SetupHyper(hyper_fixed_after_source=False)
+        assert hyper.hyper_fixed_after_source_tag == ""
 
-        assert setup.tag == ""
+        hyper = al.SetupHyper(hyper_fixed_after_source=True)
+        assert hyper.hyper_fixed_after_source_tag == "__fixed_from_source"
 
-        setup = al.SetupHyper(hyper_image_sky=True)
+    def test__tag(self):
 
-        assert setup.tag == "hyper[__bg_sky]"
+        setup_hyper = al.SetupHyper(hyper_image_sky=False, hyper_background_noise=False)
 
-        setup = al.SetupHyper(
+        assert setup_hyper.tag == ""
+
+        setup_hyper = al.SetupHyper(hyper_image_sky=True)
+
+        assert setup_hyper.tag == "hyper[__bg_sky]"
+
+        setup_hyper = al.SetupHyper(
             hyper_galaxies_lens=True,
             hyper_galaxies_source=False,
             hyper_image_sky=True,
             hyper_background_noise=True,
         )
 
-        assert setup.tag == "hyper[galaxies_lens__bg_sky__bg_noise]"
+        assert setup_hyper.tag == "hyper[galaxies_lens__bg_sky__bg_noise]"
 
-        setup = al.SetupHyper(
+        setup_hyper = al.SetupHyper(
             hyper_galaxies_lens=True,
             hyper_galaxies_source=True,
             hyper_background_noise=True,
             hyper_fixed_after_source=True,
         )
 
-        assert setup.tag == "hyper[galaxies_lens_source__bg_noise__fixed_from_source]"
+        assert (
+            setup_hyper.tag
+            == "hyper[galaxies_lens_source__bg_noise__fixed_from_source]"
+        )
 
 
 class TestSetupMass:
-    def test__no_shear_tag(self):
-        setup = al.SetupMassLightDark(no_shear=False)
-        assert setup.no_shear_tag == "__with_shear"
+    def test__with_shear_tag(self):
 
-        setup = al.SetupMassLightDark(no_shear=True)
-        assert setup.no_shear_tag == "__no_shear"
+        setup_mass = al.SetupMassLightDark(with_shear=True)
+        assert setup_mass.with_shear_tag == "__with_shear"
+
+        setup_mass = al.SetupMassLightDark(with_shear=False)
+        assert setup_mass.with_shear_tag == "__no_shear"
+
+
+class TestSetupSource:
+    def test__tag(self):
+
+        setup = al.SetupSourceParametric()
+
+        assert (
+            setup.tag
+            == "source[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre]"
+        )
 
 
 class TestSetupSubhalo:
+    def test__subhalo_prior_model_and_tags(self):
+
+        setup = al.SetupSubhalo()
+
+        assert setup.subhalo_prior_model.cls is al.mp.SphericalNFWMCRLudlow
+        assert setup.subhalo_prior_model_tag == "nfw_sph_ludlow"
+
+        setup = al.SetupSubhalo(subhalo_prior_model=af.PriorModel(al.mp.EllipticalNFW))
+
+        assert setup.subhalo_prior_model.cls is al.mp.EllipticalNFW
+        assert setup.subhalo_prior_model_tag == "nfw"
+
     def test__mass_is_model_tag(self):
 
         setup = al.SetupSubhalo(mass_is_model=False)
@@ -91,13 +127,13 @@ class TestSetupSubhalo:
         setup = al.SetupSubhalo(subhalo_instance=None)
         assert setup.subhalo_centre_tag == ""
         setup = al.SetupSubhalo(subhalo_instance=al.mp.SphericalNFW(centre=(2.0, 2.0)))
-        assert setup.subhalo_centre_tag == "__sub_centre_(2.00,2.00)"
+        assert setup.subhalo_centre_tag == "__centre_(2.00,2.00)"
         setup = al.SetupSubhalo(subhalo_instance=al.mp.SphericalNFW(centre=(3.0, 4.0)))
-        assert setup.subhalo_centre_tag == "__sub_centre_(3.00,4.00)"
+        assert setup.subhalo_centre_tag == "__centre_(3.00,4.00)"
         setup = al.SetupSubhalo(
             subhalo_instance=al.mp.SphericalNFW(centre=(3.027, 4.033))
         )
-        assert setup.subhalo_centre_tag == "__sub_centre_(3.03,4.03)"
+        assert setup.subhalo_centre_tag == "__centre_(3.03,4.03)"
 
     def test__subhalo_mass_at_200_tag(self):
 
@@ -106,20 +142,23 @@ class TestSetupSubhalo:
         setup = al.SetupSubhalo(
             subhalo_instance=al.mp.SphericalNFWMCRLudlow(mass_at_200=1e8)
         )
-        assert setup.subhalo_mass_at_200_tag == "__sub_mass_1.0e+08"
+        assert setup.subhalo_mass_at_200_tag == "__mass_1.0e+08"
         setup = al.SetupSubhalo(
             subhalo_instance=al.mp.SphericalNFWMCRLudlow(mass_at_200=1e9)
         )
-        assert setup.subhalo_mass_at_200_tag == "__sub_mass_1.0e+09"
+        assert setup.subhalo_mass_at_200_tag == "__mass_1.0e+09"
         setup = al.SetupSubhalo(
             subhalo_instance=al.mp.SphericalNFWMCRLudlow(mass_at_200=1e10)
         )
-        assert setup.subhalo_mass_at_200_tag == "__sub_mass_1.0e+10"
+        assert setup.subhalo_mass_at_200_tag == "__mass_1.0e+10"
 
     def test__tag(self):
 
         setup = al.SetupSubhalo(mass_is_model=True, source_is_model=False)
-        assert setup.tag == "subhalo[nfw__mass_is_model__source_is_instance__grid_5]"
+        assert (
+            setup.tag
+            == "subhalo[nfw_sph_ludlow__mass_is_model__source_is_instance__grid_5]"
+        )
 
         setup = al.SetupSubhalo(
             mass_is_model=False,
@@ -131,7 +170,7 @@ class TestSetupSubhalo:
         )
         assert (
             setup.tag
-            == "subhalo[nfw__mass_is_instance__source_is_model__grid_4__sub_centre_(2.00,2.00)__sub_mass_1.0e+10]"
+            == "subhalo[nfw_sph_ludlow__mass_is_instance__source_is_model__grid_4__centre_(2.00,2.00)__mass_1.0e+10]"
         )
 
 
@@ -149,16 +188,17 @@ class TestSetupPipeline:
         assert (
             setup.tag == "setup__"
             "hyper[galaxies_lens__bg_sky__bg_noise]__"
-            "mass[light_dark__with_shear__mlr_free__align_bulge_dark_centre]"
+            "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_sph_ludlow__with_shear__align_bulge_dark_centre]"
         )
 
         setup_source = al.SetupSourceInversion(
-            pixelization=al.pix.Rectangular, regularization=al.reg.Constant
+            pixelization_prior_model=al.pix.Rectangular,
+            regularization_prior_model=al.reg.Constant,
         )
 
-        setup_light = al.SetupLightBulgeDisk(light_centre=(1.0, 2.0))
+        setup_light = al.SetupLightParametric(light_centre=(1.0, 2.0))
 
-        setup_mass = al.SetupMassLightDark(mass_centre=(3.0, 4.0), no_shear=True)
+        setup_mass = al.SetupMassLightDark(mass_centre=(3.0, 4.0), with_shear=False)
 
         setup = al.SetupPipeline(
             setup_source=setup_source, setup_light=setup_light, setup_mass=setup_mass
@@ -166,32 +206,32 @@ class TestSetupPipeline:
 
         assert (
             setup.tag == "setup__"
-            "light[bulge_disk__light_centre_(1.00,2.00)]__"
-            "mass[light_dark__mass_centre_(3.00,4.00)__no_shear__mlr_free]__"
-            "source[pix_rect__reg_const]"
+            "light[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre__centre_(1.00,2.00)]__"
+            "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_sph_ludlow__no_shear__centre_(3.00,4.00)]__"
+            "source[inversion__pix_rect__reg_const]"
         )
 
-        setup_mass = al.SetupMassLightDark(align_light_dark_centre=True)
+        setup_mass = al.SetupMassLightDark(align_bulge_dark_centre=True)
 
         setup = al.SetupPipeline(setup_mass=setup_mass)
 
         assert (
             setup.tag == "setup__"
-            "mass[light_dark__with_shear__mlr_free__align_light_dark_centre]"
+            "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_sph_ludlow__with_shear__align_bulge_dark_centre]"
         )
 
-        smbh = al.SetupSMBH(include_smbh=True, smbh_centre_fixed=True)
+        smbh = al.SetupSMBH(smbh_centre_fixed=True)
 
-        subhalo = al.SetupSubhalo(
+        setup_subhalo = al.SetupSubhalo(
             subhalo_instance=al.mp.SphericalNFWMCRLudlow(
                 centre=(1.0, 2.0), mass_at_200=1e8
             )
         )
 
-        setup = al.SetupPipeline(setup_smbh=smbh, subhalo=subhalo)
+        setup = al.SetupPipeline(setup_smbh=smbh, setup_subhalo=setup_subhalo)
 
         assert (
             setup.tag == "setup__"
-            "smbh[centre_fixed]__"
-            "subhalo[nfw__mass_is_model__source_is_model__grid_5__sub_centre_(1.00,2.00)__sub_mass_1.0e+08]"
+            "smbh[point_mass__centre_fixed]__"
+            "subhalo[nfw_sph_ludlow__mass_is_model__source_is_model__grid_5__centre_(1.00,2.00)__mass_1.0e+08]"
         )

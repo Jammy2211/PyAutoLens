@@ -3,7 +3,7 @@ import shutil
 from os import path
 
 import pytest
-from autoconf import conf
+
 import autolens as al
 from autolens.pipeline import visualizer as vis
 
@@ -18,10 +18,8 @@ def make_visualizer_plotter_setup():
 
 
 @pytest.fixture(autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "files/plotter"), path.join(directory, "output")
-    )
+def push_config(plot_path, config):
+    config.push(f"{directory}/config", output_path=plot_path)
 
 
 class TestAbstractPhaseVisualizer:
@@ -263,14 +261,8 @@ class TestPhaseImagingVisualizer:
 
 class TestPhaseInterferometerVisualizer:
     def test__visualizes_interferometer_using_configs(
-        self,
-        masked_interferometer_7,
-        general_config,
-        include_all,
-        plot_path,
-        plot_patch,
+        self, masked_interferometer_7, include_all, plot_path, plot_patch
     ):
-
         visualizer = vis.PhaseInterferometerVisualizer(
             masked_dataset=masked_interferometer_7, image_path=plot_path
         )
@@ -295,7 +287,6 @@ class TestPhaseInterferometerVisualizer:
         plot_path,
         plot_patch,
     ):
-
         visualizer = vis.PhaseInterferometerVisualizer(
             masked_dataset=masked_interferometer_7, image_path=plot_path
         )
@@ -360,7 +351,6 @@ class TestHyperGalaxyVisualizer:
         plot_path,
         plot_patch,
     ):
-
         visualizer = vis.HyperGalaxyVisualizer(image_path=plot_path)
 
         visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(

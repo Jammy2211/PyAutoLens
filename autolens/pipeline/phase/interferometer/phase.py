@@ -14,10 +14,8 @@ class PhaseInterferometer(dataset.PhaseDataset):
     Analysis = Analysis
     Result = Result
 
-    @af.convert_paths
     def __init__(
         self,
-        paths,
         *,
         search,
         real_space_mask,
@@ -40,14 +38,10 @@ class PhaseInterferometer(dataset.PhaseDataset):
             The side length of the subgrid
         """
 
-        paths.tag = settings.phase_tag_with_inversion
+        search.paths.tag = settings.phase_tag_with_inversion
 
         super().__init__(
-            paths=paths,
-            search=search,
-            galaxies=galaxies,
-            settings=settings,
-            cosmology=cosmology,
+            search=search, galaxies=galaxies, settings=settings, cosmology=cosmology
         )
 
         self.hyper_background_noise = hyper_background_noise
@@ -58,7 +52,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
     def make_analysis(self, dataset, mask, results=None):
         """
-        Create an lens object. Also calls the prior passing and masked_interferometer modifying functions to allow child
+        Returns an lens object. Also calls the prior passing and masked_interferometer modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
@@ -74,7 +68,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         Returns
         -------
         lens : Analysis
-            An lens object that the non-linear search calls to determine the fit of a set of values
+            An lens object that the `NonLinearSearch` calls to determine the fit of a set of values
         """
 
         masked_interferometer = interferometer.MaskedInterferometer(

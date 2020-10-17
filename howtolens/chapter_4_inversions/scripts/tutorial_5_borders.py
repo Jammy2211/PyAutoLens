@@ -9,28 +9,29 @@ In the previous tutorial, we told our `Inversion` to use a border. Here, we'll d
 # %%
 #%matplotlib inline
 
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
-import os
 
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
 
 # %%
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
  - The lens `Galaxy`'s light is omitted.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
 """
 
 # %%
-from howtolens.simulators.chapter_4 import mass_sie__source_sersic__2
-
 dataset_type = "chapter_4"
 dataset_name = "mass_sie__source_sersic__2"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -289,11 +290,9 @@ we'll use new strong lensing data as the previous tutorial, where:
 """
 
 # %%
-from howtolens.simulators.chapter_4 import mass_sie_x2__source_sersic
-
 dataset_type = "chapter_4"
 dataset_name = "mass_sie_x2__source_sersic"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -395,7 +394,7 @@ Multi-galaxy modeling is rife for border effects and if you have multiple lens g
 a close eye to your source-plane borders!
 
 Before we end,I want to quickly highlight that care must be taken when choosing the size of your mask. If you don't 
-choose a big enough mask, the border won`t be able to relocate all of the demanigified image pixels to the border edge.
+choose a big enough mask, the border won't be able to relocate all of the demanigified image pixels to the border edge.
 """
 
 # %%
@@ -457,7 +456,7 @@ aplt.Inversion.reconstruction(
 # %%
 """
 And with that, borders are done. In truth, borders should pretty much take care of themselves when you`re using 
-__PyAutoLens__ and you probably won`t think about them much. However, as I showed above, if you don't choose a large enough 
+__PyAutoLens__ and you probably won't think about them much. However, as I showed above, if you don't choose a large enough 
 mask things can go wrong - thus, its important you know what borders are, so you can look out for this potential 
 source of systematics!
 """

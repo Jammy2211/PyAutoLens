@@ -7,7 +7,7 @@ from autogalaxy.plot import lensing_plotters
 @lensing_plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
 def subplot_tracer(tracer, grid, positions=None, include=None, sub_plotter=None):
-    """Plot the observed _tracer of an analysis, using the *Imaging* class object.
+    """Plot the observed _tracer of an analysis, using the `Imaging` class object.
 
     The visualization and output type can be fully customized.
 
@@ -87,7 +87,7 @@ def individual(
     include=None,
     plotter=None,
 ):
-    """Plot the observed _tracer of an analysis, using the *Imaging* class object.
+    """Plot the observed _tracer of an analysis, using the `Imaging` class object.
 
     The visualization and output type can be fully customized.
 

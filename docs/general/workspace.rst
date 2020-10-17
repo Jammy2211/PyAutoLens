@@ -18,7 +18,7 @@ Here, you'll find the configuration files used by **PyAutoLens** which customize
     - The default settings used by every *non-linear search*.
     - Visualization, including the backend used by *matplotlib*.
     - The priors and notation configs associated with the light and mass profiles used for lens model-fitting.
-    - The behaviour of different (y,x) Cartesian grids used to perform lens calcluations.
+    - The behaviour of different (y,x) Cartesian grids used to perform lens calculations.
     - The general.ini config which customizes other aspects of **PyAutoLens**.
 
 Checkout the `configuration <https://pyautolens.readthedocs.io/en/latest/general/installation.html#installation-with-pip>`_
@@ -55,7 +55,7 @@ of real instruments such as the Hubble Space Telescope, Euclid and ALMA.
 Dataset
 -------
 
-The folder where ``data`` for your model-fitting problem is stored. Example ``data`` created using the simulators are
+The folder where ``dataset`` for your lens modeling is stored. Example ``dataset`` created using the simulators are
 provided with the workspace.
 
 Output
@@ -66,7 +66,7 @@ The folder where the model-fitting results of your model-fitting problem are sto
 Preprocess
 ----------
 
-Example scripts and tutorials on how to preprocess CCD imaging and interferometer ``data`` before analysing it with
+Example scripts and tutorials on how to preprocess CCD imaging and interferometer ``dataset``'s before analysing it with
 **PyAutoLens**. These includes scripts covering the image formats and units, computing a noise-map, creating the
 PSF and setting up masks for the data.
 
@@ -93,9 +93,7 @@ Manipulate large suites of modeling results via Jupyter notebooks, using **PyAut
 
 See `here <https://pyautolens.readthedocs.io/en/latest/advanced/aggregator.html>`_ for an overview.
 
-Hyper (Advanced)
-----------------
+HPC
+---
 
-Example scripts for using **PyAutoLens**'s hyper-mode.
-
-See `here <https://pyautolens.readthedocs.io/en/latest/advanced/hyper_mode.html>`_ for an overview.
+Example scripts describing how to set up **PyAutoLens** on high performance computers.

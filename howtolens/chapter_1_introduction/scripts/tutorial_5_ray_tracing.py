@@ -6,13 +6,19 @@ Tutorial 5: Ray Tracing
 In the last tutorial, our use of `Plane`'s was a bit clunky. We manually had to input `Grid`'s to trace them, and keep
 track of which `Grid`'s were the image-plane`s and which were the source planes. It was easy to make mistakes!
 
-Fotunately, in **PyAutoLens**, you won`t actually spend much hands-on time with the `Plane` objects. Instead, you`ll
+Fotunately, in **PyAutoLens**, you won't actually spend much hands-on time with the `Plane` objects. Instead, you`ll
 primarily use the `ray-tracing` module, which we'll cover in this example. Lets look at how easy it is to setup the
 same lens-plane + source-plane strong lens configuration as the previous tutorial, but with a lot less lines of code!
 """
 
 # %%
 #%matplotlib inline
+
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
 
 import autolens as al
 import autolens.plot as aplt
@@ -39,7 +45,7 @@ print(lens_galaxy)
 
 # %%
 """
-And for our source galaxy, the same `SphericalSersic` _LightProfile_
+And for our source galaxy, the same `SphericalSersic` `LightProfile`
 """
 
 # %%
@@ -90,7 +96,7 @@ print(tracer.source_plane)
 The most convenient part of the `Tracer` is we can use it to create fully `ray-traced` images, without manually 
 setting up the `Plane`'s to do this. The function below does the following
 
-1) Using the lens-`Galaxy`'s `MassProfile`, the deflection angle of every image-plane `Grid` coordinate is computed.
+1) Using the lens-total mass distribution, the deflection angle of every image-plane `Grid` coordinate is computed.
 2) These deflection angles are used to trace every image-plane coordinate to a source-plane coordinate.
 3) The light of each traced source-plane coordinate is evaluated using the source-plane `Galaxy`'s `LightProfile`.
 """
@@ -162,11 +168,11 @@ __PyAutoLens__ has tools for plotting a `Tracer`. A ray-tracing subplot plots th
 
 2) The source-plane image, showing the source-`Galaxy`'s true appearance (i.e. if it were not lensed).
 
-3) The image-plane convergence, computed using the lens `Galaxy`'s `MassProfile`.
+3) The image-plane convergence, computed using the lens total mass distribution.
 
-4) The image-plane gravitational potential, computed using the lens `Galaxy`'s `MassProfile`.
+4) The image-plane gravitational potential, computed using the lens total mass distribution.
 
-5) The image-plane deflection angles, computed using the lens `Galaxy`'s `MassProfile`.
+5) The image-plane deflection angles, computed using the lens total mass distribution.
 """
 
 # %%
@@ -174,7 +180,7 @@ aplt.Tracer.subplot_tracer(tracer=tracer, grid=image_plane_grid)
 
 # %%
 """
-Just like for a plane, these quantities attributes can be computed by passing a `Grid` (converted to 2D NumPy arrays
+Just like for a plane, these quantities attributes can be computed by passing a `Grid` (converted to 2D ndarrays
 the same dimensions as our input grid!).
 """
 

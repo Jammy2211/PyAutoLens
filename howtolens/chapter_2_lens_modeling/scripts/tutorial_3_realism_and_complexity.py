@@ -24,35 +24,29 @@ In future exercises, we'll fit even more complex models, with some 20-30+ non-li
 # %%
 #%matplotlib inline
 
-from autoconf import conf
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
 import autofit as af
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
-)
 
 # %%
 """
 we'll use new strong lensing data, where:
 
  - The lens `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is an `EllipticalExponential`.
 """
 
 # %%
-from howtolens.simulators.chapter_2 import light_sersic__mass_sie__source_exp
-
 dataset_type = "chapter_2"
 dataset_name = "light_sersic__mass_sie__source_exp"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -81,7 +75,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 
 # %%
 """
-Like in the previous tutorial, we use a_SettingsPhaseImaging_ object to specify our model-fitting procedure uses a 
+Like in the previous tutorial, we use a `SettingsPhaseImaging` object to specify our model-fitting procedure uses a 
 regular `Grid`.
 """
 
@@ -97,15 +91,18 @@ Now lets fit the dataset using a phase.
 
 # %%
 phase = al.PhaseImaging(
-    phase_name="phase_t3_realism_and_complexity",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens",
+        name="phase_t3_realism_and_complexity",
+        n_live_points=80,
+    ),
     settings=settings,
     galaxies=dict(
         lens_galaxy=al.GalaxyModel(
-            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source_galaxy=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential),
+        source_galaxy=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential),
     ),
-    search=af.DynestyStatic(n_live_points=80),
 )
 
 # %%
@@ -145,7 +142,7 @@ However, non-linear searches may not always successfully locate the global maxim
 a `local maxima`, a solution which has a high log likelihood value relative to the lens models near it in parameter 
 space, but whose log likelihood is significantly below the `global` maxima solution somewhere else in parameter space. 
 
-Inferring such solutions is essentially a failure of our non-linear search and it is something we do not want to
+Inferring such solutions is essentially a failure of our `NonLinearSearch` and it is something we do not want to
 happen! Lets infer a local maxima, by reducing the number of `live points` Dynesty uses to map out parameter space.
 We`re going to use so few that it has no hope of locating the global maxima, ultimating finding and inferring a local 
 maxima instead.
@@ -153,15 +150,18 @@ maxima instead.
 
 # %%
 phase = al.PhaseImaging(
-    phase_name="phase_t3_realism_and_complexity__local_maxima",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens",
+        name="phase_t3_realism_and_complexity__local_maxima",
+        n_live_points=5,
+    ),
     settings=settings,
     galaxies=dict(
         lens_galaxy=al.GalaxyModel(
-            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source_galaxy=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential),
+        source_galaxy=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential),
     ),
-    search=af.DynestyStatic(n_live_points=5),
 )
 
 print(
@@ -186,7 +186,7 @@ And lets look at the fit to the `Imaging` data, which is clearly worse than our 
 """
 Finally, just to be sure we hit a local maxima, lets compare the maximum log likelihood values of the two results 
 
-The local maxima value is significantly lower, confirming that our non-linear search simply failed to locate lens 
+The local maxima value is significantly lower, confirming that our `NonLinearSearch` simply failed to locate lens 
 models which fit the data better when it searched parameter space.
 """
 
@@ -198,26 +198,26 @@ print("Likelihood of Local Model:")
 
 # %%
 """
-In this example, we intentionally made our non-linear search fail, by using so few live points it had no hope of 
+In this example, we intentionally made our `NonLinearSearch` fail, by using so few live points it had no hope of 
 sampling parameter space thoroughly. For modeling real lenses we wouldn't do this on purpose, but the risk of inferring 
 a local maxima is still very real, especially as we make our lens model more complex.
 
 Lets think about *complexity*. As we make our lens model more realistic, we also made it more complex. For this 
 tutorial, our non-linear parameter space went from 7 dimensions to 18. This means there was a much larger *volume* of 
-parameter space to search. As this volume grows, there becomes a higher chance that our non-linear search gets lost 
+parameter space to search. As this volume grows, there becomes a higher chance that our `NonLinearSearch` gets lost 
 and infers a local maxima, especially if we don't set it up with enough live points!
 
-At its core, lens modeling is all about learning how to get a non-linear search to find the global maxima region of 
+At its core, lens modeling is all about learning how to get a `NonLinearSearch` to find the global maxima region of 
 parameter space, even when the lens model is extremely complex.
 
 And with that, we`re done. In the next exercise, we'll learn how to deal with failure and begin thinking about how we 
-can ensure our non-linear search finds the global-maximum log likelihood solution. Before that, think about 
+can ensure our `NonLinearSearch` finds the global-maximum log likelihood solution. Before that, think about 
 the following:
 
  1) When you look at an image of a strong lens, do you get a sense of roughly what values certain lens model 
  parameters are?
     
- 2) The non-linear search failed because parameter space was too complex. Could we make it less complex, whilst 
+ 2) The `NonLinearSearch` failed because parameter space was too complex. Could we make it less complex, whilst 
  still keeping our lens model fairly realistic?
     
  3) The source galaxy in this example had only 7 non-linear parameters. Real source galaxies may have multiple 

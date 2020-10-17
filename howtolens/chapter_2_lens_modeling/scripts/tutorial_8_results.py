@@ -8,27 +8,17 @@ the maximum log likelihood fit of the modoel-fits. Lets take a more detailed loo
 """
 
 # %%
-from autoconf import conf
-import autofit as af
+#%matplotlib inline
+
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-# %%
-"""
-Use this path to explicitly set the config path and output path, with the latter corresponding to the specific path
-the results of the phase 1 tutorial were output too.
-"""
-
-# %%
-conf.instance = conf.Config(
-    config_path=f"{workspace_path}/howtolens/config",
-    output_path=f"{workspace_path}/howtolens/output",
-)
-
+import autofit as af
 
 # %%
 """
@@ -39,7 +29,7 @@ your hard-disk this should simply reload them into this Pythons script.
 # %%
 dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp"
-dataset_path = f"{workspace_path}/howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -53,15 +43,16 @@ mask = al.Mask2D.circular(
 )
 
 phase = al.PhaseImaging(
-    phase_name="phase_t1_non_linear_search",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t1_non_linear_search", n_live_points=40
+    ),
     settings=al.SettingsPhaseImaging(
         settings_masked_imaging=al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
     ),
     galaxies=dict(
         lens_galaxy=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
-        source_galaxy=al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential),
+        source_galaxy=al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential),
     ),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
 # result =  phase.run(dataset=imaging, mask=mask)
@@ -81,7 +72,7 @@ a fast way to visualize the result.
 # %%
 """
 The result contains a lot more information about the model-fit. For example, its `Samples` object contains the complete
-set of non-linear search samples, for example every set of parameters evaluated, their log likelihoods and so on,
+set of `NonLinearSearch` samples, for example every set of parameters evaluated, their log likelihoods and so on,
 which are used for computing information about the model-fit such as the error on every parameter.
 """
 # print(result.samples)
@@ -90,7 +81,7 @@ which are used for computing information about the model-fit such as the error o
 
 # %%
 """
-However, we are not going into any more detail on the result variable in this tutorial, or in the ``.owToLens__ lectures.
+However, we are not going into any more detail on the result variable in this tutorial, or in the **HowToLens** lectures.
 
 A comprehensive description of the results can be found at the following script:
 
@@ -112,7 +103,7 @@ a sensible use of your time to analyse the results by sifting through the output
 
 PyAutoFit`s aggregator tool allows us to load results in a Python script or, more impotantly, a Jupyter notebook.
 All we have to do is point the aggregator to the output directory from which we want to load results, which in this c
-ase will be the results of the first non-linear search of this chapter.
+ase will be the results of the first `NonLinearSearch` of this chapter.
 """
 
 # %%
@@ -121,7 +112,7 @@ To set up the aggregator we simply pass it the folder of the results we want to 
 """
 
 # %%
-output_path = f"{workspace_path}/output"
+output_path = f"output"
 # # agg = af.Aggregator(directory=str(output_path))
 # # agg = agg.filter(agg.phase == "phase_t1_non_linear_search")
 
@@ -144,7 +135,7 @@ print(samples[0].max_log_likelihood_vector)
 
 # %%
 """
-Again, we won`t go into any more detail on the aggregator in this tutorial. For those of you modeling large samples of
+Again, we won't go into any more detail on the aggregator in this tutorial. For those of you modeling large samples of
 lenses for who the tool will prove useful, checkout the full set of aggregator tutorials which can be found at the 
 location `autolens_workspace/advanced`aggregator`. Here, you`ll learn how to:
 

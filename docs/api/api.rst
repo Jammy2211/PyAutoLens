@@ -291,11 +291,11 @@ Lens Modeling
    :toctree: generated/
 
     SetupHyper
-    SetupLightSersic
-    SetupLightBulgeDisk
+    SetupLightParametric
+    SetupLightParametric
     SetupMassTotal
     SetupMassLightDark
-    SetupSourceSersic
+    SetupSourceParametric
     SetupSourceInversion
     SetupSMBH
     SetupSubhalo
@@ -309,7 +309,7 @@ Lens Modeling
    SLaM
    SLaMPipelineSourceParametric
    SLaMPipelineSourceInversion
-   SLaMPipelineLight
+   SLaMPipelineLightParametric
    SLaMPipelineMass
 
 ---------
