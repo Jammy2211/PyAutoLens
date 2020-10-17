@@ -60,7 +60,7 @@
 # @pytest.fixture(name="phase1")
 # def make_phase_1():
 #     return al.PhaseImaging(
-#         name="phase_1",
+#         name="phase[1]",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens, mass=al.mp.EllipticalIsothermal
@@ -81,7 +81,7 @@
 # @pytest.fixture(name="phase2")
 # def make_phase_2():
 #     return al.PhaseImaging(
-#         name="phase_2",
+#         name="phase[2]",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens,
@@ -109,7 +109,7 @@
 # @pytest.fixture(name="phase3")
 # def make_phase_3(phase2):
 #     return al.PhaseImaging(
-#         name="phase_3",
+#         name="phase[3]",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens, mass=af.last[-1].model.galaxies.lens.mass
@@ -133,7 +133,7 @@
 # @pytest.fixture(name="phase4")
 # def make_phase_phase_4(phase2, phase3):
 #     return al.PhaseImaging(
-#         name="phase_4",
+#         name="phase[4]",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens, mass=phase2.result.instance.galaxies.lens.mass
@@ -159,7 +159,7 @@
 # @pytest.fixture(name="phase5")
 # def make_phase_5(phase3, phase4):
 #     return al.PhaseImaging(
-#         name="phase_5",
+#         name="phase[5]",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens, mass=phase3.result.model.galaxies.lens.mass

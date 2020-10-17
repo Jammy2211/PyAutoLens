@@ -319,11 +319,11 @@ class AbstractSetupMass:
         For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
 
         with_shear = `False` -> setup__with_shear
-        with_shear = ``True`` -> setup___with_shear
+        with_shear = `True` -> setup___with_shear
         """
-        if not self.with_shear:
+        if self.with_shear:
             return f"__{conf.instance['notation']['setup_tags']['mass']['with_shear']}"
-        return f"__{conf.instance['notation']['setup_tags']['mass']['with_shear']}"
+        return f"__{conf.instance['notation']['setup_tags']['mass']['no_shear']}"
 
     @property
     def shear_prior_model(self) -> af.PriorModel:

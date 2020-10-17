@@ -5,7 +5,7 @@ import numpy as np
 from test_autolens.simulators.interferometer import instrument_util
 
 interferometer = instrument_util.load_test_interferometer(
-    data_name="lens_sie__source_smooth", instrument="sma"
+    dataset_name="lens_sie__source_smooth", instrument="sma"
 )
 
 # aplt.Interferometer.visibilities(interferometer=interferometer)

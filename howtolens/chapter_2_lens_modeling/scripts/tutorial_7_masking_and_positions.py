@@ -10,33 +10,28 @@ choose your mask. I`ll also show you another neat trick to improve the speed and
 # %%
 #%matplotlib inline
 
-from autoconf import conf
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
 import autofit as af
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-conf.instance.push(
-f"howtolens/config", output_path=f"howtolens/output"
-)
 
 # %%
 """
 we'll use the same strong lensing data as tutorials 1 & 2, where:
 
- - The lens `Galaxy`'s `MassProfile` is a *SphericalIsothermal*.
+ - The lens total mass distribution is a *SphericalIsothermal*.
  - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 """
 
 # %%
-from howtolens.simulators.chapter_2 import mass_sis__source_exp
-
 dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp"
-dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -80,7 +75,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 
 # %%
 """
-Like in the previous tutorial, we use a_SettingsPhaseImaging_ object to specify our model-fitting procedure uses a 
+Like in the previous tutorial, we use a `SettingsPhaseImaging` object to specify our model-fitting procedure uses a 
 regular `Grid`.
 """
 
@@ -96,13 +91,14 @@ Now we create our phase as usual, remember that we pass the mask to the run func
 
 # %%
 phase_with_custom_mask = al.PhaseImaging(
-    name="phase_t7_with_custom_mask",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t7_with_custom_mask", n_live_points=40
+    ),
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
-        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential),
+        source=al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential),
     ),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
 # phase_with_custom_mask.run(dataset=imaging, mask=mask)
@@ -192,13 +188,14 @@ We can then tell our phase to use these positions in the analysis.
 
 # %%
 phase_with_positions = al.PhaseImaging(
-    name="phase_t7_with_positions",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t7_with_positions", n_live_points=40
+    ),
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
-        source=al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential),
+        source=al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential),
     ),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
 # %%
@@ -222,11 +219,9 @@ Lets load example data containing two distinct source galaxies.
 """
 
 # %%
-from howtolens.simulators.chapter_2 import mass_sis__source_exp_x2
-
 dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp_x2"
-dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -272,14 +267,15 @@ settings = al.SettingsPhaseImaging(
 )
 
 phase_with_x2_positions = al.PhaseImaging(
-    name="phase_t7_with_x2_positions",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t7_with_x2_positions", n_live_points=40
+    ),
     settings=settings,
     galaxies=dict(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
-        source_0=al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential),
-        source_1=al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential),
+        source_0=al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential),
+        source_1=al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential),
     ),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
 print(

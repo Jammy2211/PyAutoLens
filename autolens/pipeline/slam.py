@@ -202,7 +202,7 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
         For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
 
         light_is_model = `False` -> setup__
-        light_is_model = ``True`` -> setup___light_is_model
+        light_is_model = `True` -> setup___light_is_model
         """
         if self.light_is_model:
             return f"__{conf.instance['notation']['setup_tags']['pipeline']['light_is_model']}"

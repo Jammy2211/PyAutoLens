@@ -4,14 +4,14 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_adaptive_magnification"
-data_name = "lens_sie__source_smooth"
+dataset_name = "lens_sie__source_smooth"
 instrument = "euclid"
 
 
 def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase1 = al.PhaseImaging(
-        name="phase_1",
+        name="phase[1]",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
@@ -31,7 +31,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     phase1 = phase1.extend_with_inversion_phase()
 
     phase2 = al.PhaseImaging(
-        name="phase_2",
+        name="phase[2]",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -52,7 +52,7 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase2 = phase2.extend_with_inversion_phase()
 
-    return al.PipelineDataset(name, phase1, phase2)
+    return al.PipelineDataset(name, path_prefix, phase1, phase2)
 
 
 if __name__ == "__main__":

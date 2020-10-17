@@ -10,6 +10,12 @@ generated via a `Tracer`, and by comparing to the simulated image we'll get diag
 # %%
 #%matplotlib inline
 
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
 
@@ -20,12 +26,12 @@ we'll need the path to the chapter in this tutorial to load the dataset from you
 
 # %%
 """
-The data path specifies where the data was output in the last tutorial, this time in the directory 
-`chapter_path/dataset`.
+The `dataset_path` specifies where the data was output in the last tutorial, which is the directory 
+`autolens_workspace/dataset/howtolens/chapter_1`.
 """
 
 # %%
-dataset_path = f"howtolens/dataset/chapter_1/"
+dataset_path = f"dataset/howtolens/chapter_1"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -185,7 +191,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    sersic=al.lp.EllipticalSersic(
+    bulge=al.lp.EllipticalSersic(
         centre=(0.1, 0.1),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
         intensity=0.3,
@@ -328,7 +334,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    sersic=al.lp.EllipticalSersic(
+    bulge=al.lp.EllipticalSersic(
         centre=(0.1, 0.1),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
         intensity=0.3,
@@ -376,7 +382,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    sersic=al.lp.EllipticalSersic(
+    bulge=al.lp.EllipticalSersic(
         centre=(0.2, 0.0),
         elliptical_comps=al.convert.elliptical_comps_from(axis_ratio=0.8, phi=60.0),
         intensity=0.5,

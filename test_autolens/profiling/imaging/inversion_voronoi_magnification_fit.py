@@ -37,7 +37,7 @@ source_galaxy = al.Galaxy(
 for instrument in ["vro", "euclid", "hst", "hst_up"]:  # , 'ao']:
 
     imaging = instrument_util.load_test_imaging(
-        data_name="lens_sie__source_smooth",
+        dataset_name="lens_sie__source_smooth",
         instrument=instrument,
         psf_shape_2d=psf_shape_2d,
     )

@@ -52,14 +52,16 @@ def make_pipeline(setup, settings):
     path_prefix = f"{setup.path_prefix}/{pipeline_name}/{setup.tag}"
 
     phase1 = al.PhaseImaging(
-        name="phase_1__mass_sie__source_bulge",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(
+            name="phase[1]_mass[sie]_source[bulge]",
+            n_live_points=50,
+            evidence_tolerance=5.0,
+        ),
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
-            source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
+            source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
         ),
         settings=settings,
-        search=af.DynestyStatic(n_live_points=50, evidence_tolerance=5.0),
     )
 
     phase1.search.facc = 0.3
@@ -93,8 +95,9 @@ def make_pipeline(setup, settings):
     )
 
     phase2 = al.PhaseImaging(
-        name="phase_2__source_inversion_initialize",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(
+            name="phase[2]_source[inversion_initialize]", n_live_points=50
+        ),
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
@@ -102,7 +105,6 @@ def make_pipeline(setup, settings):
             source=source,
         ),
         settings=settings,
-        search=af.DynestyStatic(n_live_points=50),
     )
 
     """
@@ -125,8 +127,9 @@ def make_pipeline(setup, settings):
     """
 
     phase3 = al.PhaseImaging(
-        name="phase_3__lens_sie__source_inversion",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(
+            name="phase[3]_mass[sie]_source[inversion]", n_live_points=50
+        ),
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, mass=phase1.result.model.galaxies.lens.mass
@@ -138,7 +141,6 @@ def make_pipeline(setup, settings):
             ),
         ),
         settings=settings,
-        search=af.DynestyStatic(n_live_points=50),
     )
 
-    return al.PipelineDataset(pipeline_name, phase1, phase2, phase3)
+    return al.PipelineDataset(pipeline_name, path_prefix, phase1, phase2, phase3)

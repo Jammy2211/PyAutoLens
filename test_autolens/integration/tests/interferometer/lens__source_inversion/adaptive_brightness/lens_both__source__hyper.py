@@ -4,14 +4,14 @@ from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_both__source_adaptive_brightness__hyper"
-data_name = "lens_light__source_smooth"
+dataset_name = "lens_light__source_smooth"
 instrument = "sma"
 
 
 def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic()):
 
     phase1 = al.PhaseInterferometer(
-        name="phase_1",
+        name="phase[1]",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -31,10 +31,10 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
             self.galaxies.lens.light = results.from_phase(
-                "phase_1"
+                "phase[1]"
             ).instance.galaxies.lens.light
             self.galaxies.lens.mass = results.from_phase(
-                "phase_1"
+                "phase[1]"
             ).instance.galaxies.lens.mass
 
     phase2 = InversionPhase(
@@ -70,7 +70,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
 
             ## Lens Mass, SIE -> SIE, Shear -> Shear ###
 
-            self.galaxies.lens = results.from_phase("phase_1").model.galaxies.lens
+            self.galaxies.lens = results.from_phase("phase[1]").model.galaxies.lens
 
             self.galaxies.source.pixelization = (
                 results.last.inversion.instance.galaxies.source.pixelization
@@ -80,7 +80,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
             )
 
     phase3 = InversionPhase(
-        name="phase_3",
+        name="phase[3]",
         path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
@@ -107,7 +107,7 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
         hyper_galaxies_search=True, include_inversion=True
     )
 
-    return al.PipelineDataset(name, phase1, phase2, phase3)
+    return al.PipelineDataset(name, path_prefix, phase1, phase2, phase3)
 
 
 if __name__ == "__main__":

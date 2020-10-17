@@ -8,35 +8,19 @@ and describe every configuration file complete with input parameters.
 Setup
 -----
 
-By default, **PyAutoLens** looks for the config files at the path set by the environmental WORKSPACE variable, which
-you should have set up during the **PyAutoLens** installation. The variable was set by running the following command
-in your command line:
-
-.. code-block:: bash
-
-    export WORKSPACE=/path/to/autolens_workspace/
-
-If you find that **PyAutoLens** originally worked on your laptop, but more recently is raising config related errors,
-this is likely because your WORKSPACE variable has been reset. You can fix this by running the above command again,
-however to ensure this does not occur again I would recommend you put the command in your .bashrc file or the
-activate script of your Python virtual environment.
+By default, **PyAutoLens** looks for the config files in a ``config`` folder in the current working directory, which is
+why we run autolens scripts from the ``autolens_workspace`` directory.
 
 The configuration path can also be set manually in a script using **PyAutoConf** and the following command (the path
-to the 'output' folder where the results of a *non-linear search* are stored is also set below):
+to the ``output`` folder where the results of a ``NonLinearSearch`` are stored is also set below):
 
 .. code-block:: bash
 
     from autoconf import conf
 
-    workspace_path = "/path/to/user/autolens_workspace"
-
     conf.instance.push(
-f"config", output_path=f"output"
+        config_path="path/to/config", output_path=f"path/to/output"
     )
-
-This manual setting of the config files is used in every example script in the autolens workspace *example* folder,
-alongsie the **HowToFit** lectures. If the WORKSPACE environment variable does not seem to set the config path
-correct we recommend you try manually setting the config files as shown above.
 
 general.ini
 -----------
@@ -218,10 +202,10 @@ visualization in **PyAutoLens**. The *general.ini* config contains the following
 
         Agg (outputs to .fits / .png but doesn't'display figures during a run on your computer screen)
 
-json_priors
------------
+priors
+------
 
-These config files are found at 'autolens_workspace/config/json_priors' and they contain the default priors and related
+These config files are found at 'autolens_workspace/config/priors' and they contain the default priors and related
 variables for every model-component in a project, using .json format files (as opposed to .ini. for most config files).
 
 The autolens workspace contains example json_prior files for the 1D ``data`` fitting problem. An example entry of the

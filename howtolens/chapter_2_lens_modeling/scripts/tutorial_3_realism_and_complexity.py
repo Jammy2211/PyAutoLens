@@ -24,34 +24,29 @@ In future exercises, we'll fit even more complex models, with some 20-30+ non-li
 # %%
 #%matplotlib inline
 
-from autoconf import conf
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
 import autofit as af
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-conf.instance.push(
-f"howtolens/config", output_path=f"howtolens/output"
-)
 
 # %%
 """
 we'll use new strong lensing data, where:
 
  - The lens `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is an `EllipticalExponential`.
 """
 
 # %%
-from howtolens.simulators.chapter_2 import light_sersic__mass_sie__source_exp
-
 dataset_type = "chapter_2"
 dataset_name = "light_sersic__mass_sie__source_exp"
-dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -80,7 +75,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 
 # %%
 """
-Like in the previous tutorial, we use a_SettingsPhaseImaging_ object to specify our model-fitting procedure uses a 
+Like in the previous tutorial, we use a `SettingsPhaseImaging` object to specify our model-fitting procedure uses a 
 regular `Grid`.
 """
 
@@ -96,15 +91,18 @@ Now lets fit the dataset using a phase.
 
 # %%
 phase = al.PhaseImaging(
-    name="phase_t3_realism_and_complexity",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens",
+        name="phase_t3_realism_and_complexity",
+        n_live_points=80,
+    ),
     settings=settings,
     galaxies=dict(
         lens_galaxy=al.GalaxyModel(
-            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source_galaxy=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential),
+        source_galaxy=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential),
     ),
-    search=af.DynestyStatic(n_live_points=80),
 )
 
 # %%
@@ -152,15 +150,18 @@ maxima instead.
 
 # %%
 phase = al.PhaseImaging(
-    name="phase_t3_realism_and_complexity__local_maxima",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens",
+        name="phase_t3_realism_and_complexity__local_maxima",
+        n_live_points=5,
+    ),
     settings=settings,
     galaxies=dict(
         lens_galaxy=al.GalaxyModel(
-            redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+            redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
-        source_galaxy=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential),
+        source_galaxy=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential),
     ),
-    search=af.DynestyStatic(n_live_points=5),
 )
 
 print(

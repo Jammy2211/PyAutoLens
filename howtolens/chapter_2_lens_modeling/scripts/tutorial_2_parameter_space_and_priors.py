@@ -28,7 +28,7 @@ isn't something that we can write down analytically and its inherently non-linea
 if we put the same set of lens model parameters into it, we'll compute the same log likelihood.
 
 We can write our log_likelihood function as follows (using x_mp, y_mp, I_lp etc. as short-hand notation for the
-_MassProfile_ and `LightProfile` parameters):
+`MassProfile` and `LightProfile` parameters):
 
 f(x_mp, y_mp, R_mp, x_lp, y_lp, I_lp, R_lp) = a log likelihood from **PyAutoLens**`s `Tracer` and `FitImaging` objects.
 
@@ -67,7 +67,7 @@ GaussianPrior:
  The values of a parameter are randomly drawn from a Gaussian distribution with a mean value and a
  width sigma. For example, an Einstein radius might assume a mean value of 1.0" and width of sigma = 1.0".
 
-The default priors on all parameters can be found by navigating to the `autolens_workspace/config/json_priors/` folder,
+The default priors on all parameters can be found by navigating to the `autolens_workspace/config/priors/` folder,
 and inspecting config files like light_profiles.json. The convention is as follow:
 
 {
@@ -91,33 +91,28 @@ and inspecting config files like light_profiles.json. The convention is as follo
 # %%
 #%matplotlib inline
 
-from autoconf import conf
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
 import autofit as af
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-conf.instance.push(
-f"howtolens/config", output_path=f"howtolens/output"
-)
 
 # %%
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens `Galaxy`'s `MassProfile` is a *SphericalIsothermal*.
+ - The lens total mass distribution is a *SphericalIsothermal*.
  - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 """
 
 # %%
-from howtolens.simulators.chapter_2 import mass_sis__source_exp
-
 dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp"
-dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -145,14 +140,14 @@ To change the priors on specific parameters, we create our galaxy models and the
 
 # %%
 lens = al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal)
-source = al.GalaxyModel(redshift=1.0, sersic=al.lp.SphericalExponential)
+source = al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential)
 
 # %%
 """
 To change priors, we use the `prior` module of PyAutoFit (imported as af). These priors link our `GalaxyModel` to the 
 non-linear search. Thus, it tells **PyAutoLens** where to search non-linear parameter space.
 
-These two lines change the centre of the lens `Galaxy`'s `MassProfile` to UniformPriors around the coordinates 
+These two lines change the centre of the lens total mass distribution to UniformPriors around the coordinates 
 (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the centre of emission of the lens 
 _Galaxy_`s light.
 
@@ -178,11 +173,11 @@ We can also customize the source galaxy - lets say we believe it is compact and 
 """
 
 # %%
-source.sersic.effective_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.3)
+source.bulge.effective_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.3)
 
 # %%
 """
-Like in the previous tutorial, we use a_SettingsPhaseImaging_ object to specify our model-fitting procedure uses a 
+Like in the previous tutorial, we use a `SettingsPhaseImaging` object to specify our model-fitting procedure uses a 
 regular `Grid`.
 """
 
@@ -199,10 +194,11 @@ output of the non-linear search, you`ll see that the priors have indeed been cha
 
 # %%
 phase = al.PhaseImaging(
-    name="phase_t2_custom_priors",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t2_custom_priors", n_live_points=40
+    ),
     settings=settings,
     galaxies=dict(lens=lens, source=source),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
 print(

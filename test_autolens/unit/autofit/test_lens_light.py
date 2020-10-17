@@ -77,7 +77,7 @@
 #     lens.bulge.centre = lens.disk.centre
 #
 #     return al.PhaseImaging(
-#         name="phase_1", galaxies=dict(lens=lens), search=af.DynestyStatic()
+#         name="phase[1]", galaxies=dict(lens=lens), search=af.DynestyStatic()
 #     )
 #
 #
@@ -91,7 +91,7 @@
 # def make_phase_2(phase1):
 #
 #     return al.PhaseImaging(
-#         name="phase_2",
+#         name="phase[2]",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens,
@@ -132,7 +132,7 @@
 #     lens.bulge.centre = lens.disk.centre
 #
 #     return al.PhaseImaging(
-#         name="phase_3",
+#         name="phase[3]",
 #         galaxies=dict(
 #             lens=lens,
 #             source=al.GalaxyModel(
@@ -156,7 +156,7 @@
 # def make_phase_4(phase2, phase3):
 #
 #     return al.PhaseImaging(
-#         name="phase_4",
+#         name="phase[4]",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens,
@@ -186,7 +186,7 @@
 # def make_phase_5():
 #
 #     return al.PhaseImaging(
-#         name="phase_5",
+#         name="phase[5]",
 #         galaxies=dict(
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens,

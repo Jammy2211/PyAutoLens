@@ -15,35 +15,30 @@ global maxima.
 # %%
 #%matplotlib inline
 
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import numpy as np
-from autoconf import conf
 import autolens as al
 import autolens.plot as aplt
 import autofit as af
-import os
-
-workspace_path = os.environ["WORKSPACE"]
-print("Workspace Path: ", workspace_path)
-
-conf.instance.push(
-f"howtolens/config", output_path=f"howtolens/output"
-)
 
 # %%
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
  - The lens `Galaxy`'s `LightProfile` is an `EllipticalSersic`.
- - The lens `Galaxy`'s `MassProfile` is an `EllipticalIsothermal`.
+ - The lens total mass distribution is an `EllipticalIsothermal`.
  - The source `Galaxy`'s `LightProfile` is an `EllipticalExponential`.
 """
 
 # %%
-from howtolens.simulators.chapter_2 import light_sersic__mass_sie__source_exp
-
 dataset_type = "chapter_2"
 dataset_name = "light_sersic__mass_sie__source_exp"
-dataset_path = f"howtolens/dataset/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -72,7 +67,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 
 # %%
 """
-Like in the previous tutorials, we use a_SettingsPhaseImaging_ object to specify our model-fitting procedure uses a 
+Like in the previous tutorials, we use a `SettingsPhaseImaging` object to specify our model-fitting procedure uses a 
 regular `Grid`.
 """
 
@@ -103,7 +98,7 @@ giving these searches a good starting point will increase the chances of us find
 
 # %%
 lens = al.GalaxyModel(
-    redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+    redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
 )
 
 # %%
@@ -114,8 +109,8 @@ so lets reduce where `NonLinearSearch` looks for these parameters.
 """
 
 # %%
-lens.sersic.centre.centre_0 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
-lens.sersic.centre.centre_1 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
+lens.bulge.centre.centre_0 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
+lens.bulge.centre.centre_1 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
 lens.mass.centre.centre_0 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
 lens.mass.centre.centre_1 = af.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
 
@@ -130,10 +125,10 @@ However, looking close to the image it is clear that the lens `Galaxy`'s light i
 """
 
 # %%
-lens.sersic.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
+lens.bulge.elliptical_comps.elliptical_comps_0 = af.GaussianPrior(
     mean=0.333333, sigma=0.1, lower_limit=-1.0, upper_limit=1.0
 )
-lens.sersic.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
+lens.bulge.elliptical_comps.elliptical_comps_1 = af.GaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-1.0, upper_limit=1.0
 )
 
@@ -160,7 +155,7 @@ is internal to a circle defined within that radius. **PyAutoLens** assumes a Uni
 """
 
 # %%
-lens.sersic.effective_radius = af.GaussianPrior(
+lens.bulge.effective_radius = af.GaussianPrior(
     mean=1.0, sigma=0.8, lower_limit=0.0, upper_limit=np.inf
 )
 
@@ -171,7 +166,7 @@ have Sersic indexes near 4. So lets change our Sersic index from a UniformPrior 
 """
 
 # %%
-lens.sersic.sersic_index = af.GaussianPrior(
+lens.bulge.sersic_index = af.GaussianPrior(
     mean=4.0, sigma=1.0, lower_limit=0.0, upper_limit=np.inf
 )
 
@@ -194,7 +189,7 @@ form. Furthermore, the source`s morphology can be pretty complex, making it diff
 """
 
 # %%
-source = al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential)
+source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential)
 
 # %%
 """
@@ -204,10 +199,11 @@ regions of parameter space, given our improved and more informed priors.
 
 # %%
 phase = al.PhaseImaging(
-    name="phase_t4_custom_priors",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t4_custom_priors", n_live_points=50
+    ),
     settings=settings,
     galaxies=dict(lens=lens, source=source),
-    search=af.DynestyStatic(n_live_points=50),
 )
 
 print(
@@ -262,10 +258,10 @@ elliptical components), so its worth trying!
 
 # %%
 lens = al.GalaxyModel(
-    redshift=0.5, sersic=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
+    redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
 )
 
-source = al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalExponential)
+source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential)
 
 # %%
 """
@@ -275,7 +271,7 @@ parameter on the right-hand side.
 """
 
 # %%
-lens.mass.centre = lens.sersic.centre
+lens.mass.centre = lens.bulge.centre
 
 # %%
 """
@@ -283,7 +279,7 @@ Lets do this with the elliptical components of the light and mass profiles.
 """
 
 # %%
-lens.mass.elliptical_comps = lens.sersic.elliptical_comps
+lens.mass.elliptical_comps = lens.bulge.elliptical_comps
 
 # %%
 """
@@ -292,10 +288,11 @@ Again, we create this phase and run it. The `NonLinearSearch` now has a less com
 
 # %%
 phase_light_traces_mass = al.PhaseImaging(
-    name="phase_t4_light_traces_mass",
+    search=af.DynestyStatic(
+        path_prefix=f"howtolens", name="phase_t4_light_traces_mass", n_live_points=40
+    ),
     settings=settings,
     galaxies=dict(lens=lens, source=source),
-    search=af.DynestyStatic(n_live_points=40),
 )
 
 print(

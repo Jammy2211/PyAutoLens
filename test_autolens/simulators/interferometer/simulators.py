@@ -5,7 +5,7 @@ from test_autolens.simulators.interferometer import instrument_util
 
 def simulate__lens_sie__source_smooth(instrument):
 
-    data_name = "lens_sie__source_smooth"
+    dataset_name = "lens_sie__source_smooth"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -29,14 +29,14 @@ def simulate__lens_sie__source_smooth(instrument):
 
     instrument_util.simulate_interferometer_from_instrument(
         instrument=instrument,
-        data_name=data_name,
+        dataset_name=dataset_name,
         galaxies=[lens_galaxy, source_galaxy],
     )
 
 
 def simulate__lens_sie__source_cuspy(instrument):
 
-    data_name = "lens_sie__source_cuspy"
+    dataset_name = "lens_sie__source_cuspy"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -60,14 +60,14 @@ def simulate__lens_sie__source_cuspy(instrument):
 
     instrument_util.simulate_interferometer_from_instrument(
         instrument=instrument,
-        data_name=data_name,
+        dataset_name=dataset_name,
         galaxies=[lens_galaxy, source_galaxy],
     )
 
 
 def simulate__lens_sis__source_smooth(instrument):
 
-    data_name = "lens_sis__source_smooth"
+    dataset_name = "lens_sis__source_smooth"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -89,14 +89,14 @@ def simulate__lens_sis__source_smooth(instrument):
 
     instrument_util.simulate_interferometer_from_instrument(
         instrument=instrument,
-        data_name=data_name,
+        dataset_name=dataset_name,
         galaxies=[lens_galaxy, source_galaxy],
     )
 
 
 def simulate__lens_sie__source_smooth__offset_centre(instrument):
 
-    data_name = "lens_sie__source_smooth__offset_centre"
+    dataset_name = "lens_sie__source_smooth__offset_centre"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -118,14 +118,14 @@ def simulate__lens_sie__source_smooth__offset_centre(instrument):
 
     instrument_util.simulate_interferometer_from_instrument(
         instrument=instrument,
-        data_name=data_name,
+        dataset_name=dataset_name,
         galaxies=[lens_galaxy, source_galaxy],
     )
 
 
 def simulate__lens_light__source_smooth(instrument):
 
-    data_name = "lens_light__source_smooth"
+    dataset_name = "lens_light__source_smooth"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -156,14 +156,14 @@ def simulate__lens_light__source_smooth(instrument):
 
     instrument_util.simulate_interferometer_from_instrument(
         instrument=instrument,
-        data_name=data_name,
+        dataset_name=dataset_name,
         galaxies=[lens_galaxy, source_galaxy],
     )
 
 
 def simulate__lens_light__source_cuspy(instrument):
 
-    data_name = "lens_light__source_cuspy"
+    dataset_name = "lens_light__source_cuspy"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -194,6 +194,6 @@ def simulate__lens_light__source_cuspy(instrument):
 
     instrument_util.simulate_interferometer_from_instrument(
         instrument=instrument,
-        data_name=data_name,
+        dataset_name=dataset_name,
         galaxies=[lens_galaxy, source_galaxy],
     )

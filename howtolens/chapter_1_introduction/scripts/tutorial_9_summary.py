@@ -22,6 +22,12 @@ system. Lets get a `fit` to a strong lens, by setting up an image, mask, tracer,
 # %%
 #%matplotlib inline
 
+from pyprojroot import here
+
+workspace_path = str(here())
+#%cd $workspace_path
+print(f"Working Directory has been set to `{workspace_path}`")
+
 import autolens as al
 import autolens.plot as aplt
 
@@ -32,11 +38,11 @@ we'll need the path to the chapter in this tutorial to load the dataset from you
 
 # %%
 """
-The data path specifies where the data was output in the last tutorial, which is the directory `chapter_path/data`
+The `dataset_path` specifies where the data was output in the last tutorial, which is the directory `chapter_path/data`
 """
 
 # %%
-dataset_path = f"howtolens/dataset/chapter_1/"
+dataset_path = f"dataset/howtolens/chapter_1/"
 
 # %%
 """
