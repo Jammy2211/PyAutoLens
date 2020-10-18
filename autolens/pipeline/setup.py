@@ -480,7 +480,7 @@ class SetupSourceParametric(setup.SetupLightParametric):
     def __init__(
         self,
         bulge_prior_model: af.PriorModel(lp.LightProfile) = lp.EllipticalSersic,
-        disk_prior_model: af.PriorModel(lp.LightProfile) = lp.EllipticalExponential,
+        disk_prior_model: af.PriorModel(lp.LightProfile) = None,
         envelope_prior_model: af.PriorModel(lp.LightProfile) = None,
         light_centre: (float, float) = None,
         align_bulge_disk_centre: bool = True,
