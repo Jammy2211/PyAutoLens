@@ -21,7 +21,7 @@ def run(
     test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
     output_path = f"{test_path}/output/interferometer/"
     config_path = test_path + config_folder
-    conf.instance.push(config_path, output_path=output_path)
+    conf.instance.push(new_path, output_path=output_path)
 
     interferometer = instrument_util.load_test_interferometer(
         dataset_name=module.dataset_name, instrument=module.instrument
