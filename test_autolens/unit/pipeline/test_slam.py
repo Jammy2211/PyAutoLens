@@ -50,7 +50,7 @@ class TestSLaM:
         assert (
             slam.source_parametric_tag == f"source__"
             f"mass[total__sie__with_shear]__"
-            f"source[parametric__bulge_sersic__align_bulge_disk_centre]"
+            f"source[parametric__bulge_sersic]"
         )
         assert slam.source_parametric_tag == slam.source_tag
 
@@ -126,7 +126,7 @@ class TestSLaM:
 
         assert (
             slam.source_inversion_tag == f"source__"
-            f"light[parametric__bulge_exp_sph__align_bulge_disk_centre]__"
+            f"light[parametric__bulge_exp_sph]__"
             f"mass[total__power_law__with_shear__centre_(0.00,0.00)]__"
             f"source[inversion__pix_voro_mag__reg_adapt_bright]"
         )
@@ -144,7 +144,7 @@ class TestSLaM:
             slam.light_parametric_tag == f"light__"
             f"light[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre]__"
             f"mass[total__sie__with_shear]__"
-            f"source[parametric__bulge_sersic__align_bulge_disk_centre]"
+            f"source[parametric__bulge_sersic]"
         )
 
         pipeline_source_parametric = al.SLaMPipelineSourceParametric(
@@ -203,7 +203,7 @@ class TestSLaM:
             slam.mass_tag == f"mass__"
             f"light[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre]__"
             f"mass[total__power_law__with_shear]__"
-            f"source[parametric__bulge_sersic__align_bulge_disk_centre]"
+            f"source[parametric__bulge_sersic]"
         )
 
         pipeline_source_parametric = al.SLaMPipelineSourceParametric(

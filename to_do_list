@@ -14,15 +14,12 @@ Positions:
 
 Model Fitting:
 
-    - We are going fully Dynesty - explain rwalk, steps setting, facc, Dynamic etc simila to MultiiNest black magic!
-      HowToLens and examples. Small bit on MCMC.
     - Find example where rwalk becomes inefficient (N > 30?) and try to show how rslice wins in this regime. Need to do
       no prior initialization and prior initalization cases.
 
 Features:
 
     - Stochastic mode, clean up with feature on github.
-    - PyLops.
     - Sanity checks on priors, e.g. intensity and effective radius, size of PSF up to 21x21.
     - Self calibration.
     - GradientSolver + Caustic grid refinement.
