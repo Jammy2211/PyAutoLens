@@ -79,10 +79,7 @@ class TestSetupSource:
 
         setup = al.SetupSourceParametric()
 
-        assert (
-            setup.tag
-            == "source[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre]"
-        )
+        assert setup.tag == "source[parametric__bulge_sersic__align_bulge_disk_centre]"
 
 
 class TestSetupSubhalo:
