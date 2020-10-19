@@ -18,12 +18,12 @@ def test__tag__mixture_of_values():
     assert (
         settings.phase_tag_no_inversion == "settings__"
         "imaging[grid_sub_2__snr_2]__"
-        "lens[pos_on_2.00]"
+        "lens[pos_on]"
     )
     assert (
         settings.phase_tag_with_inversion == "settings__"
         "imaging[grid_sub_2_inv_sub_2__snr_2]__"
-        "lens[pos_on_2.00]__"
+        "lens[pos_on]__"
         "pix[use_border]__"
         "inv[mat]"
     )
@@ -49,13 +49,13 @@ def test__tag__mixture_of_values():
     assert (
         settings.phase_tag_no_inversion == "settings__"
         "imaging[grid_facc_0.5__bin_3__psf_2x2]__"
-        "lens[pos_on_1.00]__"
+        "lens[pos_on]__"
         "lh_cap_200.0"
     )
     assert (
         settings.phase_tag_with_inversion == "settings__"
         "imaging[grid_facc_0.5_inv_interp_0.300__bin_3__psf_2x2]__"
-        "lens[pos_on_1.00]__"
+        "lens[pos_on]__"
         "pix[no_border__stochastic]__"
         "inv[mat]__"
         "lh_cap_200.0"
