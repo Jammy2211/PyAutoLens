@@ -457,7 +457,7 @@ class SLaM:
         return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
 
     def lens_from_light_parametric_pipeline_for_mass_total_pipeline(
-        self, mass: af.PriorModel, shear: af.PriorModel, light_is_model: bool
+        self, mass: af.PriorModel, shear: af.PriorModel
     ) -> ag.GalaxyModel:
         """Setup the lens model for a `Mass` pipeline using the previous `Light` pipeline and phase results.
 
@@ -482,7 +482,7 @@ class SLaM:
             Contains the `PriorModel`'s of the lens's light, mass, the shear, etc.
         """
 
-        if not light_is_model:
+        if not self.pipeline_mass.light_is_model:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_lens,
@@ -615,6 +615,7 @@ class SLaM:
                 regularization=af.last[
                     index
                 ].hyper_combined.model.galaxies.source.regularization,
+                hyper_galaxy=hyper_galaxy,
             )
 
         else:

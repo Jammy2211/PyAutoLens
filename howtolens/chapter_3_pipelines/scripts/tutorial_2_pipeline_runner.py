@@ -95,7 +95,7 @@ Multi-galaxy ray-tracing is just a lot more complicated, which means so is model
 So, how can we break the lens modeling up? As follows:
 
  1) Fit and subtract the light of each lens galaxy individually.
- 2) Use these results to initialize each lens total mass distribution.
+ 2) Use these results to initialize each lens `Galaxy`'s total mass distribution.
 
 So, with this in mind, we've written a pipeline composed of 4 phases:
 
