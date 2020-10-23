@@ -6,7 +6,7 @@ import pytest
 import autofit as af
 import autolens as al
 from autofit.mapper.prior.prior import TuplePrior
-from autolens import mock
+from autolens.mock import mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "

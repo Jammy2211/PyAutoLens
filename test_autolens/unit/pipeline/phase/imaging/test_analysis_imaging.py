@@ -6,7 +6,7 @@ from autolens import exc
 import pytest
 from astropy import cosmology as cosmo
 from autolens.fit.fit import FitImaging
-from autolens import mock
+from autolens.mock import mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "

@@ -4,7 +4,7 @@ import autolens as al
 """
 This script simulates `Imaging` of a strong lens where:
 
- - The lens total mass distribution is a *SphericalIsothermal*.
+ - The lens `Galaxy`'s total mass distribution is a *SphericalIsothermal*.
  - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 
 This dataset is used in chapter 2, tutorials 1-3.

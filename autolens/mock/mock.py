@@ -1,6 +1,5 @@
-from autogalaxy.mock import *
-
-import autolens as al
+import autofit as af
+from autofit.mock.mock import MockSearch, MockSamples
 
 
 class MockResult(af.MockResult):
@@ -141,13 +140,3 @@ class MockResults(af.ResultsCollection):
 
     def __len__(self):
         return len(self.__result_list)
-
-
-def make_phase_imaging_7x7():
-    return al.PhaseImaging(search=MockSearch(name="test_phase"))
-
-
-def make_phase_interferometer_7():
-    return al.PhaseInterferometer(
-        search=MockSearch(name="test_phase"), real_space_mask=make_mask_7x7()
-    )

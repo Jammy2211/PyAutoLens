@@ -3,7 +3,7 @@ from os import path
 import autolens as al
 import numpy as np
 import pytest
-from autolens import mock
+from autolens.mock import mock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "

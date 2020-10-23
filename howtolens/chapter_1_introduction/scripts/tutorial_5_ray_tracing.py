@@ -168,11 +168,11 @@ __PyAutoLens__ has tools for plotting a `Tracer`. A ray-tracing subplot plots th
 
 2) The source-plane image, showing the source-`Galaxy`'s true appearance (i.e. if it were not lensed).
 
-3) The image-plane convergence, computed using the lens total mass distribution.
+3) The image-plane convergence, computed using the lens `Galaxy`'s total mass distribution.
 
-4) The image-plane gravitational potential, computed using the lens total mass distribution.
+4) The image-plane gravitational potential, computed using the lens `Galaxy`'s total mass distribution.
 
-5) The image-plane deflection angles, computed using the lens total mass distribution.
+5) The image-plane deflection angles, computed using the lens `Galaxy`'s total mass distribution.
 """
 
 # %%

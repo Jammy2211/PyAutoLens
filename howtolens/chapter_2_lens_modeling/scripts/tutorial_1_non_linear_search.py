@@ -86,7 +86,7 @@ we simulate strong lens data, checkout the scripts in the folder `autolens_works
 
 The strong lens in this image was generated using:
 
- - The lens total mass distribution is a *SphericalIsothermal*.
+ - The lens `Galaxy`'s total mass distribution is a *SphericalIsothermal*.
  - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 
 This dataset (and all datasets used in tutorials from here are on) are stored and loaded from the 

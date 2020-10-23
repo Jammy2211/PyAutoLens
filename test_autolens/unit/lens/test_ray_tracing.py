@@ -5,7 +5,7 @@ import os
 import shutil
 from astropy import cosmology as cosmo
 from skimage import measure
-from test_autoarray import mock as mock_inv
+from autoarray.mock import mock as mock_inv
 
 
 test_path = "{}/files/tracer".format(os.path.dirname(os.path.realpath(__file__)))
