@@ -34,7 +34,7 @@ The redshifts of the lens (z=0.5) and source(z=1.0) are fixed.
 To perform the model-fit, we create a ``PhaseImaging`` object and 'run' the phase by passing it the ``Imaging`` dataset
 and *Mask2D*.
 
-We also pass it a *non-linear search*, which is the algorithm used to determine the set of ``LightProfile`` and
+We also pass it a `NonLinearSearch`, which is the algorithm used to determine the set of ``LightProfile`` and
 ``MassProfile`` parameters that best-fit our data, that is, that minimize the *residuals* and *chi-squared* values and
 maximize its *log likelihood*.
 
@@ -46,6 +46,15 @@ maximize its *log likelihood*.
     )
 
     result = phase.run(data=imaging, mask=mask)
+
+The `NonLinearSearch` fits the lens model by guessing many lens models over and over iteratively, using the models which
+give a good fit to the data to guide it where to guess subsequent model. An animation of a `NonLinearSearch` is shown
+below,  whereinitial lens models give a poor fit to the data but gradually improve (increasing the likelihood) as more
+iterations are performed.
+
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/master/docs/overview/images/modeling/lensmodel.gif
+  :width: 600
+  :alt: Alternative text
 
 The ``PhaseImaging`` object above returned a 'result', or ``Result`` object. This contains the maximum log likelihood
 ``Tracer`` and ``FitImaging``, which can easily be plotted.
@@ -91,7 +100,7 @@ any combination of ``LightProfile``'s and ``MassProfile``'s light profiles:
 
     lens_galaxy_model.mass.einstein_radius > 1.0
 
-The above fit used the *non-linear search* ``dynesty``, but **PyAutoLens** supports many other methods and their
+The above fit used the `NonLinearSearch` ``dynesty``, but **PyAutoLens** supports many other methods and their
 setting can be easily customized:
 
 .. code-block:: bash
@@ -117,7 +126,7 @@ fitting techniques to be straightforwardly integrated into scientific modeling s
 are interested in developing your own software to perform advanced model-fitting!
 
 Chapters 2 and 3 **HowToLens** lecture series give a comprehensive description of lens modeling, including a
-description of what a *non-linear search* is and strategies to fit complex lens model to ``data`` in efficient and
+description of what a `NonLinearSearch` is and strategies to fit complex lens model to ``data`` in efficient and
 robust way.
 
 

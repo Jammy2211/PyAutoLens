@@ -232,7 +232,7 @@ The sections of this example config set the following:
 
 json config
     type -> Prior
-        The default prior given to this parameter which is used by the *non-linear search*. In the example above, a
+        The default prior given to this parameter which is used by the `NonLinearSearch`. In the example above, a
         UniformPrior is used with lower_limit of 0.0 and upper_limit of 30.0. A GaussianPrior could be used by
         putting "Gaussian" in the "type" box, with "mean" and "sigma" used to set the default values. Any prior can be
         set in an analogous fashion (see the example configs).
