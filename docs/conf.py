@@ -19,11 +19,12 @@ workspace_path = str(here())
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("."))
 os.system("git clone https://github.com/Jammy2211/autolens_workspace --depth 1")
-os.system("cp -r autolens_workspace/config .")
+os.system(f"cp -r autolens_workspace/dataset {workspace_path}")
+os.system(f"cp -r autolens_workspace/config {workspace_path}")
 os.system("rm -rf autolens_workspace")
-os.environ["WORKSPACE"] = f"{str(workspace_path)}"
+
+sys.path.insert(0, os.path.abspath("."))
 
 # -- Project information -----------------------------------------------------
 
