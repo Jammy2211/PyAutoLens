@@ -57,6 +57,7 @@ class PhaseDataset(dataset.PhaseDataset):
         """
 
         if results.last is not None:
+
             if not hasattr(results.last, "positions"):
                 return positions
             try:
@@ -97,6 +98,23 @@ class PhaseDataset(dataset.PhaseDataset):
         self.auto_positions_factor to set the threshold.
 
         The threshold is rounded up to the auto positions minimum threshold if that setting is included."""
+
+        if results.last is not None:
+
+            try:
+                if len(results.last.max_log_likelihood_tracer.planes) <= 1:
+                    if self.settings.settings_lens.positions_threshold is not None:
+                        return self.settings.settings_lens.positions_threshold
+                    if (
+                        self.settings.settings_lens.auto_positions_minimum_threshold
+                        is not None
+                    ):
+                        return (
+                            self.settings.settings_lens.auto_positions_minimum_threshold
+                        )
+                    return None
+            except AttributeError:
+                pass
 
         if (
             self.settings.settings_lens.auto_positions_factor
