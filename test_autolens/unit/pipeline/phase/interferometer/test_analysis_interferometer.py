@@ -1,7 +1,8 @@
 from os import path
 
 import autolens as al
-from autolens import exc, mock
+from autolens import exc
+from autolens.mock import mock
 import pytest
 from astropy import cosmology as cosmo
 from autolens.fit.fit import FitInterferometer

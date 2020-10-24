@@ -4,7 +4,7 @@ from os import path
 import autofit as af
 import autolens as al
 import pytest
-from autolens import mock
+from autolens.mock import mock
 
 directory = path.dirname(path.realpath(__file__))
 

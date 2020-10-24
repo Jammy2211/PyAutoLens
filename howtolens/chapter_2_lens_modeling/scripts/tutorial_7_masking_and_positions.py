@@ -24,7 +24,7 @@ import autofit as af
 """
 we'll use the same strong lensing data as tutorials 1 & 2, where:
 
- - The lens total mass distribution is a *SphericalIsothermal*.
+ - The lens `Galaxy`'s total mass distribution is a *SphericalIsothermal*.
  - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 """
 

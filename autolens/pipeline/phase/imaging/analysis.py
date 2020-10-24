@@ -180,6 +180,10 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             visualizer.visualize_ray_tracing(
                 tracer=fit.tracer, during_analysis=during_analysis
             )
+        except Exception:
+            pass
+
+        try:
             visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)
         except Exception:
             pass

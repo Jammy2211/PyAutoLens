@@ -105,7 +105,7 @@ import autofit as af
 """
 we'll use the same strong lensing data as the previous tutorial, where:
 
- - The lens total mass distribution is a *SphericalIsothermal*.
+ - The lens `Galaxy`'s total mass distribution is a *SphericalIsothermal*.
  - The source `Galaxy`'s `LightProfile` is a *SphericalExponential*.
 """
 
@@ -147,7 +147,7 @@ source = al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential)
 To change priors, we use the `prior` module of PyAutoFit (imported as af). These priors link our `GalaxyModel` to the 
 non-linear search. Thus, it tells **PyAutoLens** where to search non-linear parameter space.
 
-These two lines change the centre of the lens total mass distribution to UniformPriors around the coordinates 
+These two lines change the centre of the lens `Galaxy`'s total mass distribution to UniformPriors around the coordinates 
 (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the centre of emission of the lens 
 _Galaxy_`s light.
 
