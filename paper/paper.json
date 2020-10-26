@@ -1,0 +1,23 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "http://orcid.org/0000-0002-8987-7401",
+      "@type": "Person",
+      "email": "james.w.nightingale@durham.ac.uk",
+      "name": "James W. Nightingale",
+      "affiliation": "Institute for Computational Cosmology, Durham University"
+    }
+  ],
+  "identifier": "",
+  "codeRepository": "https://github.com/Jammy2211/PyAutoLens",
+  "datePublished": "2020-10-26",
+  "dateModified": "2020-10-26",
+  "dateCreated": "2020-10-26",
+  "description": "PyAutoFit`: A Classy Probabilistic Programming Language for Model Composition and Fitting",
+  "keywords": "Python, statistics, Bayesian inference, probabilistic programming, model fitting",
+  "license": "MIT",
+  "title": "PyAutoFit",
+  "version": "v0.64.2"
+}
