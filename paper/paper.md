@@ -1,11 +1,11 @@
 ---
 title: "`PyAutoLens`: Open-Source Strong Gravitational Lensing"
 tags:
-  - Python
   - astronomy
   - gravitational lensing
   - galaxies
   - cosmology
+  - Python
 authors:
   - name: James. W. Nightingale
     orcid: 0000-0002-8987-7401
@@ -17,6 +17,9 @@ authors:
     affiliation: 1
   - name: Amy Etherington
     affiliation: 1
+  - name: Qiuhan He
+    orcid: 0000-0003-3672-9365
+    affiliation: 1       
   - name: Nan Li
     orcid: 0000-0001-6800-7389
     affiliation: 2
@@ -29,15 +32,14 @@ authors:
     orcid: 0000-0002-5954-7903
     affiliation: 1
   - name: Andrea Enia
-    affiliation: 1
+    orcid: 0000-0002-0200-2857
+    affiliation: 4
   - name: Carlos S. Frenk
     orcid: 0000-0002-2338-716X
     affiliation: 1
   - name: David R. Harvey
     orcid: 0000-0002-6066-6707
-    affiliation: 3
-  - name: Qiuhan He
-    affiliation: 1
+    affiliation: 5 
   - name: Ran Li
     orcid: 0000-0003-3899-0612
     affiliation: 3
@@ -46,7 +48,7 @@ authors:
     affiliation: 1
   - name: Mattia Negrello
     orcid: 0000-0002-7925-7663
-    affiliation: 1
+    affiliation: 6
   - name: Andrew Robertson
     orcid: 0000-0002-0086-0524
     affiliation: 1
@@ -57,9 +59,14 @@ affiliations:
     index: 2
   - name: National Astronomical Observatories, Chinese Academy of Sciences, 20A Datun Road, Chaoyang District, Beijing 100012, China
     index: 3
-  - name: Lorentz Institute, Leiden University, Niels Bohrweg 2, Leiden, NL-2333 CA, The Netherlands
+  - name: Dipartimento di Fisica e Astronomia, Università degli Studi di Bologna, Via Berti Pichat 6/2, I-40127 Bologna, Italy
     index: 4
-date: 17 July 2020
+  - name: Lorentz Institute, Leiden University, Niels Bohrweg 2, Leiden, NL-2333 CA, The Netherlands
+    index: 5
+  - name: School of Physics and Astronomy, Cardiff University, The Parade, Cardiff CF24 3AA, UK
+    index: 6
+
+date: 26 October 2020
 codeRepository: https://github.com/Jammy2211/PyAutoLens
 license: MIT
 bibliography: paper.bib
@@ -127,8 +134,8 @@ data via a `NonLinearSearch` (e.g. `Dynesty` [@Dynesty], `Emcee` [@emcee], `PySw
 lens model with a `Pixelization` and `Regularizaion` object, the background source's light is modeled using a 
 rectangular grid or Voronoi mesh that accounts for irregular galaxy morphologies which a `LightProile` cannot 
 accurately capture. Lensed quasar and supernovae datasets can be fitted using a `PointSource`, which uses positions 
-and / or flux-ratios to fit the lens model. `PyAutoLens` also includes functionality dedicated to the analysis of 
-strong lensing clusters.
+and / or flux-ratios to fit the lens model. Strong lensing clusters containing many lens galaxies can also be 
+analysed with `PyAutoLens` using these objects.
 
 Automated lens modeling uses `PyAutoFit`'s transdimensional model-fitting pipelines, which break the model-fit into 
 a chained sequence of non-linear searches which pass information gained about simpler lens models fitted in earlier 
@@ -146,9 +153,9 @@ performed directly on the observed visibilities in the uv-plane, circumventing i
 sampling of the uv-plane that give rise to artefacts that can bias the inferred mass model and source reconstruction 
 in real-space. To make feasible the analysis of `millions` of visibilities, `PyAutoLens` uses `PyNUFFT` [@PyNUFFT] to 
 fit the visibilities via a non-uniform fast Fourier transform and `PyLops` [@PyLops] to express the memory-intensive 
-linear algebra calculations as efficient linear operators. Creating realistic simulations of imaging and interferometer 
-strong lensing datasets is possible, as performed by [@Alexander2019] [@Hermans2019] who used `PyAutoLens` to train 
-neural networks to detect strong lenses.
+linear algebra calculations as efficient linear operators [@Powell2020]. Creating realistic simulations of imaging 
+and interferometer strong lensing datasets is possible, as performed by [@Alexander2019] [@Hermans2019] who 
+used `PyAutoLens` to train neural networks to detect strong lenses.
  
 # Workspace and HowToLens Tutorials
 
@@ -181,11 +188,20 @@ viewed on our [readthedocs](https://pyautolens.readthedocs.io/en/latest/howtolen
 - `scikit-learn` [@scikit-learn]
 - `Scipy` [@Scipy2020]
 
+# Related Software
+
+- `gravlens` http://www.physics.rutgers.edu/~keeton/gravlens/manual.pdf
+- `lenstronomy` https://github.com/sibirrer/lenstronomy [@Birrer2018a]
+- `visilens` https://github.com/jspilker/visilens [@spilker16a]
+
 # Acknowledgements
 
 JWN and RJM are supported by the UK Space Agency, through grant ST/V001582/1, and by InnovateUK through grant TS/V002856/1. RGH is supported by STFC Opportunities grant ST/T002565/1.
+QH, CSF and SMC are supported by ERC Advanced In-vestigator grant, DMIDAS [GA 786910] and also by the STFCConsolidated Grant for Astronomy at Durham [grant numbersST/F001166/1, ST/I00162X/1,ST/P000541/1].
 RJM is supported by a Royal Society University Research Fellowship.
 DH acknowledges support by the ITP Delta foundation.
+AR is supported bythe ERC Horizon2020 project ‘EWC’ (award AMD-776247-6).
+MN has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement no. 707601.
 This work used the DiRAC@Durham facility managed by the Institute for Computational Cosmology on behalf of the STFC DiRAC HPC Facility (www.dirac.ac.uk). The equipment was funded by BEIS capital funding via STFC capital grants ST/K00042X/1, ST/P002293/1, ST/R002371/1 and ST/S002502/1, Durham University and STFC operations grant ST/R000832/1. DiRAC is part of the National e-Infrastructure.
 
 # References

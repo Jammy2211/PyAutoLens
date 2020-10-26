@@ -7,5 +7,5 @@ The Source, Lens and Mass **(SLaM)** analysis pipelines allow one to fit large l
 light and mass profiles in a manageable and structured way.
 
 The readthedocs overview for **SLaM** is not written yet. However, checkout
-`Chapter 5 of the HowToLens lectures <https://github.com/Jammy2211/autolens_workspace/blob/master/advanced/slam/runners/with_lens_light/lens_bulge_disk_mlr_nfw__source_inversion.pyl>`_
+`this link <https://github.com/Jammy2211/autolens_workspace/blob/master/advanced/slam/runners/with_lens_light/lens_bulge_disk_mlr_nfw__source_inversion.pyl>`_
 for a description of a **SLaM** analysis.

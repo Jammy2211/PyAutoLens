@@ -81,7 +81,7 @@ For this pipeline the pipeline setup customizes and tags:
 
  - If there is an `ExternalShear` in the mass model or not.
  - The `Pixelization` used by the `Inversion` of this pipeline.
- - The `Regularization` scheme used by of this pipeline.
+ - The `Regularization` scheme used by the `Inversion` of this pipeline.
 """
 
 # %%
