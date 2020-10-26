@@ -23,7 +23,7 @@ dataset_type = "chapter_4"
 dataset_name = "mass_sie_x2__source_sersic"
 
 """
-Returns the path where the dataset will be output, which in this case is:
+The path where the dataset will be output, which in this case is:
 `/autolens_workspace/howtolens/dataset/chapter_2/mass_sis__source_exp/`
 """
 dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
@@ -61,7 +61,7 @@ simulator = al.SimulatorImaging(
 Setup the two lens galaxies with `EllipticalIsothermal` `MassProfile`'s and source galaxy light (`EllipticalSersic`) 
 for this simulated lens.
 
-For lens modeling, defining ellipticity in terms of the  `elliptical_comps` improves the model-fitting procedure.
+For lens modeling, defining ellipticity in terms of the `elliptical_comps` improves the model-fitting procedure.
 
 However, for simulating a strong lens you may find it more intuitive to define the elliptical geometry using the 
 axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle phi, where phi is
