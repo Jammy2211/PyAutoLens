@@ -26,3 +26,4 @@ The chapter contains the following tutorials:
    tutorial_1_pipeline_runner
    tutorial_2_pipeline_runner
    tutorial_3_pipeline_runner
+   tutorial_4_setup_and_slam
