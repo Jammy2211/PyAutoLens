@@ -98,9 +98,7 @@ imaged source galaxy whose light has been distorted into an `Einstein ring'. The
 reconstructions of the source's lensed and unlensed light distributions, which are created using a model of the lens 
 galaxy's mass to trace backwards how the source's light is gravitationally lensed.
 
-![Hubble Space Telescope imaging of the strong lens SLACSJ1430+1405 (left column), a fit to its lensed source galaxy 
-(middle column) and unlensed source reconstruction (right column) 
-using `PyAutoLens`.\label{figure:example}](imageaxis.png).
+![Hubble Space Telescope imaging of the strong lens SLACSJ1430+1405 (left column), a fit to its lensed source galaxy (middle column) and unlensed source reconstruction (right column) using `PyAutoLens`.\label{figure:example}](imageaxis.png)
 
 Strong lensing provides astronomers with an invaluable tool to study a diverse range of topics. Mass modeling of 
 strong lenses has quantified the distribution of stars [@Koopmans2009] [@Sonnenfeld2015] [@Treu2009] [@Nightingale2019] 
@@ -128,9 +126,9 @@ are optimized using the packages `NumPy` [@numpy], `numba` [@numba] and `pyqaud`
 Python-only code base runs efficiently.
 
 To perform lens modeling, `PyAutoLens` adopts the probabilistic programming 
-language `PyAutoFit` [@PyAutoFit] (https://github.com/rhayes777/PyAutoFit). `PyAutoFit` allows users to compose a 
+language `PyAutoFit` (https://github.com/rhayes777/PyAutoFit). `PyAutoFit` allows users to compose a 
 lens model from `LightProfile`, `MassProfile` and `Galaxy` objects, customize the model parameterization and fit it to 
-data via a `NonLinearSearch` (e.g. `Dynesty` [@Dynesty], `Emcee` [@emcee], `PySwarms` [@pyswarms]). By composing a 
+data via a `NonLinearSearch` (e.g. `dynesty` [@dynesty], `emcee` [@emcee], `PySwarms` [@pyswarms]). By composing a 
 lens model with a `Pixelization` and `Regularizaion` object, the background source's light is modeled using a 
 rectangular grid or Voronoi mesh that accounts for irregular galaxy morphologies which a `LightProile` cannot 
 accurately capture. Lensed quasar and supernovae datasets can be fitted using a `PointSource`, which uses positions 
@@ -168,25 +166,25 @@ viewed on our [readthedocs](https://pyautolens.readthedocs.io/en/latest/howtolen
 
 # Software Citations
 
-`PyAutoFit` is written in Python 3.6+ [@Python] and uses the following software packages:
+`PyAutoLens` is written in Python 3.6+ [@Python] and uses the following software packages:
 
 - `Astropy` [@astropy]
-- `Colossus` [@Diemer2018]
-- `corner.py` [@corner2016]
-- `Dynesty` [@Dynesty]
-- `Emcee` [@Emcee]
-- `Matplotlib` [@Matplotlib2007]
+- `Colossus` [@colossus]
+- `corner.py` [@corner]
+- `Dynesty` [@dynesty]
+- `Emcee` [@emcee]
+- `Matplotlib` [@matplotlib]
 - `numba` [@numba]
-- `NumPy` [@Numpy2011]
-- `PyAutoFit` [@PyAutoFit]
+- `NumPy` [@numpy]
+- `PyAutoFit` (https://github.com/rhayes777/PyAutoFit)
 - `PyLops` [@PyLops]
-- `PyMulitNest` [@Feroz2009] [@Buchner2014]
-- `PyNUFFT` [@PyNUFFT]
+- `PyMulitNest` [@pymultinest] [@multinest]
+- `PyNUFFT` [@pynufft]
 - `pyquad` [@pyquad]
 - `PySwarms` [@pyswarms]
 - `scikit-image` [@scikit-image]
 - `scikit-learn` [@scikit-learn]
-- `Scipy` [@Scipy2020]
+- `Scipy` [@scipy]
 
 # Related Software
 

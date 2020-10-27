@@ -15,6 +15,9 @@ The chapter contains the following tutorials:
 `Tutorial 3: Pipeline Complex Source <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_3_pipelines/tutorial_3_pipeline_runner.html>`_
 - Using multiple light profiles to fit a complex and irregular source.
 
+`Tutorial 4: Setup and SLaM <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_3_pipelines/tutorial_4_setup_and_slam.html>`_
+- Template objects and pipelines for fitting lens model is standardized ways.
+
 .. toctree::
    :caption: Tutorials:
    :maxdepth: 1
@@ -23,3 +26,4 @@ The chapter contains the following tutorials:
    tutorial_1_pipeline_runner
    tutorial_2_pipeline_runner
    tutorial_3_pipeline_runner
+   tutorial_4_setup_and_slam
