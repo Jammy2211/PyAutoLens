@@ -149,7 +149,7 @@ interferometer datasets, tools for preprocessing data to formats suited to lens 
 effects like the telescope optics and background sky subtraction in the model-fit. Interferometric analysis is 
 performed directly on the observed visibilities in the uv-plane, circumventing issues associated with the incomplete 
 sampling of the uv-plane that give rise to artefacts that can bias the inferred mass model and source reconstruction 
-in real-space. To make feasible the analysis of `millions` of visibilities, `PyAutoLens` uses `PyNUFFT` [@PyNUFFT] to 
+in real-space. To make feasible the analysis of `millions` of visibilities, `PyAutoLens` uses `PyNUFFT` [@pynufft] to 
 fit the visibilities via a non-uniform fast Fourier transform and `PyLops` [@PyLops] to express the memory-intensive 
 linear algebra calculations as efficient linear operators [@Powell2020]. Creating realistic simulations of imaging 
 and interferometer strong lensing datasets is possible, as performed by [@Alexander2019] [@Hermans2019] who 
@@ -166,10 +166,10 @@ viewed on our [readthedocs](https://pyautolens.readthedocs.io/en/latest/howtolen
 
 # Software Citations
 
-`PyAutoLens` is written in Python 3.6+ [@Python] and uses the following software packages:
+`PyAutoLens` is written in Python 3.6+ [@python] and uses the following software packages:
 
-- `Astropy` [@astropy]
-- `Colossus` [@colossus]
+- `Astropy` [@astropy1] [@astropy2]
+- `COLOSSUS` [@colossus]
 - `corner.py` [@corner]
 - `dynesty` [@dynesty]
 - `emcee` [@emcee]
