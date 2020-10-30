@@ -283,7 +283,11 @@ def grid_search_result_as_array(aggregator, use_log_evidences=True):
 
     grid_search_results = list(filter(None, list(grid_search_result_gen)))
 
-    if len(grid_search_results) != 1:
+    if len(grid_search_results) == 0:
+        raise exc.AggregatorException(
+            "There is no grid search resultin the aggregator."
+        )
+    elif len(grid_search_results) > 1:
         raise exc.AggregatorException(
             "There is more than one grid search result in the aggregator - please filter the"
             "aggregator."

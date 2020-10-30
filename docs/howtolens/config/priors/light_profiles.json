@@ -468,7 +468,7 @@
         "radius_break": {
             "type": "Uniform",
             "lower_limit": 0.0,
-            "upper_limit": 1.0,
+            "upper_limit": 10.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 0.1
@@ -481,7 +481,7 @@
         "intensity_break": {
             "type": "LogUniform",
             "lower_limit": 1e-05,
-            "upper_limit": 10.0,
+            "upper_limit": 1000.0,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.2
@@ -506,15 +506,15 @@
         },
         "alpha": {
             "type": "Uniform",
-            "lower_limit": 2.5,
-            "upper_limit": 3.5,
+            "lower_limit": 4.5,
+            "upper_limit": 5.5,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 3.0
             },
             "gaussian_limits": {
-                "lower": 2.0,
-                "upper": 4.0
+                "lower": 4.5,
+                "upper": 5.5
             }
         }
     },
@@ -609,7 +609,7 @@
         "radius_break": {
             "type": "Uniform",
             "lower_limit": 0.0,
-            "upper_limit": 1.0,
+            "upper_limit": 10.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 0.1
@@ -622,7 +622,7 @@
         "intensity_break": {
             "type": "LogUniform",
             "lower_limit": 1e-05,
-            "upper_limit": 10.0,
+            "upper_limit": 1000.0,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.2
@@ -647,15 +647,15 @@
         },
         "alpha": {
             "type": "Uniform",
-            "lower_limit": 2.5,
-            "upper_limit": 3.5,
+            "lower_limit": 4.5,
+            "upper_limit": 5.5,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 3.0
             },
             "gaussian_limits": {
-                "lower": 2.0,
-                "upper": 4.0
+                "lower": 4.5,
+                "upper": 5.5
             }
         }
     },
@@ -824,7 +824,7 @@
         "core_radius_0": {
             "type": "Uniform",
             "lower_limit": 0.0,
-            "upper_limit": 10.0,
+            "upper_limit": 30.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 0.3
@@ -837,7 +837,7 @@
         "core_radius_1": {
             "type": "Uniform",
             "lower_limit": 0.0,
-            "upper_limit": 10.0,
+            "upper_limit": 30.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 0.3
@@ -913,7 +913,7 @@
         "core_radius_0": {
             "type": "Uniform",
             "lower_limit": 0.0,
-            "upper_limit": 10.0,
+            "upper_limit": 30.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 0.3
@@ -926,7 +926,7 @@
         "core_radius_1": {
             "type": "Uniform",
             "lower_limit": 0.0,
-            "upper_limit": 10.0,
+            "upper_limit": 30.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 0.3
