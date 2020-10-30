@@ -41,7 +41,7 @@ Phase 3:
 """
 
 
-def make_pipeline(setup, settings):
+def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0):
 
     pipeline_name = "pipeline__light_and_source"
 
@@ -49,13 +49,7 @@ def make_pipeline(setup, settings):
     A pipelines takes the `path_prefix` as input, which together with the `pipeline_name` specifies the path structure 
     of the output. In the pipeline runner we pass the `path_prefix` f"howtolens/c3_t1_lens_and_source", making the
     output of this pipeline `autolens_workspace/output/howtolens/c3_t1_lens_and_source/pipeline__light_and_source`.
-
-    The output path is also tagged according to the `SetupPipeline`, in an analagous fashion to how the 
-    `SettingsPhaseImaging` tagged the output paths of phases. In this example, we do not use an `ExternalShear`
-    in the mass model, and the pipeline is tagged accordingly.
     """
-
-    path_prefix = f"{setup.path_prefix}/{pipeline_name}/{setup.tag}"
 
     """
     Phase 1: Fit only the lens `Galaxy`'s light, where we:
@@ -70,7 +64,9 @@ def make_pipeline(setup, settings):
         search=af.DynestyStatic(
             name="phase[1]_light[bulge]", n_live_points=30, evidence_tolerance=5.0
         ),
-        galaxies=dict(lens=al.GalaxyModel(redshift=0.5, bulge=al.lp.EllipticalSersic)),
+        galaxies=dict(
+            lens=al.GalaxyModel(redshift=redshift_lens, bulge=al.lp.EllipticalSersic)
+        ),
         settings=settings,
     )
 
@@ -105,11 +101,13 @@ def make_pipeline(setup, settings):
         ),
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5,
+                redshift=redshift_lens,
                 bulge=phase1.result.instance.galaxies.lens.bulge,
                 mass=mass,
             ),
-            source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalSersic),
+            source=al.GalaxyModel(
+                redshift=redshift_source, bulge=al.lp.EllipticalSersic
+            ),
         ),
         settings=settings,
     )
@@ -129,12 +127,13 @@ def make_pipeline(setup, settings):
         ),
         galaxies=dict(
             lens=al.GalaxyModel(
-                redshift=0.5,
+                redshift=redshift_lens,
                 bulge=phase1.result.model.galaxies.lens.bulge,
                 mass=phase2.result.model.galaxies.lens.mass,
             ),
             source=al.GalaxyModel(
-                redshift=1.0, bulge=phase2.result.model.galaxies.source.bulge
+                redshift=redshift_source,
+                bulge=phase2.result.model.galaxies.source.bulge,
             ),
         ),
         settings=settings,

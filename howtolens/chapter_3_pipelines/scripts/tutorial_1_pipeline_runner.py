@@ -1,7 +1,3 @@
-"""
-
-"""
-
 # %%
 """
 Tutorial 1: Lens and Source
@@ -16,9 +12,9 @@ In chapter 2, we fitted strong lens `Imaging` which included the lens `Galaxy`'s
 again (I promise, this is the last time!). However, now we`re using pipelines, we can perform a different (and
 significantly faster) model-fit.
 
-The crucial point to note is that for many lenses the lens `Galaxy`'s light can be fitted and subtracted reasonable well
-before we attempt to fit the source galaxy. This makes sense, as fitting the lens`s light (which is an elliptical blob
-of light in the centre of the imaging) looks nothing like the source`s light (which is a ring of light)! Formally,
+The crucial point to note is that for many lenses the lens `Galaxy`'s light can be fitted and subtracted reasonably 
+well before we attempt to fit the source galaxy. This makes sense, as fitting the lens`s light (which is an elliptical 
+blob of light in the centre of the imaging) looks nothing like the source`s light (which is a ring of light)! Formally,
 we would say that these two model components (the lens`s light and source`s light) are not covariant.
 
 So, as a newly trained lens modeler, what does the lack of covariance between these parameters make you think?
@@ -56,9 +52,8 @@ we'll use strong lensing data, where:
 """
 
 # %%
-dataset_type = "chapter_3"
 dataset_name = "light_sersic__mass_sie__source_exp"
-dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/chapter_3/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -99,67 +94,6 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 
 # %%
 """
-__Pipeline_Setup__:
-
-Pipelines use `Setup` objects to customize how different aspects of the model are fitted. 
-
-First, we create a `SetupLightParametric` which customizes:
-
- - If the centre of the lens light profile is manually input and fixed for modeling.
-
-In this example we do not fix the centre of the `EllipticalSersic` light model to a specific value.
-"""
-
-# %%
-setup_light = al.SetupLightParametric(light_centre=None)
-
-# %%
-"""
-This pipeline also uses a `SetupMass`, which customizes:
-
- - If there is an `ExternalShear` in the mass model or not.
-"""
-
-# %%
-setup_mass = al.SetupMassTotal(with_shear=True)
-
-# %%
-"""
-Next, we create a `SetupSourceParametric` which does not customize the pipeline behaviour except for tagging (see below).
-"""
-
-# %%
-setup_source = al.SetupSourceParametric()
-
-"""
-_Pipeline Tagging_
-
-The `Setup` objects are input into a `SetupPipeline` object, which is passed into the pipeline and used to customize
-the analysis depending on the setup. This includes tagging the output path of a pipeline. For example, if `with_shear` 
-is True, the pipeline`s output paths are `tagged` with the string `with_shear`.
-
-This means you can run the same pipeline on the same data twice (e.g. with and without shear) and the results will go
-to different output folders and thus not clash with one another!
-
-The `path_prefix` belows specify the path the pipeline results are written 
-
- `autolens_workspace/howtolens/output/c3_t1_lens_and_source/pipeline__light_and_source`
-
-The redshift of the lens and source galaxies are also input (see `examples/model/customize/redshift.py`) for a 
-description of what inputting redshifts into **PyAutoLens** does.
-"""
-
-# %%
-setup = al.SetupPipeline(
-    path_prefix="howtolens/c3_t1_lens_and_source",
-    redshift_lens=0.5,
-    redshift_source=1.0,
-    setup_mass=setup_mass,
-    setup_source=setup_source,
-)
-
-# %%
-"""
 __Pipeline Creation__
 
 To create a `Pipeline`, we call a `make_pipeline` function, which is written in its own Python script: 
@@ -176,7 +110,10 @@ from autolens_workspace.howtolens.chapter_3_pipelines import (
 )
 
 pipeline_lens_and_source = tutorial_1_pipeline_lens_and_source.make_pipeline(
-    setup=setup, settings=settings
+    path_prefix="howtolens/c3_t1_lens_and_source",
+    settings=settings,
+    redshift_lens=0.5,
+    redshift_source=1.0,
 )
 
 # Uncomment to run.

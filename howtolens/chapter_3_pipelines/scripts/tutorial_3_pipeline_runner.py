@@ -36,9 +36,8 @@ we'll use new strong lensing data, where:
 """
 
 # %%
-dataset_type = "chapter_3"
 dataset_name = "mass_sie__source_sersic_x4"
-dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/chapter_3/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -86,34 +85,6 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 
 # %%
 """
-__Pipeline_Setup_And_Tagging__:
-
-For this pipeline the pipeline setup customizes:
-
- - If there is an `ExternalShear` in the mass model or not.
- 
-The `path_prefix` belows specify the path the pipeline results are written 
-
- `autolens_workspace/howtolens/output/c3_t3_complex_source/pipeline__light_and_source`
-
-The redshift of the lens and source galaxies are also input (see `examples/model/customize/redshift.py`) for a 
-description of what inputting redshifts into **PyAutoLens** does.
-"""
-
-# %%
-setup_mass = al.SetupMassTotal(with_shear=True)
-setup_source = al.SetupSourceParametric()
-
-setup = al.SetupPipeline(
-    path_prefix="howtolens/c3_t3_complex_source",
-    redshift_lens=0.5,
-    redshift_source=1.0,
-    setup_mass=setup_mass,
-    setup_source=setup_source,
-)
-
-# %%
-"""
 __Pipeline Creation__
 
 To create a `Pipeline`, we call a `make_pipeline` function, which is written in its own Python script: 
@@ -134,7 +105,10 @@ from autolens_workspace.howtolens.chapter_3_pipelines import (
 )
 
 pipeline_complex_source = tutorial_3_pipeline_complex_source.make_pipeline(
-    setup=setup, settings=settings
+    path_prefix="howtolens/c3_t3_complex_source",
+    settings=settings,
+    redshift_lens=0.5,
+    redshift_source=1.0,
 )
 
 # Uncomment to run.

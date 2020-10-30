@@ -33,9 +33,8 @@ we'll use strong lensing data, where:
 """
 
 # %%
-dataset_type = "chapter_4"
 dataset_name = "mass_sie__source_sersic_x4"
-dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/chapter_4/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -77,15 +76,29 @@ settings = al.SettingsPhaseImaging(
 """
 __Pipeline_Setup_And_Tagging__:
 
+We will use the standardized `Setup` objects in this pipeline, which as discussed in chapter 3 provide us with 
+covenient and standardized tools to compose a lens model and tags the output paths. 
+
+We saw the `SetupMassTotal` object in the previous chapter, which:
+
 For this pipeline the pipeline setup customizes and tags:
 
+ - The `MassProfile` fitted by the pipeline.
  - If there is an `ExternalShear` in the mass model or not.
+"""
+
+# %%
+setup_mass = al.SetupMassTotal(with_shear=True)
+
+# %%
+"""
+We also use the `SetupSourceInversion` object to customize the `Inversion` used for the source, specifically:
+
  - The `Pixelization` used by the `Inversion` of this pipeline.
  - The `Regularization` scheme used by the `Inversion` of this pipeline.
 """
 
 # %%
-setup_mass = al.SetupMassTotal(with_shear=True)
 setup_source = al.SetupSourceInversion(
     pixelization_prior_model=al.pix.VoronoiMagnification,
     regularization_prior_model=al.reg.Constant,

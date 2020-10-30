@@ -31,9 +31,8 @@ we'll use new strong lensing data, where:
 """
 
 # %%
-dataset_type = "chapter_2"
 dataset_name = "light_sersic__mass_sie__source_sersic"
-dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/chapter_2/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -75,32 +74,62 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 """
 __Nested Sampling__
 
-Lets first perform the model-fit using Dynesty, but first discuss in a bit more detail how Dynesty works.
-
-Dynesty is a `nested sampling` algorithm. As we described in tutorial 1, it throws down a set of `live points` in 
-parameter space, where each live point corresponds to a lens model with a given set of parameters. These points are
-intially distributed according to our priors, hence why tuning our priors allows us to sample parameter space faster.
-
-The following settings control how fast a nested sampling algorithm samples non-linear parameter space:
+Lets first perform the model-fit using Dynesty, but look at different parameters that control how long it takes to run. 
+We'll therefore discuss in a bit more detail how Dynesty works, but still keep this description conceptually simple  
+and avoid technical terms and jargon. For a complete description of Dynesty you should check out the Dynesty 
+publication `https://arxiv.org/abs/1904.02180`.
 
 n_live_points:
 
- The number of live points which sample parameter space. More points provide a more thorough sampling of parameter 
- space, increasing the probability that we locate the global maxima solution at the expense if taking longer to 
- convergence on this solution. Ideally, we would use as few live pooints as possible to locate the global maxima
- as quickly as possible.
+Dynesty is a `nested sampling` algorithm. As we described in tutorial 1, it throws down a set of `live points` in 
+parameter space, where each live point corresponds to a lens model with a given set of parameters. These points are
+initially distributed according to our priors, hence why tuning our priors allows us to sample parameter space faster.
+ 
+The number of live points is set by the parameter `n_live_points`. More points provide a more thorough sampling of 
+parameter space, increasing the probability that we locate the global maxima solution. Therefore, if you think your 
+model-fit has gone to a local maxima, you should try increasing `n_live_points`. The downside of this is Dynesty will 
+take longer to sample parameter space and converge on a solution. Ideally, we will use as few live points as possible 
+to locate the global maxima as quickly as possible.
 
-evidence_tolerance : float
+evidence_tolerance:
 
- Dynesty stops sampling when it estimates that it has converged on the global maxima solution in parameter space and
- that continuing sampling will not increase the log likelihoods of the current live points more than this evidence
- tolerance value. For example, an evidence tolerance of 1.0 roughly require that all live points have log likelihood
- values within 1.0 of one another. Thus, the higher the evidence_tolerance the sooner Dynesty will stop running. 
+A nested sampling algorithm estimates the *Bayesian Evidence* of the model-fit, which is quantity the non-linear 
+search algorithms we introduce later do not. The Bayesian evidence quantifies how well the lens model as a whole fits
+the data, following a principle called Occam's Razor (`https://simple.wikipedia.org/wiki/Occam%27s_razor`). This 
+penalizes models for being more complex (e.g. more parameters) and requires that their additional complexity improve 
+their overall fit to the data compared to a simpler model. By computing the comparing the Bayesian evidence of 
+different models one can objectively choose the lens model that best fits the data.
+
+A nested sampling algorithm stops sampling when it estimates that continuing sampling will not increase the Bayesian 
+evidence (called the `log_evidence`) by more than the `evidence_tolerance`. As Dynesty progresses and converges on the
+solution, the rate of increase of the estimated Bayesian evidence slows down. Therefore, higher `evidence_tolerance`s 
+mean Dynesty terminate sooner.
     
- A high tolerance will make the errors estimated on every parameter unreliable, and the tolerance must be kept below
- 0.8 if you want reliable error estimates. However, when linking phases, we typically *do not care* about the errors 
- in the first phase, therefore setting a high evidence tolerance can be an effective means to make Dynesty converge
- faster. 
+A high `evidence_tolerance` will make the errors estimated on every parameter unreliable and its value must be kept 
+below 0.8 for reliable error estimates. However, when linking phases, we typically *do not care* about the errors 
+in the first phase, therefore setting a high evidence tolerance can be an effective means to make Dynesty converge
+faster (we'll estimate reliable errors in the second phase when the `evidence_tolerance is 0.8 or less). 
+
+walks:
+
+By default **PyAutoLens** use's Dynesty's Random Walk nested sampling (other approaches are available in Dynesty 
+however our testing has revealed that the random walk sampling is best for lens modeling). In brief, in order for 
+Dynesty to update the location of a live's point in parameter space, it performs a random walk from the live point's 
+current location for the number of steps defined by the `walks` parameter, with the highest likelihood model chosen. 
+The random walk chooses steps based on the likelihood values it evaluates, so as to try and walk towards higher 
+likelihood solutions.
+
+Therefore a `walks` of 5 will walk 5 steps, 10 will take 10 steps and so on. The choice of `walks` needs to strike a 
+balance. If `walks` is too low, the random walk from each live point will not sufficiently explore parameter space 
+around it and therefore fail to locate a new point with a sizeable increase in likelihood. This will slow down 
+convergence around the highest likleihod solutions, but may even mean the global maxima solution is not located at all.
+If `walks` is too large the walk takes longer than necessary, slowing down the code.
+
+Through testing, we have found that `walks` = 5 - 10 is optimal for lens modeling with **PyAutoLens**. Higher values
+of walks take longer to run, but are better at avoiding Dynesty inferred a local maxima as they more thoroughly
+sample parameter space. The parameter `facc` controls the size of the steps the random walk takes. We have found 
+**PyAutoLens** performs best for `facc` = 0.2-0.3, but feel free to experiment with these values.
+
 
 Lets perform two fits, where:
 
