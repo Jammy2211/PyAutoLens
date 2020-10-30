@@ -122,4 +122,5 @@ html_static_path = ["_static"]
 
 
 from sphinx.builders.html import StandaloneHTMLBuilder
-StandaloneHTMLBuilder.supported_image_types = ['image/gif', 'image/png', 'image/jpeg']
+
+StandaloneHTMLBuilder.supported_image_types = ["image/gif", "image/png", "image/jpeg"]

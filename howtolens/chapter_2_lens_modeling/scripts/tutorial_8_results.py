@@ -27,9 +27,8 @@ your hard-disk this should simply reload them into this Pythons script.
 """
 
 # %%
-dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp"
-dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/chapter_2/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",

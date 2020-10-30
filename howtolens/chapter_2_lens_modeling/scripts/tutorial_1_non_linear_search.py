@@ -35,6 +35,11 @@ This is called a `non-linear search` and its a fairly common problem faced by sc
 we`re going to really get our heads around the concept of a `NonLinearSearch` - intuition which will prove crucial to
 being a successful lens modeler.
 
+An animation of a `NonLinearSearch` fitting a lens model can be found on the following page on our readthedocs. Note
+how the initial models that it fits give a poor fit to the data, but gradually improve as more iterations are performed.
+
+ `https://pyautolens.readthedocs.io/en/latest/overview/modeling.html`
+
 We`re going to use a `NonLinearSearch` called `Dynesty`. I highly recommend it, and find its great for
 lens modeling. However, for now, lets not worry about the details of how Dynesty actually works. Instead, just
 picture that a `NonLinearSearch` in **PyAutoLens** operates as follows:
@@ -94,9 +99,8 @@ This dataset (and all datasets used in tutorials from here are on) are stored an
 """
 
 # %%
-dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp"
-dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/chapter_2/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",

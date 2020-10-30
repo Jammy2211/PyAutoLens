@@ -54,13 +54,11 @@ Phase 4:
 """
 
 
-def make_pipeline(setup, settings):
+def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0):
 
     """SETUP PIPELINE & PHASE NAMES, TAGS AND PATHS"""
 
     pipeline_name = "pipeline__x2_galaxies"
-
-    path_prefix = f"{setup.path_prefix}/{pipeline_name}/{setup.tag}"
 
     """
     Phase 1: Fit the left lens `Galaxy`'s light, where we:
@@ -68,7 +66,7 @@ def make_pipeline(setup, settings):
         1) Fix the centres to (0.0, -1.0), the pixel we know the left `Galaxy`'s light centre peaks.
     """
 
-    left_lens = al.GalaxyModel(redshift=0.5, bulge=al.lp.EllipticalSersic)
+    left_lens = al.GalaxyModel(redshift=redshift_lens, bulge=al.lp.EllipticalSersic)
     left_lens.bulge.centre_0 = 0.0
     left_lens.bulge.centre_1 = -1.0
 
@@ -79,7 +77,9 @@ def make_pipeline(setup, settings):
             evidence_tolerance=5.0,
         ),
         galaxies=dict(
-            left_lens=al.GalaxyModel(redshift=0.5, bulge=al.lp.EllipticalSersic)
+            left_lens=al.GalaxyModel(
+                redshift=redshift_lens, bulge=al.lp.EllipticalSersic
+            )
         ),
         settings=settings,
     )
@@ -91,7 +91,7 @@ def make_pipeline(setup, settings):
         2) Pass the left lens`s light model as an instance, to improve the fitting of the right galaxy.
     """
 
-    right_lens = al.GalaxyModel(redshift=0.5, bulge=al.lp.EllipticalSersic)
+    right_lens = al.GalaxyModel(redshift=redshift_lens, bulge=al.lp.EllipticalSersic)
     right_lens.bulge.centre_0 = 0.0
     right_lens.bulge.centre_1 = 1.0
 
@@ -117,13 +117,13 @@ def make_pipeline(setup, settings):
     """
 
     left_lens = al.GalaxyModel(
-        redshift=0.5,
+        redshift=redshift_lens,
         bulge=phase1.result.instance.galaxies.left_lens.bulge,
         mass=al.mp.EllipticalIsothermal,
     )
 
     right_lens = al.GalaxyModel(
-        redshift=0.5,
+        redshift=redshift_lens,
         bulge=phase2.result.instance.galaxies.right_lens.bulge,
         mass=al.mp.EllipticalIsothermal,
     )
@@ -142,7 +142,9 @@ def make_pipeline(setup, settings):
         galaxies=dict(
             left_lens=left_lens,
             right_lens=right_lens,
-            source=al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential),
+            source=al.GalaxyModel(
+                redshift=redshift_source, bulge=al.lp.EllipticalExponential
+            ),
         ),
     )
 
@@ -180,7 +182,9 @@ def make_pipeline(setup, settings):
         phase3.result.model.galaxies.left_lens.mass.einstein_radius
     )
 
-    left_lens = al.GalaxyModel(redshift=0.5, bulge=left_sersic, mass=left_mass)
+    left_lens = al.GalaxyModel(
+        redshift=redshift_lens, bulge=left_sersic, mass=left_mass
+    )
 
     right_sersic = af.PriorModel(al.lp.EllipticalSersic)
     right_sersic.elliptical_comps = (
@@ -202,7 +206,9 @@ def make_pipeline(setup, settings):
         phase3.result.model.galaxies.right_lens.mass.einstein_radius
     )
 
-    right_lens = al.GalaxyModel(redshift=0.5, bulge=right_sersic, mass=right_mass)
+    right_lens = al.GalaxyModel(
+        redshift=redshift_lens, bulge=right_sersic, mass=right_mass
+    )
 
     phase4 = al.PhaseImaging(
         search=af.DynestyStatic(
