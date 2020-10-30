@@ -19,9 +19,10 @@ def agg_max_log_likelihood_from_aggregator(aggregator):
 
 def copy_pickle_files_to_agg_max(agg_max_log_likelihood):
 
-    search_before = list(agg_max_log_likelihood.values("search"))
-    pickle_path_before = search_before[0].paths.pickle_path
-    pickle_path_grid_search = pickle_path_before.rsplit("/", 1)[0]
+    search_max_log_likelihood = list(agg_max_log_likelihood.values("search"))
+    pickle_path_max_log_likelihood = search_max_log_likelihood[0].paths.pickle_path
+
+    pickle_path_grid_search = pickle_path_max_log_likelihood.rsplit("/", 1)[0]
     pickle_path_grid_search = pickle_path_grid_search.rsplit("/", 1)[0]
     pickle_path_grid_search = pickle_path_grid_search.rsplit("/", 1)[0]
     pickle_path_grid_search = pickle_path_grid_search.rsplit("/", 1)[0]
@@ -33,9 +34,10 @@ def copy_pickle_files_to_agg_max(agg_max_log_likelihood):
     for file_name in src_files:
         full_file_name = os.path.join(pickle_path_grid_search, file_name)
         if os.path.isfile(full_file_name):
-            shutil.copy(full_file_name, pickle_path_before)
+            shutil.copy(full_file_name, pickle_path_max_log_likelihood)
 
-    os.remove(f"{pickle_path_before}/grid_search_result.pickle")
+
+# os.remove(f"{pickle_path_max_log_likelihood}/grid_search_result.pickle")
 
 
 def subplot_detection_agg(

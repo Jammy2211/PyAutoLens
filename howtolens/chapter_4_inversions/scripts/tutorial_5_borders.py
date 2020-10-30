@@ -29,9 +29,8 @@ we'll use the same strong lensing data as the previous tutorial, where:
 """
 
 # %%
-dataset_type = "chapter_4"
 dataset_name = "mass_sie__source_sersic__2"
-dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/chapter_4/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",
@@ -290,9 +289,8 @@ we'll use new strong lensing data as the previous tutorial, where:
 """
 
 # %%
-dataset_type = "chapter_4"
 dataset_name = "mass_sie_x2__source_sersic"
-dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
+dataset_path = f"dataset/howtolens/chapter_4/{dataset_name}"
 
 imaging = al.Imaging.from_fits(
     image_path=f"{dataset_path}/image.fits",

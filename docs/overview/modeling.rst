@@ -54,7 +54,6 @@ iterations are performed.
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/master/docs/overview/images/modeling/lensmodel.gif
   :width: 600
-  :alt: Alternative text
 
 The ``PhaseImaging`` object above returned a 'result', or ``Result`` object. This contains the maximum log likelihood
 ``Tracer`` and ``FitImaging``, which can easily be plotted.
