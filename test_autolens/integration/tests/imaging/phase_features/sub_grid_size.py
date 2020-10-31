@@ -4,15 +4,14 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "phase_features"
 test_name = "sub_size"
-dataset_name = "lens_light_dev_vaucouleurs"
+dataset_name = "light_dev_vaucouleurs"
 instrument = "vro"
 
 
-def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
+def make_pipeline(name, path_prefix):
 
     phase1 = al.PhaseImaging(
         name="phase[1]",
-        path_prefix=path_prefix,
         galaxies=dict(lens=al.GalaxyModel(redshift=0.5, sersic=al.lp.EllipticalSersic)),
         sub_size=2,
         search=search,

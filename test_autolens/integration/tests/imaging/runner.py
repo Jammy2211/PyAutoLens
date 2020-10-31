@@ -5,15 +5,13 @@ import autolens as al
 from test_autolens.simulators.imaging import instrument_util
 
 
-def run(
-    module, test_name=None, search=af.DynestyStatic(), config_folder="config", mask=None
-):
+def run(module, test_name=None, config_folder="config", mask=None):
 
     test_name = test_name or module.test_name
     test_path = "{}/../..".format(os.path.dirname(os.path.realpath(__file__)))
     output_path = f"{test_path}/output/imaging"
     config_path = f"{test_path}/{config_folder}"
-    conf.instance.push(new_path, output_path=output_path)
+    conf.instance.push(new_path=config_path, output_path=output_path)
 
     imaging = instrument_util.load_test_imaging(
         dataset_name=module.dataset_name, instrument=module.instrument
@@ -27,7 +25,7 @@ def run(
     info = {"Test": 100}
 
     module.make_pipeline(
-        name=test_name, path_prefix=f"{module.test_type}/{test_name}", search=search
+        name=test_name, path_prefix=f"{module.test_type}/{test_name}"
     ).run(dataset=imaging, mask=mask, info=info)
 
 

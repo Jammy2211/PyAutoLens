@@ -98,16 +98,14 @@ __Pipeline Creation__
 
 To create a `Pipeline`, we call a `make_pipeline` function, which is written in its own Python script: 
 
- `tutorial_1_pipeline_lens_and_source.py`. 
+ `pipelines/tutorial_1_pipeline_lens_and_source.py`. 
     
 Before we check it out, lets get the pipeline running, by importing the script, running the `make_pipeline` function
 to create the `Pipeline` object and calling that objects `run` function.
 """
 
 # %%
-from autolens_workspace.howtolens.chapter_3_pipelines import (
-    tutorial_1_pipeline_lens_and_source,
-)
+from pipelines import tutorial_1_pipeline_lens_and_source
 
 pipeline_lens_and_source = tutorial_1_pipeline_lens_and_source.make_pipeline(
     path_prefix="howtolens/c3_t1_lens_and_source",
@@ -121,10 +119,10 @@ pipeline_lens_and_source = tutorial_1_pipeline_lens_and_source.make_pipeline(
 
 # %%
 """
-Okay, good job, we`re running our first pipeline in **PyAutoLens**! But what does it *actually* do? Well, to find that out, 
-go to the script `tutorial_1_pipeline_lens_and_source.py`, which contains a full description of the pipeline, as well 
-as an overview of the tools we use to write the most general pipelines possible. Once you`re done, come back to this 
-pipeline runner script and we'll wrap up tutorial 1.
+Okay, good job, we`re running our first pipeline in **PyAutoLens**! But what does it *actually* do? Well, to find 
+that out, go to the script `pipelines/tutorial_1_pipeline_lens_and_source.py`, which contains a full description of 
+the pipeline, as well as an overview of the tools we use to write the most general pipelines possible. Once you`re 
+done, come back to this pipeline runner script and we'll wrap up tutorial 1.
 """
 
 # %%

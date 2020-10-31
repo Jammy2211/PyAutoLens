@@ -37,9 +37,6 @@ def copy_pickle_files_to_agg_max(agg_max_log_likelihood):
             shutil.copy(full_file_name, pickle_path_max_log_likelihood)
 
 
-# os.remove(f"{pickle_path_max_log_likelihood}/grid_search_result.pickle")
-
-
 def subplot_detection_agg(
     agg_before, agg_detect, use_log_evidences=True, include=None, sub_plotter=None
 ):

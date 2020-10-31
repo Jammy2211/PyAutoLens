@@ -22,8 +22,8 @@ instruments = ["sma"]
 
 for instrument in instruments:
 
-    simulators.simulate__lens_sie__source_smooth(instrument=instrument)
-    simulators.simulate__lens_sie__source_cuspy(instrument=instrument)
-    simulators.simulate__lens_sie__source_smooth__offset_centre(instrument=instrument)
-    simulators.simulate__lens_light__source_smooth(instrument=instrument)
-    simulators.simulate__lens_light__source_cuspy(instrument=instrument)
+    simulators.simulate__mass_sie__source_sersic(instrument=instrument)
+    simulators.simulate__mass_sie__source_sersic(instrument=instrument)
+    simulators.simulate__mass_sie__source_sersic__offset_centre(instrument=instrument)
+    simulators.simulate__light_sersic__source_sersic(instrument=instrument)
+    simulators.simulate__light_sersic__source_sersic(instrument=instrument)

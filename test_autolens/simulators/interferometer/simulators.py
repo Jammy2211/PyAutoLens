@@ -3,9 +3,9 @@ import autolens as al
 from test_autolens.simulators.interferometer import instrument_util
 
 
-def simulate__lens_sie__source_smooth(instrument):
+def simulate__mass_sie__source_sersic(instrument):
 
-    dataset_name = "lens_sie__source_smooth"
+    dataset_name = "mass_sie__source_sersic"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -34,9 +34,9 @@ def simulate__lens_sie__source_smooth(instrument):
     )
 
 
-def simulate__lens_sie__source_cuspy(instrument):
+def simulate__mass_sie__source_sersic(instrument):
 
-    dataset_name = "lens_sie__source_cuspy"
+    dataset_name = "mass_sie__source_sersic"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -65,9 +65,9 @@ def simulate__lens_sie__source_cuspy(instrument):
     )
 
 
-def simulate__lens_sis__source_smooth(instrument):
+def simulate__mass_sie__source_sersic(instrument):
 
-    dataset_name = "lens_sis__source_smooth"
+    dataset_name = "mass_sie__source_sersic"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -94,9 +94,9 @@ def simulate__lens_sis__source_smooth(instrument):
     )
 
 
-def simulate__lens_sie__source_smooth__offset_centre(instrument):
+def simulate__mass_sie__source_sersic__offset_centre(instrument):
 
-    dataset_name = "lens_sie__source_smooth__offset_centre"
+    dataset_name = "mass_sie__source_sersic__offset_centre"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -123,9 +123,9 @@ def simulate__lens_sie__source_smooth__offset_centre(instrument):
     )
 
 
-def simulate__lens_light__source_smooth(instrument):
+def simulate__light_sersic__source_sersic(instrument):
 
-    dataset_name = "lens_light__source_smooth"
+    dataset_name = "light_sersic__source_sersic"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -161,9 +161,9 @@ def simulate__lens_light__source_smooth(instrument):
     )
 
 
-def simulate__lens_light__source_cuspy(instrument):
+def simulate__light_sersic__source_sersic(instrument):
 
-    dataset_name = "lens_light__source_cuspy"
+    dataset_name = "light_sersic__source_sersic"
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
