@@ -4,7 +4,7 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "reult_passing"
 test_name = "source_choice_parametric_via_af_last"
-dataset_name = "lens_sie__source_smooth"
+dataset_name = "mass_sie__source_sersic"
 instrument = "vro"
 
 
@@ -40,11 +40,10 @@ def source_with_previous_model_or_instance():
         )
 
 
-def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
+def make_pipeline(name, path_prefix):
 
     phase1 = al.PhaseImaging(
         name="phase[1]",
-        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source=al.GalaxyModel(redshift=1.0, sersic=al.lp.EllipticalSersic),
@@ -68,7 +67,6 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase2 = al.PhaseImaging(
         name="phase[2]",
-        path_prefix=path_prefix,
         galaxies=dict(lens=phase1.result.model.galaxies.lens, source=source),
         sub_size=1,
         search=search,

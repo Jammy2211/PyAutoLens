@@ -107,16 +107,14 @@ __Pipeline Creation__
 
 To create a `Pipeline`, we call a `make_pipeline` function, which is written in its own Python script: 
 
- `tutorial_2_pipeline_x2_lens_galaxies.py`. 
+ `pipelines/tutorial_2_pipeline_x2_lens_galaxies.py`. 
 
 Before we check it out, lets get the pipeline running, by importing the script, running the `make_pipeline` function
 to create the `Pipeline` object and calling that objects `run` function.
 """
 
 # %%
-from autolens_workspace.howtolens.chapter_3_pipelines import (
-    tutorial_2_pipeline_x2_lens_galaxies,
-)
+from pipelines import tutorial_2_pipeline_x2_lens_galaxies
 
 pipeline_x2_galaxies = tutorial_2_pipeline_x2_lens_galaxies.make_pipeline(
     path_prefix="howtolens/c3_t2_x2_galaxies",

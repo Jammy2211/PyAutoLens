@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "reult_passing"
 test_name = "instance_to_model"
-dataset_name = "lens_sie__source_smooth"
+dataset_name = "mass_sie__source_sersic"
 instrument = "vro"
 
 
-def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
+def make_pipeline(name, path_prefix):
 
     light = af.PriorModel(al.lp.SphericalDevVaucouleurs)
 
@@ -16,7 +16,6 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase1 = al.PhaseImaging(
         name="phase[1]",
-        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, light=light, mass=al.mp.EllipticalIsothermal
@@ -39,7 +38,6 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase2 = al.PhaseImaging(
         name="phase[2]",
-        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5, light=light, mass=phase1.result.model.galaxies.lens.mass

@@ -4,15 +4,14 @@ from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens__source_inversion"
 test_name = "lens_mass__source_adaptive_brightness"
-dataset_name = "lens_sie__source_smooth"
+dataset_name = "mass_sie__source_sersic"
 instrument = "sma"
 
 
-def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic()):
+def make_pipeline(name, path_prefix, real_space_mask):
 
     phase1 = al.PhaseInterferometer(
         name="phase[1]",
-        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
@@ -23,7 +22,6 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
 
     phase2 = al.PhaseInterferometer(
         name="phase_2_weighted_regularization",
-        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -46,7 +44,6 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
 
     phase3 = al.PhaseInterferometer(
         name="phase[3]",
-        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
@@ -69,7 +66,6 @@ def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic())
 
     phase4 = al.PhaseInterferometer(
         name="phase_4_weighted_regularization",
-        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
