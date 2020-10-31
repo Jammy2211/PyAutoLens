@@ -53,6 +53,7 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
 
     import autolens as al
     import autolens.plot as aplt
+    from astropy import cosmology as cosmo
 
     """
     To describe the deflection of light by mass, two-dimensional grids of (y,x) Cartesian
@@ -100,7 +101,8 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     aplt.Tracer.image(tracer=tracer, grid=grid)
 
 With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates
-a simple analysis which fits the foreground lens galaxy's mass & the background source galaxy's light.
+a simple analysis which fits the lens galaxy's mass with an EllipticalIsothermal and the source galaxy's light
+with an EllipticalSersic.
 
 .. code-block:: python
 
@@ -108,7 +110,7 @@ a simple analysis which fits the foreground lens galaxy's mass & the background 
     import autolens as al
     import autolens.plot as aplt
 
-    """Use the dataset path and lens name to load the imaging data."""
+    """Load Imaging data of the strong lens from the dataset folder of the workspace."""
 
     imaging = al.Imaging.from_fits(
         image_path="/path/to/dataset/image.fits",
@@ -124,16 +126,16 @@ a simple analysis which fits the foreground lens galaxy's mass & the background 
     )
 
     """
-    We model our lens galaxy using an EllipticalIsothermal MassProfile &
-    our source galaxy as an EllipticalSersic LightProfile.
+    We model the lens galaxy using an EllipticalIsothermal MassProfile and
+    the source galaxy using an EllipticalSersic LightProfile.
     """
 
     lens_mass_profile = al.mp.EllipticalIsothermal
     source_light_profile = al.lp.EllipticalSersic
 
     """
-    To setup our model galaxies, we use the GalaxyModel class, which represents a
-    galaxy whose parameters are free & fitted for by PyAutoLens.
+    To setup these profiles as model components whose parameters are free & fitted for
+    we use the GalaxyModel class.
     """
 
     lens_galaxy_model = al.GalaxyModel(redshift=0.5, mass=lens_mass_profile)
@@ -141,7 +143,7 @@ a simple analysis which fits the foreground lens galaxy's mass & the background 
 
     """
     To perform the analysis we set up a phase, which takes our galaxy models & fits
-    their parameters using a `NonLinearSearch` (in this case, Dynesty).
+    their parameters using a NonLinearSearch (in this case, Dynesty).
     """
 
     phase = al.PhaseImaging(
@@ -150,12 +152,18 @@ a simple analysis which fits the foreground lens galaxy's mass & the background 
     )
 
     """
-    We pass the imaging `data` and `mask` to the phase, thereby fitting it with the lens
-    model & plot the resulting fit.
+    We pass the imaging dataset and mask to the phase's run function,
+    fitting it with the lens model. & plot the resulting fit.
     """
 
     result = phase.run(dataset=imaging, mask=mask)
-    aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+
+    """
+    The results contain information on the fit, for example the maximum likelihood
+    model from the Dynesty parameter space search.
+    """
+
+    print(result.samples.max_log_likelihood_instance)
 
 Getting Started
 ---------------

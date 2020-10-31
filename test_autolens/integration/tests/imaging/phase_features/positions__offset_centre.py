@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "phase_features"
 test_name = "positions__offset_centre"
-dataset_name = "lens_sis__source_smooth__offset_centre"
+dataset_name = "mass_sie__source_sersic__offset_centre"
 instrument = "vro"
 
 
-def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
+def make_pipeline(name, path_prefix):
     class LensPhase(al.PhaseImaging):
         def customize_priors(self, results):
 
@@ -19,7 +19,6 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase1 = LensPhase(
         name="phase[1]",
-        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
