@@ -119,7 +119,7 @@ To create a pipeline we import it from the pipelines folder and run its `make_pi
 """
 
 # %%
-from autolens_workspace.howtolens.chapter_4_inversions import tutorial_8_pipeline
+from pipelines import tutorial_8_pipeline
 
 pipeline_inversion = tutorial_8_pipeline.make_pipeline(setup=setup, settings=settings)
 

@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "grid_search"
 test_name = "multinest_grid__subhalo"
-dataset_name = "lens_sie__source_smooth"
+dataset_name = "mass_sie__source_sersic"
 instrument = "vro"
 
 
-def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
+def make_pipeline(name, path_prefix):
 
     lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
 
@@ -25,10 +25,8 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     source.light.sersic_index = af.UniformPrior(lower_limit=0.9, upper_limit=1.1)
 
     phase1 = al.PhaseImaging(
-        name="phase[1]",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(name="phase[1]"),
         galaxies=dict(lens=lens, source=source),
-        search=search,
         settings=al.SettingsPhaseImaging(),
     )
 
@@ -43,33 +41,31 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
     subhalo = al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalTruncatedNFWMCRLudlow)
 
     subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
-
     subhalo.mass.centre_0 = af.UniformPrior(lower_limit=-2.5, upper_limit=2.5)
     subhalo.mass.centre_1 = af.UniformPrior(lower_limit=-2.5, upper_limit=2.5)
 
+    subhalo.mass.redshift_object = 0.5
+    subhalo.mass.redshift_source = 1.0
+
     phase2 = GridPhase(
-        name="phase[2]",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(name="phase[2]"),
         galaxies=dict(
             lens=af.last.instance.galaxies.lens,
             subhalo=subhalo,
             source=af.last.instance.galaxies.source,
         ),
-        search=search,
         settings=al.SettingsPhaseImaging(),
         number_of_steps=2,
     )
 
     phase3 = al.PhaseImaging(
-        name="phase_3__subhalo_refine",
-        path_prefix=path_prefix,
+        search=af.DynestyStatic(name="phase[3]_subhalo[refine]"),
         galaxies=dict(
             lens=af.last[-1].model.galaxies.lens,
             subhalo=phase2.result.model.galaxies.subhalo,
             source=af.last[-1].instance.galaxies.source,
         ),
         settings=al.SettingsPhaseImaging(),
-        search=af.DynestyStatic(),
     )
 
     return al.PipelineDataset(name, path_prefix, phase1, phase2, phase3)

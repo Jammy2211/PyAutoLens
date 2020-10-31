@@ -100,9 +100,7 @@ The `path_prefix` below specifies the path the pipeline results are written to, 
 """
 
 # %%
-from autolens_workspace.howtolens.chapter_3_pipelines import (
-    tutorial_3_pipeline_complex_source,
-)
+from pipelines import tutorial_3_pipeline_complex_source
 
 pipeline_complex_source = tutorial_3_pipeline_complex_source.make_pipeline(
     path_prefix="howtolens/c3_t3_complex_source",

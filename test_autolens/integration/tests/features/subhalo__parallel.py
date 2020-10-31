@@ -4,11 +4,11 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "grid_search"
 test_name = "multinest_grid_subhalo__parallel"
-dataset_name = "lens_sie__source_smooth"
+dataset_name = "mass_sie__source_sersic"
 instrument = "vro"
 
 
-def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
+def make_pipeline(name, path_prefix):
 
     lens = al.GalaxyModel(redshift=0.5, mass=al.mp.EllipticalIsothermal)
 
@@ -41,7 +41,6 @@ def make_pipeline(name, path_prefix, search=af.DynestyStatic()):
 
     phase1 = GridPhase(
         name="phase[1]",
-        path_prefix=path_prefix,
         galaxies=dict(lens=lens, subhalo=subhalo, source=source),
         search=search,
         settings=al.SettingsPhaseImaging(),

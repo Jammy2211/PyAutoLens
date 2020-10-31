@@ -3,16 +3,15 @@ import autolens as al
 from test_autolens.integration.tests.interferometer import runner
 
 test_type = "lens__source"
-test_name = "lens_light_mass__source"
-dataset_name = "lens_sie__source_smooth"
+test_name = "light_sersic___mass__source"
+dataset_name = "mass_sie__source_sersic"
 instrument = "sma"
 
 
-def make_pipeline(name, path_prefix, real_space_mask, search=af.DynestyStatic()):
+def make_pipeline(name, path_prefix, real_space_mask):
 
     phase1 = al.PhaseInterferometer(
         name="phase[1]",
-        path_prefix=path_prefix,
         galaxies=dict(
             lens=al.GalaxyModel(
                 redshift=0.5,
