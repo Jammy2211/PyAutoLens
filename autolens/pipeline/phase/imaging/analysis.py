@@ -1,4 +1,5 @@
 from autoconf import conf
+import autofit as af
 from autoarray.inversion import pixelizations as pix
 from autoarray.exc import PixelizationException, InversionException, GridException
 from autofit.exc import FitException
@@ -12,9 +13,7 @@ import copy
 
 
 class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
-    def __init__(
-        self, masked_imaging, settings, cosmology, image_path=None, results=None
-    ):
+    def __init__(self, masked_imaging, settings, cosmology, results=None):
 
         super().__init__(
             masked_dataset=masked_imaging,
@@ -24,12 +23,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         )
 
         self.visualizer = visualizer.PhaseImagingVisualizer(
-            masked_dataset=masked_imaging, image_path=image_path, results=results
-        )
-
-        self.visualizer.visualize_hyper_images(
-            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
-            hyper_model_image=self.hyper_model_image,
+            masked_dataset=masked_imaging
         )
 
     @property
@@ -144,7 +138,15 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
 
         return log_evidences
 
-    def visualize(self, instance, during_analysis):
+    def visualize(self, paths: af.Paths, instance, during_analysis):
+
+        self.visualizer.visualize_imaging(paths=paths)
+
+        self.visualizer.visualize_hyper_images(
+            paths=paths,
+            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
+            hyper_model_image=self.hyper_model_image,
+        )
 
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
@@ -178,13 +180,15 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
 
         try:
             visualizer.visualize_ray_tracing(
-                tracer=fit.tracer, during_analysis=during_analysis
+                paths=paths, tracer=fit.tracer, during_analysis=during_analysis
             )
         except Exception:
             pass
 
         try:
-            visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)
+            visualizer.visualize_fit(
+                paths=paths, fit=fit, during_analysis=during_analysis
+            )
         except Exception:
             pass
 
@@ -195,6 +199,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             )
 
             visualizer.visualize_stochastic_histogram(
+                paths=paths,
                 log_evidences=log_evidences,
                 max_log_evidence=fit.log_evidence,
                 during_analysis=during_analysis,
