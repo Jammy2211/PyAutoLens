@@ -1,10 +1,12 @@
+import autofit as af
 import autolens as al
 
 from autofit import exc
 from functools import partial
+import numpy as np
 
 
-def tracer_generator_from_aggregator(aggregator):
+def tracer_generator_from_aggregator(aggregator: af.Aggregator):
     """
     Returns a generator of `Tracer` objects from an input aggregator, which generates a list of the `Tracer` objects
     for every set of results loaded in the aggregator.
@@ -19,7 +21,7 @@ def tracer_generator_from_aggregator(aggregator):
     return aggregator.map(func=tracer_from_agg_obj)
 
 
-def tracer_from_agg_obj(agg_obj):
+def tracer_from_agg_obj(agg_obj: af.PhaseOutput) -> "al.Tracer":
     """
     Returns a `Tracer` object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe that
      it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator outputs
@@ -54,7 +56,9 @@ def tracer_from_agg_obj(agg_obj):
     return al.Tracer.from_galaxies(galaxies=galaxies)
 
 
-def masked_imaging_generator_from_aggregator(aggregator, settings_masked_imaging=None):
+def masked_imaging_generator_from_aggregator(
+    aggregator: af.Aggregator, settings_masked_imaging: al.SettingsMaskedImaging = None
+):
     """
     Returns a generator of *MaskedImaging* objects from an input aggregator, which generates a list of the
     *MaskedImaging* objects for every set of results loaded in the aggregator.
@@ -73,7 +77,9 @@ def masked_imaging_generator_from_aggregator(aggregator, settings_masked_imaging
     return aggregator.map(func=func)
 
 
-def masked_imaging_from_agg_obj(agg_obj, settings_masked_imaging=None):
+def masked_imaging_from_agg_obj(
+    agg_obj: af.PhaseOutput, settings_masked_imaging: al.SettingsMaskedImaging = None
+) -> "al.MaskedImaging":
     """
     Returns a *MaskedImaging* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe
      that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator 
@@ -97,10 +103,10 @@ def masked_imaging_from_agg_obj(agg_obj, settings_masked_imaging=None):
 
 
 def fit_imaging_generator_from_aggregator(
-    aggregator,
-    settings_masked_imaging=None,
-    settings_pixelization=None,
-    settings_inversion=None,
+    aggregator: af.Aggregator,
+    settings_masked_imaging: al.SettingsMaskedImaging = None,
+    settings_pixelization: al.SettingsPixelization = None,
+    settings_inversion: al.SettingsInversion = None,
 ):
     """
     Returns a generator of `FitImaging` objects from an input aggregator, which generates a list of the
@@ -125,11 +131,11 @@ def fit_imaging_generator_from_aggregator(
 
 
 def fit_imaging_from_agg_obj(
-    agg_obj,
-    settings_masked_imaging=None,
-    settings_pixelization=None,
-    settings_inversion=None,
-):
+    agg_obj: af.PhaseOutput,
+    settings_masked_imaging: al.SettingsMaskedImaging = None,
+    settings_pixelization: al.SettingsPixelization = None,
+    settings_inversion: al.SettingsInversion = None,
+) -> "al.FitImaging":
     """
     Returns a `FitImaging` object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to describe
      that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's generator 
@@ -162,7 +168,8 @@ def fit_imaging_from_agg_obj(
 
 
 def masked_interferometer_generator_from_aggregator(
-    aggregator, settings_masked_interferometer=None
+    aggregator: af.Aggregator,
+    settings_masked_interferometer: al.SettingsMaskedInterferometer = None,
 ):
     """
     Returns a generator of *MaskedInterferometer* objects from an input aggregator, which generates a list of the
@@ -183,7 +190,10 @@ def masked_interferometer_generator_from_aggregator(
     return aggregator.map(func=func)
 
 
-def masked_interferometer_from_agg_obj(agg_obj, settings_masked_interferometer=None):
+def masked_interferometer_from_agg_obj(
+    agg_obj: af.PhaseOutput,
+    settings_masked_interferometer: al.SettingsMaskedInterferometer = None,
+) -> "al.MaskedInterferometer":
     """
     Returns a *MaskedInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to
     describe that it acts as the aggregator object for one result in the *Aggregator*. This uses the aggregator's 
@@ -212,10 +222,10 @@ def masked_interferometer_from_agg_obj(agg_obj, settings_masked_interferometer=N
 
 
 def fit_interferometer_generator_from_aggregator(
-    aggregator,
-    settings_masked_interferometer=None,
-    settings_pixelization=None,
-    settings_inversion=None,
+    aggregator: af.Aggregator,
+    settings_masked_interferometer: al.SettingsMaskedInterferometer = None,
+    settings_pixelization: al.SettingsPixelization = None,
+    settings_inversion: al.SettingsInversion = None,
 ):
     """
     Returns a *FitInterferometer* object from an aggregator's *PhaseOutput* class, which we call an 'agg_obj' to
@@ -241,11 +251,11 @@ def fit_interferometer_generator_from_aggregator(
 
 
 def fit_interferometer_from_agg_obj(
-    agg_obj,
-    settings_masked_interferometer=None,
-    settings_pixelization=None,
-    settings_inversion=None,
-):
+    agg_obj: af.PhaseOutput,
+    settings_masked_interferometer: al.SettingsMaskedInterferometer = None,
+    settings_pixelization: al.SettingsPixelization = None,
+    settings_inversion: al.SettingsInversion = None,
+) -> "al.FitInterferometer":
     """
     Returns a generator of *FitInterferometer* objects from an input aggregator, which generates a list of the
     *FitInterferometer* objects for every set of results loaded in the aggregator.
@@ -277,7 +287,9 @@ def fit_interferometer_from_agg_obj(
     )
 
 
-def grid_search_result_as_array(aggregator, use_log_evidences=True):
+def grid_search_result_as_array(
+    aggregator: af.Aggregator, use_log_evidences: bool = True
+) -> np.ndarray:
 
     grid_search_result_gen = aggregator.values("grid_search_result")
 
@@ -298,7 +310,7 @@ def grid_search_result_as_array(aggregator, use_log_evidences=True):
     )
 
 
-def grid_search_subhalo_masses_as_array(aggregator):
+def grid_search_subhalo_masses_as_array(aggregator: af.Aggregator) -> al.Array:
 
     grid_search_result_gen = aggregator.values("grid_search_result")
 
@@ -315,7 +327,7 @@ def grid_search_subhalo_masses_as_array(aggregator):
     )
 
 
-def grid_search_subhalo_centres_as_array(aggregator):
+def grid_search_subhalo_centres_as_array(aggregator: af.Aggregator) -> al.Array:
 
     grid_search_result_gen = aggregator.values("grid_search_result")
 
@@ -334,7 +346,7 @@ def grid_search_subhalo_centres_as_array(aggregator):
 
 def grid_search_log_evidences_as_array_from_grid_search_result(
     grid_search_result, use_log_evidences=True
-):
+) -> al.Array:
 
     if grid_search_result.no_dimensions != 2:
         raise exc.AggregatorException(
@@ -363,7 +375,9 @@ def grid_search_log_evidences_as_array_from_grid_search_result(
     )
 
 
-def grid_search_subhalo_masses_as_array_from_grid_search_result(grid_search_result):
+def grid_search_subhalo_masses_as_array_from_grid_search_result(
+    grid_search_result
+) -> [float]:
 
     if grid_search_result.no_dimensions != 2:
         raise exc.AggregatorException(
@@ -385,7 +399,9 @@ def grid_search_subhalo_masses_as_array_from_grid_search_result(grid_search_resu
     )
 
 
-def grid_search_subhalo_centres_as_array_from_grid_search_result(grid_search_result):
+def grid_search_subhalo_centres_as_array_from_grid_search_result(
+    grid_search_result
+) -> [(float, float)]:
 
     if grid_search_result.no_dimensions != 2:
         raise exc.AggregatorException(
