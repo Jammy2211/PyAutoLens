@@ -56,7 +56,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_background_noise=hyper_background_noise,
         )
 
-    def visualize(self, instance, during_analysis):
+    def visualize(self, paths, instance, during_analysis):
 
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
