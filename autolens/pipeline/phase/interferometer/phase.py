@@ -84,7 +84,6 @@ class PhaseInterferometer(dataset.PhaseDataset):
             masked_interferometer=masked_interferometer,
             settings=self.settings,
             cosmology=self.cosmology,
-            image_path=self.search.paths.image_path,
             results=results,
         )
 

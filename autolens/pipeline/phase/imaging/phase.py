@@ -82,7 +82,6 @@ class PhaseImaging(dataset.PhaseDataset):
             masked_imaging=masked_imaging,
             settings=self.settings,
             cosmology=self.cosmology,
-            image_path=self.search.paths.image_path,
             results=results,
         )
 

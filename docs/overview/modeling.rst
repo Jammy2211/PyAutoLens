@@ -52,7 +52,7 @@ give a good fit to the data to guide it where to guess subsequent model. An anim
 below,  whereinitial lens models give a poor fit to the data but gradually improve (increasing the likelihood) as more
 iterations are performed.
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/master/docs/overview/images/modeling/lensmodel.gif
+.. image:: https://github.com/Jammy2211/autolens_files/blob/main/lensmodel.gif
   :width: 600
 
 The ``PhaseImaging`` object above returned a 'result', or ``Result`` object. This contains the maximum log likelihood

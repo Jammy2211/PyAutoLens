@@ -167,7 +167,6 @@ class TestFit:
             masked_imaging=masked_imaging_7x7,
             settings=al.SettingsPhaseImaging(),
             results=results,
-            image_path="files/",
             cosmology=cosmo.Planck15,
         )
 
@@ -235,7 +234,6 @@ class TestFit:
             masked_imaging=masked_imaging_7x7,
             settings=al.SettingsPhaseImaging(),
             results=results,
-            image_path="files/",
             cosmology=cosmo.Planck15,
         )
 

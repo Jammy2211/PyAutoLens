@@ -7,16 +7,16 @@ from autolens.pipeline import visualizer
 
 
 class Analysis(af.Analysis):
-    def __init__(self, cosmology, results, image_path):
+    def __init__(self, cosmology, results):
         self.cosmology = cosmology
         self.results = results
-        self.visualizer = visualizer.PhaseGalaxyVisualizer(image_path)
+        self.visualizer = visualizer.PhaseGalaxyVisualizer()
 
 
 # noinspection PyAbstractClass
 class AnalysisSingle(Analysis):
-    def __init__(self, galaxy_data, cosmology, image_path: str, results=None):
-        super().__init__(cosmology=cosmology, image_path=image_path, results=results)
+    def __init__(self, galaxy_data, cosmology, results=None):
+        super().__init__(cosmology=cosmology, results=results)
 
         self.galaxy_data = galaxy_data
 
@@ -24,7 +24,7 @@ class AnalysisSingle(Analysis):
         fit = self.fit_for_instance(instance=instance)
         return fit.figure_of_merit
 
-    def visualize(self, instance, during_analysis):
+    def visualize(self, paths, instance, during_analysis):
         fit = self.fit_for_instance(instance=instance)
 
         self.visualizer.plot_galaxy_fit_subplot(fit)
@@ -68,10 +68,8 @@ class AnalysisSingle(Analysis):
 
 # noinspection PyAbstractClass
 class AnalysisDeflections(Analysis):
-    def __init__(
-        self, galaxy_data_y, galaxy_data_x, cosmology, image_path, results=None
-    ):
-        super().__init__(cosmology=cosmology, image_path=image_path, results=results)
+    def __init__(self, galaxy_data_y, galaxy_data_x, cosmology, results=None):
+        super().__init__(cosmology=cosmology, results=results)
 
         self.galaxy_data_y = galaxy_data_y
         self.galaxy_data_x = galaxy_data_x
@@ -80,7 +78,7 @@ class AnalysisDeflections(Analysis):
         fit_y, fit_x = self.fit_for_instance(instance=instance)
         return fit_y.figure_of_merit + fit_x.figure_of_merit
 
-    def visualize(self, instance, during_analysis):
+    def visualize(self, paths, instance, during_analysis):
 
         fit_y, fit_x = self.fit_for_instance(instance=instance)
 
@@ -228,10 +226,7 @@ class PhaseGalaxy(abstract.AbstractPhase):
             )
 
             return AnalysisSingle(
-                galaxy_data=galaxy_data,
-                cosmology=self.cosmology,
-                image_path=self.search.paths.image_path,
-                results=results,
+                galaxy_data=galaxy_data, cosmology=self.cosmology, results=results
             )
 
         elif self.use_deflections:
@@ -262,7 +257,6 @@ class PhaseGalaxy(abstract.AbstractPhase):
                 galaxy_data_y=galaxy_data_y,
                 galaxy_data_x=galaxy_data_x,
                 cosmology=self.cosmology,
-                image_path=self.search.paths.image_path,
                 results=results,
             )
 

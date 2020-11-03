@@ -80,7 +80,6 @@ class PhasePositions(abstract.AbstractPhase):
             solver=self.solver,
             imaging=imaging,
             cosmology=self.cosmology,
-            image_path=self.search.paths.image_path,
             results=results,
         )
 

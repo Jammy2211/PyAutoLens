@@ -11,16 +11,14 @@ import copy
 
 
 class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
-    def __init__(
-        self, positions, solver, imaging, cosmology, image_path=None, results=None
-    ):
+    def __init__(self, positions, solver, imaging, cosmology, results=None):
 
         super().__init__(cosmology=cosmology, results=results)
 
         self.solver = solver
 
         self.visualizer = visualizer.PhasePositionsVisualizer(
-            positions=positions, imaging=imaging, image_path=image_path, results=results
+            positions=positions, imaging=imaging, results=results
         )
 
         self.imaging = imaging
@@ -58,7 +56,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_background_noise=hyper_background_noise,
         )
 
-    def visualize(self, instance, during_analysis):
+    def visualize(self, paths, instance, during_analysis):
 
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
