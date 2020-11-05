@@ -224,7 +224,7 @@ To fit the image, we pass the `MaskedImaging` and `Tracer` to a `FitImaging` obj
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
@@ -304,7 +304,7 @@ If we use this data to perform a fit, we can immediately note how the resolution
 # %%
 fit_custom = al.FitImaging(masked_imaging=masked_imaging_custom, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit_custom, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit_custom, include=aplt.Include(mask=True))
 
 # %%
 """
@@ -347,7 +347,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
@@ -395,7 +395,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-# aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """

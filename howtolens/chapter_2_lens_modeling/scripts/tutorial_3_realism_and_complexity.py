@@ -116,7 +116,7 @@ print(
     " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# result =  phase.run(dataset=imaging, mask=mask)
+result = phase.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -126,7 +126,7 @@ And lets look at the fit to the `Imaging` data, which as we are used to fits the
 """
 
 # %%
-# aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 # %%
 """
@@ -169,7 +169,7 @@ print(
     " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# result_local_maxima = phase.run(dataset=imaging, mask=mask)
+result_local_maxima = phase.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -179,7 +179,7 @@ And lets look at the fit to the `Imaging` data, which is clearly worse than our 
 """
 
 # %%
-# aplt.FitImaging.subplot_fit_imaging(fit=result_local_maxima.max_log_likelihood_fit)
+aplt.FitImaging.subplot_fit_imaging(fit=result_local_maxima.max_log_likelihood_fit)
 
 # %%
 """
@@ -191,9 +191,9 @@ models which fit the data better when it searched parameter space.
 
 # %%
 print("Likelihood of Global Model:")
-# print(result.max_log_likelihood_fit.log_likelihood)
+print(result.max_log_likelihood_fit.log_likelihood)
 print("Likelihood of Local Model:")
-# print(result_local_maxima.max_log_likelihood_fit.log_likelihood)
+print(result_local_maxima.max_log_likelihood_fit.log_likelihood)
 
 # %%
 """

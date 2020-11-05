@@ -170,7 +170,7 @@ print(
     " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# phase1_# result =  phase1.run(dataset=imaging, mask=mask)
+phase1_result = phase1.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -180,7 +180,7 @@ And indeed, we get a reasonably good model and fit to the data - in a much short
 """
 
 # %%
-# aplt.FitImaging.subplot_fit_imaging(fit=phase1_result.max_log_likelihood_fit)
+aplt.FitImaging.subplot_fit_imaging(fit=phase1_result.max_log_likelihood_fit)
 
 # %%
 """
@@ -291,7 +291,7 @@ print(
     " This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# phase2_# result =  phase2.run(dataset=imaging, mask=mask)
+phase2_result = phase2.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -301,7 +301,7 @@ Look at that, the right lens model, again!
 """
 
 # %%
-# aplt.FitImaging.subplot_fit_imaging(fit=phase2_result.max_log_likelihood_fit)
+aplt.FitImaging.subplot_fit_imaging(fit=phase2_result.max_log_likelihood_fit)
 
 # %%
 """
@@ -332,7 +332,7 @@ phase2_pass = al.PhaseImaging(
     ),
 )
 
-# # phase[2]_pass.run(dataset=imaging, mask=mask)
+# phase2_pass.run(dataset=imaging, mask=mask)
 
 # %%
 """
@@ -411,7 +411,7 @@ phase2_pass = al.PhaseImaging(
     galaxies=dict(lens=lens, source=phase1_result.model.galaxies.source),
 )
 
-# # phase[2]_pass.run(dataset=imaging, mask=mask)
+# phase2_pass.run(dataset=imaging, mask=mask)
 
 # %%
 """

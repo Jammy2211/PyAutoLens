@@ -100,7 +100,7 @@ phase_with_custom_mask = al.PhaseImaging(
     ),
 )
 
-# phase_with_custom_mask.run(dataset=imaging, mask=mask)
+phase_with_custom_mask.run(dataset=imaging, mask=mask)
 
 # %%
 """
@@ -204,7 +204,7 @@ print(
     "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# phase_with_positions.run(dataset=imaging, mask=mask)
+phase_with_positions.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -283,7 +283,7 @@ print(
 )
 
 
-# phase_with_x2_positions.run(dataset=imaging, mask=mask)
+phase_with_x2_positions.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 

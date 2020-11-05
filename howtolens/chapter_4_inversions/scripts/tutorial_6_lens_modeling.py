@@ -65,13 +65,13 @@ def perform_fit_with_lens__source_galaxy(imaging, lens_galaxy, source_galaxy):
     mask = al.Mask2D.circular_annular(
         shape_2d=imaging.shape_2d,
         pixel_scales=imaging.pixel_scales,
-        sub_size=2,
+        sub_size=1,
         inner_radius=0.5,
         outer_radius=2.2,
     )
 
     masked_imaging = al.MaskedImaging(
-        imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=2)
+        imaging=imaging, mask=mask, settings=al.SettingsMaskedImaging(sub_size=1)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -96,7 +96,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    pixelization=al.pix.Rectangular(shape=(40, 40)),
+    pixelization=al.pix.Rectangular(shape=(20, 20)),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -133,7 +133,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    pixelization=al.pix.Rectangular(shape=(40, 40)),
+    pixelization=al.pix.Rectangular(shape=(20, 20)),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -232,7 +232,7 @@ These are all the usual things we do when setting up a fit.
 # %%
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    pixelization=al.pix.Rectangular(shape=(40, 40)),
+    pixelization=al.pix.Rectangular(shape=(20, 20)),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 

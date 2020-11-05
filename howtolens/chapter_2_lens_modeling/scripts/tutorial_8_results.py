@@ -54,7 +54,7 @@ phase = al.PhaseImaging(
     ),
 )
 
-# result =  phase.run(dataset=imaging, mask=mask)
+result = phase.run(dataset=imaging, mask=mask)
 
 # %%
 """
@@ -66,7 +66,7 @@ a fast way to visualize the result.
 # aplt.Tracer.subplot_tracer(
 #    tracer=result.max_log_likelihood_tracer, grid=mask.geometry.unmasked_grid
 # )
-# aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 # %%
 """
@@ -74,9 +74,9 @@ The result contains a lot more information about the model-fit. For example, its
 set of `NonLinearSearch` samples, for example every set of parameters evaluated, their log likelihoods and so on,
 which are used for computing information about the model-fit such as the error on every parameter.
 """
-# print(result.samples)
-# print(result.samples.parameters)
-# print(result.samples.log_likelihoods)
+print(result.samples)
+print(result.samples.parameters)
+print(result.samples.log_likelihoods)
 
 # %%
 """
@@ -112,8 +112,8 @@ To set up the aggregator we simply pass it the folder of the results we want to 
 
 # %%
 output_path = f"output"
-# # agg = af.Aggregator(directory=str(output_path))
-# # agg = agg.filter(agg.phase == "phase_t1_non_linear_search")
+agg = af.Aggregator(directory=str(output_path))
+agg = agg.filter(agg.phase == "phase_t1_non_linear_search")
 
 # %%
 """
@@ -122,7 +122,7 @@ This gives us a list with 1 entry, the list would have more entries if there wer
 """
 
 # %%
-# samples = list(agg.values("samples"))
+samples = list(agg.values("samples"))
 
 # %%
 """

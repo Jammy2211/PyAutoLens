@@ -169,7 +169,7 @@ print(
 # This code (and the lines of code after) is commented out to signify the analysis runs slow, so it is optional for
 # you to run this part of the tutorials.
 
-# # result_slow = phase_slow.run(dataset=imaging, mask=mask)
+# result_slow = phase_slow.run(dataset=imaging, mask=mask)
 
 # %%
 """
@@ -177,14 +177,14 @@ Lets check that we get a good model and fit to the data.
 """
 
 # %%
-# # aplt.FitImaging.subplot_fit_imaging(fit=result_slow.max_log_likelihood_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=result_slow.max_log_likelihood_fit)
 
 # %%
 """
 We can use the result to tell us how many iterations Dynesty took to convergence on the solution.
 """
 print("Total Dynesty Iterations (If you skip running the phase, this is ~ 500000):")
-# # print(result_slow.samples.total_samples)
+# print(result_slow.samples.total_samples)
 
 # %%
 """
@@ -212,7 +212,7 @@ print(
     "  This Jupyter notebook cell with progress once Dynesty has completed - this could take some time!"
 )
 
-# # result_fast = phase_fast.run(dataset=imaging, mask=mask)
+# result_fast = phase_fast.run(dataset=imaging, mask=mask)
 
 print("Dynesty has finished run - you may now continue the notebook.")
 
@@ -222,7 +222,7 @@ Lets check that this search, despite its faster sampling settings, still gives u
 """
 
 # %%
-# # aplt.FitImaging.subplot_fit_imaging(fit=result_fast.max_log_likelihood_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=result_fast.max_log_likelihood_fit)
 
 # %%
 """
@@ -231,7 +231,7 @@ And now lets confirm it uses significantly fewer iterations.
 
 print("Total Dynesty Iterations:")
 print("Slow settings: ~500000")
-# # print(result_slow.samples.total_samples)
+# print(result_slow.samples.total_samples)
 # print("Fast settings: ", result_fast.samples.total_samples)
 
 # %%
@@ -287,7 +287,7 @@ print(
 
 print("PySwarms has finished run - you may now continue the notebook.")
 
-# # aplt.FitImaging.subplot_fit_imaging(fit=result_pso.max_log_likelihood_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=result_pso.max_log_likelihood_fit)
 
 # %%
 """
@@ -343,4 +343,4 @@ print(
 
 print("Emcee has finished run - you may now continue the notebook.")
 
-# # aplt.FitImaging.subplot_fit_imaging(fit=result_mcmc.max_log_likelihood_fit)
+# aplt.FitImaging.subplot_fit_imaging(fit=result_mcmc.max_log_likelihood_fit)
