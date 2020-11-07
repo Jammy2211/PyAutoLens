@@ -22,7 +22,6 @@ from autoarray.structures.grids import (
 )
 from autoarray.structures.kernel import Kernel
 from autoarray.structures.visibilities import Visibilities, VisibilitiesNoiseMap
-from autogalaxy import dimensions as dim
 from autogalaxy import util
 from autogalaxy.dataset.imaging import SettingsMaskedImaging
 from autogalaxy.dataset.interferometer import SettingsMaskedInterferometer
@@ -47,7 +46,7 @@ from autogalaxy.profiles import (
     mass_profiles as mp,
     light_and_mass_profiles as lmp,
 )
-from autogalaxy.util import convert
+from autogalaxy import convert
 
 from . import aggregator as agg
 from . import plot

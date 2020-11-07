@@ -13,7 +13,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="plot_path")
 def make_visualizer_plotter_setup():
-    return "{}/files/plot/visualizer/".format(
+    return "{}/files/plot/visualizer".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 
@@ -50,7 +50,7 @@ class TestAbstractPhaseVisualizer:
             paths=af.Paths(), tracer=tracer_x2_plane_7x7, during_analysis=True
         )
 
-        assert f"{plot_path}/image//subplots/subplot_tracer.png" in plot_patch.paths
+        assert f"{plot_path}/image/subplots/subplot_tracer.png" in plot_patch.paths
 
 
 class TestPhaseDataSetVisualizer:
@@ -77,21 +77,23 @@ class TestPhaseDataSetVisualizer:
             paths=af.Paths(), tracer=tracer_x2_plane_7x7, during_analysis=False
         )
 
-        assert f"{plot_path}/image//subplots/subplot_tracer.png" in plot_patch.paths
-        assert f"{plot_path}/image//ray_tracing/image.png" in plot_patch.paths
-        assert f"{plot_path}/image//ray_tracing/source_plane.png" in plot_patch.paths
-        assert f"{plot_path}/image//ray_tracing/convergence.png" in plot_patch.paths
-        assert f"{plot_path}/image//ray_tracing/potential.png" not in plot_patch.paths
+        print(plot_patch.paths)
+
+        assert f"{plot_path}/image/subplots/subplot_tracer.png" in plot_patch.paths
+        assert f"{plot_path}/image/ray_tracing/image.png" in plot_patch.paths
+        assert f"{plot_path}/image/ray_tracing/source_plane.png" in plot_patch.paths
+        assert f"{plot_path}/image/ray_tracing/convergence.png" in plot_patch.paths
+        assert f"{plot_path}/image/ray_tracing/potential.png" not in plot_patch.paths
         assert (
-            f"{plot_path}/image//ray_tracing/deflections_y.png" not in plot_patch.paths
+            f"{plot_path}/image/ray_tracing/deflections_y.png" not in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//ray_tracing/deflections_x.png" not in plot_patch.paths
+            f"{plot_path}/image/ray_tracing/deflections_x.png" not in plot_patch.paths
         )
-        assert f"{plot_path}/image//ray_tracing/magnification.png" in plot_patch.paths
+        assert f"{plot_path}/image/ray_tracing/magnification.png" in plot_patch.paths
 
         convergence = al.util.array.numpy_array_2d_from_fits(
-            file_path=f"{plot_path}/image//ray_tracing/fits/convergence.fits", hdu=0
+            file_path=f"{plot_path}/image/ray_tracing/fits/convergence.fits", hdu=0
         )
 
         assert convergence.shape == (5, 5)
@@ -109,7 +111,7 @@ class TestPhaseDataSetVisualizer:
             during_analysis=True,
         )
         assert (
-            f"{plot_path}/image//other/stochastic_histogram.png" not in plot_patch.paths
+            f"{plot_path}/image/other/stochastic_histogram.png" not in plot_patch.paths
         )
 
         visualizer.visualize_stochastic_histogram(
@@ -118,7 +120,7 @@ class TestPhaseDataSetVisualizer:
             max_log_evidence=3.0,
             during_analysis=False,
         )
-        assert f"{plot_path}/image//other/stochastic_histogram.png" in plot_patch.paths
+        assert f"{plot_path}/image/other/stochastic_histogram.png" in plot_patch.paths
 
 
 class TestPhaseImagingVisualizer:
@@ -138,21 +140,20 @@ class TestPhaseImagingVisualizer:
 
         visualizer.visualize_imaging(paths=af.Paths())
 
-        assert f"{plot_path}/image//subplots/subplot_imaging.png" in plot_patch.paths
-        assert f"{plot_path}/image//imaging/image.png" in plot_patch.paths
-        assert f"{plot_path}/image//imaging/noise_map.png" not in plot_patch.paths
-        assert f"{plot_path}/image//imaging/psf.png" in plot_patch.paths
-        assert f"{plot_path}/image//imaging/inverse_noise_map.png" in plot_patch.paths
+        assert f"{plot_path}/image/subplots/subplot_imaging.png" in plot_patch.paths
+        assert f"{plot_path}/image/imaging/image.png" in plot_patch.paths
+        assert f"{plot_path}/image/imaging/noise_map.png" not in plot_patch.paths
+        assert f"{plot_path}/image/imaging/psf.png" in plot_patch.paths
+        assert f"{plot_path}/image/imaging/inverse_noise_map.png" in plot_patch.paths
         assert (
-            f"{plot_path}/image//imaging/signal_to_noise_map.png"
+            f"{plot_path}/image/imaging/signal_to_noise_map.png" not in plot_patch.paths
+        )
+        assert (
+            f"{plot_path}/image/imaging/absolute_signal_to_noise_map.png"
             not in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//imaging/absolute_signal_to_noise_map.png"
-            not in plot_patch.paths
-        )
-        assert (
-            f"{plot_path}/image//imaging/potential_chi_squared_map.png"
+            f"{plot_path}/image/imaging/potential_chi_squared_map.png"
             in plot_patch.paths
         )
 
@@ -181,81 +182,77 @@ class TestPhaseImagingVisualizer:
             during_analysis=False,
         )
 
+        assert f"{plot_path}/image/subplots/subplot_fit_imaging.png" in plot_patch.paths
+        assert f"{plot_path}/image/fit_imaging/image.png" in plot_patch.paths
+        assert f"{plot_path}/image/fit_imaging/noise_map.png" not in plot_patch.paths
         assert (
-            f"{plot_path}/image//subplots/subplot_fit_imaging.png" in plot_patch.paths
-        )
-        assert f"{plot_path}/image//fit_imaging/image.png" in plot_patch.paths
-        assert f"{plot_path}/image//fit_imaging/noise_map.png" not in plot_patch.paths
-        assert (
-            f"{plot_path}/image//fit_imaging/signal_to_noise_map.png"
+            f"{plot_path}/image/fit_imaging/signal_to_noise_map.png"
             not in plot_patch.paths
         )
-        assert f"{plot_path}/image//fit_imaging/model_image.png" in plot_patch.paths
+        assert f"{plot_path}/image/fit_imaging/model_image.png" in plot_patch.paths
+        assert f"{plot_path}/image/fit_imaging/residual_map.png" not in plot_patch.paths
         assert (
-            f"{plot_path}/image//fit_imaging/residual_map.png" not in plot_patch.paths
-        )
-        assert (
-            f"{plot_path}/image//fit_imaging/normalized_residual_map.png"
+            f"{plot_path}/image/fit_imaging/normalized_residual_map.png"
             in plot_patch.paths
         )
-        assert f"{plot_path}/image//fit_imaging/chi_squared_map.png" in plot_patch.paths
+        assert f"{plot_path}/image/fit_imaging/chi_squared_map.png" in plot_patch.paths
         assert (
-            f"{plot_path}/image//fit_imaging/subtracted_image_of_plane_0.png"
-            in plot_patch.paths
-        )
-        assert (
-            f"{plot_path}/image//fit_imaging/subtracted_image_of_plane_1.png"
+            f"{plot_path}/image/fit_imaging/subtracted_image_of_plane_0.png"
             in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//fit_imaging/model_image_of_plane_0.png"
+            f"{plot_path}/image/fit_imaging/subtracted_image_of_plane_1.png"
+            in plot_patch.paths
+        )
+        assert (
+            f"{plot_path}/image/fit_imaging/model_image_of_plane_0.png"
             not in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//fit_imaging/model_image_of_plane_1.png"
+            f"{plot_path}/image/fit_imaging/model_image_of_plane_1.png"
             not in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//fit_imaging/plane_image_of_plane_0.png"
+            f"{plot_path}/image/fit_imaging/plane_image_of_plane_0.png"
             in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//fit_imaging/plane_image_of_plane_1.png"
+            f"{plot_path}/image/fit_imaging/plane_image_of_plane_1.png"
             in plot_patch.paths
         )
 
-        assert f"{plot_path}/image//subplots/subplot_inversion.png" in plot_patch.paths
+        assert f"{plot_path}/image/subplots/subplot_inversion.png" in plot_patch.paths
         assert (
-            f"{plot_path}/image//inversion/reconstructed_image.png" in plot_patch.paths
+            f"{plot_path}/image/inversion/reconstructed_image.png" in plot_patch.paths
         )
-        assert f"{plot_path}/image//inversion/reconstruction.png" in plot_patch.paths
-        assert f"{plot_path}/image//inversion/errors.png" not in plot_patch.paths
-        assert f"{plot_path}/image//inversion/residual_map.png" not in plot_patch.paths
+        assert f"{plot_path}/image/inversion/reconstruction.png" in plot_patch.paths
+        assert f"{plot_path}/image/inversion/errors.png" not in plot_patch.paths
+        assert f"{plot_path}/image/inversion/residual_map.png" not in plot_patch.paths
         assert (
-            f"{plot_path}/image//inversion/normalized_residual_map.png"
+            f"{plot_path}/image/inversion/normalized_residual_map.png"
             not in plot_patch.paths
         )
-        assert f"{plot_path}/image//inversion/chi_squared_map.png" in plot_patch.paths
+        assert f"{plot_path}/image/inversion/chi_squared_map.png" in plot_patch.paths
         assert (
-            f"{plot_path}/image//inversion/regularization_weight_map.png"
-            not in plot_patch.paths
-        )
-        assert (
-            f"{plot_path}/image//inversion/interpolated_reconstruction.png"
+            f"{plot_path}/image/inversion/regularization_weight_map.png"
             not in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//inversion/interpolated_errors.png" in plot_patch.paths
+            f"{plot_path}/image/inversion/interpolated_reconstruction.png"
+            not in plot_patch.paths
+        )
+        assert (
+            f"{plot_path}/image/inversion/interpolated_errors.png" in plot_patch.paths
         )
 
         image = al.util.array.numpy_array_2d_from_fits(
-            file_path=f"{plot_path}/image//fit_imaging/fits/image.fits", hdu=0
+            file_path=f"{plot_path}/image/fit_imaging/fits/image.fits", hdu=0
         )
 
         assert image.shape == (5, 5)
 
         image = al.util.array.numpy_array_2d_from_fits(
-            file_path=f"{plot_path}/image//inversion/fits/interpolated_reconstruction.fits",
+            file_path=f"{plot_path}/image/inversion/fits/interpolated_reconstruction.fits",
             hdu=0,
         )
 
@@ -284,9 +281,9 @@ class TestPhaseImagingVisualizer:
             hyper_model_image=hyper_model_image_7x7,
         )
 
-        assert f"{plot_path}/image//hyper/hyper_model_image.png" in plot_patch.paths
+        assert f"{plot_path}/image/hyper/hyper_model_image.png" in plot_patch.paths
         assert (
-            f"{plot_path}/image//subplots/subplot_hyper_galaxy_images.png"
+            f"{plot_path}/image/subplots/subplot_hyper_galaxy_images.png"
             in plot_patch.paths
         )
 
@@ -307,16 +304,15 @@ class TestPhaseInterferometerVisualizer:
         visualizer.visualize_interferometer(paths=af.Paths())
 
         assert (
-            f"{plot_path}/image//subplots/subplot_interferometer.png"
-            in plot_patch.paths
+            f"{plot_path}/image/subplots/subplot_interferometer.png" in plot_patch.paths
         )
-        assert f"{plot_path}/image//interferometer/visibilities.png" in plot_patch.paths
+        assert f"{plot_path}/image/interferometer/visibilities.png" in plot_patch.paths
         assert (
-            f"{plot_path}/image//interferometer/u_wavelengths.png"
+            f"{plot_path}/image/interferometer/u_wavelengths.png"
             not in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//interferometer/v_wavelengths.png"
+            f"{plot_path}/image/interferometer/v_wavelengths.png"
             not in plot_patch.paths
         )
 
@@ -344,57 +340,56 @@ class TestPhaseInterferometerVisualizer:
         )
 
         assert (
-            f"{plot_path}/image//subplots/subplot_fit_interferometer.png"
+            f"{plot_path}/image/subplots/subplot_fit_interferometer.png"
             in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//fit_interferometer/visibilities.png"
-            in plot_patch.paths
+            f"{plot_path}/image/fit_interferometer/visibilities.png" in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//fit_interferometer/noise_map.png"
+            f"{plot_path}/image/fit_interferometer/noise_map.png"
             not in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//fit_interferometer/signal_to_noise_map.png"
+            f"{plot_path}/image/fit_interferometer/signal_to_noise_map.png"
             not in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//fit_interferometer/model_visibilities.png"
+            f"{plot_path}/image/fit_interferometer/model_visibilities.png"
             in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//fit_interferometer/residual_map_vs_uv_distances_real.png"
+            f"{plot_path}/image/fit_interferometer/residual_map_vs_uv_distances_real.png"
             not in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//fit_interferometer/normalized_residual_map_vs_uv_distances_real.png"
+            f"{plot_path}/image/fit_interferometer/normalized_residual_map_vs_uv_distances_real.png"
             in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//fit_interferometer/chi_squared_map_vs_uv_distances_real.png"
+            f"{plot_path}/image/fit_interferometer/chi_squared_map_vs_uv_distances_real.png"
             in plot_patch.paths
         )
 
-        #    assert f"{plot_path}/image//subplots/subplot_inversion.png" in plot_patch.paths
+        #    assert f"{plot_path}/image/subplots/subplot_inversion.png" in plot_patch.paths
         assert (
-            f"{plot_path}/image//inversion/reconstructed_image.png" in plot_patch.paths
+            f"{plot_path}/image/inversion/reconstructed_image.png" in plot_patch.paths
         )
-        assert f"{plot_path}/image//inversion/reconstruction.png" in plot_patch.paths
-        assert f"{plot_path}/image//inversion/errors.png" not in plot_patch.paths
-        #  assert f"{plot_path}/image//inversion/residual_map.png" not in plot_patch.paths
-        #  assert f"{plot_path}/image//inversion/normalized_residual_map.png" not in plot_patch.paths
-        #  assert f"{plot_path}/image//inversion/chi_squared_map.png" in plot_patch.paths
+        assert f"{plot_path}/image/inversion/reconstruction.png" in plot_patch.paths
+        assert f"{plot_path}/image/inversion/errors.png" not in plot_patch.paths
+        #  assert f"{plot_path}/image/inversion/residual_map.png" not in plot_patch.paths
+        #  assert f"{plot_path}/image/inversion/normalized_residual_map.png" not in plot_patch.paths
+        #  assert f"{plot_path}/image/inversion/chi_squared_map.png" in plot_patch.paths
         assert (
-            f"{plot_path}/image//inversion/regularization_weight_map.png"
+            f"{plot_path}/image/inversion/regularization_weight_map.png"
             not in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//inversion/interpolated_reconstruction.png"
+            f"{plot_path}/image/inversion/interpolated_reconstruction.png"
             not in plot_patch.paths
         )
         assert (
-            f"{plot_path}/image//inversion/interpolated_errors.png" in plot_patch.paths
+            f"{plot_path}/image/inversion/interpolated_errors.png" in plot_patch.paths
         )
 
 
@@ -423,6 +418,6 @@ class TestHyperGalaxyVisualizer:
         )
 
         assert (
-            f"{plot_path}/image//subplots/subplot_fit_hyper_galaxy.png"
+            f"{plot_path}/image/subplots/subplot_fit_hyper_galaxy.png"
             in plot_patch.paths
         )

@@ -37,8 +37,8 @@ class TestPhase:
 
         model = phase_extended.make_model(instance=galaxies)
 
-        assert isinstance(model.lens.mass.einstein_radius, af.PriorModel)
-        assert not isinstance(model.lens.light.intensity, af.PriorModel)
+        assert isinstance(model.lens.mass.einstein_radius, af.UniformPrior)
+        assert isinstance(model.lens.light.intensity, float)
 
 
 class TestMakeAnalysis:
@@ -347,29 +347,25 @@ class TestExtensions:
         model = phase_extended.make_model(instance=galaxies)
 
         assert isinstance(model.lens.mass.centre, TuplePrior)
-        assert not isinstance(model.lens.light.intensity, af.PriorModel)
-        assert not isinstance(model.source.pixelization.pixels, af.PriorModel)
-        assert not isinstance(
-            model.source.regularization.inner_coefficient, af.PriorModel
-        )
+        assert isinstance(model.lens.light.intensity, float)
+        assert isinstance(model.source.pixelization.pixels, int)
+        assert isinstance(model.source.regularization.inner_coefficient, float)
 
         phase_extended = phase.extend_with_stochastic_phase(include_lens_light=True)
 
         model = phase_extended.make_model(instance=galaxies)
 
         assert isinstance(model.lens.mass.centre, TuplePrior)
-        assert isinstance(model.lens.light.intensity, af.PriorModel)
-        assert not isinstance(model.source.pixelization.pixels, af.UniformPrior)
-        assert not isinstance(
-            model.source.regularization.inner_coefficient, af.UniformPrior
-        )
+        assert isinstance(model.lens.light.intensity, af.UniformPrior)
+        assert isinstance(model.source.pixelization.pixels, int)
+        assert isinstance(model.source.regularization.inner_coefficient, float)
 
         phase_extended = phase.extend_with_stochastic_phase(include_pixelization=True)
 
         model = phase_extended.make_model(instance=galaxies)
 
         assert isinstance(model.lens.mass.centre, TuplePrior)
-        assert not isinstance(model.lens.light.intensity, af.PriorModel)
+        assert isinstance(model.lens.light.intensity, float)
         assert isinstance(model.source.pixelization.pixels, af.UniformPrior)
         assert not isinstance(
             model.source.regularization.inner_coefficient, af.UniformPrior
@@ -380,8 +376,8 @@ class TestExtensions:
         model = phase_extended.make_model(instance=galaxies)
 
         assert isinstance(model.lens.mass.centre, TuplePrior)
-        assert not isinstance(model.lens.light.intensity, af.PriorModel)
-        assert not isinstance(model.source.pixelization.pixels, af.UniformPrior)
+        assert isinstance(model.lens.light.intensity, float)
+        assert isinstance(model.source.pixelization.pixels, int)
         assert isinstance(
             model.source.regularization.inner_coefficient, af.UniformPrior
         )

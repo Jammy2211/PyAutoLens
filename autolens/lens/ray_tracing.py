@@ -188,57 +188,6 @@ class AbstractTracer(lensing.LensingObject, ABC):
     def plane_with_galaxy(self, galaxy):
         return [plane for plane in self.planes if galaxy in plane.galaxies][0]
 
-    def new_object_with_units_converted(
-        self,
-        unit_length=None,
-        unit_luminosity=None,
-        unit_mass=None,
-        kpc_per_arcsec=None,
-        exposure_time=None,
-        critical_surface_density=None,
-    ):
-
-        new_planes = list(
-            map(
-                lambda plane: plane.new_object_with_units_converted(
-                    unit_length=unit_length,
-                    unit_luminosity=unit_luminosity,
-                    unit_mass=unit_mass,
-                    kpc_per_arcsec=kpc_per_arcsec,
-                    exposure_time=exposure_time,
-                    critical_surface_density=critical_surface_density,
-                ),
-                self.planes,
-            )
-        )
-
-        return self.__class__(planes=new_planes, cosmology=self.cosmology)
-
-    @property
-    def unit_length(self):
-        if self.has_light_profile:
-            return self.planes_with_light_profile[0].unit_length
-        elif self.has_mass_profile:
-            return self.planes_with_mass_profile[0].unit_length
-        else:
-            return None
-
-    @property
-    def unit_luminosity(self):
-        if self.has_light_profile:
-            return self.planes_with_light_profile[0].unit_luminosity
-        elif self.has_mass_profile:
-            return self.planes_with_mass_profile[0].unit_luminosity
-        else:
-            return None
-
-    @property
-    def unit_mass(self):
-        if self.has_mass_profile:
-            return self.planes_with_mass_profile[0].unit_mass
-        else:
-            return None
-
     @classmethod
     def load(cls, file_path, filename="tracer"):
         with open(f"{file_path}/{filename}.pickle", "rb") as f:
@@ -252,77 +201,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
             pickle.dump(self, f)
 
 
-class AbstractTracerCosmology(AbstractTracer, ABC):
-    @property
-    def arcsec_per_kpc(self):
-        return self.arcsec_per_kpc_proper_of_plane(i=0)
-
-    @property
-    def kpc_per_arcsec(self):
-        return 1.0 / self.arcsec_per_kpc
-
-    def arcsec_per_kpc_proper_of_plane(self, i):
-        return cosmology_util.arcsec_per_kpc_from(
-            redshift=self.plane_redshifts[i], cosmology=self.cosmology
-        )
-
-    def kpc_per_arcsec_proper_of_plane(self, i):
-        return 1.0 / self.arcsec_per_kpc_proper_of_plane(i=i)
-
-    def angular_diameter_distance_of_plane_to_earth_in_units(
-        self, i, unit_length="arcsec"
-    ):
-        return cosmology_util.angular_diameter_distance_to_earth_from(
-            redshift=self.plane_redshifts[i],
-            cosmology=self.cosmology,
-            unit_length=unit_length,
-        )
-
-    def angular_diameter_distance_between_planes_in_units(
-        self, i, j, unit_length="arcsec"
-    ):
-        return cosmology_util.angular_diameter_distance_between_redshifts_from(
-            redshift_0=self.plane_redshifts[i],
-            redshift_1=self.plane_redshifts[j],
-            cosmology=self.cosmology,
-            unit_length=unit_length,
-        )
-
-    def angular_diameter_distance_to_source_plane_in_units(self, unit_length="arcsec"):
-        return cosmology_util.angular_diameter_distance_to_earth_from(
-            redshift=self.plane_redshifts[-1],
-            cosmology=self.cosmology,
-            unit_length=unit_length,
-        )
-
-    def critical_surface_density_between_planes_in_units(
-        self, i, j, unit_length="arcsec", unit_mass="solMass"
-    ):
-        return cosmology_util.critical_surface_density_between_redshifts_from(
-            redshift_0=self.plane_redshifts[i],
-            redshift_1=self.plane_redshifts[j],
-            cosmology=self.cosmology,
-            unit_length=unit_length,
-            unit_mass=unit_mass,
-        )
-
-    def scaling_factor_between_planes(self, i, j):
-        return cosmology_util.scaling_factor_between_redshifts_from(
-            redshift_0=self.plane_redshifts[i],
-            redshift_1=self.plane_redshifts[j],
-            redshift_final=self.plane_redshifts[-1],
-            cosmology=self.cosmology,
-        )
-
-    def angular_diameter_distance_from_image_to_source_plane_in_units(
-        self, unit_length="arcsec"
-    ):
-        return self.angular_diameter_distance_between_planes_in_units(
-            i=0, j=-1, unit_length=unit_length
-        )
-
-
-class AbstractTracerLensing(AbstractTracerCosmology, ABC):
+class AbstractTracerLensing(AbstractTracer, ABC):
     @grids.grid_like_to_structure_list
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
@@ -451,10 +330,7 @@ class AbstractTracerLensing(AbstractTracerCosmology, ABC):
                 plane_index_insert = plane_index
 
         planes = self.planes
-        planes.insert(
-            plane_index_insert,
-            pl.Plane(redshift=redshift, galaxies=[], cosmology=self.cosmology),
-        )
+        planes.insert(plane_index_insert, pl.Plane(redshift=redshift, galaxies=[]))
 
         tracer = Tracer(planes=planes, cosmology=self.cosmology)
 
@@ -882,9 +758,7 @@ class Tracer(AbstractTracerData):
         planes = []
 
         for plane_index in range(0, len(plane_redshifts)):
-            planes.append(
-                pl.Plane(galaxies=galaxies_in_planes[plane_index], cosmology=cosmology)
-            )
+            planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index]))
 
         return Tracer(planes=planes, cosmology=cosmology)
 
@@ -948,7 +822,6 @@ class Tracer(AbstractTracerData):
                 pl.Plane(
                     redshift=plane_redshifts[plane_index],
                     galaxies=galaxies_in_planes[plane_index],
-                    cosmology=cosmology,
                 )
             )
 

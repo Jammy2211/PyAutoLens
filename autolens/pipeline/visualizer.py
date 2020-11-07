@@ -52,7 +52,7 @@ class AbstractVisualizer:
             )
         return lensing_plotters.Plotter(
             output=mat_objs.Output(
-                path=f"{paths.image_path}/{subfolders}", format=format
+                path=f"{paths.image_path}{subfolders}", format=format
             )
         )
 
@@ -60,7 +60,7 @@ class AbstractVisualizer:
     def sub_plotter_from_paths(paths):
 
         return lensing_plotters.SubPlotter(
-            output=mat_objs.Output(path=f"{paths.image_path}/subplots/", format="png")
+            output=mat_objs.Output(path=f"{paths.image_path}subplots", format="png")
         )
 
     def new_visualizer_with_preloaded_critical_curves_and_caustics(

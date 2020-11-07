@@ -665,184 +665,6 @@ class TestAbstractTracer:
                 [(3.0, 3.0), (4.0, 4.0)],
             ]
 
-    class TestUnits:
-        def test__light_profiles_conversions(self):
-
-            profile_0 = al.lp.EllipticalGaussian(
-                centre=(
-                    al.dim.Length(value=3.0, unit_length="arcsec"),
-                    al.dim.Length(value=3.0, unit_length="arcsec"),
-                ),
-                intensity=al.dim.Luminosity(value=2.0, unit_luminosity="eps"),
-            )
-
-            galaxy_0 = al.Galaxy(light=profile_0, redshift=1.0)
-
-            profile_1 = al.lp.EllipticalGaussian(
-                centre=(
-                    al.dim.Length(value=4.0, unit_length="arcsec"),
-                    al.dim.Length(value=4.0, unit_length="arcsec"),
-                ),
-                intensity=al.dim.Luminosity(value=5.0, unit_luminosity="eps"),
-            )
-
-            galaxy_1 = al.Galaxy(light=profile_1, redshift=1.0)
-
-            plane_0 = al.Plane(galaxies=[galaxy_0])
-            plane_1 = al.Plane(galaxies=[galaxy_1])
-
-            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
-
-            assert tracer.planes[0].galaxies[0].light.centre == (3.0, 3.0)
-            assert tracer.planes[0].galaxies[0].light.unit_length == "arcsec"
-            assert tracer.planes[0].galaxies[0].light.intensity == 2.0
-            assert tracer.planes[0].galaxies[0].light.intensity.unit_luminosity == "eps"
-            assert tracer.planes[1].galaxies[0].light.centre == (4.0, 4.0)
-            assert tracer.planes[1].galaxies[0].light.unit_length == "arcsec"
-            assert tracer.planes[1].galaxies[0].light.intensity == 5.0
-            assert tracer.planes[1].galaxies[0].light.intensity.unit_luminosity == "eps"
-
-            tracer = tracer.new_object_with_units_converted(
-                unit_length="kpc",
-                kpc_per_arcsec=2.0,
-                unit_luminosity="counts",
-                exposure_time=0.5,
-            )
-
-            assert tracer.planes[0].galaxies[0].light.centre == (6.0, 6.0)
-            assert tracer.planes[0].galaxies[0].light.unit_length == "kpc"
-            assert tracer.planes[0].galaxies[0].light.intensity == 1.0
-            assert (
-                tracer.planes[0].galaxies[0].light.intensity.unit_luminosity == "counts"
-            )
-            assert tracer.planes[1].galaxies[0].light.centre == (8.0, 8.0)
-            assert tracer.planes[1].galaxies[0].light.unit_length == "kpc"
-            assert tracer.planes[1].galaxies[0].light.intensity == 2.5
-            assert (
-                tracer.planes[1].galaxies[0].light.intensity.unit_luminosity == "counts"
-            )
-
-        def test__mass_profiles_conversions(self):
-
-            profile_0 = al.mp.EllipticalSersic(
-                centre=(
-                    al.dim.Length(value=3.0, unit_length="arcsec"),
-                    al.dim.Length(value=3.0, unit_length="arcsec"),
-                ),
-                intensity=al.dim.Luminosity(value=2.0, unit_luminosity="eps"),
-                mass_to_light_ratio=al.dim.MassOverLuminosity(
-                    value=5.0, unit_mass="angular", unit_luminosity="eps"
-                ),
-            )
-
-            galaxy_0 = al.Galaxy(mass=profile_0, redshift=1.0)
-
-            profile_1 = al.mp.EllipticalSersic(
-                centre=(
-                    al.dim.Length(value=4.0, unit_length="arcsec"),
-                    al.dim.Length(value=4.0, unit_length="arcsec"),
-                ),
-                intensity=al.dim.Luminosity(value=5.0, unit_luminosity="eps"),
-                mass_to_light_ratio=al.dim.MassOverLuminosity(
-                    value=10.0, unit_mass="angular", unit_luminosity="eps"
-                ),
-            )
-
-            galaxy_1 = al.Galaxy(mass=profile_1, redshift=1.0)
-
-            plane_0 = al.Plane(galaxies=[galaxy_0])
-            plane_1 = al.Plane(galaxies=[galaxy_1])
-
-            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
-
-            assert tracer.planes[0].galaxies[0].mass.centre == (3.0, 3.0)
-            assert tracer.planes[0].galaxies[0].mass.unit_length == "arcsec"
-            assert tracer.planes[0].galaxies[0].mass.intensity == 2.0
-            assert tracer.planes[0].galaxies[0].mass.intensity.unit_luminosity == "eps"
-            assert tracer.planes[0].galaxies[0].mass.mass_to_light_ratio == 5.0
-            assert (
-                tracer.planes[0].galaxies[0].mass.mass_to_light_ratio.unit_mass
-                == "angular"
-            )
-            assert tracer.planes[1].galaxies[0].mass.centre == (4.0, 4.0)
-            assert tracer.planes[1].galaxies[0].mass.unit_length == "arcsec"
-            assert tracer.planes[1].galaxies[0].mass.intensity == 5.0
-            assert tracer.planes[1].galaxies[0].mass.intensity.unit_luminosity == "eps"
-            assert tracer.planes[1].galaxies[0].mass.mass_to_light_ratio == 10.0
-            assert (
-                tracer.planes[1].galaxies[0].mass.mass_to_light_ratio.unit_mass
-                == "angular"
-            )
-
-            tracer = tracer.new_object_with_units_converted(
-                unit_length="kpc",
-                kpc_per_arcsec=2.0,
-                unit_luminosity="counts",
-                exposure_time=0.5,
-                unit_mass="solMass",
-                critical_surface_density=3.0,
-            )
-
-            assert tracer.planes[0].galaxies[0].mass.centre == (6.0, 6.0)
-            assert tracer.planes[0].galaxies[0].mass.unit_length == "kpc"
-            assert tracer.planes[0].galaxies[0].mass.intensity == 1.0
-            assert (
-                tracer.planes[0].galaxies[0].mass.intensity.unit_luminosity == "counts"
-            )
-            assert tracer.planes[0].galaxies[0].mass.mass_to_light_ratio == 30.0
-            assert (
-                tracer.planes[0].galaxies[0].mass.mass_to_light_ratio.unit_mass
-                == "solMass"
-            )
-            assert tracer.planes[1].galaxies[0].mass.centre == (8.0, 8.0)
-            assert tracer.planes[1].galaxies[0].mass.unit_length == "kpc"
-            assert tracer.planes[1].galaxies[0].mass.intensity == 2.5
-            assert (
-                tracer.planes[1].galaxies[0].mass.intensity.unit_luminosity == "counts"
-            )
-            assert tracer.planes[1].galaxies[0].mass.mass_to_light_ratio == 60.0
-            assert (
-                tracer.planes[1].galaxies[0].mass.mass_to_light_ratio.unit_mass
-                == "solMass"
-            )
-
-        def test__tracer_keeps_attributes(self):
-            profile_0 = al.lp.EllipticalGaussian(
-                centre=(
-                    al.dim.Length(value=3.0, unit_length="arcsec"),
-                    al.dim.Length(value=3.0, unit_length="arcsec"),
-                ),
-                intensity=al.dim.Luminosity(value=2.0, unit_luminosity="eps"),
-            )
-
-            galaxy_0 = al.Galaxy(light=profile_0, redshift=1.0)
-
-            profile_1 = al.lp.EllipticalGaussian(
-                centre=(
-                    al.dim.Length(value=4.0, unit_length="arcsec"),
-                    al.dim.Length(value=4.0, unit_length="arcsec"),
-                ),
-                intensity=al.dim.Luminosity(value=5.0, unit_luminosity="eps"),
-            )
-
-            galaxy_1 = al.Galaxy(light=profile_1, redshift=1.0)
-
-            plane_0 = al.Plane(galaxies=[galaxy_0])
-            plane_1 = al.Plane(galaxies=[galaxy_1])
-
-            tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=1)
-
-            assert tracer.cosmology == 1
-
-            tracer = tracer.new_object_with_units_converted(
-                unit_length="kpc",
-                kpc_per_arcsec=2.0,
-                unit_luminosity="counts",
-                exposure_time=0.5,
-            )
-
-            assert tracer.cosmology == 1
-
     class TestPickle:
         def test__tracer_can_be_pickled_and_loaded(self):
 
@@ -863,297 +685,6 @@ class TestAbstractTracer:
             tracer = al.Tracer.load(file_path=test_path, filename="test_tracer")
 
             assert tracer.galaxies[0].light.intensity == 1.1
-
-
-class TestAbstractTracerCosmology:
-    def test__2_planes__z01_and_z1(self):
-        g0 = al.Galaxy(redshift=0.1)
-        g1 = al.Galaxy(redshift=1.0)
-
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
-
-        assert tracer.cosmology == cosmo.Planck15
-
-        assert tracer.image_plane.arcsec_per_kpc == pytest.approx(0.525060, 1e-5)
-        assert tracer.image_plane.kpc_per_arcsec == pytest.approx(1.904544, 1e-5)
-        assert tracer.image_plane.angular_diameter_distance_to_earth_in_units(
-            unit_length="kpc"
-        ) == pytest.approx(392840, 1e-5)
-
-        assert tracer.source_plane.arcsec_per_kpc == pytest.approx(0.1214785, 1e-5)
-        assert tracer.source_plane.kpc_per_arcsec == pytest.approx(8.231907, 1e-5)
-        assert tracer.source_plane.angular_diameter_distance_to_earth_in_units(
-            unit_length="kpc"
-        ) == pytest.approx(1697952, 1e-5)
-
-        assert tracer.angular_diameter_distance_from_image_to_source_plane_in_units(
-            unit_length="kpc"
-        ) == pytest.approx(1481890.4, 1e-5)
-
-        assert tracer.critical_surface_density_between_planes_in_units(
-            i=0, j=1, unit_length="kpc", unit_mass="solMass"
-        ) == pytest.approx(4.85e9, 1e-2)
-
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
-
-        assert tracer.critical_surface_density_between_planes_in_units(
-            i=0, j=1, unit_length="arcsec", unit_mass="solMass"
-        ) == pytest.approx(17593241668, 1e-2)
-
-    def test__3_planes__z01_z1__and_z2(self):
-
-        g0 = al.Galaxy(redshift=0.1)
-        g1 = al.Galaxy(redshift=1.0)
-        g2 = al.Galaxy(redshift=2.0)
-
-        tracer = al.Tracer.from_galaxies(
-            galaxies=[g0, g1, g2], cosmology=cosmo.Planck15
-        )
-
-        assert tracer.arcsec_per_kpc_proper_of_plane(i=0) == pytest.approx(
-            0.525060, 1e-5
-        )
-        assert tracer.kpc_per_arcsec_proper_of_plane(i=0) == pytest.approx(
-            1.904544, 1e-5
-        )
-
-        assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(
-            i=0, unit_length="kpc"
-        ) == pytest.approx(392840, 1e-5)
-        assert (
-            tracer.angular_diameter_distance_between_planes_in_units(
-                i=0, j=0, unit_length="kpc"
-            )
-            == 0.0
-        )
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=0, j=1, unit_length="kpc"
-        ) == pytest.approx(1481890.4, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=0, j=2, unit_length="kpc"
-        ) == pytest.approx(1626471, 1e-5)
-
-        assert tracer.arcsec_per_kpc_proper_of_plane(i=1) == pytest.approx(
-            0.1214785, 1e-5
-        )
-        assert tracer.kpc_per_arcsec_proper_of_plane(i=1) == pytest.approx(
-            8.231907, 1e-5
-        )
-
-        assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(
-            i=1, unit_length="kpc"
-        ) == pytest.approx(1697952, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=1, j=0, unit_length="kpc"
-        ) == pytest.approx(-2694346, 1e-5)
-        assert (
-            tracer.angular_diameter_distance_between_planes_in_units(
-                i=1, j=1, unit_length="kpc"
-            )
-            == 0.0
-        )
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=1, j=2, unit_length="kpc"
-        ) == pytest.approx(638544, 1e-5)
-
-        assert tracer.arcsec_per_kpc_proper_of_plane(i=2) == pytest.approx(
-            0.116500, 1e-5
-        )
-        assert tracer.kpc_per_arcsec_proper_of_plane(i=2) == pytest.approx(
-            8.58368, 1e-5
-        )
-
-        assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(
-            i=2, unit_length="kpc"
-        ) == pytest.approx(1770512, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=2, j=0, unit_length="kpc"
-        ) == pytest.approx(-4435831, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=2, j=1, unit_length="kpc"
-        ) == pytest.approx(-957816)
-        assert (
-            tracer.angular_diameter_distance_between_planes_in_units(
-                i=2, j=2, unit_length="kpc"
-            )
-            == 0.0
-        )
-
-        assert tracer.critical_surface_density_between_planes_in_units(
-            i=0, j=1, unit_length="kpc", unit_mass="solMass"
-        ) == pytest.approx(4.85e9, 1e-2)
-        assert tracer.critical_surface_density_between_planes_in_units(
-            i=0, j=1, unit_length="arcsec", unit_mass="solMass"
-        ) == pytest.approx(17593241668, 1e-2)
-
-        assert tracer.scaling_factor_between_planes(i=0, j=1) == pytest.approx(
-            0.9500, 1e-4
-        )
-        assert tracer.scaling_factor_between_planes(i=0, j=2) == pytest.approx(
-            1.0, 1e-4
-        )
-        assert tracer.scaling_factor_between_planes(i=1, j=2) == pytest.approx(
-            1.0, 1e-4
-        )
-
-    def test__4_planes__z01_z1_z2_and_z3(self):
-
-        g0 = al.Galaxy(redshift=0.1)
-        g1 = al.Galaxy(redshift=1.0)
-        g2 = al.Galaxy(redshift=2.0)
-        g3 = al.Galaxy(redshift=3.0)
-
-        tracer = al.Tracer.from_galaxies(
-            galaxies=[g0, g1, g2, g3], cosmology=cosmo.Planck15
-        )
-
-        assert tracer.arcsec_per_kpc_proper_of_plane(i=0) == pytest.approx(
-            0.525060, 1e-5
-        )
-        assert tracer.kpc_per_arcsec_proper_of_plane(i=0) == pytest.approx(
-            1.904544, 1e-5
-        )
-
-        assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(
-            i=0, unit_length="kpc"
-        ) == pytest.approx(392840, 1e-5)
-        assert (
-            tracer.angular_diameter_distance_between_planes_in_units(
-                i=0, j=0, unit_length="kpc"
-            )
-            == 0.0
-        )
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=0, j=1, unit_length="kpc"
-        ) == pytest.approx(1481890.4, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=0, j=2, unit_length="kpc"
-        ) == pytest.approx(1626471, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=0, j=3, unit_length="kpc"
-        ) == pytest.approx(1519417, 1e-5)
-
-        assert tracer.arcsec_per_kpc_proper_of_plane(i=1) == pytest.approx(
-            0.1214785, 1e-5
-        )
-        assert tracer.kpc_per_arcsec_proper_of_plane(i=1) == pytest.approx(
-            8.231907, 1e-5
-        )
-
-        assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(
-            i=1, unit_length="kpc"
-        ) == pytest.approx(1697952, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=1, j=0, unit_length="kpc"
-        ) == pytest.approx(-2694346, 1e-5)
-        assert (
-            tracer.angular_diameter_distance_between_planes_in_units(
-                i=1, j=1, unit_length="kpc"
-            )
-            == 0.0
-        )
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=1, j=2, unit_length="kpc"
-        ) == pytest.approx(638544, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=1, j=3, unit_length="kpc"
-        ) == pytest.approx(778472, 1e-5)
-
-        assert tracer.arcsec_per_kpc_proper_of_plane(i=2) == pytest.approx(
-            0.116500, 1e-5
-        )
-        assert tracer.kpc_per_arcsec_proper_of_plane(i=2) == pytest.approx(
-            8.58368, 1e-5
-        )
-
-        assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(
-            i=2, unit_length="kpc"
-        ) == pytest.approx(1770512, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=2, j=0, unit_length="kpc"
-        ) == pytest.approx(-4435831, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=2, j=1, unit_length="kpc"
-        ) == pytest.approx(-957816)
-        assert (
-            tracer.angular_diameter_distance_between_planes_in_units(
-                i=2, j=2, unit_length="kpc"
-            )
-            == 0.0
-        )
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=2, j=3, unit_length="kpc"
-        ) == pytest.approx(299564)
-
-        assert tracer.arcsec_per_kpc_proper_of_plane(i=3) == pytest.approx(
-            0.12674, 1e-5
-        )
-        assert tracer.kpc_per_arcsec_proper_of_plane(i=3) == pytest.approx(
-            7.89009, 1e-5
-        )
-
-        assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(
-            i=3, unit_length="kpc"
-        ) == pytest.approx(1627448, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=3, j=0, unit_length="kpc"
-        ) == pytest.approx(-5525155, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=3, j=1, unit_length="kpc"
-        ) == pytest.approx(-1556945, 1e-5)
-        assert tracer.angular_diameter_distance_between_planes_in_units(
-            i=3, j=2, unit_length="kpc"
-        ) == pytest.approx(-399419, 1e-5)
-        assert (
-            tracer.angular_diameter_distance_between_planes_in_units(
-                i=3, j=3, unit_length="kpc"
-            )
-            == 0.0
-        )
-
-        assert tracer.critical_surface_density_between_planes_in_units(
-            i=0, j=1, unit_length="kpc", unit_mass="solMass"
-        ) == pytest.approx(4.85e9, 1e-2)
-        assert tracer.critical_surface_density_between_planes_in_units(
-            i=0, j=1, unit_length="arcsec", unit_mass="solMass"
-        ) == pytest.approx(17593241668, 1e-2)
-
-        assert tracer.scaling_factor_between_planes(i=0, j=1) == pytest.approx(
-            0.9348, 1e-4
-        )
-        assert tracer.scaling_factor_between_planes(i=0, j=2) == pytest.approx(
-            0.984, 1e-4
-        )
-        assert tracer.scaling_factor_between_planes(i=0, j=3) == pytest.approx(
-            1.0, 1e-4
-        )
-        assert tracer.scaling_factor_between_planes(i=1, j=2) == pytest.approx(
-            0.754, 1e-4
-        )
-        assert tracer.scaling_factor_between_planes(i=1, j=3) == pytest.approx(
-            1.0, 1e-4
-        )
-        assert tracer.scaling_factor_between_planes(i=2, j=3) == pytest.approx(
-            1.0, 1e-4
-        )
-
-    def test__6_galaxies__tracer_planes_are_correct(self):
-
-        g0 = al.Galaxy(redshift=2.0)
-        g1 = al.Galaxy(redshift=2.0)
-        g2 = al.Galaxy(redshift=0.1)
-        g3 = al.Galaxy(redshift=3.0)
-        g4 = al.Galaxy(redshift=1.0)
-        g5 = al.Galaxy(redshift=3.0)
-
-        tracer = al.Tracer.from_galaxies(
-            galaxies=[g0, g1, g2, g3, g4, g5], cosmology=cosmo.Planck15
-        )
-
-        assert tracer.planes[0].galaxies == [g2]
-        assert tracer.planes[1].galaxies == [g4]
-        assert tracer.planes[2].galaxies == [g0, g1]
-        assert tracer.planes[3].galaxies == [g3, g5]
 
 
 class TestAbstractTracerLensing:
@@ -2696,8 +2227,9 @@ class TestAbstractTracerLensing:
                 planes=[plane, al.Plane(redshift=1.0)], cosmology=cosmo.Planck15
             )
 
-            assert tracer.einstein_mass_in_units(unit_mass="angular") == pytest.approx(
-                np.pi * 2.0 ** 2.0, 1.0e-1
+            assert (
+                tracer.einstein_mass_angular_from_tangential_critical_curve
+                == pytest.approx(np.pi * 2.0 ** 2.0, 1.0e-1)
             )
 
 
@@ -3504,9 +3036,9 @@ class TestAbstractTracerData:
                 settings_pixelization=al.SettingsPixelization(use_border=False),
             )
 
-            assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
-                masked_interferometer_7.visibilities[:, 0], 1.0e-2
-            )
+            # assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
+            #     masked_interferometer_7.visibilities[:, 0], 1.0e-2
+            # )
 
     class TestHyperNoiseMap:
         def test__hyper_noise_maps_of_planes(self, sub_grid_7x7):
@@ -3583,530 +3115,201 @@ class TestAbstractTracerData:
 
 
 class TestTracer:
-    class TestTracedDeflectionsFromGrid:
-        def test__x2_planes__no_galaxy__all_deflections_are_zeros(
-            self, sub_grid_7x7_simple
-        ):
+    def test__x2_planes__no_galaxy__all_deflections_are_zeros(
+        self, sub_grid_7x7_simple
+    ):
 
-            tracer = al.Tracer.from_galaxies(
-                galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
-            )
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
+        )
 
-            traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-                grid=sub_grid_7x7_simple, plane_i=0, plane_j=0
-            )
+        traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
+            grid=sub_grid_7x7_simple, plane_i=0, plane_j=0
+        )
 
-            assert traced_deflections_between_planes[0] == pytest.approx(
-                np.array([0.0, 0.0]), 1e-3
-            )
-            assert traced_deflections_between_planes[1] == pytest.approx(
-                np.array([0.0, 0.0]), 1e-3
-            )
-            assert traced_deflections_between_planes[2] == pytest.approx(
-                np.array([0.0, 0.0]), 1e-3
-            )
-            assert traced_deflections_between_planes[3] == pytest.approx(
-                np.array([0.0, 0.0]), 1e-3
-            )
+        assert traced_deflections_between_planes[0] == pytest.approx(
+            np.array([0.0, 0.0]), 1e-3
+        )
+        assert traced_deflections_between_planes[1] == pytest.approx(
+            np.array([0.0, 0.0]), 1e-3
+        )
+        assert traced_deflections_between_planes[2] == pytest.approx(
+            np.array([0.0, 0.0]), 1e-3
+        )
+        assert traced_deflections_between_planes[3] == pytest.approx(
+            np.array([0.0, 0.0]), 1e-3
+        )
 
-            traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-                grid=sub_grid_7x7_simple, plane_i=0, plane_j=1
-            )
+        traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
+            grid=sub_grid_7x7_simple, plane_i=0, plane_j=1
+        )
 
-            assert traced_deflections_between_planes[0] == pytest.approx(
-                np.array([0.0, 0.0]), 1e-3
-            )
-            assert traced_deflections_between_planes[1] == pytest.approx(
-                np.array([0.0, 0.0]), 1e-3
-            )
-            assert traced_deflections_between_planes[2] == pytest.approx(
-                np.array([0.0, 0.0]), 1e-3
-            )
-            assert traced_deflections_between_planes[3] == pytest.approx(
-                np.array([0.0, 0.0]), 1e-3
-            )
+        assert traced_deflections_between_planes[0] == pytest.approx(
+            np.array([0.0, 0.0]), 1e-3
+        )
+        assert traced_deflections_between_planes[1] == pytest.approx(
+            np.array([0.0, 0.0]), 1e-3
+        )
+        assert traced_deflections_between_planes[2] == pytest.approx(
+            np.array([0.0, 0.0]), 1e-3
+        )
+        assert traced_deflections_between_planes[3] == pytest.approx(
+            np.array([0.0, 0.0]), 1e-3
+        )
 
-        def test__x2_planes__sis_lens__traced_deflection_are_correct(
-            self, sub_grid_7x7_simple, gal_x1_mp
-        ):
+    def test__x2_planes__sis_lens__traced_deflection_are_correct(
+        self, sub_grid_7x7_simple, gal_x1_mp
+    ):
 
-            tracer = al.Tracer.from_galaxies(
-                galaxies=[gal_x1_mp, al.Galaxy(redshift=1.0)]
-            )
+        tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, al.Galaxy(redshift=1.0)])
 
-            traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-                grid=sub_grid_7x7_simple, plane_i=0, plane_j=1
-            )
+        traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
+            grid=sub_grid_7x7_simple, plane_i=0, plane_j=1
+        )
 
-            assert traced_deflections_between_planes[0] == pytest.approx(
-                np.array([0.707, 0.707]), 1e-3
-            )
-            assert traced_deflections_between_planes[1] == pytest.approx(
-                np.array([1.0, 0.0]), 1e-3
-            )
-            assert traced_deflections_between_planes[2] == pytest.approx(
-                np.array([0.707, 0.707]), 1e-3
-            )
-            assert traced_deflections_between_planes[3] == pytest.approx(
-                np.array([1.0, 0.0]), 1e-3
-            )
+        assert traced_deflections_between_planes[0] == pytest.approx(
+            np.array([0.707, 0.707]), 1e-3
+        )
+        assert traced_deflections_between_planes[1] == pytest.approx(
+            np.array([1.0, 0.0]), 1e-3
+        )
+        assert traced_deflections_between_planes[2] == pytest.approx(
+            np.array([0.707, 0.707]), 1e-3
+        )
+        assert traced_deflections_between_planes[3] == pytest.approx(
+            np.array([1.0, 0.0]), 1e-3
+        )
 
-        def test__same_as_above_but_x2_sis_lenses__deflections_double(
-            self, sub_grid_7x7_simple, gal_x1_mp
-        ):
+    def test__same_as_above_but_x2_sis_lenses__deflections_double(
+        self, sub_grid_7x7_simple, gal_x1_mp
+    ):
 
-            tracer = al.Tracer.from_galaxies(
-                galaxies=[gal_x1_mp, gal_x1_mp, al.Galaxy(redshift=1.0)]
-            )
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[gal_x1_mp, gal_x1_mp, al.Galaxy(redshift=1.0)]
+        )
 
-            traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-                grid=sub_grid_7x7_simple, plane_i=0, plane_j=1
-            )
+        traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
+            grid=sub_grid_7x7_simple, plane_i=0, plane_j=1
+        )
 
-            assert traced_deflections_between_planes[0] == pytest.approx(
-                np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3
-            )
-            assert traced_deflections_between_planes[1] == pytest.approx(
-                np.array([2.0 * 1.0, 0.0]), 1e-3
-            )
-            assert traced_deflections_between_planes[2] == pytest.approx(
-                np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3
-            )
-            assert traced_deflections_between_planes[3] == pytest.approx(
-                np.array([2.0 * 1.0, 0.0]), 1e-3
-            )
-
-        # def test__multi_plane_x4_planes__traced_deflections_are_correct_including_cosmology_scaling__sis_mass_profile(
-        #     self, sub_grid_7x7_simple
-        # ):
-        #
-        #     g0 = al.Galaxy(
-        #         redshift=2.0, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
-        #     )
-        #     g1 = al.Galaxy(
-        #         redshift=2.0, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
-        #     )
-        #     g2 = al.Galaxy(
-        #         redshift=0.1, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
-        #     )
-        #     g3 = al.Galaxy(
-        #         redshift=3.0,
-        #     )
-        #     g4 = al.Galaxy(
-        #         redshift=1.0, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
-        #     )
-        #     g5 = al.Galaxy(
-        #         redshift=3.0,
-        #     )
-        #
-        #     tracer = al.Tracer.from_galaxies(
-        #         galaxies=[g0, g1, g2, g3, g4, g5],
-        #         cosmology=cosmo.Planck15,
-        #     )
-        #
-        #     deflections_between_planes = tracer.deflections_between_planes_from_grid(
-        #         grid=sub_grid_7x7_simple, plane_i=0, plane_j=1)
-        #
-        #     # The scaling factors are as follows and were computed independently from the test_autoarray.
-        #     beta_01 = 0.9348
-        #     beta_02 = 0.9839601
-        #     # Beta_03 = 1.0
-        #     beta_12 = 0.7539734
-        #     # Beta_13 = 1.0
-        #     # Beta_23 = 1.0
-        #
-        #     val = np.sqrt(2) / 2.0
-        #
-        #     assert deflections_between_planes[0] == pytest.approx(
-        #         np.arrays([val, val]), 1e-4
-        #     )
-        #     assert deflections_between_planes[1] == pytest.approx(
-        #         np.arrays([1.0, 0.0]), 1e-4
-        #     )
-        #
-        #     defl11 = g0.deflections_from_grid(
-        #         grid=np.arrays([[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]])
-        #     )
-        #     defl12 = g0.deflections_from_grid(
-        #         grid=np.arrays([[(1.0 - beta_01 * 1.0), 0.0]])
-        #     )
-
-        # assert traced_deflections_of_planes[1][0] == pytest.approx(
-        #     defl11[0], 1e-4
-        # )
-        # assert traced_deflections_of_planes[1][1] == pytest.approx(
-        #     defl12[0], 1e-4
-        # )
-
-        # 2 Galaxies in this plane, so multiply by 2.0
-
-        # defl21 = 2.0 * g0.deflections_from_grid(
-        #     grid=np.arrays(
-        #         [
-        #             [
-        #                 (1.0 - beta_02 * val - beta_12 * defl11[0, 0]),
-        #                 (1.0 - beta_02 * val - beta_12 * defl11[0, 1]),
-        #             ]
-        #         ]
-        #     )
-        # )
-        # defl22 = 2.0 * g0.deflections_from_grid(
-        #     grid=np.arrays([[(1.0 - beta_02 * 1.0 - beta_12 * defl12[0, 0]), 0.0]])
-        # )
-
-        # assert deflections_between_planes[2][0] == pytest.approx(
-        #     defl21[0], 1e-4
-        # )
-        # assert deflections_between_planes[2][1] == pytest.approx(
-        #     defl22[0], 1e-4
-        # )
-        #
-        # assert deflections_between_planes[3][0] == pytest.approx(
-        #     np.arrays([0.0, 0.0]), 1e-3
-        # )
-        # assert deflections_between_planes[3][1] == pytest.approx(
-        #     np.arrays([0.0, 0.0]), 1e-3
-        # )
-
-        # def test__grid_attributes_passed(self, sub_grid_7x7_simple):
-        #     tracer = al.Tracer.from_galaxies(
-        #         galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)],
-        #     )
-        #
-        #     traced_deflections_of_planes = tracer.traced_deflections_of_planes_from_grid(
-        #         grid=sub_grid_7x7_simple)
-        #
-        #     assert (
-        #         traced_deflections_of_planes[0].mask == sub_grid_7x7_simple.sub.mask
-        #     ).all()
+        assert traced_deflections_between_planes[0] == pytest.approx(
+            np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3
+        )
+        assert traced_deflections_between_planes[1] == pytest.approx(
+            np.array([2.0 * 1.0, 0.0]), 1e-3
+        )
+        assert traced_deflections_between_planes[2] == pytest.approx(
+            np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3
+        )
+        assert traced_deflections_between_planes[3] == pytest.approx(
+            np.array([2.0 * 1.0, 0.0]), 1e-3
+        )
 
 
 class TestTacerFixedSlices:
-    class TestCosmology:
-        def test__4_planes_after_slicing(self, sub_grid_7x7):
+    def test__6_galaxies__tracer_planes_are_correct(self, sub_grid_7x7):
+        lens_g0 = al.Galaxy(redshift=0.5)
+        source_g0 = al.Galaxy(redshift=2.0)
+        los_g0 = al.Galaxy(redshift=0.1)
+        los_g1 = al.Galaxy(redshift=0.2)
+        los_g2 = al.Galaxy(redshift=0.4)
+        los_g3 = al.Galaxy(redshift=0.6)
 
-            lens_g0 = al.Galaxy(redshift=0.5)
-            source_g0 = al.Galaxy(redshift=2.0)
-            los_g0 = al.Galaxy(redshift=1.0)
+        tracer = al.Tracer.sliced_tracer_from_lens_line_of_sight_and_source_galaxies(
+            lens_galaxies=[lens_g0],
+            line_of_sight_galaxies=[los_g0, los_g1, los_g2, los_g3],
+            source_galaxies=[source_g0],
+            planes_between_lenses=[1, 1],
+            cosmology=cosmo.Planck15,
+        )
 
-            tracer = al.Tracer.sliced_tracer_from_lens_line_of_sight_and_source_galaxies(
-                lens_galaxies=[lens_g0],
-                line_of_sight_galaxies=[los_g0],
-                source_galaxies=[source_g0],
-                planes_between_lenses=[1, 1],
-                cosmology=cosmo.Planck15,
-            )
+        # Plane redshifts are [0.25, 0.5, 1.25, 2.0]
 
-            assert (
-                tracer.arcsec_per_kpc_proper_of_plane(i=0)
-                == tracer.cosmology.arcsec_per_kpc_proper(z=0.25).value
-            )
-            assert (
-                tracer.kpc_per_arcsec_proper_of_plane(i=0)
-                == 1.0 / tracer.cosmology.arcsec_per_kpc_proper(z=0.25).value
-            )
+        assert tracer.planes[0].galaxies == [los_g0, los_g1]
+        assert tracer.planes[1].galaxies == [lens_g0, los_g2, los_g3]
+        assert tracer.planes[2].galaxies == []
+        assert tracer.planes[3].galaxies == [source_g0]
 
-            assert (
-                tracer.angular_diameter_distance_of_plane_to_earth_in_units(
-                    i=0, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance(0.25).to("kpc").value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=0, j=0, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(0.25, 0.25)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=0, j=1, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(0.25, 0.5)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=0, j=2, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(0.25, 1.25)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=0, j=3, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(0.25, 2.0)
-                .to("kpc")
-                .value
-            )
+    def test__4_planes__data_grid_and_deflections_stacks_are_correct__sis_mass_profile(
+        self, sub_grid_7x7_simple
+    ):
 
-            assert (
-                tracer.arcsec_per_kpc_proper_of_plane(i=1)
-                == tracer.cosmology.arcsec_per_kpc_proper(z=0.5).value
-            )
-            assert (
-                tracer.kpc_per_arcsec_proper_of_plane(i=1)
-                == 1.0 / tracer.cosmology.arcsec_per_kpc_proper(z=0.5).value
-            )
+        lens_g0 = al.Galaxy(
+            redshift=0.5, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
+        )
+        source_g0 = al.Galaxy(
+            redshift=2.0, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
+        )
+        los_g0 = al.Galaxy(
+            redshift=0.1, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
+        )
+        los_g1 = al.Galaxy(
+            redshift=0.2, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
+        )
+        los_g2 = al.Galaxy(
+            redshift=0.4, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
+        )
+        los_g3 = al.Galaxy(
+            redshift=0.6, mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0)
+        )
 
-            assert (
-                tracer.angular_diameter_distance_of_plane_to_earth_in_units(
-                    i=1, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance(0.5).to("kpc").value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=1, j=0, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(0.5, 0.25)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=1, j=1, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(0.5, 0.5)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=1, j=2, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(0.5, 1.25)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=1, j=3, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(0.5, 2.0)
-                .to("kpc")
-                .value
-            )
+        tracer = al.Tracer.sliced_tracer_from_lens_line_of_sight_and_source_galaxies(
+            lens_galaxies=[lens_g0],
+            line_of_sight_galaxies=[los_g0, los_g1, los_g2, los_g3],
+            source_galaxies=[source_g0],
+            planes_between_lenses=[1, 1],
+            cosmology=cosmo.Planck15,
+        )
 
-            assert (
-                tracer.arcsec_per_kpc_proper_of_plane(i=2)
-                == tracer.cosmology.arcsec_per_kpc_proper(z=1.25).value
-            )
-            assert (
-                tracer.kpc_per_arcsec_proper_of_plane(i=2)
-                == 1.0 / tracer.cosmology.arcsec_per_kpc_proper(z=1.25).value
-            )
+        traced_grids = tracer.traced_grids_of_planes_from_grid(grid=sub_grid_7x7_simple)
 
-            assert (
-                tracer.angular_diameter_distance_of_plane_to_earth_in_units(
-                    i=2, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance(1.25).to("kpc").value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=2, j=0, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(1.25, 0.25)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=2, j=1, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(1.25, 0.5)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=2, j=2, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(1.25, 1.25)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=2, j=3, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(1.25, 2.0)
-                .to("kpc")
-                .value
-            )
+        # This test_autoarray is essentially the same as the TracerMulti test_autoarray, we just slightly change how many galaxies go
+        # in each plane and therefore change the factor in front of val for different planes.
 
-            assert (
-                tracer.arcsec_per_kpc_proper_of_plane(i=3)
-                == tracer.cosmology.arcsec_per_kpc_proper(z=2.0).value
-            )
-            assert (
-                tracer.kpc_per_arcsec_proper_of_plane(i=3)
-                == 1.0 / tracer.cosmology.arcsec_per_kpc_proper(z=2.0).value
-            )
+        # The scaling factors are as follows and were computed indepedently from the test_autoarray.
+        beta_01 = 0.57874474423
+        beta_02 = 0.91814281
+        # Beta_03 = 1.0
+        beta_12 = 0.8056827034
+        # Beta_13 = 1.0
+        # Beta_23 = 1.0
 
-            assert (
-                tracer.angular_diameter_distance_of_plane_to_earth_in_units(
-                    i=3, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance(2.0).to("kpc").value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=3, j=0, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(2.0, 0.25)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=3, j=1, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(2.0, 0.5)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=3, j=2, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(2.0, 1.25)
-                .to("kpc")
-                .value
-            )
-            assert (
-                tracer.angular_diameter_distance_between_planes_in_units(
-                    i=3, j=3, unit_length="kpc"
-                )
-                == tracer.cosmology.angular_diameter_distance_z1z2(2.0, 2.0)
-                .to("kpc")
-                .value
-            )
+        val = np.sqrt(2) / 2.0
 
-    class TestPlaneSetup:
-        def test__6_galaxies__tracer_planes_are_correct(self, sub_grid_7x7):
-            lens_g0 = al.Galaxy(redshift=0.5)
-            source_g0 = al.Galaxy(redshift=2.0)
-            los_g0 = al.Galaxy(redshift=0.1)
-            los_g1 = al.Galaxy(redshift=0.2)
-            los_g2 = al.Galaxy(redshift=0.4)
-            los_g3 = al.Galaxy(redshift=0.6)
+        assert traced_grids[0][0] == pytest.approx(np.array([1.0, 1.0]), 1e-4)
+        assert traced_grids[0][1] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
 
-            tracer = al.Tracer.sliced_tracer_from_lens_line_of_sight_and_source_galaxies(
-                lens_galaxies=[lens_g0],
-                line_of_sight_galaxies=[los_g0, los_g1, los_g2, los_g3],
-                source_galaxies=[source_g0],
-                planes_between_lenses=[1, 1],
-                cosmology=cosmo.Planck15,
-            )
+        assert traced_grids[1][0] == pytest.approx(
+            np.array([(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]), 1e-4
+        )
+        assert traced_grids[1][1] == pytest.approx(
+            np.array([(1.0 - beta_01 * 2.0), 0.0]), 1e-4
+        )
 
-            # Plane redshifts are [0.25, 0.5, 1.25, 2.0]
+        #  Galaxies in this plane, so multiply by 3
 
-            assert tracer.planes[0].galaxies == [los_g0, los_g1]
-            assert tracer.planes[1].galaxies == [lens_g0, los_g2, los_g3]
-            assert tracer.planes[2].galaxies == []
-            assert tracer.planes[3].galaxies == [source_g0]
+        defl11 = 3.0 * lens_g0.deflections_from_grid(
+            grid=np.array([[(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]])
+        )
+        defl12 = 3.0 * lens_g0.deflections_from_grid(
+            grid=np.array([[(1.0 - beta_01 * 2.0 * 1.0), 0.0]])
+        )
 
-    class TestPlaneGrids:
-        def test__4_planes__data_grid_and_deflections_stacks_are_correct__sis_mass_profile(
-            self, sub_grid_7x7_simple
-        ):
+        assert traced_grids[2][0] == pytest.approx(
+            np.array(
+                [
+                    (1.0 - beta_02 * 2.0 * val - beta_12 * defl11[0, 0]),
+                    (1.0 - beta_02 * 2.0 * val - beta_12 * defl11[0, 1]),
+                ]
+            ),
+            1e-4,
+        )
+        assert traced_grids[2][1] == pytest.approx(
+            np.array([(1.0 - beta_02 * 2.0 - beta_12 * defl12[0, 0]), 0.0]), 1e-4
+        )
 
-            lens_g0 = al.Galaxy(
-                redshift=0.5,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
-            )
-            source_g0 = al.Galaxy(
-                redshift=2.0,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
-            )
-            los_g0 = al.Galaxy(
-                redshift=0.1,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
-            )
-            los_g1 = al.Galaxy(
-                redshift=0.2,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
-            )
-            los_g2 = al.Galaxy(
-                redshift=0.4,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
-            )
-            los_g3 = al.Galaxy(
-                redshift=0.6,
-                mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
-            )
-
-            tracer = al.Tracer.sliced_tracer_from_lens_line_of_sight_and_source_galaxies(
-                lens_galaxies=[lens_g0],
-                line_of_sight_galaxies=[los_g0, los_g1, los_g2, los_g3],
-                source_galaxies=[source_g0],
-                planes_between_lenses=[1, 1],
-                cosmology=cosmo.Planck15,
-            )
-
-            traced_grids = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7_simple
-            )
-
-            # This test_autoarray is essentially the same as the TracerMulti test_autoarray, we just slightly change how many galaxies go
-            # in each plane and therefore change the factor in front of val for different planes.
-
-            # The scaling factors are as follows and were computed indepedently from the test_autoarray.
-            beta_01 = 0.57874474423
-            beta_02 = 0.91814281
-            # Beta_03 = 1.0
-            beta_12 = 0.8056827034
-            # Beta_13 = 1.0
-            # Beta_23 = 1.0
-
-            val = np.sqrt(2) / 2.0
-
-            assert traced_grids[0][0] == pytest.approx(np.array([1.0, 1.0]), 1e-4)
-            assert traced_grids[0][1] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
-
-            assert traced_grids[1][0] == pytest.approx(
-                np.array([(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]),
-                1e-4,
-            )
-            assert traced_grids[1][1] == pytest.approx(
-                np.array([(1.0 - beta_01 * 2.0), 0.0]), 1e-4
-            )
-
-            #  Galaxies in this plane, so multiply by 3
-
-            defl11 = 3.0 * lens_g0.deflections_from_grid(
-                grid=np.array(
-                    [[(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]]
-                )
-            )
-            defl12 = 3.0 * lens_g0.deflections_from_grid(
-                grid=np.array([[(1.0 - beta_01 * 2.0 * 1.0), 0.0]])
-            )
-
-            assert traced_grids[2][0] == pytest.approx(
-                np.array(
-                    [
-                        (1.0 - beta_02 * 2.0 * val - beta_12 * defl11[0, 0]),
-                        (1.0 - beta_02 * 2.0 * val - beta_12 * defl11[0, 1]),
-                    ]
-                ),
-                1e-4,
-            )
-            assert traced_grids[2][1] == pytest.approx(
-                np.array([(1.0 - beta_02 * 2.0 - beta_12 * defl12[0, 0]), 0.0]), 1e-4
-            )
-
-            assert traced_grids[3][0] == pytest.approx(
-                np.array([-2.5355, -2.5355]), 1e-4
-            )
-            assert traced_grids[3][1] == pytest.approx(np.array([2.0, 0.0]), 1e-4)
+        assert traced_grids[3][0] == pytest.approx(np.array([-2.5355, -2.5355]), 1e-4)
+        assert traced_grids[3][1] == pytest.approx(np.array([2.0, 0.0]), 1e-4)
 
 
 class TestRegression:
