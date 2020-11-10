@@ -64,7 +64,6 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                 hyper_image_sky=hyper_image_sky,
                 hyper_background_noise=hyper_background_noise,
             )
-
             return fit.figure_of_merit
         except (
             PixelizationException,

@@ -2228,7 +2228,7 @@ class TestAbstractTracerLensing:
             )
 
             assert (
-                tracer.einstein_mass_angular_from_tangential_critical_curve
+                tracer.einstein_mass_angular_via_tangential_critical_curve
                 == pytest.approx(np.pi * 2.0 ** 2.0, 1.0e-1)
             )
 
