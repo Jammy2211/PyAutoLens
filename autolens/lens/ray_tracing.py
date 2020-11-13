@@ -1,6 +1,7 @@
 from abc import ABC
 import pickle
 import numpy as np
+from os import path
 from astropy import cosmology as cosmo
 from autoarray.inversion import pixelizations as pix
 from autoarray.inversion import inversions as inv
@@ -190,14 +191,14 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
     @classmethod
     def load(cls, file_path, filename="tracer"):
-        with open(f"{file_path}/{filename}.pickle", "rb") as f:
+        with open(path.join(file_path, f"{filename}.pickle"), "rb") as f:
             return pickle.load(f)
 
     def save(self, file_path, filename="tracer"):
         """
         Save the tracer by serializing it with pickle.
         """
-        with open(f"{file_path}/{filename}.pickle", "wb") as f:
+        with open(path.join(file_path, f"{filename}.pickle"), "wb") as f:
             pickle.dump(self, f)
 
 
