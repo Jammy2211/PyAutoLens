@@ -42,7 +42,7 @@ The `dataset_path` specifies where the data was output in the last tutorial, whi
 """
 
 # %%
-dataset_path = f"dataset/howtolens/chapter_1/"
+dataset_path = path.join("dataset", "howtolens", "chapter_2")
 
 # %%
 """
@@ -51,9 +51,9 @@ Below, we do all the steps we learned this chapter - making `Galaxy`'s a tracer,
 
 # %%
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 

@@ -1,12 +1,13 @@
-import os
-
+from os import path
 import autolens.plot as aplt
 import pytest
 
 
 @pytest.fixture(name="plot_path")
-def make_fit_interferometer_plotter_setup():
-    return "{}/files/plots/fit/".format(os.path.dirname(os.path.realpath(__file__)))
+def make_fit_imaging_plotter_setup():
+    return path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "files", "plots", "fit"
+    )
 
 
 def test__fit_quantities_are_output(
@@ -18,35 +19,38 @@ def test__fit_quantities_are_output(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/visibilities.png" in plot_patch.paths
+    assert path.join(plot_path, "visibilities.png") in plot_patch.paths
 
     aplt.FitInterferometer.noise_map(
         fit=masked_interferometer_fit_x2_plane_7x7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/noise_map.png" in plot_patch.paths
+    assert path.join(plot_path, "noise_map.png") in plot_patch.paths
 
     aplt.FitInterferometer.signal_to_noise_map(
         fit=masked_interferometer_fit_x2_plane_7x7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/signal_to_noise_map.png" in plot_patch.paths
+    assert path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
 
     aplt.FitInterferometer.model_visibilities(
         fit=masked_interferometer_fit_x2_plane_7x7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/model_visibilities.png" in plot_patch.paths
+    assert path.join(plot_path, "model_visibilities.png") in plot_patch.paths
 
     aplt.FitInterferometer.residual_map_vs_uv_distances(
         fit=masked_interferometer_fit_x2_plane_7x7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/residual_map_vs_uv_distances_real.png" in plot_patch.paths
+    assert (
+        path.join(plot_path, "residual_map_vs_uv_distances_real.png")
+        in plot_patch.paths
+    )
 
     aplt.FitInterferometer.residual_map_vs_uv_distances(
         fit=masked_interferometer_fit_x2_plane_7x7,
@@ -54,7 +58,10 @@ def test__fit_quantities_are_output(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/residual_map_vs_uv_distances_imag.png" in plot_patch.paths
+    assert (
+        path.join(plot_path, "residual_map_vs_uv_distances_imag.png")
+        in plot_patch.paths
+    )
 
     aplt.FitInterferometer.normalized_residual_map_vs_uv_distances(
         fit=masked_interferometer_fit_x2_plane_7x7,
@@ -62,7 +69,7 @@ def test__fit_quantities_are_output(
     )
 
     assert (
-        f"{plot_path}/normalized_residual_map_vs_uv_distances_real.png"
+        path.join(plot_path, "normalized_residual_map_vs_uv_distances_real.png")
         in plot_patch.paths
     )
 
@@ -73,7 +80,7 @@ def test__fit_quantities_are_output(
     )
 
     assert (
-        f"{plot_path}/normalized_residual_map_vs_uv_distances_imag.png"
+        path.join(plot_path, "normalized_residual_map_vs_uv_distances_imag.png")
         in plot_patch.paths
     )
 
@@ -82,7 +89,10 @@ def test__fit_quantities_are_output(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/chi_squared_map_vs_uv_distances_real.png" in plot_patch.paths
+    assert (
+        path.join(plot_path, "chi_squared_map_vs_uv_distances_real.png")
+        in plot_patch.paths
+    )
 
     aplt.FitInterferometer.chi_squared_map_vs_uv_distances(
         fit=masked_interferometer_fit_x2_plane_7x7,
@@ -90,7 +100,10 @@ def test__fit_quantities_are_output(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/chi_squared_map_vs_uv_distances_imag.png" in plot_patch.paths
+    assert (
+        path.join(plot_path, "chi_squared_map_vs_uv_distances_imag.png")
+        in plot_patch.paths
+    )
 
 
 def test__fit_sub_plot(
@@ -103,7 +116,9 @@ def test__fit_sub_plot(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_fit_interferometer_real.png" in plot_patch.paths
+    assert (
+        path.join(plot_path, "subplot_fit_interferometer_real.png") in plot_patch.paths
+    )
 
 
 def test__fit_sub_plot_real_space(
@@ -116,7 +131,7 @@ def test__fit_sub_plot_real_space(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_fit_real_space.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_fit_real_space.png") in plot_patch.paths
 
 
 def test__fit_individuals__source_and_lens__depedent_on_input(
@@ -138,19 +153,25 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/visibilities.png" in plot_patch.paths
+    assert path.join(plot_path, "visibilities.png") in plot_patch.paths
 
-    assert f"{plot_path}/noise_map.png" not in plot_patch.paths
+    assert path.join(plot_path, "noise_map.png") not in plot_patch.paths
 
-    assert f"{plot_path}/signal_to_noise_map.png" not in plot_patch.paths
+    assert path.join(plot_path, "signal_to_noise_map.png") not in plot_patch.paths
 
-    assert f"{plot_path}/model_visibilities.png" in plot_patch.paths
-
-    assert f"{plot_path}/residual_map_vs_uv_distances_real.png" not in plot_patch.paths
+    assert path.join(plot_path, "model_visibilities.png") in plot_patch.paths
 
     assert (
-        f"{plot_path}/normalized_residual_map_vs_uv_distances_real.png"
+        path.join(plot_path, "residual_map_vs_uv_distances_real.png")
         not in plot_patch.paths
     )
 
-    assert f"{plot_path}/chi_squared_map_vs_uv_distances_real.png" in plot_patch.paths
+    assert (
+        path.join(plot_path, "normalized_residual_map_vs_uv_distances_real.png")
+        not in plot_patch.paths
+    )
+
+    assert (
+        path.join(plot_path, "chi_squared_map_vs_uv_distances_real.png")
+        in plot_patch.paths
+    )

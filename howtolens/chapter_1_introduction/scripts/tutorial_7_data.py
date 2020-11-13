@@ -121,7 +121,7 @@ Output these files to.fits files, we'll begin to analyze them in the next tutori
 The `dataset_path` specifies where the data is output, this time in the directory `chapter_path/data`.
 
 """
-dataset_path = f"dataset/howtolens/chapter_1"
+dataset_path = path.join("dataset", "howtolens", "chapter_1")
 print("Dataset Path: ", dataset_path)
 
 # %%
@@ -131,8 +131,8 @@ Now output our simulated data to hard-disk.
 
 # %%
 imaging.output_to_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     overwrite=True,
 )

@@ -111,12 +111,12 @@ we'll use the same strong lensing data as the previous tutorial, where:
 
 # %%
 dataset_name = "mass_sis__source_exp"
-dataset_path = f"dataset/howtolens/chapter_2/{dataset_name}"
+dataset_path = path.join("dataset", "howtolens", "chapter_2", dataset_name)
 
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
@@ -194,7 +194,7 @@ output of the non-linear search, you`ll see that the priors have indeed been cha
 # %%
 phase = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens", name="phase_t2_custom_priors", n_live_points=40
+        path_prefix="howtolens", name="phase_t2_custom_priors", n_live_points=40
     ),
     settings=settings,
     galaxies=dict(lens=lens, source=source),

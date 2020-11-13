@@ -58,12 +58,12 @@ we'll use the same strong lensing data as the previous tutorial, where:
 
 # %%
 dataset_name = "light_sersic__mass_sie__source_exp"
-dataset_path = f"dataset/howtolens/chapter_2/{dataset_name}"
+dataset_path = path.join("dataset", "howtolens", "chapter_2", dataset_name)
 
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
@@ -151,7 +151,7 @@ Now lets create the phase.
 # %%
 phase1 = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens", name="phase_t5_linking_phases_1", n_live_points=40
+        path_prefix="howtolens", name="phase_t5_linking_phases_1", n_live_points=40
     ),
     settings=settings,
     galaxies=dict(lens=lens, source=source),
@@ -279,7 +279,7 @@ than we`re used to - I didn`t have to edit the config files to get this phase to
 # %%
 phase2 = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens", name="phase_t5_linking_phases_2", n_live_points=40
+        path_prefix="howtolens", name="phase_t5_linking_phases_2", n_live_points=40
     ),
     settings=settings,
     galaxies=dict(lens=lens, source=source),
@@ -321,7 +321,7 @@ code below sets up phase2 with priors fully linked, but without specifying each 
 # %%
 phase2_pass = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens",
+        path_prefix="howtolens",
         name="phase_t5_linking_phases_2_pass",
         n_live_points=40,
     ),
@@ -403,7 +403,7 @@ We now create and run the phase, using the lens ``.alaxyModel__ we created above
 # %%
 phase2_pass = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens",
+        path_prefix="howtolens",
         name="phase_t5_linking_phases_2_pass_individual",
         n_live_points=40,
     ),

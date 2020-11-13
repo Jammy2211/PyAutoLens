@@ -30,12 +30,12 @@ we'll use the same strong lensing data as tutorials 1 & 2, where:
 
 # %%
 dataset_name = "mass_sis__source_exp"
-dataset_path = f"dataset/howtolens/chapter_2/{dataset_name}"
+dataset_path = path.join("dataset", "howtolens", "chapter_2", dataset_name)
 
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
@@ -91,7 +91,7 @@ Now we create our phase as usual, remember that we pass the mask to the run func
 # %%
 phase_with_custom_mask = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens", name="phase_t7_with_custom_mask", n_live_points=40
+        path_prefix="howtolens", name="phase_t7_with_custom_mask", n_live_points=40
     ),
     settings=settings,
     galaxies=dict(
@@ -188,7 +188,7 @@ We can then tell our phase to use these positions in the analysis.
 # %%
 phase_with_positions = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens", name="phase_t7_with_positions", n_live_points=40
+        path_prefix="howtolens", name="phase_t7_with_positions", n_live_points=40
     ),
     settings=settings,
     galaxies=dict(
@@ -219,12 +219,12 @@ Lets load example data containing two distinct source galaxies.
 
 # %%
 dataset_name = "mass_sis__source_exp_x2"
-dataset_path = f"dataset/howtolens/chapter_2/{dataset_name}"
+dataset_path = path.join("dataset", "howtolens", "chapter_2", dataset_name)
 
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
@@ -266,7 +266,7 @@ settings = al.SettingsPhaseImaging(
 
 phase_with_x2_positions = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens", name="phase_t7_with_x2_positions", n_live_points=40
+        path_prefix="howtolens", name="phase_t7_with_x2_positions", n_live_points=40
     ),
     settings=settings,
     galaxies=dict(

@@ -31,12 +31,12 @@ we'll use the same strong lensing data as the previous tutorial, where:
 
 # %%
 dataset_name = "mass_sie__source_sersic"
-dataset_path = f"dataset/howtolens/chapter_4/{dataset_name}"
+dataset_path = path.join("dataset", "howtolens", "chapter_4", dataset_name)
 
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
@@ -130,12 +130,12 @@ invert a really complex source!
 
 # %%
 dataset_name = "mass_sie__source_sersic_x5"
-dataset_path = f"dataset/howtolens/chapter_4/{dataset_name}"
+dataset_path = path.join("dataset", "howtolens", "chapter_4", dataset_name)
 
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 

@@ -1,15 +1,17 @@
-import os
+from os import path
 
 import pytest
 
 import autolens.plot as aplt
 
-directory = os.path.dirname(os.path.realpath(__file__))
+directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(name="plot_path")
 def make_fit_imaging_plotter_setup():
-    return "{}/files/plots/fit/".format(os.path.dirname(os.path.realpath(__file__)))
+    return path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "files", "plots", "fit"
+    )
 
 
 def test__fit_quantities_are_output(
@@ -21,7 +23,7 @@ def test__fit_quantities_are_output(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/image.png" in plot_patch.paths
+    assert path.join(plot_path, "image.png") in plot_patch.paths
 
     aplt.FitImaging.noise_map(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -29,7 +31,7 @@ def test__fit_quantities_are_output(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/noise_map.png" in plot_patch.paths
+    assert path.join(plot_path, "noise_map.png") in plot_patch.paths
 
     aplt.FitImaging.signal_to_noise_map(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -37,7 +39,7 @@ def test__fit_quantities_are_output(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/signal_to_noise_map.png" in plot_patch.paths
+    assert path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
 
     aplt.FitImaging.model_image(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -45,7 +47,7 @@ def test__fit_quantities_are_output(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/model_image.png" in plot_patch.paths
+    assert path.join(plot_path, "model_image.png") in plot_patch.paths
 
     aplt.FitImaging.residual_map(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -53,7 +55,7 @@ def test__fit_quantities_are_output(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/residual_map.png" in plot_patch.paths
+    assert path.join(plot_path, "residual_map.png") in plot_patch.paths
 
     aplt.FitImaging.normalized_residual_map(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -61,7 +63,7 @@ def test__fit_quantities_are_output(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/normalized_residual_map.png" in plot_patch.paths
+    assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
 
     aplt.FitImaging.chi_squared_map(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -69,7 +71,7 @@ def test__fit_quantities_are_output(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/chi_squared_map.png" in plot_patch.paths
+    assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
 
 def test__fit_sub_plot(
@@ -81,7 +83,7 @@ def test__fit_sub_plot(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_fit_imaging.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_fit_imaging.png") in plot_patch.paths
 
 
 def test__subtracted_image_of_plane_is_output(
@@ -98,7 +100,7 @@ def test__subtracted_image_of_plane_is_output(
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subtracted_image_of_plane_0.png" in plot_patch.paths
+    assert path.join(plot_path, "subtracted_image_of_plane_0.png") in plot_patch.paths
 
     aplt.FitImaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -107,7 +109,7 @@ def test__subtracted_image_of_plane_is_output(
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subtracted_image_of_plane_0.png" in plot_patch.paths
+    assert path.join(plot_path, "subtracted_image_of_plane_0.png") in plot_patch.paths
 
     aplt.FitImaging.subtracted_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -116,7 +118,7 @@ def test__subtracted_image_of_plane_is_output(
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subtracted_image_of_plane_1.png" in plot_patch.paths
+    assert path.join(plot_path, "subtracted_image_of_plane_1.png") in plot_patch.paths
 
 
 def test__model_image_of_plane_is_output(
@@ -133,7 +135,7 @@ def test__model_image_of_plane_is_output(
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/model_image_of_plane_0.png" in plot_patch.paths
+    assert path.join(plot_path, "model_image_of_plane_0.png") in plot_patch.paths
 
     aplt.FitImaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -142,7 +144,7 @@ def test__model_image_of_plane_is_output(
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/model_image_of_plane_0.png" in plot_patch.paths
+    assert path.join(plot_path, "model_image_of_plane_0.png") in plot_patch.paths
 
     aplt.FitImaging.model_image_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -151,7 +153,7 @@ def test__model_image_of_plane_is_output(
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/model_image_of_plane_1.png" in plot_patch.paths
+    assert path.join(plot_path, "model_image_of_plane_1.png") in plot_patch.paths
 
 
 def test_subplot_fit_imaging_is_output(
@@ -163,7 +165,7 @@ def test_subplot_fit_imaging_is_output(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_fit_imaging.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_fit_imaging.png") in plot_patch.paths
 
 
 def test__subplot_of_plane(
@@ -180,7 +182,7 @@ def test__subplot_of_plane(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_of_plane_0.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_of_plane_0.png") in plot_patch.paths
 
     aplt.FitImaging.subplot_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -189,7 +191,7 @@ def test__subplot_of_plane(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_of_plane_0.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_of_plane_0.png") in plot_patch.paths
 
     aplt.FitImaging.subplot_of_plane(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -198,7 +200,7 @@ def test__subplot_of_plane(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_of_plane_1.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_of_plane_1.png") in plot_patch.paths
 
     aplt.FitImaging.subplots_of_all_planes(
         fit=masked_imaging_fit_x1_plane_7x7,
@@ -206,7 +208,7 @@ def test__subplot_of_plane(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_of_plane_0.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_of_plane_0.png") in plot_patch.paths
 
     aplt.FitImaging.subplots_of_all_planes(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -214,8 +216,8 @@ def test__subplot_of_plane(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_of_plane_0.png" in plot_patch.paths
-    assert f"{plot_path}/subplot_of_plane_1.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_of_plane_0.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_of_plane_1.png") in plot_patch.paths
 
 
 def test__fit_individuals__source_and_lens__dependent_on_input(
@@ -239,25 +241,25 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/image.png" in plot_patch.paths
+    assert path.join(plot_path, "image.png") in plot_patch.paths
 
-    assert f"{plot_path}/noise_map.png" not in plot_patch.paths
+    assert path.join(plot_path, "noise_map.png") not in plot_patch.paths
 
-    assert f"{plot_path}/signal_to_noise_map.png" not in plot_patch.paths
+    assert path.join(plot_path, "signal_to_noise_map.png") not in plot_patch.paths
 
-    assert f"{plot_path}/model_image.png" in plot_patch.paths
+    assert path.join(plot_path, "model_image.png") in plot_patch.paths
 
-    assert f"{plot_path}/residual_map.png" not in plot_patch.paths
+    assert path.join(plot_path, "residual_map.png") not in plot_patch.paths
 
-    assert f"{plot_path}/normalized_residual_map.png" not in plot_patch.paths
+    assert path.join(plot_path, "normalized_residual_map.png") not in plot_patch.paths
 
-    assert f"{plot_path}/chi_squared_map.png" in plot_patch.paths
+    assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
-    assert f"{plot_path}/subtracted_image_of_plane_0.png" in plot_patch.paths
+    assert path.join(plot_path, "subtracted_image_of_plane_0.png") in plot_patch.paths
 
-    assert f"{plot_path}/model_image_of_plane_0.png" in plot_patch.paths
+    assert path.join(plot_path, "model_image_of_plane_0.png") in plot_patch.paths
 
-    assert f"{plot_path}/plane_image_of_plane_0.png" in plot_patch.paths
+    assert path.join(plot_path, "plane_image_of_plane_0.png") in plot_patch.paths
 
     aplt.FitImaging.individuals(
         fit=masked_imaging_fit_x2_plane_7x7,
@@ -273,25 +275,25 @@ def test__fit_individuals__source_and_lens__dependent_on_input(
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
-    assert f"{plot_path}/image.png" in plot_patch.paths
+    assert path.join(plot_path, "image.png") in plot_patch.paths
 
-    assert f"{plot_path}/noise_map.png" not in plot_patch.paths
+    assert path.join(plot_path, "noise_map.png") not in plot_patch.paths
 
-    assert f"{plot_path}/signal_to_noise_map.png" not in plot_patch.paths
+    assert path.join(plot_path, "signal_to_noise_map.png") not in plot_patch.paths
 
-    assert f"{plot_path}/model_image.png" in plot_patch.paths
+    assert path.join(plot_path, "model_image.png") in plot_patch.paths
 
-    assert f"{plot_path}/residual_map.png" not in plot_patch.paths
+    assert path.join(plot_path, "residual_map.png") not in plot_patch.paths
 
-    assert f"{plot_path}/normalized_residual_map.png" not in plot_patch.paths
+    assert path.join(plot_path, "normalized_residual_map.png") not in plot_patch.paths
 
-    assert f"{plot_path}/chi_squared_map.png" in plot_patch.paths
+    assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
-    assert f"{plot_path}/subtracted_image_of_plane_0.png" in plot_patch.paths
-    assert f"{plot_path}/subtracted_image_of_plane_1.png" in plot_patch.paths
+    assert path.join(plot_path, "subtracted_image_of_plane_0.png") in plot_patch.paths
+    assert path.join(plot_path, "subtracted_image_of_plane_1.png") in plot_patch.paths
 
-    assert f"{plot_path}/model_image_of_plane_0.png" in plot_patch.paths
-    assert f"{plot_path}/model_image_of_plane_1.png" in plot_patch.paths
+    assert path.join(plot_path, "model_image_of_plane_0.png") in plot_patch.paths
+    assert path.join(plot_path, "model_image_of_plane_1.png") in plot_patch.paths
 
-    assert f"{plot_path}/plane_image_of_plane_0.png" in plot_patch.paths
-    assert f"{plot_path}/plane_image_of_plane_1.png" in plot_patch.paths
+    assert path.join(plot_path, "plane_image_of_plane_0.png") in plot_patch.paths
+    assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths

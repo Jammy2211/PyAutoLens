@@ -19,6 +19,8 @@ class Result(result.Result, ag_result.Result):
 
     @property
     def max_log_likelihood_pixelization_grids_of_planes(self):
-        return self.max_log_likelihood_tracer.sparse_image_plane_grids_of_planes_from_grid(
-            grid=self.max_log_likelihood_fit.grid
+        return (
+            self.max_log_likelihood_tracer.sparse_image_plane_grids_of_planes_from_grid(
+                grid=self.max_log_likelihood_fit.grid
+            )
         )

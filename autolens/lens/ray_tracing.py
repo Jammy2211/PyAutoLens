@@ -101,17 +101,17 @@ class AbstractTracer(lensing.LensingObject, ABC):
     @property
     def light_profile_centres(self):
         """
-    Returns the light profile centres of the tracer as a `GridCoordinates` object, which structures the centres
-        in lists according to which plane they come from.
+        Returns the light profile centres of the tracer as a `GridCoordinates` object, which structures the centres
+            in lists according to which plane they come from.
 
-        Fo example, if the tracer has two planes, the first with one light profile and second with two light profiles
-        this returns:
+            Fo example, if the tracer has two planes, the first with one light profile and second with two light profiles
+            this returns:
 
-        [[(y0, x0)], [(y0, x0), (y1, x1)]]
+            [[(y0, x0)], [(y0, x0), (y1, x1)]]
 
-        This is used for visualization, for example plotting the centres of all light profiles colored by their galaxy.
+            This is used for visualization, for example plotting the centres of all light profiles colored by their galaxy.
 
-        The centres of light-sheets are filtered out, as their centres are not relevant to lensing calculations
+            The centres of light-sheets are filtered out, as their centres are not relevant to lensing calculations
 
         """
         return grids.GridCoordinates(
@@ -137,17 +137,17 @@ class AbstractTracer(lensing.LensingObject, ABC):
     @property
     def mass_profile_centres(self):
         """
-    Returns the mass profile centres of the tracer as a `GridCoordinates` object, which structures the centres
-        in lists according to which plane they come from.
+        Returns the mass profile centres of the tracer as a `GridCoordinates` object, which structures the centres
+            in lists according to which plane they come from.
 
-        Fo example, if the tracer has two planes, the first with one mass profile and second with two mass profiles
-        this returns:
+            Fo example, if the tracer has two planes, the first with one mass profile and second with two mass profiles
+            this returns:
 
-        [[(y0, x0)], [(y0, x0), (y1, x1)]]
+            [[(y0, x0)], [(y0, x0), (y1, x1)]]
 
-        This is used for visualization, for example plotting the centres of all mass profiles colored by their galaxy.
+            This is used for visualization, for example plotting the centres of all mass profiles colored by their galaxy.
 
-        The centres of mass-sheets are filtered out, as their centres are not relevant to lensing calculations
+            The centres of mass-sheets are filtered out, as their centres are not relevant to lensing calculations
 
         """
         return grids.GridCoordinates(
@@ -214,11 +214,13 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from(
-                        redshift_0=self.plane_redshifts[previous_plane_index],
-                        redshift_1=plane.redshift,
-                        redshift_final=self.plane_redshifts[-1],
-                        cosmology=self.cosmology,
+                    scaling_factor = (
+                        cosmology_util.scaling_factor_between_redshifts_from(
+                            redshift_0=self.plane_redshifts[previous_plane_index],
+                            redshift_1=plane.redshift,
+                            redshift_final=self.plane_redshifts[-1],
+                            cosmology=self.cosmology,
+                        )
                     )
 
                     scaled_deflections = (
@@ -569,8 +571,10 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             or settings_pixelization.is_stochastic
         ):
 
-            sparse_image_plane_grids_of_planes = self.sparse_image_plane_grids_of_planes_from_grid(
-                grid=grid, pixelization_setting=settings_pixelization
+            sparse_image_plane_grids_of_planes = (
+                self.sparse_image_plane_grids_of_planes_from_grid(
+                    grid=grid, pixelization_setting=settings_pixelization
+                )
             )
 
         else:
@@ -710,10 +714,12 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         )
 
         for (plane_index, plane) in enumerate(self.planes):
-            blurred_images_of_galaxies = plane.blurred_images_of_galaxies_from_grid_and_convolver(
-                grid=traced_grids_of_planes[plane_index],
-                convolver=convolver,
-                blurring_grid=traced_blurring_grids_of_planes[plane_index],
+            blurred_images_of_galaxies = (
+                plane.blurred_images_of_galaxies_from_grid_and_convolver(
+                    grid=traced_grids_of_planes[plane_index],
+                    convolver=convolver,
+                    blurring_grid=traced_blurring_grids_of_planes[plane_index],
+                )
             )
             for (galaxy_index, galaxy) in enumerate(plane.galaxies):
                 galaxy_blurred_image_dict[galaxy] = blurred_images_of_galaxies[
@@ -734,8 +740,10 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         for (plane_index, plane) in enumerate(self.planes):
-            profile_visibilities_of_galaxies = plane.profile_visibilities_of_galaxies_from_grid_and_transformer(
-                grid=traced_grids_of_planes[plane_index], transformer=transformer
+            profile_visibilities_of_galaxies = (
+                plane.profile_visibilities_of_galaxies_from_grid_and_transformer(
+                    grid=traced_grids_of_planes[plane_index], transformer=transformer
+                )
             )
             for (galaxy_index, galaxy) in enumerate(plane.galaxies):
                 galaxy_profile_visibilities_image_dict[

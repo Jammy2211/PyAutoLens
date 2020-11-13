@@ -32,12 +32,12 @@ we'll use new strong lensing data, where:
 
 # %%
 dataset_name = "light_sersic__mass_sie__source_sersic"
-dataset_path = f"dataset/howtolens/chapter_2/{dataset_name}"
+dataset_path = path.join("dataset", "howtolens", "chapter_2", dataset_name)
 
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
@@ -145,7 +145,7 @@ Lets perform two fits, where:
 # %%
 phase_slow = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens",
+        path_prefix="howtolens",
         name="phase_t6_slow",
         n_live_points=150,
         evidence_tolerance=0.8,
@@ -194,7 +194,7 @@ Now lets run the phase with fast setting, so we can compare the total number of 
 # %%
 phase_fast = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens", name="phase_t6_fast", n_live_points=30
+        path_prefix="howtolens", name="phase_t6_fast", n_live_points=30
     ),
     settings=settings,
     galaxies=dict(
@@ -266,7 +266,7 @@ iterations is n_particles * iters. Lets try a total of ? iterations, a factor ? 
 # %%
 phase_pso = al.PhaseImaging(
     search=af.PySwarmsLocal(
-        path_prefix=f"howtolens", name="phase_t6_pso", n_particles=50, iters=1000
+        path_prefix="howtolens", name="phase_t6_pso", n_particles=50, iters=1000
     ),
     settings=settings,
     galaxies=dict(
@@ -322,7 +322,7 @@ but it is sill pretty successful. I`ve included an example run of Emcee below.
 # %%
 phase_mcmc = al.PhaseImaging(
     search=af.Emcee(
-        path_prefix=f"howtolens", name="phase_t6_mcmc", nwalkers=50, nsteps=1000
+        path_prefix="howtolens", name="phase_t6_mcmc", nwalkers=50, nsteps=1000
     ),
     settings=settings,
     galaxies=dict(

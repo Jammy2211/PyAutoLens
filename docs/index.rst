@@ -169,19 +169,7 @@ For new **PyAutoLens** users, we recommend they start by
 already!), read through the example scripts on
 the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ and take the
 `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_ on
-strong gravitatioonal lensing with **PyAutoLens**.
-
-.. toctree::
-   :caption: General:
-   :maxdepth: 1
-   :hidden:
-
-   general/installation
-   general/workspace
-   general/configs
-   general/papers
-   general/citations
-   general/credits
+strong gravitational lensing with **PyAutoLens**.
 
 .. toctree::
    :caption: Overview:
@@ -194,6 +182,28 @@ strong gravitatioonal lensing with **PyAutoLens**.
    overview/simulate
    overview/pixelizations
    overview/interferometry
+
+.. toctree::
+   :caption: Installation:
+   :maxdepth: 1
+   :hidden:
+
+   installation/installation
+   installation/conda
+   installation/pip
+   installation/source
+   installation/troubleshooting
+
+.. toctree::
+   :caption: General:
+   :maxdepth: 1
+   :hidden:
+
+   general/workspace
+   general/configs
+   general/papers
+   general/citations
+   general/credits
 
 .. toctree::
    :caption: Tutorials:

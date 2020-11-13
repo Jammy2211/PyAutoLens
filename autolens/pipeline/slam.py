@@ -322,8 +322,7 @@ class SLaM:
 
     @property
     def source_parametric_tag(self) -> str:
-        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
-        """
+        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to."""
 
         setup_tag = conf.instance["notation"]["setup_tags"]["names"]["source"]
         hyper_tag = (
@@ -355,8 +354,7 @@ class SLaM:
 
     @property
     def source_inversion_tag(self) -> str:
-        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
-        """
+        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to."""
 
         setup_tag = conf.instance["notation"]["setup_tags"]["names"]["source"]
         hyper_tag = (
@@ -395,8 +393,7 @@ class SLaM:
 
     @property
     def light_parametric_tag(self) -> str:
-        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
-        """
+        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to."""
 
         setup_tag = conf.instance["notation"]["setup_tags"]["names"]["light"]
         hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
@@ -426,8 +423,7 @@ class SLaM:
 
     @property
     def mass_tag(self) -> str:
-        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to.
-        """
+        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to."""
 
         setup_tag = conf.instance["notation"]["setup_tags"]["names"]["mass"]
         hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
