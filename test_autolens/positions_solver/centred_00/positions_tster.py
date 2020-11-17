@@ -50,7 +50,7 @@ for i in range(iters):
         source_plane_coordinate=tracer.source_plane.galaxies[0].light.centre,
     )
 
-    positions_true = al.GridCoordinates.load(
+    positions_true = al.GridIrregularGrouped.load(
         file_path=pickle_path, filename=f"positions_{str(i)}"
     )
 
@@ -62,13 +62,13 @@ for i in range(iters):
     )
 
     print()
-    print(positions_true.in_list)
-    print(positions.in_list)
+    print(positions_true.in_grouped_list)
+    print(positions.in_grouped_list)
     print(minimum_separations)
     print(in_positions_true)
 
-    positions_plot = al.GridCoordinates(
-        coordinates=[positions.in_list[0], positions_true.in_list[0]]
+    positions_plot = al.GridIrregularGrouped(
+        coordinates=[positions.in_grouped_list[0], positions_true.in_grouped_list[0]]
     )
 
     aplt.Tracer.image(

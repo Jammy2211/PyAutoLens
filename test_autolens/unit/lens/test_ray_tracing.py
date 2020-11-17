@@ -503,7 +503,7 @@ class TestAbstractTracer:
 
             assert tracer.galaxies == [g0, g1, g4, g2, g3, g5]
 
-        # def test__galaxy_in_planes_lists__comes_in_lists_of_planes_in_redshift_order(self, sub_grid_7x7):
+        # def test__galaxy_in_planes_lists__comes_in_grouped_lists_of_planes_in_redshift_order(self, sub_grid_7x7):
         #     g0 = al.Galaxy(redshift=0.5)
         #     g1 = al.Galaxy(redshift=0.5)
         #
@@ -556,14 +556,14 @@ class TestAbstractTracer:
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.light_profile_centres.in_list == [[(1.0, 1.0)], [(2.0, 2.0)]]
+            assert tracer.light_profile_centres.in_grouped_list == [[(1.0, 1.0)], [(2.0, 2.0)]]
 
             plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
             plane_1 = al.Plane(galaxies=[g2], redshift=None)
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.light_profile_centres.in_list == [
+            assert tracer.light_profile_centres.in_grouped_list == [
                 [(1.0, 1.0), (2.0, 2.0)],
                 [(3.0, 3.0), (4.0, 4.0)],
             ]
@@ -636,14 +636,14 @@ class TestAbstractTracer:
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.mass_profile_centres.in_list == [[(1.0, 1.0)], [(2.0, 2.0)]]
+            assert tracer.mass_profile_centres.in_grouped_list == [[(1.0, 1.0)], [(2.0, 2.0)]]
 
             plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
             plane_1 = al.Plane(galaxies=[g2], redshift=None)
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.mass_profile_centres.in_list == [
+            assert tracer.mass_profile_centres.in_grouped_list == [
                 [(1.0, 1.0), (2.0, 2.0)],
                 [(3.0, 3.0), (4.0, 4.0)],
             ]
@@ -665,7 +665,7 @@ class TestAbstractTracer:
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.mass_profile_centres.in_list == [
+            assert tracer.mass_profile_centres.in_grouped_list == [
                 [(1.0, 1.0), (2.0, 2.0)],
                 [(3.0, 3.0), (4.0, 4.0)],
             ]
@@ -927,7 +927,7 @@ class TestAbstractTracerLensing:
             )
 
             traced_positions_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=al.GridCoordinates([[(1.0, 1.0), (1.0, 1.0)], [(1.0, 1.0)]])
+                grid=al.GridIrregularGrouped([[(1.0, 1.0), (1.0, 1.0)], [(1.0, 1.0)]])
             )
 
             # From unit test_autoarray below:
@@ -940,11 +940,11 @@ class TestAbstractTracerLensing:
 
             val = math.sqrt(2) / 2.0
 
-            assert traced_positions_of_planes[0].in_list[0][0] == pytest.approx(
+            assert traced_positions_of_planes[0].in_grouped_list[0][0] == pytest.approx(
                 (1.0, 1.0), 1e-4
             )
 
-            assert traced_positions_of_planes[1].in_list[0][0] == pytest.approx(
+            assert traced_positions_of_planes[1].in_grouped_list[0][0] == pytest.approx(
                 ((1.0 - 0.9348 * val), (1.0 - 0.9348 * val)), 1e-4
             )
 
@@ -952,7 +952,7 @@ class TestAbstractTracerLensing:
                 grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
             )
 
-            assert traced_positions_of_planes[2].in_list[0][0] == pytest.approx(
+            assert traced_positions_of_planes[2].in_grouped_list[0][0] == pytest.approx(
                 (
                     (
                         1.0 - beta_02 * val - beta_12 * defl11[0, 0],
@@ -962,15 +962,15 @@ class TestAbstractTracerLensing:
                 1e-4,
             )
 
-            assert traced_positions_of_planes[3].in_list[0][0] == pytest.approx(
+            assert traced_positions_of_planes[3].in_grouped_list[0][0] == pytest.approx(
                 (1.0, 1.0), 1e-4
             )
 
-            assert traced_positions_of_planes[0].in_list[0][1] == pytest.approx(
+            assert traced_positions_of_planes[0].in_grouped_list[0][1] == pytest.approx(
                 (1.0, 1.0), 1e-4
             )
 
-            assert traced_positions_of_planes[1].in_list[0][1] == pytest.approx(
+            assert traced_positions_of_planes[1].in_grouped_list[0][1] == pytest.approx(
                 ((1.0 - 0.9348 * val), (1.0 - 0.9348 * val)), 1e-4
             )
 
@@ -978,7 +978,7 @@ class TestAbstractTracerLensing:
                 grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
             )
 
-            assert traced_positions_of_planes[2].in_list[0][1] == pytest.approx(
+            assert traced_positions_of_planes[2].in_grouped_list[0][1] == pytest.approx(
                 (
                     (
                         1.0 - beta_02 * val - beta_12 * defl11[0, 0],
@@ -988,15 +988,15 @@ class TestAbstractTracerLensing:
                 1e-4,
             )
 
-            assert traced_positions_of_planes[3].in_list[0][1] == pytest.approx(
+            assert traced_positions_of_planes[3].in_grouped_list[0][1] == pytest.approx(
                 (1.0, 1.0), 1e-4
             )
 
-            assert traced_positions_of_planes[0].in_list[1][0] == pytest.approx(
+            assert traced_positions_of_planes[0].in_grouped_list[1][0] == pytest.approx(
                 (1.0, 1.0), 1e-4
             )
 
-            assert traced_positions_of_planes[1].in_list[1][0] == pytest.approx(
+            assert traced_positions_of_planes[1].in_grouped_list[1][0] == pytest.approx(
                 ((1.0 - 0.9348 * val), (1.0 - 0.9348 * val)), 1e-4
             )
 
@@ -1004,7 +1004,7 @@ class TestAbstractTracerLensing:
                 grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]])
             )
 
-            assert traced_positions_of_planes[2].in_list[1][0] == pytest.approx(
+            assert traced_positions_of_planes[2].in_grouped_list[1][0] == pytest.approx(
                 (
                     (
                         1.0 - beta_02 * val - beta_12 * defl11[0, 0],
@@ -1014,7 +1014,7 @@ class TestAbstractTracerLensing:
                 1e-4,
             )
 
-            assert traced_positions_of_planes[3].in_list[1][0] == pytest.approx(
+            assert traced_positions_of_planes[3].in_grouped_list[1][0] == pytest.approx(
                 (1.0, 1.0), 1e-4
             )
 
@@ -1054,51 +1054,51 @@ class TestAbstractTracerLensing:
             )
 
             traced_positions_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=al.GridCoordinates([[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
+                grid=al.GridIrregularGrouped([[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
             )
 
-            assert traced_positions_of_planes[0].in_list[0][0] == tuple(
+            assert traced_positions_of_planes[0].in_grouped_list[0][0] == tuple(
                 traced_grids_of_planes[0][0]
             )
 
-            assert traced_positions_of_planes[1].in_list[0][0] == tuple(
+            assert traced_positions_of_planes[1].in_grouped_list[0][0] == tuple(
                 traced_grids_of_planes[1][0]
             )
 
-            assert traced_positions_of_planes[2].in_list[0][0] == tuple(
+            assert traced_positions_of_planes[2].in_grouped_list[0][0] == tuple(
                 traced_grids_of_planes[2][0]
             )
-            assert traced_positions_of_planes[3].in_list[0][0] == tuple(
+            assert traced_positions_of_planes[3].in_grouped_list[0][0] == tuple(
                 traced_grids_of_planes[3][0]
             )
 
-            assert traced_positions_of_planes[0].in_list[0][1] == tuple(
+            assert traced_positions_of_planes[0].in_grouped_list[0][1] == tuple(
                 traced_grids_of_planes[0][1]
             )
 
-            assert traced_positions_of_planes[1].in_list[0][1] == tuple(
+            assert traced_positions_of_planes[1].in_grouped_list[0][1] == tuple(
                 traced_grids_of_planes[1][1]
             )
 
-            assert traced_positions_of_planes[2].in_list[0][1] == tuple(
+            assert traced_positions_of_planes[2].in_grouped_list[0][1] == tuple(
                 traced_grids_of_planes[2][1]
             )
-            assert traced_positions_of_planes[3].in_list[0][1] == tuple(
+            assert traced_positions_of_planes[3].in_grouped_list[0][1] == tuple(
                 traced_grids_of_planes[3][1]
             )
 
-            assert traced_positions_of_planes[0].in_list[1][0] == tuple(
+            assert traced_positions_of_planes[0].in_grouped_list[1][0] == tuple(
                 traced_grids_of_planes[0][2]
             )
 
-            assert traced_positions_of_planes[1].in_list[1][0] == tuple(
+            assert traced_positions_of_planes[1].in_grouped_list[1][0] == tuple(
                 traced_grids_of_planes[1][2]
             )
 
-            assert traced_positions_of_planes[2].in_list[1][0] == tuple(
+            assert traced_positions_of_planes[2].in_grouped_list[1][0] == tuple(
                 traced_grids_of_planes[2][2]
             )
-            assert traced_positions_of_planes[3].in_list[1][0] == tuple(
+            assert traced_positions_of_planes[3].in_grouped_list[1][0] == tuple(
                 traced_grids_of_planes[3][2]
             )
 
@@ -1711,11 +1711,11 @@ class TestAbstractTracerLensing:
 
             tracer_convergence = tracer.convergence_from_grid(grid=positions_7x7)
 
-            assert image_plane_convergence.in_list[0][0] == pytest.approx(
-                g0_convergence.in_list[0][0] + g1_convergence.in_list[0][0], 1.0e-4
+            assert image_plane_convergence.in_grouped_list[0][0] == pytest.approx(
+                g0_convergence.in_grouped_list[0][0] + g1_convergence.in_grouped_list[0][0], 1.0e-4
             )
-            assert tracer_convergence.in_list[0][0] == pytest.approx(
-                g0_convergence.in_list[0][0] + g1_convergence.in_list[0][0], 1.0e-4
+            assert tracer_convergence.in_grouped_list[0][0] == pytest.approx(
+                g0_convergence.in_grouped_list[0][0] + g1_convergence.in_grouped_list[0][0], 1.0e-4
             )
 
         def test__no_galaxy_has_mass_profile__convergence_returned_as_zeros(
@@ -1830,11 +1830,11 @@ class TestAbstractTracerLensing:
 
             tracer_potential = tracer.potential_from_grid(grid=positions_7x7)
 
-            assert image_plane_potential.in_list[0][0] == pytest.approx(
-                g0_potential.in_list[0][0] + g1_potential.in_list[0][0], 1.0e-4
+            assert image_plane_potential.in_grouped_list[0][0] == pytest.approx(
+                g0_potential.in_grouped_list[0][0] + g1_potential.in_grouped_list[0][0], 1.0e-4
             )
-            assert tracer_potential.in_list[0][0] == pytest.approx(
-                g0_potential.in_list[0][0] + g1_potential.in_list[0][0], 1.0e-4
+            assert tracer_potential.in_grouped_list[0][0] == pytest.approx(
+                g0_potential.in_grouped_list[0][0] + g1_potential.in_grouped_list[0][0], 1.0e-4
             )
 
         def test__no_galaxy_has_mass_profile__potential_returned_as_zeros(
@@ -1955,20 +1955,20 @@ class TestAbstractTracerLensing:
                 grid=positions_7x7
             )
 
-            assert image_plane_deflections.in_list[0][0][0] == pytest.approx(
-                g0_deflections.in_list[0][0][0] + g1_deflections.in_list[0][0][0],
+            assert image_plane_deflections.in_grouped_list[0][0][0] == pytest.approx(
+                g0_deflections.in_grouped_list[0][0][0] + g1_deflections.in_grouped_list[0][0][0],
                 1.0e-4,
             )
-            assert image_plane_deflections.in_list[0][0][1] == pytest.approx(
-                g0_deflections.in_list[0][0][1] + g1_deflections.in_list[0][0][1],
+            assert image_plane_deflections.in_grouped_list[0][0][1] == pytest.approx(
+                g0_deflections.in_grouped_list[0][0][1] + g1_deflections.in_grouped_list[0][0][1],
                 1.0e-4,
             )
-            assert tracer_deflections.in_list[0][0][0] == pytest.approx(
-                g0_deflections.in_list[0][0][0] + g1_deflections.in_list[0][0][0],
+            assert tracer_deflections.in_grouped_list[0][0][0] == pytest.approx(
+                g0_deflections.in_grouped_list[0][0][0] + g1_deflections.in_grouped_list[0][0][0],
                 1.0e-4,
             )
-            assert tracer_deflections.in_list[0][0][1] == pytest.approx(
-                g0_deflections.in_list[0][0][1] + g1_deflections.in_list[0][0][1],
+            assert tracer_deflections.in_grouped_list[0][0][1] == pytest.approx(
+                g0_deflections.in_grouped_list[0][0][1] + g1_deflections.in_grouped_list[0][0][1],
                 1.0e-4,
             )
 
@@ -2952,7 +2952,7 @@ class TestAbstractTracerData:
             mappers_of_planes = tracer.mappers_of_planes_from_grid(grid=sub_grid_7x7)
             assert mappers_of_planes == [None]
 
-        def test__source_galaxy_has_pixelization__returns_mapper_in_list(
+        def test__source_galaxy_has_pixelization__returns_mapper_in_grouped_list(
             self, sub_grid_7x7
         ):
             galaxy_pix = al.Galaxy(

@@ -52,7 +52,7 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        assert result.source_plane_light_profile_centres.in_list == [[(1.0, 2.0)]]
+        assert result.source_plane_light_profile_centres.in_grouped_list == [[(1.0, 2.0)]]
 
         source = al.Galaxy(
             redshift=1.0,
@@ -76,7 +76,7 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        assert result.source_plane_light_profile_centres.in_list == [
+        assert result.source_plane_light_profile_centres.in_grouped_list == [
             [(1.0, 2.0), (3.0, 4.0)],
             [(5.0, 6.0)],
         ]
@@ -122,7 +122,7 @@ class TestTracer:
             np.array([0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80]), 1.0e-1
         )
 
-        assert result.source_plane_inversion_centres.in_list == [[(0.0, 0.0)]]
+        assert result.source_plane_inversion_centres.in_grouped_list == [[(0.0, 0.0)]]
 
         lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
         source = al.Galaxy(redshift=1.0)
@@ -164,7 +164,7 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        assert result.source_plane_centres.in_list == [[(9.0, 8.0), (0.0, 0.0)]]
+        assert result.source_plane_centres.in_grouped_list == [[(9.0, 8.0), (0.0, 0.0)]]
 
     def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_centres_and_separations(
         self, imaging_7x7, mask_7x7
@@ -221,6 +221,6 @@ class TestTracer:
             source_plane_coordinate=result.source_plane_inversion_centres[0],
         )
 
-        assert multiple_images.in_list[0] == multiple_images_manual_0.in_list[0]
-        assert multiple_images.in_list[1] == multiple_images_manual_1.in_list[0]
-        assert multiple_images.in_list[2] == multiple_images_manual_2.in_list[0]
+        assert multiple_images.in_grouped_list[0] == multiple_images_manual_0.in_grouped_list[0]
+        assert multiple_images.in_grouped_list[1] == multiple_images_manual_1.in_grouped_list[0]
+        assert multiple_images.in_grouped_list[2] == multiple_images_manual_2.in_grouped_list[0]

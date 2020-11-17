@@ -81,14 +81,14 @@ class PhaseDataset(dataset.PhaseDataset):
 
             # TODO : Coorrdinates refascotr will sort out index call here
 
-            if isinstance(updated_positions, aa.GridCoordinates):
-                if updated_positions.in_list:
-                    if len(updated_positions.in_list[0]) > 1:
+            if isinstance(updated_positions, aa.GridIrregularGrouped):
+                if updated_positions.in_grouped_list:
+                    if len(updated_positions.in_grouped_list[0]) > 1:
                         return updated_positions
 
         if results.last is not None:
             if results.last.positions is not None:
-                if results.last.positions.in_list:
+                if results.last.positions.in_grouped_list:
                     return results.last.positions
 
         return positions
@@ -129,7 +129,7 @@ class PhaseDataset(dataset.PhaseDataset):
                 return None
 
             positions_fits = fit_positions.FitPositionsSourcePlaneMaxSeparation(
-                positions=aa.GridCoordinates(coordinates=positions),
+                positions=aa.GridIrregularGrouped(coordinates=positions),
                 tracer=results.last.max_log_likelihood_tracer,
                 noise_value=1.0,
             )

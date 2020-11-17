@@ -14,7 +14,7 @@ class AbstractFitPositionsSourcePlane:
 
         Parameters
         -----------
-        positions : grids.GridCoordinates
+        positions : grids.GridIrregularGrouped
             The (y,x) arc-second coordinates of named positions which the log_likelihood is computed using. Positions
             are paired to galaxies in the `Tracer` using their names.
         tracer : ray_tracing.Tracer
@@ -32,7 +32,7 @@ class AbstractFitPositionsSourcePlane:
     def maximum_separations(self):
         return [
             self.max_separation_of_grid(grid=np.asarray(positions))
-            for positions in self.source_plane_positions.in_list
+            for positions in self.source_plane_positions.in_grouped_list
         ]
 
     def maximum_separation_within_threshold(self, threshold):
@@ -55,7 +55,7 @@ class FitPositionsSourcePlaneMaxSeparation(AbstractFitPositionsSourcePlane):
 
         Parameters
         -----------
-        positions : grids.GridCoordinates
+        positions : grids.GridIrregularGrouped
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value : float
             The noise-value assumed when computing the log likelihood.

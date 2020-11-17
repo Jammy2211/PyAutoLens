@@ -15,7 +15,7 @@ def minimum_separations_from(positions_true, positions):
 
     minimum_separations = []
 
-    for pos_true in positions_true.in_list[0]:
+    for pos_true in positions_true.in_grouped_list[0]:
 
         minimum_separations.append(
             min_separation_of_positions_to_grid(positions=pos_true, grid=positions)

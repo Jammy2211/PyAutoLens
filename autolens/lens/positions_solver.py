@@ -39,7 +39,7 @@ class AbstractPositionsSolver:
         lensing_obj : autogalaxy.LensingObject
             An object which has a deflection_from_grid method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
-        grid : autoarray.GridCoordinatesUniform or ndarray
+        grid : autoarray.GridIrregularGroupedUniform or ndarray
             A gridd of (y,x) Cartesian coordinates for which their distances to the mass profile centres are computed,
             with points within the threshold removed.
         """
@@ -60,8 +60,8 @@ class AbstractPositionsSolver:
                     outside_distance=self.distance_from_mass_profile_centre,
                 )
 
-            return grids.GridCoordinatesUniform(
-                coordinates=grid, pixel_scales=pixel_scales
+            return grids.GridIrregularGroupedUniform(
+                grid=grid, pixel_scales=pixel_scales
             )
 
         return grid
@@ -112,8 +112,8 @@ class AbstractPositionsSolver:
             upscale_factor=upscale_factor,
         )
 
-        return grids.GridCoordinatesUniform(
-            coordinates=grid_buffed,
+        return grids.GridIrregularGroupedUniform(
+            grid=grid_buffed,
             pixel_scales=(
                 pixel_scales[0] / upscale_factor,
                 pixel_scales[1] / upscale_factor,
@@ -139,7 +139,7 @@ class AbstractPositionsSolver:
         lensing_obj : autogalaxy.LensingObject
             An object which has a deflection_from_grid method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
-        grid : autoarray.GridCoordinatesUniform or ndarray
+        grid : autoarray.GridIrregularGroupedUniform or ndarray
             A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
             their neighbors are found.
         source_plane_coordinate : (y,x)
@@ -161,8 +161,8 @@ class AbstractPositionsSolver:
             has_neighbors=has_neighbors,
         )
 
-        return grids.GridCoordinatesUniform(
-            coordinates=grid_peaks, pixel_scales=grid.pixel_scales
+        return grids.GridIrregularGroupedUniform(
+            grid=grid_peaks, pixel_scales=grid.pixel_scales
         )
 
     def grid_within_distance_of_source_plane_centre(
@@ -186,7 +186,7 @@ class AbstractPositionsSolver:
             lensing_obj : autogalaxy.LensingObject
                 An object which has a deflection_from_grid method for performing lensing calculations, for example a
                 `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
-            grid : autoarray.GridCoordinatesUniform or ndarray
+            grid : autoarray.GridIrregularGroupedUniform or ndarray
                 A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
                 their neighbors are found.
             source_plane_coordinate : (y,x)
@@ -208,8 +208,8 @@ class AbstractPositionsSolver:
             distances_1d=source_plane_distances, grid_1d=grid, within_distance=distance
         )
 
-        return grids.GridCoordinatesUniform(
-            coordinates=grid_within_distance_of_centre, pixel_scales=grid.pixel_scales
+        return grids.GridIrregularGroupedUniform(
+            grid=grid_within_distance_of_centre, pixel_scales=grid.pixel_scales
         )
 
 
@@ -302,10 +302,10 @@ class PositionsFinder(AbstractPositionsSolver):
     def solve_from_tracer(self, tracer):
         """Needs work - idea is it solves for all image plane multiple image positions using the redshift distribution of
         the tracer."""
-        return grids.GridCoordinates(
+        return grids.GridIrregularGrouped(
             coordinates=[
                 self.solve(lensing_obj=tracer, source_plane_coordinate=centre)
-                for centre in tracer.light_profile_centres.in_list[-1]
+                for centre in tracer.light_profile_centres.in_grouped_list[-1]
             ]
         )
 
@@ -323,7 +323,7 @@ class PositionsFinder(AbstractPositionsSolver):
 
         if not self.use_upscaling:
 
-            return grids.GridCoordinates(coordinates=coordinates_list)
+            return grids.GridIrregularGrouped(coordinates=coordinates_list)
 
         pixel_scale = self.grid.pixel_scale
 
@@ -353,14 +353,14 @@ class PositionsFinder(AbstractPositionsSolver):
 
         coordinates_list = self.grid_within_distance_of_source_plane_centre(
             lensing_obj=lensing_obj,
-            grid=grids.GridCoordinatesUniform(
-                coordinates=coordinates_list, pixel_scales=(pixel_scale, pixel_scale)
+            grid=grids.GridIrregularGroupedUniform(
+                grid=coordinates_list, pixel_scales=(pixel_scale, pixel_scale)
             ),
             source_plane_coordinate=source_plane_coordinate,
             distance=self.distance_from_source_centre,
         )
 
-        return grids.GridCoordinates(coordinates=coordinates_list)
+        return grids.GridIrregularGrouped(coordinates=coordinates_list)
 
 
 @decorator_util.jit()

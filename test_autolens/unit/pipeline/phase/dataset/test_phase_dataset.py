@@ -25,7 +25,7 @@ class TestMakeAnalysis:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)]]),
+            positions=al.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -47,10 +47,10 @@ class TestMakeAnalysis:
         )
 
         assert (
-            analysis.masked_dataset.positions.in_list[0][0] == np.array([1.0, 1.0])
+            analysis.masked_dataset.positions.in_grouped_list[0][0] == np.array([1.0, 1.0])
         ).all()
         assert (
-            analysis.masked_dataset.positions.in_list[0][1] == np.array([2.0, 2.0])
+            analysis.masked_dataset.positions.in_grouped_list[0][1] == np.array([2.0, 2.0])
         ).all()
         assert analysis.settings.settings_lens.positions_threshold == 0.2
 
@@ -153,7 +153,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridCoordinates([[(1.0, 1.0)]]),
+            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -171,14 +171,14 @@ class TestAutoPositions:
             dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
-        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_grouped_list == [[(1.0, 1.0)]]
 
         # Auto positioning is ON, but there are no previous results, so use input positions.
 
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridCoordinates([[(1.0, 1.0)]]),
+            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -196,7 +196,7 @@ class TestAutoPositions:
             dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
-        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_grouped_list == [[(1.0, 1.0)]]
 
         # Auto positioning is ON, there are previous results so use their new positions and threshold (which is
         # multiplied by the auto_positions_factor). However, only one set of positions is computed from the previous
@@ -205,7 +205,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridCoordinates([[(1.0, 1.0)]]),
+            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -219,7 +219,7 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer,
-            updated_positions=al.GridCoordinates(coordinates=[[(2.0, 2.0)]]),
+            updated_positions=al.GridIrregularGrouped(coordinates=[[(2.0, 2.0)]]),
             updated_positions_threshold=0.3,
         )
 
@@ -229,14 +229,14 @@ class TestAutoPositions:
             dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
-        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_grouped_list == [[(1.0, 1.0)]]
 
         # Auto positioning is ON, but the tracer only has a single plane and thus no lensing, so use input positions.
 
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridCoordinates([[(1.0, 1.0)]]),
+            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -252,7 +252,7 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer_x1_plane,
-            updated_positions=al.GridCoordinates(
+            updated_positions=al.GridIrregularGrouped(
                 coordinates=[[(2.0, 2.0), (3.0, 3.0)]]
             ),
             updated_positions_threshold=0.3,
@@ -264,7 +264,7 @@ class TestAutoPositions:
             dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
-        assert analysis.masked_dataset.positions.in_list == [[(1.0, 1.0)]]
+        assert analysis.masked_dataset.positions.in_grouped_list == [[(1.0, 1.0)]]
 
         # Auto positioning is ON, there are previous results so use their new positions and threshold (which is
         # multiplied by the auto_positions_factor). Multiple positions are available so these are now used.
@@ -272,7 +272,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridCoordinates([[(1.0, 1.0)]]),
+            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -286,7 +286,7 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer,
-            updated_positions=al.GridCoordinates(
+            updated_positions=al.GridIrregularGrouped(
                 coordinates=[[(2.0, 2.0), (3.0, 3.0)]]
             ),
             updated_positions_threshold=0.3,
@@ -298,7 +298,7 @@ class TestAutoPositions:
             dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
-        assert analysis.masked_dataset.positions.in_list == [[(2.0, 2.0), (3.0, 3.0)]]
+        assert analysis.masked_dataset.positions.in_grouped_list == [[(2.0, 2.0), (3.0, 3.0)]]
 
         # Auto positioning is Off, but there are previous results with updated positions relative to the input
         # positions, so use those with their positions threshold.
@@ -306,7 +306,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridCoordinates([[(2.0, 2.0)]]),
+            positions=al.GridIrregularGrouped([[(2.0, 2.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -318,7 +318,7 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer,
-            positions=al.GridCoordinates(coordinates=[[(3.0, 3.0), (4.0, 4.0)]]),
+            positions=al.GridIrregularGrouped(coordinates=[[(3.0, 3.0), (4.0, 4.0)]]),
             updated_positions_threshold=0.3,
         )
 
@@ -328,7 +328,7 @@ class TestAutoPositions:
             dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
-        assert analysis.masked_dataset.positions.in_list == [[(3.0, 3.0), (4.0, 4.0)]]
+        assert analysis.masked_dataset.positions.in_grouped_list == [[(3.0, 3.0), (4.0, 4.0)]]
 
     def test__uses_auto_update_factor(self, image_7x7, noise_map_7x7, mask_7x7):
         tracer = al.Tracer.from_galaxies(
@@ -340,7 +340,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridCoordinates([[(1.0, 1.0)]]),
+            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -366,7 +366,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridCoordinates([[(1.0, 0.0), (-1.0, 0.0)]]),
+            positions=al.GridIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -394,7 +394,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridCoordinates([[(1.0, 0.0), (-1.0, 0.0)]]),
+            positions=al.GridIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -424,7 +424,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridCoordinates([[(1.0, 0.0), (-1.0, 0.0)]]),
+            positions=al.GridIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(

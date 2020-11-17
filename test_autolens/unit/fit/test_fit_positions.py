@@ -15,35 +15,35 @@ class MockTracerPositions:
 class TestAbstractFitPositionsSourcePlane:
     def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
 
-        positions = al.GridCoordinates(coordinates=[[(0.0, 0.0), (0.0, 1.0)]])
+        positions = al.GridIrregularGrouped(coordinates=[[(0.0, 0.0), (0.0, 1.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
         )
         assert fit.maximum_separations[0] == 1.0
 
-        positions = al.GridCoordinates([[(0.0, 0.0), (1.0, 1.0)]])
+        positions = al.GridIrregularGrouped([[(0.0, 0.0), (1.0, 1.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
         )
         assert fit.maximum_separations[0] == np.sqrt(2)
 
-        positions = al.GridCoordinates([[(0.0, 0.0), (1.0, 3.0)]])
+        positions = al.GridIrregularGrouped([[(0.0, 0.0), (1.0, 3.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
         )
         assert fit.maximum_separations[0] == np.sqrt(np.square(1.0) + np.square(3.0))
 
-        positions = al.GridCoordinates([[(-2.0, -4.0), (1.0, 3.0)]])
+        positions = al.GridIrregularGrouped([[(-2.0, -4.0), (1.0, 3.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
         )
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
-        positions = al.GridCoordinates([[(8.0, 4.0), (-9.0, -4.0)]])
+        positions = al.GridIrregularGrouped([[(8.0, 4.0), (-9.0, -4.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
@@ -53,28 +53,28 @@ class TestAbstractFitPositionsSourcePlane:
     def test_multiple_positions__mock_position_tracer__maximum_separation_is_correct(
         self,
     ):
-        positions = al.GridCoordinates([[(0.0, 0.0), (0.0, 1.0), (0.0, 0.5)]])
+        positions = al.GridIrregularGrouped([[(0.0, 0.0), (0.0, 1.0), (0.0, 0.5)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
         )
         assert fit.maximum_separations[0] == 1.0
 
-        positions = al.GridCoordinates([[(0.0, 0.0), (0.0, 0.0), (3.0, 3.0)]])
+        positions = al.GridIrregularGrouped([[(0.0, 0.0), (0.0, 0.0), (3.0, 3.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
         )
         assert fit.maximum_separations[0] == np.sqrt(18)
 
-        al.GridCoordinates([[(0.0, 0.0), (1.0, 1.0), (3.0, 3.0)]])
+        al.GridIrregularGrouped([[(0.0, 0.0), (1.0, 1.0), (3.0, 3.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
         )
         assert fit.maximum_separations[0] == np.sqrt(18)
 
-        positions = al.GridCoordinates(
+        positions = al.GridIrregularGrouped(
             [
                 [
                     (-2.0, -4.0),
@@ -92,7 +92,7 @@ class TestAbstractFitPositionsSourcePlane:
         )
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
-        positions = al.GridCoordinates([[(8.0, 4.0), (8.0, 4.0), (-9.0, -4.0)]])
+        positions = al.GridIrregularGrouped([[(8.0, 4.0), (8.0, 4.0), (-9.0, -4.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
@@ -100,7 +100,7 @@ class TestAbstractFitPositionsSourcePlane:
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
     def test_multiple_sets_of_positions__multiple_sets_of_max_distances(self):
-        positions = al.GridCoordinates(
+        positions = al.GridIrregularGrouped(
             [
                 [(0.0, 0.0), (0.0, 1.0), (0.0, 0.5)],
                 [(0.0, 0.0), (0.0, 0.0), (3.0, 3.0)],
@@ -119,7 +119,7 @@ class TestAbstractFitPositionsSourcePlane:
 
     def test__threshold__if_not_met_returns_ray_tracing_exception(self):
 
-        positions = al.GridCoordinates([[(0.0, 0.0), (0.0, 1.0)]])
+        positions = al.GridIrregularGrouped([[(0.0, 0.0), (0.0, 1.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
@@ -139,13 +139,13 @@ class TestAbstractFitPositionsSourcePlane:
             ]
         )
 
-        positions = al.GridCoordinates([[(1.0, 0.0), (-1.0, 0.0)]])
+        positions = al.GridIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]])
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
         )
         assert fit.maximum_separation_within_threshold(threshold=0.01)
 
-        positions = al.GridCoordinates([[(1.2, 0.0), (-1.0, 0.0)]])
+        positions = al.GridIrregularGrouped([[(1.2, 0.0), (-1.0, 0.0)]])
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0
         )
@@ -155,7 +155,7 @@ class TestAbstractFitPositionsSourcePlane:
 
 class TestFitPositionsSourcePlane:
     def test__likelihood__is_sum_of_separations_divided_by_noise(self):
-        positions = al.GridCoordinates(
+        positions = al.GridIrregularGrouped(
             [
                 [(0.0, 0.0), (0.0, 1.0), (0.0, 0.5)],
                 [(0.0, 0.0), (0.0, 0.0), (3.0, 3.0)],

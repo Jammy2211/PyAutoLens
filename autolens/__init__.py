@@ -16,7 +16,7 @@ from autoarray.structures.grids import (
     Grid,
     GridIterate,
     GridInterpolate,
-    GridCoordinates,
+    GridIrregularGrouped,
     GridRectangular,
     GridVoronoi,
 )

@@ -20,7 +20,7 @@ class TestLogLikelihoodFunction:
     def test__positions_do_not_trace_within_threshold__raises_exception(
         self, phase_interferometer_7, interferometer_7, mask_7x7, visibilities_mask_7x2
     ):
-        interferometer_7.positions = al.GridCoordinates([[(1.0, 100.0), (200.0, 2.0)]])
+        interferometer_7.positions = al.GridIrregularGrouped([[(1.0, 100.0), (200.0, 2.0)]])
 
         phase_interferometer_7 = al.PhaseInterferometer(
             real_space_mask=mask_7x7,

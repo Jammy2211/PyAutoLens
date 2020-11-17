@@ -102,7 +102,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
     @property
     def light_profile_centres(self):
         """
-        Returns the light profile centres of the tracer as a `GridCoordinates` object, which structures the centres
+        Returns the light profile centres of the tracer as a `GridIrregularGrouped` object, which structures the centres
             in lists according to which plane they come from.
 
             Fo example, if the tracer has two planes, the first with one light profile and second with two light profiles
@@ -115,7 +115,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
             The centres of light-sheets are filtered out, as their centres are not relevant to lensing calculations
 
         """
-        return grids.GridCoordinates(
+        return grids.GridIrregularGrouped(
             [
                 list(plane.light_profile_centres)
                 for plane in self.planes
@@ -138,7 +138,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
     @property
     def mass_profile_centres(self):
         """
-        Returns the mass profile centres of the tracer as a `GridCoordinates` object, which structures the centres
+        Returns the mass profile centres of the tracer as a `GridIrregularGrouped` object, which structures the centres
             in lists according to which plane they come from.
 
             Fo example, if the tracer has two planes, the first with one mass profile and second with two mass profiles
@@ -151,7 +151,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
             The centres of mass-sheets are filtered out, as their centres are not relevant to lensing calculations
 
         """
-        return grids.GridCoordinates(
+        return grids.GridIrregularGrouped(
             [
                 list(plane.mass_profile_centres)
                 for plane in self.planes

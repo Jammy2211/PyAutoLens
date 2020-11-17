@@ -16,7 +16,7 @@ Data Structures
    Grid
    GridIterate
    GridInterpolate
-   GridCoordinates
+   GridIrregularGrouped
    Kernel
    Convolver
    Visibilities
