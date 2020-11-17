@@ -1,4 +1,5 @@
 import autofit as af
+from os import path
 import autolens as al
 
 """

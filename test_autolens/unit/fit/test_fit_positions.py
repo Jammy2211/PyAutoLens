@@ -51,7 +51,7 @@ class TestAbstractFitPositionsSourcePlane:
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
     def test_multiple_positions__mock_position_tracer__maximum_separation_is_correct(
-        self
+        self,
     ):
         positions = al.GridCoordinates([[(0.0, 0.0), (0.0, 1.0), (0.0, 0.5)]])
         tracer = MockTracerPositions(positions=positions)

@@ -54,7 +54,7 @@ class Result(result.Result):
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(
-        self
+        self,
     ) -> grids.GridCoordinates:
         """Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
         the multiple image position of the source(s) in the image-plane..

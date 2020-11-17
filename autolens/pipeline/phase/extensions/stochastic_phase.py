@@ -3,6 +3,7 @@ import autofit as af
 from autogalaxy.pipeline.phase import abstract
 from autogalaxy.pipeline.phase import extensions
 
+from os import path
 import math
 from scipy.stats import norm
 import pickle
@@ -53,7 +54,12 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         self.results = results
 
-        stochastic_log_evidences_file = f"{conf.instance.output_path}/{self.paths.path_prefix}/{self.paths.name}/stochastic_log_evidences.json"
+        stochastic_log_evidences_file = path.join(
+            conf.instance.output_path,
+            self.paths.path_prefix,
+            self.paths.name,
+            "stochastic_log_evidences.json",
+        )
 
         try:
             stochastic_log_evidences = self.stochastic_log_evidences_from_json(
@@ -129,7 +135,7 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
         Save the dataset associated with the phase
         """
         with open(
-            "{}/stochastic_log_evidences.pickle".format(self.paths.pickle_path), "wb"
+            path.join(self.paths.pickle_path, "stochastic_log_evidences.pickle"), "wb"
         ) as f:
             pickle.dump(stochastic_log_evidences, f)
 

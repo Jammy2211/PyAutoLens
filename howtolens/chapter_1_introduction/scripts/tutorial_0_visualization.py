@@ -12,6 +12,7 @@ will be covered in a later tutorial.
 # %%
 #%matplotlib inline
 
+from os import path
 import autolens as al
 import autolens.plot as aplt
 
@@ -56,7 +57,7 @@ The dataset path specifies where the dataset is located, this time in the direct
 """
 
 # %%
-dataset_path = f"dataset/howtolens/chapter_1"
+dataset_path = path.join("dataset", "howtolens", "chapter_1")
 
 # %%
 """
@@ -65,9 +66,9 @@ We now load this dataset from .fits files and create an instance of an `imaging`
 
 # %%
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
@@ -88,9 +89,9 @@ If not, you can customize a number of matplotlib setup options using a Plotter o
 
 # %%
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 

@@ -1,16 +1,18 @@
-import os
+from os import path
 
 import pytest
 
 import autolens as al
 import autolens.plot as aplt
 
-directory = os.path.dirname(os.path.realpath(__file__))
+directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(name="plot_path")
 def make_fit_imaging_plotter_setup():
-    return "{}/files/plots/fit/".format(os.path.dirname(os.path.realpath(__file__)))
+    return path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "files", "plots", "fit"
+    )
 
 
 def test__subhalo_detection_sub_plot(
@@ -30,7 +32,7 @@ def test__subhalo_detection_sub_plot(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_detection_imaging.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_detection_imaging.png") in plot_patch.paths
 
     aplt.Subhalo.subplot_detection_imaging(
         fit_imaging_detect=masked_imaging_fit_x2_plane_inversion_7x7,
@@ -40,7 +42,7 @@ def test__subhalo_detection_sub_plot(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_detection_imaging.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_detection_imaging.png") in plot_patch.paths
 
 
 def test__subhalo_detection_fits(
@@ -57,7 +59,7 @@ def test__subhalo_detection_fits(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_detection_fits.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_detection_fits.png") in plot_patch.paths
 
     aplt.Subhalo.subplot_detection_fits(
         fit_imaging_before=masked_imaging_fit_x2_plane_inversion_7x7,
@@ -66,4 +68,4 @@ def test__subhalo_detection_fits(
         sub_plotter=aplt.SubPlotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert f"{plot_path}/subplot_detection_fits.png" in plot_patch.paths
+    assert path.join(plot_path, "subplot_detection_fits.png") in plot_patch.paths

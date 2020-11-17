@@ -20,6 +20,7 @@ workspace_path = str(here())
 #%cd $workspace_path
 print(f"Working Directory has been set to `{workspace_path}`")
 
+from os import path
 import autolens as al
 import autolens.plot as aplt
 
@@ -34,12 +35,12 @@ we'll use strong lensing data, where:
 
 # %%
 dataset_name = "mass_sie__source_sersic_x4"
-dataset_path = f"dataset/howtolens/chapter_4/{dataset_name}"
+dataset_path = path.join("dataset", "howtolens", "chapter_4", dataset_name)
 
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
@@ -105,7 +106,7 @@ setup_source = al.SetupSourceInversion(
 )
 
 setup = al.SetupPipeline(
-    path_prefix="howtolens/c4_t8_inversion",
+    path_prefix=path.join("howtolens", "c4_t8_inversion"),
     setup_mass=setup_mass,
     setup_source=setup_source,
 )

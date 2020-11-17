@@ -23,6 +23,7 @@ workspace_path = str(here())
 #%cd $workspace_path
 print(f"Working Directory has been set to `{workspace_path}`")
 
+from os import path
 import autolens as al
 import autolens.plot as aplt
 
@@ -37,12 +38,12 @@ we'll use new strong lensing data, where:
 
 # %%
 dataset_name = "mass_sie__source_sersic_x4"
-dataset_path = f"dataset/howtolens/chapter_3/{dataset_name}"
+dataset_path = path.join("dataset", "howtolens", "chapter_3", dataset_name)
 
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
@@ -103,7 +104,7 @@ The `path_prefix` below specifies the path the pipeline results are written to, 
 from pipelines import tutorial_3_pipeline_complex_source
 
 pipeline_complex_source = tutorial_3_pipeline_complex_source.make_pipeline(
-    path_prefix="howtolens/c3_t3_complex_source",
+    path_prefix=path.join("howtolens", "c3_t3_complex_source"),
     settings=settings,
     redshift_lens=0.5,
     redshift_source=1.0,

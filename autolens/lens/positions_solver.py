@@ -70,34 +70,34 @@ class AbstractPositionsSolver:
         self, coordinate, pixel_scales, buffer, upscale_factor
     ):
         """
-    For an input (y,x) Catersian coordinate create a buffed and upscaled square grid of (y,x) coordinates where:
+        For an input (y,x) Catersian coordinate create a buffed and upscaled square grid of (y,x) coordinates where:
 
-        - The new grid of coordinates are buffed. For example, if buffer=1, the new grid will correspond to a 3x3 grid
-          of coordinates centred on the input (y,x) value with spacings defined by the input pixel_scales.
+            - The new grid of coordinates are buffed. For example, if buffer=1, the new grid will correspond to a 3x3 grid
+              of coordinates centred on the input (y,x) value with spacings defined by the input pixel_scales.
 
-        - The new grid is upscaled. For example, if upscale=2, the new grid will be at x2 the resolution of the input
-          pixel_scale.
+            - The new grid is upscaled. For example, if upscale=2, the new grid will be at x2 the resolution of the input
+              pixel_scale.
 
-        Buffing and upscaling work together, so a buffer=2 and upscale=2 will produce a new 6x6 grid centred around the
-        input coordinate.
+            Buffing and upscaling work together, so a buffer=2 and upscale=2 will produce a new 6x6 grid centred around the
+            input coordinate.
 
-        The `PositionFinder` works by locating pixels that trace closer to the source galaxy than neighboring pixels
-        and iteratively refining the grid to find pixels that trace close at higher and higher resolutions. This
-        function is core to producing these upscaled grids.
+            The `PositionFinder` works by locating pixels that trace closer to the source galaxy than neighboring pixels
+            and iteratively refining the grid to find pixels that trace close at higher and higher resolutions. This
+            function is core to producing these upscaled grids.
 
-        Parameters
-        ----------
-        coordinate : (float, float)
-            The (y,x) Cartesian coordinates aroun which the buffed and upscaled grid is created.
-        pixel_scales : (float, float)
-            The pixel-scale resolution of the buffed and upscaled grid that is formed around the input coordinate. If
-            upscale > 1, the pixel_scales are reduced to pixel_scale / upscale_factor.
-        buffer : int
-            The number of pixels around the central (y,x) coordinate that the grid is computed on, i.e. how much it is
-            buffed. A buffer of 1 puts 1 pixel in every direction around the (y,x) coordinate, creating a 3x3 grid. A
-            buffer=2 places two pixels around it in every direction, creating a 5x5 grid. And so on.
-        upscale_factor : int
-            The factor by which the resolution of the grid is increased relative to the input pixel-scales.
+            Parameters
+            ----------
+            coordinate : (float, float)
+                The (y,x) Cartesian coordinates aroun which the buffed and upscaled grid is created.
+            pixel_scales : (float, float)
+                The pixel-scale resolution of the buffed and upscaled grid that is formed around the input coordinate. If
+                upscale > 1, the pixel_scales are reduced to pixel_scale / upscale_factor.
+            buffer : int
+                The number of pixels around the central (y,x) coordinate that the grid is computed on, i.e. how much it is
+                buffed. A buffer of 1 puts 1 pixel in every direction around the (y,x) coordinate, creating a 3x3 grid. A
+                buffer=2 places two pixels around it in every direction, creating a 5x5 grid. And so on.
+            upscale_factor : int
+                The factor by which the resolution of the grid is increased relative to the input pixel-scales.
         """
 
         if self.use_upscaling:
@@ -121,7 +121,7 @@ class AbstractPositionsSolver:
         )
 
     def grid_peaks_from(self, lensing_obj, grid, source_plane_coordinate):
-        """ Find the 'peaks' of a grid of coordinates, where a peak corresponds to a (y,x) coordinate on the grid which
+        """Find the 'peaks' of a grid of coordinates, where a peak corresponds to a (y,x) coordinate on the grid which
         traces closer to the input (y,x) source-plane coordinate than any of its 8 adjacent neighbors. This is
         performed by:
 
@@ -169,31 +169,31 @@ class AbstractPositionsSolver:
         self, lensing_obj, source_plane_coordinate, grid, distance
     ):
         """
-    For an input grid of (y,x) coordinates, remove all coordinates that do not trace within a threshold distance
-        of the source-plane centre. This is performed by:
+        For an input grid of (y,x) coordinates, remove all coordinates that do not trace within a threshold distance
+            of the source-plane centre. This is performed by:
 
-         1) Computing the deflection angle of every (y,x) coordinate on the grid using the input lensing object.
-         2) Ray tracing these coordinates to the source-plane.
-         3) Computing their distance to the centre of the source in the source-plane.
-         4) Removing all coordinates that are not within the input distance of the centre.
+             1) Computing the deflection angle of every (y,x) coordinate on the grid using the input lensing object.
+             2) Ray tracing these coordinates to the source-plane.
+             3) Computing their distance to the centre of the source in the source-plane.
+             4) Removing all coordinates that are not within the input distance of the centre.
 
-        This algorithm is optionally used in the _PositionFiner_. It may be required to remove solutions that are
-        genuine 'peaks' that tracer closer to a source than their 8 neighboring pixels, but which do not truly
-        trace to the centre of the source-centre.
+            This algorithm is optionally used in the _PositionFiner_. It may be required to remove solutions that are
+            genuine 'peaks' that tracer closer to a source than their 8 neighboring pixels, but which do not truly
+            trace to the centre of the source-centre.
 
-        Parameters
-        ----------
-        lensing_obj : autogalaxy.LensingObject
-            An object which has a deflection_from_grid method for performing lensing calculations, for example a
-            `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
-        grid : autoarray.GridCoordinatesUniform or ndarray
-            A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
-            their neighbors are found.
-        source_plane_coordinate : (y,x)
-            The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
-            for.
-        distance : float
-            The distance within which a grid coordinate must trace to the source-plane centre to be retained.
+            Parameters
+            ----------
+            lensing_obj : autogalaxy.LensingObject
+                An object which has a deflection_from_grid method for performing lensing calculations, for example a
+                `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
+            grid : autoarray.GridCoordinatesUniform or ndarray
+                A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
+                their neighbors are found.
+            source_plane_coordinate : (y,x)
+                The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
+                for.
+            distance : float
+                The distance within which a grid coordinate must trace to the source-plane centre to be retained.
         """
         if distance is None:
             return grid
@@ -245,7 +245,7 @@ class PositionsFinder(AbstractPositionsSolver):
           - Image pixels which do not correspond to genuine multiple images may be detected as they meet the peak
             criteria. This can occurance in certain circumstances where a non-multiple image still traces closer than its
             8 neighbors. Depending on how the `PositionFinder` is being used these can be removed.
-         """
+        """
 
         super(PositionsFinder, self).__init__(
             use_upscaling=use_upscaling,
@@ -541,7 +541,7 @@ def grid_square_neighbors_1d_from(shape_1d):
 
 @decorator_util.jit()
 def grid_peaks_from(distance_1d, grid_1d, neighbors, has_neighbors):
-    """ Given an input grid of (y,x) coordinates and a 1d array of their distances to the centre of the source,
+    """Given an input grid of (y,x) coordinates and a 1d array of their distances to the centre of the source,
     determine the coordinates which are closer to the source than their 8 neighboring pixels.
 
     These pixels are selected as the next closest set of pixels to the source and used to define the coordinates of

@@ -30,16 +30,20 @@ class PhaseDataset(dataset.PhaseDataset):
         positions_threshold = self.updated_positions_threshold_from_positions(
             positions=dataset.positions, results=results
         )
-        self.settings.settings_lens = self.settings.settings_lens.modify_positions_threshold(
-            positions_threshold=positions_threshold
+        self.settings.settings_lens = (
+            self.settings.settings_lens.modify_positions_threshold(
+                positions_threshold=positions_threshold
+            )
         )
         self.check_positions(positions=dataset.positions)
 
-        preload_sparse_grids_of_planes = self.preload_pixelization_grids_of_planes_from_results(
-            results=results
+        preload_sparse_grids_of_planes = (
+            self.preload_pixelization_grids_of_planes_from_results(results=results)
         )
-        self.settings.settings_pixelization = self.settings.settings_pixelization.modify_preload(
-            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes
+        self.settings.settings_pixelization = (
+            self.settings.settings_pixelization.modify_preload(
+                preload_sparse_grids_of_planes=preload_sparse_grids_of_planes
+            )
         )
 
     def updated_positions_from_positions_and_results(self, positions, results):

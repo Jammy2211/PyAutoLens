@@ -23,7 +23,9 @@ class TestTags:
 
 
 class TestCheckPositionsTrace:
-    def test__positions_do_not_trace_within_threshold__raises_exception(self,):
+    def test__positions_do_not_trace_within_threshold__raises_exception(
+        self,
+    ):
 
         tracer = al.Tracer.from_galaxies(
             galaxies=[

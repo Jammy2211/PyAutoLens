@@ -205,22 +205,22 @@ class SetupHyper(setup.SetupHyper):
     ):
         """
         Returns the `HyperGalaxy` `PriorModel` from a previous pipeline or phase of the lens galaxy in a template
-        PyAutoLens pipeline. 
-        
+        PyAutoLens pipeline.
+
         The `HyperGalaxy` is extracted from the `hyper_combined` phase of the previous pipeline, and by default has its
         parameters passed as instance's which are fixed in the next phase.
-        
+
         If `noise_factor_is_model` is `True` the `noise_factor` parameter of the `HyperGalaxy` is passed as a model and
         fitted for by the phase. This is typically used when the lens model complexity is updated and it is possible
         that the noise-scaling performed in the previous phase (using a simpler lens light model) over-scales the
         noise for the new more complex light profile.
-        
+
         Parameters
         ----------
         index : int
             The index of the previous phase the `HyperGalaxy` `PriorModel` is passed from.
         noise_factor_is_model : bool
-            If `True` the `noise_factor` of the `HyperGalaxy` is passed as a `model`, else it is passed as an 
+            If `True` the `noise_factor` of the `HyperGalaxy` is passed as a `model`, else it is passed as an
             `instance`.
 
         Returns
@@ -258,7 +258,7 @@ class SetupHyper(setup.SetupHyper):
     ):
         """
         Returns the `HyperGalaxy` `PriorModel` from a previous pipeline or phase of the source galaxy in a template
-        PyAutosource pipeline. 
+        PyAutosource pipeline.
 
         The `HyperGalaxy` is extracted from the `hyper_combined` phase of the previous pipeline, and by default has its
         parameters passed as instance's which are fixed in the next phase.
@@ -273,7 +273,7 @@ class SetupHyper(setup.SetupHyper):
         index : int
             The index of the previous phase the `HyperGalaxy` `PriorModel` is passed from.
         noise_factor_is_model : bool
-            If `True` the `noise_factor` of the `HyperGalaxy` is passed as a `model`, else it is passed as an 
+            If `True` the `noise_factor` of the `HyperGalaxy` is passed as a `model`, else it is passed as an
             `instance`.
 
         Returns
@@ -362,7 +362,7 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
            If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
            non-linear search.
         align_bulge_mass_centre : bool
-            If `True` and the galaxy model has both a light and mass component, the function 
+            If `True` and the galaxy model has both a light and mass component, the function
             `align_centre_of_mass_to_light` can be used to align their centres.
         """
 
@@ -409,36 +409,36 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
         align_bulge_dark_centre: bool = False,
     ):
         """
-         The setup of the mass modeling in a pipeline for `MassProfile`'s representing the decomposed light and dark
-         mass distributions, which controls how PyAutoGalaxy template pipelines run, for example controlling assumptions
-         about the bulge-disk model.
+        The setup of the mass modeling in a pipeline for `MassProfile`'s representing the decomposed light and dark
+        mass distributions, which controls how PyAutoGalaxy template pipelines run, for example controlling assumptions
+        about the bulge-disk model.
 
-         Users can write their own pipelines which do not use or require the `SetupMassLightDark` class.
+        Users can write their own pipelines which do not use or require the `SetupMassLightDark` class.
 
-         This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
-         scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
-         different models to a dataset in a structured path format.
+        This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
+        scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
+        different models to a dataset in a structured path format.
 
-         Parameters
-         ----------
-         with_shear : bool
-            If `True` the `ExternalShear` `PriorModel` is omitted from the galaxy model.
-         bulge_prior_model : af.PriorModel or al.lmp.LightMassProfile
-             The `LightProfile` `PriorModel` used to represent the light distribution of a bulge.
-         disk_prior_model : af.PriorModel(al.lmp.LightMassProfile)
-             The `LightProfile` `PriorModel` used to represent the light distribution of a disk.
-         envelope_prior_model : af.PriorModel(al.lmp.LightMassProfile)
-             The `LightProfile` `PriorModel` used to represent the light distribution of a envelope.
-         mass_centre : (float, float)
-            If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
-            non-linear search.
-         constant_mass_to_light_ratio : bool
-             If True, and the mass model consists of multiple `LightProfile` and `MassProfile` coomponents, the
-             mass-to-light ratio's of all components are fixed to one shared value.
-         align_bulge_mass_centre : bool
-             If True, and the mass model is a decomposed bulge, disk and dark matter model (e.g. EllipticalSersic +
-             EllipticalExponential + SphericalNFW), the centre of the bulge and dark matter profiles are aligned.
-         """
+        Parameters
+        ----------
+        with_shear : bool
+           If `True` the `ExternalShear` `PriorModel` is omitted from the galaxy model.
+        bulge_prior_model : af.PriorModel or al.lmp.LightMassProfile
+            The `LightProfile` `PriorModel` used to represent the light distribution of a bulge.
+        disk_prior_model : af.PriorModel(al.lmp.LightMassProfile)
+            The `LightProfile` `PriorModel` used to represent the light distribution of a disk.
+        envelope_prior_model : af.PriorModel(al.lmp.LightMassProfile)
+            The `LightProfile` `PriorModel` used to represent the light distribution of a envelope.
+        mass_centre : (float, float)
+           If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
+           non-linear search.
+        constant_mass_to_light_ratio : bool
+            If True, and the mass model consists of multiple `LightProfile` and `MassProfile` coomponents, the
+            mass-to-light ratio's of all components are fixed to one shared value.
+        align_bulge_mass_centre : bool
+            If True, and the mass model is a decomposed bulge, disk and dark matter model (e.g. EllipticalSersic +
+            EllipticalExponential + SphericalNFW), the centre of the bulge and dark matter profiles are aligned.
+        """
         super().__init__(
             bulge_prior_model=bulge_prior_model,
             disk_prior_model=disk_prior_model,
@@ -485,6 +485,7 @@ class SetupSourceParametric(setup.SetupLightParametric):
         light_centre: (float, float) = None,
         align_bulge_disk_centre: bool = True,
         align_bulge_disk_elliptical_comps: bool = False,
+        align_bulge_envelope_centre: bool = False,
     ):
         """
         The setup of the light modeling in a pipeline, which controls how PyAutoGalaxy template pipelines runs, for
@@ -513,6 +514,9 @@ class SetupSourceParametric(setup.SetupLightParametric):
         align_bulge_disk_elliptical_comps : bool or None
             If a bulge + disk light model (e.g. EllipticalSersic + EllipticalExponential) is used to fit the galaxy,
             `True` will align the elliptical components the bulge and disk components and not fit them separately.
+        align_bulge_envelope_centre : bool or None
+            If a bulge + envelope light model (e.g. EllipticalSersic + EllipticalExponential) is used to fit the
+            galaxy, `True` will align the centre of the bulge and envelope components and not fit them separately.
         """
 
         super().__init__(
@@ -522,6 +526,7 @@ class SetupSourceParametric(setup.SetupLightParametric):
             light_centre=light_centre,
             align_bulge_disk_centre=align_bulge_disk_centre,
             align_bulge_disk_elliptical_comps=align_bulge_disk_elliptical_comps,
+            align_bulge_envelope_centre=align_bulge_envelope_centre,
         )
 
     @property
@@ -600,6 +605,7 @@ class SetupSubhalo(setup.AbstractSetup):
         source_is_model: bool = True,
         mass_is_model: bool = True,
         grid_size: int = 5,
+        grid_dimension_arcsec: float = 3.0,
         parallel: bool = False,
         subhalo_instance=None,
     ):
@@ -624,6 +630,9 @@ class SetupSubhalo(setup.AbstractSetup):
             inferred in a previous pipeline.
         grid_size : int
             The 2D dimensions of the grid (e.g. grid_size x grid_size) that the subhalo search is performed for.
+        grid_dimension_arcsec : float
+            the arc-second dimensions of the grid in the y and x directions. An input value of 3.0" means the grid in
+            all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
         parallel : bool
             If `True` the `Python` `multiprocessing` module is used to parallelize the fitting over the cpus available
             on the system.
@@ -640,13 +649,14 @@ class SetupSubhalo(setup.AbstractSetup):
         self.source_is_model = source_is_model
         self.mass_is_model = mass_is_model
         self.grid_size = grid_size
+        self.grid_dimensions_arcsec = grid_dimension_arcsec
         self.parallel = parallel
         self.subhalo_instance = subhalo_instance
 
     @property
     def component_name(self) -> str:
         """
-        The name of the subhalo component of a `subhalo` pipeline which preceeds the `Setup` tag contained within square 
+        The name of the subhalo component of a `subhalo` pipeline which preceeds the `Setup` tag contained within square
         brackets.
 
         For the default configuration files this tag appears as `subhalo[tag]`.
@@ -853,13 +863,13 @@ class SetupPipeline(setup.SetupPipeline):
     @property
     def tag(self) -> str:
         """
-       The overall pipeline tag, which customizes the 'setup' folder the results are output to.
+        The overall pipeline tag, which customizes the 'setup' folder the results are output to.
 
-       For the the default configuration files `config/notation/setup_tags.ini` examples of tagging are as follows:
+        For the the default configuration files `config/notation/setup_tags.ini` examples of tagging are as follows:
 
-       - setup__hyper[galaxies__bg_noise]__light[bulge_sersic__disk__exp_light_centre_(1.00,2.00)]
-       - "setup__smbh[point_mass__centre_fixed]"
-       """
+        - setup__hyper[galaxies__bg_noise]__light[bulge_sersic__disk__exp_light_centre_(1.00,2.00)]
+        - "setup__smbh[point_mass__centre_fixed]"
+        """
 
         setup_tag = conf.instance["notation"]["setup_tags"]["pipeline"]["pipeline"]
 

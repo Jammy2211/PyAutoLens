@@ -30,6 +30,7 @@ workspace_path = str(here())
 #%cd $workspace_path
 print(f"Working Directory has been set to `{workspace_path}`")
 
+from os import path
 import autolens as al
 import autolens.plot as aplt
 import autofit as af
@@ -45,12 +46,12 @@ we'll use new strong lensing data, where:
 
 # %%
 dataset_name = "light_sersic__mass_sie__source_exp"
-dataset_path = f"dataset/howtolens/chapter_2/{dataset_name}"
+dataset_path = path.join("dataset", "howtolens", "chapter_2", dataset_name)
 
 imaging = al.Imaging.from_fits(
-    image_path=f"{dataset_path}/image.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
-    psf_path=f"{dataset_path}/psf.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
@@ -91,7 +92,7 @@ Now lets fit the dataset using a phase.
 # %%
 phase = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens",
+        path_prefix="howtolens",
         name="phase_t3_realism_and_complexity",
         n_live_points=80,
     ),
@@ -150,7 +151,7 @@ maxima instead.
 # %%
 phase = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix=f"howtolens",
+        path_prefix="howtolens",
         name="phase_t3_realism_and_complexity__local_maxima",
         n_live_points=5,
     ),

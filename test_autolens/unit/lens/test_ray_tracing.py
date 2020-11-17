@@ -2,13 +2,16 @@ import autolens as al
 import numpy as np
 import pytest
 import os
+from os import path
 import shutil
 from astropy import cosmology as cosmo
 from skimage import measure
 from autoarray.mock import mock as mock_inv
 
 
-test_path = "{}/files/tracer".format(os.path.dirname(os.path.realpath(__file__)))
+test_path = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "files", "tracer"
+)
 
 
 def critical_curve_via_magnification_from_tracer_and_grid(tracer, grid):
@@ -27,8 +30,10 @@ def critical_curve_via_magnification_from_tracer_and_grid(tracer, grid):
         contour_x, contour_y = contours[jj].T
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-        critical_curve = grid.geometry.grid_scaled_from_grid_pixels_1d_for_marching_squares(
-            grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
+        critical_curve = (
+            grid.geometry.grid_scaled_from_grid_pixels_1d_for_marching_squares(
+                grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
+            )
         )
 
         critical_curve = np.array(grid=critical_curve)
@@ -524,7 +529,7 @@ class TestAbstractTracer:
 
     class TestLightProfileQuantities:
         def test__extract_centres_of_all_light_profiles_of_all_planes_and_galaxies(
-            self
+            self,
         ):
             g0 = al.Galaxy(
                 redshift=0.5, light=al.lp.SphericalGaussian(centre=(1.0, 1.0))
@@ -605,7 +610,7 @@ class TestAbstractTracer:
             assert tracer.mass_profiles == [g0.mass, g1.mass, g2.mass0, g2.mass1]
 
         def test__extract_centres_of_all_mass_profiles_of_all_planes_and_galaxies__ignores_mass_sheets(
-            self
+            self,
         ):
             g0 = al.Galaxy(
                 redshift=0.5, mass=al.mp.SphericalIsothermal(centre=(1.0, 1.0))
@@ -668,10 +673,10 @@ class TestAbstractTracer:
     class TestPickle:
         def test__tracer_can_be_pickled_and_loaded(self):
 
-            if os.path.exists(test_path):
+            if path.exists(test_path):
                 shutil.rmtree(test_path)
 
-            if not os.path.exists(test_path):
+            if not path.exists(test_path):
                 os.mkdir(test_path)
 
             tracer = al.Tracer.from_galaxies(
@@ -2204,7 +2209,7 @@ class TestAbstractTracerLensing:
 
     class TestLensingObject:
         def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(
-            self
+            self,
         ):
             sis_0 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.2)
 
@@ -2476,10 +2481,12 @@ class TestAbstractTracerData:
                 galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
             )
 
-            blurred_image_dict = tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
-                grid=sub_grid_7x7,
-                convolver=convolver_7x7,
-                blurring_grid=blurring_grid_7x7,
+            blurred_image_dict = (
+                tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
+                    grid=sub_grid_7x7,
+                    convolver=convolver_7x7,
+                    blurring_grid=blurring_grid_7x7,
+                )
             )
 
             assert (blurred_image_dict[g0].in_1d == g0_blurred_image.in_1d).all()
@@ -2568,8 +2575,10 @@ class TestAbstractTracerData:
                 1.0e-4,
             )
 
-            unmasked_blurred_image_of_planes = tracer.unmasked_blurred_image_of_planes_from_grid_and_psf(
-                grid=grid, psf=psf
+            unmasked_blurred_image_of_planes = (
+                tracer.unmasked_blurred_image_of_planes_from_grid_and_psf(
+                    grid=grid, psf=psf
+                )
             )
 
             assert unmasked_blurred_image_of_planes[0].in_2d == pytest.approx(
@@ -2583,8 +2592,10 @@ class TestAbstractTracerData:
                 1.0e-4,
             )
 
-            unmasked_blurred_image_of_planes_and_galaxies = tracer.unmasked_blurred_image_of_planes_and_galaxies_from_grid_and_psf(
-                grid=grid, psf=psf
+            unmasked_blurred_image_of_planes_and_galaxies = (
+                tracer.unmasked_blurred_image_of_planes_and_galaxies_from_grid_and_psf(
+                    grid=grid, psf=psf
+                )
             )
 
             assert (
@@ -2665,8 +2676,10 @@ class TestAbstractTracerData:
                 planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15
             )
 
-            visibilities = tracer.profile_visibilities_of_planes_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            visibilities = (
+                tracer.profile_visibilities_of_planes_from_grid_and_transformer(
+                    grid=sub_grid_7x7, transformer=transformer_7x7_7
+                )
             )
 
             assert (visibilities[0] == visibilities_0).all()
@@ -2717,8 +2730,10 @@ class TestAbstractTracerData:
                 galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
             )
 
-            visibilities_dict = tracer.galaxy_profile_visibilities_dict_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            visibilities_dict = (
+                tracer.galaxy_profile_visibilities_dict_from_grid_and_transformer(
+                    grid=sub_grid_7x7, transformer=transformer_7x7_7
+                )
             )
 
             assert (visibilities_dict[g0] == g0_visibilities).all()

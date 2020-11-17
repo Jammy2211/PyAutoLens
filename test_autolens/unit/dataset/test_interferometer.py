@@ -69,7 +69,7 @@ class TestMaskedInterferometer:
         assert (masked_interferometer_7.grid == grid).all()
 
     def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
-        self
+        self,
     ):
         interferometer = al.Interferometer(
             visibilities=al.Visibilities.ones(shape_1d=(19,)),
@@ -195,7 +195,7 @@ class TestSimulatorInterferometer:
         assert (interferometer.noise_map == interferometer_via_image.noise_map).all()
 
     def test__simulate_interferometer_from_lens__source_galaxy__compare_to_interferometer(
-        self
+        self,
     ):
 
         lens_galaxy = al.Galaxy(

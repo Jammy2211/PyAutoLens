@@ -1,4 +1,4 @@
-import autofit as af
+from os import path
 import autolens as al
 
 """
@@ -18,6 +18,7 @@ gives it a descriptive name. They define the folder the dataset is output to on 
  - The noise-map will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/lens_name/noise_map.fits`.
  - The psf will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/psf.fits`.
 """
+
 dataset_type = "chapter_3"
 dataset_name = "light_sersic__mass_sie__source_exp"
 
@@ -25,7 +26,8 @@ dataset_name = "light_sersic__mass_sie__source_exp"
 The path where the dataset will be output, which in this case is:
 `/autolens_workspace/howtolens/dataset/chapter_2/mass_sis__source_exp/`
 """
-dataset_path = f"dataset/howtolens/{dataset_type}/{dataset_name}"
+
+dataset_path = path.join("dataset", "howtolens", dataset_type, dataset_name)
 
 """
 For simulating an image of a strong lens, we recommend using a GridIterate object. This represents a grid of $(y,x)$ 
@@ -36,6 +38,7 @@ sub-size of the grid is iteratively increased (in steps of 2, 4, 8, 16, 24) unti
 This ensures that the divergent and bright central regions of the source galaxy are fully resolved when determining the
 total flux emitted within a pixel.
 """
+
 grid = al.GridIterate.uniform(
     shape_2d=(100, 100),
     pixel_scales=0.1,
@@ -44,6 +47,7 @@ grid = al.GridIterate.uniform(
 )
 
 """Simulate a simple Gaussian PSF for the image."""
+
 psf = al.Kernel.from_gaussian(
     shape_2d=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
 )
@@ -103,9 +107,9 @@ imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
 """Output our simulated dataset to the dataset path as .fits files"""
 imaging.output_to_fits(
-    image_path=f"{dataset_path}/image.fits",
-    psf_path=f"{dataset_path}/psf.fits",
-    noise_map_path=f"{dataset_path}/noise_map.fits",
+    image_path=path.join(dataset_path, "image.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
     overwrite=True,
 )
 

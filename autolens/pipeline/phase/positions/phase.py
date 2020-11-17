@@ -1,3 +1,4 @@
+from os import path
 import autofit as af
 from astropy import cosmology as cosmo
 from autogalaxy.pipeline.phase import abstract
@@ -87,7 +88,7 @@ class PhasePositions(abstract.AbstractPhase):
 
     def output_phase_info(self):
 
-        file_phase_info = "{}/{}".format(self.search.paths.output_path, "phase.info")
+        file_phase_info = path.join(self.search.paths.output_path, "phase.info")
 
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.search).__name__))

@@ -8,7 +8,7 @@ import pytest
 
 class TestAbstractPositionsSolver:
     def test__solver_with_remove_distance_from_mass_profile_centre__remove_pixels_from_initial_grid(
-        self
+        self,
     ):
 
         grid = al.Grid.manual_1d(

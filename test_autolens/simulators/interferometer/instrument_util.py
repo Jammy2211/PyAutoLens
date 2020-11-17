@@ -1,12 +1,10 @@
-import os
-
-import autofit as af
+from os import path
 import autolens as al
 import autolens.plot as aplt
 
 from test_autogalaxy.simulators.interferometer import instrument_util
 
-test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
+test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "..", "..")
 
 
 def simulator_from_instrument(instrument):
@@ -29,8 +27,8 @@ def simulator_from_instrument(instrument):
     if instrument in "sma":
         return al.SimulatorInterferometer(
             uv_wavelengths=uv_wavelengths,
-            exposure_time_map=al.Array.full(fill_value=100.0, shape_2d=grid.shape_2d),
-            background_sky_map=al.Array.full(fill_value=1.0, shape_2d=grid.shape_2d),
+            exposure_time=100.0,
+            background_sky_level=1.0,
             noise_sigma=0.01,
         )
     else:
@@ -54,14 +52,16 @@ def simulate_interferometer_from_instrument(instrument, dataset_name, galaxies):
     interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
     # Now, lets output this simulated interferometer-simulator to the test_autoarray/simulator folder.
-    test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
+    test_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "..", ".."
+    )
 
-    dataset_path = f"dataset/interferometer/{dataset_name}/{instrument}"
+    dataset_path = path.join("dataset", "interferometer", dataset_name, instrument)
 
     interferometer.output_to_fits(
-        visibilities_path=f"{dataset_path}/visibilities.fits",
-        noise_map_path=f"{dataset_path}/noise_map.fits",
-        uv_wavelengths_path=f"{dataset_path}/uv_wavelengths.fits",
+        visibilities_path=path.join(dataset_path, "visibilities.fits"),
+        noise_map_path=path.join(dataset_path, "noise_map.fits"),
+        uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
         overwrite=True,
     )
 
@@ -92,10 +92,10 @@ def simulate_interferometer_from_instrument(instrument, dataset_name, galaxies):
 
 def load_test_interferometer(dataset_name, instrument):
 
-    dataset_path = f"dataset/interferometer/{dataset_name}/{instrument}"
+    dataset_path = path.join("dataset", "interferometer", dataset_name, instrument)
 
     return al.Interferometer.from_fits(
-        visibilities_path=f"{dataset_path}/visibilities.fits",
-        noise_map_path=f"{dataset_path}/noise_map.fits",
-        uv_wavelengths_path=f"{dataset_path}/uv_wavelengths.fits",
+        visibilities_path=path.join(dataset_path, "visibilities.fits"),
+        noise_map_path=path.join(dataset_path, "noise_map.fits"),
+        uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
     )

@@ -5,6 +5,7 @@ from autogalaxy.plot import lensing_plotters, plane_plots, inversion_plots
 from autolens.plot import fit_imaging_plots
 from autoarray.plot import plotters
 import os
+from os import path
 import shutil
 
 
@@ -22,18 +23,18 @@ def copy_pickle_files_to_agg_max(agg_max_log_likelihood):
     search_max_log_likelihood = list(agg_max_log_likelihood.values("search"))
     pickle_path_max_log_likelihood = search_max_log_likelihood[0].paths.pickle_path
 
-    pickle_path_grid_search = pickle_path_max_log_likelihood.rsplit("/", 1)[0]
-    pickle_path_grid_search = pickle_path_grid_search.rsplit("/", 1)[0]
-    pickle_path_grid_search = pickle_path_grid_search.rsplit("/", 1)[0]
-    pickle_path_grid_search = pickle_path_grid_search.rsplit("/", 1)[0]
-    pickle_path_grid_search = pickle_path_grid_search.rsplit("/", 1)[0]
+    pickle_path_grid_search = path.split(pickle_path_max_log_likelihood)[0]
+    pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
+    pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
+    pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
+    pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
 
-    pickle_path_grid_search = f"{pickle_path_grid_search}/pickles"
+    pickle_path_grid_search = path.join(pickle_path_grid_search, "pickles")
 
     src_files = os.listdir(pickle_path_grid_search)
     for file_name in src_files:
-        full_file_name = os.path.join(pickle_path_grid_search, file_name)
-        if os.path.isfile(full_file_name):
+        full_file_name = path.join(pickle_path_grid_search, file_name)
+        if path.isfile(full_file_name):
             shutil.copy(full_file_name, pickle_path_max_log_likelihood)
 
 
