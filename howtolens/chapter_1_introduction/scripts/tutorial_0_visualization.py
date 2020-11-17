@@ -47,7 +47,7 @@ as follows (the example below shows the path I would use on my laptop. The code 
 use this path in this tutorial!
 """
 # %%
-# workspace_path = "/home/jammy/PycharmProjects/PyAuto/autolens_workspace"
+# workspace_path = "/Users/Jammy/Code/PyAuto/autolens_workspace"
 # #%cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 

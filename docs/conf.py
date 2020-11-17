@@ -24,6 +24,10 @@ os.system(f"cp -r autolens_workspace/dataset {workspace_path}")
 os.system(f"cp -r autolens_workspace/config {workspace_path}")
 os.system("rm -rf autolens_workspace")
 
+os.system("git clone https://github.com/Jammy2211/autolens_files --depth 1")
+os.system(f"cp -r autolens_files/output {workspace_path}")
+os.system("rm -rf autolens_files")
+
 sys.path.insert(0, os.path.abspath("."))
 
 # -- Project information -----------------------------------------------------
