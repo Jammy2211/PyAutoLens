@@ -1,4 +1,3 @@
-import os
 from os import path
 
 import autofit as af
@@ -11,7 +10,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="path")
 def make_path():
-    return "{}/files/".format(os.path.dirname(os.path.realpath(__file__)))
+    return path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
 @pytest.fixture(name="samples")

@@ -72,9 +72,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             fit = self.masked_interferometer_fit_for_tracer(
                 tracer=tracer, hyper_background_noise=hyper_background_noise
             )
-            fig = fit.figure_of_merit
-            print(fig)
-            return fig
+            return fit.figure_of_merit
         except (
             PixelizationException,
             InversionException,

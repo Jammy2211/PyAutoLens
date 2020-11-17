@@ -757,7 +757,9 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
             if self.plot_fit_all_at_end_fits:
 
                 fits_plotter = self.plotter_from_paths(
-                    paths=paths, subfolders=path.join("fit_interferometer", "fits"), format="fits"
+                    paths=paths,
+                    subfolders=path.join("fit_interferometer", "fits"),
+                    format="fits",
                 )
 
                 fit_interferometer_plots.individuals(
@@ -775,7 +777,9 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
 
                 if fit.inversion is not None:
                     fits_plotter = self.plotter_from_paths(
-                        paths=paths, subfolders=path.join("inversion", "fits"), format="fits"
+                        paths=paths,
+                        subfolders=path.join("inversion", "fits"),
+                        format="fits",
                     )
 
                     inversion_plots.individuals(

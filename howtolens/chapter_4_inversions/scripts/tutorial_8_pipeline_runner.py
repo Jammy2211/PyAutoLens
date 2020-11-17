@@ -20,6 +20,7 @@ workspace_path = str(here())
 #%cd $workspace_path
 print(f"Working Directory has been set to `{workspace_path}`")
 
+from os import path
 import autolens as al
 import autolens.plot as aplt
 
@@ -105,7 +106,7 @@ setup_source = al.SetupSourceInversion(
 )
 
 setup = al.SetupPipeline(
-    path_prefix="howtolens/c4_t8_inversion",
+    path_prefix=path.join("howtolens", "c4_t8_inversion"),
     setup_mass=setup_mass,
     setup_source=setup_source,
 )

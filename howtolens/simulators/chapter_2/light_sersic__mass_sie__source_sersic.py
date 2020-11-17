@@ -1,6 +1,5 @@
-import autofit as af
+from os import path
 import autolens as al
-import autolens.plot as aplt
 
 """
 This script simulates `Imaging` of a strong lens where:
@@ -19,6 +18,7 @@ gives it a descriptive name. They define the folder the dataset is output to on 
  - The noise-map will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/lens_name/noise_map.fits`.
  - The psf will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/psf.fits`.
 """
+
 dataset_type = "chapter_2"
 dataset_name = "light_sersic__mass_sie__source_sersic"
 
@@ -37,6 +37,7 @@ sub-size of the grid is iteratively increased (in steps of 2, 4, 8, 16, 24) unti
 This ensures that the divergent and bright central regions of the source galaxy are fully resolved when determining the
 total flux emitted within a pixel.
 """
+
 grid = al.GridIterate.uniform(
     shape_2d=(100, 100),
     pixel_scales=0.1,
@@ -53,6 +54,7 @@ psf = al.Kernel.from_gaussian(
 To simulate the `Imaging` dataset we first create a simulator, which defines the exposure time, background sky,
 noise levels and psf of the dataset that is simulated.
 """
+
 simulator = al.SimulatorImaging(
     exposure_time=300.0, psf=psf, background_sky_level=0.1, add_poisson_noise=True
 )
@@ -100,6 +102,7 @@ imaging dataset.
 imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
 """Output our simulated dataset to the dataset path as .fits files"""
+
 imaging.output_to_fits(
     image_path=path.join(dataset_path, "image.fits"),
     psf_path=path.join(dataset_path, "psf.fits"),

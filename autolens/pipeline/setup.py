@@ -485,6 +485,7 @@ class SetupSourceParametric(setup.SetupLightParametric):
         light_centre: (float, float) = None,
         align_bulge_disk_centre: bool = True,
         align_bulge_disk_elliptical_comps: bool = False,
+        align_bulge_envelope_centre: bool = False,
     ):
         """
         The setup of the light modeling in a pipeline, which controls how PyAutoGalaxy template pipelines runs, for
@@ -513,6 +514,9 @@ class SetupSourceParametric(setup.SetupLightParametric):
         align_bulge_disk_elliptical_comps : bool or None
             If a bulge + disk light model (e.g. EllipticalSersic + EllipticalExponential) is used to fit the galaxy,
             `True` will align the elliptical components the bulge and disk components and not fit them separately.
+        align_bulge_envelope_centre : bool or None
+            If a bulge + envelope light model (e.g. EllipticalSersic + EllipticalExponential) is used to fit the
+            galaxy, `True` will align the centre of the bulge and envelope components and not fit them separately.
         """
 
         super().__init__(
@@ -522,6 +526,7 @@ class SetupSourceParametric(setup.SetupLightParametric):
             light_centre=light_centre,
             align_bulge_disk_centre=align_bulge_disk_centre,
             align_bulge_disk_elliptical_comps=align_bulge_disk_elliptical_comps,
+            align_bulge_envelope_centre=align_bulge_envelope_centre,
         )
 
     @property
@@ -600,6 +605,7 @@ class SetupSubhalo(setup.AbstractSetup):
         source_is_model: bool = True,
         mass_is_model: bool = True,
         grid_size: int = 5,
+        grid_dimension_arcsec: float = 3.0,
         parallel: bool = False,
         subhalo_instance=None,
     ):
@@ -624,6 +630,9 @@ class SetupSubhalo(setup.AbstractSetup):
             inferred in a previous pipeline.
         grid_size : int
             The 2D dimensions of the grid (e.g. grid_size x grid_size) that the subhalo search is performed for.
+        grid_dimension_arcsec : float
+            the arc-second dimensions of the grid in the y and x directions. An input value of 3.0" means the grid in
+            all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
         parallel : bool
             If `True` the `Python` `multiprocessing` module is used to parallelize the fitting over the cpus available
             on the system.
@@ -640,6 +649,7 @@ class SetupSubhalo(setup.AbstractSetup):
         self.source_is_model = source_is_model
         self.mass_is_model = mass_is_model
         self.grid_size = grid_size
+        self.grid_dimensions_arcsec = grid_dimension_arcsec
         self.parallel = parallel
         self.subhalo_instance = subhalo_instance
 

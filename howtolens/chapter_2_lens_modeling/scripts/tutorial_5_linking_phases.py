@@ -43,6 +43,7 @@ workspace_path = str(here())
 print(f"Working Directory has been set to `{workspace_path}`")
 
 import numpy as np
+from os import path
 import autolens as al
 import autolens.plot as aplt
 import autofit as af
@@ -321,9 +322,7 @@ code below sets up phase2 with priors fully linked, but without specifying each 
 # %%
 phase2_pass = al.PhaseImaging(
     search=af.DynestyStatic(
-        path_prefix="howtolens",
-        name="phase_t5_linking_phases_2_pass",
-        n_live_points=40,
+        path_prefix="howtolens", name="phase_t5_linking_phases_2_pass", n_live_points=40
     ),
     settings=settings,
     galaxies=dict(

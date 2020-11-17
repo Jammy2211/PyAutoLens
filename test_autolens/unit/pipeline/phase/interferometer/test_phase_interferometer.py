@@ -1,5 +1,4 @@
-import os
-
+from os import path
 import numpy as np
 import pytest
 
@@ -13,7 +12,7 @@ pytestmark = pytest.mark.filterwarnings(
     "either in an error or a different result."
 )
 
-directory = os.path.dirname(os.path.realpath(__file__))
+directory = path.dirname(path.realpath(__file__))
 
 
 class TestMakeAnalysis:
@@ -110,7 +109,7 @@ class TestMakeAnalysis:
             results=mock.MockResults(),
         )
 
-        file_phase_info = "{}/{}".format(
+        file_phase_info = path.join(
             phase_interferometer_7.search.paths.output_path, "phase.info"
         )
 

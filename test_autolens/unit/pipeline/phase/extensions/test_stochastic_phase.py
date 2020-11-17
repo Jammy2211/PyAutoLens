@@ -1,3 +1,4 @@
+from os import path
 import autofit as af
 import autofit.non_linear.paths
 import autolens as al
@@ -98,6 +99,10 @@ class _TestStochasticPhase:
         hyper_phase = phase_stochastic.make_hyper_phase()
 
         assert (
-            "test_phase/stochastic__settings__grid_sub_2__bin_2/dynesty_static__nlive_1"
+            path.join(
+                "test_phase",
+                "stochastic__settings__grid_sub_2__bin_2",
+                "dynesty_static__nlive_1",
+            )
             in hyper_phase.paths.output_path
         )

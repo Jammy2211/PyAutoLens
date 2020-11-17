@@ -26,6 +26,7 @@ workspace_path = str(here())
 #%cd $workspace_path
 print(f"Working Directory has been set to `{workspace_path}`")
 
+from os import path
 import autolens as al
 import autolens.plot as aplt
 
@@ -117,7 +118,7 @@ to create the `Pipeline` object and calling that objects `run` function.
 from pipelines import tutorial_2_pipeline_x2_lens_galaxies
 
 pipeline_x2_galaxies = tutorial_2_pipeline_x2_lens_galaxies.make_pipeline(
-    path_prefix="howtolens/c3_t2_x2_galaxies",
+    path_prefix=path.join("howtolens", "c3_t2_x2_galaxies"),
     settings=settings,
     redshift_lens=0.5,
     redshift_source=1.0,

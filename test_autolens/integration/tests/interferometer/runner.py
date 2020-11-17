@@ -1,4 +1,5 @@
 import os
+from os import path
 import numpy as np
 import autolens as al
 import autofit as af
@@ -18,10 +19,12 @@ def run(
     positions=None,
 ):
     test_name = test_name or module.test_name
-    test_path = "{}/../../".format(os.path.dirname(os.path.realpath(__file__)))
-    output_path = f"{test_path}/output/interferometer/"
-    config_path = test_path + config_folder
-    conf.instance.push(new_path, output_path=output_path)
+    test_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "..", ".."
+    )
+    output_path = path.join(test_path, "output", "interferometer", "")
+    config_path = path.join(test_path, config_folder)
+    conf.instance.push(new_path=config_path, output_path=output_path)
 
     interferometer = instrument_util.load_test_interferometer(
         dataset_name=module.dataset_name, instrument=module.instrument
@@ -42,7 +45,7 @@ def run(
 
     module.make_pipeline(
         name=test_name,
-        path_prefix=f"{module.test_type}/{test_name}",
+        path_prefix=path.join(module.test_type, test_name),
         real_space_mask=real_space_mask,
         search=search,
     ).run(dataset=interferometer, mask=visibilities_mask)

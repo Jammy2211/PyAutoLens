@@ -1,4 +1,5 @@
 import os
+from os import path
 import shutil
 
 import autolens as al
@@ -35,28 +36,30 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
 
     imaging.noise_map = al.Array.ones(shape_2d=imaging.image.shape_2d, pixel_scales=0.2)
 
-    path = "{}/data_temp/simulate_and_fit".format(
-        os.path.dirname(os.path.realpath(__file__))
-    )  # Setup path so we can output the simulated image.
+    file_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))),
+        "data_temp",
+        "simulate_and_fit",
+    )
 
     try:
-        shutil.rmtree(path)
+        shutil.rmtree(file_path)
     except FileNotFoundError:
         pass
 
-    if os.path.exists(path) is False:
-        os.makedirs(path)
+    if path.exists(file_path) is False:
+        os.makedirs(file_path)
 
     imaging.output_to_fits(
-        image_path=f"{path}/image.fits",
-        noise_map_path=f"{path}/noise_map.fits",
-        psf_path=f"{path}/psf.fits",
+        image_path=path.join(file_path, "image.fits"),
+        noise_map_path=path.join(file_path, "noise_map.fits"),
+        psf_path=path.join(file_path, "psf.fits"),
     )
 
     imaging = al.Imaging.from_fits(
-        image_path=f"{path}/image.fits",
-        noise_map_path=f"{path}/noise_map.fits",
-        psf_path=f"{path}/psf.fits",
+        image_path=path.join(file_path, "image.fits"),
+        noise_map_path=path.join(file_path, "noise_map.fits"),
+        psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,
     )
 
@@ -76,12 +79,12 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
 
     assert fit.chi_squared == 0.0
 
-    path = "{}/data_temp".format(
-        os.path.dirname(os.path.realpath(__file__))
-    )  # Setup path so we can output the simulated image.
-
-    if os.path.exists(path) == True:
-        shutil.rmtree(path)
+    file_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))),
+        "data_temp",
+    )
+    if path.exists(file_path) == True:
+        shutil.rmtree(file_path)
 
 
 def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0__noise_normalization_correct():
@@ -110,28 +113,30 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
     imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
     imaging.noise_map = al.Array.ones(shape_2d=imaging.image.shape_2d, pixel_scales=0.2)
 
-    path = "{}/data_temp/simulate_and_fit".format(
-        os.path.dirname(os.path.realpath(__file__))
-    )  # Setup path so we can output the simulated image.
+    file_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))),
+        "data_temp",
+        "simulate_and_fit",
+    )
 
     try:
-        shutil.rmtree(path)
+        shutil.rmtree(file_path)
     except FileNotFoundError:
         pass
 
-    if os.path.exists(path) is False:
-        os.makedirs(path)
+    if path.exists(file_path) is False:
+        os.makedirs(file_path)
 
     imaging.output_to_fits(
-        image_path=f"{path}/image.fits",
-        noise_map_path=f"{path}/noise_map.fits",
-        psf_path=f"{path}/psf.fits",
+        image_path=path.join(file_path, "image.fits"),
+        noise_map_path=path.join(file_path, "noise_map.fits"),
+        psf_path=path.join(file_path, "psf.fits"),
     )
 
     simulator = al.Imaging.from_fits(
-        image_path=f"{path}/image.fits",
-        noise_map_path=f"{path}/noise_map.fits",
-        psf_path=f"{path}/psf.fits",
+        image_path=path.join(file_path, "image.fits"),
+        noise_map_path=path.join(file_path, "noise_map.fits"),
+        psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,
     )
 
@@ -149,12 +154,13 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
 
     assert fit.chi_squared == pytest.approx(0.0, 1e-4)
 
-    path = "{}/data_temp".format(
-        os.path.dirname(os.path.realpath(__file__))
-    )  # Setup path so we can output the simulated image.
+    file_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))),
+        "data_temp",
+    )
 
-    if os.path.exists(path) == True:
-        shutil.rmtree(path)
+    if path.exists(file_path) == True:
+        shutil.rmtree(file_path)
 
 
 def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normalization_correct():
@@ -184,28 +190,30 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
 
     interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
-    path = "{}/data_temp/simulate_and_fit".format(
-        os.path.dirname(os.path.realpath(__file__))
-    )  # Setup path so we can output the simulated image.
+    file_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))),
+        "data_temp",
+        "simulate_and_fit",
+    )
 
     try:
-        shutil.rmtree(path)
+        shutil.rmtree(file_path)
     except FileNotFoundError:
         pass
 
-    if os.path.exists(path) is False:
-        os.makedirs(path)
+    if path.exists(file_path) is False:
+        os.makedirs(file_path)
 
     interferometer.output_to_fits(
-        visibilities_path=path + "/visibilities.fits",
-        noise_map_path=f"{path}/noise_map.fits",
-        uv_wavelengths_path=path + "/uv_wavelengths.fits",
+        visibilities_path=path.join(file_path, "visibilities.fits"),
+        noise_map_path=path.join(file_path, "noise_map.fits"),
+        uv_wavelengths_path=path.join(file_path, "uv_wavelengths.fits"),
     )
 
     interferometer = al.Interferometer.from_fits(
-        visibilities_path=path + "/visibilities.fits",
-        noise_map_path=f"{path}/noise_map.fits",
-        uv_wavelengths_path=path + "/uv_wavelengths.fits",
+        visibilities_path=path.join(file_path, "visibilities.fits"),
+        noise_map_path=path.join(file_path, "noise_map.fits"),
+        uv_wavelengths_path=path.join(file_path, "uv_wavelengths.fits"),
     )
 
     visibilities_mask = np.full(fill_value=False, shape=(7, 2))
@@ -252,9 +260,10 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     )
     assert abs(fit.chi_squared) < 1.0e-4
 
-    path = "{}/data_temp".format(
-        os.path.dirname(os.path.realpath(__file__))
-    )  # Setup path so we can output the simulated image.
+    file_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))),
+        "data_temp",
+    )
 
-    if os.path.exists(path) == True:
-        shutil.rmtree(path)
+    if path.exists(file_path) == True:
+        shutil.rmtree(file_path)

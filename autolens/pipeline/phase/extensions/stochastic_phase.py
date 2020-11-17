@@ -54,7 +54,12 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         self.results = results
 
-        stochastic_log_evidences_file = path.join(conf.instance.output_path, self.paths.path_prefix, self.paths.name, "stochastic_log_evidences.json")
+        stochastic_log_evidences_file = path.join(
+            conf.instance.output_path,
+            self.paths.path_prefix,
+            self.paths.name,
+            "stochastic_log_evidences.json",
+        )
 
         try:
             stochastic_log_evidences = self.stochastic_log_evidences_from_json(

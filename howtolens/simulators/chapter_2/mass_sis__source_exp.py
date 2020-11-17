@@ -1,6 +1,5 @@
-import autofit as af
+from os import path
 import autolens as al
-import autolens.plot as aplt
 
 """
 This script simulates `Imaging` of a strong lens where:
@@ -19,6 +18,7 @@ gives it a descriptive name. They define the folder the dataset is output to on 
  - The noise-map will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/lens_name/noise_map.fits`.
  - The psf will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/psf.fits`.
 """
+
 dataset_type = "chapter_2"
 dataset_name = "mass_sis__source_exp"
 

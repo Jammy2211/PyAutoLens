@@ -81,14 +81,12 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         self.output_phase_info()
 
-        analysis = self.Analysis(
+        return self.Analysis(
             masked_interferometer=masked_interferometer,
             settings=self.settings,
             cosmology=self.cosmology,
             results=results,
         )
-
-        return analysis
 
     def output_phase_info(self):
 

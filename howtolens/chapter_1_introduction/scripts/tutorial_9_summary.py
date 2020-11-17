@@ -28,6 +28,7 @@ workspace_path = str(here())
 #%cd $workspace_path
 print(f"Working Directory has been set to `{workspace_path}`")
 
+from os import path
 import autolens as al
 import autolens.plot as aplt
 
@@ -42,7 +43,7 @@ The `dataset_path` specifies where the data was output in the last tutorial, whi
 """
 
 # %%
-dataset_path = path.join("dataset", "howtolens", "chapter_2")
+dataset_path = path.join("dataset", "howtolens", "chapter_1")
 
 # %%
 """

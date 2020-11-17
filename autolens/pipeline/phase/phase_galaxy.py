@@ -1,3 +1,4 @@
+from os import path
 import autofit as af
 from astropy import cosmology as cosmo
 from autogalaxy.galaxy import fit_galaxy
@@ -40,7 +41,7 @@ class AnalysisSingle(Analysis):
 
             if self.visualizer.plot_ray_tracing_all_at_end_fits:
                 self.visualizer.plot_fit_individuals(
-                    fit=fit, plot_all=True, image_format="fits", path_suffix="/fits/"
+                    fit=fit, plot_all=True, image_format="fits", path_suffix="fits"
                 )
 
         return fit
@@ -83,27 +84,33 @@ class AnalysisDeflections(Analysis):
         fit_y, fit_x = self.fit_for_instance(instance=instance)
 
         if self.visualizer.plot_subplot_galaxy_fit:
-            self.visualizer.plot_galaxy_fit_subplot(fit_y, path_suffix="/fit_y_")
-            self.visualizer.plot_galaxy_fit_subplot(fit_x, path_suffix="/fit_x_")
+            self.visualizer.plot_galaxy_fit_subplot(fit_y, path_suffix="fit_y_")
+            self.visualizer.plot_galaxy_fit_subplot(fit_x, path_suffix="fit_x_")
 
         if during_analysis:
-            self.visualizer.plot_fit_individuals(fit_y, path_suffix="/fit_y")
-            self.visualizer.plot_fit_individuals(fit_x, path_suffix="/fit_x")
+            self.visualizer.plot_fit_individuals(fit_y, path_suffix="fit_y")
+            self.visualizer.plot_fit_individuals(fit_x, path_suffix="fit_x")
         else:
             if self.visualizer.plot_ray_tracing_all_at_end_png:
                 self.visualizer.plot_fit_individuals(
-                    fit_y, path_suffix="/fits/fit_y", plot_all=True
+                    fit_y, path_suffix=path.join("fits", "fit_y"), plot_all=True
                 )
                 self.visualizer.plot_fit_individuals(
-                    fit_x, path_suffix="/fits/fit_x", plot_all=True
+                    fit_x, path_suffix=path.join("fits", "fit_x"), plot_all=True
                 )
 
             if self.visualizer.plot_ray_tracing_all_at_end_fits:
                 self.visualizer.plot_fit_individuals(
-                    fit_y, path_suffix="/fits/fit_y", plot_all=True, image_format="fits"
+                    fit_y,
+                    path_suffix=path.join("fits", "fit_y"),
+                    plot_all=True,
+                    image_format="fits",
                 )
                 self.visualizer.plot_fit_individuals(
-                    fit_x, path_suffix="/fits/fit_x", plot_all=True, image_format="fits"
+                    fit_x,
+                    path_suffix=path.join("fits", "fit_x"),
+                    plot_all=True,
+                    image_format="fits",
                 )
 
         return fit_y, fit_x

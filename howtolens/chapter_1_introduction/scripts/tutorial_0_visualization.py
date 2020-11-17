@@ -12,6 +12,7 @@ will be covered in a later tutorial.
 # %%
 #%matplotlib inline
 
+from os import path
 import autolens as al
 import autolens.plot as aplt
 
