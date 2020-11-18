@@ -29,7 +29,7 @@ Examples
 
 Example scripts describing how to perform different lensing calculations, fit lens models using different non-linear
 searches, plot results with **PyAutoLens** and use many other features. These example closely follow and expand on the
-`API overview <file:///home/jammy/PycharmProjects/PyAuto/PyAutoLens/docs/_build/overview/lensing.html>`_ found on
+`API overview <file:///Users/Jammy/Code/PyAuto/PyAutoLens/docs/_build/overview/lensing.html>`_ found on
 this readthedocs.
 
 An overview of the example scripts can be found on the readthedocs, starting with the
@@ -42,7 +42,7 @@ The **HowToLens** lecture series are a collection of Jupyter notebooks describin
 fitting project and giving illustrations of different statistical methods and techniques.
 
 Checkout the
-`tutorials section <file:///home/jammy/PycharmProjects/PyAuto/PyAutoLens/docs/_build/tutorials/howtolens.html>`_ for a
+`tutorials section <file:///Users/Jammy/Code/PyAuto/PyAutoLens/docs/_build/tutorials/howtolens.html>`_ for a
 full description of the lectures and online examples of every notebook.
 
 Simulators
