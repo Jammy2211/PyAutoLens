@@ -129,7 +129,7 @@ class PhaseDataset(dataset.PhaseDataset):
                 return None
 
             positions_fits = fit_positions.FitPositionsSourcePlaneMaxSeparation(
-                positions=aa.GridIrregularGrouped(coordinates=positions),
+                positions=aa.GridIrregularGrouped(grid=positions),
                 tracer=results.last.max_log_likelihood_tracer,
                 noise_value=1.0,
             )

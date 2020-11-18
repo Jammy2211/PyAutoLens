@@ -15,7 +15,7 @@ class MockTracerPositions:
 class TestAbstractFitPositionsSourcePlane:
     def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
 
-        positions = al.GridIrregularGrouped(coordinates=[[(0.0, 0.0), (0.0, 1.0)]])
+        positions = al.GridIrregularGrouped(grid=[[(0.0, 0.0), (0.0, 1.0)]])
         tracer = MockTracerPositions(positions=positions)
         fit = al.FitPositionsSourcePlaneMaxSeparation(
             positions=positions, tracer=tracer, noise_value=1.0

@@ -16,10 +16,12 @@ from autoarray.structures.grids import (
     Grid,
     GridIterate,
     GridInterpolate,
+    GridIrregular,
     GridIrregularGrouped,
     GridRectangular,
     GridVoronoi,
 )
+from autoarray import VectorFieldIrregular
 from autoarray.structures.kernel import Kernel
 from autoarray.structures.visibilities import Visibilities, VisibilitiesNoiseMap
 from autogalaxy import util
@@ -84,4 +86,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = '1.8.0'
+__version__ = "1.8.0"

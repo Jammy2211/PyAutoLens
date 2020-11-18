@@ -47,10 +47,12 @@ class TestMakeAnalysis:
         )
 
         assert (
-            analysis.masked_dataset.positions.in_grouped_list[0][0] == np.array([1.0, 1.0])
+            analysis.masked_dataset.positions.in_grouped_list[0][0]
+            == np.array([1.0, 1.0])
         ).all()
         assert (
-            analysis.masked_dataset.positions.in_grouped_list[0][1] == np.array([2.0, 2.0])
+            analysis.masked_dataset.positions.in_grouped_list[0][1]
+            == np.array([2.0, 2.0])
         ).all()
         assert analysis.settings.settings_lens.positions_threshold == 0.2
 
@@ -219,7 +221,7 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer,
-            updated_positions=al.GridIrregularGrouped(coordinates=[[(2.0, 2.0)]]),
+            updated_positions=al.GridIrregularGrouped(grid=[[(2.0, 2.0)]]),
             updated_positions_threshold=0.3,
         )
 
@@ -252,9 +254,7 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer_x1_plane,
-            updated_positions=al.GridIrregularGrouped(
-                coordinates=[[(2.0, 2.0), (3.0, 3.0)]]
-            ),
+            updated_positions=al.GridIrregularGrouped(grid=[[(2.0, 2.0), (3.0, 3.0)]]),
             updated_positions_threshold=0.3,
         )
 
@@ -286,9 +286,7 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer,
-            updated_positions=al.GridIrregularGrouped(
-                coordinates=[[(2.0, 2.0), (3.0, 3.0)]]
-            ),
+            updated_positions=al.GridIrregularGrouped(grid=[[(2.0, 2.0), (3.0, 3.0)]]),
             updated_positions_threshold=0.3,
         )
 
@@ -298,7 +296,9 @@ class TestAutoPositions:
             dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
-        assert analysis.masked_dataset.positions.in_grouped_list == [[(2.0, 2.0), (3.0, 3.0)]]
+        assert analysis.masked_dataset.positions.in_grouped_list == [
+            [(2.0, 2.0), (3.0, 3.0)]
+        ]
 
         # Auto positioning is Off, but there are previous results with updated positions relative to the input
         # positions, so use those with their positions threshold.
@@ -318,7 +318,7 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer,
-            positions=al.GridIrregularGrouped(coordinates=[[(3.0, 3.0), (4.0, 4.0)]]),
+            positions=al.GridIrregularGrouped(grid=[[(3.0, 3.0), (4.0, 4.0)]]),
             updated_positions_threshold=0.3,
         )
 
@@ -328,7 +328,9 @@ class TestAutoPositions:
             dataset=imaging_7x7, mask=mask_7x7, results=results
         )
 
-        assert analysis.masked_dataset.positions.in_grouped_list == [[(3.0, 3.0), (4.0, 4.0)]]
+        assert analysis.masked_dataset.positions.in_grouped_list == [
+            [(3.0, 3.0), (4.0, 4.0)]
+        ]
 
     def test__uses_auto_update_factor(self, image_7x7, noise_map_7x7, mask_7x7):
         tracer = al.Tracer.from_galaxies(

@@ -556,7 +556,10 @@ class TestAbstractTracer:
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.light_profile_centres.in_grouped_list == [[(1.0, 1.0)], [(2.0, 2.0)]]
+            assert tracer.light_profile_centres.in_grouped_list == [
+                [(1.0, 1.0)],
+                [(2.0, 2.0)],
+            ]
 
             plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
             plane_1 = al.Plane(galaxies=[g2], redshift=None)
@@ -636,7 +639,10 @@ class TestAbstractTracer:
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-            assert tracer.mass_profile_centres.in_grouped_list == [[(1.0, 1.0)], [(2.0, 2.0)]]
+            assert tracer.mass_profile_centres.in_grouped_list == [
+                [(1.0, 1.0)],
+                [(2.0, 2.0)],
+            ]
 
             plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
             plane_1 = al.Plane(galaxies=[g2], redshift=None)
@@ -1712,10 +1718,14 @@ class TestAbstractTracerLensing:
             tracer_convergence = tracer.convergence_from_grid(grid=positions_7x7)
 
             assert image_plane_convergence.in_grouped_list[0][0] == pytest.approx(
-                g0_convergence.in_grouped_list[0][0] + g1_convergence.in_grouped_list[0][0], 1.0e-4
+                g0_convergence.in_grouped_list[0][0]
+                + g1_convergence.in_grouped_list[0][0],
+                1.0e-4,
             )
             assert tracer_convergence.in_grouped_list[0][0] == pytest.approx(
-                g0_convergence.in_grouped_list[0][0] + g1_convergence.in_grouped_list[0][0], 1.0e-4
+                g0_convergence.in_grouped_list[0][0]
+                + g1_convergence.in_grouped_list[0][0],
+                1.0e-4,
             )
 
         def test__no_galaxy_has_mass_profile__convergence_returned_as_zeros(
@@ -1831,10 +1841,12 @@ class TestAbstractTracerLensing:
             tracer_potential = tracer.potential_from_grid(grid=positions_7x7)
 
             assert image_plane_potential.in_grouped_list[0][0] == pytest.approx(
-                g0_potential.in_grouped_list[0][0] + g1_potential.in_grouped_list[0][0], 1.0e-4
+                g0_potential.in_grouped_list[0][0] + g1_potential.in_grouped_list[0][0],
+                1.0e-4,
             )
             assert tracer_potential.in_grouped_list[0][0] == pytest.approx(
-                g0_potential.in_grouped_list[0][0] + g1_potential.in_grouped_list[0][0], 1.0e-4
+                g0_potential.in_grouped_list[0][0] + g1_potential.in_grouped_list[0][0],
+                1.0e-4,
             )
 
         def test__no_galaxy_has_mass_profile__potential_returned_as_zeros(
@@ -1956,19 +1968,23 @@ class TestAbstractTracerLensing:
             )
 
             assert image_plane_deflections.in_grouped_list[0][0][0] == pytest.approx(
-                g0_deflections.in_grouped_list[0][0][0] + g1_deflections.in_grouped_list[0][0][0],
+                g0_deflections.in_grouped_list[0][0][0]
+                + g1_deflections.in_grouped_list[0][0][0],
                 1.0e-4,
             )
             assert image_plane_deflections.in_grouped_list[0][0][1] == pytest.approx(
-                g0_deflections.in_grouped_list[0][0][1] + g1_deflections.in_grouped_list[0][0][1],
+                g0_deflections.in_grouped_list[0][0][1]
+                + g1_deflections.in_grouped_list[0][0][1],
                 1.0e-4,
             )
             assert tracer_deflections.in_grouped_list[0][0][0] == pytest.approx(
-                g0_deflections.in_grouped_list[0][0][0] + g1_deflections.in_grouped_list[0][0][0],
+                g0_deflections.in_grouped_list[0][0][0]
+                + g1_deflections.in_grouped_list[0][0][0],
                 1.0e-4,
             )
             assert tracer_deflections.in_grouped_list[0][0][1] == pytest.approx(
-                g0_deflections.in_grouped_list[0][0][1] + g1_deflections.in_grouped_list[0][0][1],
+                g0_deflections.in_grouped_list[0][0][1]
+                + g1_deflections.in_grouped_list[0][0][1],
                 1.0e-4,
             )
 

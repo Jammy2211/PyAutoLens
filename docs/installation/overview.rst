@@ -1,7 +1,7 @@
 .. _overview:
 
-Installation
-============
+Overview
+========
 
 **PyAutoLens** requires Python 3.6+ and support the Linux, MacOS and Windows operating systems.
 

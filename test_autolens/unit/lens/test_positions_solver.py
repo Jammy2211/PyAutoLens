@@ -113,9 +113,15 @@ class TestPositionFinder:
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
         )
 
-        assert coordinates.in_grouped_list[0][0] == pytest.approx((1.028125, -0.003125), 1.0e-4)
-        assert coordinates.in_grouped_list[0][1] == pytest.approx((0.009375, -0.95312), 1.0e-4)
-        assert coordinates.in_grouped_list[0][2] == pytest.approx((0.009375, 0.95312), 1.0e-4)
+        assert coordinates.in_grouped_list[0][0] == pytest.approx(
+            (1.028125, -0.003125), 1.0e-4
+        )
+        assert coordinates.in_grouped_list[0][1] == pytest.approx(
+            (0.009375, -0.95312), 1.0e-4
+        )
+        assert coordinates.in_grouped_list[0][2] == pytest.approx(
+            (0.009375, 0.95312), 1.0e-4
+        )
         assert coordinates.in_grouped_list[0][3] == pytest.approx(
             (-1.028125, -0.003125), 1.0e-4
         )
@@ -143,9 +149,15 @@ class TestPositionFinder:
 
         coordinates = solver.solve_from_tracer(tracer=tracer)
 
-        assert coordinates.in_grouped_list[0][0] == pytest.approx((1.028125, -0.003125), 1.0e-4)
-        assert coordinates.in_grouped_list[0][1] == pytest.approx((0.009375, -0.95312), 1.0e-4)
-        assert coordinates.in_grouped_list[0][2] == pytest.approx((0.009375, 0.95312), 1.0e-4)
+        assert coordinates.in_grouped_list[0][0] == pytest.approx(
+            (1.028125, -0.003125), 1.0e-4
+        )
+        assert coordinates.in_grouped_list[0][1] == pytest.approx(
+            (0.009375, -0.95312), 1.0e-4
+        )
+        assert coordinates.in_grouped_list[0][2] == pytest.approx(
+            (0.009375, 0.95312), 1.0e-4
+        )
         assert coordinates.in_grouped_list[0][3] == pytest.approx(
             (-1.028125, -0.003125), 1.0e-4
         )

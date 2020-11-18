@@ -1,7 +1,10 @@
 .. _troubleshooting:
 
+Troubleshooting
+===============
+
 LLVMLite / numba
-================
+----------------
 
 The libraries **numba** and **llvmlite** cause known installation issues when installing via `conda` or `pip`.
 Newer versions of llvmlite (> 0.32.1) raise an error during install due to a missing configuration file. To circumvent

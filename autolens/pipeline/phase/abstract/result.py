@@ -50,7 +50,7 @@ class Result(result.Result):
             self.source_plane_inversion_centres
         )
 
-        return grids.GridIrregularGrouped(coordinates=centres)
+        return grids.GridIrregularGrouped(grid=centres)
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(
@@ -76,7 +76,7 @@ class Result(result.Result):
                 )
                 for centre in self.source_plane_centres.in_grouped_list[0]
             ]
-            return grids.GridIrregularGrouped(coordinates=multiple_images)
+            return grids.GridIrregularGrouped(grid=multiple_images)
         except IndexError:
             return None
 

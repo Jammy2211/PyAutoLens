@@ -188,7 +188,7 @@ strong gravitational lensing with **PyAutoLens**.
    :maxdepth: 1
    :hidden:
 
-   installation/installation
+   installation/overview
    installation/conda
    installation/pip
    installation/source

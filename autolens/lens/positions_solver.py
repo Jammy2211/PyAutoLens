@@ -303,7 +303,7 @@ class PositionsFinder(AbstractPositionsSolver):
         """Needs work - idea is it solves for all image plane multiple image positions using the redshift distribution of
         the tracer."""
         return grids.GridIrregularGrouped(
-            coordinates=[
+            grid=[
                 self.solve(lensing_obj=tracer, source_plane_coordinate=centre)
                 for centre in tracer.light_profile_centres.in_grouped_list[-1]
             ]
@@ -323,7 +323,7 @@ class PositionsFinder(AbstractPositionsSolver):
 
         if not self.use_upscaling:
 
-            return grids.GridIrregularGrouped(coordinates=coordinates_list)
+            return grids.GridIrregularGrouped(grid=coordinates_list)
 
         pixel_scale = self.grid.pixel_scale
 
@@ -360,7 +360,7 @@ class PositionsFinder(AbstractPositionsSolver):
             distance=self.distance_from_source_centre,
         )
 
-        return grids.GridIrregularGrouped(coordinates=coordinates_list)
+        return grids.GridIrregularGrouped(grid=coordinates_list)
 
 
 @decorator_util.jit()

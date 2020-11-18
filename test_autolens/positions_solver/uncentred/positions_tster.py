@@ -70,7 +70,10 @@ for i in range(40, 41):
         )
 
         positions_plot = al.GridIrregularGrouped(
-            coordinates=[positions.in_grouped_list[0], positions_true.in_grouped_list[0]]
+            coordinates=[
+                positions.in_grouped_list[0],
+                positions_true.in_grouped_list[0],
+            ]
         )
 
     else:
@@ -78,7 +81,9 @@ for i in range(40, 41):
         minimum_separations = None
         in_positions_true = None
 
-        positions_plot = al.GridIrregularGrouped(coordinates=[positions_true.in_grouped_list[0]])
+        positions_plot = al.GridIrregularGrouped(
+            coordinates=[positions_true.in_grouped_list[0]]
+        )
 
     print(positions)
 
