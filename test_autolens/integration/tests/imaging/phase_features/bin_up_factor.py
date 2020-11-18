@@ -4,7 +4,7 @@ from test_autolens.integration.tests.imaging import runner
 
 test_type = "phase_features"
 test_name = "bin_up_factor"
-dataset_name = "light_dev_vaucouleurs"
+dataset_name = "light_sersic__source_sersic"
 instrument = "vro"
 
 

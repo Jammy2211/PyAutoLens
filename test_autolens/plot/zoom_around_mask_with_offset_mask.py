@@ -7,7 +7,7 @@ import autolens as al
 
 # Lets quickly remind ourselves of the image, and the 3.0" circular mask we'll use to mask it.
 imaging = instrument_util.load_test_imaging(
-    dataset_name="light_dev_vaucouleurs", instrument="vro"
+    dataset_name="light_sersic__source_sersic", instrument="vro"
 )
 mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d,

@@ -3,7 +3,7 @@ import autolens.plot as aplt
 from test_autolens.simulators.imaging import instrument_util
 
 imaging = instrument_util.load_test_imaging(
-    dataset_name="light_dev_vaucouleurs", instrument="vro"
+    dataset_name="light_sersic__source_sersic", instrument="vro"
 )
 
 array = imaging.image
