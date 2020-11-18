@@ -72,11 +72,9 @@ class AbstractVisualizer:
 
         visualizer = copy.deepcopy(self)
 
-        visualizer.include = (
-            visualizer.include.new_include_with_preloaded_critical_curves_and_caustics(
-                preloaded_critical_curves=preloaded_critical_curves,
-                preloaded_caustics=preloaded_caustics,
-            )
+        visualizer.include = visualizer.include.new_include_with_preloaded_critical_curves_and_caustics(
+            preloaded_critical_curves=preloaded_critical_curves,
+            preloaded_caustics=preloaded_caustics,
         )
 
         return visualizer

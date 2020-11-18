@@ -80,8 +80,7 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
     assert fit.chi_squared == 0.0
 
     file_path = path.join(
-        "{}".format(path.dirname(path.realpath(__file__))),
-        "data_temp",
+        "{}".format(path.dirname(path.realpath(__file__))), "data_temp"
     )
     if path.exists(file_path) == True:
         shutil.rmtree(file_path)
@@ -155,8 +154,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
     assert fit.chi_squared == pytest.approx(0.0, 1e-4)
 
     file_path = path.join(
-        "{}".format(path.dirname(path.realpath(__file__))),
-        "data_temp",
+        "{}".format(path.dirname(path.realpath(__file__))), "data_temp"
     )
 
     if path.exists(file_path) == True:
@@ -261,8 +259,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     assert abs(fit.chi_squared) < 1.0e-4
 
     file_path = path.join(
-        "{}".format(path.dirname(path.realpath(__file__))),
-        "data_temp",
+        "{}".format(path.dirname(path.realpath(__file__))), "data_temp"
     )
 
     if path.exists(file_path) == True:

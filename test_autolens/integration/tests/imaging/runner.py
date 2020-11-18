@@ -9,7 +9,9 @@ from test_autolens.simulators.imaging import instrument_util
 def run(module, test_name=None, config_folder="config", mask=None):
 
     test_name = test_name or module.test_name
-    test_path = path.join("{}".format(os.path.dirname(os.path.realpath(__file__))), "..", "..")
+    test_path = path.join(
+        "{}".format(os.path.dirname(os.path.realpath(__file__))), "..", ".."
+    )
     output_path = path.join(test_path, "output", "imaging")
     config_path = path.join(test_path, config_folder)
     conf.instance.push(new_path=config_path, output_path=output_path)
