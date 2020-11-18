@@ -19,4 +19,4 @@ grid = al.GridIrregular(grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
 
 print(grid)
 
-aplt.Array(array=array.in_2d, grid=grid, plotter=plotter)
+aplt.Array(array=array.in_2d, grid=grid, positions=al.GridIrregularGrouped([(0.0, 1.0), (0.0, 2.0)]), plotter=plotter)
