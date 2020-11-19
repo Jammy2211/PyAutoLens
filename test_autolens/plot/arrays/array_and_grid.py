@@ -19,4 +19,12 @@ grid = al.GridIrregular(grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
 
 print(grid)
 
-aplt.Array(array=array.in_2d, grid=grid, positions=al.GridIrregularGrouped([(0.0, 1.0), (0.0, 2.0)]), plotter=plotter)
+vector_field = al.VectorFieldIrregular(vectors=[(1.0, 2.0), (2.0, 1.0)], grid=[(-1.0, 0.0), (-2.0, 0.0)])
+
+aplt.Array(
+    array=array.in_2d,
+    grid=grid,
+    positions=al.GridIrregularGrouped([(0.0, 1.0), (0.0, 2.0)]),
+    vector_field=vector_field,
+    patches=vector_field.elliptical_patches,
+    plotter=plotter)
