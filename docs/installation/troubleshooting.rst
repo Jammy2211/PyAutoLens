@@ -6,9 +6,9 @@ Troubleshooting
 LLVMLite / numba
 ----------------
 
-The libraries **numba** and **llvmlite** cause known installation issues when installing via `conda` or `pip`.
+The libraries **numba** and **llvmlite** cause known installation issues when installing via ``conda`` or ``pip``.
 Newer versions of llvmlite (> 0.32.1) raise an error during install due to a missing configuration file. To circumvent
-this the **PyAutoLens** requirements file requires that `llvmlite<=0.32.1` and `numba<=0.47.0`.
+this the **PyAutoLens** requirements file requires that ``llvmlite<=0.32.1`` and ``numba<=0.47.0``.
 
 However, if your conda / Python environment already has either library installed with a version above these, it may
 raise an error along the lines of:
@@ -18,7 +18,11 @@ raise an error along the lines of:
    Cannot uninstall 'llvmlite'. It is a distutils installed project and thus we cannot accurately determine which
    files belong to it which would lead to only a partial uninstall.
 
-**PyAutoLens** works fine with these newer versions, so if your environment already has `llvmlite` and `numba`
+This is why in the `installation via conda <https://pyautolens.readthedocs.io/en/latest/installation/conda.html>`_
+instructions we installed these libraries as part of the ``conda`` environment and ignored them when we installed
+``autolens`` via pip.
+
+**PyAutoLens** works fine with these newer versions, so if your environment already has ``llvmlite`` and ``numba``
 installed you can circumvent this error by simply not installing them when you install **PyAutoLens**:
 
 .. code-block:: bash

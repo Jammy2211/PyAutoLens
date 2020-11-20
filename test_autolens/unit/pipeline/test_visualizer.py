@@ -40,8 +40,10 @@ class TestAbstractPhaseVisualizer:
         assert visualizer.include.preloaded_critical_curves == None
         assert visualizer.include.preloaded_caustics == None
 
-        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-            preloaded_critical_curves=1, preloaded_caustics=2
+        visualizer = (
+            visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+                preloaded_critical_curves=1, preloaded_caustics=2
+            )
         )
 
         assert visualizer.include.preloaded_critical_curves == 1
@@ -74,9 +76,11 @@ class TestPhaseDataSetVisualizer:
 
         visualizer = vis.PhaseDatasetVisualizer(masked_dataset=masked_imaging_7x7)
 
-        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-            preloaded_critical_curves=include_all.preloaded_critical_curves,
-            preloaded_caustics=include_all.preloaded_caustics,
+        visualizer = (
+            visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+                preloaded_critical_curves=include_all.preloaded_critical_curves,
+                preloaded_caustics=include_all.preloaded_caustics,
+            )
         )
 
         visualizer.visualize_ray_tracing(
@@ -164,9 +168,11 @@ class TestPhaseImagingVisualizer:
 
         visualizer = vis.PhaseImagingVisualizer(masked_dataset=masked_imaging_7x7)
 
-        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-            preloaded_critical_curves=include_all.preloaded_critical_curves,
-            preloaded_caustics=include_all.preloaded_caustics,
+        visualizer = (
+            visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+                preloaded_critical_curves=include_all.preloaded_critical_curves,
+                preloaded_caustics=include_all.preloaded_caustics,
+            )
         )
 
         visualizer.visualize_imaging(paths=af.Paths())
@@ -212,9 +218,11 @@ class TestPhaseImagingVisualizer:
 
         visualizer = vis.PhaseImagingVisualizer(masked_dataset=masked_imaging_7x7)
 
-        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-            preloaded_critical_curves=include_all.preloaded_critical_curves,
-            preloaded_caustics=include_all.preloaded_caustics,
+        visualizer = (
+            visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+                preloaded_critical_curves=include_all.preloaded_critical_curves,
+                preloaded_caustics=include_all.preloaded_caustics,
+            )
         )
 
         visualizer.visualize_fit(
@@ -361,9 +369,11 @@ class TestPhaseImagingVisualizer:
 
         visualizer = vis.PhaseImagingVisualizer(masked_dataset=masked_imaging_7x7)
 
-        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-            preloaded_critical_curves=include_all.preloaded_critical_curves,
-            preloaded_caustics=include_all.preloaded_caustics,
+        visualizer = (
+            visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+                preloaded_critical_curves=include_all.preloaded_critical_curves,
+                preloaded_caustics=include_all.preloaded_caustics,
+            )
         )
 
         visualizer.visualize_hyper_images(
@@ -390,9 +400,11 @@ class TestPhaseInterferometerVisualizer:
             masked_dataset=masked_interferometer_7
         )
 
-        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-            preloaded_critical_curves=include_all.preloaded_critical_curves,
-            preloaded_caustics=include_all.preloaded_caustics,
+        visualizer = (
+            visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+                preloaded_critical_curves=include_all.preloaded_critical_curves,
+                preloaded_caustics=include_all.preloaded_caustics,
+            )
         )
 
         visualizer.visualize_interferometer(paths=af.Paths())
@@ -426,9 +438,11 @@ class TestPhaseInterferometerVisualizer:
             masked_dataset=masked_interferometer_7
         )
 
-        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-            preloaded_critical_curves=include_all.preloaded_critical_curves,
-            preloaded_caustics=include_all.preloaded_caustics,
+        visualizer = (
+            visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+                preloaded_critical_curves=include_all.preloaded_critical_curves,
+                preloaded_caustics=include_all.preloaded_caustics,
+            )
         )
 
         visualizer.visualize_fit(
@@ -532,9 +546,11 @@ class TestHyperGalaxyVisualizer:
     ):
         visualizer = vis.HyperGalaxyVisualizer()
 
-        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-            preloaded_critical_curves=include_all.preloaded_critical_curves,
-            preloaded_caustics=include_all.preloaded_caustics,
+        visualizer = (
+            visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+                preloaded_critical_curves=include_all.preloaded_critical_curves,
+                preloaded_caustics=include_all.preloaded_caustics,
+            )
         )
 
         visualizer.visualize_hyper_galaxy(

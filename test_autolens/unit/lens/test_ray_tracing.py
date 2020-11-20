@@ -30,8 +30,10 @@ def critical_curve_via_magnification_from_tracer_and_grid(tracer, grid):
         contour_x, contour_y = contours[jj].T
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-        critical_curve = grid.geometry.grid_scaled_from_grid_pixels_1d_for_marching_squares(
-            grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
+        critical_curve = (
+            grid.geometry.grid_scaled_from_grid_pixels_1d_for_marching_squares(
+                grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
+            )
         )
 
         critical_curve = np.array(grid=critical_curve)
@@ -2495,10 +2497,12 @@ class TestAbstractTracerData:
                 galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
             )
 
-            blurred_image_dict = tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
-                grid=sub_grid_7x7,
-                convolver=convolver_7x7,
-                blurring_grid=blurring_grid_7x7,
+            blurred_image_dict = (
+                tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
+                    grid=sub_grid_7x7,
+                    convolver=convolver_7x7,
+                    blurring_grid=blurring_grid_7x7,
+                )
             )
 
             assert (blurred_image_dict[g0].in_1d == g0_blurred_image.in_1d).all()
@@ -2587,8 +2591,10 @@ class TestAbstractTracerData:
                 1.0e-4,
             )
 
-            unmasked_blurred_image_of_planes = tracer.unmasked_blurred_image_of_planes_from_grid_and_psf(
-                grid=grid, psf=psf
+            unmasked_blurred_image_of_planes = (
+                tracer.unmasked_blurred_image_of_planes_from_grid_and_psf(
+                    grid=grid, psf=psf
+                )
             )
 
             assert unmasked_blurred_image_of_planes[0].in_2d == pytest.approx(
@@ -2602,8 +2608,10 @@ class TestAbstractTracerData:
                 1.0e-4,
             )
 
-            unmasked_blurred_image_of_planes_and_galaxies = tracer.unmasked_blurred_image_of_planes_and_galaxies_from_grid_and_psf(
-                grid=grid, psf=psf
+            unmasked_blurred_image_of_planes_and_galaxies = (
+                tracer.unmasked_blurred_image_of_planes_and_galaxies_from_grid_and_psf(
+                    grid=grid, psf=psf
+                )
             )
 
             assert (
@@ -2684,8 +2692,10 @@ class TestAbstractTracerData:
                 planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15
             )
 
-            visibilities = tracer.profile_visibilities_of_planes_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            visibilities = (
+                tracer.profile_visibilities_of_planes_from_grid_and_transformer(
+                    grid=sub_grid_7x7, transformer=transformer_7x7_7
+                )
             )
 
             assert (visibilities[0] == visibilities_0).all()
@@ -2736,8 +2746,10 @@ class TestAbstractTracerData:
                 galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
             )
 
-            visibilities_dict = tracer.galaxy_profile_visibilities_dict_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+            visibilities_dict = (
+                tracer.galaxy_profile_visibilities_dict_from_grid_and_transformer(
+                    grid=sub_grid_7x7, transformer=transformer_7x7_7
+                )
             )
 
             assert (visibilities_dict[g0] == g0_visibilities).all()
