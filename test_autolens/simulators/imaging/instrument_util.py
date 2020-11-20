@@ -163,7 +163,9 @@ def simulate_imaging_from_instrument(instrument, dataset_name, galaxies):
     imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
     # Now, lets output this simulated imaging-data to the test_autoarray/simulator folder.
-    test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "..", "..")
+    test_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "..", ".."
+    )
 
     dataset_path = path.join(test_path, "dataset", "imaging", dataset_name, instrument)
 
@@ -206,7 +208,9 @@ def load_test_imaging(dataset_name, instrument, name=None):
 
     pixel_scales = instrument_util.pixel_scale_from_instrument(instrument=instrument)
 
-    test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "..", "..")
+    test_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "..", ".."
+    )
 
     dataset_path = path.join(test_path, "dataset", "imaging", dataset_name, instrument)
 
