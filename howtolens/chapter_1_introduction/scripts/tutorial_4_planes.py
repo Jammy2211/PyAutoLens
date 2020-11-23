@@ -23,7 +23,7 @@ Observer                  Image-Plane               Source-Plane
 (z=0, Earth)               (z = 0.5)                (z = 1.0)
 
          ----------------------------------------------
-        /                                              \ <---- This is one of the source`s light-rays
+        /                                              \ <---- This is one of the source's light-rays
        /                      ``                        \
   p   /                      /  \                      __
   |  /                      /   \                     /  \
@@ -36,7 +36,7 @@ Observer                  Image-Plane               Source-Plane
 
 # %%
 """
-As an observer, we don't see the source`s true appearance (e.g. a round blob of light). Instead, we only observe its 
+As an observer, we don't see the source's true appearance (e.g. a round blob of light). Instead, we only observe its 
 light after it is deflected and lensed by the foreground `Galaxy`'s mass. In this exercise, we'll make a source galaxy 
 image whose light has been deflected by a lens galaxy.
 
@@ -208,7 +208,7 @@ aplt.Plane.image_and_source_plane_subplot(
 
 # %%
 """
-Clearly, the source-plane`s `Grid` is very different to the image-planes! It`s not uniform and its certranly not boring!
+Clearly, the source-plane`s `Grid` is very different to the image-planes! It's not uniform and its certranly not boring!
 
 We can now ask the question - `what does our source-galaxy look like in the image-plane`? That is, to us, the observer 
 on Earth, how does the source-galaxy appear after lensing?. To do this, we simple trace the source-`Galaxy`'s light 
@@ -220,14 +220,14 @@ aplt.Plane.image(plane=source_plane, grid=source_plane_grid)
 
 # %%
 """
-It`s a rather spectacular ring of light, but why is it a ring? Well:
+It's a rather spectacular ring of light, but why is it a ring? Well:
 
 - Our lens galaxy was centred at (0.0", 0.0").
 - Our source-galaxy was centred at (0.0", 0.0").
 - Our lens galaxy had a spherical `MassProfile`.
 - Our source-galaxy a spherical `LightProfile`.
 
-Given the perfect symmetry of the system, every path the source`s light takes around the lens galaxy is radially 
+Given the perfect symmetry of the system, every path the source's light takes around the lens galaxy is radially 
 identical. Thus, nothing else but a ring of light can form!
 
 This is called an `Einstein Ring` and its radius is called the `Einstein Radius`, which are both named after the man 
@@ -271,11 +271,11 @@ __Caustic**__
  critical curve `maps` too.
         
 You may be surprised that the inner critical curve does not appear symmetric, but instead is a non-circular jagged 
-shape. As a result of this, the correspnding caustic in the source plane also appears jaggedy. 
+shape. As a result of this, the corresponding caustic in the source plane also appears jaggedy. 
  
 This is a numerical issue with the way that **PyAutoLens** computes the critical curves and caustics - without this issue
 both would appear perfect symmetric and smooth! Implementing a more robust calculation of these quantities is on the
-__PyAutoLens__ featre list, but for now you`ll just have to accept this aspect of the visualization is sub-optimal!
+**PyAutoLens** featre list, but for now you'll just have to accept this aspect of the visualization is sub-optimal!
 """
 
 # %%

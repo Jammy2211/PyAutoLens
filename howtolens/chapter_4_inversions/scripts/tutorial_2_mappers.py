@@ -81,7 +81,7 @@ mapper = rectangular.mapper_from_grid_and_sparse_grid(grid=source_plane_grid)
 
 # %%
 """
-We`re going to plot our `Mapper` alongside the image we used to generate the source-plane grid.
+We're going to plot our `Mapper` alongside the image we used to generate the source-plane grid.
 """
 
 # %%
@@ -171,7 +171,7 @@ mask = al.Mask2D.circular_annular(
 
 # %%
 """
-Lets quickly confirm the annuli capture the source`s light.
+Lets quickly confirm the annuli capture the source's light.
 """
 
 # %%

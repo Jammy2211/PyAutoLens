@@ -11,7 +11,7 @@ First, I want to develop the idea of a `parameter space`. Lets think of a functi
 f(x) = x^2
 
 In this function, when we input a parameter x, it returns a value f(x). The mappings between different values of x and
-f(x) define a parameter space (and if you remember your high school math classes, you`ll remember this parameter
+f(x) define a parameter space (and if you remember your high school math classes, you'll remember this parameter
 space is a parabola).
 
 A function can of course have multiple parameters:
@@ -36,7 +36,7 @@ The point is, like we did for the simple functions above, we again have a parame
 down analytically and its undoubtedly very complex and non-linear. Fortunately, we've already learnt how to search
 it, and find the solutions which maximize our log_likelihood function!
 
-Lets inspect the results of the last tutorial`s non-linear search. We`re going to look at what are called `probably
+Lets inspect the results of the last tutorial`s non-linear search. We're going to look at what are called `probably
 density functions` or PDF`s for short. These represent where the highest log likelihood regions of parameter space were
 found for each parameter.
 
@@ -189,7 +189,7 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 # %%
 """
 We can now create this custom phase like we did a hyper phase before. If you look at the `model.info` file in the 
-output of the non-linear search, you`ll see that the priors have indeed been changed.
+output of the non-linear search, you'll see that the priors have indeed been changed.
 """
 
 # %%
@@ -219,7 +219,7 @@ And, we`re done. This tutorial had some pretty difficult concepts to wrap your h
 enough how important it is that you develop an intuition for non-linear searches and the notion of a non-linear 
 parameter space. Becoming good at lens modeling is all being able to navigate a complex, degenerate and highly 
 non-linear parameter space! Luckily, we`re going to keep thinking about this in the next set of tutorials, so if 
-you`re not feeling too confident yet, you will be soon!
+you're not feeling too confident yet, you will be soon!
 
 Before continuing to the next tutorial, I want you think about whether anything could go wrong when we search a 
 non-linear parameter space. Is it possible that we won't find the highest log likelihood lens model? Why might this be?

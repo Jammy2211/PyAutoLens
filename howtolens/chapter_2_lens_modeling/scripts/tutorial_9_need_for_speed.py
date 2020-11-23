@@ -41,7 +41,7 @@ than me!
 __Data Quantity__
 
 The final factor driving run-speed is the quantity of data that is being modeled. For every image-pixel that we fit,
-we have to compute the `LightProfile` image, the `MassProfile` deflection angles and convolve it with the telescope`s
+we have to compute the `LightProfile` image, the `MassProfile` deflection angles and convolve it with the telescope's
 PSF. The larger that PSF is, the more convolution operations we have to perform too.
 
 In the previous exercises, we used images with a pixel scale of 0.1". I sneakily chose this value cause its fairly
@@ -75,6 +75,6 @@ you might write a pipeline to perform the following analyses:
  lens galaxy parameters. Can you setup phases that fit each galaxy individiually, before fitting them jointly?
 
  3) The source galaxy is really complex. Infact, in your strong lens image you count 12 distinct multiple images,
- meaning that there are at least three distinct source`s of light in the source plane. This is a potentially very
+ meaning that there are at least three distinct source's of light in the source plane. This is a potentially very
  complex non-linear parameter space, so how might you break down the analysis?
 """

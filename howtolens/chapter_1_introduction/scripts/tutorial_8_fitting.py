@@ -84,7 +84,7 @@ print(mask[48:53, 48:53])  # Whereas central pixels are `False` and therefore un
 # %%
 """
 We can use an `Imaging` `Plotter`.to compare the mask and the image - this is useful if we really want to `tailor` a 
-mask to the lensed source`s light (which in this example, we won't).
+mask to the lensed source's light (which in this example, we won't).
 """
 
 # %%
@@ -95,7 +95,7 @@ aplt.Imaging.image(imaging=imaging, mask=mask)
 The `mask` automatically `zooms` our plot around the masked region only - meaning that if our image is very large, we 
 focus-in on the lens and source galaxies.
 
-You`ll see this is an option for pretty much every `Plotter` in **PyAutoLens**, and is something we'll do often throughout 
+You'll see this is an option for pretty much every `Plotter` in **PyAutoLens**, and is something we'll do often throughout 
 the tutorials.
 """
 
@@ -110,7 +110,7 @@ to fit it with a lens model:
 
  2) The mask, so that only the regions of the image with a signal are fitted.
 
- 3) A `Grid` aligned to the `Imaging` data`s pixels, so the tracer`s image is generated on the same (masked) `Grid` 
+ 3) A `Grid` aligned to the `Imaging` data's pixels, so the tracer`s image is generated on the same (masked) `Grid` 
  as the image.
 """
 
@@ -176,8 +176,8 @@ print(masked_imaging.grid.in_1d)
 To fit an image, create an image using a `Tracer`. Lets use the same `Tracer` we simulated the `Imaging` instrument with 
 (thus, our fit is `perfect`).
 
-Its worth noting that below, we use the masked imaging`s `Grid` to setup the `Tracer`. This ensures that our 
-image-plane image is the same resolution and alignment as our lens data`s masked image.
+Its worth noting that below, we use the `MaskedImaging`'s `Grid` to setup the `Tracer`. This ensures that our 
+image-plane image is the same resolution and alignment as our lens data's masked image.
 """
 
 # %%
@@ -209,7 +209,7 @@ aplt.Tracer.image(tracer=tracer, grid=masked_imaging.grid)
 """
 To fit the image, we pass the `MaskedImaging` and `Tracer` to a `FitImaging` object. This performs the following:
 
-    1) Blurs the tracer`s image with the lens data`s PSF, ensuring the telescope optics are included in the fit. This 
+    1) Blurs the tracer`s image with the lens data's PSF, ensuring the telescope optics are included in the fit. This 
     creates the fit`s `model_image`.
 
     2) Computes the difference between this model_image and the observed image-data, creating the fit`s `residual_map`.

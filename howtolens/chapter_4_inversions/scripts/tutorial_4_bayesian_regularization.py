@@ -47,8 +47,8 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-We`re going to perform a lot of fits using an `Inversion` this tutorial. This would create a lot of code, so to keep 
-things tidy, I`ve setup this function which handles it all for us.
+We're going to perform a lot of fits using an `Inversion` this tutorial. This would create a lot of code, so to keep 
+things tidy, I've setup this function which handles it all for us.
 
 (You may notice we include an option to `use_inversion_border, ignore this for now, as we'll be covering borders in 
 the next tutorial)
@@ -235,7 +235,7 @@ Here are a few questions for you to think about.
  1) We maximize the log evidence by using simpler source reconstructions. Therefore, decreasing the pixel-grid 
  size should provide a higher log_evidence, provided it still has enough resolution to fit the image well (and 
  provided that the `Regularization` coefficient is still an appropriate value). Can you increase the log evidence 
- from the value above by changing these parameters - I`ve set you up with a code to do so below.
+ from the value above by changing these parameters - I've set you up with a code to do so below.
 """
 
 # %%
@@ -257,6 +257,6 @@ aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 # %%
 """
  2) Can you think of any other ways we might increase the log evidence even further? If not - don't worry. but 
- you`ll learn that **PyAutoLens** actually adapts its source reconstructions to the properties of the image that it is 
+ you'll learn that **PyAutoLens** actually adapts its source reconstructions to the properties of the image that it is 
  fitting, so as to objectively maximize the log evidence!
 """

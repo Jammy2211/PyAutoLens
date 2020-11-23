@@ -12,7 +12,7 @@ However, we can still break their analysis down using a pipeline and give oursel
 model. Here, we`re going to fit a double lens system, fitting as much about each individual lens galaxy before fitting
 them simultaneously.
 
-Up to now, I`ve put a focus on pipelines being general. The pipeline we write in this example is going to be the
+Up to now, I've put a focus on pipelines being general. The pipeline we write in this example is going to be the
 opposite, specific to the image we`re modeling. Fitting multiple lens galaxies is really difficult and writing a
 pipeline that we can generalize to many lenses isn't currently possible with **PyAutoLens**.
 """
@@ -84,7 +84,7 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 """
 __Pipeline Approach__
 
-Looking at the image, there are clearly two blobs of light corresponding to our two lens galaxies. The source`s 
+Looking at the image, there are clearly two blobs of light corresponding to our two lens galaxies. The source's 
 light is also pretty complex - the arcs don't posses the rotational symmetry we`re used to seeing up to now. 
 Multi-galaxy ray-tracing is just a lot more complicated, which means so is modeling it!
 

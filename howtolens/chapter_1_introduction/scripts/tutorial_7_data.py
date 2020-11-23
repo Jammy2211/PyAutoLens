@@ -23,7 +23,7 @@ import autolens.plot as aplt
 
 # %%
 """
-To simulate an image, we need to model the telescope`s optics. we'll do this by convolving the image with a 
+To simulate an image, we need to model the telescope's optics. we'll do this by convolving the image with a 
 Point-Spread Function using a `Kernel` object, which we can simulate as a Gaussian.
 """
 

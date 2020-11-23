@@ -61,7 +61,7 @@ print("etc.")
 
 # %%
 """
-_Grid_`s in **PyAutoLens** are stored as both 1D and 2D ndarrays, because different calculations benefit from us using 
+`Grid``s in **PyAutoLens** are stored as both 1D and 2D ndarrays, because different calculations benefit from us using 
 the array in different formats. We can access both the 1D and 2D `Array`'s automatically by specifying the input as a 1D 
 or 2D.
 """
@@ -196,7 +196,7 @@ print("etc.")
 # %%
 """
 Congratulations, you`ve completed your first **PyAutoLens** tutorial! Before moving on to the next one, experiment with 
-__PyAutoLens__ by doing the following:
+**PyAutoLens** by doing the following:
 
 1) Change the pixel-scale of the `Grid`'s - what happens to the Cartesian coordinates?
 2) Change the resolution of the `Grid`'s - what happens Cartesian coordinates?

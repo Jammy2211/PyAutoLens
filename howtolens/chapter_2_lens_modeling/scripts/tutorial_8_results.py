@@ -137,7 +137,7 @@ print(samples[0].max_log_likelihood_vector)
 """
 Again, we won't go into any more detail on the aggregator in this tutorial. For those of you modeling large samples of
 lenses for who the tool will prove useful, checkout the full set of aggregator tutorials which can be found at the 
-location `autolens_workspace/advanced`aggregator`. Here, you`ll learn how to:
+location `autolens_workspace/advanced`aggregator`. Here, you'll learn how to:
 
  - Use the aggregator to filter out results given a phase name or input string.
  - Use the Samples to produce many different results from the fit, including error estimates on parameters and 

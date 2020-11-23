@@ -84,9 +84,9 @@ First, we`re going to try giving our `NonLinearSearch` a helping hand. Lets thin
 the `NonLinearSearch` where to look in parameter space. If we tell it to look in the right place (that is, 
 *tune* our priors), it might find the best-fit lens model.
 
-We've already seen that we can fully customize priors in **PyAutoLens**, so lets do it. I`ve set up a custom phase 
+We've already seen that we can fully customize priors in **PyAutoLens**, so lets do it. I've set up a custom phase 
 below and specified a new set of priors that'll give the `NonLinearSearch` a much better chance if inferring the 
-correct model. I`ve also let you know what we`re changing the priors from (as initially specified by the 
+correct model. I've also let you know what we`re changing the priors from (as initially specified by the 
 `config/priors/default` config files.)
 
 we'll call our lens and source galaxies `lens` and `source` this time, for shorter more readable code.
@@ -185,7 +185,7 @@ lens.mass.einstein_radius = af.GaussianPrior(
 """
 In this exercise, I'm not going to change any priors on the source galaxy. Whilst lens modeling experts can look at a 
 strong lens and often tell you roughly where the source-galaxy is located (in the source-plane), it is something of art 
-form. Furthermore, the source`s morphology can be pretty complex, making it difficult to come up with a good source prior!
+form. Furthermore, the source's morphology can be pretty complex, making it difficult to come up with a good source prior!
 """
 
 # %%
@@ -360,7 +360,7 @@ Disadvantage:
  - Its potentially expensive. Very expensive. For very complex models, the run times can begin to take hours, days, 
  weeks or, dare I say it, months!
 
-So, we can now fit strong lenses with **PyAutoLens**. And when it fails, we know how to get it to work. I hope you`re 
+So, we can now fit strong lenses with **PyAutoLens**. And when it fails, we know how to get it to work. I hope you're 
 feeling pretty smug. You might even be thinking `why should I bother with the rest of these tutorials, if I can fit 
 strong a lens already`.
 

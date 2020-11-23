@@ -144,7 +144,7 @@ space, but whose log likelihood is significantly below the `global` maxima solut
 
 Inferring such solutions is essentially a failure of our `NonLinearSearch` and it is something we do not want to
 happen! Lets infer a local maxima, by reducing the number of `live points` Dynesty uses to map out parameter space.
-We`re going to use so few that it has no hope of locating the global maxima, ultimating finding and inferring a local 
+We're going to use so few that it has no hope of locating the global maxima, ultimating finding and inferring a local 
 maxima instead.
 """
 

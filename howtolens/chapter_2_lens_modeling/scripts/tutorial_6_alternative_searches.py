@@ -136,7 +136,7 @@ Lets perform two fits, where:
 
  - One has many live points, a low sampling efficiency and evidence tolerance, causing the `NonLinearSearch` to
  take a long time to run (in fact, on my laptop, this run takes > 500000 iterations which translates to > 6 
- hours. So, I`ve commented the run function out to not waste your time, but feel free to uncomment it and run
+ hours. So, I've commented the run function out to not waste your time, but feel free to uncomment it and run
  the phase to see this for yourself!).
       
  - One has few live points, a high sampling efficiency and evidence tolerance, causing the `NonLinearSearch` to
@@ -303,10 +303,10 @@ So, when should we use Dynesty and when should we use PySwarms? Its simple:
     
 There is one exception however, for complex models whose priors have not be well tuned or initialized by a previous 
 phase, PySwarms has a tendancy to locate a local maxima. Dynesty`s slower but more complete sampling of parameter space 
-will often find the global maxima when PySwarms doesn`t. So, if you`re not happy with the results PySwarms is giving, 
+will often find the global maxima when PySwarms doesn`t. So, if you're not happy with the results PySwarms is giving, 
 it may be shrewd to bite-the-button on run-time and use Dynesty to get your initial lens model fit.
 
-In the next chapter, when we introduce pipelines, you`ll note that are our general strategy to lens modeling is to
+In the next chapter, when we introduce pipelines, you'll note that are our general strategy to lens modeling is to
 initialize the model-fit with Dynesty, perform intermediate phases that refine the model with PySwarms and then
 end with Dynesty for robust errors. Here, we choose our non-linear searches based on what result we want!
 """
@@ -317,7 +317,7 @@ __MCMC__
 
 For users familiar with Markov Chain Monte Carlo (MCMC) non-linear samplers, PyAutoFit supports the non-linear
 search *Emcee* (af.Emcee). We have found this to be less effective at lens modeling than Dynesty and PySwarms,
-but it is sill pretty successful. I`ve included an example run of Emcee below.
+but it is sill pretty successful. I've included an example run of Emcee below.
 """
 
 # %%

@@ -116,7 +116,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     """
     Phase 3: Fit simultaneously the lens and source galaxies, where we:
 
-        1) Set the lens`s light, mass, and source`s light using the results of phases 1 and 2.
+        1) Set the lens`s light, mass, and source's light using the results of phases 1 and 2.
         
     As in chapter 2, we can use the `model` attribute to do this. Our `Dynesty` search now uses slower and more 
     thorough settings than the previous phases, to ensure we robustly quantify the errors.

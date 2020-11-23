@@ -8,7 +8,7 @@ Of course, many of these templates probably require only minor tweaking to meet 
 
 If a pipeline isn't available for what you need to do, and you go on to write your own, feel free to get in contact
 with me to add it to the examples. We really have no idea what science people are ultimately going to do with
-__PyAutoLens__, so we have no idea of the weird and wonderful pipelines people will craft along the way!
+**PyAutoLens**, so we have no idea of the weird and wonderful pipelines people will craft along the way!
 
 You should also checkout the 'autolens_workspace/runners' folder, where the corresponding runners which import and run these
 pipeines are found. The example runners come as both a Python scripts and Juypter notebooks. I personally prefer to use

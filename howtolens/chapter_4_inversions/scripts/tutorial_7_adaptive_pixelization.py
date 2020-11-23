@@ -176,7 +176,7 @@ aplt.Inversion.reconstruction(
 
 # %%
 """
-Clearly, this is an improvement. We`re using fewer pixels than the rectangular `Grid` (400, instead of 1600), but 
+Clearly, this is an improvement. We're using fewer pixels than the rectangular `Grid` (400, instead of 1600), but 
 reconstructing our source is far greater detail. A win all around? It sure is.
 
 On our rectangular grid, we regularized each source pixel with its 4 neighbors. We compared their fluxes, summed 
@@ -187,7 +187,7 @@ are formed.
 
 However, this `VoronoiMagnification` `Pixelization`.is still far from optimal. There are lots of source-pixels 
 effectively fitting just noise. We may achieve even better solutions if the central regions of the source were 
-reconstructed using even more pixels. So, how do we improve on this? Well, you`ll have to wait until chapter 5, 
+reconstructed using even more pixels. So, how do we improve on this? Well, you'll have to wait until chapter 5, 
 when we introduce **PyAutoLens**`s adaptive functionality, or `hyper-mode`.
 
 In the mean time, you may wish to experiment with using both Rectangular and VoronoiMagnification `Grid`'s to fit 

@@ -28,7 +28,7 @@ from astropy import cosmology
 
 # %%
 """
-To begin, lets setup the `Grid`'s we `ll ray-trace using. Lets do something crazy, and use a higher resolution `Grid` 
+To begin, lets setup the `Grid`'s we'll ray-trace using. Lets do something crazy, and use a higher resolution `Grid` 
 then before and set the sub `Grid` size to 4x4 per pixel!
 
 Every pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.

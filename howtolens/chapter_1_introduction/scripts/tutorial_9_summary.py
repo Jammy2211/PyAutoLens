@@ -11,7 +11,7 @@ In this chapter, you`ve learnt how create and fit strong lenses with **PyAutoLen
  3) Profiles are combined to make galaxies.
  4) Collections of galaxies (at the same redshift) form a plane.
  5) A `Tracer` can make an image-plane + source-plane strong lens system.
- 6) The Universe`s cosmology can be input into this `Tracer` to convert unit_label to physical values.
+ 6) The Universe's cosmology can be input into this `Tracer` to convert unit_label to physical values.
  7) The tracer`s image can be used to simulate strong lens `Imaging` observed on a real telescope.
  8) This instrument can be fitted, so to as quantify how well a model strong lens system represents the observed image.
 
@@ -168,10 +168,10 @@ These are the things that, as scientists, we use to visualize a strong lens syst
 Software that abstracts the underlying code in this way follows what is called an `object-oriented design`, and it 
 is our hope with **PyAutoLens** that we've made the way you use it (that is, in coding speak, its `interface`) intuitive.
 
-However, if you do enjoy code, variables, functions, and parameters, you`re probably ready to take a look at the 
-__PyAutoLens__ source-code. This can be found in the `autolens` folder. At team **PyAutoLens**, we take a lot of pride in our 
+However, if you do enjoy code, variables, functions, and parameters, you're probably ready to take a look at the 
+**PyAutoLens** source-code. This can be found in the `autolens` folder. At team **PyAutoLens**, we take a lot of pride in our 
 source-code, so I can promise you its well written, well documented and thoroughly tested (check out the `test` 
-directory if you`re curious how to test code well!).
+directory if you're curious how to test code well!).
 
 Okay, enough self-serving praise for **PyAutoLens**, lets wrap up the chapter. You`ve learn a lot in this chapter, but 
 what you haven`t learnt is how to `model` a real strong gravitational lens.

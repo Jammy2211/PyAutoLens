@@ -99,7 +99,7 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 
 # %%
 """
-As we've eluded to before, one can look at an image and immediately identify the centre of the lens galaxy. It`s 
+As we've eluded to before, one can look at an image and immediately identify the centre of the lens galaxy. It's 
 that bright blob of light in the middle! Given that we know we`re going to make the lens model more complex in the 
 next phase, lets take a more liberal approach than before and fix the lens centre to $(y,x)$ = (0.0", 0.0").
 """
@@ -201,9 +201,9 @@ source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential)
 
 # %%
 """
-What I`ve done below is looked at the results of phase 1 and manually specified a prior for every parameter. If a 
+What I've done below is looked at the results of phase 1 and manually specified a prior for every parameter. If a 
 parameter was fixed in the previous phase, its prior is based around the previous value. Don't worry about the sigma 
-values for now, I`ve chosen values that I know will ensure reasonable sampling, but we'll cover this later.
+values for now, I've chosen values that I know will ensure reasonable sampling, but we'll cover this later.
 """
 
 # %%
@@ -311,7 +311,7 @@ able to begin by making simplifying assumptions that eased our search of non-lin
 phase 1 to pretty much any strong lens and therefore get ourselves a decent lens model with which to tune phase 2`s 
 priors.
 
-You`re probably thinking though that there is one huge, giant, glaring flaw in all of this that I`ve not mentioned. 
+You`re probably thinking though that there is one huge, giant, glaring flaw in all of this that I've not mentioned. 
 Phase 2 can`t be generalized to another lens - it`s priors are tuned to the image we fitted. If we had a lot of lenses, 
 we`d have to write a new phase2 for every single one. This isn't ideal, is it?
 
@@ -415,7 +415,7 @@ phase2_pass = al.PhaseImaging(
 # %%
 """
 Don't worry too much about whether you fully understand the prior passing API yet, as this will be a key subject in
-chapter 3 when we consider pipelines. Furthermore, in the `autolens_workspace/pipelines` directly you`ll find
+chapter 3 when we consider pipelines. Furthermore, in the `autolens_workspace/pipelines` directly you'll find
 numerous example pipelines that give examples of how to perform prior passing for many common lens models. 
 
 To end, lets consider how we passed priors using the `model` attribute of the phase 1 results above, as its not clear 

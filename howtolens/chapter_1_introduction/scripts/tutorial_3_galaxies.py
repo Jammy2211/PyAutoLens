@@ -142,7 +142,7 @@ print(galaxy_with_3_mass_profiles)
 # %%
 """
 We can use a `Galaxy` `Plotter`.to plot these deflection angles. (Deflection angles of `MassProfile`'s add together just 
-like the `LightProfile` image`s above)
+like the `LightProfile` image's above)
 """
 
 # %%
@@ -229,7 +229,7 @@ aplt.Galaxy.deflections_x(galaxy=galaxy_with_many_profiles, grid=grid)
 And we`re done. Lets finished by just thinking about one question:
 
  1) We've learnt we can group profiles into `Galaxy`'s to essentially sum the contribution of each `LightProfile` to 
- the galaxy image`s intensity, or sum the contribution of each `MassProfile` to the convergence, potential and 
+ the galaxy image's intensity, or sum the contribution of each `MassProfile` to the convergence, potential and 
  deflection angles. In strong lensing, there are often multiple galaxies next to one another responsible for the 
  lensing - how might we account for this?
 """

@@ -40,7 +40,7 @@ how the initial models that it fits give a poor fit to the data, but gradually i
 
  `https://pyautolens.readthedocs.io/en/latest/overview/modeling.html`
 
-We`re going to use a `NonLinearSearch` called `Dynesty`. I highly recommend it, and find its great for
+We're going to use a `NonLinearSearch` called `Dynesty`. I highly recommend it, and find its great for
 lens modeling. However, for now, lets not worry about the details of how Dynesty actually works. Instead, just
 picture that a `NonLinearSearch` in **PyAutoLens** operates as follows:
 
@@ -155,7 +155,7 @@ These settings are passed to `SettingsPhaseImaging` via a `SettingsMaskedImaging
 we saw could be used to customize how the `MaskedImaging` was setup. All settings passed to a `SettingsPhaseImaging`
 object are passed in this way, thus the settings we input into a phase are categorized based on what they change.
 
-You`ll note that the output folder of non-linear seach results has been `tagged` with these phase settings. we'll 
+You'll note that the output folder of non-linear seach results has been `tagged` with these phase settings. we'll 
 discuss this and phase settings in more detail in a later tutorial.
 """
 
@@ -173,7 +173,7 @@ bring together the model, `NonLinearSearch` and data, in order to perform a mode
 thing with the phase`s galaxies. This is good practise - as once we start using complex lens models, you could 
 potentially have a lot of galaxies - and this is the best way to keep track of them!).
 
-You`ll note that we also pass the `NonLinearSearch` the following:
+You'll note that we also pass the `NonLinearSearch` the following:
  
  - Input parameters like `n_live_points` and `walks` controlling how it samples parameter space. we'll cover what 
    these do in a later tutorial.  The results full output path are `tagged` depending on these settings.
@@ -233,7 +233,7 @@ code to see the result.
 
 In fact, even when a phase is running, it outputs the the current maximum log likelihood results of the lens model 
 to your hard-disk, on-the-fly. If you navigate to the output/howtolens folder, even before the phase has finished, 
-you`ll see:
+you'll see:
 
  1) The `image` folder, where the current maximum log likelihood lens model `Tracer` and `FitImaging` are visualized 
  (again, this outputs on-the-fly).

@@ -6,7 +6,7 @@ Tutorial 5: Ray Tracing
 In the last tutorial, our use of `Plane`'s was a bit clunky. We manually had to input `Grid`'s to trace them, and keep
 track of which `Grid`'s were the image-plane`s and which were the source planes. It was easy to make mistakes!
 
-Fotunately, in **PyAutoLens**, you won't actually spend much hands-on time with the `Plane` objects. Instead, you`ll
+Fotunately, in **PyAutoLens**, you won't actually spend much hands-on time with the `Plane` objects. Instead, you'll
 primarily use the `ray-tracing` module, which we'll cover in this example. Lets look at how easy it is to setup the
 same lens-plane + source-plane strong lens configuration as the previous tutorial, but with a lot less lines of code!
 """
@@ -162,7 +162,7 @@ aplt.Plane.plane_grid(
 
 # %%
 """
-__PyAutoLens__ has tools for plotting a `Tracer`. A ray-tracing subplot plots the following:
+**PyAutoLens** has tools for plotting a `Tracer`. A ray-tracing subplot plots the following:
 
 1) The image, computed by tracing the source-`Galaxy`'s light `forwards` through the `Tracer`.
 
@@ -218,7 +218,7 @@ print(image_plane_convergence.in_2d[1, 0])
 
 # %%
 """
-I`ve left the rest below commented to avoid too many print statements, but if you`re feeling adventurous go ahead 
+I've left the rest below commented to avoid too many print statements, but if you're feeling adventurous go ahead 
 and uncomment the lines below!
 """
 
@@ -234,7 +234,7 @@ and uncomment the lines below!
 
 # %%
 """
-You can also plot the above attributes on individual figures, using appropriate ray-tracing `Plotter` (I`ve left most 
+You can also plot the above attributes on individual figures, using appropriate ray-tracing `Plotter` (I've left most 
 commented out again for convenience)
 """
 
@@ -263,7 +263,7 @@ Multi-plane lensing:
  However, there are strong lens system where there are more than 2 planes! 
 
  In these instances, the  convergence, potential and deflections of each plane is different to the overall values 
- given by the `Tracer`.  This is beyond the scope of this chapter, but be reassured that what you`re learning now 
+ given by the `Tracer`.  This is beyond the scope of this chapter, but be reassured that what you're learning now 
  will prepare you for the advanced chapters later on!
 
 And with that, we`re done. You`ve performed your first ray-tracing with **PyAutoLens**! There are no exercises for this 

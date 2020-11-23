@@ -9,7 +9,7 @@ wealth of different structures that could be present - bulges, disks, bars, star
 there could be more than one source-galaxy!
 
 In this example, we'll explore how far we can get trying to_fit a complex source using a pipeline. Fitting complex
-source`s is an exercise in diminishing returns. Each component we add to our source model brings with it an
+source's is an exercise in diminishing returns. Each component we add to our source model brings with it an
 extra 5-7, parameters. If there are 4 components, or multiple `Galaxy`'s we`re quickly entering the somewhat nasty
 regime of 30-40+ parameters in our non-linear search. Even with a pipeline, that is a lot of parameters to fit!
 """
@@ -63,7 +63,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 # %%
 """
 Yep, that`s a pretty complex source. There are clearly more than 4 peaks of light - I wouldn't like to guess how many
-sources of light there truly is! You`ll also notice I omitted the lens `Galaxy`'s light for this system. This is to 
+sources of light there truly is! You'll also notice I omitted the lens `Galaxy`'s light for this system. This is to 
 keep the number of parameters down and the phases running fast, but we wouldn't get such a luxury for a real galaxy.
 """
 

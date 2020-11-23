@@ -109,7 +109,7 @@ Many matplotlib options can be customized, but for now we`re only concerned with
 your Jupter Notebooks. However, for future reference, a descrition of all options can be found in the file 
 `autolens_workspace/plot/mat_objs.py`.
 
-Ideally, we wouldn't need to specify a new `Plotter` every time we plot an image we make, especially as you`ll be 
+Ideally, we wouldn't need to specify a new `Plotter` every time we plot an image we make, especially as you'll be 
 changing the same option to the same value over and over again (e.g. the figsize). Fortunately, the default values 
 used by **PyAutoLens** can be fully customized.
 
@@ -169,7 +169,7 @@ aplt.Imaging.image(imaging=imaging, plotter=plotter, include=aplt.Include(origin
 
 # %%
 """
-Throughout the **HowToLens** lecture series you`ll see lots more objects that can include on figures.
+Throughout the **HowToLens** lecture series you'll see lots more objects that can include on figures.
 
 Just like the matplotlib setup, you can customize what does and does not appear on figures by default using the 
 config file `autolens_workspace/config/visualize/general.ini`

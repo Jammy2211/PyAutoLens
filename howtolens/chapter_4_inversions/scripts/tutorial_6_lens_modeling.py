@@ -3,7 +3,7 @@
 Tutorial 6: Lens Modeling
 =========================
 
-When modeling complex source`s with parametric profiles, we quickly entered a regime where our `NonLinearSearch` was
+When modeling complex source's with parametric profiles, we quickly entered a regime where our `NonLinearSearch` was
 faced with a parameter space of dimensionality N=30+ parameters. This made the model-fitting inefficient, and very
 likely to infer a local maxima.
 
@@ -83,7 +83,7 @@ def perform_fit_with_lens__source_galaxy(imaging, lens_galaxy, source_galaxy):
 # %%
 """
 To see the short-comings of an `Inversion`, we begin by performing a fit where the lens galaxy has an incorrect 
-mass-model (I`ve reduced its Einstein Radius from 1.6 to 0.8). This is the sort of mass moddel the non-linear search
+mass-model (I've reduced its Einstein Radius from 1.6 to 0.8). This is the sort of mass moddel the non-linear search
 might sample at the beginning of a model-fit.
 """
 
@@ -260,7 +260,7 @@ aplt.FitImaging.subplot_of_plane(
 # %%
 """
 Of course if the lens subtraction is rubbish so is our fit, so we can be sure that our lens model wants to fit the 
-lens `Galaxy`'s light accurately (below, I`ve increased the lens galaxy intensity from 0.2 to 0.3).
+lens `Galaxy`'s light accurately (below, I've increased the lens galaxy intensity from 0.2 to 0.3).
 """
 
 # %%
