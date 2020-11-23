@@ -117,7 +117,7 @@ def perform_fit_with_source_galaxy_mask_and_border(
 Okay, so lets first look at our `Mapper` without using a border using our annular `Mask2D`.
 
 First, note how we set up the border. We use a `SettingsPixelization` object, which is analogous to the 
-_SettingsMaskedImaging_ and `SettingsLens` objects we used in previous tutorials. Later, you`ll see how these 
+`SettingsMaskedImaging` and `SettingsLens` objects we used in previous tutorials. Later, you`ll see how these 
 settings can also be passed to a `SettingsPhaseImaging` object, to control the behaviour of the `Pixelization` during a
 model-fit.
 """
