@@ -1,5 +1,6 @@
 import numpy as np
 
+from autoconf import conf
 from autoarray.fit import fit as aa_fit
 from autoarray.inversion import pixelizations as pix, inversions as inv
 from autogalaxy.galaxy import galaxy as g
@@ -317,5 +318,7 @@ def hyper_noise_map_from_noise_map_tracer_and_hyper_background_noise(
 
     if hyper_noise_map is not None:
         noise_map = noise_map + hyper_noise_map
+        noise_map_limit = conf.instance["general"]["hyper"]["hyper_noise_limit"]
+        noise_map[noise_map > noise_map_limit] = noise_map_limit
 
     return noise_map

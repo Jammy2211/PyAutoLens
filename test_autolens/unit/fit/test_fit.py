@@ -590,6 +590,68 @@ class TestFitImaging:
                 6.25 + 2.0 * np.log(2 * np.pi * 2.0 ** 2.0)
             )
 
+        def test_hyper_galaxy_changes_noise_above_hyper_noise_limit__rounded_down_to_limit(
+            self,
+        ):
+            # This PSF changes the blurred image plane image from [1.0, 1.0] to [1.0, 5.0]
+
+            # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
+
+            # The hyper_galaxies galaxy increases the noise in both pixels by 1.0, to 2.0.
+
+            # This reduces the chi squared to 2.0 instead of 4.0
+
+            psf = al.Kernel.manual_2d(
+                array=[[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]],
+                pixel_scales=1.0,
+            )
+
+            imaging = al.Imaging(
+                image=5.0 * al.Array.ones(shape_2d=(3, 4), pixel_scales=1.0),
+                psf=psf,
+                noise_map=al.Array.ones(shape_2d=(3, 4), pixel_scales=1.0),
+            )
+            imaging.image[6] = 4.0
+
+            mask = al.Mask2D.manual(
+                mask=[
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ],
+                pixel_scales=1.0,
+            )
+
+            masked_imaging_7x7 = al.MaskedImaging(
+                imaging=imaging,
+                mask=mask,
+                settings=al.SettingsMaskedImaging(sub_size=1, renormalize_psf=False),
+            )
+
+            # Setup as a ray trace instance, using a light profile for the lens
+
+            g0 = al.Galaxy(
+                redshift=0.5,
+                light_profile=MockLightProfile(value=1.0, size=2),
+                hyper_galaxy=al.HyperGalaxy(
+                    contribution_factor=1.0, noise_factor=1.0e9, noise_power=1.0
+                ),
+                hyper_model_image=al.Array.ones(shape_2d=(1, 2), pixel_scales=1.0),
+                hyper_galaxy_image=al.Array.ones(shape_2d=(1, 2), pixel_scales=1.0),
+                hyper_minimum_value=0.0,
+            )
+
+            tracer = al.Tracer.from_galaxies(galaxies=[g0])
+
+            fit = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
+
+            assert (
+                fit.noise_map.in_2d
+                == np.array(
+                    [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0e8, 1.0e8, 0.0], [0.0, 0.0, 0.0, 0.0]]
+                )
+            ).all()
+
     class TestCompareToManualProfilesOnly:
         def test___all_lens_fit_quantities__no_hyper_methods(self, masked_imaging_7x7):
 

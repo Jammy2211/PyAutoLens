@@ -1,7 +1,7 @@
 autoconf==0.7.2
 autofit==0.70.1
-autoarray==0.15.1
-autogalaxy==0.16.1
+autoarray==0.15.2
+autogalaxy==0.16.2
 astropy>=3.0.0
 nbsphinx>=0.7.0
 nbsphinx-link>=1.3.0
