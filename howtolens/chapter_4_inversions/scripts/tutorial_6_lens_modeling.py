@@ -285,7 +285,7 @@ aplt.FitImaging.subplot_of_plane(
 
 # %%
 """
-And with that, we`re done. Finally, I`ll point out a few things about what we've covered to get you thinking about 
+And with that, we're done. Finally, I'll point out a few things about what we've covered to get you thinking about 
 the next tutorial on adaption.
 
  - The unphysical solutions above are clearly problematic. Whilst they have lower Bayesian evidences their existance 

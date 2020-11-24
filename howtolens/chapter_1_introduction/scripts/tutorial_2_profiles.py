@@ -32,7 +32,7 @@ grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
 Next, lets create a `LightProfile` using the `light_profiles` module, which in **PyAutoLens** is imported as `lp` for 
 conciseness. we'll use an `EllipticalSersic` function, which is an analytic function often use to depict galaxies.
 
-(If you are unsure what the `elliptical_comps` are, I`ll give a description of them at the end of the tutorial.)
+(If you are unsure what the `elliptical_comps` are, I'll give a description of them at the end of the tutorial.)
 """
 
 # %%
@@ -136,7 +136,7 @@ the image above, they are computed on the sub-grid, so that we can bin up their 
 deflection angles.
 
 (If you are new to gravitiational lensing, and are unclear on what a `deflection-angle` means or what it is used for, 
-then I`ll explain all in tutorial 4 of this chapter. For now, just look at the pretty pictures they make, and worry 
+then I'll explain all in tutorial 4 of this chapter. For now, just look at the pretty pictures they make, and worry 
 about what they mean in tutorial 4!).
 """
 

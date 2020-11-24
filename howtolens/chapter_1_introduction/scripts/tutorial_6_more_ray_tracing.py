@@ -263,35 +263,48 @@ aplt.Tracer.subplot_tracer(tracer=tracer, grid=grid, sub_plotter=sub_plotter)
 # %%
 """
 In the previous example, we saw that the `Tracer` had attributes we plotted (e.g. convergence, potential, etc.). Now 
-we've input a cosmology and galaxy redshifts, the `Tracer` has attributes associated with its cosmology.
+we've input an **AstroPy** cosmology and galaxy redshifts, the `Tracer` has attributes associated with its cosmology.
+
+We can use the `cosmology_util` module in **PyAutoLens** to compute quantities associated with this cosmology.
 """
 
 # %%
+
+cosmology = tracer.cosmology
+
 print("Image-plane arcsec-per-kpc:")
-print(tracer.image_plane.arcsec_per_kpc)
+print(al.util.cosmology.arcsec_per_kpc_from(redshift=0.5, cosmology=cosmology))
 print("Image-plane kpc-per-arcsec:")
-print(tracer.image_plane.kpc_per_arcsec)
-print("Angular Diameter Distance to Image-plane:")
-print(tracer.image_plane.angular_diameter_distance_to_earth_in_units(unit_length="kpc"))
+print(al.util.cosmology.kpc_per_arcsec_from(redshift=0.5, cosmology=cosmology))
+print("Angular Diameter Distance to Image-plane (kpc):")
+print(
+    al.util.cosmology.angular_diameter_distance_to_earth_in_kpc_from(
+        redshift=0.5, cosmology=cosmology
+    )
+)
 
 print("Source-plane arcsec-per-kpc:")
-print(tracer.source_plane.arcsec_per_kpc)
+print(al.util.cosmology.arcsec_per_kpc_from(redshift=1.0, cosmology=cosmology))
 print("Source-plane kpc-per-arcsec:")
-print(tracer.source_plane.kpc_per_arcsec)
+print(al.util.cosmology.kpc_per_arcsec_from(redshift=1.0, cosmology=cosmology))
 print("Angular Diameter Distance to Source-plane:")
 print(
-    tracer.source_plane.angular_diameter_distance_to_earth_in_units(unit_length="kpc")
+    al.util.cosmology.angular_diameter_distance_to_earth_in_kpc_from(
+        redshift=1.0, cosmology=cosmology
+    )
 )
 
 print("Angular Diameter Distance From Image To Source Plane:")
 print(
-    tracer.angular_diameter_distance_from_image_to_source_plane_in_units(
-        unit_length="kpc"
+    al.util.cosmology.angular_diameter_distance_between_redshifts_in_kpc_from(
+        redshift_0=0.5, redshift_1=1.0, cosmology=cosmology
     )
 )
 print("Lensing Critical convergence:")
 print(
-    tracer.critical_surface_density_between_planes_in_units(i=0, j=1, unit_length="kpc")
+    al.util.cosmology.critical_surface_density_between_redshifts_solar_mass_per_kpc2_from(
+        redshift_0=0.5, redshift_1=1.0, cosmology=cosmology
+    )
 )
 
 # %%

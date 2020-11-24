@@ -6,7 +6,7 @@ Tutorial 5: Linking Phases
 So, we've learnt that if our parameter space is too complex, our `NonLinearSearch` might fail to find the global
 maximum solution. However, we also learnt how to ensure this doesn`t happen, by:
 
- 1) Tuning our priors to the strong lens we`re fitting.
+ 1) Tuning our priors to the strong lens we're fitting.
  2) Making our lens model less complex.
  3) Searching non-linear parameter space for longer.
 
@@ -14,7 +14,7 @@ However, each of the above approaches has disadvantages. The more we tune our pr
 analysis to a different strong lens. The less complex we make our model, the less realistic it is. And if we rely too
 much on searching parameter space for longer, we could end up with phase`s that take days, weeks or months to run.
 
-In this exercise, we`re going to combine these 3 approaches so that we can fit complex and realistic lens models in a
+In this exercise, we're going to combine these 3 approaches so that we can fit complex and realistic lens models in a
 way that that can be generalized to many different strong lenses. To do this, we'll run 2 phases, and link the lens
 model inferred in the first phase to the priors of the second phase`s lens model.
 
@@ -23,7 +23,7 @@ gives a reasonable lens model. However, we'll make a couple of extra simplifying
 our lens model complexity down and get the `NonLinearSearch` running fast.
 
 The model we infer above will therefore be a lot less realistic. But it doesn`t matter, because in the second phase
-we`re going to relax these assumptions and get back our more realistic lens model. The beauty is that, by running the
+we're going to relax these assumptions and get back our more realistic lens model. The beauty is that, by running the
 first phase, we can use its results to tune the priors of our second phase. For example:
 
  1) The first phase should give us a pretty good idea of the lens `Galaxy`'s light and mass profiles, for example its
@@ -100,7 +100,7 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 # %%
 """
 As we've eluded to before, one can look at an image and immediately identify the centre of the lens galaxy. It's 
-that bright blob of light in the middle! Given that we know we`re going to make the lens model more complex in the 
+that bright blob of light in the middle! Given that we know we're going to make the lens model more complex in the 
 next phase, lets take a more liberal approach than before and fix the lens centre to $(y,x)$ = (0.0", 0.0").
 """
 
@@ -274,7 +274,7 @@ source.bulge.effective_radius = af.GaussianPrior(
 # %%
 """
 Lets setup and run the phase. As expected, it gives us the correct lens model. However, it does so significantly faster 
-than we`re used to - I didn`t have to edit the config files to get this phase to run fast!
+than we're used to - I didn`t have to edit the config files to get this phase to run fast!
 """
 
 # %%
@@ -434,7 +434,7 @@ By invoking the `model` attribute, the prioris passed following 3 rules:
  2) The mean of the GaussianPrior is the median PDF value of the parameter estimated in phase 1.
     
  This ensures that the initial sampling of the new phase`s non-linear starts by searching the region of non-linear 
- parameter space that correspond to highest log likelihood solutions in the previous phase. Thus, we`re setting 
+ parameter space that correspond to highest log likelihood solutions in the previous phase. Thus, we're setting 
  our priors to look in the `correct` regions of parameter space.
 
  3) The sigma of the Gaussian will use the maximum of two values: 
@@ -517,8 +517,8 @@ sigma=0.8.
 If the prior config file had specified that we use an relative value of 0.8, the GaussianPrior in phase 2 would have a 
 mean=4.0 and sigma=3.2.
 
-And with that, we`re done. Linking priors is a bit of an art form, but one that tends to work really well. Its true to 
-say that things can go wrong - maybe we `trim` out the solution we`re looking for, or underestimate our errors a bit 
+And with that, we're done. Linking priors is a bit of an art form, but one that tends to work really well. Its true to 
+say that things can go wrong - maybe we `trim` out the solution we're looking for, or underestimate our errors a bit 
 due to making our priors too narrow. However, in general, things are okay, and the example pipelines in 
 `autolens_workspace/pipelines` have been thoroughly tested to ensure prior linking works effectively.
 """

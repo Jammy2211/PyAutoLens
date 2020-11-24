@@ -9,11 +9,11 @@ model, because they add an extra 5-10 parameters to the `NonLinearSearch` and, m
 between the `MassProfile`'s of the two galaxies can be severe.
 
 However, we can still break their analysis down using a pipeline and give ourselves a shot at getting a good lens
-model. Here, we`re going to fit a double lens system, fitting as much about each individual lens galaxy before fitting
+model. Here, we're going to fit a double lens system, fitting as much about each individual lens galaxy before fitting
 them simultaneously.
 
 Up to now, I've put a focus on pipelines being general. The pipeline we write in this example is going to be the
-opposite, specific to the image we`re modeling. Fitting multiple lens galaxies is really difficult and writing a
+opposite, specific to the image we're modeling. Fitting multiple lens galaxies is really difficult and writing a
 pipeline that we can generalize to many lenses isn't currently possible with **PyAutoLens**.
 """
 
@@ -85,7 +85,7 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 __Pipeline Approach__
 
 Looking at the image, there are clearly two blobs of light corresponding to our two lens galaxies. The source's 
-light is also pretty complex - the arcs don't posses the rotational symmetry we`re used to seeing up to now. 
+light is also pretty complex - the arcs don't posses the rotational symmetry we're used to seeing up to now. 
 Multi-galaxy ray-tracing is just a lot more complicated, which means so is modeling it!
 
 So, how can we break the lens modeling up? As follows:
@@ -135,7 +135,7 @@ Once you`ve done that, come back here and we'll wrap up this tutorial.
 
 # %%
 """
-And, we`re done. This pipeline takes a while to run, as is the nature of multi-galaxy modeling. Nevertheless, 
+And, we're done. This pipeline takes a while to run, as is the nature of multi-galaxy modeling. Nevertheless, 
 the techniques we've learnt above can be applied to systems with even more `Galaxy`'s albeit the increases in 
 parameters will slow down the non-linear search. Here are some more Q&A`s
 

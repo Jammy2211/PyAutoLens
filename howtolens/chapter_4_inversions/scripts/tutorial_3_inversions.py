@@ -3,7 +3,7 @@
 Tutorial 3: Inversions
 ======================
 
-We've covered `Mapper``., which, if I haven`t emphasised it enough yet, map things. Now, we`re going to look at how we
+We've covered `Mapper``., which, if I haven`t emphasised it enough yet, map things. Now, we're going to look at how we
 can use these `Mapper`'s (which map things) to reconstruct the source galaxy - I hope you're excited!
 """
 
@@ -60,7 +60,7 @@ aplt.Imaging.image(imaging=imaging, mask=mask)
 # %%
 """
 Next, lets set the `Imaging` and `Mask2D` up as a `MaskedImaging` object and setup a `Tracer` using the input lens 
-galaxy model (we don't need to provide the source's `LightProfile`, as we`re using a `Mapper` to reconstruct it).
+galaxy model (we don't need to provide the source's `LightProfile`, as we're using a `Mapper` to reconstruct it).
 """
 
 # %%
@@ -97,7 +97,7 @@ aplt.Mapper.subplot_image_and_mapper(
 
 # %%
 """
-And now, finally, we`re going to use our `Mapper` to invert the image using an `Inversion`. I`ll explain how this 
+And now, finally, we're going to use our `Mapper` to invert the image using an `Inversion`. I'll explain how this 
 works in a second - but lets just go ahead and use the `Inversion` first. (Ignore the `regularization` input below for 
 now, we'll cover this in the next tutorial).
 """
@@ -125,7 +125,7 @@ aplt.Inversion.reconstruction(
 """
 And there we have it, we've successfully reconstructed, or, *inverted*, our source using the mapper`s rectangular 
 grid. Whilst this source was simple (a blob of light in the centre of the source-plane), `Inversion`'s come into their 
-own when fitting sources with complex morphologies. Infact, given we`re having so much fun inverting things, lets 
+own when fitting sources with complex morphologies. Infact, given we're having so much fun inverting things, lets 
 invert a really complex source!
 """
 
@@ -256,7 +256,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 # %%
 """
 Then, like before, we pass the `MaskedImaging` and `Tracer` to a `FitImaging` object. Indeed, we see some 
-pretty good looking residuals - we`re certainly fitting the lensed source accurately!
+pretty good looking residuals - we're certainly fitting the lensed source accurately!
 """
 
 # %%
@@ -266,10 +266,10 @@ aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
 
 # %%
 """
-And, we`re done, here are a few questions to get you thinking about `Inversion``.:
+And, we're done, here are a few questions to get you thinking about `Inversion``.:
 
  1) The `Inversion` provides the maximum log likelihood solution to the observed image. Is there a problem with seeking 
- the `best-fit`? Is there a risk that we`re going to fit other things in the image than just the lensed source 
+ the `best-fit`? Is there a risk that we're going to fit other things in the image than just the lensed source 
  galaxy? What happens if you reduce the `regularization_coefficient` above to zero?
 
  2) The exterior pixels in the `Rectangular` `Grid`.have no image-pixels in them. However, they are still given a 

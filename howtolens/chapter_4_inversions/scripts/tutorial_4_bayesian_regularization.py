@@ -47,7 +47,7 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-We're going to perform a lot of fits using an `Inversion` this tutorial. This would create a lot of code, so to keep 
+we're going to perform a lot of fits using an `Inversion` this tutorial. This would create a lot of code, so to keep 
 things tidy, I've setup this function which handles it all for us.
 
 (You may notice we include an option to `use_inversion_border, ignore this for now, as we'll be covering borders in 

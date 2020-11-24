@@ -50,7 +50,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 
 # %%
 """
-The lines of code below do everything we`re used to, that is, setup an image, mask it, trace it via a tracer, 
+The lines of code below do everything we're used to, that is, setup an image, mask it, trace it via a tracer, 
 setup the rectangular mapper, etc.
 """
 
@@ -86,7 +86,7 @@ aplt.FitImaging.subplot_of_plane(
 Okay, so lets think about the `Rectangular` `Pixelization`. Is this the optimal way to reconstruct our source? Are 
 there features in the source-plane that arn`t ideal? How do you think we could do a better job?
 
-Well, given we`re doing a whole tutorial on using a different `Pixelization`.o this grid, you`ve probably guessed that
+Well, given we're doing a whole tutorial on using a different `Pixelization`.o this grid, you`ve probably guessed that
 it isn't optimal. Infact, its pretty rubbish, and not a `Pixelization`.e should actually want to model any lenses with!
 
 So what is wrong with the grid? Well, lets think about the source reconstruction.
@@ -100,7 +100,7 @@ aplt.Inversion.reconstruction(
 # %%
 """
 There is one clear problem, we are using a small number of the total source pixels to reconstruct the source. The 
-majority of source pixels are located away from the source. By my estimate, we`re using just 16 pixels (the central 
+majority of source pixels are located away from the source. By my estimate, we're using just 16 pixels (the central 
 4x4 grid) out of the 1600 pixels to actually fit the data! The remaining ~1500 pixels are doing *nothing* but fit noise.
 
 This is a waste and our analysis will take longer to run because of it. However, more importantly, it means that our 
@@ -176,7 +176,7 @@ aplt.Inversion.reconstruction(
 
 # %%
 """
-Clearly, this is an improvement. We're using fewer pixels than the rectangular `Grid` (400, instead of 1600), but 
+Clearly, this is an improvement. we're using fewer pixels than the rectangular `Grid` (400, instead of 1600), but 
 reconstructing our source is far greater detail. A win all around? It sure is.
 
 On our rectangular grid, we regularized each source pixel with its 4 neighbors. We compared their fluxes, summed 

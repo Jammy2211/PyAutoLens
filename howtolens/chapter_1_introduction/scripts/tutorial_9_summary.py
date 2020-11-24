@@ -12,7 +12,7 @@ In this chapter, you`ve learnt how create and fit strong lenses with **PyAutoLen
  4) Collections of galaxies (at the same redshift) form a plane.
  5) A `Tracer` can make an image-plane + source-plane strong lens system.
  6) The Universe's cosmology can be input into this `Tracer` to convert unit_label to physical values.
- 7) The tracer`s image can be used to simulate strong lens `Imaging` observed on a real telescope.
+ 7) The `Tracer`'s image can be used to simulate strong lens `Imaging` observed on a real telescope.
  8) This instrument can be fitted, so to as quantify how well a model strong lens system represents the observed image.
 
 In this summary, we'll consider how flexible the tools **PyAutoLens** gives you are to study every aspect of a strong lens
@@ -120,7 +120,7 @@ print()
 
 # %%
 """
-Using the plotters we've used throughout this chapter, we can visualize any aspect of a fit we`re interested in. 
+Using the plotters we've used throughout this chapter, we can visualize any aspect of a fit we're interested in. 
 For example, if we want to plot the image of the source galaxy `MassProfile`, we can do this in a variety of 
 different ways
 """
@@ -156,7 +156,7 @@ aplt.LightProfile.image(
 
 # %%
 """
-And, we`re done, not just with the tutorial, but the chapter!
+And, we're done, not just with the tutorial, but the chapter!
 
 To end, I want to quickly talk about code-design and structure. Yeah, I know, as a scientist, you don't like code 
 and certainly don't want to think about code! However, the point is, with **PyAutoLens**, you don't need to!

@@ -29,13 +29,13 @@ speeding up, I strongly recommend that you look up Numba:
 
 http://numba.pydata.org/
 
-We've worked very hard to `Profile` every line of code in **PyAutoLens** and we`re confident its as fast, if not faster,
+We've worked very hard to `Profile` every line of code in **PyAutoLens** and we're confident its as fast, if not faster,
 than any code written in C. In fact, we know this - I wrote the original version of AutoLens in Fortran (bless my
 poor soul) and we timed it against **PyAutoLens**. After invoking the magic of Numba, **PyAutoLens** ran 3 times faster than
 the Fortran code - I felt pretty smug at that point.
 
 We probably arn`t going to see much more of speed-up via optimization then. Of course, if you`d like to prove me
-wrong, go for it - I`ll buy you a beer at a conference someday if you can optimize any function in **PyAutoLens** better
+wrong, go for it - I'll buy you a beer at a conference someday if you can optimize any function in **PyAutoLens** better
 than me!
 
 __Data Quantity__

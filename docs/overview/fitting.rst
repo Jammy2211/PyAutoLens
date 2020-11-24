@@ -37,7 +37,7 @@ Here's what our image, ``noise_map`` and point-spread function look like:
   :alt: Alternative text
 
 We now need to mask the data, so that regions where there is no signal (e.g. the edges) are omitted from the fit. To do
-this we can use a *Mask2D* object, which for this example we'll create as a 3.0" circle.
+this we can use a ``Mask2D`` object, which for this example we'll create as a 3.0" circle.
 
 .. code-block:: bash
 
@@ -50,7 +50,7 @@ this we can use a *Mask2D* object, which for this example we'll create as a 3.0"
     aplt.Imaging.image(imaging=masked_imaging)
 
 Here is what our image looks like with the mask applied, where **PyAutoLens** has automatically zoomed around the
-*Mask2D* to make the lensed source appear bigger:
+``Mask2D`` to make the lensed source appear bigger:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/masked_image.png
   :width: 400
@@ -59,7 +59,7 @@ Here is what our image looks like with the mask applied, where **PyAutoLens** ha
 Following the lensing API guide, we can make a ``Tracer`` from a collection of ``LightProfile``, ``MassProfile`` and
 ``Galaxy`` objects. This ``Tracer`` then allows us to create an image of the strong lens system.
 
-By passing a ``Tracer`` and *MaskedImaging* object to a ``FitImaging`` object, we create a model-image from the ``Tracer``.
+By passing a ``Tracer`` and ``MaskImaging`` object to a ``FitImaging`` object, we create a model-image from the ``Tracer``.
 The model-image is the image of the ``Tracer`` blurred with the ``Imaging`` dataset's PSF, ensuring our fit to the data
 provides a like-with-like comparison.
 

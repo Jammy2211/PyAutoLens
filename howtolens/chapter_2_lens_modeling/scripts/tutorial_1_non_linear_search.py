@@ -3,7 +3,7 @@
 Tutorial 1: Non-linear Search
 =============================
 
-In this example, we`re going to find a lens model that provides a good fit to an image, without assuming any knowledge
+In this example, we're going to find a lens model that provides a good fit to an image, without assuming any knowledge
 of what the `correct` lens model is.
 
 So, whats a `lens model`? It is the combination of `LightProfile`'s and `MassProfile`'s we use to represent a lens galaxy,
@@ -16,8 +16,8 @@ we'll use the following lens model:
  1) A `SphericalIsothermal` Sphere (SIS) for the lens `Galaxy`'s mass.
  2) A `SphericalExponential` `LightProfile`.for the source-`Galaxy`'s light.
 
-I`ll let you into a secret - this is the same lens model used to simulate the `Imaging` data we`re going to fit and
-we`re going to infer the actual parameters I used!
+I'll let you into a secret - this is the same lens model used to simulate the `Imaging` data we're going to fit and
+we're going to infer the actual parameters I used!
 
 So, how do we infer the light and `MassProfile` parameters that give a good fit to our data?
 
@@ -32,7 +32,7 @@ combinations of parameters that gave higher log_likelihood solutions previously.
 provided a good fit to the data, another set with similar values probably will too.
 
 This is called a `non-linear search` and its a fairly common problem faced by scientists. Over the next few tutorials,
-we`re going to really get our heads around the concept of a `NonLinearSearch` - intuition which will prove crucial to
+we're going to really get our heads around the concept of a `NonLinearSearch` - intuition which will prove crucial to
 being a successful lens modeler.
 
 An animation of a `NonLinearSearch` fitting a lens model can be found on the following page on our readthedocs. Note
@@ -40,7 +40,7 @@ how the initial models that it fits give a poor fit to the data, but gradually i
 
  `https://pyautolens.readthedocs.io/en/latest/overview/modeling.html`
 
-We're going to use a `NonLinearSearch` called `Dynesty`. I highly recommend it, and find its great for
+we're going to use a `NonLinearSearch` called `Dynesty`. I highly recommend it, and find its great for
 lens modeling. However, for now, lets not worry about the details of how Dynesty actually works. Instead, just
 picture that a `NonLinearSearch` in **PyAutoLens** operates as follows:
 
@@ -124,7 +124,7 @@ aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
 
 # %%
 """
-To compute a lens model, we use a `GalaxyModel`, which behaves analogously to the `Galaxy` objects we`re now used to. 
+To compute a lens model, we use a `GalaxyModel`, which behaves analogously to the `Galaxy` objects we're now used to. 
 However, whereas for a `Galaxy` we manually specified the value of every parameter of its `LightProfile`'s and 
 `MassProfile`'s, for a `GalaxyModel` these are fitted for and inferred by the non-linear search.
 
@@ -193,7 +193,7 @@ phase = al.PhaseImaging(
 
 # %%
 """
-To run the phase, we pass it the data we`re going to fit a lens model to and the `NonLinearSearch` begins!
+To run the phase, we pass it the data we're going to fit a lens model to and the `NonLinearSearch` begins!
 
 Model fits using a `NonLinearSearch` can take a long time to run. Whilst the fit in this tutorial should take of order 
 ~10 minutes, later tutorials will take upwards of hours! This is fine, afterall lens modeling is an inherently 
@@ -261,7 +261,7 @@ The fit looks good and we've therefore found a model close to the one I used to 
 confirm this yourself if you want, by comparing the inferred parameters to those found in the script
 `autolens_workspace/howtolens/simulators/mass_sis__source_exp.py`).
 
-And with that, we`re done - you`ve successfully modeled your first strong lens with **PyAutoLens**! Before moving onto the 
+And with that, we're done - you`ve successfully modeled your first strong lens with **PyAutoLens**! Before moving onto the 
 next tutorial, I want you to think about the following:
 
  1) a `NonLinearSearch` is often said to search a `non-linear parameter-space` - why is the term parameter-space 

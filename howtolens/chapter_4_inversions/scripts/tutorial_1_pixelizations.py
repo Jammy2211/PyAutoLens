@@ -22,7 +22,7 @@ import autolens.plot as aplt
 # %%
 """
 Lets setup a lensed source-plane grid, using a lens galaxy and `Tracer` (our source galaxy doesn`t have a 
-`LightProfile`,as we`re going to reconstruct its light using a pixelization).
+`LightProfile`,as we're going to reconstruct its light using a pixelization).
 """
 
 # %%
@@ -53,7 +53,7 @@ rectangular = al.pix.Rectangular(shape=(25, 25))
 # %%
 """
 By itself, a `Pixelization`.oesn`t tell us much. It has no `Grid` of coordinates, no image, and nothing which tells it 
-about the lens we`re fitting. This information comes when we use the `Pixelization`.o set up a `Mapper`. we'll use 
+about the lens we're fitting. This information comes when we use the `Pixelization`.o set up a `Mapper`. we'll use 
 the (traced) source-plane `Grid` to set up this mapper.
 """
 
@@ -154,7 +154,7 @@ print(mapper.pixelization_grid.scaled_minima)
 
 # %%
 """
-And with that, we`re done. This was a relatively gentle overview of `Pixelization``., but one that was hopefully easy 
+And with that, we're done. This was a relatively gentle overview of `Pixelization``., but one that was hopefully easy 
 to follow. Think about the following questions before moving on to the next tutorial:
 
  1) Look at how the source-grid coordinates are distributed over the rectangular pixel-grid. Are these points 

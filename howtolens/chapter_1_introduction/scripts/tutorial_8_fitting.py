@@ -43,7 +43,7 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-The `imaging` is an `Imaging` object, which is a `package` of all components of the dataset, in particular:
+The `imaging` is an `Imaging` object, which is a package of all components of the dataset, in particular:
 
  1) The image.
  2) The Point Spread Function (PSF).

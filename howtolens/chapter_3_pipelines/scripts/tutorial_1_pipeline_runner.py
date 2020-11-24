@@ -8,8 +8,8 @@ down into a series of phases, linking the results of the phases to guide the `No
 sample parameter space. In this chapter, we'll cover `Pipeline`'s, which provide a powerful means by which to
 link together many phases.
 
-In chapter 2, we fitted strong lens `Imaging` which included the lens `Galaxy`'s light. We're going to fit this dataset
-again (I promise, this is the last time!). However, now we`re using pipelines, we can perform a different (and
+In chapter 2, we fitted strong lens `Imaging` which included the lens `Galaxy`'s light. we're going to fit this dataset
+again (I promise, this is the last time!). However, now we're using pipelines, we can perform a different (and
 significantly faster) model-fit.
 
 The crucial point to note is that for many lenses the lens `Galaxy`'s light can be fitted and subtracted reasonably 
@@ -19,7 +19,7 @@ we would say that these two model components (the lens`s light and source's ligh
 
 So, as a newly trained lens modeler, what does the lack of covariance between these parameters make you think?
 Hopefully, you're thinking, why should I bother fitting the lens and source galaxy simultaneously? Surely we can
-find the right regions of non-linear parameter space by fitting each separately first? This is what we`re going to do
+find the right regions of non-linear parameter space by fitting each separately first? This is what we're going to do
 in this tutorial, using a pipeline composed of a modest 3 phases:
 
  1) Fit the lens `Galaxy`'s light, ignoring the source.
@@ -120,7 +120,7 @@ pipeline_lens_and_source = tutorial_1_pipeline_lens_and_source.make_pipeline(
 
 # %%
 """
-Okay, good job, we`re running our first pipeline in **PyAutoLens**! But what does it *actually* do? Well, to find 
+Okay, good job, we're running our first pipeline in **PyAutoLens**! But what does it *actually* do? Well, to find 
 that out, go to the script `pipelines/tutorial_1_pipeline_lens_and_source.py`, which contains a full description of 
 the pipeline, as well as an overview of the tools we use to write the most general pipelines possible. Once you're 
 done, come back to this pipeline runner script and we'll wrap up tutorial 1.

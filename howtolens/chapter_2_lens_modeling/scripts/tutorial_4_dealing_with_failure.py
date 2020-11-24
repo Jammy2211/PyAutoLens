@@ -4,7 +4,7 @@ Tutorial 4: Dealing With Failure
 ================================
 
 In the last tutorial we showed how our `NonLinearSearch` can potentially fail, and infer a local maxima solution.
-In this tutorial, we`re going to learn how to stop this and infer the globally maximal lens model.
+In this tutorial, we're going to learn how to stop this and infer the globally maximal lens model.
 
 In the previous tutorial, when we inferred a local maxima we knew that we had done so. For modeling a real lens,
 we do not know the *true* lens model and it iss often  unclear if a solution is a global or local maximma. The tricks
@@ -80,13 +80,13 @@ settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imagi
 """
 __Approach 1: Prior Tuning__
 
-First, we`re going to try giving our `NonLinearSearch` a helping hand. Lets think about our priors, they`re telling 
+First, we're going to try giving our `NonLinearSearch` a helping hand. Lets think about our priors, they`re telling 
 the `NonLinearSearch` where to look in parameter space. If we tell it to look in the right place (that is, 
 *tune* our priors), it might find the best-fit lens model.
 
 We've already seen that we can fully customize priors in **PyAutoLens**, so lets do it. I've set up a custom phase 
 below and specified a new set of priors that'll give the `NonLinearSearch` a much better chance if inferring the 
-correct model. I've also let you know what we`re changing the priors from (as initially specified by the 
+correct model. I've also let you know what we're changing the priors from (as initially specified by the 
 `config/priors/default` config files.)
 
 we'll call our lens and source galaxies `lens` and `source` this time, for shorter more readable code.
@@ -227,7 +227,7 @@ aplt.FitImaging.subplot_fit_imaging(fit=result_custom_priors.max_log_likelihood_
 
 # %%
 """
-By tuning our priors to the lens we`re fitting we can increase our chance of inferring the global maxima lens model. 
+By tuning our priors to the lens we're fitting we can increase our chance of inferring the global maxima lens model. 
 Before moving onto the next approach, lets think about the advantages and disadvantages of prior tuning:
 
 Advantages: 
@@ -336,7 +336,7 @@ Disadvantages:
 __Approach 3: Look Harder__
 
 In approaches 1 and 2 we extended our `NonLinearSearch` an olive branch and helped it find the highest log likelihood 
-regions of parameter space. In approach 3 ,we`re going to tell it to just `look harder`.
+regions of parameter space. In approach 3 ,we're going to tell it to just `look harder`.
 
 Basically, every `NonLinearSearch` has a set of parameters that govern how thoroughly it searches parameter 
 space. The more thoroughly it looks, the more likely it is that it`ll find the global maximum lens model. However, 

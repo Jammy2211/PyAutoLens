@@ -54,7 +54,7 @@ grid = al.Grid.uniform(
 # %%
 """
 Our `Tracer` will use the same lens galaxy and source galaxy that we used to Simulate the `Imaging` data (although, 
-becuase we`re modeling the source with a pixel-grid, we don't need to supply its `LightProfile`..
+becuase we're modeling the source with a pixel-grid, we don't need to supply its `LightProfile`..
 """
 
 # %%
@@ -81,7 +81,7 @@ mapper = rectangular.mapper_from_grid_and_sparse_grid(grid=source_plane_grid)
 
 # %%
 """
-We're going to plot our `Mapper` alongside the image we used to generate the source-plane grid.
+we're going to plot our `Mapper` alongside the image we used to generate the source-plane grid.
 """
 
 # %%
@@ -239,8 +239,8 @@ and source plane map to one another. Your exercises are:
     
  2) Incrementally increase the axis ratio of the lens`s `MassProfile` to 1.0. What happens to quadruple imaging?
     
- 3) Now, finally, think - how is all of this going to help us actually model lenses? We've said we`re going to 
+ 3) Now, finally, think - how is all of this going to help us actually model lenses? We've said we're going to 
  reconstruct our source galaxies on the pixel-grid. So, how does knowing how each pixel maps to the image actually 
- help us? If you`ve not got any bright ideas, then worry not - that exactly what we`re going to cover in the next 
+ help us? If you`ve not got any bright ideas, then worry not - that exactly what we're going to cover in the next 
  tutorial.
 """

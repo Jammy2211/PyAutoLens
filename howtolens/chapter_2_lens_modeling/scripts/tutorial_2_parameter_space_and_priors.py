@@ -36,7 +36,7 @@ The point is, like we did for the simple functions above, we again have a parame
 down analytically and its undoubtedly very complex and non-linear. Fortunately, we've already learnt how to search
 it, and find the solutions which maximize our log_likelihood function!
 
-Lets inspect the results of the last tutorial`s non-linear search. We're going to look at what are called `probably
+Lets inspect the results of the last tutorial`s non-linear search. we're going to look at what are called `probably
 density functions` or PDF`s for short. These represent where the highest log likelihood regions of parameter space were
 found for each parameter.
 
@@ -215,10 +215,10 @@ print("Dynesty has finished run - you may now continue the notebook.")
 
 # %%
 """
-And, we`re done. This tutorial had some pretty difficult concepts to wrap your head around. However, I can`t emphasize 
+And, we're done. This tutorial had some pretty difficult concepts to wrap your head around. However, I can`t emphasize 
 enough how important it is that you develop an intuition for non-linear searches and the notion of a non-linear 
 parameter space. Becoming good at lens modeling is all being able to navigate a complex, degenerate and highly 
-non-linear parameter space! Luckily, we`re going to keep thinking about this in the next set of tutorials, so if 
+non-linear parameter space! Luckily, we're going to keep thinking about this in the next set of tutorials, so if 
 you're not feeling too confident yet, you will be soon!
 
 Before continuing to the next tutorial, I want you think about whether anything could go wrong when we search a 

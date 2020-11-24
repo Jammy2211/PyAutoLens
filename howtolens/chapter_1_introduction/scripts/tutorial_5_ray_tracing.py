@@ -79,7 +79,7 @@ print(tracer.planes)
 
 # %%
 """
-We can access these using the `image-plane` and `source-plane` attributes.
+We can access these using the `image_plane` and `source_plane` attributes.
 """
 
 # %%
@@ -248,24 +248,25 @@ aplt.Tracer.convergence(tracer=tracer, grid=image_plane_grid)
 
 # %%
 """
-Before we finish, you might be wondering `why do both the image-plane and `Tracer` have the attributes convergence / 
-potential / deflection angles, when the two are identical`. Afterall, only `MassProfile`'s contribute to these
-quantities, and only the image-plane has galaxies with measureable  `MassProfile`'s! There are two reasons:
+Before we finish, you might be wondering why do both the image-plane and `Tracer` have the attributes convergence / 
+potential / deflection angles, when the two are identical? 
 
-Convenience: 
+Afterall, only `MassProfile`'s contribute to these quantities, and only the image-plane has galaxies with 
+measureable  `MassProfile`'s! There are two reasons:
 
- You could always write `tracer.image_plane.convergence` and `aplt.Plane.convergence(plane=tracer.image_plane). 
- However, code appears neater if you can just write `tracer.convergence` and `aplt.Tracer.convergence(tracer=tracer).
+__Convenience__:  You could always write `tracer.image_plane.convergence` and 
+`aplt.Plane.convergence(plane=tracer.image_plane)`. However, code appears neater if you can just 
+ write `tracer.convergence` and `aplt.Tracer.convergence(tracer=tracer).
 
-Multi-plane lensing:
+__Multi-plane lensin__g:
  
- For now, we`re focused on the simplest lensing configuratio possible, an image-plane + source-plane configuration. 
+ For now, we're focused on the simplest lensing configuration possible, an image-plane + source-plane configuration. 
  However, there are strong lens system where there are more than 2 planes! 
 
  In these instances, the  convergence, potential and deflections of each plane is different to the overall values 
  given by the `Tracer`.  This is beyond the scope of this chapter, but be reassured that what you're learning now 
  will prepare you for the advanced chapters later on!
 
-And with that, we`re done. You`ve performed your first ray-tracing with **PyAutoLens**! There are no exercises for this 
-chapter, and we`re going to take a deeper look at ray-tracing in the next chapter.
+And with that, we're done. You`ve performed your first ray-tracing with **PyAutoLens**! There are no exercises for this 
+chapter, and we're going to take a deeper look at ray-tracing in the next chapter.
 """

@@ -68,7 +68,7 @@ transform of ~10 million in less than a second!
     transformer_class = al.TransformerNUFFT
 
 The perform a fit, we follow the same process we did for imaging, creating a *MaskedInterferometer* object which
-behaves analogously to a *MaskedImaging* object.
+behaves analogously to a ``MaskImaging`` object.
 
 .. code-block:: bash
 
@@ -135,7 +135,7 @@ ALMA and JVLA feasible in **PyAutoLens**. However, the largest datasets may stil
 averaging or tapering. Rest assured, we are actively working on new solution that will make the analysis of
 **hundreds of millions** of visibilities feasible.
 
-Simulated interferometer datasets can be generated using the *SimulatorInterferometer* object, which includes adding
+Simulated interferometer datasets can be generated using the ``SimulatorInterferometer`` object, which includes adding
 Gaussian noise to the visibilities:
 
 .. code-block:: bash

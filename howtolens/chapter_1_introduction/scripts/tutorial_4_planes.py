@@ -24,7 +24,7 @@ Observer                  Image-Plane               Source-Plane
 
          ----------------------------------------------
         /                                              \ <---- This is one of the source's light-rays
-       /                      ``                        \
+       /                      --                        \
   p   /                      /  \                      __
   |  /                      /   \                     /  \
  /\  \                      \   /                     \__/
@@ -211,8 +211,8 @@ aplt.Plane.image_and_source_plane_subplot(
 Clearly, the source-plane`s `Grid` is very different to the image-planes! It's not uniform and its certranly not boring!
 
 We can now ask the question - `what does our source-galaxy look like in the image-plane`? That is, to us, the observer 
-on Earth, how does the source-galaxy appear after lensing?. To do this, we simple trace the source-`Galaxy`'s light 
-`back` from the source-plane grid.
+on Earth, how does the source-galaxy appear after lensing?. To do this, we simple trace the source `Galaxy`'s light 
+back from the source-plane grid.
 """
 
 # %%
@@ -230,7 +230,7 @@ It's a rather spectacular ring of light, but why is it a ring? Well:
 Given the perfect symmetry of the system, every path the source's light takes around the lens galaxy is radially 
 identical. Thus, nothing else but a ring of light can form!
 
-This is called an `Einstein Ring` and its radius is called the `Einstein Radius`, which are both named after the man 
+This is called an 'Einstein Ring' and its radius is called the 'Einstein Radius', which are both named after the man 
 who famously used gravitational lensing to prove his theory of general relativity.
 
 Finally, because we know our source-`Galaxy`'s `LightProfile`, we can also plot its `plane-image`. This image is how the 
@@ -257,17 +257,13 @@ aplt.Plane.plane_image(
 
 # %%
 """
-For `MassProfile`'s, you can also plot their `critical curve` and `caustics`, which for those unfamiliar with lensing 
+For `MassProfile`'s, you can also plot their 'critical curve' and 'caustics', which for those unfamiliar with lensing 
 are defined as follows:
 
-__Critical Curve__
-
- Lines of infinite magnification where the `MassProfile` perfectly `focuses` light rays. Source light near a 
+__Critical Curve__: Lines of infinite magnification where the `MassProfile` perfectly `focuses` light rays. Source light near a 
  critical curve appears much brighter than its true luminosity!
 
-__Caustic**__
-    
- Given the deflection angles of the `MassProfile` at the critical curves, the caustic is where the 
+__Caustic__: Given the deflection angles of the `MassProfile` at the critical curves, the caustic is where the 
  critical curve `maps` too.
         
 You may be surprised that the inner critical curve does not appear symmetric, but instead is a non-circular jagged 
@@ -295,7 +291,7 @@ aplt.Plane.image_and_source_plane_subplot(
 
 # %%
 """
-And, we`re done. This is the first tutorial covering strong-lensing and I highly recommend you take a moment to really 
+And, we're done. This is the first tutorial covering strong-lensing and I highly recommend you take a moment to really 
 mess about with the code above to see what sort of lensed images you can form. Pay attention to the source-plane `Grid` - 
 its appearance can change a lot!
 

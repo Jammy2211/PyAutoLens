@@ -105,7 +105,7 @@ aplt.Imaging.image(imaging=imaging, plotter=plotter)
 
 # %%
 """
-Many matplotlib options can be customized, but for now we`re only concerned with making sure figures display cleanly in 
+Many matplotlib options can be customized, but for now we're only concerned with making sure figures display cleanly in 
 your Jupter Notebooks. However, for future reference, a descrition of all options can be found in the file 
 `autolens_workspace/plot/mat_objs.py`.
 

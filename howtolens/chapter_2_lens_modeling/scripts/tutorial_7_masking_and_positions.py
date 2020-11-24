@@ -4,7 +4,7 @@ Tutorial 7: Masking and Positions
 =================================
 
 We've learnt nearly all the tools we need to model strong lenses, so I'm now going to quickly cover how you should
-choose your mask. I`ll also show you another neat trick to improve the speed and accuracy of your non-linear search.
+choose your mask. I'll also show you another neat trick to improve the speed and accuracy of your non-linear search.
 """
 
 # %%
@@ -152,7 +152,7 @@ coordinates.
 # %%
 
 positions = al.GridIrregularGrouped(
-    coordinates=[(1.6, 0.0), (0.0, 1.6), (-1.6, 0.0), (0.0, -1.6)]
+    grid=[(1.6, 0.0), (0.0, 1.6), (-1.6, 0.0), (0.0, -1.6)]
 )
 
 aplt.Imaging.subplot_imaging(imaging=imaging, positions=positions)
@@ -240,7 +240,7 @@ These are plotted in different colours to represent that they trace from differe
 
 # %%
 positions = al.GridIrregularGrouped(
-    coordinates=[[(2.65, 0.0), (-0.55, 0.0)], [(-2.65, 0.0), (0.55, 0.0)]]
+    grid=[[(2.65, 0.0), (-0.55, 0.0)], [(-2.65, 0.0), (0.55, 0.0)]]
 )
 
 aplt.Imaging.subplot_imaging(imaging=imaging, positions=positions)

@@ -13,7 +13,7 @@ appears, with multiple rings and clumps of light:
   :width: 400
   :alt: Alternative text
 
-We are going to fit this image with an ``Inversion``, so we first create *Mask2D* and *MaskedImaging* objects:
+We are going to fit this image with an ``Inversion``, so we first create ``Mask2D`` and ``MaskImaging`` objects:
 
 .. code-block:: bash
 
@@ -26,7 +26,7 @@ We are going to fit this image with an ``Inversion``, so we first create *Mask2D
 To reconstruct the source using a pixel-grid, we simply pass it the ``Pixelization`` class we want to reconstruct its
 light using. We also pass a ``Regularization`` scheme which describes our prior on how much we smooth the reconstruction.
 
-Below, we use a *Rectangular* pixelization with resolution 40 x 40 and *Constant* regularizaton scheme:
+Below, we use a ``Rectangular`` pixelization with resolution 40 x 40 and ``Constant`` regularizaton scheme:
 
 .. code-block:: bash
 

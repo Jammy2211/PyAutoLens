@@ -144,7 +144,7 @@ space, but whose log likelihood is significantly below the `global` maxima solut
 
 Inferring such solutions is essentially a failure of our `NonLinearSearch` and it is something we do not want to
 happen! Lets infer a local maxima, by reducing the number of `live points` Dynesty uses to map out parameter space.
-We're going to use so few that it has no hope of locating the global maxima, ultimating finding and inferring a local 
+we're going to use so few that it has no hope of locating the global maxima, ultimating finding and inferring a local 
 maxima instead.
 """
 
@@ -210,7 +210,7 @@ and infers a local maxima, especially if we don't set it up with enough live poi
 At its core, lens modeling is all about learning how to get a `NonLinearSearch` to find the global maxima region of 
 parameter space, even when the lens model is extremely complex.
 
-And with that, we`re done. In the next exercise, we'll learn how to deal with failure and begin thinking about how we 
+And with that, we're done. In the next exercise, we'll learn how to deal with failure and begin thinking about how we 
 can ensure our `NonLinearSearch` finds the global-maximum log likelihood solution. Before that, think about 
 the following:
 

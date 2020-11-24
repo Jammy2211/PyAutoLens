@@ -59,7 +59,7 @@ aplt.Imaging.subplot_imaging(
 
 # %%
 """
-As you can see, for a circular `Mask2D`, the border *is* the edge of our `Mask2D` (the ring of black dots we`re used to 
+As you can see, for a circular `Mask2D`, the border *is* the edge of our `Mask2D` (the ring of black dots we're used to 
 seeing whenever we plot a `Mask2D`.. For an annular `Mask2D`, not every pixel on the edge of the mask is necessarily a part 
 of its border!
 """

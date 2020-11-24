@@ -10,7 +10,7 @@ there could be more than one source-galaxy!
 
 In this example, we'll explore how far we can get trying to_fit a complex source using a pipeline. Fitting complex
 source's is an exercise in diminishing returns. Each component we add to our source model brings with it an
-extra 5-7, parameters. If there are 4 components, or multiple `Galaxy`'s we`re quickly entering the somewhat nasty
+extra 5-7, parameters. If there are 4 components, or multiple `Galaxy`'s we're quickly entering the somewhat nasty
 regime of 30-40+ parameters in our non-linear search. Even with a pipeline, that is a lot of parameters to fit!
 """
 

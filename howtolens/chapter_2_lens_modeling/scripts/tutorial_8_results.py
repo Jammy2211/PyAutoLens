@@ -64,9 +64,9 @@ a fast way to visualize the result.
 
 (Uncomment the line below to pllot the tracer).
 """
-# aplt.Tracer.subplot_tracer(
-#    tracer=result.max_log_likelihood_tracer, grid=mask.geometry.unmasked_grid
-# )
+aplt.Tracer.subplot_tracer(
+    tracer=result.max_log_likelihood_tracer, grid=mask.geometry.unmasked_grid
+)
 aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 # %%
@@ -112,8 +112,7 @@ To set up the aggregator we simply pass it the folder of the results we want to 
 """
 
 # %%
-output_path = f"output"
-agg = af.Aggregator(directory=str(output_path))
+agg = af.Aggregator(directory="output")
 agg = agg.filter(agg.phase == "phase_t1_non_linear_search")
 
 # %%

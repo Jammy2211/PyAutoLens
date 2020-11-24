@@ -119,13 +119,13 @@ first `Grid` pixel, as follows:
 """
 pixel 1
 
-              ``.______
+                 ______
               
               I         I
               
               I         I  o = $(y,x)$ centre of
               
- y = 2.475"   I    o    I       `Grid` coordinate.
+ y = 2.475"   I    o    I       Grid coordinate.
  
               I         I
               
@@ -136,13 +136,13 @@ pixel 1
 
 Sub-pixels 1, 2, 3 & 4
 
-               ``.______
+                 ______
                
               I         I
               
               I  o   o  I  o = $(y,x)$ centre of sub
               
- y = 2.475"   I         I       `Grid` coordinates.
+ y = 2.475"   I         I       Grid coordinates.
  
               I  o   o  I
               

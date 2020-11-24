@@ -122,6 +122,8 @@ Output these files to.fits files, we'll begin to analyze them in the next tutori
 The `dataset_path` specifies where the data is output, this time in the directory `chapter_path/data`.
 
 """
+
+# %%
 dataset_path = path.join("dataset", "howtolens", "chapter_1")
 print("Dataset Path: ", dataset_path)
 

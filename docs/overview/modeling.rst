@@ -25,14 +25,14 @@ are inferred by fitting the strong lens data.
 
 In the example above, we will fit our strong lens ``data`` two galaxies:
 
-    - A lens galaxy with a *EllipticalDevVaucouleurs* ``LightProfile`` representing a bulge and
+    - A lens galaxy with a ``EllipticalDevVaucouleurs`` ``LightProfile`` representing a bulge and
       ``EllipticalIsothermal`` ``MassProfile`` representing its mass.
-    - A source galaxy with a *EllipticalExponential* ``LightProfile`` representing a disk.
+    - A source galaxy with a ``EllipticalExponential`` ``LightProfile`` representing a disk.
 
 The redshifts of the lens (z=0.5) and source(z=1.0) are fixed.
 
 To perform the model-fit, we create a ``PhaseImaging`` object and 'run' the phase by passing it the ``Imaging`` dataset
-and *Mask2D*.
+and ``Mask2D``.
 
 We also pass it a `NonLinearSearch`, which is the algorithm used to determine the set of ``LightProfile`` and
 ``MassProfile`` parameters that best-fit our data, that is, that minimize the *residuals* and *chi-squared* values and
