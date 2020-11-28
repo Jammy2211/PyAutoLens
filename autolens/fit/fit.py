@@ -172,7 +172,7 @@ class FitInterferometer(aa_fit.FitInterferometer):
         """
 
         if hyper_background_noise is not None:
-            noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
+            noise_map = hyper_background_noise.hyper_noise_map_from_complex_noise_map(
                 noise_map=masked_interferometer.noise_map
             )
         else:

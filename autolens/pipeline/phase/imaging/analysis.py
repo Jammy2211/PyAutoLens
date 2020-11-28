@@ -87,7 +87,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         )
 
     def stochastic_log_evidences_for_instance(
-        self, instance, histogram_samples=100, histogram_bins=10
+        self, instance, samples=100,
     ):
 
         instance = self.associate_hyper_images(instance=instance)
@@ -113,7 +113,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
 
         log_evidences = []
 
-        for i in range(histogram_samples):
+        for i in range(samples):
 
             try:
                 log_evidence = fit.FitImaging(

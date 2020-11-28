@@ -34,11 +34,11 @@ Finally, run ``welcome.py`` in the ``autolens_workspace`` to get started!
    python3 welcome.py
 
 If your installation had an error, check the
-`troubleshooting section <https://pyautolens.readthedocs.io/en/latest/general/installation.html#trouble-shooting>`_ on
+`troubleshooting section <https://pyautolens.readthedocs.io/en/latest/installation/troubleshooting.html>`_ on
 our readthedocs.
 
 If you would prefer to Fork or Clone the **PyAutoLens** GitHub repo, checkout the
-`cloning section <https://pyautolens.readthedocs.io/en/latest/general/installation.html#forking-cloning>`_ on our
+`cloning section <https://pyautolens.readthedocs.io/en/latest/installation/source.html>`_ on our
 readthedocs.
 
 API Overview

@@ -18,3 +18,5 @@ array_overlay = al.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=
 
 
 aplt.Array(array=array, array_overlay=array_overlay)
+
+aplt.Array(array=array_overlay, extent_manual=array.extent)

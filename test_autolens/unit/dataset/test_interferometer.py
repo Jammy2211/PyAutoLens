@@ -8,14 +8,14 @@ class TestMaskedInterferometer:
         self,
         interferometer_7,
         sub_mask_7x7,
-        visibilities_mask_7x2,
-        visibilities_7x2,
-        noise_map_7x2,
+        visibilities_mask_7,
+        visibilities_7,
+        visibilities_noise_map_7,
     ):
 
         masked_interferometer_7 = al.MaskedInterferometer(
             interferometer=interferometer_7,
-            visibilities_mask=visibilities_mask_7x2,
+            visibilities_mask=visibilities_mask_7,
             real_space_mask=sub_mask_7x7,
             settings=al.SettingsMaskedInterferometer(
                 transformer_class=al.TransformerDFT
@@ -25,13 +25,13 @@ class TestMaskedInterferometer:
         assert (
             masked_interferometer_7.visibilities == interferometer_7.visibilities
         ).all()
-        assert (masked_interferometer_7.visibilities == visibilities_7x2).all()
+        assert (masked_interferometer_7.visibilities == visibilities_7).all()
 
-        assert (masked_interferometer_7.noise_map == noise_map_7x2).all()
+        assert (masked_interferometer_7.noise_map == visibilities_noise_map_7).all()
 
         assert (
             masked_interferometer_7.visibilities_mask
-            == np.full(fill_value=False, shape=(7, 2))
+            == np.full(fill_value=False, shape=(7, ))
         ).all()
 
         assert (
@@ -49,14 +49,14 @@ class TestMaskedInterferometer:
         self,
         interferometer_7,
         sub_mask_7x7,
-        visibilities_mask_7x2,
+        visibilities_mask_7,
         grid_7x7,
         sub_grid_7x7,
     ):
 
         masked_interferometer_7 = al.MaskedInterferometer(
             interferometer=interferometer_7,
-            visibilities_mask=visibilities_mask_7x2,
+            visibilities_mask=visibilities_mask_7,
             real_space_mask=sub_mask_7x7,
             settings=al.SettingsMaskedInterferometer(grid_class=al.Grid),
         )
@@ -90,30 +90,30 @@ class TestMaskedInterferometer:
             real_space_mask=real_space_mask,
         )
 
-        assert (masked_interferometer.visibilities.in_1d == np.ones((19, 2))).all()
-        assert (masked_interferometer.noise_map.in_1d == 2.0 * np.ones((19, 2))).all()
+        assert (masked_interferometer.visibilities.in_1d == (1.0+1.0j) * np.ones((19,))).all()
+        assert (masked_interferometer.noise_map.in_1d == (2.0+2.0j) * np.ones((19,))).all()
         assert (
             masked_interferometer.interferometer.uv_wavelengths
             == 3.0 * np.ones((19, 2))
         ).all()
 
     def test__modified_noise_map(
-        self, noise_map_7x2, interferometer_7, sub_mask_7x7, visibilities_mask_7x2
+        self, visibilities_noise_map_7, interferometer_7, sub_mask_7x7, visibilities_mask_7
     ):
 
         masked_interferometer_7 = al.MaskedInterferometer(
             interferometer=interferometer_7,
-            visibilities_mask=visibilities_mask_7x2,
+            visibilities_mask=visibilities_mask_7,
             real_space_mask=sub_mask_7x7,
         )
 
-        noise_map_7x2[0, 0] = 10.0
+        visibilities_noise_map_7[0] = 10.0+0.0j
 
         masked_interferometer_7 = masked_interferometer_7.modify_noise_map(
-            noise_map=noise_map_7x2
+            noise_map=visibilities_noise_map_7
         )
 
-        assert masked_interferometer_7.noise_map[0, 0] == 10.0
+        assert masked_interferometer_7.noise_map[0] == 10.0+0.0j
 
 
 class TestSimulatorInterferometer:

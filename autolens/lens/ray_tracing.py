@@ -531,7 +531,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
     def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
         if not self.has_light_profile:
-            return np.zeros(shape=transformer.uv_wavelengths.shape)
+            return np.zeros(shape=transformer.uv_wavelengths.shape[0])
 
         image = self.image_from_grid(grid=grid)
 

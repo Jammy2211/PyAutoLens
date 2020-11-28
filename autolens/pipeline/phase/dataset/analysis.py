@@ -10,3 +10,8 @@ class Analysis:
         return ray_tracing.Tracer.from_galaxies(
             galaxies=instance.galaxies, cosmology=self.cosmology
         )
+
+    def stochastic_log_evidences_for_instance(
+        self, instance, samples=100,
+    ):
+        raise NotImplementedError()

@@ -238,7 +238,7 @@ class TestFit:
         )
 
         log_evidences = analysis.stochastic_log_evidences_for_instance(
-            instance=instance, histogram_samples=2
+            instance=instance, samples=2
         )
 
         assert log_evidences[0] != log_evidences[1]
