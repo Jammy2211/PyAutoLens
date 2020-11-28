@@ -9,6 +9,7 @@ from os import path
 import shutil
 import sys
 
+
 def agg_max_log_likelihood_from_aggregator(aggregator):
 
     samples = list(filter(None, aggregator.values("samples")))
@@ -27,7 +28,9 @@ def copy_pickle_files_to_agg_max(agg_max_log_likelihood):
     search_max_log_likelihood = list(agg_max_log_likelihood.values("search"))
     pickle_path_max_log_likelihood = search_max_log_likelihood[0].paths.pickle_path
 
-    pickle_path_grid_search = str(pickle_path_max_log_likelihood).replace(r"/", path.sep)
+    pickle_path_grid_search = str(pickle_path_max_log_likelihood).replace(
+        r"/", path.sep
+    )
 
     pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
     pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
@@ -35,8 +38,8 @@ def copy_pickle_files_to_agg_max(agg_max_log_likelihood):
 
     # TODO : needed for linux?
 
- #   pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
- #   pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
+    #   pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
+    #   pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
 
     pickle_path_grid_search = path.join(pickle_path_grid_search, "pickles")
 
@@ -91,7 +94,7 @@ def subplot_detection_agg(
     detection_array = detection_array_from(
         agg_before=agg_before,
         agg_detect=agg_detect,
-        use_log_evidences=use_log_evidences
+        use_log_evidences=use_log_evidences,
     )
 
     mass_array = mass_array_from(agg_detect=agg_detect)
@@ -249,14 +252,22 @@ def subplot_detection_imaging(
     )
 
     plotters.plot_array(
-        array=detection_array, extent_manual=fit_imaging_detect.image.extent, include=include, plotter=sub_plotter_detect
+        array=detection_array,
+        extent_manual=fit_imaging_detect.image.extent,
+        include=include,
+        plotter=sub_plotter_detect,
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(title="Subhalo Mass")
 
-    plotters.plot_array(array=mass_array, extent_manual=fit_imaging_detect.image.extent, include=include, plotter=sub_plotter_detect)
+    plotters.plot_array(
+        array=mass_array,
+        extent_manual=fit_imaging_detect.image.extent,
+        include=include,
+        plotter=sub_plotter_detect,
+    )
 
     sub_plotter.output.subplot_to_figure()
 

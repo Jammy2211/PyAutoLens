@@ -86,9 +86,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             settings_inversion=self.settings.settings_inversion,
         )
 
-    def stochastic_log_evidences_for_instance(
-        self, instance, samples=100,
-    ):
+    def stochastic_log_evidences_for_instance(self, instance, samples=100):
 
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)

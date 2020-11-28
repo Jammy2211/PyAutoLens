@@ -26,5 +26,5 @@ class Result(result.Result, ag_result.Result):
     @property
     def stochastic_log_evidences(self):
         return self.analysis.stochastic_log_evidences_for_instance(
-            instance=self.instance,
+            instance=self.instance
         )

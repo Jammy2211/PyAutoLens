@@ -1666,7 +1666,7 @@ class TestFitInterferometer:
                 uv_wavelengths=uv_wavelengths,
             )
 
-            interferometer.visibilities[0] = 5.0+4.0j
+            interferometer.visibilities[0] = 5.0 + 4.0j
 
             visibilities_mask = np.full(fill_value=False, shape=(1,))
 
@@ -1703,12 +1703,12 @@ class TestFitInterferometer:
 
             assert (fit.visibilities_mask == np.array([False, False])).all()
 
-            assert (fit.visibilities.in_1d == np.array([5.0+4.0J])).all()
-            assert (fit.noise_map.in_1d == np.array([1.0+1.0J])).all()
-            assert (fit.model_visibilities.in_1d == np.array([2.0+0.0j])).all()
-            assert (fit.residual_map.in_1d == np.array([3.0+4.0j])).all()
-            assert (fit.normalized_residual_map.in_1d == np.array([3.0+4.0j])).all()
-            assert (fit.chi_squared_map.in_1d == np.array([9.0+16.0j])).all()
+            assert (fit.visibilities.in_1d == np.array([5.0 + 4.0j])).all()
+            assert (fit.noise_map.in_1d == np.array([1.0 + 1.0j])).all()
+            assert (fit.model_visibilities.in_1d == np.array([2.0 + 0.0j])).all()
+            assert (fit.residual_map.in_1d == np.array([3.0 + 4.0j])).all()
+            assert (fit.normalized_residual_map.in_1d == np.array([3.0 + 4.0j])).all()
+            assert (fit.chi_squared_map.in_1d == np.array([9.0 + 16.0j])).all()
 
             assert fit.chi_squared == 25.0
             assert fit.noise_normalization == (2.0 * np.log(2 * np.pi * 1.0 ** 2.0))
@@ -1773,11 +1773,10 @@ class TestFitInterferometer:
             assert (fit.visibilities_mask == np.array([False, False, False])).all()
 
             assert (
-                fit.visibilities.in_1d
-                == np.array([5.0+5.0j, 5.0+5.0j, 5.0+5.0j])
+                fit.visibilities.in_1d == np.array([5.0 + 5.0j, 5.0 + 5.0j, 5.0 + 5.0j])
             ).all()
             assert (
-                fit.noise_map.in_1d == np.array([2.0+2.0j, 2.0+2.0j, 2.0+2.0j])
+                fit.noise_map.in_1d == np.array([2.0 + 2.0j, 2.0 + 2.0j, 2.0 + 2.0j])
             ).all()
 
             assert fit.model_visibilities.in_1d == pytest.approx(
@@ -1787,15 +1786,15 @@ class TestFitInterferometer:
             # moddel visibilities are all [1.94805, 0.0]
 
             assert fit.residual_map.in_1d == pytest.approx(
-                np.array([3.0519+5.0j, 3.0519+5.0j, 3.0519+5.0j]), 1.0e-4
+                np.array([3.0519 + 5.0j, 3.0519 + 5.0j, 3.0519 + 5.0j]), 1.0e-4
             )
 
             assert fit.normalized_residual_map.in_1d == pytest.approx(
                 np.array(
                     [
-                        3.0519 / 2.0 + (5.0 / 2.0)*1.0j,
-                        3.0519 / 2.0 + (5.0 / 2.0)*1.0j,
-                        3.0519 / 2.0 + (5.0 / 2.0)*1.0j,
+                        3.0519 / 2.0 + (5.0 / 2.0) * 1.0j,
+                        3.0519 / 2.0 + (5.0 / 2.0) * 1.0j,
+                        3.0519 / 2.0 + (5.0 / 2.0) * 1.0j,
                     ]
                 ),
                 1.0e-4,
@@ -1804,9 +1803,9 @@ class TestFitInterferometer:
             assert fit.chi_squared_map.in_1d == pytest.approx(
                 np.array(
                     [
-                        (3.0519 / 2.0) ** 2.0 + ((5.0 / 2.0) ** 2.0)*1.0j,
-                        (3.0519 / 2.0) ** 2.0 + ((5.0 / 2.0) ** 2.0)*1.0j,
-                        (3.0519 / 2.0) ** 2.0 + ((5.0 / 2.0) ** 2.0)*1.0j,
+                        (3.0519 / 2.0) ** 2.0 + ((5.0 / 2.0) ** 2.0) * 1.0j,
+                        (3.0519 / 2.0) ** 2.0 + ((5.0 / 2.0) ** 2.0) * 1.0j,
+                        (3.0519 / 2.0) ** 2.0 + ((5.0 / 2.0) ** 2.0) * 1.0j,
                     ]
                 ),
                 1.0e-4,
@@ -1868,10 +1867,14 @@ class TestFitInterferometer:
             )
 
             assert (
-                fit.visibilities.in_1d == (1.0+1.0j) * np.full(fill_value=5.0, shape=(3,))
+                fit.visibilities.in_1d
+                == (1.0 + 1.0j) * np.full(fill_value=5.0, shape=(3,))
             ).all()
 
-            assert (fit.noise_map.in_1d == (1.0+1.0j) * np.full(fill_value=3.0, shape=(3,))).all()
+            assert (
+                fit.noise_map.in_1d
+                == (1.0 + 1.0j) * np.full(fill_value=3.0, shape=(3,))
+            ).all()
 
     class TestCompareToManualProfilesOnly:
         def test___all_lens_fit_quantities__no_hyper_methods(
@@ -2011,7 +2014,8 @@ class TestFitInterferometer:
                 g1_profile_visibilities, 1.0e-4
             )
             assert (
-                fit.galaxy_model_visibilities_dict[g2].in_1d == (0.0+0.0j) * np.zeros((7,))
+                fit.galaxy_model_visibilities_dict[g2].in_1d
+                == (0.0 + 0.0j) * np.zeros((7,))
             ).all()
 
             assert fit.model_visibilities.in_1d == pytest.approx(
@@ -2213,7 +2217,9 @@ class TestFitInterferometer:
                 transformer=masked_interferometer_7.transformer,
             )
 
-            assert (fit.galaxy_model_visibilities_dict[g0] == (0.0+0.0j) * np.zeros((7,))).all()
+            assert (
+                fit.galaxy_model_visibilities_dict[g0] == (0.0 + 0.0j) * np.zeros((7,))
+            ).all()
 
             assert fit.galaxy_model_visibilities_dict[g1].in_1d == pytest.approx(
                 inversion.mapped_reconstructed_visibilities.in_1d, 1.0e-4
@@ -2358,7 +2364,9 @@ class TestFitInterferometer:
                 fit.chi_squared_map.in_1d, 1.0e-4
             )
 
-            chi_squared = al.util.fit.chi_squared_complex_from(chi_squared_map=chi_squared_map)
+            chi_squared = al.util.fit.chi_squared_complex_from(
+                chi_squared_map=chi_squared_map
+            )
 
             noise_normalization = al.util.fit.noise_normalization_complex_from(
                 noise_map=masked_interferometer_7.noise_map
@@ -2477,7 +2485,9 @@ class TestFitInterferometer:
 
             assert chi_squared_map.in_1d == pytest.approx(fit.chi_squared_map.in_1d)
 
-            chi_squared = al.util.fit.chi_squared_complex_from(chi_squared_map=chi_squared_map)
+            chi_squared = al.util.fit.chi_squared_complex_from(
+                chi_squared_map=chi_squared_map
+            )
 
             noise_normalization = al.util.fit.noise_normalization_complex_from(
                 noise_map=masked_interferometer_7.noise_map
@@ -2644,7 +2654,9 @@ class TestFitInterferometer:
                 regularization=reg,
             )
 
-            assert (fit.galaxy_model_visibilities_dict[g2] == (0.0+0.0j) * np.zeros((7,))).all()
+            assert (
+                fit.galaxy_model_visibilities_dict[g2] == (0.0 + 0.0j) * np.zeros((7,))
+            ).all()
 
             assert fit.galaxy_model_visibilities_dict[g0].in_1d == pytest.approx(
                 g0_visibilities.in_1d, 1.0e-4

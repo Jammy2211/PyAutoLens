@@ -215,12 +215,12 @@ class TestHyperMethods:
 
         assert (
             analysis.hyper_galaxy_visibilities_path_dict[("galaxies", "lens")]
-            == 4.0 * np.ones((7, 2))
+            == (4.0 + 4.0j) * np.ones((7,))
         ).all()
 
         assert (
             analysis.hyper_galaxy_visibilities_path_dict[("galaxies", "source")]
-            == 5.0 * np.ones((7, 2))
+            == (5.0 + 5.0j) * np.ones((7,))
         ).all()
 
-        assert (analysis.hyper_model_visibilities == 6.0 * np.ones((7, 2))).all()
+        assert (analysis.hyper_model_visibilities == (6.0 + 6.0j) * np.ones((7,))).all()

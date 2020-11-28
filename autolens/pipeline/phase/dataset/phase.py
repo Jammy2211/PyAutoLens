@@ -39,14 +39,21 @@ class PhaseDataset(dataset.PhaseDataset):
             A result object comprising the best fit model and other hyper_galaxies.
         """
 
-        result = super().run(dataset=dataset, mask=mask, results=results, info=info, pickle_files=pickle_files, log_likelihood_cap=log_likelihood_cap)
+        result = super().run(
+            dataset=dataset,
+            mask=mask,
+            results=results,
+            info=info,
+            pickle_files=pickle_files,
+            log_likelihood_cap=log_likelihood_cap,
+        )
 
         if self.should_output_stochastic_log_evidence_file:
 
             stochastic_log_evidences = result.stochastic_log_evidences
 
             self.save_stochastic_log_evidences_to_json(
-                stochastic_log_evidences=stochastic_log_evidences,
+                stochastic_log_evidences=stochastic_log_evidences
             )
 
         return result
@@ -228,10 +235,7 @@ class PhaseDataset(dataset.PhaseDataset):
 
     @property
     def stochastic_log_evidences_json_file(self):
-        return path.join(
-            self.paths.output_path,
-            "stochastic_log_evidences.json",
-        )
+        return path.join(self.paths.output_path, "stochastic_log_evidences.json")
 
     @property
     def should_output_stochastic_log_evidence_file(self):

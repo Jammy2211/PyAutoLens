@@ -60,7 +60,7 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
             )
         try:
             self.stochastic_log_evidences_to_json(
-                stochastic_log_evidences=stochastic_log_evidences,
+                stochastic_log_evidences=stochastic_log_evidences
             )
         except FileExistsError:
             pass
