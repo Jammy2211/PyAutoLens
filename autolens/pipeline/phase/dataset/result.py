@@ -22,3 +22,9 @@ class Result(result.Result, ag_result.Result):
         return self.max_log_likelihood_tracer.sparse_image_plane_grids_of_planes_from_grid(
             grid=self.max_log_likelihood_fit.grid
         )
+
+    @property
+    def stochastic_log_evidences(self):
+        return self.analysis.stochastic_log_evidences_for_instance(
+            instance=self.instance
+        )

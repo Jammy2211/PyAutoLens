@@ -87,7 +87,7 @@ class TestImagePassing:
             search=None,
         )
 
-        assert result.stochastic_log_evidences(histogram_samples=2) == None
+        assert result.stochastic_log_evidences == None
 
         galaxies.source = al.Galaxy(
             redshift=1.0,
@@ -112,7 +112,4 @@ class TestImagePassing:
             search=None,
         )
 
-        assert (
-            result.stochastic_log_evidences(histogram_samples=2)[0]
-            != result.stochastic_log_evidences(histogram_samples=2)[1]
-        )
+        assert result.stochastic_log_evidences[0] != result.stochastic_log_evidences[1]

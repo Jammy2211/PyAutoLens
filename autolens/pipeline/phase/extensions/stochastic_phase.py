@@ -6,8 +6,6 @@ from autogalaxy.pipeline.phase import extensions
 from os import path
 import math
 from scipy.stats import norm
-import pickle
-import json
 import numpy as np
 
 # noinspection PyAbstractClass
@@ -54,25 +52,18 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         self.results = results
 
-        stochastic_log_evidences_file = path.join(
-            conf.instance.output_path,
-            self.paths.path_prefix,
-            self.paths.name,
-            "stochastic_log_evidences.json",
-        )
-
         try:
-            stochastic_log_evidences = self.stochastic_log_evidences_from_json(
-                filename=stochastic_log_evidences_file
-            )
+            stochastic_log_evidences = self.load_stochastic_log_evidences_from_json()
         except FileNotFoundError:
             stochastic_log_evidences = results.last.stochastic_log_evidences(
                 histogram_samples=self.histogram_samples
             )
+        try:
             self.stochastic_log_evidences_to_json(
-                filename=stochastic_log_evidences_file,
-                stochastic_log_evidences=stochastic_log_evidences,
+                stochastic_log_evidences=stochastic_log_evidences
             )
+        except FileExistsError:
+            pass
 
         if self.stochastic_method in "gaussian":
 
@@ -115,6 +106,10 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         phase.model.galaxies.lens.mass = mass
 
+        self.save_stochastic_log_evidences_to_pickle(
+            stochastic_log_evidences=stochastic_log_evidences
+        )
+
         result = phase.run(
             dataset,
             mask=results.last.mask,
@@ -124,30 +119,4 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
             log_likelihood_cap=log_likelihood_cap,
         )
 
-        self.save_stochastic_log_evidences(
-            stochastic_log_evidences=stochastic_log_evidences
-        )
-
         return result
-
-    def save_stochastic_log_evidences(self, stochastic_log_evidences):
-        """
-        Save the dataset associated with the phase
-        """
-        with open(
-            path.join(self.paths.pickle_path, "stochastic_log_evidences.pickle"), "wb"
-        ) as f:
-            pickle.dump(stochastic_log_evidences, f)
-
-    def stochastic_log_evidences_from_json(cls, filename):
-        with open(filename, "r") as f:
-            return np.asarray(json.load(f))
-
-    def stochastic_log_evidences_to_json(self, filename, stochastic_log_evidences):
-        """
-        Save the dataset associated with the phase
-        """
-        with open(filename, "w") as outfile:
-            json.dump(
-                [float(evidence) for evidence in stochastic_log_evidences], outfile
-            )

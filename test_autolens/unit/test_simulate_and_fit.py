@@ -214,7 +214,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         uv_wavelengths_path=path.join(file_path, "uv_wavelengths.fits"),
     )
 
-    visibilities_mask = np.full(fill_value=False, shape=(7, 2))
+    visibilities_mask = np.full(fill_value=False, shape=(7,))
 
     real_space_mask = al.Mask2D.unmasked(
         shape_2d=(51, 51), pixel_scales=0.1, sub_size=2
