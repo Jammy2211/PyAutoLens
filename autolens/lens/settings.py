@@ -11,11 +11,13 @@ class SettingsLens:
         positions_threshold=None,
         auto_positions_factor=None,
         auto_positions_minimum_threshold=None,
+        stochastic_samples : int = 250,
     ):
 
         self.positions_threshold = positions_threshold
         self.auto_positions_factor = auto_positions_factor
         self.auto_positions_minimum_threshold = auto_positions_minimum_threshold
+        self.stochastic_samples = stochastic_samples
 
     @property
     def tag(self):
