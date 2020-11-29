@@ -531,7 +531,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
     def profile_visibilities_from_grid_and_transformer(self, grid, transformer):
 
         if not self.has_light_profile:
-            return np.zeros(shape=transformer.uv_wavelengths.shape)
+            return np.zeros(shape=transformer.uv_wavelengths.shape[0])
 
         image = self.image_from_grid(grid=grid)
 
@@ -666,10 +666,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         )
 
     def hyper_noise_map_from_noise_map(self, noise_map):
-        hyper_noise_maps = self.hyper_noise_maps_of_planes_from_noise_map(
-            noise_map=noise_map
-        )
-        return sum(hyper_noise_maps)
+        return sum(self.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map))
 
     def hyper_noise_maps_of_planes_from_noise_map(self, noise_map):
         return [

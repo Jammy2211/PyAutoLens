@@ -14,7 +14,7 @@ def make_masked_imaging_7x7():
 def make_masked_interferometer_7():
     return al.MaskedInterferometer(
         interferometer=make_interferometer_7(),
-        visibilities_mask=make_visibilities_mask_7x2(),
+        visibilities_mask=make_visibilities_mask_7(),
         real_space_mask=make_mask_7x7(),
         settings=al.SettingsMaskedInterferometer(
             sub_size=1, transformer_class=al.TransformerNUFFT
@@ -25,7 +25,7 @@ def make_masked_interferometer_7():
 def make_masked_interferometer_7_grid():
     return al.MaskedInterferometer(
         interferometer=make_interferometer_7(),
-        visibilities_mask=make_visibilities_mask_7x2(),
+        visibilities_mask=make_visibilities_mask_7(),
         real_space_mask=make_mask_7x7(),
         settings=al.SettingsMaskedInterferometer(
             grid_class=al.Grid, sub_size=1, transformer_class=aa.TransformerDFT

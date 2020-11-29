@@ -96,10 +96,3 @@ class Result(dataset.Result):
             hyper_model_image += self.hyper_galaxy_image_path_dict[path]
 
         return hyper_model_image
-
-    def stochastic_log_evidences(self, histogram_samples=100, histogram_bins=10):
-        return self.analysis.stochastic_log_evidences_for_instance(
-            instance=self.instance,
-            histogram_samples=histogram_samples,
-            histogram_bins=histogram_bins,
-        )

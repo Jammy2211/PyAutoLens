@@ -232,13 +232,16 @@ class TestFit:
 
         analysis = al.PhaseImaging.Analysis(
             masked_imaging=masked_imaging_7x7,
-            settings=al.SettingsPhaseImaging(),
+            settings=al.SettingsPhaseImaging(
+                settings_lens=al.SettingsLens(stochastic_samples=2)
+            ),
             results=results,
             cosmology=cosmo.Planck15,
         )
 
         log_evidences = analysis.stochastic_log_evidences_for_instance(
-            instance=instance, histogram_samples=2
+            instance=instance
         )
 
+        assert len(log_evidences) == 2
         assert log_evidences[0] != log_evidences[1]

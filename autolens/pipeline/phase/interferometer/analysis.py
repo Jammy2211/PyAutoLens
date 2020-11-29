@@ -1,4 +1,5 @@
 import autofit as af
+from autoarray.inversion import pixelizations as pix
 from autoarray.exc import PixelizationException, InversionException, GridException
 from autofit.exc import FitException
 from autogalaxy.galaxy import galaxy as g
@@ -128,6 +129,52 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             settings_pixelization=self.settings.settings_pixelization,
             settings_inversion=self.settings.settings_inversion,
         )
+
+    def stochastic_log_evidences_for_instance(self, instance):
+
+        instance = self.associate_hyper_images(instance=instance)
+        tracer = self.tracer_for_instance(instance=instance)
+
+        if not tracer.has_pixelization:
+            return None
+
+        if not isinstance(
+            tracer.pixelizations_of_planes[-1], pix.VoronoiBrightnessImage
+        ):
+            return None
+
+        hyper_background_noise = self.hyper_background_noise_for_instance(
+            instance=instance
+        )
+
+        settings_pixelization = (
+            self.settings.settings_pixelization.settings_with_is_stochastic_true()
+        )
+
+        log_evidences = []
+
+        for i in range(self.settings.settings_lens.stochastic_samples):
+
+            try:
+                log_evidence = fit.FitInterferometer(
+                    masked_interferometer=self.masked_dataset,
+                    tracer=tracer,
+                    hyper_background_noise=hyper_background_noise,
+                    settings_pixelization=settings_pixelization,
+                    settings_inversion=self.settings.settings_inversion,
+                ).log_evidence
+            except (
+                PixelizationException,
+                InversionException,
+                GridException,
+                OverflowError,
+            ) as e:
+                log_evidence = None
+
+            if log_evidence is not None:
+                log_evidences.append(log_evidence)
+
+        return log_evidences
 
     def visualize(self, paths: af.Paths, instance, during_analysis):
 

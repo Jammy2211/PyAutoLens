@@ -5,7 +5,6 @@ import pytest
 
 import autofit as af
 import autolens as al
-from autofit.mapper.prior.prior import TuplePrior
 from autolens.mock import mock
 
 pytestmark = pytest.mark.filterwarnings(
@@ -326,58 +325,3 @@ class TestExtensions:
         ).all()
 
         assert (analysis.hyper_model_image.in_2d == 3.0 * np.ones((3, 3))).all()
-
-    def test__extend_with_stochastic_phase__sets_up_model_correctly(self):
-        galaxies = af.ModelInstance()
-        galaxies.lens = al.Galaxy(
-            redshift=0.5,
-            light=al.lp.SphericalSersic(),
-            mass=al.mp.SphericalIsothermal(),
-        )
-        galaxies.source = al.Galaxy(
-            redshift=1.0,
-            pixelization=al.pix.VoronoiBrightnessImage(),
-            regularization=al.reg.AdaptiveBrightness(),
-        )
-
-        phase = al.PhaseImaging(search=mock.MockSearch())
-
-        phase_extended = phase.extend_with_stochastic_phase()
-
-        model = phase_extended.make_model(instance=galaxies)
-
-        assert isinstance(model.lens.mass.centre, TuplePrior)
-        assert isinstance(model.lens.light.intensity, float)
-        assert isinstance(model.source.pixelization.pixels, int)
-        assert isinstance(model.source.regularization.inner_coefficient, float)
-
-        phase_extended = phase.extend_with_stochastic_phase(include_lens_light=True)
-
-        model = phase_extended.make_model(instance=galaxies)
-
-        assert isinstance(model.lens.mass.centre, TuplePrior)
-        assert isinstance(model.lens.light.intensity, af.UniformPrior)
-        assert isinstance(model.source.pixelization.pixels, int)
-        assert isinstance(model.source.regularization.inner_coefficient, float)
-
-        phase_extended = phase.extend_with_stochastic_phase(include_pixelization=True)
-
-        model = phase_extended.make_model(instance=galaxies)
-
-        assert isinstance(model.lens.mass.centre, TuplePrior)
-        assert isinstance(model.lens.light.intensity, float)
-        assert isinstance(model.source.pixelization.pixels, af.UniformPrior)
-        assert not isinstance(
-            model.source.regularization.inner_coefficient, af.UniformPrior
-        )
-
-        phase_extended = phase.extend_with_stochastic_phase(include_regularization=True)
-
-        model = phase_extended.make_model(instance=galaxies)
-
-        assert isinstance(model.lens.mass.centre, TuplePrior)
-        assert isinstance(model.lens.light.intensity, float)
-        assert isinstance(model.source.pixelization.pixels, int)
-        assert isinstance(
-            model.source.regularization.inner_coefficient, af.UniformPrior
-        )
