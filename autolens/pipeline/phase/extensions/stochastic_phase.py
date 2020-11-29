@@ -15,15 +15,11 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
         phase: abstract.AbstractPhase,
         hyper_search,
         model_classes=tuple(),
-        histogram_samples=100,
-        histogram_bins=10,
         stochastic_method="gaussian",
         stochastic_sigma=0.0,
     ):
 
         self.is_stochastic = True
-        self.histogram_samples = histogram_samples
-        self.histogram_bins = histogram_bins
         self.stochastic_method = stochastic_method
         self.stochastic_sigma = stochastic_sigma
 
@@ -55,11 +51,10 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
         try:
             stochastic_log_evidences = self.load_stochastic_log_evidences_from_json()
         except FileNotFoundError:
-            stochastic_log_evidences = results.last.stochastic_log_evidences(
-                histogram_samples=self.histogram_samples
-            )
+            stochastic_log_evidences = results.last.stochastic_log_evidences
+
         try:
-            self.stochastic_log_evidences_to_json(
+            self.save_stochastic_log_evidences_to_json(
                 stochastic_log_evidences=stochastic_log_evidences
             )
         except FileExistsError:
@@ -82,7 +77,7 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
             log_likelihood_cap = np.median(stochastic_log_evidences)
 
-            stochastic_tag = f"{self.stochastic_method}"
+            stochastic_tag = self.stochastic_method
 
         phase = self.make_hyper_phase()
         phase.hyper_name = f"{phase.hyper_name}_{stochastic_tag}"
@@ -106,7 +101,20 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         phase.model.galaxies.lens.mass = mass
 
-        self.save_stochastic_log_evidences_to_pickle(
+        # TODO : Nasty hack to get log evidnees to copy, do something bettter in future.
+
+        phase.modify_search_paths()
+
+        print(phase.stochastic_log_evidences_json_file)
+
+        try:
+            phase.save_stochastic_log_evidences_to_json(
+                stochastic_log_evidences=stochastic_log_evidences
+            )
+        except FileExistsError:
+            pass
+
+        phase.save_stochastic_log_evidences_to_pickle(
             stochastic_log_evidences=stochastic_log_evidences
         )
 

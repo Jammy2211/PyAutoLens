@@ -1,8 +1,10 @@
 from autoconf import conf
 from os import path
 import autoarray as aa
+import autogalaxy as ag
 from autolens.fit import fit_positions
 from autogalaxy.pipeline.phase import dataset
+from autolens.pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from autolens import exc
 import pickle
 import json
@@ -59,6 +61,19 @@ class PhaseDataset(dataset.PhaseDataset):
             self.save_stochastic_log_evidences_to_pickle(
                 stochastic_log_evidences=stochastic_log_evidences
             )
+
+        try:
+
+            result.analysis.visualizer.visualize_stochastic_histogram(
+                paths=self.paths,
+                log_evidences=self.load_stochastic_log_evidences_from_json(),
+                max_log_evidence=result.log_likelihood,
+                histogram_bins=self.settings.settings_lens.stochastic_histogram_bins,
+            )
+
+        except FileNotFoundError:
+
+            pass
 
         return result
 
@@ -270,3 +285,35 @@ class PhaseDataset(dataset.PhaseDataset):
             path.join(self.paths.pickle_path, "stochastic_log_evidences.pickle"), "wb"
         ) as f:
             pickle.dump(stochastic_log_evidences, f)
+
+    def extend_with_stochastic_phase(
+        self,
+        stochastic_search=None,
+        include_lens_light=False,
+        include_pixelization=False,
+        include_regularization=False,
+        stochastic_method="gaussian",
+        stochastic_sigma=0.0,
+    ):
+
+        if stochastic_search is None:
+            stochastic_search = self.search.copy_with_name_extension(extension="")
+
+        model_classes = [ag.mp.MassProfile]
+
+        if include_lens_light:
+            model_classes.append(ag.lp.LightProfile)
+
+        if include_pixelization:
+            model_classes.append(ag.pix.Pixelization)
+
+        if include_regularization:
+            model_classes.append(ag.reg.Regularization)
+
+        return StochasticPhase(
+            phase=self,
+            hyper_search=stochastic_search,
+            model_classes=tuple(model_classes),
+            stochastic_method=stochastic_method,
+            stochastic_sigma=stochastic_sigma,
+        )

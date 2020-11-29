@@ -86,9 +86,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             settings_inversion=self.settings.settings_inversion,
         )
 
-    def stochastic_log_evidences_for_instance(
-        self, instance,
-    ):
+    def stochastic_log_evidences_for_instance(self, instance):
 
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
@@ -190,19 +188,6 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             )
         except Exception:
             pass
-
-        if not during_analysis and visualizer.plot_stochastic_histogram:
-
-            log_evidences = self.stochastic_log_evidences_for_instance(
-                instance=instance
-            )
-
-            visualizer.visualize_stochastic_histogram(
-                paths=paths,
-                log_evidences=log_evidences,
-                max_log_evidence=fit.log_evidence,
-                during_analysis=during_analysis,
-            )
 
     def make_attributes(self):
         return Attributes(

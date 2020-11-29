@@ -1,13 +1,11 @@
 from os import path
 import autofit as af
-import autogalaxy as ag
 from astropy import cosmology as cosmo
 from autolens.pipeline.phase import dataset
 from autolens.dataset import imaging
 from autolens.pipeline.phase.settings import SettingsPhaseImaging
 from autolens.pipeline.phase.imaging.analysis import Analysis
 from autolens.pipeline.phase.imaging.result import Result
-from autolens.pipeline.phase.extensions.stochastic_phase import StochasticPhase
 
 
 class PhaseImaging(dataset.PhaseDataset):
@@ -87,42 +85,6 @@ class PhaseImaging(dataset.PhaseDataset):
         )
 
         return analysis
-
-    def extend_with_stochastic_phase(
-        self,
-        stochastic_search=None,
-        include_lens_light=False,
-        include_pixelization=False,
-        include_regularization=False,
-        histogram_samples=500,
-        histogram_bins=10,
-        stochastic_method="gaussian",
-        stochastic_sigma=0.0,
-    ):
-
-        if stochastic_search is None:
-            stochastic_search = self.search.copy_with_name_extension(extension="")
-
-        model_classes = [ag.mp.MassProfile]
-
-        if include_lens_light:
-            model_classes.append(ag.lp.LightProfile)
-
-        if include_pixelization:
-            model_classes.append(ag.pix.Pixelization)
-
-        if include_regularization:
-            model_classes.append(ag.reg.Regularization)
-
-        return StochasticPhase(
-            phase=self,
-            hyper_search=stochastic_search,
-            model_classes=tuple(model_classes),
-            histogram_samples=histogram_samples,
-            histogram_bins=histogram_bins,
-            stochastic_method=stochastic_method,
-            stochastic_sigma=stochastic_sigma,
-        )
 
     def output_phase_info(self):
 

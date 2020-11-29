@@ -53,7 +53,7 @@ class MockResult(af.MockResult):
         self.updated_positions_threshold = updated_positions_threshold
         self._stochastic_log_evidences = stochastic_log_evidences
 
-    def stochastic_log_evidences(self, histogram_samples=100):
+    def stochastic_log_evidences(self):
         return self._stochastic_log_evidences
 
     @property

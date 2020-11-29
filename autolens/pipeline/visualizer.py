@@ -308,12 +308,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
             )
 
     def visualize_stochastic_histogram(
-        self,
-        paths: af.Paths,
-        log_evidences,
-        max_log_evidence,
-        during_analysis,
-        histogram_bins=10,
+        self, paths: af.Paths, log_evidences, max_log_evidence, histogram_bins=10
     ):
 
         if log_evidences is None:
@@ -321,7 +316,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
 
         plotter = self.plotter_from_paths(paths=paths, subfolders="other")
 
-        if self.plot_stochastic_histogram and not during_analysis:
+        if self.plot_stochastic_histogram:
 
             (mu, sigma) = norm.fit(log_evidences)
             n, bins, patches = plt.hist(x=log_evidences, bins=histogram_bins, density=1)
@@ -334,6 +329,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
                 path.join(plotter.output.path, "stochastic_histogram.png"),
                 bbox_inches="tight",
             )
+            plt.close()
 
 
 class PhaseImagingVisualizer(PhaseDatasetVisualizer):

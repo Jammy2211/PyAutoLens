@@ -1,5 +1,6 @@
 from os import path
 
+import autofit as af
 import autolens as al
 from autolens import exc
 from autolens.mock import mock
@@ -154,3 +155,53 @@ class TestFit:
         )
 
         assert fit.log_likelihood == fit_figure_of_merit
+
+    def test__stochastic_histogram_for_instance(self, masked_interferometer_7):
+
+        galaxies = af.ModelInstance()
+        galaxies.lens = al.Galaxy(
+            redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.2)
+        )
+        galaxies.source = al.Galaxy(
+            redshift=1.0,
+            pixelization=al.pix.VoronoiBrightnessImage(pixels=5),
+            regularization=al.reg.Constant(),
+        )
+
+        instance = af.ModelInstance()
+        instance.galaxies = galaxies
+
+        lens_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        lens_hyper_image[4] = 10.0
+        source_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        source_hyper_image[4] = 10.0
+        hyper_model_image = al.Array.full(
+            fill_value=0.5, shape_2d=(3, 3), pixel_scales=0.1
+        )
+
+        hyper_galaxy_image_path_dict = {
+            ("galaxies", "lens"): lens_hyper_image,
+            ("galaxies", "source"): source_hyper_image,
+        }
+
+        results = mock.MockResults(
+            use_as_hyper_dataset=True,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+            hyper_model_image=hyper_model_image,
+        )
+
+        analysis = al.PhaseInterferometer.Analysis(
+            masked_interferometer=masked_interferometer_7,
+            settings=al.SettingsPhaseImaging(
+                settings_lens=al.SettingsLens(stochastic_samples=2)
+            ),
+            results=results,
+            cosmology=cosmo.Planck15,
+        )
+
+        log_evidences = analysis.stochastic_log_evidences_for_instance(
+            instance=instance
+        )
+
+        assert len(log_evidences) == 2
+        assert log_evidences[0] != log_evidences[1]

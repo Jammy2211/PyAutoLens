@@ -135,18 +135,6 @@ class TestPhaseDataSetVisualizer:
             paths=af.Paths(),
             log_evidences=[1.0, 2.0, 1.0, 2.0, 3.0, 2.5],
             max_log_evidence=3.0,
-            during_analysis=True,
-        )
-        assert (
-            path.join(plot_path, "image", "other", "stochastic_histogram.png")
-            not in plot_patch.paths
-        )
-
-        visualizer.visualize_stochastic_histogram(
-            paths=af.Paths(),
-            log_evidences=[1.0, 2.0, 1.0, 2.0, 3.0, 2.5],
-            max_log_evidence=3.0,
-            during_analysis=False,
         )
         assert (
             path.join(plot_path, "image", "other", "stochastic_histogram.png")
