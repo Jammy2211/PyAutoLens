@@ -106,6 +106,10 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         phase.model.galaxies.lens.mass = mass
 
+        self.save_stochastic_log_evidences_to_pickle(
+            stochastic_log_evidences=stochastic_log_evidences
+        )
+
         result = phase.run(
             dataset,
             mask=results.last.mask,
@@ -113,10 +117,6 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
             info=info,
             pickle_files=pickle_files,
             log_likelihood_cap=log_likelihood_cap,
-        )
-
-        self.save_stochastic_log_evidences_to_pickle(
-            stochastic_log_evidences=stochastic_log_evidences
         )
 
         return result

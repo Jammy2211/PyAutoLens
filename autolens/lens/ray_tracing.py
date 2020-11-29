@@ -666,10 +666,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         )
 
     def hyper_noise_map_from_noise_map(self, noise_map):
-        hyper_noise_maps = self.hyper_noise_maps_of_planes_from_noise_map(
+        return sum(self.hyper_noise_maps_of_planes_from_noise_map(
             noise_map=noise_map
-        )
-        return sum(hyper_noise_maps)
+        ))
 
     def hyper_noise_maps_of_planes_from_noise_map(self, noise_map):
         return [

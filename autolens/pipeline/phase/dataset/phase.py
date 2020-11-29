@@ -56,6 +56,10 @@ class PhaseDataset(dataset.PhaseDataset):
                 stochastic_log_evidences=stochastic_log_evidences
             )
 
+            self.save_stochastic_log_evidences_to_pickle(
+                stochastic_log_evidences=stochastic_log_evidences
+            )
+
         return result
 
     def modify_dataset(self, dataset, results):
