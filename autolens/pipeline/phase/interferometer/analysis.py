@@ -130,7 +130,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             settings_inversion=self.settings.settings_inversion,
         )
 
-    def stochastic_log_evidences_for_instance(self, instance, samples=100):
+    def stochastic_log_evidences_for_instance(self, instance):
 
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
@@ -153,7 +153,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
 
         log_evidences = []
 
-        for i in range(samples):
+        for i in range(self.settings.settings_lens.stochastic_samples):
 
             try:
                 log_evidence = fit.FitInterferometer(
