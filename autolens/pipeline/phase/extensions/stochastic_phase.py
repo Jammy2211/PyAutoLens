@@ -1,9 +1,12 @@
-from autoconf import conf
+from os import path
+import pickle
+import json
 import autofit as af
 from autogalaxy.pipeline.phase import abstract
 from autogalaxy.pipeline.phase import extensions
 
 from os import path
+import os
 import math
 from scipy.stats import norm
 import numpy as np
@@ -46,19 +49,26 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
         only fit pixelization hyperparameters.
         """
 
+        # TODO : This is a horror show. It will be cleaner once autofit doesnt use .zip files anymore.
+
         self.results = results
 
-        try:
-            stochastic_log_evidences = self.load_stochastic_log_evidences_from_json()
-        except FileNotFoundError:
-            stochastic_log_evidences = results.last.stochastic_log_evidences
+        self.search.paths.restore()
+
+        stochastic_log_evidences_json_file = path.join(
+            self.paths.output_path, "stochastic_log_evidences.json"
+        )
 
         try:
+            with open(stochastic_log_evidences_json_file, "r") as f:
+                stochastic_log_evidences = np.asarray(json.load(f))
+        except FileNotFoundError:
+            stochastic_log_evidences = results.last.stochastic_log_evidences
             self.save_stochastic_log_evidences_to_json(
                 stochastic_log_evidences=stochastic_log_evidences
             )
-        except FileExistsError:
-            pass
+
+        self.search.paths.zip_remove()
 
         if self.stochastic_method in "gaussian":
 
@@ -105,20 +115,35 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         phase.modify_search_paths()
 
-        print(phase.stochastic_log_evidences_json_file)
+        phase.search.paths.restore()
 
         try:
-            phase.save_stochastic_log_evidences_to_json(
-                stochastic_log_evidences=stochastic_log_evidences
-            )
+            os.makedirs(self.paths.output_path)
         except FileExistsError:
             pass
 
-        phase.save_stochastic_log_evidences_to_pickle(
-            stochastic_log_evidences=stochastic_log_evidences
+        stochastic_log_evidences_json_file = path.join(
+            phase.paths.output_path, "stochastic_log_evidences.json"
         )
 
-        result = phase.run(
+        try:
+            with open(stochastic_log_evidences_json_file, "w") as outfile:
+                json.dump(
+                    [float(evidence) for evidence in stochastic_log_evidences], outfile
+                )
+        except FileExistsError:
+            pass
+
+        stochastic_log_evidences_pickle_file = path.join(
+            phase.paths.pickle_path, "stochastic_log_evidences.pickle"
+        )
+
+        with open(stochastic_log_evidences_pickle_file, "wb") as f:
+            pickle.dump(stochastic_log_evidences, f)
+
+        phase.search.paths.zip_remove()
+
+        return phase.run(
             dataset,
             mask=results.last.mask,
             results=results,
@@ -126,5 +151,3 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
             pickle_files=pickle_files,
             log_likelihood_cap=log_likelihood_cap,
         )
-
-        return result
