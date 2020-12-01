@@ -92,12 +92,12 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         tracer = self.tracer_for_instance(instance=instance)
 
         if not tracer.has_pixelization:
-            return None
+            return
 
         if not isinstance(
             tracer.pixelizations_of_planes[-1], pix.VoronoiBrightnessImage
         ):
-            return None
+            return
 
         hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
 

@@ -1,82 +1,15 @@
-from autoconf import conf
-from os import path
 import autoarray as aa
 import autogalaxy as ag
 from autolens.fit import fit_positions
 from autogalaxy.pipeline.phase import dataset
 from autolens.pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from autolens import exc
-import pickle
-import json
 import numpy as np
 
 import copy
 
 
 class PhaseDataset(dataset.PhaseDataset):
-    def run(
-        self,
-        dataset,
-        mask,
-        results=None,
-        info=None,
-        pickle_files=None,
-        log_likelihood_cap=None,
-    ):
-        """
-        Run this phase.
-
-        Parameters
-        ----------
-        mask: Mask2D
-            The default masks passed in by the pipeline
-        results: autofit.tools.pipeline.ResultsCollection
-            An object describing the results of the last phase or None if no phase has been executed
-        dataset: scaled_array.ScaledSquarePixelArray
-            An masked_imaging that has been masked
-
-        Returns
-        -------
-        result: AbstractPhase.Result
-            A result object comprising the best fit model and other hyper_galaxies.
-        """
-
-        result = super().run(
-            dataset=dataset,
-            mask=mask,
-            results=results,
-            info=info,
-            pickle_files=pickle_files,
-            log_likelihood_cap=log_likelihood_cap,
-        )
-
-        if self.should_output_stochastic_log_evidence_file:
-
-            stochastic_log_evidences = result.stochastic_log_evidences
-
-            self.save_stochastic_log_evidences_to_json(
-                stochastic_log_evidences=stochastic_log_evidences
-            )
-
-            self.save_stochastic_log_evidences_to_pickle(
-                stochastic_log_evidences=stochastic_log_evidences
-            )
-
-        try:
-
-            result.analysis.visualizer.visualize_stochastic_histogram(
-                paths=self.paths,
-                log_evidences=self.load_stochastic_log_evidences_from_json(),
-                max_log_evidence=result.log_likelihood,
-                histogram_bins=self.settings.settings_lens.stochastic_histogram_bins,
-            )
-
-        except FileNotFoundError:
-
-            pass
-
-        return result
-
     def modify_dataset(self, dataset, results):
 
         # TODO : There is a very weird error no cosma for this line we don't yet undersatand. This try / except fixes it.
@@ -251,40 +184,6 @@ class PhaseDataset(dataset.PhaseDataset):
                 "You have specified for a phase to use positions, but not input positions to the "
                 "pipeline when you ran it."
             )
-
-    @property
-    def stochastic_log_evidences_json_file(self):
-        return path.join(self.paths.output_path, "stochastic_log_evidences.json")
-
-    @property
-    def should_output_stochastic_log_evidence_file(self):
-        if self.uses_cluster_inversion:
-            if not path.exists(self.stochastic_log_evidences_json_file):
-                if conf.instance["general"]["hyper"]["stochastic_outputs"]:
-                    return True
-        return False
-
-    def load_stochastic_log_evidences_from_json(self):
-        with open(self.stochastic_log_evidences_json_file, "r") as f:
-            return np.asarray(json.load(f))
-
-    def save_stochastic_log_evidences_to_json(self, stochastic_log_evidences):
-        """
-        Save the dataset associated with the phase
-        """
-        with open(self.stochastic_log_evidences_json_file, "w") as outfile:
-            json.dump(
-                [float(evidence) for evidence in stochastic_log_evidences], outfile
-            )
-
-    def save_stochastic_log_evidences_to_pickle(self, stochastic_log_evidences):
-        """
-        Save the dataset associated with the phase
-        """
-        with open(
-            path.join(self.paths.pickle_path, "stochastic_log_evidences.pickle"), "wb"
-        ) as f:
-            pickle.dump(stochastic_log_evidences, f)
 
     def extend_with_stochastic_phase(
         self,
