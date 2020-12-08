@@ -98,16 +98,16 @@
 #                 bulge=phase1.result.instance.galaxies.lens.bulge,
 #                 disk=phase1.result.instance.galaxies.lens.disk,
 #                 mass=al.mp.EllipticalIsothermal,
-#                 hyper_galaxy=phase1.result.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+#                 hyper_galaxy=phase1.result.hyper.instance.optional.galaxies.lens.hyper_galaxy,
 #             ),
 #             source=al.GalaxyModel(
 #                 redshift=redshift_source,
 #                 sersic=al.lp.EllipticalSersic,
-#                 hyper_galaxy=phase1.result.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+#                 hyper_galaxy=phase1.result.hyper.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         hyper_image_sky=phase1.result.hyper_combined.instance.optional.hyper_image_sky,
-#         hyper_background_noise=phase1.result.hyper_combined.instance.optional.hyper_background_noise,
+#         hyper_image_sky=phase1.result.hyper.instance.optional.hyper_image_sky,
+#         hyper_background_noise=phase1.result.hyper.instance.optional.hyper_background_noise,
 #         search=af.DynestyStatic(),
 #     )
 #
@@ -126,7 +126,7 @@
 #         bulge=al.lp.EllipticalSersic,
 #         disk=al.lp.EllipticalExponential,
 #         mass=phase2.result.instance.galaxies.lens.mass,
-#         hyper_galaxy=phase2.result.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+#         hyper_galaxy=phase2.result.hyper.instance.optional.galaxies.lens.hyper_galaxy,
 #     )
 #
 #     lens.bulge.centre = lens.disk.centre
@@ -138,11 +138,11 @@
 #             source=al.GalaxyModel(
 #                 redshift=redshift_source,
 #                 sersic=phase2.result.instance.galaxies.source.sersic,
-#                 hyper_galaxy=phase2.result.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+#                 hyper_galaxy=phase2.result.hyper.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         hyper_image_sky=phase2.result.hyper_combined.instance.optional.hyper_image_sky,
-#         hyper_background_noise=phase2.result.hyper_combined.instance.optional.hyper_background_noise,
+#         hyper_image_sky=phase2.result.hyper.instance.optional.hyper_image_sky,
+#         hyper_background_noise=phase2.result.hyper.instance.optional.hyper_background_noise,
 #         search=af.DynestyStatic(),
 #     )
 #
@@ -163,16 +163,16 @@
 #                 bulge=phase3.result.model.galaxies.lens.bulge,
 #                 disk=phase3.result.model.galaxies.lens.disk,
 #                 mass=phase2.result.model.galaxies.lens.mass,
-#                 hyper_galaxy=phase3.result.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+#                 hyper_galaxy=phase3.result.hyper.instance.optional.galaxies.lens.hyper_galaxy,
 #             ),
 #             source=al.GalaxyModel(
 #                 redshift=redshift_source,
 #                 sersic=phase2.result.model.galaxies.source.sersic,
-#                 hyper_galaxy=phase3.result.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+#                 hyper_galaxy=phase3.result.hyper.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         hyper_image_sky=phase3.result.hyper_combined.instance.optional.hyper_image_sky,
-#         hyper_background_noise=phase3.result.hyper_combined.instance.optional.hyper_background_noise,
+#         hyper_image_sky=phase3.result.hyper.instance.optional.hyper_image_sky,
+#         hyper_background_noise=phase3.result.hyper.instance.optional.hyper_background_noise,
 #         search=af.DynestyStatic(),
 #     )
 #
@@ -193,17 +193,17 @@
 #                 bulge=af.last.instance.galaxies.lens.bulge,
 #                 disk=af.last.instance.galaxies.lens.disk,
 #                 mass=af.last.instance.galaxies.lens.mass,
-#                 hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+#                 hyper_galaxy=af.last.hyper.instance.optional.galaxies.lens.hyper_galaxy,
 #             ),
 #             source=al.GalaxyModel(
 #                 redshift=redshift_source,
 #                 pixelization=al.pix.VoronoiMagnification,
 #                 regularization=al.reg.Constant,
-#                 hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+#                 hyper_galaxy=af.last.hyper.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         hyper_image_sky=af.last.hyper_combined.instance.optional.hyper_image_sky,
-#         hyper_background_noise=af.last.hyper_combined.instance.optional.hyper_background_noise,
+#         hyper_image_sky=af.last.hyper.instance.optional.hyper_image_sky,
+#         hyper_background_noise=af.last.hyper.instance.optional.hyper_background_noise,
 #         search=af.DynestyStatic(),
 #     )
 #
@@ -224,17 +224,17 @@
 #                 disk=af.last[-1].instance.galaxies.lens.disk,
 #                 mass=af.last[-1].model.galaxies.lens.mass,
 #                 shear=af.last[-1].model.galaxies.lens.shear,
-#                 hyper_galaxy=phase5.result.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+#                 hyper_galaxy=phase5.result.hyper.instance.optional.galaxies.lens.hyper_galaxy,
 #             ),
 #             source=al.GalaxyModel(
 #                 redshift=redshift_source,
 #                 pixelization=phase5.result.instance.galaxies.source.pixelization,
 #                 regularization=phase5.result.instance.galaxies.source.regularization,
-#                 hyper_galaxy=phase5.result.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+#                 hyper_galaxy=phase5.result.hyper.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         hyper_image_sky=phase5.result.hyper_combined.instance.optional.hyper_image_sky,
-#         hyper_background_noise=phase5.result.hyper_combined.instance.optional.hyper_background_noise,
+#         hyper_image_sky=phase5.result.hyper.instance.optional.hyper_image_sky,
+#         hyper_background_noise=phase5.result.hyper.instance.optional.hyper_background_noise,
 #         search=af.DynestyStatic(),
 #     )
 #
@@ -255,17 +255,17 @@
 #                 disk=phase6.result.instance.galaxies.lens.disk,
 #                 mass=phase6.result.instance.galaxies.lens.mass,
 #                 shear=phase6.result.instance.galaxies.lens.shear,
-#                 hyper_galaxy=phase6.result.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+#                 hyper_galaxy=phase6.result.hyper.instance.optional.galaxies.lens.hyper_galaxy,
 #             ),
 #             source=al.GalaxyModel(
 #                 redshift=redshift_source,
 #                 pixelization=al.pix.VoronoiBrightnessImage,
 #                 regularization=al.reg.AdaptiveBrightness,
-#                 hyper_galaxy=phase6.result.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+#                 hyper_galaxy=phase6.result.hyper.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         hyper_image_sky=phase6.result.hyper_combined.instance.optional.hyper_image_sky,
-#         hyper_background_noise=phase6.result.hyper_combined.instance.optional.hyper_background_noise,
+#         hyper_image_sky=phase6.result.hyper.instance.optional.hyper_image_sky,
+#         hyper_background_noise=phase6.result.hyper.instance.optional.hyper_background_noise,
 #         search=af.DynestyStatic(),
 #     )
 #
@@ -288,7 +288,7 @@
 #         disk=phase6.result.instance.galaxies.lens.disk,
 #         mass=mass,
 #         shear=phase6.result.model.galaxies.lens.shear,
-#         hyper_galaxy=phase7.result.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+#         hyper_galaxy=phase7.result.hyper.instance.optional.galaxies.lens.hyper_galaxy,
 #     )
 #
 #     return al.PhaseImaging(
@@ -299,11 +299,11 @@
 #                 redshift=redshift_source,
 #                 pixelization=phase7.result.instance.galaxies.source.pixelization,
 #                 regularization=phase7.result.instance.galaxies.source.regularization,
-#                 hyper_galaxy=phase7.result.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+#                 hyper_galaxy=phase7.result.hyper.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         hyper_image_sky=phase7.result.hyper_combined.instance.optional.hyper_image_sky,
-#         hyper_background_noise=phase7.result.hyper_combined.instance.optional.hyper_background_noise,
+#         hyper_image_sky=phase7.result.hyper.instance.optional.hyper_image_sky,
+#         hyper_background_noise=phase7.result.hyper.instance.optional.hyper_background_noise,
 #         search=af.DynestyStatic(),
 #     )
 #

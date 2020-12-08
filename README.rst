@@ -101,8 +101,8 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     aplt.Tracer.image(tracer=tracer, grid=grid)
 
 With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates
-a simple analysis which fits the lens galaxy's mass with an EllipticalIsothermal and the source galaxy's light
-with an EllipticalSersic.
+a simple analysis which fits the lens galaxy's mass with an ``EllipticalIsothermal`` and the source galaxy's light
+with an ``EllipticalSersic``.
 
 .. code-block:: python
 
@@ -152,8 +152,9 @@ with an EllipticalSersic.
     )
 
     """
-    We pass the imaging dataset and mask to the phase's run function,
-    fitting it with the lens model. & plot the resulting fit.
+    We pass the imaging dataset and mask to the phase's run function, fitting it
+    with the lens model & outputting the results (dynesty samples, visualization,
+    etc.) to hard-disk.
     """
 
     result = phase.run(dataset=imaging, mask=mask)

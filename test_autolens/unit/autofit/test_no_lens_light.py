@@ -86,17 +86,17 @@
 #             lens=al.GalaxyModel(
 #                 redshift=redshift_lens,
 #                 mass=af.last.instance.galaxies.lens.mass,
-#                 hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+#                 hyper_galaxy=af.last.hyper.instance.optional.galaxies.lens.hyper_galaxy,
 #             ),
 #             source=al.GalaxyModel(
 #                 redshift=redshift_source,
 #                 pixelization=al.pix.VoronoiMagnification,
 #                 regularization=al.reg.Constant,
-#                 hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+#                 hyper_galaxy=af.last.hyper.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         hyper_image_sky=af.last.hyper_combined.instance.optional.hyper_image_sky,
-#         hyper_background_noise=af.last.hyper_combined.instance.optional.hyper_background_noise,
+#         hyper_image_sky=af.last.hyper.instance.optional.hyper_image_sky,
+#         hyper_background_noise=af.last.hyper.instance.optional.hyper_background_noise,
 #         search=MockSearch,
 #     )
 #
@@ -118,7 +118,7 @@
 #                 redshift=redshift_source,
 #                 pixelization=phase2.result.instance.galaxies.source.pixelization,
 #                 regularization=phase2.result.instance.galaxies.source.regularization,
-#                 hyper_galaxy=phase2.result.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+#                 hyper_galaxy=phase2.result.hyper.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
 #         search=MockSearch,
@@ -142,11 +142,11 @@
 #                 redshift=redshift_source,
 #                 pixelization=al.pix.VoronoiBrightnessImage,
 #                 regularization=al.reg.AdaptiveBrightness,
-#                 hyper_galaxy=phase3.result.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+#                 hyper_galaxy=phase3.result.hyper.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         hyper_image_sky=phase3.result.hyper_combined.instance.optional.hyper_image_sky,
-#         hyper_background_noise=phase3.result.hyper_combined.instance.optional.hyper_background_noise,
+#         hyper_image_sky=phase3.result.hyper.instance.optional.hyper_image_sky,
+#         hyper_background_noise=phase3.result.hyper.instance.optional.hyper_background_noise,
 #         search=MockSearch,
 #     )
 #
@@ -168,11 +168,11 @@
 #                 redshift=redshift_source,
 #                 pixelization=phase4.result.instance.galaxies.source.pixelization,
 #                 regularization=phase4.result.instance.galaxies.source.regularization,
-#                 hyper_galaxy=phase4.result.hyper_combined.instance.optional.galaxies.source.hyper_galaxy,
+#                 hyper_galaxy=phase4.result.hyper.instance.optional.galaxies.source.hyper_galaxy,
 #             ),
 #         ),
-#         hyper_image_sky=phase4.result.hyper_combined.instance.optional.hyper_image_sky,
-#         hyper_background_noise=phase4.result.hyper_combined.instance.optional.hyper_background_noise,
+#         hyper_image_sky=phase4.result.hyper.instance.optional.hyper_image_sky,
+#         hyper_background_noise=phase4.result.hyper.instance.optional.hyper_background_noise,
 #         search=MockSearch,
 #     )
 #
@@ -195,8 +195,8 @@
 #
 #     source = al.GalaxyModel(
 #         redshift=af.last.instance.galaxies.source.redshift,
-#         pixelization=af.last.hyper_combined.instance.galaxies.source.pixelization,
-#         regularization=af.last.hyper_combined.instance.galaxies.source.regularization,
+#         pixelization=af.last.hyper.instance.galaxies.source.pixelization,
+#         regularization=af.last.hyper.instance.galaxies.source.regularization,
 #     )
 #
 #     return al.PhaseImaging(
@@ -204,8 +204,8 @@
 #         galaxies=dict(
 #             lens=al.GalaxyModel(redshift=redshift_lens, mass=mass), source=source
 #         ),
-#         hyper_image_sky=af.last.hyper_combined.instance.optional.hyper_image_sky,
-#         hyper_background_noise=af.last.hyper_combined.instance.optional.hyper_background_noise,
+#         hyper_image_sky=af.last.hyper.instance.optional.hyper_image_sky,
+#         hyper_background_noise=af.last.hyper.instance.optional.hyper_background_noise,
 #         search=MockSearch,
 #     )
 #

@@ -1,3 +1,4 @@
+from autoconf import conf
 import autofit as af
 from autoarray.inversion import pixelizations as pix
 from autoarray.exc import PixelizationException, InversionException, GridException
@@ -226,6 +227,13 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_model_image=self.hyper_model_image,
             hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
         )
+
+    def save_results_for_aggregator(
+        self, paths: af.Paths, samples: af.OptimizerSamples
+    ):
+
+        if conf.instance["general"]["hyper"]["stochastic_outputs"]:
+            self.save_stochastic_outputs(paths=paths, samples=samples)
 
 
 class Attributes(AgAttributes):

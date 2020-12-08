@@ -19,11 +19,9 @@ class SetupHyper(setup.SetupHyper):
         hyper_galaxies_source: bool = False,
         hyper_image_sky: bool = False,
         hyper_background_noise: bool = False,
-        hyper_galaxy_phase_first: bool = False,
         hyper_fixed_after_source: bool = False,
-        hyper_galaxies_search: af.NonLinearSearch = None,
-        inversion_search: af.NonLinearSearch = None,
-        hyper_combined_search: af.NonLinearSearch = None,
+        hyper_search_no_inversion: af.NonLinearSearch = None,
+        hyper_search_with_inversion: af.NonLinearSearch = None,
         evidence_tolerance: float = None,
     ):
         """
@@ -48,18 +46,13 @@ class SetupHyper(setup.SetupHyper):
         hyper_background_noise : bool
             If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used include the
             noise-map's background component in the model.
-        hyper_galaxy_phase_first : bool
-            If True, the hyper-galaxy phase which scales the noise map is performed before the inversion phase, else
-            it is performed after.
         hyper_fixed_after_source : bool
             If `True`, the hyper parameters are fixed and not updated after a desnated pipeline in the analysis. For
             the `SLaM` pipelines this is after the `SourcePipeline`. This allow Bayesian model comparison to be
             performed objected between later phases in a pipeline.
-        hyper_galaxies_search : af.NonLinearSearch or None
-            The `NonLinearSearch` used by every hyper-galaxies phase.
-        inversion_search : af.NonLinearSearch or None
+        hyper_search_no_inversion : af.NonLinearSearch or None
             The `NonLinearSearch` used by every inversion phase.
-        hyper_combined_search : af.NonLinearSearch or None
+        hyper_search_with_inversion : af.NonLinearSearch or None
             The `NonLinearSearch` used by every hyper combined phase.
         evidence_tolerance : float
             The evidence tolerance of the non-linear searches used in the hyper phases, whereby higher values will
@@ -74,10 +67,8 @@ class SetupHyper(setup.SetupHyper):
             hyper_galaxies=hyper_galaxies,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
-            hyper_galaxy_phase_first=hyper_galaxy_phase_first,
-            hyper_galaxies_search=hyper_galaxies_search,
-            inversion_search=inversion_search,
-            hyper_combined_search=hyper_combined_search,
+            hyper_search_no_inversion=hyper_search_no_inversion,
+            hyper_search_with_inversion=hyper_search_with_inversion,
             evidence_tolerance=evidence_tolerance,
         )
 
@@ -200,8 +191,8 @@ class SetupHyper(setup.SetupHyper):
         elif self.hyper_fixed_after_source:
             return f"__{conf.instance['notation']['setup_tags']['hyper']['hyper_fixed_after_source']}"
 
-    def hyper_galaxy_lens_from_previous_pipeline(
-        self, index=0, noise_factor_is_model=False
+    def hyper_galaxy_lens_from_result(
+        self, result: af.Result, noise_factor_is_model=False
     ):
         """
         Returns the `HyperGalaxy` `PriorModel` from a previous pipeline or phase of the lens galaxy in a template
@@ -234,27 +225,27 @@ class SetupHyper(setup.SetupHyper):
 
             if noise_factor_is_model:
 
-                hyper_galaxy.noise_factor = af.last[
-                    index
-                ].hyper_combined.model.galaxies.lens.hyper_galaxy.noise_factor
+                hyper_galaxy.noise_factor = (
+                    result.hyper.model.galaxies.lens.hyper_galaxy.noise_factor
+                )
 
             else:
 
-                hyper_galaxy.noise_factor = af.last[
-                    index
-                ].hyper_combined.instance.galaxies.lens.hyper_galaxy.noise_factor
+                hyper_galaxy.noise_factor = (
+                    result.hyper.instance.galaxies.lens.hyper_galaxy.noise_factor
+                )
 
-            hyper_galaxy.contribution_factor = af.last[
-                index
-            ].hyper_combined.instance.optional.galaxies.lens.hyper_galaxy.contribution_factor
-            hyper_galaxy.noise_power = af.last[
-                index
-            ].hyper_combined.instance.optional.galaxies.lens.hyper_galaxy.noise_power
+            hyper_galaxy.contribution_factor = (
+                result.hyper.instance.optional.galaxies.lens.hyper_galaxy.contribution_factor
+            )
+            hyper_galaxy.noise_power = (
+                result.hyper.instance.optional.galaxies.lens.hyper_galaxy.noise_power
+            )
 
             return hyper_galaxy
 
-    def hyper_galaxy_source_from_previous_pipeline(
-        self, index=0, noise_factor_is_model=False
+    def hyper_galaxy_source_from_result(
+        self, result: af.Result, noise_factor_is_model=False
     ):
         """
         Returns the `HyperGalaxy` `PriorModel` from a previous pipeline or phase of the source galaxy in a template
@@ -287,22 +278,22 @@ class SetupHyper(setup.SetupHyper):
 
             if noise_factor_is_model:
 
-                hyper_galaxy.noise_factor = af.last[
-                    index
-                ].hyper_combined.model.galaxies.source.hyper_galaxy.noise_factor
+                hyper_galaxy.noise_factor = (
+                    result.hyper.model.galaxies.source.hyper_galaxy.noise_factor
+                )
 
             else:
 
-                hyper_galaxy.noise_factor = af.last[
-                    index
-                ].hyper_combined.instance.galaxies.source.hyper_galaxy.noise_factor
+                hyper_galaxy.noise_factor = (
+                    result.hyper.instance.galaxies.source.hyper_galaxy.noise_factor
+                )
 
-            hyper_galaxy.contribution_factor = af.last[
-                index
-            ].hyper_combined.instance.optional.galaxies.source.hyper_galaxy.contribution_factor
-            hyper_galaxy.noise_power = af.last[
-                index
-            ].hyper_combined.instance.optional.galaxies.source.hyper_galaxy.noise_power
+            hyper_galaxy.contribution_factor = (
+                result.hyper.instance.optional.galaxies.source.hyper_galaxy.contribution_factor
+            )
+            hyper_galaxy.noise_power = (
+                result.hyper.instance.optional.galaxies.source.hyper_galaxy.noise_power
+            )
 
             return hyper_galaxy
 

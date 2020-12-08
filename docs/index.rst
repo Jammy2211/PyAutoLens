@@ -1,8 +1,18 @@
+What is PyAutoLens?
+===================
+
+**PyAutoLens** is open source software for the analysis and modeling of strong gravitational lenses. Its target audience
+is anyone with an interest in strong gravitational lensing, whether that be study the mass structure properties of
+the foreground lens galaxy or the magnified properties of the backgrounds source.
+
+An overview of its core features can be found in
+the `overview <https://pyautolens.readthedocs.io/en/latest/overview/lensing.html>`_ section of the readthedoc.
+
 Strong Gravitational Lensing
 ============================
 
-When two galaxies are aligned down the line-of-sight to Earth, light rays from the background galaxy are bent by the
-intervening mass of one or more foreground galaxies. Its light can be fully bent around the foreground galaxies,
+When two galaxies are aligned down the line-of-sight to Earth, light rays from the background galaxy are deflected by the
+intervening mass of one or more foreground galaxies. Sometimes its light is fully bent around the foreground galaxies,
 traversing multiple paths to the Earth, meaning that the background galaxy is observed multiple times. This alignment
 of galaxies is called a strong gravitational lens, an example of which, SLACS1430+4105, is shown in the image
 below. The massive elliptical lens galaxy can be seen in the centre of the left panel, surrounded by a multiply
@@ -17,14 +27,12 @@ galaxy's mass to trace backwards how the source's light is gravitationally lense
 Strong lensing provides astronomers with an invaluable tool to study a diverse range of topics, including the
 `structure of galaxies <https://academic.oup.com/mnras/article-abstract/489/2/2049/5550746>`_,
 `dark matter <https://academic.oup.com/mnras/article/442/3/2017/1048278>`_ and the
-`expansion of the Universe <https://academic.oup.com/mnras/article/468/3/2590/3055701>`_. The past decade has seen
-the discovery of many hundreds of new strong lenses, however the modeling of a strong lens is historically a
-time-intensive process that requires significant human intervention to perform, restricting the scope of any scientific
-analysis. In the next decade of order `one hundred thousand` strong lenses will be discovered by surveys such as
-Euclid, the Vera Rubin Observatory and Square Kilometer Array.
+`expansion of the Universe <https://academic.oup.com/mnras/article/468/3/2590/3055701>`_.
 
-**PyAutoLens** is open source software aiming to automate the lens modeling process and make strong lensing
-accessible to the entire scientific community.
+The past decade has seen the discovery of many hundreds of new strong lenses, however the modeling of a strong lens is historically a
+time-intensive process that requires significant human intervention to perform, restricting the scope of any scientific
+analysis. In the next decade of order of `one hundred thousand` strong lenses will be discovered by surveys such as
+Euclid, the Vera Rubin Observatory and Square Kilometer Array.
 
 How does PyAutoLens Work?
 =========================

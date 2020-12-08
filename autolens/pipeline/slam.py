@@ -208,15 +208,14 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
             return f"__{conf.instance['notation']['setup_tags']['pipeline']['light_is_model']}"
         return f"__{conf.instance['notation']['setup_tags']['pipeline']['light_is_instance']}"
 
-    @property
-    def smbh_prior_model(self):
+    def smbh_prior_model_from_results(self, results: af.ResultsCollection):
 
         if self.setup_smbh is not None:
             return self.setup_smbh.smbh_from_centre(
-                centre=af.last.instance.galaxies.lens.sersic.centre
+                centre=results.last.instance.galaxies.lens.sersic.centre
             )
 
-    def shear_from_previous_pipeline(self, index=0):
+    def shear_from_results(self, results: af.Result, as_instance=False):
         """Return the shear `PriorModel` from a previous pipeline, where:
 
         1) If the shear was included in the *Source* pipeline and `with_shear` is `False` in the `Mass` object, it is
@@ -224,10 +223,18 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
         2) If the shear was not included in the *Source* pipeline and *with_shear* is `False` in the `Mass` object,
             it is returned as a new *ExternalShear* PriorModel.
         3) If `with_shear` is `True` in the `Mass` object, it is returned as None and omitted from the lens model.
+
+        Parameters
+        ----------
+        result : af.Result
+            The result of a previous light or mass pipeline.
         """
         if self.setup_mass.with_shear:
-            if af.last[index].model.galaxies.lens.shear is not None:
-                return af.last[index].model.galaxies.lens.shear
+            if results.last.model.galaxies.lens.shear is not None:
+                if not as_instance:
+                    return results.last.model.galaxies.lens.shear
+                else:
+                    return results.last.instance.galaxies.lens.shear
             else:
                 return ag.mp.ExternalShear
 
@@ -246,7 +253,6 @@ class SLaM:
         setup_subhalo: setup.SetupSubhalo = None,
     ):
         """
-
         Parameters
         ----------
         path_prefix : str or None
@@ -452,8 +458,8 @@ class SLaM:
 
         return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
 
-    def lens_from_light_parametric_pipeline_for_mass_total_pipeline(
-        self, mass: af.PriorModel, shear: af.PriorModel
+    def lens_for_mass_pipeline_from_results(
+        self, results: af.ResultsCollection, mass: af.PriorModel, shear: af.PriorModel
     ) -> ag.GalaxyModel:
         """Setup the lens model for a `Mass` pipeline using the previous `Light` pipeline and phase results.
 
@@ -465,8 +471,8 @@ class SLaM:
 
         Parameters
         ----------
-        redshift_lens : float
-            The redshift of the lens galaxy.
+        result : af.Result
+            The result of the previous source or light pipeline.
         mass : ag.MassProfile
             The mass model of the len galaxy.
         shear : ag.ExternalShear
@@ -482,34 +488,40 @@ class SLaM:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_lens,
-                bulge=af.last.instance.galaxies.lens.bulge,
-                disk=af.last.instance.galaxies.lens.disk,
-                envelope=af.last.instance.galaxies.lens.envelope,
+                bulge=results.last.instance.galaxies.lens.bulge,
+                disk=results.last.instance.galaxies.lens.disk,
+                envelope=results.last.instance.galaxies.lens.envelope,
                 mass=mass,
                 shear=shear,
-                hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+                hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
+                    result=results.last
+                ),
             )
 
         else:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_lens,
-                bulge=af.last.model.galaxies.lens.bulge,
-                disk=af.last.model.galaxies.lens.disk,
-                envelope=af.last.model.galaxies.lens.envelope,
+                bulge=results.last.model.galaxies.lens.bulge,
+                disk=results.last.model.galaxies.lens.disk,
+                envelope=results.last.model.galaxies.lens.envelope,
                 mass=mass,
                 shear=shear,
-                hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+                hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
+                    result=results.last
+                ),
             )
 
-    def lens_for_subhalo_pipeline(self, index: int = 0) -> ag.GalaxyModel:
+    def lens_for_subhalo_pipeline_from_results(
+        self, results: af.ResultsCollection
+    ) -> ag.GalaxyModel:
         """
         Pass the lens `PriorModel` as a `model` or `instance` from the `MassPipeline` to the `SubhaloPipeline`.
 
         Parameters
         ----------
-        index : int
-            The index of the previous phase from which the `PriorModel`'s are passed.
+        result : af.Result
+            The result of the previous mass pipeline.
 
         Returns
         -------
@@ -521,50 +533,54 @@ class SLaM:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_lens,
-                mass=af.last[index].model.galaxies.lens.mass,
-                shear=af.last[index].model.galaxies.lens.shear,
-                hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+                mass=results.last.model.galaxies.lens.mass,
+                shear=results.last.model.galaxies.lens.shear,
+                hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
+                    result=results.last
+                ),
             )
 
         else:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_lens,
-                mass=af.last[index].instance.galaxies.lens.mass,
-                shear=af.last[index].instance.galaxies.lens.shear,
-                hyper_galaxy=af.last.hyper_combined.instance.optional.galaxies.lens.hyper_galaxy,
+                mass=results.last.instance.galaxies.lens.mass,
+                shear=results.last.instance.galaxies.lens.shear,
+                hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
+                    result=results.last
+                ),
             )
 
-    def _source_parametric_from_previous_pipeline(
-        self, source_is_model: bool = True, index: int = 0
+    def _source_parametric_from_results(
+        self, results: af.ResultsCollection, source_is_model: bool = True
     ) -> ag.GalaxyModel:
         """
          Pass a parametric source `PriorModel` as a `model` or `instance` from a previous pipeline.
 
         Parameters
         ----------
+        result : af.Result
+            The result of the previous source pipeline.        
         source_is_model : bool
             If `True`, the source is passed as a `model` and fitted for by the pipeline. If `False` it is
             passed as an `instance` with fixed parameters.
-        index : int
-            The index of the previous phase the source results are passed from.
 
         Returns
         -------
         ag.GalaxyModel
             Contains the `PriorModel`'s of the source's bulge, disk, etc.
         """
-        hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_previous_pipeline(
-            index=index
+        hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_result(
+            result=results.last
         )
 
         if source_is_model:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_source,
-                bulge=af.last[index].model.galaxies.source.bulge,
-                disk=af.last[index].model.galaxies.source.disk,
-                envelope=af.last[index].model.galaxies.source.envelope,
+                bulge=results.last.model.galaxies.source.bulge,
+                disk=results.last.model.galaxies.source.disk,
+                envelope=results.last.model.galaxies.source.envelope,
                 hyper_galaxy=hyper_galaxy,
             )
 
@@ -572,45 +588,41 @@ class SLaM:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_source,
-                bulge=af.last[index].instance.galaxies.source.bulge,
-                disk=af.last[index].instance.galaxies.source.disk,
-                envelope=af.last[index].instance.galaxies.source.envelope,
+                bulge=results.last.instance.galaxies.source.bulge,
+                disk=results.last.instance.galaxies.source.disk,
+                envelope=results.last.instance.galaxies.source.envelope,
                 hyper_galaxy=hyper_galaxy,
             )
 
-    def _source_inversion_from_previous_pipeline(
-        self, source_is_model: bool = False, index: int = 0
+    def _source_inversion_from_results(
+        self, results: af.ResultsCollection, source_is_model: bool = False
     ) -> ag.GalaxyModel:
         """
          Pass an inversion source `PriorModel` as a `model` or `instance` from a previous pipeline.
 
         Parameters
         ----------
+        result : af.Result
+            The result of the previous source pipeline.          
         source_is_model : bool
             If `True`, the source is passed as a `model` and fitted for by the pipeline. If `False` it is
             passed as an `instance` with fixed parameters.
-        index : int
-            The index of the previous phase the source results are passed from.
-
+            
         Returns
         -------
         ag.GalaxyModel
             Contains the `PriorModel`'s of the source's pixelization, regularization, etc.
         """
-        hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_previous_pipeline(
-            index=index
+        hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_result(
+            result=results.last
         )
 
         if source_is_model:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_source,
-                pixelization=af.last[
-                    index
-                ].hyper_combined.instance.galaxies.source.pixelization,
-                regularization=af.last[
-                    index
-                ].hyper_combined.model.galaxies.source.regularization,
+                pixelization=results.last.hyper.instance.galaxies.source.pixelization,
+                regularization=results.last.hyper.model.galaxies.source.regularization,
                 hyper_galaxy=hyper_galaxy,
             )
 
@@ -618,17 +630,13 @@ class SLaM:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_source,
-                pixelization=af.last[
-                    index
-                ].hyper_combined.instance.galaxies.source.pixelization,
-                regularization=af.last[
-                    index
-                ].hyper_combined.instance.galaxies.source.regularization,
+                pixelization=results.last.hyper.instance.galaxies.source.pixelization,
+                regularization=results.last.hyper.instance.galaxies.source.regularization,
                 hyper_galaxy=hyper_galaxy,
             )
 
-    def source_from_previous_pipeline(
-        self, source_is_model: bool = False, index: int = 0
+    def source_from_results(
+        self, results: af.ResultsCollection, source_is_model: bool = False
     ) -> ag.GalaxyModel:
         """
         Setup the source model using the previous pipeline and phase results.
@@ -641,32 +649,28 @@ class SLaM:
         model) and return inversions as an instance (as they have sufficient flexibility to typically not required
         updating). They use the *source_from_pevious_pipeline* method of the SLaM class to do this.
 
-        The pipeline tool af.last is required to locate the previous source model, which requires an index based
-        on the pipelines that have run. For example, if the source model you wish to load from is 3 phases back
-        (perhaps because there were multiple phases in a Light pipeline preivously) this index should be 2.
-
         Parameters
         ----------
+        result : af.Result
+            The result of the previous source pipeline.  
         source_is_model : bool
             If `True` the source is returned as a *model* where the parameters are fitted for using priors of the
             phase result it is loaded from. If `False`, it is an instance of that phase's result.
-        index : integer
-            The index (counting backwards from this phase) of the phase result used to setup the source.
         """
 
         if self.pipeline_source_inversion is None:
 
-            return self._source_parametric_from_previous_pipeline(
-                source_is_model=source_is_model, index=index
+            return self._source_parametric_from_results(
+                results=results, source_is_model=source_is_model
             )
 
         else:
 
-            return self._source_inversion_from_previous_pipeline(
-                source_is_model=source_is_model, index=index
+            return self._source_inversion_from_results(
+                results=results, source_is_model=source_is_model
             )
 
-    def source_from_previous_pipeline_model_if_parametric(self, index=0):
+    def source_from_results_model_if_parametric(self, results: af.ResultsCollection):
         """Setup the source model for a Mass pipeline using the previous pipeline and phase results.
 
         The source light model is not specified by the pipeline Mass pipeline (e.g. the previous pipelines are used to
@@ -676,12 +680,17 @@ class SLaM:
         model) whereas inversions are returned as an instance (as they have sufficient flexibility to typically not
         required updating). This behaviour can be customized in SLaM pipelines by replacing this method with the
         *source_from_previous_pipeline_model_or_instance* method of the SLaM class.
+        
+        Parameters
+        ----------
+        result : af.Result
+            The result of the previous source pipeline.  
         """
         if self.pipeline_source_inversion is None:
-            return self.source_from_previous_pipeline(source_is_model=True, index=index)
-        return self.source_from_previous_pipeline(source_is_model=False, index=index)
+            return self.source_from_results(results=results, source_is_model=True)
+        return self.source_from_results(results=results, source_is_model=False)
 
-    def source_for_subhalo_pipeline(self, index=0):
-        return self.source_from_previous_pipeline(
-            source_is_model=self.setup_subhalo.source_is_model, index=index
+    def source_for_subhalo_pipeline_from_results(self, results: af.ResultsCollection):
+        return self.source_from_results(
+            results=results, source_is_model=self.setup_subhalo.source_is_model
         )

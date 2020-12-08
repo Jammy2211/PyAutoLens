@@ -139,11 +139,40 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
 
         self.visualizer.visualize_imaging(paths=paths)
 
-        self.visualizer.visualize_hyper_images(
-            paths=paths,
-            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
-            hyper_model_image=self.hyper_model_image,
-        )
+        if self.visualizer.plot_fit_no_hyper:
+
+            tracer = self.tracer_for_instance(instance=instance)
+
+            fit = self.masked_imaging_fit_for_tracer(
+                tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
+            )
+
+            if tracer.has_mass_profile:
+
+                try:
+
+                    visualizer = self.visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
+                        preloaded_critical_curves=tracer.critical_curves,
+                        preloaded_caustics=tracer.caustics,
+                    )
+
+                except (Exception, IndexError, ValueError):
+
+                    visualizer = self.visualizer
+
+            else:
+
+                visualizer = self.visualizer
+
+            try:
+                visualizer.visualize_fit(
+                    paths=paths,
+                    fit=fit,
+                    during_analysis=during_analysis,
+                    subfolders="fit_no_hyper",
+                )
+            except Exception:
+                pass
 
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
@@ -189,6 +218,13 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         except Exception:
             pass
 
+        self.visualizer.visualize_hyper_images(
+            paths=paths,
+            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
+            hyper_model_image=self.hyper_model_image,
+            contribution_maps_of_galaxies=tracer.contribution_maps_of_planes,
+        )
+
     def make_attributes(self):
         return Attributes(
             cosmology=self.cosmology,
@@ -196,6 +232,13 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_model_image=self.hyper_model_image,
             hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
         )
+
+    def save_results_for_aggregator(
+        self, paths: af.Paths, samples: af.OptimizerSamples
+    ):
+
+        if conf.instance["general"]["hyper"]["stochastic_outputs"]:
+            self.save_stochastic_outputs(paths=paths, samples=samples)
 
 
 class Attributes(AgAttributes):

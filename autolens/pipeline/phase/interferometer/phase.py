@@ -3,6 +3,8 @@ import autofit as af
 from astropy import cosmology as cosmo
 from autolens.dataset import interferometer
 from autolens.pipeline.phase import dataset
+from autoarray.inversion import pixelizations as pix
+from autoarray.inversion import regularization as reg
 from autolens.pipeline.phase.settings import SettingsPhaseInterferometer
 from autolens.pipeline.phase.interferometer.analysis import Analysis
 from autolens.pipeline.phase.interferometer.result import Result
@@ -87,6 +89,17 @@ class PhaseInterferometer(dataset.PhaseDataset):
             cosmology=self.cosmology,
             results=results,
         )
+
+    @property
+    def model_classes_for_hyper_phase(self) -> tuple:
+        if self.has_pixelization:
+            return tuple(
+                filter(
+                    None,
+                    [pix.Pixelization, reg.Regularization, self.hyper_background_noise],
+                )
+            )
+        return tuple(filter(None, [self.hyper_background_noise]))
 
     def output_phase_info(self):
 

@@ -29,7 +29,7 @@ def make_pipeline(name, path_prefix, real_space_mask):
     phase1.search.n_live_points = 50
     phase1.search.facc = 0.8
 
-    phase1 = phase1.extend_with_multiple_hyper_phases(
+    phase1 = phase1.extend_with_hyper_phase(
         hyper_galaxies_search=True,
         include_background_sky=True,
         include_background_noise=True,
@@ -41,13 +41,13 @@ def make_pipeline(name, path_prefix, real_space_mask):
                 redshift=0.5,
                 mass=phase1.result.instance.galaxies.lens.mass,
                 shear=phase1.result.instance.galaxies.lens.shear,
-                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
+                hyper_galaxy=phase1.result.hyper.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiBrightnessImage,
                 regularization=al.reg.AdaptiveBrightness,
-                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
+                hyper_galaxy=phase1.result.hyper.instance.galaxies.source.hyper_galaxy,
             ),
         ),
         real_space_mask=real_space_mask,
@@ -58,7 +58,7 @@ def make_pipeline(name, path_prefix, real_space_mask):
     phase2.search.n_live_points = 30
     phase2.search.facc = 0.8
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(
+    phase2 = phase2.extend_with_hyper_phase(
         hyper_galaxies_search=True,
         include_background_sky=True,
         include_background_noise=True,
@@ -72,13 +72,13 @@ def make_pipeline(name, path_prefix, real_space_mask):
                 redshift=0.5,
                 mass=phase1.result.model.galaxies.lens.mass,
                 shear=phase1.result.model.galaxies.lens.shear,
-                hyper_galaxy=phase2.result.hyper_combined.instance.galaxies.lens.hyper_galaxy,
+                hyper_galaxy=phase2.result.hyper.instance.galaxies.lens.hyper_galaxy,
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
                 pixelization=phase2.result.instance.galaxies.source.pixelization,
                 regularization=phase2.result.instance.galaxies.source.regularization,
-                hyper_galaxy=phase2.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
+                hyper_galaxy=phase2.result.hyper.instance.galaxies.source.hyper_galaxy,
             ),
         ),
         real_space_mask=real_space_mask,
@@ -89,7 +89,7 @@ def make_pipeline(name, path_prefix, real_space_mask):
     phase3.search.n_live_points = 40
     phase3.search.facc = 0.8
 
-    phase3 = phase3.extend_with_multiple_hyper_phases(
+    phase3 = phase3.extend_with_hyper_phase(
         hyper_galaxies_search=True,
         include_background_sky=True,
         include_background_noise=True,

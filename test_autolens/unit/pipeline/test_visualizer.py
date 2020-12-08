@@ -343,6 +343,7 @@ class TestPhaseImagingVisualizer:
         hyper_model_image_7x7,
         include_all,
         hyper_galaxy_image_path_dict_7x7,
+        masked_imaging_fit_x2_plane_7x7,
         plot_path,
         plot_patch,
     ):
@@ -358,6 +359,7 @@ class TestPhaseImagingVisualizer:
             paths=af.Paths(),
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict_7x7,
             hyper_model_image=hyper_model_image_7x7,
+            contribution_maps_of_galaxies=masked_imaging_fit_x2_plane_7x7.tracer.contribution_maps_of_planes,
         )
 
         assert (
@@ -365,8 +367,16 @@ class TestPhaseImagingVisualizer:
             in plot_patch.paths
         )
         assert (
-            path.join(plot_path, "image", "subplots", "subplot_hyper_galaxy_images.png")
+            path.join(
+                plot_path, "image", "hyper", "subplot_hyper_images_of_galaxies.png"
+            )
             in plot_patch.paths
+        )
+        assert (
+            path.join(
+                plot_path, "image", "hyper", "subplot_contribution_maps_of_galaxies.png"
+            )
+            not in plot_patch.paths
         )
 
 
@@ -505,35 +515,5 @@ class TestPhaseInterferometerVisualizer:
         )
         assert (
             path.join(plot_path, "image", "inversion", "interpolated_errors.png")
-            in plot_patch.paths
-        )
-
-
-class TestHyperGalaxyVisualizer:
-    def test__hyper_fit__images_for_phase__source_and_lens__depedent_on_input(
-        self,
-        masked_imaging_fit_x2_plane_7x7,
-        hyper_galaxy_image_0_7x7,
-        include_all,
-        plot_path,
-        plot_patch,
-    ):
-        visualizer = vis.HyperGalaxyVisualizer()
-
-        visualizer = visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-            preloaded_critical_curves=include_all.preloaded_critical_curves,
-            preloaded_caustics=include_all.preloaded_caustics,
-        )
-
-        visualizer.visualize_hyper_galaxy(
-            paths=af.Paths(),
-            fit=masked_imaging_fit_x2_plane_7x7,
-            hyper_fit=masked_imaging_fit_x2_plane_7x7,
-            galaxy_image=hyper_galaxy_image_0_7x7,
-            contribution_map_in=hyper_galaxy_image_0_7x7,
-        )
-
-        assert (
-            path.join(plot_path, "image", "subplots", "subplot_fit_hyper_galaxy.png")
             in plot_patch.paths
         )

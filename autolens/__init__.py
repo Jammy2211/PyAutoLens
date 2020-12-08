@@ -33,14 +33,7 @@ from autogalaxy.galaxy.galaxy_data import GalaxyData
 from autogalaxy.galaxy.galaxy_model import GalaxyModel
 from autogalaxy.hyper import hyper_data
 from autogalaxy.pipeline.setup import SetupLightParametric, SetupSMBH
-from autogalaxy.pipeline.phase.extensions import CombinedHyperPhase
-from autogalaxy.pipeline.phase.extensions import HyperGalaxyPhase
-from autogalaxy.pipeline.phase.extensions.hyper_galaxy_phase import HyperGalaxyPhase
 from autogalaxy.pipeline.phase.extensions.hyper_phase import HyperPhase
-from autogalaxy.pipeline.phase.extensions.inversion_phase import (
-    InversionPhase,
-    ModelFixingHyperPhase,
-)
 from autogalaxy.pipeline.pipeline import PipelineDataset
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles import (
@@ -86,4 +79,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = '1.8.6'
+__version__ = "1.8.6"

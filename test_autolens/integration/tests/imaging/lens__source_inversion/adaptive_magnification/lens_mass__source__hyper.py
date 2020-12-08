@@ -33,9 +33,7 @@ def make_pipeline(name, path_prefix):
     phase1.search.n_live_points = 60
     phase1.search.facc = 0.8
 
-    phase1.extend_with_multiple_hyper_phases(
-        hyper_galaxies_search=True, include_inversion=True
-    )
+    phase1.extend_with_hyper_phase(hyper_galaxies_search=True, include_inversion=True)
 
     phase2 = al.PhaseImaging(
         name="phase[2]",
@@ -57,9 +55,7 @@ def make_pipeline(name, path_prefix):
     phase2.search.n_live_points = 40
     phase2.search.facc = 0.8
 
-    phase2.extend_with_multiple_hyper_phases(
-        hyper_galaxies_search=True, include_inversion=True
-    )
+    phase2.extend_with_hyper_phase(hyper_galaxies_search=True, include_inversion=True)
 
     phase3 = al.PhaseImaging(
         name="phase[3]",
@@ -81,9 +77,7 @@ def make_pipeline(name, path_prefix):
     phase3.search.n_live_points = 40
     phase3.search.facc = 0.8
 
-    phase3.extend_with_multiple_hyper_phases(
-        hyper_galaxies_search=True, include_inversion=True
-    )
+    phase3.extend_with_hyper_phase(hyper_galaxies_search=True, include_inversion=True)
 
     return al.PipelineDataset(name, path_prefix, phase1, phase2, phase3)
 
