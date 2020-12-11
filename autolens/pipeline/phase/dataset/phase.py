@@ -35,7 +35,7 @@ class PhaseDataset(dataset.PhaseDataset):
         self.settings.settings_lens = self.settings.settings_lens.modify_positions_threshold(
             positions_threshold=positions_threshold
         )
-        self.check_positions(positions=dataset.positions)
+        #   self.check_positions(positions=dataset.positions)
 
         preload_sparse_grids_of_planes = self.preload_pixelization_grids_of_planes_from_results(
             results=results
@@ -175,6 +175,9 @@ class PhaseDataset(dataset.PhaseDataset):
         return None
 
     def check_positions(self, positions):
+
+        print(self.settings.settings_lens.positions_threshold)
+        print(positions)
 
         if (
             self.settings.settings_lens.positions_threshold is not None

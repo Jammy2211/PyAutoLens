@@ -26,6 +26,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         hyper_background_noise=None,
         settings=SettingsPhaseInterferometer(),
         cosmology=cosmo.Planck15,
+        use_as_hyper_dataset=False,
     ):
 
         """
@@ -44,7 +45,11 @@ class PhaseInterferometer(dataset.PhaseDataset):
         search.paths.tag = settings.phase_tag_with_inversion
 
         super().__init__(
-            search=search, galaxies=galaxies, settings=settings, cosmology=cosmology
+            search=search,
+            galaxies=galaxies,
+            settings=settings,
+            cosmology=cosmology,
+            use_as_hyper_dataset=use_as_hyper_dataset,
         )
 
         self.hyper_background_noise = hyper_background_noise
@@ -89,17 +94,6 @@ class PhaseInterferometer(dataset.PhaseDataset):
             cosmology=self.cosmology,
             results=results,
         )
-
-    @property
-    def model_classes_for_hyper_phase(self) -> tuple:
-        if self.has_pixelization:
-            return tuple(
-                filter(
-                    None,
-                    [pix.Pixelization, reg.Regularization, self.hyper_background_noise],
-                )
-            )
-        return tuple(filter(None, [self.hyper_background_noise]))
 
     def output_phase_info(self):
 

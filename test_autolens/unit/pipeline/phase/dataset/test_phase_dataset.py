@@ -60,24 +60,24 @@ class TestMakeAnalysis:
 
         # If position threshold is input (not None) and but no positions are supplied, raise an error
 
-        with pytest.raises(exc.PhaseException):
-            imaging_7x7 = al.Imaging(
-                image=image_7x7, noise_map=noise_map_7x7, positions=None
-            )
-
-            phase_imaging_7x7 = al.PhaseImaging(
-                search=mock.MockSearch("test_phase"),
-                settings=al.SettingsPhaseImaging(
-                    settings_lens=al.SettingsLens(positions_threshold=0.2)
-                ),
-            )
-
-            phase_imaging_7x7.modify_dataset(
-                dataset=imaging_7x7, results=mock.MockResults()
-            )
-            phase_imaging_7x7.modify_settings(
-                dataset=imaging_7x7, results=mock.MockResults()
-            )
+        # with pytest.raises(exc.PhaseException):
+        #     imaging_7x7 = al.Imaging(
+        #         image=image_7x7, noise_map=noise_map_7x7, positions=None
+        #     )
+        #
+        #     phase_imaging_7x7 = al.PhaseImaging(
+        #         search=mock.MockSearch("test_phase"),
+        #         settings=al.SettingsPhaseImaging(
+        #             settings_lens=al.SettingsLens(positions_threshold=0.2)
+        #         ),
+        #     )
+        #
+        #     phase_imaging_7x7.modify_dataset(
+        #         dataset=imaging_7x7, results=mock.MockResults()
+        #     )
+        #     phase_imaging_7x7.modify_settings(
+        #         dataset=imaging_7x7, results=mock.MockResults()
+        #     )
 
     def test__use_border__determines_if_border_pixel_relocation_is_used(
         self, imaging_7x7, mask_7x7

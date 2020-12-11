@@ -7,9 +7,10 @@ from autogalaxy.profiles import (
     mass_profiles as mp,
     light_and_mass_profiles as lmp,
 )
+from autogalaxy.hyper import hyper_data as hd
 from autogalaxy.galaxy import galaxy as g
 
-from typing import Union
+from typing import Union, Optional
 
 
 class SetupHyper(setup.SetupHyper):
@@ -17,8 +18,8 @@ class SetupHyper(setup.SetupHyper):
         self,
         hyper_galaxies_lens: bool = False,
         hyper_galaxies_source: bool = False,
-        hyper_image_sky: bool = False,
-        hyper_background_noise: bool = False,
+        hyper_image_sky: Optional[type(hd.HyperImageSky)] = None,
+        hyper_background_noise: Optional[type(hd.HyperBackgroundNoise)] = None,
         hyper_fixed_after_source: bool = False,
         hyper_search_no_inversion: af.NonLinearSearch = None,
         hyper_search_with_inversion: af.NonLinearSearch = None,
@@ -99,9 +100,7 @@ class SetupHyper(setup.SetupHyper):
         - hyper[galaxies_lens__bg_sky]
         - hyper[bg_sky__bg_noise__fixed_after_source]
         """
-        if not any(
-            [self.hyper_galaxies, self.hyper_image_sky, self.hyper_background_noise]
-        ):
+        if self.hypers_all_off:
             return ""
 
         return (
@@ -125,9 +124,7 @@ class SetupHyper(setup.SetupHyper):
         - hyper[galaxies__bg_sky]
         - hyper[bg_sky__bg_noise]
         """
-        if not any(
-            [self.hyper_galaxies, self.hyper_image_sky, self.hyper_background_noise]
-        ):
+        if self.hypers_all_off:
             return ""
 
         return (
@@ -188,8 +185,7 @@ class SetupHyper(setup.SetupHyper):
         """
         if not self.hyper_fixed_after_source:
             return ""
-        elif self.hyper_fixed_after_source:
-            return f"__{conf.instance['notation']['setup_tags']['hyper']['hyper_fixed_after_source']}"
+        return f"__{conf.instance['notation']['setup_tags']['hyper']['hyper_fixed_after_source']}"
 
     def hyper_galaxy_lens_from_result(
         self, result: af.Result, noise_factor_is_model=False
@@ -219,30 +215,35 @@ class SetupHyper(setup.SetupHyper):
         af.PriorModel(g.HyperGalaxy)
             The hyper-galaxy that is passed to the next phase.
         """
-        if self.hyper_galaxies:
 
-            hyper_galaxy = af.PriorModel(g.HyperGalaxy)
+        if not self.hyper_galaxies_lens:
+            return None
 
-            if noise_factor_is_model:
+        if result.hyper.model.galaxies.lens.hyper_galaxy is None:
+            return None
 
-                hyper_galaxy.noise_factor = (
-                    result.hyper.model.galaxies.lens.hyper_galaxy.noise_factor
-                )
+        hyper_galaxy = af.PriorModel(g.HyperGalaxy)
 
-            else:
+        if noise_factor_is_model:
 
-                hyper_galaxy.noise_factor = (
-                    result.hyper.instance.galaxies.lens.hyper_galaxy.noise_factor
-                )
-
-            hyper_galaxy.contribution_factor = (
-                result.hyper.instance.optional.galaxies.lens.hyper_galaxy.contribution_factor
-            )
-            hyper_galaxy.noise_power = (
-                result.hyper.instance.optional.galaxies.lens.hyper_galaxy.noise_power
+            hyper_galaxy.noise_factor = (
+                result.hyper.model.galaxies.lens.hyper_galaxy.noise_factor
             )
 
-            return hyper_galaxy
+        else:
+
+            hyper_galaxy.noise_factor = (
+                result.hyper.instance.galaxies.lens.hyper_galaxy.noise_factor
+            )
+
+        hyper_galaxy.contribution_factor = (
+            result.hyper.instance.galaxies.lens.hyper_galaxy.contribution_factor
+        )
+        hyper_galaxy.noise_power = (
+            result.hyper.instance.galaxies.lens.hyper_galaxy.noise_power
+        )
+
+        return hyper_galaxy
 
     def hyper_galaxy_source_from_result(
         self, result: af.Result, noise_factor_is_model=False
@@ -272,30 +273,35 @@ class SetupHyper(setup.SetupHyper):
         af.PriorModel(g.HyperGalaxy)
             The hyper-galaxy that is passed to the next phase.
         """
-        if self.hyper_galaxies:
 
-            hyper_galaxy = af.PriorModel(g.HyperGalaxy)
+        if not self.hyper_galaxies_source:
+            return None
 
-            if noise_factor_is_model:
+        if result.hyper.model.galaxies.source.hyper_galaxy is None:
+            return None
 
-                hyper_galaxy.noise_factor = (
-                    result.hyper.model.galaxies.source.hyper_galaxy.noise_factor
-                )
+        hyper_galaxy = af.PriorModel(g.HyperGalaxy)
 
-            else:
+        if noise_factor_is_model:
 
-                hyper_galaxy.noise_factor = (
-                    result.hyper.instance.galaxies.source.hyper_galaxy.noise_factor
-                )
-
-            hyper_galaxy.contribution_factor = (
-                result.hyper.instance.optional.galaxies.source.hyper_galaxy.contribution_factor
-            )
-            hyper_galaxy.noise_power = (
-                result.hyper.instance.optional.galaxies.source.hyper_galaxy.noise_power
+            hyper_galaxy.noise_factor = (
+                result.hyper.model.galaxies.source.hyper_galaxy.noise_factor
             )
 
-            return hyper_galaxy
+        else:
+
+            hyper_galaxy.noise_factor = (
+                result.hyper.instance.galaxies.source.hyper_galaxy.noise_factor
+            )
+
+        hyper_galaxy.contribution_factor = (
+            result.hyper.instance.galaxies.source.hyper_galaxy.contribution_factor
+        )
+        hyper_galaxy.noise_power = (
+            result.hyper.instance.galaxies.source.hyper_galaxy.noise_power
+        )
+
+        return hyper_galaxy
 
 
 class AbstractSetupMass:

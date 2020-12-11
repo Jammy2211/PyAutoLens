@@ -54,7 +54,7 @@ class TestAbstractPhaseVisualizer:
         )
 
         assert (
-            path.join(plot_path, "image", "subplots", "subplot_tracer.png")
+            path.join(plot_path, "image", "ray_tracing", "subplot_tracer.png")
             in plot_patch.paths
         )
 
@@ -84,7 +84,7 @@ class TestPhaseDataSetVisualizer:
         )
 
         assert (
-            path.join(plot_path, "image", "subplots", "subplot_tracer.png")
+            path.join(plot_path, "image", "ray_tracing", "subplot_tracer.png")
             in plot_patch.paths
         )
         assert (
@@ -160,7 +160,7 @@ class TestPhaseImagingVisualizer:
         visualizer.visualize_imaging(paths=af.Paths())
 
         assert (
-            path.join(plot_path, "image", "subplots", "subplot_imaging.png")
+            path.join(plot_path, "image", "imaging", "subplot_imaging.png")
             in plot_patch.paths
         )
         assert path.join(plot_path, "image", "imaging", "image.png") in plot_patch.paths
@@ -212,7 +212,7 @@ class TestPhaseImagingVisualizer:
         )
 
         assert (
-            path.join(plot_path, "image", "subplots", "subplot_fit_imaging.png")
+            path.join(plot_path, "image", "fit_imaging", "subplot_fit_imaging.png")
             in plot_patch.paths
         )
         assert (
@@ -273,7 +273,7 @@ class TestPhaseImagingVisualizer:
         )
 
         assert (
-            path.join(plot_path, "image", "subplots", "subplot_inversion.png")
+            path.join(plot_path, "image", "inversion", "subplot_inversion.png")
             in plot_patch.paths
         )
         assert (
@@ -396,7 +396,9 @@ class TestPhaseInterferometerVisualizer:
         visualizer.visualize_interferometer(paths=af.Paths())
 
         assert (
-            path.join(plot_path, "image", "subplots", "subplot_interferometer.png")
+            path.join(
+                plot_path, "image", "interferometer", "subplot_interferometer.png"
+            )
             in plot_patch.paths
         )
         assert (
@@ -436,7 +438,12 @@ class TestPhaseInterferometerVisualizer:
         )
 
         assert (
-            path.join(plot_path, "image", "subplots", "subplot_fit_interferometer.png")
+            path.join(
+                plot_path,
+                "image",
+                "fit_interferometer",
+                "subplot_fit_interferometer.png",
+            )
             in plot_patch.paths
         )
         assert (
@@ -487,7 +494,7 @@ class TestPhaseInterferometerVisualizer:
             in plot_patch.paths
         )
 
-        #    assert path.join(plot_path, "image","subplots","subplot_inversion.png") in plot_patch.paths
+        #    assert path.join(plot_path, "image","inversion","subplot_inversion.png") in plot_patch.paths
         assert (
             path.join(plot_path, "image", "inversion", "reconstructed_image.png")
             in plot_patch.paths

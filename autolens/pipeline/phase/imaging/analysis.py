@@ -74,7 +74,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             raise FitException from e
 
     def masked_imaging_fit_for_tracer(
-        self, tracer, hyper_image_sky, hyper_background_noise
+        self, tracer, hyper_image_sky, hyper_background_noise, use_hyper_scalings=True
     ):
 
         return fit.FitImaging(
@@ -82,6 +82,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
+            use_hyper_scaling=use_hyper_scalings,
             settings_pixelization=self.settings.settings_pixelization,
             settings_inversion=self.settings.settings_inversion,
         )
@@ -139,41 +140,6 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
 
         self.visualizer.visualize_imaging(paths=paths)
 
-        if self.visualizer.plot_fit_no_hyper:
-
-            tracer = self.tracer_for_instance(instance=instance)
-
-            fit = self.masked_imaging_fit_for_tracer(
-                tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
-            )
-
-            if tracer.has_mass_profile:
-
-                try:
-
-                    visualizer = self.visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-                        preloaded_critical_curves=tracer.critical_curves,
-                        preloaded_caustics=tracer.caustics,
-                    )
-
-                except (Exception, IndexError, ValueError):
-
-                    visualizer = self.visualizer
-
-            else:
-
-                visualizer = self.visualizer
-
-            try:
-                visualizer.visualize_fit(
-                    paths=paths,
-                    fit=fit,
-                    during_analysis=during_analysis,
-                    subfolders="fit_no_hyper",
-                )
-            except Exception:
-                pass
-
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
         hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
@@ -224,6 +190,25 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_model_image=self.hyper_model_image,
             contribution_maps_of_galaxies=tracer.contribution_maps_of_planes,
         )
+
+        if self.visualizer.plot_fit_no_hyper:
+
+            fit = self.masked_imaging_fit_for_tracer(
+                tracer=tracer,
+                hyper_image_sky=None,
+                hyper_background_noise=None,
+                use_hyper_scalings=False,
+            )
+
+            try:
+                visualizer.visualize_fit(
+                    paths=paths,
+                    fit=fit,
+                    during_analysis=during_analysis,
+                    subfolders="fit_no_hyper",
+                )
+            except Exception:
+                pass
 
     def make_attributes(self):
         return Attributes(

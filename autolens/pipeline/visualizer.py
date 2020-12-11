@@ -58,8 +58,11 @@ class AbstractVisualizer:
         )
 
     @staticmethod
-    def sub_plotter_from_paths(paths: af.Paths, subfolders="subplots"):
-
+    def sub_plotter_from_paths(paths: af.Paths, subfolders=None):
+        if subfolders is None:
+            return lensing_plotters.SubPlotter(
+                output=mat_objs.Output(path=paths.image_path, format="png")
+            )
         return lensing_plotters.SubPlotter(
             output=mat_objs.Output(
                 path=path.join(paths.image_path, subfolders), format="png"
@@ -213,7 +216,7 @@ class PhaseDatasetVisualizer(AbstractVisualizer):
     def visualize_ray_tracing(self, paths: af.Paths, tracer, during_analysis):
 
         plotter = self.plotter_from_paths(paths=paths, subfolders="ray_tracing")
-        sub_plotter = self.sub_plotter_from_paths(paths=paths)
+        sub_plotter = self.sub_plotter_from_paths(paths=paths, subfolders="ray_tracing")
 
         if self.plot_subplot_ray_tracing:
 
@@ -365,7 +368,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
     def visualize_imaging(self, paths: af.Paths):
 
         plotter = self.plotter_from_paths(paths=paths, subfolders="imaging")
-        sub_plotter = self.sub_plotter_from_paths(paths=paths)
+        sub_plotter = self.sub_plotter_from_paths(paths=paths, subfolders="imaging")
 
         if self.plot_subplot_dataset:
             aa.plot.Imaging.subplot_imaging(
@@ -404,7 +407,7 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
     ):
 
         plotter = self.plotter_from_paths(paths=paths, subfolders=subfolders)
-        sub_plotter = self.sub_plotter_from_paths(paths=paths)
+        sub_plotter = self.sub_plotter_from_paths(paths=paths, subfolders=subfolders)
 
         if self.plot_subplot_fit:
             fit_imaging_plots.subplot_fit_imaging(
@@ -435,6 +438,10 @@ class PhaseImagingVisualizer(PhaseDatasetVisualizer):
         if fit.inversion is not None:
 
             if self.plot_subplot_inversion:
+                sub_plotter = self.sub_plotter_from_paths(
+                    paths=paths, subfolders="inversion"
+                )
+
                 inversion_plots.subplot_inversion(
                     inversion=fit.inversion,
                     image_positions=self.include.positions_from_fit(fit=fit),
@@ -604,7 +611,9 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
 
     def visualize_interferometer(self, paths: af.Paths):
 
-        sub_plotter = self.sub_plotter_from_paths(paths=paths)
+        sub_plotter = self.sub_plotter_from_paths(
+            paths=paths, subfolders="interferometer"
+        )
 
         if self.plot_subplot_dataset:
             aa.plot.Interferometer.subplot_interferometer(
@@ -624,9 +633,11 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
             plotter=plotter,
         )
 
-    def visualize_fit(self, paths: af.Paths, fit, during_analysis):
+    def visualize_fit(
+        self, paths: af.Paths, fit, during_analysis, subfolders="fit_interferometer"
+    ):
 
-        sub_plotter = self.sub_plotter_from_paths(paths=paths)
+        sub_plotter = self.sub_plotter_from_paths(paths=paths, subfolders=subfolders)
 
         if self.plot_subplot_fit:
 
@@ -638,7 +649,7 @@ class PhaseInterferometerVisualizer(PhaseDatasetVisualizer):
                 fit=fit, include=self.include, sub_plotter=sub_plotter
             )
 
-        plotter = self.plotter_from_paths(paths=paths, subfolders="fit_interferometer")
+        plotter = self.plotter_from_paths(paths=paths, subfolders=subfolders)
 
         fit_interferometer_plots.individuals(
             fit=fit,

@@ -95,7 +95,7 @@ class StochasticPhase(extensions.HyperPhase):
 
         phase.use_as_hyper_dataset = False
 
-        phase.model = self.make_model(results.last.instance)
+        phase.model = self.make_model(instance=results.last.instance)
 
         # TODO : HACK
 
