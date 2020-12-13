@@ -34,18 +34,18 @@ class TestSetupHyper:
 
     def test__tag(self):
 
-        setup_hyper = al.SetupHyper(hyper_image_sky=False, hyper_background_noise=False)
+        setup_hyper = al.SetupHyper(hyper_image_sky=None, hyper_background_noise=None)
 
         assert setup_hyper.tag == ""
 
-        setup_hyper = al.SetupHyper(hyper_image_sky=True)
+        setup_hyper = al.SetupHyper(hyper_image_sky=al.hyper_data.HyperImageSky)
 
         assert setup_hyper.tag == "hyper[__bg_sky]"
 
         setup_hyper = al.SetupHyper(
             hyper_galaxies_lens=True,
             hyper_galaxies_source=False,
-            hyper_image_sky=True,
+            hyper_image_sky=al.hyper_data.HyperImageSky,
             hyper_background_noise=True,
         )
 
@@ -54,7 +54,7 @@ class TestSetupHyper:
         setup_hyper = al.SetupHyper(
             hyper_galaxies_lens=True,
             hyper_galaxies_source=True,
-            hyper_background_noise=True,
+            hyper_background_noise=al.hyper_data.HyperBackgroundNoise,
             hyper_fixed_after_source=True,
         )
 
@@ -175,7 +175,9 @@ class TestSetupPipeline:
     def test__tag(self):
 
         hyper = al.SetupHyper(
-            hyper_galaxies_lens=True, hyper_background_noise=True, hyper_image_sky=True
+            hyper_galaxies_lens=True,
+            hyper_background_noise=al.hyper_data.HyperBackgroundNoise,
+            hyper_image_sky=al.hyper_data.HyperImageSky,
         )
 
         setup_mass = al.SetupMassLightDark(align_bulge_dark_centre=True)

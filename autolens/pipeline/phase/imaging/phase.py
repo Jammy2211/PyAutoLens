@@ -3,6 +3,8 @@ import autofit as af
 from astropy import cosmology as cosmo
 from autolens.pipeline.phase import dataset
 from autolens.dataset import imaging
+from autoarray.inversion import pixelizations as pix
+from autoarray.inversion import regularization as reg
 from autolens.pipeline.phase.settings import SettingsPhaseImaging
 from autolens.pipeline.phase.imaging.analysis import Analysis
 from autolens.pipeline.phase.imaging.result import Result
@@ -26,6 +28,7 @@ class PhaseImaging(dataset.PhaseDataset):
         hyper_background_noise=None,
         settings=SettingsPhaseImaging(),
         cosmology=cosmo.Planck15,
+        use_as_hyper_dataset=False
     ):
 
         """
@@ -42,7 +45,11 @@ class PhaseImaging(dataset.PhaseDataset):
         """
 
         super().__init__(
-            search=search, settings=settings, galaxies=galaxies, cosmology=cosmology
+            search=search,
+            settings=settings,
+            galaxies=galaxies,
+            cosmology=cosmology,
+            use_as_hyper_dataset=use_as_hyper_dataset,
         )
 
         self.hyper_image_sky = hyper_image_sky

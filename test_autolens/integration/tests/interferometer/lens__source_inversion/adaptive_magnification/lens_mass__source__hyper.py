@@ -37,7 +37,7 @@ def make_pipeline(name, path_prefix, real_space_mask):
     phase1.search.n_live_points = 60
     phase1.search.facc = 0.8
 
-    phase1.extend_with_multiple_hyper_phases(hyper_galaxies_search=True)
+    phase1.extend_with_hyper_phase(hyper_galaxies_search=True)
 
     phase2 = al.PhaseInterferometer(
         name="phase[2]",
@@ -51,7 +51,7 @@ def make_pipeline(name, path_prefix, real_space_mask):
                 redshift=1.0,
                 pixelization=phase1.result.model.galaxies.source.pixelization,
                 regularization=phase1.result.model.galaxies.source.regularization,
-                hyper_galaxy=phase1.result.hyper_combined.instance.galaxies.source.hyper_galaxy,
+                hyper_galaxy=phase1.result.hyper.instance.galaxies.source.hyper_galaxy,
             ),
         ),
         real_space_mask=real_space_mask,

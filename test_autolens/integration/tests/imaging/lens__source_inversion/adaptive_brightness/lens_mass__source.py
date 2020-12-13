@@ -22,7 +22,7 @@ def make_pipeline(name, path_prefix):
     pixeliation = af.PriorModel(al.pix.VoronoiBrightnessImage)
     pixeliation.pixels = 100
 
-    phase1 = phase1.extend_with_multiple_hyper_phases(
+    phase1 = phase1.extend_with_hyper_phase(
         setup_hyper=al.SetupPipeline(), include_inversion=False
     )
 
@@ -41,7 +41,7 @@ def make_pipeline(name, path_prefix):
         search=af.DynestyStatic(n_live_points=40, evidence_tolerance=10.0),
     )
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(
+    phase2 = phase2.extend_with_hyper_phase(
         setup_hyper=al.SetupPipeline(), include_inversion=True
     )
 

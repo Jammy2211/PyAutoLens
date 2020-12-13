@@ -193,9 +193,7 @@ class TestHyperMethods:
             real_space_mask=mask_7x7,
         )
 
-        phase_interferometer_7.extend_with_multiple_hyper_phases(
-            setup_hyper=al.SetupHyper()
-        )
+        phase_interferometer_7.extend_with_hyper_phase(setup_hyper=al.SetupHyper())
 
         analysis = phase_interferometer_7.make_analysis(
             dataset=interferometer_7, mask=mask_7x7, results=results

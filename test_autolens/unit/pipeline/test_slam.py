@@ -29,14 +29,7 @@ class TestSLaMPipelineMass:
         setup_mass = al.SetupMassTotal(with_shear=False)
         pipeline_mass = al.SLaMPipelineMass(setup_mass=setup_mass)
 
-        assert pipeline_mass.shear_from_previous_pipeline() == None
-
-        setup_mass = al.SetupMassTotal(with_shear=True)
-        pipeline_mass = al.SLaMPipelineMass(setup_mass=setup_mass)
-
-        assert isinstance(
-            pipeline_mass.shear_from_previous_pipeline(), af.AbstractPromise
-        )
+        assert pipeline_mass.shear_from_result(result=None) == None
 
 
 class TestSLaM:

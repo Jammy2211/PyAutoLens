@@ -7,6 +7,15 @@ like this one:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/development/imageaxis.png
 
+Getting Started
+---------------
+
+To get started checkout our `readthedocs <https://pyautolens.readthedocs.io/>`_,
+where you'll find the installation guide, a complete overview of **PyAutoLens**'s features, examples
+scripts and tutorials, detailed API documentation and
+the `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
+on which introduces new users to strong gravitational lensing with **PyAutoLens**.
+
 Installation
 ------------
 
@@ -101,8 +110,8 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     aplt.Tracer.image(tracer=tracer, grid=grid)
 
 With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates
-a simple analysis which fits the lens galaxy's mass with an EllipticalIsothermal and the source galaxy's light
-with an EllipticalSersic.
+a simple analysis which fits the lens galaxy's mass with an ``EllipticalIsothermal`` and the source galaxy's light
+with an ``EllipticalSersic``.
 
 .. code-block:: python
 
@@ -152,8 +161,9 @@ with an EllipticalSersic.
     )
 
     """
-    We pass the imaging dataset and mask to the phase's run function,
-    fitting it with the lens model. & plot the resulting fit.
+    We pass the imaging dataset and mask to the phase's run function, fitting it
+    with the lens model & outputting the results (dynesty samples, visualization,
+    etc.) to hard-disk.
     """
 
     result = phase.run(dataset=imaging, mask=mask)
@@ -164,15 +174,6 @@ with an EllipticalSersic.
     """
 
     print(result.samples.max_log_likelihood_instance)
-
-Getting Started
----------------
-
-To get started checkout our `readthedocs <https://pyautolens.readthedocs.io/>`_,
-where you'll find the installation guide, a complete overview of **PyAutoLens**'s features, examples
-scripts and tutorials, detailed API documentation and
-the `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
-on which introduces new users to strong gravitational lensing with **PyAutoLens**.
 
 Support
 -------

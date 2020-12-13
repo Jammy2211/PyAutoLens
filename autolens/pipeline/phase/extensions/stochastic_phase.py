@@ -12,7 +12,7 @@ from scipy.stats import norm
 import numpy as np
 
 # noinspection PyAbstractClass
-class StochasticPhase(extensions.ModelFixingHyperPhase):
+class StochasticPhase(extensions.HyperPhase):
     def __init__(
         self,
         phase: abstract.AbstractPhase,
@@ -27,14 +27,12 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
         self.stochastic_sigma = stochastic_sigma
 
         super().__init__(
-            phase=phase,
-            hyper_search=hyper_search,
-            model_classes=model_classes,
-            hyper_name="stochastic",
+            phase=phase, hyper_search=hyper_search, model_classes=model_classes
         )
 
-    def make_model(self, instance):
-        return instance.as_model(self.model_classes)
+    @property
+    def hyper_name(self):
+        return "stochastic"
 
     def run_hyper(
         self,
@@ -97,7 +95,7 @@ class StochasticPhase(extensions.ModelFixingHyperPhase):
 
         phase.use_as_hyper_dataset = False
 
-        phase.model = self.make_model(results.last.instance)
+        phase.model = self.make_model(instance=results.last.instance)
 
         # TODO : HACK
 

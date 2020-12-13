@@ -3,6 +3,8 @@ import autofit as af
 from astropy import cosmology as cosmo
 from autolens.dataset import interferometer
 from autolens.pipeline.phase import dataset
+from autoarray.inversion import pixelizations as pix
+from autoarray.inversion import regularization as reg
 from autolens.pipeline.phase.settings import SettingsPhaseInterferometer
 from autolens.pipeline.phase.interferometer.analysis import Analysis
 from autolens.pipeline.phase.interferometer.result import Result
@@ -24,6 +26,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
         hyper_background_noise=None,
         settings=SettingsPhaseInterferometer(),
         cosmology=cosmo.Planck15,
+        use_as_hyper_dataset=False,
     ):
 
         """
@@ -42,7 +45,11 @@ class PhaseInterferometer(dataset.PhaseDataset):
         search.paths.tag = settings.phase_tag_with_inversion
 
         super().__init__(
-            search=search, galaxies=galaxies, settings=settings, cosmology=cosmology
+            search=search,
+            galaxies=galaxies,
+            settings=settings,
+            cosmology=cosmology,
+            use_as_hyper_dataset=use_as_hyper_dataset,
         )
 
         self.hyper_background_noise = hyper_background_noise

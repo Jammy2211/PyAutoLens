@@ -43,17 +43,17 @@ def make_pipeline(name, path_prefix, real_space_mask):
     phase2.search.n_live_points = 60
     phase2.search.facc = 0.7
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(hyper_galaxies_search=True)
+    phase2 = phase2.extend_with_hyper_phase(hyper_galaxies_search=True)
 
     class HyperLensSourcePlanePhase(al.PhaseInterferometer):
         def customize_priors(self, results):
 
             self.galaxies.source_0.hyper_galaxy = (
-                results.last.hyper_combined.instance.galaxies.source_0.hyper_galaxy
+                results.last.hyper.instance.galaxies.source_0.hyper_galaxy
             )
 
             self.galaxies.source_1.hyper_galaxy = (
-                results.last.hyper_combined.instance.galaxies.source_1.hyper_galaxy
+                results.last.hyper.instance.galaxies.source_1.hyper_galaxy
             )
 
     phase3 = HyperLensSourcePlanePhase(
@@ -65,12 +65,12 @@ def make_pipeline(name, path_prefix, real_space_mask):
             source_0=al.GalaxyModel(
                 redshift=1.0,
                 light=phase2.result.model.galaxies.source_0.setup_light,
-                hyper_galaxy=phase2.result.hyper_combined.instance.galaxies.source_0.hyper_galaxy,
+                hyper_galaxy=phase2.result.hyper.instance.galaxies.source_0.hyper_galaxy,
             ),
             source_1=al.GalaxyModel(
                 redshift=1.0,
                 light=phase2.result.model.galaxies.source_1.setup_light,
-                hyper_galaxy=phase2.result.hyper_combined.instance.galaxies.source_1.hyper_galaxy,
+                hyper_galaxy=phase2.result.hyper.instance.galaxies.source_1.hyper_galaxy,
             ),
         ),
         real_space_mask=real_space_mask,

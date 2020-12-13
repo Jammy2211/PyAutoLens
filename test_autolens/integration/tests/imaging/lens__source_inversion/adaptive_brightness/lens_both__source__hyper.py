@@ -46,7 +46,7 @@ def make_pipeline(name, path_prefix):
     phase2.search.facc = 0.8
     phase2.search.evidence_tolerance = 1000.0
 
-    phase2 = phase2.extend_with_multiple_hyper_phases(
+    phase2 = phase2.extend_with_hyper_phase(
         hyper_galaxies_search=True, include_inversion=True
     )
 
@@ -64,7 +64,7 @@ def make_pipeline(name, path_prefix):
     phase3.search.facc = 0.8
     phase3.search.evidence_tolerance = 1000.0
 
-    phase3 = phase3.extend_with_multiple_hyper_phases(
+    phase3 = phase3.extend_with_hyper_phase(
         hyper_galaxies_search=True, include_inversion=True
     )
 

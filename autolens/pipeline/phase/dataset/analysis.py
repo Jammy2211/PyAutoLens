@@ -1,4 +1,3 @@
-from autoconf import conf
 import autofit as af
 from autolens.lens import ray_tracing
 from os import path
@@ -20,13 +19,6 @@ class Analysis:
 
     def stochastic_log_evidences_for_instance(self, instance) -> List[float]:
         raise NotImplementedError()
-
-    def save_results_for_aggregator(
-        self, paths: af.Paths, samples: af.OptimizerSamples
-    ):
-
-        if conf.instance["general"]["hyper"]["stochastic_outputs"]:
-            self.save_stochastic_outputs(paths=paths, samples=samples)
 
     def save_stochastic_outputs(self, paths: af.Paths, samples: af.OptimizerSamples):
 
@@ -59,7 +51,7 @@ class Analysis:
 
         self.visualizer.visualize_stochastic_histogram(
             paths=paths,
-            log_evidences=stochastic_log_evidences_json_file,
+            log_evidences=stochastic_log_evidences,
             max_log_evidence=np.max(samples.log_likelihoods),
             histogram_bins=self.settings.settings_lens.stochastic_histogram_bins,
         )
