@@ -124,6 +124,28 @@ class SLaMPipelineSourceInversion(AbstractSLaMPipeline):
 
         super().__init__(setup_source=setup_source)
 
+    def shear_from_result(self, result: af.Result, as_instance=False):
+        """Return the shear `PriorModel` from a previous pipeline, where:
+
+        1) If the shear was included in the *Source* pipeline and `with_shear` is `False` in the `Mass` object, it is
+           returned using this pipeline result as a model.
+        2) If the shear was not included in the *Source* pipeline and *with_shear* is `False` in the `Mass` object,
+            it is returned as a new *ExternalShear* PriorModel.
+        3) If `with_shear` is `True` in the `Mass` object, it is returned as None and omitted from the lens model.
+
+        Parameters
+        ----------
+        result : af.Result
+            The result of a previous light or mass pipeline.
+        """
+        if self.setup_mass.with_shear:
+            if result.model.galaxies.lens.shear is not None:
+                if not as_instance:
+                    return result.model.galaxies.lens.shear
+                else:
+                    return result.instance.galaxies.lens.shear
+            else:
+                return ag.mp.ExternalShear
 
 class SLaMPipelineLightParametric(AbstractSLaMPipeline):
     def __init__(self, setup_light: ag_setup.SetupLightParametric = None):
@@ -215,7 +237,7 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
                 centre=results.last.instance.galaxies.lens.sersic.centre
             )
 
-    def shear_from_results(self, results: af.Result, as_instance=False):
+    def shear_from_result(self, result: af.Result, as_instance=False):
         """Return the shear `PriorModel` from a previous pipeline, where:
 
         1) If the shear was included in the *Source* pipeline and `with_shear` is `False` in the `Mass` object, it is
@@ -230,11 +252,11 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
             The result of a previous light or mass pipeline.
         """
         if self.setup_mass.with_shear:
-            if results.last.model.galaxies.lens.shear is not None:
+            if result.model.galaxies.lens.shear is not None:
                 if not as_instance:
-                    return results.last.model.galaxies.lens.shear
+                    return result.model.galaxies.lens.shear
                 else:
-                    return results.last.instance.galaxies.lens.shear
+                    return result.instance.galaxies.lens.shear
             else:
                 return ag.mp.ExternalShear
 
@@ -617,23 +639,45 @@ class SLaM:
             result=results.last
         )
 
-        if source_is_model:
+        if not self.setup_hyper.hyper_fixed_after_source:
 
-            return ag.GalaxyModel(
-                redshift=self.redshift_source,
-                pixelization=results.last.hyper.instance.galaxies.source.pixelization,
-                regularization=results.last.hyper.model.galaxies.source.regularization,
-                hyper_galaxy=hyper_galaxy,
-            )
+            if source_is_model:
+
+                return ag.GalaxyModel(
+                    redshift=self.redshift_source,
+                    pixelization=results.last.hyper.instance.galaxies.source.pixelization,
+                    regularization=results.last.hyper.model.galaxies.source.regularization,
+                    hyper_galaxy=hyper_galaxy,
+                )
+
+            else:
+
+                return ag.GalaxyModel(
+                    redshift=self.redshift_source,
+                    pixelization=results.last.hyper.instance.galaxies.source.pixelization,
+                    regularization=results.last.hyper.instance.galaxies.source.regularization,
+                    hyper_galaxy=hyper_galaxy,
+                )
 
         else:
 
-            return ag.GalaxyModel(
-                redshift=self.redshift_source,
-                pixelization=results.last.hyper.instance.galaxies.source.pixelization,
-                regularization=results.last.hyper.instance.galaxies.source.regularization,
-                hyper_galaxy=hyper_galaxy,
-            )
+            if source_is_model:
+
+                return ag.GalaxyModel(
+                    redshift=self.redshift_source,
+                    pixelization=results.last.instance.galaxies.source.pixelization,
+                    regularization=results.last.model.galaxies.source.regularization,
+                    hyper_galaxy=hyper_galaxy,
+                )
+
+            else:
+
+                return ag.GalaxyModel(
+                    redshift=self.redshift_source,
+                    pixelization=results.last.instance.galaxies.source.pixelization,
+                    regularization=results.last.instance.galaxies.source.regularization,
+                    hyper_galaxy=hyper_galaxy,
+                )
 
     def source_from_results(
         self, results: af.ResultsCollection, source_is_model: bool = False
