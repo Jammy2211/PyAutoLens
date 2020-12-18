@@ -80,14 +80,11 @@ class TestImagePassing:
             cosmology=cosmo.Planck15,
         )
 
-        result = al.PhaseImaging.Result(
-            samples=mock.MockSamples(max_log_likelihood_instance=instance),
-            previous_model=af.ModelMapper(),
-            analysis=analysis,
-            search=None,
+        stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
+            instance=instance
         )
 
-        assert result.stochastic_log_evidences == None
+        assert stochastic_log_evidences == None
 
         galaxies.source = al.Galaxy(
             redshift=1.0,
@@ -105,11 +102,8 @@ class TestImagePassing:
             cosmology=cosmo.Planck15,
         )
 
-        result = al.PhaseImaging.Result(
-            samples=mock.MockSamples(max_log_likelihood_instance=instance),
-            previous_model=af.ModelMapper(),
-            analysis=analysis,
-            search=None,
+        stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
+            instance=instance
         )
 
-        assert result.stochastic_log_evidences[0] != result.stochastic_log_evidences[1]
+        assert stochastic_log_evidences[0] != stochastic_log_evidences[1]

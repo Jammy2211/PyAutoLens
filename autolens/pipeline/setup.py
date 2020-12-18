@@ -460,6 +460,7 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
         - mass[light_dark__bulge_]
         - mass[total_power_law__centre_(0.0,0.0)]
         """
+
         return (
             f"{self.component_name}[light_dark"
             f"{self.bulge_prior_model_tag}"

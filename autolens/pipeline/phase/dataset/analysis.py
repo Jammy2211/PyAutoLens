@@ -1,6 +1,7 @@
 import autofit as af
 from autolens.lens import ray_tracing
 from os import path
+import os
 import pickle
 from typing import List
 import json

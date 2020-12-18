@@ -8,6 +8,8 @@ from autolens.pipeline import setup
 
 from typing import Union
 
+import copy
+
 
 class AbstractSLaMPipeline:
     def __init__(
@@ -146,6 +148,7 @@ class SLaMPipelineSourceInversion(AbstractSLaMPipeline):
                     return result.instance.galaxies.lens.shear
             else:
                 return ag.mp.ExternalShear
+
 
 class SLaMPipelineLightParametric(AbstractSLaMPipeline):
     def __init__(self, setup_light: ag_setup.SetupLightParametric = None):

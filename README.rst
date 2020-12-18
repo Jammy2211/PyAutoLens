@@ -12,9 +12,8 @@ Getting Started
 
 To get started checkout our `readthedocs <https://pyautolens.readthedocs.io/>`_,
 where you'll find the installation guide, a complete overview of **PyAutoLens**'s features, examples
-scripts and tutorials, detailed API documentation and
-the `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
-on which introduces new users to strong gravitational lensing with **PyAutoLens**.
+scripts and the `HowToLens Jupyter notebook tutorials <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
+which introduces new users to **PyAutoLens**.
 
 Installation
 ------------
