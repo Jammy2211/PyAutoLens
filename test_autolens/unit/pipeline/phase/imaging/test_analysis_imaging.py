@@ -7,6 +7,7 @@ import pytest
 from astropy import cosmology as cosmo
 from autolens.fit.fit import FitImaging
 from autolens.mock import mock
+import numpy as np
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -195,6 +196,75 @@ class TestFit:
 
         assert (fit.tracer.galaxies[0].hyper_galaxy_image == lens_hyper_image).all()
         assert fit_likelihood == fit.log_likelihood
+
+    def test__figure_of_merit__with_stochastic_likelihood_resamples_matches_galaxy_profiles(
+            self, masked_imaging_7x7
+    ):
+
+        galaxies = af.ModelInstance()
+        galaxies.lens = al.Galaxy(
+            redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.2)
+        )
+        galaxies.source = al.Galaxy(
+            redshift=1.0,
+            pixelization=al.pix.VoronoiBrightnessImage(pixels=5),
+            regularization=al.reg.Constant(),
+        )
+
+        instance = af.ModelInstance()
+        instance.galaxies = galaxies
+
+        lens_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        lens_hyper_image[4] = 10.0
+        source_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        source_hyper_image[4] = 10.0
+        hyper_model_image = al.Array.full(
+            fill_value=0.5, shape_2d=(3, 3), pixel_scales=0.1
+        )
+
+        hyper_galaxy_image_path_dict = {
+            ("galaxies", "lens"): lens_hyper_image,
+            ("galaxies", "source"): source_hyper_image,
+        }
+
+        results = mock.MockResults(
+            use_as_hyper_dataset=True,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+            hyper_model_image=hyper_model_image,
+        )
+
+        analysis = al.PhaseImaging.Analysis(
+            masked_imaging=masked_imaging_7x7,
+            settings=al.SettingsPhaseImaging(
+                settings_lens=al.SettingsLens(stochastic_likelihood_resamples=2)
+            ),
+            results=results,
+            cosmology=cosmo.Planck15,
+        )
+
+        fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
+
+        # tracer = analysis.tracer_for_instance(instance=instance)
+
+        # settings_pixelization = al.SettingsPixelization(kmeans_seed=1)
+        #
+        # fit_0 = al.FitImaging(
+        #     masked_imaging=masked_imaging_7x7,
+        #     tracer=tracer,
+        #     settings_pixelization=settings_pixelization,
+        #     settings_inversion=analysis.settings.settings_inversion
+        # )
+        #
+        # settings_pixelization = al.SettingsPixelization(kmeans_seed=2)
+        #
+        # fit_1 = al.FitImaging(
+        #     masked_imaging=masked_imaging_7x7,
+        #     tracer=tracer,
+        #     settings_pixelization=settings_pixelization,
+        #     settings_inversion=analysis.settings.settings_inversion
+        # )
+
+        assert fit_figure_of_merit == pytest.approx(np.mean([-22.947017744853934, -29.10665765185219]), 1.0e-8)
 
     def test__stochastic_histogram_for_instance(self, masked_imaging_7x7):
 

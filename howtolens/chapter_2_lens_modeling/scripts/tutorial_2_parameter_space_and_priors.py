@@ -36,7 +36,7 @@ The point is, like we did for the simple functions above, we again have a parame
 down analytically and its undoubtedly very complex and non-linear. Fortunately, we've already learnt how to search
 it, and find the solutions which maximize our log_likelihood function!
 
-Lets inspect the results of the last tutorial`s non-linear search. we're going to look at what are called `probably
+Lets inspect the results of the last tutorial's non-linear search. we're going to look at what are called `probably
 density functions` or PDF`s for short. These represent where the highest log likelihood regions of parameter space were
 found for each parameter.
 
@@ -198,7 +198,7 @@ phase = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t2_custom_priors", n_live_points=40
     ),
     settings=settings,
-    galaxies=dict(lens=lens, source=source),
+    galaxies=af.CollectionPriorModel(lens=lens, source=source),
 )
 
 print(

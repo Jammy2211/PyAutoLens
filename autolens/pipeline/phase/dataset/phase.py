@@ -166,7 +166,7 @@ class PhaseDataset(dataset.PhaseDataset):
             and not self.pixelization_is_model
         ):
             if self.pixelization.__class__ is results.last.pixelization.__class__:
-                if hasattr(results.last, "hyper_combined"):
+                if hasattr(results.last, "hyper"):
                     return (
                         results.last.hyper.max_log_likelihood_pixelization_grids_of_planes
                     )
@@ -175,9 +175,6 @@ class PhaseDataset(dataset.PhaseDataset):
         return None
 
     def check_positions(self, positions):
-
-        print(self.settings.settings_lens.positions_threshold)
-        print(positions)
 
         if (
             self.settings.settings_lens.positions_threshold is not None

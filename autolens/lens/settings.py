@@ -11,6 +11,7 @@ class SettingsLens:
         positions_threshold=None,
         auto_positions_factor=None,
         auto_positions_minimum_threshold=None,
+        stochastic_likelihood_resamples = None,
         stochastic_samples: int = 250,
         stochastic_histogram_bins: int = 10,
     ):
@@ -18,6 +19,7 @@ class SettingsLens:
         self.positions_threshold = positions_threshold
         self.auto_positions_factor = auto_positions_factor
         self.auto_positions_minimum_threshold = auto_positions_minimum_threshold
+        self.stochastic_likelihood_resamples = stochastic_likelihood_resamples
         self.stochastic_samples = stochastic_samples
         self.stochastic_histogram_bins = stochastic_histogram_bins
 
@@ -25,7 +27,8 @@ class SettingsLens:
     def tag(self):
         return (
             f"{conf.instance['notation']['settings_tags']['lens']['lens']}["
-            f"{self.positions_threshold_tag}]"
+            f"{self.positions_threshold_tag}"
+            f"{self.stochastic_likelihood_resamples_tag}]"
         )
 
     @property
@@ -45,6 +48,23 @@ class SettingsLens:
                 "no_positions_threshold"
             ]
         return conf.instance["notation"]["settings_tags"]["lens"]["positions_threshold"]
+
+    @property
+    def stochastic_likelihood_resamples_tag(self):
+        """Generate a positions threshold tag, to customize phase names based on the threshold that positions are required \
+        to trace within one another.
+
+        This changes the phase name 'name' as follows:
+
+        positions_threshold = 1 -> name
+        positions_threshold = 2 -> phase_name_positions_threshold_2
+        positions_threshold = 2 -> phase_name_positions_threshold_2
+        """
+
+        if self.stochastic_likelihood_resamples is None:
+            return ""
+        return f'__{conf.instance["notation"]["settings_tags"]["lens"]["stochastic_likelihood_resamples"]}_' \
+               f'{self.stochastic_likelihood_resamples}'
 
     def check_positions_trace_within_threshold_via_tracer(self, positions, tracer):
 

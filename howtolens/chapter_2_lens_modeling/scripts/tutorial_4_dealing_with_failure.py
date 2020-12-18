@@ -203,7 +203,7 @@ phase = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t4_custom_priors", n_live_points=50
     ),
     settings=settings,
-    galaxies=dict(lens=lens, source=source),
+    galaxies=af.CollectionPriorModel(lens=lens, source=source),
 )
 
 print(
@@ -292,7 +292,7 @@ phase_light_traces_mass = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t4_light_traces_mass", n_live_points=40
     ),
     settings=settings,
-    galaxies=dict(lens=lens, source=source),
+    galaxies=af.CollectionPriorModel(lens=lens, source=source),
 )
 
 print(

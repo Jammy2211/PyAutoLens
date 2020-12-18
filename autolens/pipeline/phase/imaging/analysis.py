@@ -9,6 +9,7 @@ from autolens.pipeline import visualizer
 from autolens.pipeline.phase.dataset import analysis as analysis_dataset
 from autogalaxy.pipeline.phase.imaging.analysis import Attributes as AgAttributes
 
+import numpy as np
 import copy
 
 
@@ -58,20 +59,51 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             instance=instance
         )
 
-        try:
-            fit = self.masked_imaging_fit_for_tracer(
-                tracer=tracer,
-                hyper_image_sky=hyper_image_sky,
-                hyper_background_noise=hyper_background_noise,
-            )
-            return fit.figure_of_merit
-        except (
-            PixelizationException,
-            InversionException,
-            GridException,
-            OverflowError,
-        ) as e:
-            raise FitException from e
+        if self.settings.settings_lens.stochastic_likelihood_resamples is None:
+
+            try:
+                return self.masked_imaging_fit_for_tracer(
+                    tracer=tracer,
+                    hyper_image_sky=hyper_image_sky,
+                    hyper_background_noise=hyper_background_noise,
+                ).figure_of_merit
+            except (
+                PixelizationException,
+                InversionException,
+                GridException,
+                OverflowError,
+            ) as e:
+                raise FitException from e
+
+        else:
+
+            figures_of_merit = []
+
+            for i in range(self.settings.settings_lens.stochastic_likelihood_resamples):
+
+                settings_pixelization = copy.deepcopy(self.settings.settings_pixelization)
+
+                settings_pixelization.kmeans_seed = i
+        #       settings_pixelization.is_stochastic = True
+
+                try:
+                    figures_of_merit.append(fit.FitImaging(
+                        masked_imaging=self.masked_dataset,
+                        tracer=tracer,
+                        hyper_image_sky=hyper_image_sky,
+                        hyper_background_noise=hyper_background_noise,
+                        settings_pixelization=settings_pixelization,
+                        settings_inversion=self.settings.settings_inversion,
+                    ).log_evidence)
+                except (
+                        PixelizationException,
+                        InversionException,
+                        GridException,
+                        OverflowError,
+                ) as e:
+                    raise FitException from e
+
+            return np.mean(figures_of_merit)
 
     def masked_imaging_fit_for_tracer(
         self, tracer, hyper_image_sky, hyper_background_noise, use_hyper_scalings=True

@@ -152,7 +152,7 @@ phase_slow = al.PhaseImaging(
         evidence_tolerance=0.8,
     ),
     settings=settings,
-    galaxies=dict(
+    galaxies=af.CollectionPriorModel(
         lens=al.GalaxyModel(
             redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
@@ -198,7 +198,7 @@ phase_fast = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t6_fast", n_live_points=30
     ),
     settings=settings,
-    galaxies=dict(
+    galaxies=af.CollectionPriorModel(
         lens=al.GalaxyModel(
             redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
@@ -270,7 +270,7 @@ phase_pso = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t6_pso", n_particles=50, iters=1000
     ),
     settings=settings,
-    galaxies=dict(
+    galaxies=af.CollectionPriorModel(
         lens=al.GalaxyModel(
             redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
@@ -326,7 +326,7 @@ phase_mcmc = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t6_mcmc", nwalkers=50, nsteps=1000
     ),
     settings=settings,
-    galaxies=dict(
+    galaxies=af.CollectionPriorModel(
         lens=al.GalaxyModel(
             redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
