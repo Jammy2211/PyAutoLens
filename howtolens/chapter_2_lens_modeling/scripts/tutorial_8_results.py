@@ -49,7 +49,7 @@ phase = al.PhaseImaging(
     settings=al.SettingsPhaseImaging(
         settings_masked_imaging=al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
     ),
-    galaxies=dict(
+    galaxies=af.CollectionPriorModel(
         lens_galaxy=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
         source_galaxy=al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential),
     ),

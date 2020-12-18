@@ -155,7 +155,7 @@ phase1 = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t5_linking_phases_1", n_live_points=40
     ),
     settings=settings,
-    galaxies=dict(lens=lens, source=source),
+    galaxies=af.CollectionPriorModel(lens=lens, source=source),
 )
 
 # %%
@@ -283,7 +283,7 @@ phase2 = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t5_linking_phases_2", n_live_points=40
     ),
     settings=settings,
-    galaxies=dict(lens=lens, source=source),
+    galaxies=af.CollectionPriorModel(lens=lens, source=source),
 )
 
 print(
@@ -325,7 +325,7 @@ phase2_pass = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t5_linking_phases_2_pass", n_live_points=40
     ),
     settings=settings,
-    galaxies=dict(
+    galaxies=af.CollectionPriorModel(
         lens=phase1_result.model.galaxies.lens,
         source=phase1_result.model.galaxies.source,
     ),
@@ -407,7 +407,9 @@ phase2_pass = al.PhaseImaging(
         n_live_points=40,
     ),
     settings=settings,
-    galaxies=dict(lens=lens, source=phase1_result.model.galaxies.source),
+    galaxies=af.CollectionPriorModel(
+        lens=lens, source=phase1_result.model.galaxies.source
+    ),
 )
 
 # phase2_pass.run(dataset=imaging, mask=mask)

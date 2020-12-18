@@ -95,7 +95,7 @@ phase_with_custom_mask = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t7_with_custom_mask", n_live_points=40
     ),
     settings=settings,
-    galaxies=dict(
+    galaxies=af.CollectionPriorModel(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
         source=al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential),
     ),
@@ -192,7 +192,7 @@ phase_with_positions = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t7_with_positions", n_live_points=40
     ),
     settings=settings,
-    galaxies=dict(
+    galaxies=af.CollectionPriorModel(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
         source=al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential),
     ),
@@ -270,7 +270,7 @@ phase_with_x2_positions = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t7_with_x2_positions", n_live_points=40
     ),
     settings=settings,
-    galaxies=dict(
+    galaxies=af.CollectionPriorModel(
         lens=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),
         source_0=al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential),
         source_1=al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponential),

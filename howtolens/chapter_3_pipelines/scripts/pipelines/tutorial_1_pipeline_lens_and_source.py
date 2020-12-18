@@ -65,7 +65,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         search=af.DynestyStatic(
             name="phase[1]_light[bulge]", n_live_points=30, evidence_tolerance=5.0
         ),
-        galaxies=dict(
+        galaxies=af.CollectionPriorModel(
             lens=al.GalaxyModel(redshift=redshift_lens, bulge=al.lp.EllipticalSersic)
         ),
         settings=settings,
@@ -100,7 +100,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
             n_live_points=50,
             evidence_tolerance=5.0,
         ),
-        galaxies=dict(
+        galaxies=af.CollectionPriorModel(
             lens=al.GalaxyModel(
                 redshift=redshift_lens,
                 bulge=phase1.result.instance.galaxies.lens.bulge,
@@ -126,7 +126,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
         search=af.DynestyStatic(
             name="phase[3]_light[bulge]_mass[sie]_source[bulge]", n_live_points=100
         ),
-        galaxies=dict(
+        galaxies=af.CollectionPriorModel(
             lens=al.GalaxyModel(
                 redshift=redshift_lens,
                 bulge=phase1.result.model.galaxies.lens.bulge,

@@ -70,7 +70,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
             n_live_points=40,
             evidence_tolerance=5.0,
         ),
-        galaxies=dict(
+        galaxies=af.CollectionPriorModel(
             lens=al.GalaxyModel(
                 redshift=redshift_lens, mass=al.mp.EllipticalIsothermal
             ),
@@ -93,7 +93,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
             n_live_points=40,
             evidence_tolerance=5.0,
         ),
-        galaxies=dict(
+        galaxies=af.CollectionPriorModel(
             lens=al.GalaxyModel(
                 redshift=redshift_lens, mass=phase1.result.model.galaxies.lens.mass
             ),
@@ -114,7 +114,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
             n_live_points=50,
             evidence_tolerance=5.0,
         ),
-        galaxies=dict(
+        galaxies=af.CollectionPriorModel(
             lens=al.GalaxyModel(
                 redshift=redshift_lens, mass=phase2.result.model.galaxies.lens.mass
             ),
@@ -136,7 +136,7 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
             n_live_points=50,
             evidence_tolerance=0.3,
         ),
-        galaxies=dict(
+        galaxies=af.CollectionPriorModel(
             lens=al.GalaxyModel(
                 redshift=redshift_lens, mass=phase3.result.model.galaxies.lens.mass
             ),

@@ -194,7 +194,7 @@ class SetupHyper(setup.SetupHyper):
         Returns the `HyperGalaxy` `PriorModel` from a previous pipeline or phase of the lens galaxy in a template
         PyAutoLens pipeline.
 
-        The `HyperGalaxy` is extracted from the `hyper_combined` phase of the previous pipeline, and by default has its
+        The `HyperGalaxy` is extracted from the `hyper` phase of the previous pipeline, and by default has its
         parameters passed as instance's which are fixed in the next phase.
 
         If `noise_factor_is_model` is `True` the `noise_factor` parameter of the `HyperGalaxy` is passed as a model and
@@ -252,7 +252,7 @@ class SetupHyper(setup.SetupHyper):
         Returns the `HyperGalaxy` `PriorModel` from a previous pipeline or phase of the source galaxy in a template
         PyAutosource pipeline.
 
-        The `HyperGalaxy` is extracted from the `hyper_combined` phase of the previous pipeline, and by default has its
+        The `HyperGalaxy` is extracted from the `hyper` phase of the previous pipeline, and by default has its
         parameters passed as instance's which are fixed in the next phase.
 
         If `noise_factor_is_model` is `True` the `noise_factor` parameter of the `HyperGalaxy` is passed as a model and

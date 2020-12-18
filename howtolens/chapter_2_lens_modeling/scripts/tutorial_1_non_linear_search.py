@@ -188,7 +188,9 @@ phase = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t1_non_linear_search", n_live_points=40
     ),
     settings=settings,
-    galaxies=dict(lens_galaxy=lens_galaxy_model, source_galaxy=source_galaxy_model),
+    galaxies=af.CollectionPriorModel(
+        lens_galaxy=lens_galaxy_model, source_galaxy=source_galaxy_model
+    ),
 )
 
 # %%

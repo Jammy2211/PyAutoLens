@@ -97,7 +97,7 @@ phase = al.PhaseImaging(
         n_live_points=80,
     ),
     settings=settings,
-    galaxies=dict(
+    galaxies=af.CollectionPriorModel(
         lens_galaxy=al.GalaxyModel(
             redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
@@ -156,7 +156,7 @@ phase = al.PhaseImaging(
         n_live_points=5,
     ),
     settings=settings,
-    galaxies=dict(
+    galaxies=af.CollectionPriorModel(
         lens_galaxy=al.GalaxyModel(
             redshift=0.5, bulge=al.lp.EllipticalSersic, mass=al.mp.EllipticalIsothermal
         ),
