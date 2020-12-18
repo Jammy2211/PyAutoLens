@@ -4,6 +4,8 @@ import autolens as al
 from autofit import exc
 from functools import partial
 import numpy as np
+from os import path
+import json
 
 
 def tracer_generator_from_aggregator(aggregator: af.Aggregator):
@@ -288,7 +290,9 @@ def fit_interferometer_from_agg_obj(
 
 
 def grid_search_result_as_array(
-    aggregator: af.Aggregator, use_log_evidences: bool = True
+    aggregator: af.Aggregator,
+    use_log_evidences: bool = True,
+    use_stochastic_log_evidences: bool = False,
 ) -> np.ndarray:
 
     grid_search_result_gen = aggregator.values("grid_search_result")
@@ -306,7 +310,9 @@ def grid_search_result_as_array(
         )
 
     return grid_search_log_evidences_as_array_from_grid_search_result(
-        grid_search_result=grid_search_results[0], use_log_evidences=use_log_evidences
+        grid_search_result=grid_search_results[0],
+        use_log_evidences=use_log_evidences,
+        use_stochastic_log_evidences=use_stochastic_log_evidences,
     )
 
 
@@ -345,7 +351,9 @@ def grid_search_subhalo_centres_as_array(aggregator: af.Aggregator) -> al.Array:
 
 
 def grid_search_log_evidences_as_array_from_grid_search_result(
-    grid_search_result, use_log_evidences=True
+    grid_search_result,
+    use_log_evidences=True,
+    use_stochastic_log_evidences: bool = False,
 ) -> al.Array:
 
     if grid_search_result.no_dimensions != 2:
@@ -353,12 +361,34 @@ def grid_search_log_evidences_as_array_from_grid_search_result(
             "The GridSearchResult is not dimensions 2, meaning a 2D array cannot be made."
         )
 
-    if use_log_evidences:
+    if use_log_evidences and not use_stochastic_log_evidences:
         values = [
             value
             for values in grid_search_result.log_evidence_values
             for value in values
         ]
+    elif use_stochastic_log_evidences:
+
+        stochastic_log_evidences = []
+
+        for result in grid_search_result.results:
+
+            stochastic_log_evidences_json_file = path.join(
+                result.search.paths.output_path, "stochastic_log_evidences.json"
+            )
+
+            try:
+                with open(stochastic_log_evidences_json_file, "r") as f:
+                    stochastic_log_evidences_array = np.asarray(json.load(f))
+            except FileNotFoundError:
+                raise FileNotFoundError(
+                    f"File not found at {result.search.paths.output_path}"
+                )
+
+            stochastic_log_evidences.append(np.median(stochastic_log_evidences_array))
+
+        values = stochastic_log_evidences
+
     else:
         values = [
             value

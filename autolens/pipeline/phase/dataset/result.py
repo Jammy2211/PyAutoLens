@@ -1,3 +1,7 @@
+from os import path
+import numpy as np
+import json
+
 from autogalaxy.pipeline.phase.dataset import result as ag_result
 from autolens.pipeline.phase.abstract import result
 
@@ -25,6 +29,13 @@ class Result(result.Result, ag_result.Result):
 
     @property
     def stochastic_log_evidences(self):
-        return self.analysis.stochastic_log_evidences_for_instance(
-            instance=self.instance
+
+        stochastic_log_evidences_json_file = path.join(
+            self.search.paths.output_path, "stochastic_log_evidences.json"
         )
+
+        try:
+            with open(stochastic_log_evidences_json_file, "r") as f:
+                return np.asarray(json.load(f))
+        except FileNotFoundError:
+            pass

@@ -28,9 +28,11 @@ def copy_pickle_files_to_agg_max(agg_max_log_likelihood):
     search_max_log_likelihood = list(agg_max_log_likelihood.values("search"))
     pickle_path_max_log_likelihood = search_max_log_likelihood[0].paths.pickle_path
 
-    pickle_path_grid_search = str(pickle_path_max_log_likelihood).replace(
+    pickle_path_max_log_likelihood = str(pickle_path_max_log_likelihood).replace(
         r"/", path.sep
     )
+
+    pickle_path_grid_search = pickle_path_max_log_likelihood
 
     pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
     pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
@@ -44,26 +46,35 @@ def copy_pickle_files_to_agg_max(agg_max_log_likelihood):
     pickle_path_grid_search = path.join(pickle_path_grid_search, "pickles")
 
     src_files = os.listdir(pickle_path_grid_search)
+
     for file_name in src_files:
         full_file_name = path.join(pickle_path_grid_search, file_name)
         if path.isfile(full_file_name):
             shutil.copy(full_file_name, pickle_path_max_log_likelihood)
 
 
-def detection_array_from(agg_before, agg_detect, use_log_evidences=True):
+def detection_array_from(
+    agg_before, agg_detect, use_log_evidences=True, use_stochastic_log_evidences=False
+):
 
     fit_imaging_before = list(
         agg.fit_imaging_generator_from_aggregator(aggregator=agg_before)
     )[0]
 
-    if use_log_evidences:
+    if use_log_evidences and not use_stochastic_log_evidences:
         figure_of_merit_before = list(agg_before.values("samples"))[0].log_evidence
+    elif use_stochastic_log_evidences:
+        figure_of_merit_before = np.median(
+            list(agg_before.values("stochastic_log_evidences"))[0]
+        )
     else:
         figure_of_merit_before = fit_imaging_before.figure_of_merit
 
     return (
         agg.grid_search_result_as_array(
-            aggregator=agg_detect, use_log_evidences=use_log_evidences
+            aggregator=agg_detect,
+            use_log_evidences=use_log_evidences,
+            use_stochastic_log_evidences=use_stochastic_log_evidences,
         )
         - figure_of_merit_before,
     )[0]
@@ -74,7 +85,12 @@ def mass_array_from(agg_detect):
 
 
 def subplot_detection_agg(
-    agg_before, agg_detect, use_log_evidences=True, include=None, sub_plotter=None
+    agg_before,
+    agg_detect,
+    use_log_evidences=True,
+    use_stochastic_log_evidences=False,
+    include=None,
+    sub_plotter=None,
 ):
 
     fit_imaging_before = list(
@@ -95,6 +111,7 @@ def subplot_detection_agg(
         agg_before=agg_before,
         agg_detect=agg_detect,
         use_log_evidences=use_log_evidences,
+        use_stochastic_log_evidences=use_stochastic_log_evidences,
     )
 
     mass_array = mass_array_from(agg_detect=agg_detect)
