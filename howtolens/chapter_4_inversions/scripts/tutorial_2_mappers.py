@@ -71,7 +71,7 @@ source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[1]
 
 # %%
 """
-Next, we setup our `Pixelization`.nd `Mapper` using the tracer`s source-plane grid.
+Next, we setup our `Pixelization` and `Mapper` using the tracer`s source-plane grid.
 """
 
 # %%

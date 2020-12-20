@@ -202,7 +202,7 @@ Physically, this isn't a problem, it just means that we don't see a `central ima
 which trace through the centre of the lens are demagnified. However, if the lens galaxy had a cored mass distribution 
 we would see the central image.
 
-This is a problem for our `Pixelization`.nd `Mapper`, which in the source-plane fits these demagnified pixels like 
+This is a problem for our `Pixelization` and `Mapper`, which in the source-plane fits these demagnified pixels like 
 any other pixels. This has two negative consequences:
 
  1) The `Rectangular` `Pixelization`.we `overlay` over the source-plane is much larger than for the annular `Mask2D` 

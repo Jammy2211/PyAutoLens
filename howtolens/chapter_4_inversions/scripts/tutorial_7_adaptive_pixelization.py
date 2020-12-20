@@ -86,7 +86,7 @@ aplt.FitImaging.subplot_of_plane(
 Okay, so lets think about the `Rectangular` `Pixelization`. Is this the optimal way to reconstruct our source? Are 
 there features in the source-plane that arn`t ideal? How do you think we could do a better job?
 
-Well, given we're doing a whole tutorial on using a different `Pixelization`.o this grid, you`ve probably guessed that
+Well, given we're doing a whole tutorial on using a different `Pixelization` to this grid, you`ve probably guessed that
 it isn't optimal. Infact, its pretty rubbish, and not a `Pixelization`.e should actually want to model any lenses with!
 
 So what is wrong with the grid? Well, lets think about the source reconstruction.

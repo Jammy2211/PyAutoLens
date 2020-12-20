@@ -219,31 +219,16 @@ class SetupHyper(setup.SetupHyper):
         if not self.hyper_galaxies_lens:
             return None
 
-        if result.hyper.model.galaxies.lens.hyper_galaxy is None:
-            return None
-
-        hyper_galaxy = af.PriorModel(g.HyperGalaxy)
-
-        if noise_factor_is_model:
-
-            hyper_galaxy.noise_factor = (
-                result.hyper.model.galaxies.lens.hyper_galaxy.noise_factor
+        if hasattr(result, "hyper"):
+            return self.hyper_galaxy_from_galaxy_model_and_instance(
+                galaxy_model=result.hyper.model.galaxies.lens,
+                galaxy_instance=result.hyper.instance.galaxies.lens,
             )
 
-        else:
-
-            hyper_galaxy.noise_factor = (
-                result.hyper.instance.galaxies.lens.hyper_galaxy.noise_factor
-            )
-
-        hyper_galaxy.contribution_factor = (
-            result.hyper.instance.galaxies.lens.hyper_galaxy.contribution_factor
+        return self.hyper_galaxy_from_galaxy_model_and_instance(
+            galaxy_model=result.model.galaxies.lens,
+            galaxy_instance=result.instance.galaxies.lens,
         )
-        hyper_galaxy.noise_power = (
-            result.hyper.instance.galaxies.lens.hyper_galaxy.noise_power
-        )
-
-        return hyper_galaxy
 
     def hyper_galaxy_source_from_result(
         self, result: af.Result, noise_factor_is_model=False
@@ -277,29 +262,35 @@ class SetupHyper(setup.SetupHyper):
         if not self.hyper_galaxies_source:
             return None
 
-        if result.hyper.model.galaxies.source.hyper_galaxy is None:
-            return None
+        if hasattr(result, "hyper"):
+            return self.hyper_galaxy_from_galaxy_model_and_instance(
+                galaxy_model=result.hyper.model.galaxies.source,
+                galaxy_instance=result.hyper.instance.galaxies.source,
+            )
+
+        return self.hyper_galaxy_from_galaxy_model_and_instance(
+            galaxy_model=result.model.galaxies.source,
+            galaxy_instance=result.instance.galaxies.source,
+        )
+
+    def hyper_galaxy_from_galaxy_model_and_instance(
+        self, galaxy_model, galaxy_instance, noise_factor_is_model=False
+    ):
 
         hyper_galaxy = af.PriorModel(g.HyperGalaxy)
 
         if noise_factor_is_model:
 
-            hyper_galaxy.noise_factor = (
-                result.hyper.model.galaxies.source.hyper_galaxy.noise_factor
-            )
+            hyper_galaxy.noise_factor = galaxy_model.hyper_galaxy.noise_factor
 
         else:
 
-            hyper_galaxy.noise_factor = (
-                result.hyper.instance.galaxies.source.hyper_galaxy.noise_factor
-            )
+            hyper_galaxy.noise_factor = galaxy_instance.hyper_galaxy.noise_factor
 
         hyper_galaxy.contribution_factor = (
-            result.hyper.instance.galaxies.source.hyper_galaxy.contribution_factor
+            galaxy_instance.hyper_galaxy.contribution_factor
         )
-        hyper_galaxy.noise_power = (
-            result.hyper.instance.galaxies.source.hyper_galaxy.noise_power
-        )
+        hyper_galaxy.noise_power = galaxy_instance.hyper_galaxy.noise_power
 
         return hyper_galaxy
 
