@@ -110,7 +110,7 @@ def make_pipeline(setup, settings):
 
     """
     We now `extend` phase 1 with an additional `inversion phase` which uses the maximum log likelihood mass model of 
-    phase 1 above to refine the `Inversion`, by fitting only the parameters of the `Pixelization` and _Regularization_
+    phase 1 above to refine the `Inversion`, by fitting only the parameters of the `Pixelization` and `Regularization`
     (in this case, the shape of the `VoronoiMagnification` and `Regularization` coefficient of the `Constant`.
 
     The the `Inversion` phase results are accessible as attributes of the phase results and used in phase 3 below.

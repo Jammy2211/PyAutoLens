@@ -241,7 +241,7 @@ There are three more things about a linear `Inversion` that are worth knowing:
  3) The inversion`s solution is regularized. But wait, that`s what we'll cover in the next tutorial!
 
 Finally, let me show you how easy it is to fit an image with an `Inversion` using a `FitImaging` oboject. Instead of 
-giving the source galaxy a `LightProfile`, we give it a `Pixelization`.nd `Regularization`, and pass it to a `Tracer`.
+giving the source galaxy a `LightProfile`, we give it a `Pixelization` and `Regularization`, and pass it to a `Tracer`.
 """
 
 # %%

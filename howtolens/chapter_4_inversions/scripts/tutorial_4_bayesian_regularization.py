@@ -195,7 +195,7 @@ For this, we invoke the `Bayesian Evidence`, which quantifies the goodness of th
 
  - This leaves us with a large number of solutions which all fit the data equally well (e.g., to the noise level). 
  To determine the best-fit from these solutions the Bayesian log evidence quantifies the complexity of each 
- solution`s source reconstruction. If the `Inversion` requires lots of pixels and a low level of _Regularization_
+ solution`s source reconstruction. If the `Inversion` requires lots of pixels and a low level of `Regularization`
  to achieve a good fit, the Bayesian log evidence decreases. It penalizes solutions which are complex, which, in 
  a Bayesian sense, are less probable (you may want to look up `Occam`s Razor`).
 

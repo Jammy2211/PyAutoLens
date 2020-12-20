@@ -53,7 +53,7 @@ rectangular = al.pix.Rectangular(shape=(25, 25))
 # %%
 """
 By itself, a `Pixelization`.oesn`t tell us much. It has no `Grid` of coordinates, no image, and nothing which tells it 
-about the lens we're fitting. This information comes when we use the `Pixelization`.o set up a `Mapper`. we'll use 
+about the lens we're fitting. This information comes when we use the `Pixelization` to set up a `Mapper`. we'll use 
 the (traced) source-plane `Grid` to set up this mapper.
 """
 

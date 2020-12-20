@@ -11,7 +11,7 @@ class SettingsLens:
         positions_threshold=None,
         auto_positions_factor=None,
         auto_positions_minimum_threshold=None,
-        stochastic_likelihood_resamples = None,
+        stochastic_likelihood_resamples=None,
         stochastic_samples: int = 250,
         stochastic_histogram_bins: int = 10,
     ):
@@ -63,8 +63,10 @@ class SettingsLens:
 
         if self.stochastic_likelihood_resamples is None:
             return ""
-        return f'__{conf.instance["notation"]["settings_tags"]["lens"]["stochastic_likelihood_resamples"]}_' \
-               f'{self.stochastic_likelihood_resamples}'
+        return (
+            f'__{conf.instance["notation"]["settings_tags"]["lens"]["stochastic_likelihood_resamples"]}_'
+            f"{self.stochastic_likelihood_resamples}"
+        )
 
     def check_positions_trace_within_threshold_via_tracer(self, positions, tracer):
 

@@ -81,25 +81,29 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
 
             for i in range(self.settings.settings_lens.stochastic_likelihood_resamples):
 
-                settings_pixelization = copy.deepcopy(self.settings.settings_pixelization)
+                settings_pixelization = copy.deepcopy(
+                    self.settings.settings_pixelization
+                )
 
                 settings_pixelization.kmeans_seed = i
-        #       settings_pixelization.is_stochastic = True
+                #       settings_pixelization.is_stochastic = True
 
                 try:
-                    figures_of_merit.append(fit.FitImaging(
-                        masked_imaging=self.masked_dataset,
-                        tracer=tracer,
-                        hyper_image_sky=hyper_image_sky,
-                        hyper_background_noise=hyper_background_noise,
-                        settings_pixelization=settings_pixelization,
-                        settings_inversion=self.settings.settings_inversion,
-                    ).log_evidence)
+                    figures_of_merit.append(
+                        fit.FitImaging(
+                            masked_imaging=self.masked_dataset,
+                            tracer=tracer,
+                            hyper_image_sky=hyper_image_sky,
+                            hyper_background_noise=hyper_background_noise,
+                            settings_pixelization=settings_pixelization,
+                            settings_inversion=self.settings.settings_inversion,
+                        ).log_evidence
+                    )
                 except (
-                        PixelizationException,
-                        InversionException,
-                        GridException,
-                        OverflowError,
+                    PixelizationException,
+                    InversionException,
+                    GridException,
+                    OverflowError,
                 ) as e:
                     raise FitException from e
 

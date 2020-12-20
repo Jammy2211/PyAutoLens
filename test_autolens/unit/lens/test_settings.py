@@ -34,7 +34,7 @@ class TestTags:
             positions_threshold=1.0,
             auto_positions_factor=2.56,
             auto_positions_minimum_threshold=0.5,
-            stochastic_likelihood_resamples=2
+            stochastic_likelihood_resamples=2,
         )
         assert settings.tag == "lens[pos_on__lh_resamples_2]"
 
