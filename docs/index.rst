@@ -173,7 +173,7 @@ strong lens datasets, reconstructing the lensed source galaxy on adaptive pixel-
 datasets.
 
 For new **PyAutoLens** users, we recommend they start by
-`installing PyAutoLens <https://pyautolens.readthedocs.io/en/latest/general/installation.html>`_ (if you haven't
+`installing PyAutoLens <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ (if you haven't
 already!), read through the example scripts on
 the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ and take the
 `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_ on
