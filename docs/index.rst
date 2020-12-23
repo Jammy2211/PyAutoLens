@@ -20,7 +20,7 @@ imaged source galaxy whose light has been distorted into an `Einstein ring'. The
 reconstructions of the source's lensed and unlensed light distributions, which are created using a model of the lens
 galaxy's mass to trace backwards how the source's light is gravitationally lensed.
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/development/imageaxis.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/development/imageaxis.png
   :width: 1100
   :alt: Alternative text
 
@@ -173,7 +173,7 @@ strong lens datasets, reconstructing the lensed source galaxy on adaptive pixel-
 datasets.
 
 For new **PyAutoLens** users, we recommend they start by
-`installing PyAutoLens <https://pyautolens.readthedocs.io/en/latest/general/installation.html>`_ (if you haven't
+`installing PyAutoLens <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ (if you haven't
 already!), read through the example scripts on
 the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ and take the
 `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_ on
