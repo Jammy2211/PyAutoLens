@@ -231,8 +231,8 @@ Plots
    LightProfileCentreScatter
    MassProfileCentreScatter
    MultipleImagesScatter
-   CriticalCurvesLine
-   CausticsLine
+   CriticalCurvesPlot
+   CausticsPlot
 
 **Plots:**
 
