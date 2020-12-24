@@ -143,7 +143,7 @@ values, we can see that even without `Regularization`.e are still reconstructing
 # %%
 aplt.Inversion.reconstruction(
     inversion=no_regularization_fit.inversion,
-    plotter=aplt.Plotter(cmap=aplt.ColorMap(norm_max=0.5, norm_min=-0.5)),
+    plotter=aplt.Plotter(cmap=aplt.Cmap(vmax=0.5, vmin=-0.5)),
 )
 
 # %%

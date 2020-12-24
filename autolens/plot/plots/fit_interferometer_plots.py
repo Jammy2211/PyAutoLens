@@ -1,6 +1,8 @@
+from autoarray.plot.mat_wrap import plotters
+from autogalaxy.plot.plots.fit_interferometer_plots import *
 import autogalaxy as ag
-from autogalaxy.plot.fit_interferometer_plots import *
-from autolens.plot import ray_tracing_plots
+from autolens.plot.plots import ray_tracing_plots
+from autogalaxy.plot.mat_wrap import lensing_plotters
 
 
 @lensing_plotters.set_include_and_sub_plotter
@@ -111,11 +113,11 @@ def subplot_fit_real_space(fit, include=None, sub_plotter=None):
             )
         )
 
-        if sub_plotter.figure.aspect in "square":
+        if sub_plotter.figure.kwargs["aspect"] in "square":
             aspect_inv = ratio
-        elif sub_plotter.figure.aspect in "auto":
+        elif sub_plotter.figure.kwargs["aspect"] in "auto":
             aspect_inv = 1.0 / ratio
-        elif sub_plotter.figure.aspect in "equal":
+        elif sub_plotter.figure.kwargs["aspect"] in "equal":
             aspect_inv = 1.0
 
         sub_plotter.setup_subplot(

@@ -6,10 +6,14 @@ from os import path
 from autoconf import conf
 import autofit as af
 import autoarray as aa
-from autoarray.plot import mat_objs
-from autogalaxy.plot import fit_galaxy_plots, hyper_plots, inversion_plots
-from autogalaxy.plot import lensing_plotters
-from autolens.plot import ray_tracing_plots, fit_imaging_plots, fit_interferometer_plots
+from autoarray.plot.mat_wrap import mat_base
+from autogalaxy.plot.plots import fit_galaxy_plots, hyper_plots, inversion_plots
+from autogalaxy.plot.mat_wrap import lensing_plotters, lensing_include
+from autolens.plot.plots import (
+    fit_interferometer_plots,
+    ray_tracing_plots,
+    fit_imaging_plots,
+)
 
 
 def setting(section, name):
@@ -23,7 +27,7 @@ def plot_setting(section, name):
 class AbstractVisualizer:
     def __init__(self):
 
-        self.include = lensing_plotters.Include()
+        self.include = lensing_include.Include()
 
         self.plot_ray_tracing_all_at_end_png = plot_setting(
             "ray_tracing", "all_at_end_png"
@@ -49,10 +53,10 @@ class AbstractVisualizer:
     def plotter_from_paths(paths: af.Paths, subfolders=None, format="png"):
         if subfolders is None:
             return lensing_plotters.Plotter(
-                output=mat_objs.Output(path=paths.image_path, format=format)
+                output=mat_base.Output(path=paths.image_path, format=format)
             )
         return lensing_plotters.Plotter(
-            output=mat_objs.Output(
+            output=mat_base.Output(
                 path=path.join(paths.image_path, subfolders), format=format
             )
         )
@@ -61,10 +65,10 @@ class AbstractVisualizer:
     def sub_plotter_from_paths(paths: af.Paths, subfolders=None):
         if subfolders is None:
             return lensing_plotters.SubPlotter(
-                output=mat_objs.Output(path=paths.image_path, format="png")
+                output=mat_base.Output(path=paths.image_path, format="png")
             )
         return lensing_plotters.SubPlotter(
-            output=mat_objs.Output(
+            output=mat_base.Output(
                 path=path.join(paths.image_path, subfolders), format="png"
             )
         )

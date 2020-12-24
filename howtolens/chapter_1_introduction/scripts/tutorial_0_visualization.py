@@ -97,8 +97,8 @@ imaging = al.Imaging.from_fits(
 
 plotter = aplt.Plotter(
     figure=aplt.Figure(figsize=(7, 7)),
-    ticks=aplt.Ticks(ysize=8, xsize=8),
-    labels=aplt.Labels(ysize=6, xsize=6, titlesize=12),
+    ticks=aplt.Ticks(labelsize=8, labelsize=8),
+    labels=aplt.Labels(labelsize=6, labelsize=6, titlesize=12),
 )
 
 aplt.Imaging.image(imaging=imaging, plotter=plotter)
@@ -107,7 +107,7 @@ aplt.Imaging.image(imaging=imaging, plotter=plotter)
 """
 Many matplotlib options can be customized, but for now we're only concerned with making sure figures display cleanly in 
 your Jupter Notebooks. However, for future reference, a descrition of all options can be found in the file 
-`autolens_workspace/plot/mat_objs.py`.
+`autolens_workspace/plot/mat_wrap.py`.
 
 Ideally, we wouldn't need to specify a new `Plotter` every time we plot an image we make, especially as you'll be 
 changing the same option to the same value over and over again (e.g. the figsize). Fortunately, the default values 
@@ -120,9 +120,9 @@ displaying figures correctly:
 
 [figures] -> figsize
 
-[labels] -> titlesize, ysize, xsize
+[labels] -> titlesize, labelsize, labelsize
 
-[ticks] -> ysize, xsize
+[ticks] -> labelsize, labelsize
 
 Don't worry about all the other options listed in this file for now, as they`ll make a lot more sense once you are 
 familiar with **PyAutoLens**.
@@ -147,8 +147,8 @@ Again, we can customize this subplot using a SubPlotter.
 # %%
 sub_plotter = aplt.SubPlotter(
     figure=aplt.Figure.sub(figsize=(7, 7)),
-    ticks=aplt.Ticks.sub(ysize=8, xsize=8),
-    labels=aplt.Labels.sub(ysize=6, xsize=6, titlesize=12),
+    ticks=aplt.Ticks.sub(labelsize=8, labelsize=8),
+    labels=aplt.Labels.sub(labelsize=6, labelsize=6, titlesize=12),
 )
 
 aplt.Imaging.subplot_imaging(imaging=imaging, sub_plotter=sub_plotter)

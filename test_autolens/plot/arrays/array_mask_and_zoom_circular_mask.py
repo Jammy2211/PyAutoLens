@@ -1,4 +1,4 @@
-from autolens.plot import plotters
+from autolens.plot.mat_wrap import plotters
 from test_autolens.simulators.imaging import instrument_util
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use

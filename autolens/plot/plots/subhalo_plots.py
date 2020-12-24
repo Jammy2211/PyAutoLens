@@ -1,13 +1,13 @@
 from autolens.aggregator import aggregator as agg
 
 import numpy as np
-from autogalaxy.plot import lensing_plotters, plane_plots, inversion_plots
-from autolens.plot import fit_imaging_plots
-from autoarray.plot import plotters
+from autogalaxy.plot.mat_wrap import lensing_plotters
+from autogalaxy.plot.plots import plane_plots, inversion_plots
+from autolens.plot.plots import fit_imaging_plots
+from autoarray.plot.mat_wrap import plotters
 import os
 from os import path
 import shutil
-import sys
 
 
 def agg_max_log_likelihood_from_aggregator(aggregator):
@@ -162,7 +162,7 @@ def subplot_detection_fits(
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Normailzed Residuals (No Subhalo)"
+        title_label="Normailzed Residuals (No Subhalo)"
     )
 
     fit_imaging_plots.normalized_residual_map(
@@ -172,7 +172,7 @@ def subplot_detection_fits(
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Chi-Squared Map (No Subhalo)"
+        title_label="Chi-Squared Map (No Subhalo)"
     )
 
     fit_imaging_plots.chi_squared_map(
@@ -182,7 +182,7 @@ def subplot_detection_fits(
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Source Reconstruction (No Subhalo)"
+        title_label="Source Reconstruction (No Subhalo)"
     )
 
     source_model_on_subplot(
@@ -197,7 +197,7 @@ def subplot_detection_fits(
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Normailzed Residuals (With Subhalo)"
+        title_label="Normailzed Residuals (With Subhalo)"
     )
 
     fit_imaging_plots.normalized_residual_map(
@@ -205,7 +205,7 @@ def subplot_detection_fits(
     )
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Chi-Squared Map (With Subhalo)"
+        title_label="Chi-Squared Map (With Subhalo)"
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
@@ -215,7 +215,7 @@ def subplot_detection_fits(
     )
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Source Reconstruction (With Subhalo)"
+        title_label="Source Reconstruction (With Subhalo)"
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
@@ -244,7 +244,7 @@ def subplot_detection_imaging(
 
     sub_plotter.open_subplot_figure(number_subplots=number_subplots)
 
-    sub_plotter_detect = sub_plotter.plotter_with_new_labels(title="Image")
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(title_label="Image")
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
@@ -253,7 +253,7 @@ def subplot_detection_imaging(
     )
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Signal-To-Noise Map"
+        title_label="Signal-To-Noise Map"
     )
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
@@ -265,7 +265,7 @@ def subplot_detection_imaging(
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(
-        title="Increase in Log Evidence"
+        title_label="Increase in Log Evidence"
     )
 
     plotters.plot_array(
@@ -277,7 +277,7 @@ def subplot_detection_imaging(
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
-    sub_plotter_detect = sub_plotter.plotter_with_new_labels(title="Subhalo Mass")
+    sub_plotter_detect = sub_plotter.plotter_with_new_labels(title_label="Subhalo Mass")
 
     plotters.plot_array(
         array=mass_array,
@@ -327,11 +327,11 @@ def source_model_on_subplot(
             )
         )
 
-        if sub_plotter.figure.aspect in "square":
+        if sub_plotter.figure.kwargs["aspect"] in "square":
             aspect_inv = ratio
-        elif sub_plotter.figure.aspect in "auto":
+        elif sub_plotter.figure.kwargs["aspect"] in "auto":
             aspect_inv = 1.0 / ratio
-        elif sub_plotter.figure.aspect in "equal":
+        elif sub_plotter.figure.kwargs["aspect"] in "equal":
             aspect_inv = 1.0
 
         sub_plotter.setup_subplot(

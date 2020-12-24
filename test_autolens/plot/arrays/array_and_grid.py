@@ -11,10 +11,10 @@ array = imaging.image
 
 plotter = aplt.Plotter(
     figure=aplt.Figure(figsize=(10, 10)),
-    cmap=aplt.ColorMap(
-        cmap="gray", norm="symmetric_log", norm_min=-0.13, norm_max=20, linthresh=0.02
+    cmap=aplt.Cmap(
+        cmap="gray", norm="symmetric_log", vmin=-0.13, vmax=20, linthresh=0.02
     ),
-    grid_scatterer=aplt.GridScatterer(marker="+", colors="cyan", size=450),
+    grid_scatter=aplt.GridScatter(marker="+", colors="cyan", size=450),
 )
 
 grid = al.GridIrregular(grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])

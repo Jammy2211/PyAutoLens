@@ -1,6 +1,8 @@
 import numpy as np
-from autoarray.plot import plotters
-from autogalaxy.plot import lensing_plotters, plane_plots, inversion_plots
+from autogalaxy.plot.plots.fit_imaging_plots import *
+from autoarray.plot.mat_wrap import plotters
+from autogalaxy.plot.mat_wrap import lensing_plotters
+from autogalaxy.plot.plots import plane_plots, inversion_plots
 
 
 @lensing_plotters.set_include_and_sub_plotter
@@ -130,11 +132,11 @@ def subplot_of_plane(fit, plane_index, include=None, sub_plotter=None):
             )
         )
 
-        if sub_plotter.figure.aspect in "square":
+        if sub_plotter.figure.kwargs["aspect"] in "square":
             aspect_inv = ratio
-        elif sub_plotter.figure.aspect in "auto":
+        elif sub_plotter.figure.kwargs["aspect"] in "auto":
             aspect_inv = 1.0 / ratio
-        elif sub_plotter.figure.aspect in "equal":
+        elif sub_plotter.figure.kwargs["aspect"] in "equal":
             aspect_inv = 1.0
 
         sub_plotter.setup_subplot(
@@ -303,8 +305,8 @@ def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
         subtracted_image = fit.image
 
     plotter_norm = plotter.plotter_with_new_cmap(
-        norm_max=np.max(fit.model_images_of_planes[plane_index]),
-        norm_min=np.min(fit.model_images_of_planes[plane_index]),
+        vmax=np.max(fit.model_images_of_planes[plane_index]),
+        vmin=np.min(fit.model_images_of_planes[plane_index]),
     )
 
     plotter_norm.plot_array(
@@ -358,7 +360,7 @@ def model_image_of_plane(fit, plane_index, include=None, plotter=None):
 
 @lensing_plotters.set_include_and_plotter
 @plotters.set_labels
-def image(fit, array_overlay=None, include=None, plotter=None):
+def image(fit, array_over=None, include=None, plotter=None):
     """Plot the image of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -384,7 +386,7 @@ def image(fit, array_overlay=None, include=None, plotter=None):
         ),
         critical_curves=include.critical_curves_from_obj(obj=fit.tracer),
         include_origin=include.origin,
-        array_overlay=array_overlay,
+        array_over=array_over,
     )
 
 

@@ -13,12 +13,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="plot_path")
 def make_visualizer_plotter_setup():
-    return path.join(
-        "{}".format(os.path.dirname(os.path.realpath(__file__))),
-        "files",
-        "plot",
-        "visualizer",
-    )
+    return path.join("{}".format(directory), "files", "plot", "visualizer")
 
 
 @pytest.fixture(autouse=True)

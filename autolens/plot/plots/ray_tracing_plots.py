@@ -1,7 +1,7 @@
 import autogalaxy as ag
-from autoarray.plot import plotters
+from autoarray.plot.mat_wrap import plotters
 from autoarray.structures import arrays
-from autogalaxy.plot import lensing_plotters
+from autogalaxy.plot.mat_wrap import lensing_plotters
 
 
 @lensing_plotters.set_include_and_sub_plotter

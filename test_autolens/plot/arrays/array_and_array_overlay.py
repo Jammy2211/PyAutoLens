@@ -14,9 +14,9 @@ imaging = instrument_util.load_test_imaging(
 
 array = imaging.image
 
-array_overlay = al.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=5.05)
+array_over = al.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=5.05)
 
 
-aplt.Array(array=array, array_overlay=array_overlay)
+aplt.Array(array=array, array_over=array_over)
 
-aplt.Array(array=array_overlay, extent_manual=array.extent)
+aplt.Array(array=array_over, extent_manual=array.extent)

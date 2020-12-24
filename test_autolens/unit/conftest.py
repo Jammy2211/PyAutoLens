@@ -14,13 +14,13 @@ directory = path.dirname(path.realpath(__file__))
 # Lens Datasets #
 
 
-@pytest.fixture(name="config", autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "..", "config"),
-        path.join(directory, "..", "pipeline", "output"),
+@pytest.fixture(autouse=True)
+def set_config_path(request):
+
+    conf.instance.push(
+        new_path=path.join(directory, "config"),
+        output_path=path.join(directory, "output"),
     )
-    return conf.instance
 
 
 @pytest.fixture(name="mask_7x7")

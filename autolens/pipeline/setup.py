@@ -103,6 +103,13 @@ class SetupHyper(setup.SetupHyper):
         if self.hypers_all_off:
             return ""
 
+        hyper_tag_off = conf.instance["notation"]["setup_tags"]["hyper"][
+            "hyper_tag_off"
+        ]
+
+        if hyper_tag_off:
+            return ""
+
         return (
             f"{self.component_name}["
             f"{self.hyper_galaxies_tag}"
@@ -223,6 +230,7 @@ class SetupHyper(setup.SetupHyper):
             return self.hyper_galaxy_from_galaxy_model_and_instance(
                 galaxy_model=result.hyper.model.galaxies.lens,
                 galaxy_instance=result.hyper.instance.galaxies.lens,
+                noise_factor_is_model=noise_factor_is_model,
             )
 
         return self.hyper_galaxy_from_galaxy_model_and_instance(
@@ -266,6 +274,7 @@ class SetupHyper(setup.SetupHyper):
             return self.hyper_galaxy_from_galaxy_model_and_instance(
                 galaxy_model=result.hyper.model.galaxies.source,
                 galaxy_instance=result.hyper.instance.galaxies.source,
+                noise_factor_is_model=noise_factor_is_model,
             )
 
         return self.hyper_galaxy_from_galaxy_model_and_instance(
@@ -278,6 +287,9 @@ class SetupHyper(setup.SetupHyper):
     ):
 
         hyper_galaxy = af.PriorModel(g.HyperGalaxy)
+
+        if galaxy_model.hyper_galaxy is None:
+            return None
 
         if noise_factor_is_model:
 
@@ -862,7 +874,15 @@ class SetupPipeline(setup.SetupPipeline):
 
         setup_tag = conf.instance["notation"]["setup_tags"]["pipeline"]["pipeline"]
 
-        hyper_tag = self._pipeline_tag_from_setup(setup=self.setup_hyper)
+        hyper_tag_off = conf.instance["notation"]["setup_tags"]["hyper"][
+            "hyper_tag_off"
+        ]
+
+        if not hyper_tag_off:
+            hyper_tag = self._pipeline_tag_from_setup(setup=self.setup_hyper)
+        else:
+            hyper_tag = ""
+
         light_tag = self._pipeline_tag_from_setup(setup=self.setup_light)
         mass_tag = self._pipeline_tag_from_setup(setup=self.setup_mass)
         source_tag = self._pipeline_tag_from_setup(setup=self.setup_source)
