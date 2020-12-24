@@ -118,7 +118,7 @@ print(deflections.in_2d[0, 1, 1])
 
 # %%
 """
-_Plane_ plotters exist, which work analogously to `Profile` plotters and `Galaxy` plotters.
+_Plane_ plotter exist, which work analogously to `Profile` plotter and `Galaxy` plotter.
 """
 
 # %%

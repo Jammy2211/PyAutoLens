@@ -1,12 +1,12 @@
 import numpy as np
 from autogalaxy.plot.plots.fit_imaging_plots import *
-from autoarray.plot.mat_wrap import plotters
-from autogalaxy.plot.mat_wrap import lensing_plotters
+from autoarray.plot.plotter import plotter
+from autogalaxy.plot.plotter import lensing_plotter
 from autogalaxy.plot.plots import plane_plots, inversion_plots
 
 
-@lensing_plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
+@lensing_plotter.set_include_and_sub_plotter
+@plotter.set_subplot_filename
 def subplot_fit_imaging(fit, include=None, sub_plotter=None):
     number_subplots = 6
 
@@ -58,8 +58,8 @@ def subplots_of_all_planes(fit, include=None, sub_plotter=None):
             )
 
 
-@lensing_plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
+@lensing_plotter.set_include_and_sub_plotter
+@plotter.set_subplot_filename
 def subplot_of_plane(fit, plane_index, include=None, sub_plotter=None):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -268,12 +268,12 @@ def individuals(
                 )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
     """Plot the model image of a specific plane of a lens fit.
 
-    Set *autolens.datas.arrays.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -285,7 +285,7 @@ def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
         The plane from which the model image is generated.
     """
 
-    if isinstance(plotter, lensing_plotters.Plotter):
+    if isinstance(plotter, lensing_plotter.Plotter):
         plotter = plotter.plotter_with_new_output(
             filename=plotter.output.filename + "_" + str(plane_index)
         )
@@ -324,12 +324,12 @@ def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def model_image_of_plane(fit, plane_index, include=None, plotter=None):
     """Plot the model image of a specific plane of a lens fit.
 
-    Set *autolens.datas.arrays.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.arrays.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -339,7 +339,7 @@ def model_image_of_plane(fit, plane_index, include=None, plotter=None):
         The plane from which the model image is generated.
     """
 
-    if isinstance(plotter, lensing_plotters.Plotter):
+    if isinstance(plotter, lensing_plotter.Plotter):
         plotter = plotter.plotter_with_new_output(
             filename=plotter.output.filename + "_" + str(plane_index)
         )
@@ -358,12 +358,12 @@ def model_image_of_plane(fit, plane_index, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def image(fit, array_over=None, include=None, plotter=None):
     """Plot the image of a lens fit.
 
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -390,12 +390,12 @@ def image(fit, array_over=None, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
 
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -418,12 +418,12 @@ def noise_map(fit, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def signal_to_noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
 
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -446,12 +446,12 @@ def signal_to_noise_map(fit, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def model_image(fit, include=None, plotter=None):
     """Plot the model image of a fit.
 
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -475,12 +475,12 @@ def model_image(fit, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def residual_map(fit, include=None, plotter=None):
     """Plot the residual-map of a lens fit.
 
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -503,12 +503,12 @@ def residual_map(fit, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def normalized_residual_map(fit, include=None, plotter=None):
     """Plot the residual-map of a lens fit.
 
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -531,12 +531,12 @@ def normalized_residual_map(fit, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def chi_squared_map(fit, include=None, plotter=None):
     """Plot the chi-squared-map of a lens fit.
 
-    Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------

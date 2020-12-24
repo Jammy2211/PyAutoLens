@@ -1,6 +1,6 @@
 from autolens.model.profiles import light_profiles as lp
 
-from autolens.model.profiles.plotters import profile_plotters
+from autolens.model.profiles.plotter import profile_plotter
 
 sersic = al.EllipticalSersic(
     centre=(0.0, 0.0),

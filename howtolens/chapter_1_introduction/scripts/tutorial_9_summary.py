@@ -120,7 +120,7 @@ print()
 
 # %%
 """
-Using the plotters we've used throughout this chapter, we can visualize any aspect of a fit we're interested in. 
+Using the plotter we've used throughout this chapter, we can visualize any aspect of a fit we're interested in. 
 For example, if we want to plot the image of the source galaxy `MassProfile`, we can do this in a variety of 
 different ways
 """

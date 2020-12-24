@@ -1,11 +1,11 @@
 import autogalaxy as ag
-from autoarray.plot.mat_wrap import plotters
+from autoarray.plot.plotter import plotter
 from autoarray.structures import arrays
-from autogalaxy.plot.mat_wrap import lensing_plotters
+from autogalaxy.plot.plotter import lensing_plotter
 
 
-@lensing_plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
+@lensing_plotter.set_include_and_sub_plotter
+@plotter.set_subplot_filename
 def subplot_tracer(tracer, grid, positions=None, include=None, sub_plotter=None):
     """Plot the observed _tracer of an analysis, using the `Imaging` class object.
 
@@ -104,7 +104,7 @@ def individual(
     """
 
     if include is None:
-        include = lensing_plotters.Include()
+        include = lensing_plotter.Include()
 
     if plot_image:
 
@@ -148,8 +148,8 @@ def individual(
         magnification(tracer=tracer, grid=grid, include=include, plotter=plotter)
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def image(tracer, grid, positions=None, include=None, plotter=None):
 
     plotter.plot_array(
@@ -163,8 +163,8 @@ def image(tracer, grid, positions=None, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def convergence(tracer, grid, include=None, plotter=None):
 
     plotter.plot_array(
@@ -177,8 +177,8 @@ def convergence(tracer, grid, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def potential(tracer, grid, include=None, plotter=None):
 
     plotter.plot_array(
@@ -191,8 +191,8 @@ def potential(tracer, grid, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def deflections_y(tracer, grid, include=None, plotter=None):
 
     deflections = tracer.deflections_from_grid(grid=grid)
@@ -210,8 +210,8 @@ def deflections_y(tracer, grid, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def deflections_x(tracer, grid, include=None, plotter=None):
 
     deflections = tracer.deflections_from_grid(grid=grid)
@@ -229,8 +229,8 @@ def deflections_x(tracer, grid, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def magnification(tracer, grid, include=None, plotter=None):
 
     plotter.plot_array(
@@ -243,8 +243,8 @@ def magnification(tracer, grid, include=None, plotter=None):
     )
 
 
-@lensing_plotters.set_include_and_plotter
-@plotters.set_labels
+@lensing_plotter.set_include_and_plotter
+@plotter.set_labels
 def contribution_map(tracer, mask=None, positions=None, include=None, plotter=None):
 
     plotter.plot_array(

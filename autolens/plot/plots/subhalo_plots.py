@@ -1,10 +1,10 @@
 from autolens.aggregator import aggregator as agg
 
 import numpy as np
-from autogalaxy.plot.mat_wrap import lensing_plotters
+from autogalaxy.plot.plotter import lensing_plotter
 from autogalaxy.plot.plots import plane_plots, inversion_plots
 from autolens.plot.plots import fit_imaging_plots
-from autoarray.plot.mat_wrap import plotters
+from autoarray.plot.plotter import plotter
 import os
 from os import path
 import shutil
@@ -132,8 +132,8 @@ def subplot_detection_agg(
     )
 
 
-@lensing_plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
+@lensing_plotter.set_include_and_sub_plotter
+@plotter.set_subplot_filename
 def subplot_detection_fits(
     fit_imaging_before, fit_imaging_detect, include=None, sub_plotter=None
 ):
@@ -234,8 +234,8 @@ def subplot_detection_fits(
     sub_plotter.figure.close()
 
 
-@lensing_plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
+@lensing_plotter.set_include_and_sub_plotter
+@plotter.set_subplot_filename
 def subplot_detection_imaging(
     fit_imaging_detect, detection_array, mass_array, include=None, sub_plotter=None
 ):
@@ -268,7 +268,7 @@ def subplot_detection_imaging(
         title_label="Increase in Log Evidence"
     )
 
-    plotters.plot_array(
+    plotter.plot_array(
         array=detection_array,
         extent_manual=fit_imaging_detect.image.extent,
         include=include,
@@ -279,7 +279,7 @@ def subplot_detection_imaging(
 
     sub_plotter_detect = sub_plotter.plotter_with_new_labels(title_label="Subhalo Mass")
 
-    plotters.plot_array(
+    plotter.plot_array(
         array=mass_array,
         extent_manual=fit_imaging_detect.image.extent,
         include=include,

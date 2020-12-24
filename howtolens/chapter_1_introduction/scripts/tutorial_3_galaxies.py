@@ -71,7 +71,7 @@ print("etc.")
 
 # %%
 """
-A galaxy `Plotter` allows us to the plot the image, just like the `Profile` plotters did for a `LightProfile`'s.
+A galaxy `Plotter` allows us to the plot the image, just like the `Profile` plotter did for a `LightProfile`'s.
 """
 
 # %%

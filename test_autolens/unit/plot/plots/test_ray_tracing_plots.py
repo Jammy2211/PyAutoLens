@@ -18,7 +18,7 @@ def make_fit_imaging_plotter_setup():
     )
 
 
-def test__all_individual_plotters(
+def test__all_individual_plotter(
     tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, include_all, plot_path, plot_patch
 ):
     aplt.Tracer.image(

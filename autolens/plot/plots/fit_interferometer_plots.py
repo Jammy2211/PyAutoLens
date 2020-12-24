@@ -1,12 +1,12 @@
-from autoarray.plot.mat_wrap import plotters
+from autoarray.plot.plotter import plotter
 from autogalaxy.plot.plots.fit_interferometer_plots import *
 import autogalaxy as ag
 from autolens.plot.plots import ray_tracing_plots
-from autogalaxy.plot.mat_wrap import lensing_plotters
+from autogalaxy.plot.plotter import lensing_plotter
 
 
-@lensing_plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
+@lensing_plotter.set_include_and_sub_plotter
+@plotter.set_subplot_filename
 def subplot_fit_interferometer(fit, include=None, sub_plotter=None):
 
     number_subplots = 6
@@ -54,8 +54,8 @@ def subplot_fit_interferometer(fit, include=None, sub_plotter=None):
     sub_plotter.figure.close()
 
 
-@lensing_plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
+@lensing_plotter.set_include_and_sub_plotter
+@plotter.set_subplot_filename
 def subplot_fit_real_space(fit, include=None, sub_plotter=None):
 
     number_subplots = 2

@@ -1,4 +1,4 @@
-from autolens.fit.plotters import masked_imaging_fit_plotters
+from autolens.fit.plotter import masked_imaging_fit_plotter
 from test_autolens.simulators.imaging import instrument_util
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use
