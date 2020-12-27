@@ -113,7 +113,7 @@ def test__fit_sub_plot(
     aplt.FitInterferometer.subplot_fit_interferometer(
         fit=masked_interferometer_fit_x2_plane_7x7,
         include=include_all,
-        sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
+        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert (
@@ -128,7 +128,7 @@ def test__fit_sub_plot_real_space(
     aplt.FitInterferometer.subplot_fit_real_space(
         fit=masked_interferometer_fit_x2_plane_7x7,
         include=include_all,
-        sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
+        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert path.join(plot_path, "subplot_fit_real_space.png") in plot_patch.paths

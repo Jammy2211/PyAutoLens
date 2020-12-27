@@ -100,7 +100,7 @@ def test__tracer_sub_plot_output(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
         include=include_all,
-        sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
+        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths

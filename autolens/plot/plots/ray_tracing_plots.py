@@ -5,9 +5,9 @@ from autogalaxy.plot.plotter import lensing_plotter, lensing_include
 
 
 @lensing_include.set_include
-@lensing_plotter.set_sub_plotter
+@lensing_plotter.set_plotter_for_subplot
 @plotter.set_subplot_filename
-def subplot_tracer(tracer, grid, positions=None, include=None, sub_plotter=None):
+def subplot_tracer(tracer, grid, positions=None, include=None, plotter=None):
     """Plot the observed _tracer of an analysis, using the `Imaging` class object.
 
     The visualization and output type can be fully customized.
@@ -26,29 +26,25 @@ def subplot_tracer(tracer, grid, positions=None, include=None, sub_plotter=None)
 
     number_subplots = 6
 
-    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter.open_subplot_figure(number_subplots=number_subplots)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     image(
-        tracer=tracer,
-        grid=grid,
-        positions=positions,
-        include=include,
-        plotter=sub_plotter,
+        tracer=tracer, grid=grid, positions=positions, include=include, plotter=plotter
     )
 
     if tracer.has_mass_profile:
 
-        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+        plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-        convergence(tracer=tracer, grid=grid, include=include, plotter=sub_plotter)
+        convergence(tracer=tracer, grid=grid, include=include, plotter=plotter)
 
-        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+        plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-        potential(tracer=tracer, grid=grid, include=include, plotter=sub_plotter)
+        potential(tracer=tracer, grid=grid, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
     source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=grid)[-1]
 
@@ -57,22 +53,22 @@ def subplot_tracer(tracer, grid, positions=None, include=None, sub_plotter=None)
         grid=source_plane_grid,
         caustics=include.caustics_from_obj(obj=tracer),
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
     )
 
     if tracer.has_mass_profile:
 
-        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
+        plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
-        deflections_y(tracer=tracer, grid=grid, include=include, plotter=sub_plotter)
+        deflections_y(tracer=tracer, grid=grid, include=include, plotter=plotter)
 
-        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
+        plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
-        deflections_x(tracer=tracer, grid=grid, include=include, plotter=sub_plotter)
+        deflections_x(tracer=tracer, grid=grid, include=include, plotter=plotter)
 
-    sub_plotter.output.subplot_to_figure()
+    plotter.output.subplot_to_figure()
 
-    sub_plotter.figure.close()
+    plotter.figure.close()
 
 
 def individual(
@@ -150,7 +146,7 @@ def individual(
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def image(tracer, grid, positions=None, include=None, plotter=None):
 
@@ -166,7 +162,7 @@ def image(tracer, grid, positions=None, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def convergence(tracer, grid, include=None, plotter=None):
 
@@ -181,7 +177,7 @@ def convergence(tracer, grid, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def potential(tracer, grid, include=None, plotter=None):
 
@@ -196,7 +192,7 @@ def potential(tracer, grid, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def deflections_y(tracer, grid, include=None, plotter=None):
 
@@ -216,7 +212,7 @@ def deflections_y(tracer, grid, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def deflections_x(tracer, grid, include=None, plotter=None):
 
@@ -236,7 +232,7 @@ def deflections_x(tracer, grid, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def magnification(tracer, grid, include=None, plotter=None):
 
@@ -251,7 +247,7 @@ def magnification(tracer, grid, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def contribution_map(tracer, mask=None, positions=None, include=None, plotter=None):
 

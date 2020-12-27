@@ -202,7 +202,7 @@ Plots
    :toctree: generated/
 
    Plotter
-   SubPlotter
+   Plotter
    Include
 
 **Matplotlib Objects**

@@ -131,7 +131,7 @@ familiar with **PyAutoLens**.
 have the right values using the function above beforehand!)
 
 In addition to individual `figures` which use a `plotter` to plot them, **PyAutoLens** also plots `subplots` using a 
-`sub_plotter`. Lets plot a subplot of our `Imaging` data:
+`plotter`. Lets plot a subplot of our `Imaging` data:
 """
 
 # %%
@@ -139,19 +139,19 @@ aplt.Imaging.subplot_imaging(imaging=imaging)
 
 # %%
 """
-Again, we can customize this subplot using a SubPlotter.
+Again, we can customize this subplot using a Plotter.
 
 (The `.sub` ensures we load the setting values from the config file `autolens_workspace/config/visualize/subplots.ini`
 """
 
 # %%
-sub_plotter = aplt.SubPlotter(
+plotter = aplt.Plotter(
     figure=aplt.Figure.sub(figsize=(7, 7)),
     ticks=aplt.Ticks.sub(labelsize=8, labelsize=8),
     labels=aplt.Labels.sub(labelsize=6, labelsize=6, titlesize=12),
 )
 
-aplt.Imaging.subplot_imaging(imaging=imaging, sub_plotter=sub_plotter)
+aplt.Imaging.subplot_imaging(imaging=imaging, plotter=plotter)
 
 # %%
 """

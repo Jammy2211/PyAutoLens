@@ -6,43 +6,43 @@ from autogalaxy.plot.plots import plane_plots, inversion_plots
 
 
 @lensing_include.set_include
-@lensing_plotter.set_sub_plotter
+@lensing_plotter.set_plotter_for_subplot
 @plotter.set_subplot_filename
-def subplot_fit_imaging(fit, include=None, sub_plotter=None):
+def subplot_fit_imaging(fit, include=None, plotter=None):
     number_subplots = 6
 
-    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter.open_subplot_figure(number_subplots=number_subplots)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    image(fit=fit, include=include, plotter=sub_plotter)
+    image(fit=fit, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-    signal_to_noise_map(fit=fit, include=include, plotter=sub_plotter)
+    signal_to_noise_map(fit=fit, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-    model_image(fit=fit, include=include, plotter=sub_plotter)
+    model_image(fit=fit, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
-    residual_map(fit=fit, include=include, plotter=sub_plotter)
+    residual_map(fit=fit, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
-    normalized_residual_map(fit=fit, include=include, plotter=sub_plotter)
+    normalized_residual_map(fit=fit, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
-    chi_squared_map(fit=fit, include=include, plotter=sub_plotter)
+    chi_squared_map(fit=fit, include=include, plotter=plotter)
 
-    sub_plotter.output.subplot_to_figure()
+    plotter.output.subplot_to_figure()
 
-    sub_plotter.figure.close()
+    plotter.figure.close()
 
 
-def subplots_of_all_planes(fit, include=None, sub_plotter=None):
+def subplots_of_all_planes(fit, include=None, plotter=None):
 
     for plane_index in range(fit.tracer.total_planes):
 
@@ -52,17 +52,14 @@ def subplots_of_all_planes(fit, include=None, sub_plotter=None):
         ):
 
             subplot_of_plane(
-                fit=fit,
-                plane_index=plane_index,
-                include=include,
-                sub_plotter=sub_plotter,
+                fit=fit, plane_index=plane_index, include=include, plotter=plotter
             )
 
 
 @lensing_include.set_include
-@lensing_plotter.set_sub_plotter
+@lensing_plotter.set_plotter_for_subplot
 @plotter.set_subplot_filename
-def subplot_of_plane(fit, plane_index, include=None, sub_plotter=None):
+def subplot_of_plane(fit, plane_index, include=None, plotter=None):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
@@ -82,31 +79,31 @@ def subplot_of_plane(fit, plane_index, include=None, sub_plotter=None):
 
     number_subplots = 4
 
-    sub_plotter = sub_plotter.plotter_with_new_output(
-        filename=sub_plotter.output.filename + "_" + str(plane_index)
+    plotter = plotter.plotter_with_new_output(
+        filename=plotter.output.filename + "_" + str(plane_index)
     )
 
-    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter.open_subplot_figure(number_subplots=number_subplots)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    image(fit=fit, include=include, plotter=sub_plotter)
+    image(fit=fit, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
     subtracted_image_of_plane(
-        fit=fit, plane_index=plane_index, include=include, plotter=sub_plotter
+        fit=fit, plane_index=plane_index, include=include, plotter=plotter
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
     model_image_of_plane(
-        fit=fit, plane_index=plane_index, include=include, plotter=sub_plotter
+        fit=fit, plane_index=plane_index, include=include, plotter=plotter
     )
 
     if not fit.tracer.planes[plane_index].has_pixelization:
 
-        sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+        plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
         traced_grids = fit.tracer.traced_grids_of_planes_from_grid(grid=fit.grid)
 
@@ -118,7 +115,7 @@ def subplot_of_plane(fit, plane_index, include=None, sub_plotter=None):
             ),
             caustics=include.caustics_from_obj(obj=fit.tracer),
             include=include,
-            plotter=sub_plotter,
+            plotter=plotter,
         )
 
     elif fit.tracer.planes[plane_index].has_pixelization:
@@ -134,14 +131,9 @@ def subplot_of_plane(fit, plane_index, include=None, sub_plotter=None):
             )
         )
 
-        if sub_plotter.figure.kwargs["aspect"] in "square":
-            aspect_inv = ratio
-        elif sub_plotter.figure.kwargs["aspect"] in "auto":
-            aspect_inv = 1.0 / ratio
-        elif sub_plotter.figure.kwargs["aspect"] in "equal":
-            aspect_inv = 1.0
+        aspect_inv = plotter.figure.aspect_for_subplot_from_ratio(ratio=ratio)
 
-        sub_plotter.setup_subplot(
+        plotter.setup_subplot(
             number_subplots=number_subplots, subplot_index=4, aspect=float(aspect_inv)
         )
 
@@ -152,12 +144,12 @@ def subplot_of_plane(fit, plane_index, include=None, sub_plotter=None):
             ),
             caustics=include.caustics_from_obj(obj=fit.tracer),
             include=include,
-            plotter=sub_plotter,
+            plotter=plotter,
         )
 
-    sub_plotter.output.subplot_to_figure()
+    plotter.output.subplot_to_figure()
 
-    sub_plotter.figure.close()
+    plotter.figure.close()
 
 
 def individuals(
@@ -271,7 +263,7 @@ def individuals(
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
     """Plot the model image of a specific plane of a lens fit.
@@ -288,7 +280,7 @@ def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
         The plane from which the model image is generated.
     """
 
-    if isinstance(plotter, lensing_plotter.Plotter):
+    if not plotter.for_subplot:
         plotter = plotter.plotter_with_new_output(
             filename=plotter.output.filename + "_" + str(plane_index)
         )
@@ -328,7 +320,7 @@ def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def model_image_of_plane(fit, plane_index, include=None, plotter=None):
     """Plot the model image of a specific plane of a lens fit.
@@ -343,7 +335,7 @@ def model_image_of_plane(fit, plane_index, include=None, plotter=None):
         The plane from which the model image is generated.
     """
 
-    if isinstance(plotter, lensing_plotter.Plotter):
+    if not plotter.for_subplot:
         plotter = plotter.plotter_with_new_output(
             filename=plotter.output.filename + "_" + str(plane_index)
         )
@@ -363,7 +355,7 @@ def model_image_of_plane(fit, plane_index, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def image(fit, array_overlay=None, include=None, plotter=None):
     """Plot the image of a lens fit.
@@ -396,7 +388,7 @@ def image(fit, array_overlay=None, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
@@ -425,7 +417,7 @@ def noise_map(fit, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def signal_to_noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
@@ -454,7 +446,7 @@ def signal_to_noise_map(fit, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def model_image(fit, include=None, plotter=None):
     """Plot the model image of a fit.
@@ -484,7 +476,7 @@ def model_image(fit, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def residual_map(fit, include=None, plotter=None):
     """Plot the residual-map of a lens fit.
@@ -513,7 +505,7 @@ def residual_map(fit, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def normalized_residual_map(fit, include=None, plotter=None):
     """Plot the residual-map of a lens fit.
@@ -542,7 +534,7 @@ def normalized_residual_map(fit, include=None, plotter=None):
 
 
 @lensing_include.set_include
-@lensing_plotter.set_plotter
+@lensing_plotter.set_plotter_for_figure
 @plotter.set_labels
 def chi_squared_map(fit, include=None, plotter=None):
     """Plot the chi-squared-map of a lens fit.

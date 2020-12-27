@@ -45,7 +45,7 @@ from autogalaxy.plot.mat_wrap.lensing_mat_obj import (
 
 from autogalaxy.plot.plotter.lensing_include import Include
 
-from autogalaxy.plot.plotter.lensing_plotter import Plotter, SubPlotter
+from autogalaxy.plot.plotter.lensing_plotter import LensingPlotter as Plotter
 
 from autogalaxy.plot.plotter.lensing_plotter import plot_array as Array
 from autogalaxy.plot.plotter.lensing_plotter import plot_grid as Grid

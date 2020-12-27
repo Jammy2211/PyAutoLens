@@ -257,8 +257,8 @@ a cosmology, our unit can be converted to kiloparsecs! (This cell can take a bit
 """
 
 # %%
-sub_plotter = aplt.SubPlotter(units=aplt.Units(in_kpc=True))
-aplt.Tracer.subplot_tracer(tracer=tracer, grid=grid, sub_plotter=sub_plotter)
+plotter = aplt.Plotter(units=aplt.Units(in_kpc=True))
+aplt.Tracer.subplot_tracer(tracer=tracer, grid=grid, plotter=plotter)
 
 # %%
 """
