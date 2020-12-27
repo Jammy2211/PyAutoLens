@@ -5,7 +5,8 @@ from autolens.plot.plots import ray_tracing_plots
 from autogalaxy.plot.plotter import lensing_plotter
 
 
-@lensing_plotter.set_include_and_sub_plotter
+@lensing_include.set_include
+@lensing_plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_fit_interferometer(fit, include=None, sub_plotter=None):
 
@@ -54,7 +55,8 @@ def subplot_fit_interferometer(fit, include=None, sub_plotter=None):
     sub_plotter.figure.close()
 
 
-@lensing_plotter.set_include_and_sub_plotter
+@lensing_include.set_include
+@lensing_plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_fit_real_space(fit, include=None, sub_plotter=None):
 
@@ -113,12 +115,7 @@ def subplot_fit_real_space(fit, include=None, sub_plotter=None):
             )
         )
 
-        if sub_plotter.figure.kwargs["aspect"] in "square":
-            aspect_inv = ratio
-        elif sub_plotter.figure.kwargs["aspect"] in "auto":
-            aspect_inv = 1.0 / ratio
-        elif sub_plotter.figure.kwargs["aspect"] in "equal":
-            aspect_inv = 1.0
+        aspect_inv = sub_plotter.figure.aspect_for_subplot_from_ratio(ratio=ratio)
 
         sub_plotter.setup_subplot(
             number_subplots=number_subplots, subplot_index=2, aspect=float(aspect_inv)

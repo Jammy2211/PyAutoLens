@@ -1,7 +1,7 @@
 from autolens.aggregator import aggregator as agg
 
 import numpy as np
-from autogalaxy.plot.plotter import lensing_plotter
+from autogalaxy.plot.plotter import lensing_plotter, lensing_include
 from autogalaxy.plot.plots import plane_plots, inversion_plots
 from autolens.plot.plots import fit_imaging_plots
 from autoarray.plot.plotter import plotter
@@ -132,7 +132,8 @@ def subplot_detection_agg(
     )
 
 
-@lensing_plotter.set_include_and_sub_plotter
+@lensing_include.set_include
+@lensing_plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_detection_fits(
     fit_imaging_before, fit_imaging_detect, include=None, sub_plotter=None
@@ -234,7 +235,8 @@ def subplot_detection_fits(
     sub_plotter.figure.close()
 
 
-@lensing_plotter.set_include_and_sub_plotter
+@lensing_include.set_include
+@lensing_plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_detection_imaging(
     fit_imaging_detect, detection_array, mass_array, include=None, sub_plotter=None
@@ -327,12 +329,7 @@ def source_model_on_subplot(
             )
         )
 
-        if sub_plotter.figure.kwargs["aspect"] in "square":
-            aspect_inv = ratio
-        elif sub_plotter.figure.kwargs["aspect"] in "auto":
-            aspect_inv = 1.0 / ratio
-        elif sub_plotter.figure.kwargs["aspect"] in "equal":
-            aspect_inv = 1.0
+        aspect_inv = sub_plotter.figure.aspect_for_subplot_from_ratio(ratio=ratio)
 
         sub_plotter.setup_subplot(
             number_subplots=number_subplots,

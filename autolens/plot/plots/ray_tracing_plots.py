@@ -1,10 +1,11 @@
 import autogalaxy as ag
 from autoarray.plot.plotter import plotter
 from autoarray.structures import arrays
-from autogalaxy.plot.plotter import lensing_plotter
+from autogalaxy.plot.plotter import lensing_plotter, lensing_include
 
 
-@lensing_plotter.set_include_and_sub_plotter
+@lensing_include.set_include
+@lensing_plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_tracer(tracer, grid, positions=None, include=None, sub_plotter=None):
     """Plot the observed _tracer of an analysis, using the `Imaging` class object.
@@ -148,7 +149,8 @@ def individual(
         magnification(tracer=tracer, grid=grid, include=include, plotter=plotter)
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def image(tracer, grid, positions=None, include=None, plotter=None):
 
@@ -163,7 +165,8 @@ def image(tracer, grid, positions=None, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def convergence(tracer, grid, include=None, plotter=None):
 
@@ -177,7 +180,8 @@ def convergence(tracer, grid, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def potential(tracer, grid, include=None, plotter=None):
 
@@ -191,7 +195,8 @@ def potential(tracer, grid, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def deflections_y(tracer, grid, include=None, plotter=None):
 
@@ -210,7 +215,8 @@ def deflections_y(tracer, grid, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def deflections_x(tracer, grid, include=None, plotter=None):
 
@@ -229,7 +235,8 @@ def deflections_x(tracer, grid, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def magnification(tracer, grid, include=None, plotter=None):
 
@@ -243,7 +250,8 @@ def magnification(tracer, grid, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def contribution_map(tracer, mask=None, positions=None, include=None, plotter=None):
 

@@ -5,7 +5,8 @@ from autogalaxy.plot.plotter import lensing_plotter
 from autogalaxy.plot.plots import plane_plots, inversion_plots
 
 
-@lensing_plotter.set_include_and_sub_plotter
+@lensing_include.set_include
+@lensing_plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_fit_imaging(fit, include=None, sub_plotter=None):
     number_subplots = 6
@@ -58,7 +59,8 @@ def subplots_of_all_planes(fit, include=None, sub_plotter=None):
             )
 
 
-@lensing_plotter.set_include_and_sub_plotter
+@lensing_include.set_include
+@lensing_plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_of_plane(fit, plane_index, include=None, sub_plotter=None):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
@@ -268,7 +270,8 @@ def individuals(
                 )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
     """Plot the model image of a specific plane of a lens fit.
@@ -324,7 +327,8 @@ def subtracted_image_of_plane(fit, plane_index, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def model_image_of_plane(fit, plane_index, include=None, plotter=None):
     """Plot the model image of a specific plane of a lens fit.
@@ -358,7 +362,8 @@ def model_image_of_plane(fit, plane_index, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def image(fit, array_overlay=None, include=None, plotter=None):
     """Plot the image of a lens fit.
@@ -390,7 +395,8 @@ def image(fit, array_overlay=None, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
@@ -418,7 +424,8 @@ def noise_map(fit, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def signal_to_noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
@@ -446,7 +453,8 @@ def signal_to_noise_map(fit, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def model_image(fit, include=None, plotter=None):
     """Plot the model image of a fit.
@@ -475,7 +483,8 @@ def model_image(fit, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def residual_map(fit, include=None, plotter=None):
     """Plot the residual-map of a lens fit.
@@ -503,7 +512,8 @@ def residual_map(fit, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def normalized_residual_map(fit, include=None, plotter=None):
     """Plot the residual-map of a lens fit.
@@ -531,7 +541,8 @@ def normalized_residual_map(fit, include=None, plotter=None):
     )
 
 
-@lensing_plotter.set_include_and_plotter
+@lensing_include.set_include
+@lensing_plotter.set_plotter
 @plotter.set_labels
 def chi_squared_map(fit, include=None, plotter=None):
     """Plot the chi-squared-map of a lens fit.
