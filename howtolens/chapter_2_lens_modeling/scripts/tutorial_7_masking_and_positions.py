@@ -56,7 +56,10 @@ mask = al.Mask2D.circular_annular(
     outer_radius=2.4,
 )
 
-aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
+imaging_plotter = aplt.ImagingPlotter(
+    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
+)
+imaging_plotter.subplot_imaging()
 
 # %%
 """
@@ -71,7 +74,10 @@ mask = al.Mask2D.circular_annular(
     outer_radius=2.4,
 )
 
-aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
+imaging_plotter = aplt.ImagingPlotter(
+    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
+)
+imaging_plotter.subplot_imaging()
 
 # %%
 """

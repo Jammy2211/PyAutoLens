@@ -66,4 +66,4 @@ inversion = tracer.inversion_interferometer_from_grid_and_data(
     settings_inversion=al.SettingsInversion(use_linear_operators=True),
 )
 
-aplt.Inversion.reconstruction(inversion=inversion)
+aplt.Inversion.figure_reconstruction(inversion=inversion)

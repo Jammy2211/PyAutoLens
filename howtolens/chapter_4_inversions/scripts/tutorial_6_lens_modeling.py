@@ -53,7 +53,10 @@ mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.5
 )
 
-aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
+imaging_plotter = aplt.ImagingPlotter(
+    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
+)
+imaging_plotter.subplot_imaging()
 
 # %%
 """
@@ -105,9 +108,9 @@ fit = perform_fit_with_lens__source_galaxy(
     imaging=imaging, lens_galaxy=lens_galaxy, source_galaxy=source_galaxy
 )
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include2D(mask=True))
 aplt.FitImaging.subplot_of_plane(
-    fit=fit, plane_index=1, include=aplt.Include(mask=True)
+    fit=fit, plane_index=1, include=aplt.Include2D(mask=True)
 )
 
 # %%
@@ -142,9 +145,9 @@ correct_fit = perform_fit_with_lens__source_galaxy(
     imaging=imaging, lens_galaxy=lens_galaxy, source_galaxy=source_galaxy
 )
 
-aplt.FitImaging.subplot_fit_imaging(fit=correct_fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=correct_fit, include=aplt.Include2D(mask=True))
 aplt.FitImaging.subplot_of_plane(
-    fit=fit, plane_index=1, include=aplt.Include(mask=True)
+    fit=fit, plane_index=1, include=aplt.Include2D(mask=True)
 )
 
 print("Bayesian Evidence of Incorrect Fit:")
@@ -193,9 +196,12 @@ mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.5
 )
 
-aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
+imaging_plotter = aplt.ImagingPlotter(
+    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
+)
+imaging_plotter.subplot_imaging()
 aplt.FitImaging.subplot_of_plane(
-    fit=fit, plane_index=1, include=aplt.Include(mask=True)
+    fit=fit, plane_index=1, include=aplt.Include2D(mask=True)
 )
 
 # %%
@@ -252,9 +258,9 @@ This fit now subtracts the lens `Galaxy`'s light from the image and fits the res
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include2D(mask=True))
 aplt.FitImaging.subplot_of_plane(
-    fit=fit, plane_index=1, include=aplt.Include(mask=True)
+    fit=fit, plane_index=1, include=aplt.Include2D(mask=True)
 )
 
 # %%
@@ -278,9 +284,9 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include2D(mask=True))
 aplt.FitImaging.subplot_of_plane(
-    fit=fit, plane_index=1, include=aplt.Include(mask=True)
+    fit=fit, plane_index=1, include=aplt.Include2D(mask=True)
 )
 
 # %%

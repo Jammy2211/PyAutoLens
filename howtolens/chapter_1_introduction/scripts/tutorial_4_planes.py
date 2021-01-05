@@ -122,8 +122,8 @@ _Plane_ plotter exist, which work analogously to `Profile` plotter and `Galaxy` 
 """
 
 # %%
-aplt.Plane.deflections_y(plane=image_plane, grid=image_plane_grid)
-aplt.Plane.deflections_x(plane=image_plane, grid=image_plane_grid)
+aplt.plane.deflections_y(plane=image_plane, grid=image_plane_grid)
+aplt.plane.deflections_x(plane=image_plane, grid=image_plane_grid)
 
 # %%
 """
@@ -159,16 +159,16 @@ Lets inspect our `Grid`'s - I bet our source-plane isn't the boring uniform `Gri
 """
 
 # %%
-aplt.Plane.plane_grid(
+aplt.plane.plane_grid(
     plane=image_plane,
     grid=image_plane_grid,
-    plotter=aplt.Plotter(labels=aplt.Labels(title="Image-plane Grid")),
+    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Image-plane Grid")),
 )
 
-aplt.Plane.plane_grid(
+aplt.plane.plane_grid(
     plane=source_plane,
     grid=source_plane_grid,
-    plotter=aplt.Plotter(labels=aplt.Labels(title="Source-plane Grid")),
+    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Source-plane Grid")),
 )
 
 # %%
@@ -177,11 +177,11 @@ We can zoom in on the `centre` of the source-plane (remembering the lens galaxy 
 """
 
 # %%
-aplt.Plane.plane_grid(
+aplt.plane.plane_grid(
     plane=source_plane,
     grid=source_plane_grid,
     axis_limits=[-0.1, 0.1, -0.1, 0.1],
-    plotter=aplt.Plotter(labels=aplt.Labels(title="Source-plane Grid")),
+    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Source-plane Grid")),
 )
 
 # %%
@@ -194,7 +194,7 @@ row of the image-grid running from the left - as we said it would!)
 """
 
 # %%
-aplt.Plane.image_and_source_plane_subplot(
+aplt.Plane.subplot_image_and_source_plane(
     image_plane=image_plane,
     source_plane=source_plane,
     grid=image_plane_grid,
@@ -216,7 +216,7 @@ back from the source-plane grid.
 """
 
 # %%
-aplt.Plane.image(plane=source_plane, grid=source_plane_grid)
+aplt.plane.image(plane=source_plane, grid=source_plane_grid)
 
 # %%
 """
@@ -240,8 +240,8 @@ possible!
 """
 
 # %%
-aplt.Plane.plane_image(
-    plane=source_plane, grid=source_plane_grid, include=aplt.Include(grid=True)
+aplt.plane.plane_image(
+    plane=source_plane, grid=source_plane_grid, include=aplt.Include2D(grid=True)
 )
 
 # %%
@@ -251,8 +251,8 @@ not to plot the grid.
 """
 
 # %%
-aplt.Plane.plane_image(
-    plane=source_plane, grid=source_plane_grid, include=aplt.Include(grid=False)
+aplt.plane.plane_image(
+    plane=source_plane, grid=source_plane_grid, include=aplt.Include2D(grid=False)
 )
 
 # %%
@@ -275,18 +275,18 @@ both would appear perfect symmetric and smooth! Implementing a more robust calcu
 """
 
 # %%
-aplt.Plane.image_and_source_plane_subplot(
+aplt.Plane.subplot_image_and_source_plane(
     image_plane=image_plane,
     source_plane=source_plane,
     grid=image_plane_grid,
-    include=aplt.Include(critical_curves=True, caustics=True),
+    include=aplt.Include2D(critical_curves=True, caustics=True),
 )
 
-aplt.Plane.image_and_source_plane_subplot(
+aplt.Plane.subplot_image_and_source_plane(
     image_plane=image_plane,
     source_plane=source_plane,
     grid=image_plane_grid,
-    include=aplt.Include(critical_curves=False, caustics=False),
+    include=aplt.Include2D(critical_curves=False, caustics=False),
 )
 
 # %%

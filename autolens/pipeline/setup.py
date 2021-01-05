@@ -103,13 +103,6 @@ class SetupHyper(setup.SetupHyper):
         if self.hypers_all_off:
             return ""
 
-        hyper_tag_off = conf.instance["notation"]["setup_tags"]["hyper"][
-            "hyper_tag_off"
-        ]
-
-        if hyper_tag_off:
-            return ""
-
         return (
             f"{self.component_name}["
             f"{self.hyper_galaxies_tag}"
@@ -874,15 +867,7 @@ class SetupPipeline(setup.SetupPipeline):
 
         setup_tag = conf.instance["notation"]["setup_tags"]["pipeline"]["pipeline"]
 
-        hyper_tag_off = conf.instance["notation"]["setup_tags"]["hyper"][
-            "hyper_tag_off"
-        ]
-
-        if not hyper_tag_off:
-            hyper_tag = self._pipeline_tag_from_setup(setup=self.setup_hyper)
-        else:
-            hyper_tag = ""
-
+        hyper_tag = self._pipeline_tag_from_setup(setup=self.setup_hyper)
         light_tag = self._pipeline_tag_from_setup(setup=self.setup_light)
         mass_tag = self._pipeline_tag_from_setup(setup=self.setup_mass)
         source_tag = self._pipeline_tag_from_setup(setup=self.setup_source)

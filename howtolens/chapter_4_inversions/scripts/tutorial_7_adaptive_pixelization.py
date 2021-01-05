@@ -46,7 +46,10 @@ mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=3.0
 )
 
-aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
+imaging_plotter = aplt.ImagingPlotter(
+    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
+)
+imaging_plotter.subplot_imaging()
 
 # %%
 """
@@ -76,9 +79,9 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include2D(mask=True))
 aplt.FitImaging.subplot_of_plane(
-    fit=fit, plane_index=1, include=aplt.Include(mask=True)
+    fit=fit, plane_index=1, include=aplt.Include2D(mask=True)
 )
 
 # %%
@@ -93,8 +96,9 @@ So what is wrong with the grid? Well, lets think about the source reconstruction
 """
 
 # %%
-aplt.Inversion.reconstruction(
-    inversion=fit.inversion, include=aplt.Include(inversion_pixelization_grid=True)
+aplt.Inversion.figure_reconstruction(
+    inversion=fit.inversion,
+    include=aplt.Include2D(mapper_source_pixelization_grid=True),
 )
 
 # %%
@@ -129,7 +133,7 @@ We can plot this `Grid` over the image, to see that it is a coarse `Grid` over-l
 """
 
 # %%
-aplt.Imaging.image(imaging=imaging, grid=image_plane_sparse_grid, mask=mask)
+aplt.ImagingPlotter.image(imaging=imaging, grid=image_plane_sparse_grid, mask=mask)
 
 # %%
 """
@@ -154,14 +158,14 @@ fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
 aplt.FitImaging.subplot_fit_imaging(
     fit=fit,
-    include=aplt.Include(
+    include=aplt.Include2D(
         mask=True,
-        inversion_image_pixelization_grid=True,
-        inversion_pixelization_grid=True,
+        mapper_data_pixelization_grid=True,
+        mapper_source_pixelization_grid=True,
     ),
 )
 aplt.FitImaging.subplot_of_plane(
-    fit=fit, plane_index=1, include=aplt.Include(mask=True)
+    fit=fit, plane_index=1, include=aplt.Include2D(mask=True)
 )
 
 # %%
@@ -170,8 +174,9 @@ And we can take a closer inspection of the `Inversion` itself.
 """
 
 # %%
-aplt.Inversion.reconstruction(
-    inversion=fit.inversion, include=aplt.Include(inversion_pixelization_grid=True)
+aplt.Inversion.figure_reconstruction(
+    inversion=fit.inversion,
+    include=aplt.Include2D(mapper_source_pixelization_grid=True),
 )
 
 # %%

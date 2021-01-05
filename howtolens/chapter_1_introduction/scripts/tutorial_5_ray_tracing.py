@@ -116,7 +116,7 @@ This image appears as the Einstein ring we saw in the previous tutorial.
 """
 
 # %%
-aplt.Tracer.image(tracer=tracer, grid=image_plane_grid)
+aplt.Tracer.figure_image(tracer=tracer, grid=image_plane_grid)
 
 # %%
 """
@@ -145,15 +145,15 @@ We can use the plane_plotter to plot these grids, like we did before.
 """
 
 # %%
-plotter = aplt.Plotter(labels=aplt.Labels(title="Image-plane Grid"))
+plotter = aplt.MatPlot2D(labels=aplt.Labels(title="Image-plane Grid"))
 
-aplt.Plane.plane_grid(plane=tracer.image_plane, grid=traced_grids[0], plotter=plotter)
+aplt.plane.plane_grid(plane=tracer.image_plane, grid=traced_grids[0], plotter=plotter)
 
-plotter = aplt.Plotter(labels=aplt.Labels(title="Source-plane Grid"))
+plotter = aplt.MatPlot2D(labels=aplt.Labels(title="Source-plane Grid"))
 
-aplt.Plane.plane_grid(plane=tracer.source_plane, grid=traced_grids[1], plotter=plotter)
+aplt.plane.plane_grid(plane=tracer.source_plane, grid=traced_grids[1], plotter=plotter)
 
-aplt.Plane.plane_grid(
+aplt.plane.plane_grid(
     plane=tracer.source_plane,
     grid=traced_grids[1],
     axis_limits=[-0.1, 0.1, -0.1, 0.1],
@@ -239,7 +239,7 @@ commented out again for convenience)
 """
 
 # %%
-aplt.Tracer.convergence(tracer=tracer, grid=image_plane_grid)
+aplt.Tracer.figure_convergence(tracer=tracer, grid=image_plane_grid)
 
 # aplt.Tracer.potential(tracer=tracer, grid=image_plane_grid)
 # aplt.Tracer.deflections_y(tracer=tracer, grid=image_plane_grid)

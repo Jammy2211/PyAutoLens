@@ -87,9 +87,9 @@ for i in range(40, 41):
 
     print(positions)
 
-    aplt.Tracer.image(
+    aplt.Tracer.figure_image(
         tracer=tracer,
         grid=grid,
         positions=positions_plot,
-        include=aplt.Include(origin=False, critical_curves=True, caustics=False),
+        include=aplt.Include2D(origin=False, critical_curves=True, caustics=False),
     )

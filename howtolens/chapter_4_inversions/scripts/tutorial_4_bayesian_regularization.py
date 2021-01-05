@@ -115,7 +115,7 @@ no_regularization_fit = perform_fit_with_source_galaxy(
 )
 
 aplt.FitImaging.subplot_fit_imaging(
-    fit=no_regularization_fit, include=aplt.Include(mask=True)
+    fit=no_regularization_fit, include=aplt.Include2D(mask=True)
 )
 
 # %%
@@ -141,9 +141,9 @@ values, we can see that even without `Regularization`.e are still reconstructing
 """
 
 # %%
-aplt.Inversion.reconstruction(
+aplt.Inversion.figure_reconstruction(
     inversion=no_regularization_fit.inversion,
-    plotter=aplt.Plotter(cmap=aplt.Cmap(vmax=0.5, vmin=-0.5)),
+    plotter=aplt.MatPlot2D(cmap=aplt.Cmap(vmax=0.5, vmin=-0.5)),
 )
 
 # %%
@@ -165,7 +165,7 @@ high_regularization_fit = perform_fit_with_source_galaxy(
 )
 
 aplt.FitImaging.subplot_fit_imaging(
-    fit=high_regularization_fit, include=aplt.Include(mask=True)
+    fit=high_regularization_fit, include=aplt.Include2D(mask=True)
 )
 
 # %%
@@ -252,7 +252,7 @@ print(10395.370224426646)
 print("New Bayesian Evidence:")
 print(fit.log_evidence)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include2D(mask=True))
 
 # %%
 """

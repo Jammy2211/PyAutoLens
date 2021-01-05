@@ -9,7 +9,7 @@ imaging = instrument_util.load_test_imaging(
 
 array = imaging.image
 
-plotter = aplt.Plotter(
+plotter = aplt.MatPlot2D(
     figure=aplt.Figure(figsize=(10, 10)),
     cmap=aplt.Cmap(
         cmap="gray", norm="symmetric_log", vmin=-0.13, vmax=20, linthresh=0.02

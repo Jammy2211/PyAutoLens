@@ -7,10 +7,10 @@ sis_mass_profile = al.mp.EllipticalIsothermal(
     centre=(1.0, 1.0), einstein_radius=1.6, axis_ratio=0.7
 )
 
-aplt.MassProfile.convergence(
+aplt.MassProfile.figure_convergence(
     mass_profile=sis_mass_profile,
     grid=grid,
-    include=aplt.Include(critical_curves=True, caustics=True),
+    include=aplt.Include2D(critical_curves=True, caustics=True),
 )
 
 # galaxy = al.Galaxy(mass=sis_mass_profile, redshift=1)

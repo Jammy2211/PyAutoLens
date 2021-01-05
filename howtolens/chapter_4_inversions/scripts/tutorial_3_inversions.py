@@ -55,7 +55,7 @@ mask = al.Mask2D.circular_annular(
     outer_radius=2.8,
 )
 
-aplt.Imaging.image(imaging=imaging, mask=mask)
+aplt.ImagingPlotter.image(imaging=imaging, mask=mask)
 
 # %%
 """
@@ -92,7 +92,7 @@ mapper = rectangular.mapper_from_grid_and_sparse_grid(grid=source_plane_grid)
 aplt.Mapper.subplot_image_and_mapper(
     image=imaging.image,
     mapper=mapper,
-    include=aplt.Include(mask=True, inversion_grid=True),
+    include=aplt.Include2D(mask=True, inversion_grid=True),
 )
 
 # %%
@@ -115,10 +115,12 @@ Our `Inversion` has a reconstructed image and `Pixeilzation`, whcih we can plot 
 """
 
 # %%
-aplt.Inversion.reconstructed_image(inversion=inversion, include=aplt.Include(mask=True))
+aplt.Inversion.figure_reconstructed_image(
+    inversion=inversion, include=aplt.Include2D(mask=True)
+)
 
-aplt.Inversion.reconstruction(
-    inversion=inversion, include=aplt.Include(inversion_grid=True)
+aplt.Inversion.figure_reconstruction(
+    inversion=inversion, include=aplt.Include2D(inversion_grid=True)
 )
 
 # %%
@@ -140,7 +142,7 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
-aplt.Imaging.image(imaging=imaging)
+aplt.ImagingPlotter.image(imaging=imaging)
 
 # %%
 """
@@ -157,7 +159,7 @@ mask = al.Mask2D.circular_annular(
     outer_radius=3.2,
 )
 
-aplt.Imaging.image(imaging=imaging, mask=mask)
+aplt.ImagingPlotter.image(imaging=imaging, mask=mask)
 
 masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
@@ -179,10 +181,12 @@ Lets inspect the complex source reconstruction.
 """
 
 # %%
-aplt.Inversion.reconstructed_image(inversion=inversion, include=aplt.Include(mask=True))
+aplt.Inversion.figure_reconstructed_image(
+    inversion=inversion, include=aplt.Include2D(mask=True)
+)
 
-aplt.Inversion.reconstruction(
-    inversion=inversion, include=aplt.Include(inversion_grid=True)
+aplt.Inversion.figure_reconstruction(
+    inversion=inversion, include=aplt.Include2D(inversion_grid=True)
 )
 
 
@@ -211,8 +215,8 @@ To begin, lets consider some random mappings between our mapper`s source-pixels 
 aplt.Mapper.subplot_image_and_mapper(
     image=masked_imaging.image,
     mapper=mapper,
-    include=aplt.Include(mask=True, inversion_grid=True),
-    source_pixel_indexes=[[445], [285], [313], [132], [11]],
+    include=aplt.Include2D(mask=True, inversion_grid=True),
+    pixelization_indexes=[[445], [285], [313], [132], [11]],
 )
 
 # %%
@@ -262,7 +266,7 @@ pretty good looking residuals - we're certainly fitting the lensed source accura
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include2D(mask=True))
 
 # %%
 """

@@ -19,60 +19,31 @@ def make_fit_imaging_plotter_setup():
 
 
 def test__all_individual_plotter(
-    tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, include_all, plot_path, plot_patch
+    tracer_x2_plane_7x7, sub_grid_7x7, mask_7x7, include_2d_all, plot_path, plot_patch
 ):
-    aplt.Tracer.image(
+
+    tracer_plotter = aplt.TracerPlotter(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
+        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
+    tracer_plotter.figure_image()
     assert path.join(plot_path, "image.png") in plot_patch.paths
 
-    aplt.Tracer.convergence(
-        tracer=tracer_x2_plane_7x7,
-        grid=sub_grid_7x7,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
-    )
-
+    tracer_plotter.figure_convergence()
     assert path.join(plot_path, "convergence.png") in plot_patch.paths
 
-    aplt.Tracer.potential(
-        tracer=tracer_x2_plane_7x7,
-        grid=sub_grid_7x7,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
-    )
-
+    tracer_plotter.figure_potential()
     assert path.join(plot_path, "potential.png") in plot_patch.paths
 
-    aplt.Tracer.deflections_y(
-        tracer=tracer_x2_plane_7x7,
-        grid=sub_grid_7x7,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
-    )
-
+    tracer_plotter.figure_deflections_y()
     assert path.join(plot_path, "deflections_y.png") in plot_patch.paths
 
-    aplt.Tracer.deflections_x(
-        tracer=tracer_x2_plane_7x7,
-        grid=sub_grid_7x7,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
-    )
-
+    tracer_plotter.figure_deflections_x()
     assert path.join(plot_path, "deflections_x.png") in plot_patch.paths
 
-    aplt.Tracer.magnification(
-        tracer=tracer_x2_plane_7x7,
-        grid=sub_grid_7x7,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
-    )
-
+    tracer_plotter.figure_magnification()
     assert path.join(plot_path, "magnification.png") in plot_patch.paths
 
     tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy = al.HyperGalaxy()
@@ -83,53 +54,46 @@ def test__all_individual_plotter(
         shape_2d=(7, 7), pixel_scales=0.1
     )
 
-    aplt.Tracer.contribution_map(
-        tracer=tracer_x2_plane_7x7,
-        mask=mask_7x7,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
-    )
-
+    tracer_plotter.figure_contribution_map()
     assert path.join(plot_path, "contribution_map.png") in plot_patch.paths
 
 
 def test__tracer_sub_plot_output(
-    tracer_x2_plane_7x7, sub_grid_7x7, include_all, plot_path, plot_patch
+    tracer_x2_plane_7x7, sub_grid_7x7, include_2d_all, plot_path, plot_patch
 ):
-    aplt.Tracer.subplot_tracer(
+    tracer_plotter = aplt.TracerPlotter(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
+        include_2d=include_2d_all,
+        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
+    tracer_plotter.subplot_tracer()
     assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths
 
 
 def test__tracer_individuals__dependent_on_input(
-    tracer_x2_plane_7x7, sub_grid_7x7, include_all, plot_path, plot_patch
+    tracer_x2_plane_7x7, sub_grid_7x7, include_2d_all, plot_path, plot_patch
 ):
-    aplt.Tracer.individual(
+
+    tracer_plotter = aplt.TracerPlotter(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
+        include_2d=include_2d_all,
+        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
+    )
+
+    tracer_plotter.figure_individuals(
         plot_image=True,
         plot_source_plane=True,
         plot_potential=True,
         plot_magnification=True,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert path.join(plot_path, "image.png") in plot_patch.paths
-
-    assert path.join(plot_path, "source_plane.png") in plot_patch.paths
-
+    assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
     assert path.join(plot_path, "convergence.png") not in plot_patch.paths
-
     assert path.join(plot_path, "potential.png") in plot_patch.paths
-
     assert path.join(plot_path, "deflections_y.png") not in plot_patch.paths
-
     assert path.join(plot_path, "deflections_x.png") not in plot_patch.paths
-
     assert path.join(plot_path, "magnification.png") in plot_patch.paths

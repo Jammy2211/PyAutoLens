@@ -18,28 +18,29 @@ def make_fit_imaging_plotter_setup():
 def test__subhalo_detection_sub_plot(
     masked_imaging_fit_x2_plane_7x7,
     masked_imaging_fit_x2_plane_inversion_7x7,
-    include_all,
+    include_2d_all,
     plot_path,
     plot_patch,
 ):
     arr = al.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
 
-    aplt.Subhalo.subplot_detection_imaging(
+    subhalo_plotter = aplt.SubhaloPlotter(
+        include_2d=include_2d_all,
+        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    subhalo_plotter.subplot_detection_imaging(
         fit_imaging_detect=masked_imaging_fit_x2_plane_7x7,
         detection_array=arr,
         mass_array=arr,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "subplot_detection_imaging.png") in plot_patch.paths
 
-    aplt.Subhalo.subplot_detection_imaging(
+    subhalo_plotter.subplot_detection_imaging(
         fit_imaging_detect=masked_imaging_fit_x2_plane_inversion_7x7,
         detection_array=arr,
         mass_array=arr,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "subplot_detection_imaging.png") in plot_patch.paths
@@ -48,24 +49,26 @@ def test__subhalo_detection_sub_plot(
 def test__subhalo_detection_fits(
     masked_imaging_fit_x2_plane_7x7,
     masked_imaging_fit_x2_plane_inversion_7x7,
-    include_all,
+    include_2d_all,
     plot_path,
     plot_patch,
 ):
-    aplt.Subhalo.subplot_detection_fits(
+
+    subhalo_plotter = aplt.SubhaloPlotter(
+        include_2d=include_2d_all,
+        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    subhalo_plotter.subplot_detection_fits(
         fit_imaging_before=masked_imaging_fit_x2_plane_7x7,
         fit_imaging_detect=masked_imaging_fit_x2_plane_7x7,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "subplot_detection_fits.png") in plot_patch.paths
 
-    aplt.Subhalo.subplot_detection_fits(
+    subhalo_plotter.subplot_detection_fits(
         fit_imaging_before=masked_imaging_fit_x2_plane_inversion_7x7,
         fit_imaging_detect=masked_imaging_fit_x2_plane_inversion_7x7,
-        include=include_all,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "subplot_detection_fits.png") in plot_patch.paths

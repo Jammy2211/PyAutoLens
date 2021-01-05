@@ -88,7 +88,7 @@ mask to the lensed source's light (which in this example, we won't).
 """
 
 # %%
-aplt.Imaging.image(imaging=imaging, mask=mask)
+aplt.ImagingPlotter.image(imaging=imaging, mask=mask)
 
 # %%
 """
@@ -117,7 +117,7 @@ to fit it with a lens model:
 # %%
 masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
-aplt.Imaging.image(imaging=masked_imaging.imaging)
+aplt.ImagingPlotter.image(imaging=masked_imaging.imaging)
 
 # %%
 """
@@ -203,7 +203,7 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-aplt.Tracer.image(tracer=tracer, grid=masked_imaging.grid)
+aplt.Tracer.figure_image(tracer=tracer, grid=masked_imaging.grid)
 
 # %%
 """
@@ -225,7 +225,7 @@ To fit the image, we pass the `MaskedImaging` and `Tracer` to a `FitImaging` obj
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include2D(mask=True))
 
 # %%
 """
@@ -305,7 +305,7 @@ If we use this data to perform a fit, we can immediately note how the resolution
 # %%
 fit_custom = al.FitImaging(masked_imaging=masked_imaging_custom, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit_custom, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit_custom, include=aplt.Include2D(mask=True))
 
 # %%
 """
@@ -348,7 +348,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include2D(mask=True))
 
 # %%
 """
@@ -396,7 +396,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include2D(mask=True))
 
 # %%
 """

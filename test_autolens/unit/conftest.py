@@ -73,9 +73,9 @@ def make_noise_map_7x7():
     return fixtures.make_noise_map_7x7()
 
 
-@pytest.fixture(name="positions_7x7")
-def make_positions_7x7():
-    return fixtures.make_positions_7x7()
+@pytest.fixture(name="grid_irregular_grouped_7x7")
+def make_grid_irregular_grouped_7x7():
+    return fixtures.make_grid_irregular_grouped_7x7()
 
 
 @pytest.fixture(name="psf_3x3")
@@ -235,7 +235,7 @@ def make_hyper_galaxy_image_path_dict_7x7():
     return fixtures.make_hyper_galaxy_image_path_dict_7x7()
 
 
-@pytest.fixture(name="include_all")
+@pytest.fixture(name="include_2d_all")
 def make_include_all():
     return fixtures.make_include_all()
 

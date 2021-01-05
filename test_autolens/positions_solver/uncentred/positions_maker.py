@@ -97,11 +97,11 @@ for i in range(iters):
 
     """Visually inspect the positions (comment this out if you are confident the code is behaving as expected)."""
 
-    aplt.Tracer.image(
+    aplt.Tracer.figure_image(
         tracer=tracer,
         grid=grid,
         positions=positions,
-        include=aplt.Include(origin=False, critical_curves=False, caustics=False),
+        include=aplt.Include2D(origin=False, critical_curves=False, caustics=False),
     )
 
     """Save the `Tracer` and `Positions` so they can be used for testing other `PositionsSolver` settings."""

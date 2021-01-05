@@ -78,7 +78,7 @@ We can plot an image as follows:
 """
 
 # %%
-aplt.Imaging.image(imaging=imaging)
+aplt.ImagingPlotter.image(imaging=imaging)
 
 # %%
 """
@@ -95,13 +95,13 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
-plotter = aplt.Plotter(
+plotter = aplt.MatPlot2D(
     figure=aplt.Figure(figsize=(7, 7)),
     ticks=aplt.Ticks(labelsize=8, labelsize=8),
     labels=aplt.Labels(labelsize=6, labelsize=6, titlesize=12),
 )
 
-aplt.Imaging.image(imaging=imaging, plotter=plotter)
+aplt.ImagingPlotter.image(imaging=imaging, plotter=plotter)
 
 # %%
 """
@@ -145,7 +145,7 @@ Again, we can customize this subplot using a Plotter.
 """
 
 # %%
-plotter = aplt.Plotter(
+plotter = aplt.MatPlot2D(
     figure=aplt.Figure.sub(figsize=(7, 7)),
     ticks=aplt.Ticks.sub(labelsize=8, labelsize=8),
     labels=aplt.Labels.sub(labelsize=6, labelsize=6, titlesize=12),
@@ -163,9 +163,9 @@ include the origin of the coordinate system on our plot of the image:
 """
 
 # %%
-aplt.Imaging.image(imaging=imaging, plotter=plotter, include=aplt.Include(origin=True))
+aplt.ImagingPlotter.image(imaging=imaging, plotter=plotter, include=aplt.Include2D(origin=True))
 
-aplt.Imaging.image(imaging=imaging, plotter=plotter, include=aplt.Include(origin=False))
+aplt.ImagingPlotter.image(imaging=imaging, plotter=plotter, include=aplt.Include2D(origin=False))
 
 # %%
 """

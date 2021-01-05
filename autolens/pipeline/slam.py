@@ -237,7 +237,7 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
 
         if self.setup_smbh is not None:
             return self.setup_smbh.smbh_from_centre(
-                centre=results.last.instance.galaxies.lens.sersic.centre
+                centre=results.last.instance.galaxies.lens.bulge.centre
             )
 
     def shear_from_result(self, result: af.Result, as_instance=False):

@@ -86,7 +86,7 @@ we're going to plot our `Mapper` alongside the image we used to generate the sou
 
 # %%
 aplt.Mapper.subplot_image_and_mapper(
-    image=imaging.image, mapper=mapper, include=aplt.Include(inversion_grid=True)
+    image=imaging.image, mapper=mapper, include=aplt.Include2D(inversion_grid=True)
 )
 
 # %%
@@ -99,8 +99,8 @@ both the image and source-plane.
 aplt.Mapper.subplot_image_and_mapper(
     image=imaging.image,
     mapper=mapper,
-    include=aplt.Include(inversion_grid=True),
-    image_pixel_indexes=[
+    include=aplt.Include2D(inversion_grid=True),
+    full_indexes=[
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
     ],
@@ -118,8 +118,8 @@ to the image.
 aplt.Mapper.subplot_image_and_mapper(
     image=imaging.image,
     mapper=mapper,
-    include=aplt.Include(inversion_grid=True),
-    source_pixel_indexes=[[312]],
+    include=aplt.Include2D(inversion_grid=True),
+    pixelization_indexes=[[312]],
 )
 
 # %%
@@ -132,8 +132,8 @@ This will give you a feel for how different regions of the source-plane map to t
 aplt.Mapper.subplot_image_and_mapper(
     image=imaging.image,
     mapper=mapper,
-    include=aplt.Include(inversion_grid=True),
-    source_pixel_indexes=[[312, 318], [412]],
+    include=aplt.Include2D(inversion_grid=True),
+    pixelization_indexes=[[312, 318], [412]],
 )
 
 # %%
@@ -152,8 +152,8 @@ Lets just have a quick look at these edges pixels:
 aplt.Mapper.subplot_image_and_mapper(
     image=imaging.image,
     mapper=mapper,
-    include=aplt.Include(inversion_grid=True),
-    source_pixel_indexes=[[0, 1, 2, 3, 4, 5, 6, 7], [620, 621, 622, 623, 624]],
+    include=aplt.Include2D(inversion_grid=True),
+    pixelization_indexes=[[0, 1, 2, 3, 4, 5, 6, 7], [620, 621, 622, 623, 624]],
 )
 
 # %%
@@ -175,7 +175,7 @@ Lets quickly confirm the annuli capture the source's light.
 """
 
 # %%
-aplt.Imaging.image(imaging=imaging, mask=mask)
+aplt.ImagingPlotter.image(imaging=imaging, mask=mask)
 
 # %%
 """
@@ -210,7 +210,7 @@ Lets have another look.
 aplt.Mapper.subplot_image_and_mapper(
     image=masked_imaging.image,
     mapper=mapper,
-    include=aplt.Include(mask=True, inversion_grid=True),
+    include=aplt.Include2D(mask=True, inversion_grid=True),
 )
 
 # %%
@@ -224,8 +224,8 @@ been reading up, this diamond is called the `caustic`).
 aplt.Mapper.subplot_image_and_mapper(
     image=masked_imaging.image,
     mapper=mapper,
-    include=aplt.Include(mask=True, inversion_grid=True),
-    source_pixel_indexes=[[312], [314], [316], [318]],
+    include=aplt.Include2D(mask=True, inversion_grid=True),
+    pixelization_indexes=[[312], [314], [316], [318]],
 )
 
 # %%

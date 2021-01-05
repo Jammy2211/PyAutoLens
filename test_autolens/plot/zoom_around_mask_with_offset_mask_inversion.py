@@ -44,7 +44,7 @@ fit = fit_with_offset_centre(centre=(2.0, 2.0))
 
 # aplt.FitImaging.subplot_for_plane(fit=fit, plane_index=1, plot_source_grid=True)
 
-aplt.AbstractInversion.reconstruction(inversion=fit.inversion, include_grid=True)
+aplt.AbstractInversion.figure_reconstruction(inversion=fit.inversion, include_grid=True)
 
 stop
 

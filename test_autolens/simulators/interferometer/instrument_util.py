@@ -65,20 +65,20 @@ def simulate_interferometer_from_instrument(instrument, dataset_name, galaxies):
         overwrite=True,
     )
 
-    plotter = aplt.Plotter(output=aplt.Output(path=dataset_path, format="png"))
-    plotter = aplt.Plotter(output=aplt.Output(path=dataset_path, format="png"))
+    plotter = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
+    plotter = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 
     aplt.Interferometer.subplot_interferometer(
         interferometer=interferometer, plotter=plotter
     )
 
-    aplt.Interferometer.individual(
+    aplt.Interferometer.figure_individuals(
         interferometer=interferometer, plot_visibilities=True, plotter=plotter
     )
 
     aplt.Tracer.subplot_tracer(tracer=tracer, grid=grid, plotter=plotter)
 
-    aplt.Tracer.individual(
+    aplt.Tracer.figure_individuals(
         tracer=tracer,
         grid=grid,
         plot_image=True,

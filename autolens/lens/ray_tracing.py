@@ -592,7 +592,10 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
                 )
                 traced_sparse_grids_of_planes.append(traced_sparse_grids[plane_index])
 
-        return traced_sparse_grids_of_planes
+        if len(sparse_image_plane_grids_of_planes) > 1:
+            return traced_sparse_grids_of_planes, sparse_image_plane_grids_of_planes[1]
+        else:
+            return traced_sparse_grids_of_planes, sparse_image_plane_grids_of_planes[0]
 
     def mappers_of_planes_from_grid(
         self, grid, settings_pixelization=pix.SettingsPixelization()
@@ -602,7 +605,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
-        traced_sparse_grids_of_planes = self.traced_sparse_grids_of_planes_from_grid(
+        traced_sparse_grids_of_planes, sparse_image_plane_grid = self.traced_sparse_grids_of_planes_from_grid(
             grid=grid, settings_pixelization=settings_pixelization
         )
 
@@ -614,6 +617,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
                 mapper = plane.mapper_from_grid_and_sparse_grid(
                     grid=traced_grids_of_planes[plane_index],
                     sparse_grid=traced_sparse_grids_of_planes[plane_index],
+                    sparse_image_plane_grid=sparse_image_plane_grid,
                     settings_pixelization=settings_pixelization,
                 )
                 mappers_of_planes.append(mapper)

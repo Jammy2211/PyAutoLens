@@ -38,7 +38,7 @@ First, lets plot this `Grid`, which shows that it is a fairly bland uniform `Gri
 """
 
 # %%
-plotter = aplt.Plotter(labels=aplt.Labels(title="Fairly Bland Uniform Grid Of Dots"))
+plotter = aplt.MatPlot2D(labels=aplt.Labels(title="Fairly Bland Uniform Grid Of Dots"))
 
 aplt.Grid(grid=grid, plotter=plotter)
 

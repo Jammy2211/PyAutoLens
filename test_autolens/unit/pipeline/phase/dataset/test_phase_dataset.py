@@ -115,8 +115,12 @@ class TestMakeAnalysis:
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
-        assert fit.inversion.mapper.grid[4][0] == pytest.approx(97.19584, 1.0e-2)
-        assert fit.inversion.mapper.grid[4][1] == pytest.approx(-3.699999, 1.0e-2)
+        assert fit.inversion.mapper.source_full_grid[4][0] == pytest.approx(
+            97.19584, 1.0e-2
+        )
+        assert fit.inversion.mapper.source_full_grid[4][1] == pytest.approx(
+            -3.699999, 1.0e-2
+        )
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=[lens_galaxy, source_galaxy],
@@ -141,7 +145,9 @@ class TestMakeAnalysis:
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
-        assert fit.inversion.mapper.grid[4][0] == pytest.approx(200.0, 1.0e-4)
+        assert fit.inversion.mapper.source_full_grid[4][0] == pytest.approx(
+            200.0, 1.0e-4
+        )
 
 
 class TestAutoPositions:

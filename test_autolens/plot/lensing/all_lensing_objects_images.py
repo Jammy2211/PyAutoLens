@@ -1,8 +1,8 @@
 import autolens as al
 import autolens.plot as aplt
 
-plotter = aplt.Plotter()
-plotter = aplt.Plotter()
+plotter = aplt.MatPlot2D()
+plotter = aplt.MatPlot2D()
 
 grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
 
@@ -22,13 +22,13 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-aplt.LightProfile.image(light_profile=lens_galaxy.light, grid=grid)
-aplt.Galaxy.image(galaxy=lens_galaxy, grid=grid)
-aplt.Plane.image(plane=tracer.image_plane, grid=grid)
+aplt.LightProfile.figure_image(light_profile=lens_galaxy.light, grid=grid)
+aplt.galaxy.image(galaxy=lens_galaxy, grid=grid)
+aplt.plane.image(plane=tracer.image_plane, grid=grid)
 
-aplt.Tracer.image(
+aplt.Tracer.figure_image(
     tracer=tracer,
     grid=grid,
-    include=aplt.Include(critical_curves=True),
+    include=aplt.Include2D(critical_curves=True),
     plotter=plotter,
 )

@@ -71,23 +71,6 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_background_noise=hyper_background_noise,
         )
 
-        if tracer.has_mass_profile:
-
-            try:
-
-                visualizer = self.visualizer.new_visualizer_with_preloaded_critical_curves_and_caustics(
-                    preloaded_critical_curves=tracer.critical_curves,
-                    preloaded_caustics=tracer.caustics,
-                )
-
-            except (Exception, IndexError, ValueError):
-
-                visualizer = self.visualizer
-
-        else:
-
-            visualizer = self.visualizer
-
         try:
             visualizer.visualize_ray_tracing(
                 tracer=fit.tracer, during_analysis=during_analysis

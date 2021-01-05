@@ -50,5 +50,5 @@ masked_imaging = al.MaskedImaging(
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 aplt.FitImaging.subplot_fit_imaging(
-    fit=fit, include=aplt.Include(critical_curves=False, caustics=False)
+    fit=fit, include=aplt.Include2D(critical_curves=False, caustics=False)
 )
