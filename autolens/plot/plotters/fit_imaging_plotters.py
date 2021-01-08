@@ -52,7 +52,7 @@ class FitImagingPlotter(fit_imaging_plotters.FitImagingPlotter):
 
         visuals_2d.mask = None
 
-        return visuals_2d + lensing_visuals.Visuals2D(
+        return visuals_2d + visuals_2d.__class__(
             light_profile_centres=self.extract_2d(
                 "light_profile_centres", self.tracer.planes[0].light_profile_centres
             ),
@@ -60,7 +60,7 @@ class FitImagingPlotter(fit_imaging_plotters.FitImagingPlotter):
                 "mass_profile_centres", self.tracer.planes[0].mass_profile_centres
             ),
             critical_curves=self.extract_2d(
-                "critical_curves", self.tracer.critical_curves
+                "critical_curves", self.tracer.critical_curves, "critical_curves"
             ),
         )
 
@@ -80,7 +80,7 @@ class FitImagingPlotter(fit_imaging_plotters.FitImagingPlotter):
 
     @property
     def inversion_plotter(self):
-        return inversion_plotters.InversionPlotter(
+        inversion_plotter = inversion_plotters.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.tracer_plotter.visuals_with_include_2d_of_plane(
@@ -88,6 +88,8 @@ class FitImagingPlotter(fit_imaging_plotters.FitImagingPlotter):
             ),
             include_2d=self.include_2d,
         )
+        inversion_plotter.visuals_2d.border = None
+        return inversion_plotter
 
     @abstract_plotters.for_figure_with_index
     def figure_subtracted_image_of_plane(self, plane_index):
@@ -119,16 +121,29 @@ class FitImagingPlotter(fit_imaging_plotters.FitImagingPlotter):
 
             subtracted_image = self.fit.image
 
+        try:
+            vmin = self.mat_plot_2d.cmap.kwargs["vmin"]
+        except KeyError:
+            vmin = None
+
+        try:
+            vmax = self.mat_plot_2d.cmap.kwargs["vmax"]
+        except KeyError:
+            vmax = None
+
         self.mat_plot_2d.cmap.kwargs["vmin"] = np.max(
             self.fit.model_images_of_planes[plane_index]
         )
-        self.mat_plot_2d.cmap.kwargs["vmin"] = np.min(
+        self.mat_plot_2d.cmap.kwargs["vmax"] = np.min(
             self.fit.model_images_of_planes[plane_index]
         )
 
         self.mat_plot_2d.plot_array(
             array=subtracted_image, visuals_2d=self.visuals_with_include_2d
         )
+
+        self.mat_plot_2d.cmap.kwargs["vmin"] = vmin
+        self.mat_plot_2d.cmap.kwargs["vmax"] = vmax
 
     @abstract_plotters.for_figure_with_index
     def figure_model_image_of_plane(self, plane_index):

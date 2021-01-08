@@ -92,17 +92,19 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
 
         if plane_index == 0:
             critical_curves = self.extract_2d(
-                "critical_curves", self.lensing_obj.critical_curves
+                "critical_curves", self.lensing_obj.critical_curves, "critical_curves"
             )
         else:
             critical_curves = None
 
         if plane_index == 1:
-            caustics = self.extract_2d("caustics", self.lensing_obj.caustics)
+            caustics = self.extract_2d(
+                "caustics", self.lensing_obj.caustics, "caustics"
+            )
         else:
             caustics = None
 
-        return self.visuals_2d + lensing_visuals.Visuals2D(
+        return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin", value=grids.GridIrregular(grid=[self.grid.origin])
             ),
@@ -157,6 +159,13 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
         plane_plotter = self.plane_plotter_from(plane_index=plane_index)
 
         plane_plotter.figure_plane_image()
+
+    @abstract_plotters.for_figure_with_index
+    def figure_plane_grid_of_plane(self, plane_index, indexes=None, axis_limits=None):
+
+        plane_plotter = self.plane_plotter_from(plane_index=plane_index)
+
+        plane_plotter.figure_plane_grid(indexes=indexes, axis_limits=axis_limits)
 
     def figure_individuals(
         self,

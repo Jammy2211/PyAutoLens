@@ -148,7 +148,7 @@ one another (which is controlled by the `position_threshold` parameter input int
  2) By removing these solutions, a global-maximum solution may be reached instead of a local-maxima. This is 
  because removing the incorrect mass models makes the non-linear parameter space less complex.
 
-We can easily check the image-positions are accurate by plotting them using our `Imaging` `Plotter`.(they are the magenta 
+We can easily check the image-positions are accurate by plotting them using our `ImagingPlotter`.(they are the magenta 
 dots on the image).
 
 To specify these positions, we use the `GridIrregularGrouped` object, which is used by **PyAutoLens** in general to specify (y,x)
@@ -161,7 +161,10 @@ positions = al.GridIrregularGrouped(
     grid=[(1.6, 0.0), (0.0, 1.6), (-1.6, 0.0), (0.0, -1.6)]
 )
 
-aplt.Imaging.subplot_imaging(imaging=imaging, positions=positions)
+visuals_2d = aplt.Visuals2D(positions=positions)
+
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
+imaging_plotter.subplot_imaging()
 
 # %%
 """
@@ -235,7 +238,8 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
-aplt.Imaging.subplot_imaging(imaging=imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
+imaging_plotter.subplot_imaging()
 
 # %%
 """
@@ -249,7 +253,10 @@ positions = al.GridIrregularGrouped(
     grid=[[(2.65, 0.0), (-0.55, 0.0)], [(-2.65, 0.0), (0.55, 0.0)]]
 )
 
-aplt.Imaging.subplot_imaging(imaging=imaging, positions=positions)
+visuals_2d = aplt.Visuals2D(positions=positions)
+
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
+imaging_plotter.subplot_imaging()
 
 # %%
 """

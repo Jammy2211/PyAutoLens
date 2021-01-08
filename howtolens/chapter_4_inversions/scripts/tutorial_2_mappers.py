@@ -124,7 +124,7 @@ aplt.Mapper.subplot_image_and_mapper(
 
 # %%
 """
-And there we have it - multiple `Imaging` in all its glory. Try changing the source-pixel indexes of the line below. 
+And there we have it - multiple imaging in all its glory. Try changing the source-pixel indexes of the line below. 
 This will give you a feel for how different regions of the source-plane map to the image.
 """
 
@@ -175,7 +175,10 @@ Lets quickly confirm the annuli capture the source's light.
 """
 
 # %%
-aplt.ImagingPlotter.image(imaging=imaging, mask=mask)
+visuals_2d = aplt.Visuals2D(mask=mask)
+
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
+imaging_plotter.figure_image()
 
 # %%
 """

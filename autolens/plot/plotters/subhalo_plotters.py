@@ -37,7 +37,7 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
 
         self.open_subplot_figure(number_subplots=number_subplots)
 
-        self.mat_plot_2d.title.kwargs["label"] = "Image"
+        self.set_title("Image")
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
@@ -47,7 +47,7 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
 
         fit_imaging_plotter.figure_image()
 
-        self.mat_plot_2d.title.kwargs["label"] = "Signal-To-Noise Map"
+        self.set_title("Signal-To-Noise Map")
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
@@ -55,7 +55,7 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-        self.mat_plot_2d.title.kwargs["label"] = "Increase in Log Evidence"
+        self.set_title("Increase in Log Evidence")
 
         self.mat_plot_2d.plot_array(
             array=detection_array,
@@ -65,7 +65,7 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
-        self.mat_plot_2d.title.kwargs["label"] = "Subhalo Mass"
+        self.set_title("Subhalo Mass")
 
         self.mat_plot_2d.plot_array(
             array=mass_array,
@@ -103,7 +103,7 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-        self.mat_plot_2d.title.kwargs["label"] = "Normalized Residuals (No Subhalo)"
+        self.set_title("Normalized Residuals (No Subhalo)")
 
         fit_imaging_plotter_before = self.fit_imaging_plotter_from(
             fit_imaging=fit_imaging_before
@@ -113,13 +113,13 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-        self.mat_plot_2d.title.kwargs["label"] = "Chi-Squared Map (No Subhalo)"
+        self.set_title("Chi-Squared Map (No Subhalo)")
 
         fit_imaging_plotter_before.figure_chi_squared_map()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-        self.mat_plot_2d.title.kwargs["label"] = "Source Reconstruction (No Subhalo)"
+        self.set_title("Source Reconstruction (No Subhalo)")
 
         fit_imaging_plotter_before.figure_plane_image_of_plane(plane_index=1)
 
@@ -129,17 +129,17 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
-        self.mat_plot_2d.title.kwargs["label"] = "Normailzed Residuals (With Subhalo)"
+        self.set_title("Normailzed Residuals (With Subhalo)")
 
         fit_imaging_plotter_detect.figure_normalized_residual_map()
 
-        self.mat_plot_2d.title.kwargs["label"] = "Chi-Squared Map (With Subhalo)"
+        self.set_title("Chi-Squared Map (With Subhalo)")
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
         fit_imaging_plotter_detect.figure_chi_squared_map()
 
-        self.mat_plot_2d.title.kwargs["label"] = "Source Reconstruction (With Subhalo)"
+        self.set_title("Source Reconstruction (With Subhalo)")
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 

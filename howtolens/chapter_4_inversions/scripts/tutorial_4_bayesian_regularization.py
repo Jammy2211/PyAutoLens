@@ -95,7 +95,8 @@ source_galaxy = al.Galaxy(
 
 fit = perform_fit_with_source_galaxy(imaging=imaging, source_galaxy=source_galaxy)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """

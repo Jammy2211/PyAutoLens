@@ -145,11 +145,11 @@ We can use the plane_plotter to plot these grids, like we did before.
 """
 
 # %%
-plotter = aplt.MatPlot2D(labels=aplt.Labels(title="Image-plane Grid"))
+plotter = aplt.MatPlot2D(title=aplt.Title(label="Image-plane Grid"))
 
 aplt.plane.plane_grid(plane=tracer.image_plane, grid=traced_grids[0], plotter=plotter)
 
-plotter = aplt.MatPlot2D(labels=aplt.Labels(title="Source-plane Grid"))
+plotter = aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid"))
 
 aplt.plane.plane_grid(plane=tracer.source_plane, grid=traced_grids[1], plotter=plotter)
 

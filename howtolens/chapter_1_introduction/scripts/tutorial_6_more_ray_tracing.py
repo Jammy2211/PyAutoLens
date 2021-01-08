@@ -100,13 +100,13 @@ Lets have a quick look at the appearance of our lens galaxy and its satellite.
 aplt.galaxy.image(
     galaxy=lens_galaxy,
     grid=grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Lens Galaxy")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Galaxy")),
 )
 
 aplt.galaxy.image(
     galaxy=lens_satellite,
     grid=grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Lens Satellite")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Satellite")),
 )
 
 # %%
@@ -118,22 +118,22 @@ And their deflection angles - note that the satellite doesn`t contribute as much
 aplt.galaxy.deflections_y(
     galaxy=lens_galaxy,
     grid=grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Lens Galaxy Deflections (y)")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Galaxy Deflections (y)")),
 )
 aplt.galaxy.deflections_y(
     galaxy=lens_satellite,
     grid=grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Lens Satellite Deflections (y)")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Satellite Deflections (y)")),
 )
 aplt.galaxy.deflections_x(
     galaxy=lens_galaxy,
     grid=grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Lens Galalxy Deflections (x)")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Galalxy Deflections (x)")),
 )
 aplt.galaxy.deflections_x(
     galaxy=lens_satellite,
     grid=grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Lens Satellite Deflections (x)")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Satellite Deflections (x)")),
 )
 
 # %%
@@ -179,13 +179,13 @@ Lets look at our source galaxies (before lensing)
 aplt.galaxy.image(
     galaxy=source_galaxy_0,
     grid=grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Source Galaxy 0")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Source Galaxy 0")),
 )
 
 aplt.galaxy.image(
     galaxy=source_galaxy_1,
     grid=grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Source Galaxy 1")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Source Galaxy 1")),
 )
 
 
@@ -221,7 +221,8 @@ We can next plot the tracer`s `Profile` image, which is compute as follows:
 """
 
 # %%
-aplt.Tracer.figure_image(tracer=tracer, grid=grid)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+tracer_plotter.figure_image()
 
 # %%
 """
@@ -234,7 +235,7 @@ traced_grids = tracer.traced_grids_of_planes_from_grid(grid=grid)
 aplt.plane.plane_grid(
     plane=tracer.source_plane,
     grid=traced_grids[1],
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Source-plane Grid")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid")),
 )
 
 # %%
@@ -247,7 +248,7 @@ aplt.plane.plane_grid(
     plane=tracer.source_plane,
     grid=traced_grids[1],
     axis_limits=[-0.2, 0.2, -0.2, 0.2],
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Source-plane Grid")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid")),
 )
 
 # %%

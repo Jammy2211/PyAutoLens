@@ -145,13 +145,13 @@ components of the fit and `Tracer`.
 aplt.LightProfile.figure_image(
     light_profile=fit.tracer.source_plane.galaxies[0].bulge,
     grid=source_plane_grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Bulge image")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Bulge image")),
 )
 
 aplt.LightProfile.figure_image(
     light_profile=fit.tracer.source_plane.galaxies[0].disk,
     grid=source_plane_grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Disk image")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Disk image")),
 )
 
 # %%

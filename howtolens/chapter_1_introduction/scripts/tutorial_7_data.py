@@ -70,7 +70,8 @@ Lets look at the `Tracer`'s image - this is the image we'll be simulating.
 """
 
 # %%
-aplt.Tracer.figure_image(tracer=tracer, grid=grid)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+tracer_plotter.figure_image()
 
 # %%
 """
@@ -110,7 +111,8 @@ Lets plot the image - we can see the image has been blurred due to the telescope
 """
 
 # %%
-aplt.ImagingPlotter.image(imaging=imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
+imaging_plotter.figure_image()
 
 # %%
 """

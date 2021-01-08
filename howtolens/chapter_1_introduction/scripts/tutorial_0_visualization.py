@@ -78,7 +78,8 @@ We can plot an image as follows:
 """
 
 # %%
-aplt.ImagingPlotter.image(imaging=imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
+imaging_plotter.figure_image()
 
 # %%
 """
@@ -135,7 +136,8 @@ In addition to individual `figures` which use a `plotter` to plot them, **PyAuto
 """
 
 # %%
-aplt.Imaging.subplot_imaging(imaging=imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
+imaging_plotter.subplot_imaging()
 
 # %%
 """

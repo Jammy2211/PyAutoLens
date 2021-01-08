@@ -80,7 +80,7 @@ aplt.MapperObj(
     mapper=mapper,
     include=aplt.Include2D(inversion_grid=False, mapper_source_pixelization_grid=False),
     plotter=aplt.MatPlot2D(
-        labels=aplt.Labels(title="Fairly Boring Grid of Rectangular Pixels")
+        title=aplt.Title(label="Fairly Boring Grid of Rectangular Pixels")
     ),
 )
 
@@ -109,7 +109,7 @@ aplt.MapperObj(
     mapper=mapper,
     include=aplt.Include2D(inversion_grid=False, mapper_source_pixelization_grid=True),
     plotter=aplt.MatPlot2D(
-        labels=aplt.Labels(title="Slightly less Boring Grid of Rectangular Pixels")
+        title=aplt.Title(label="Slightly less Boring Grid of Rectangular Pixels")
     ),
 )
 
@@ -137,7 +137,7 @@ aplt.MapperObj(
     mapper=mapper,
     include=aplt.Include2D(inversion_grid=True, mapper_source_pixelization_grid=True),
     plotter=aplt.MatPlot2D(
-        labels=aplt.Labels(title="Even less Boring Grid of Rectangular Pixels")
+        title=aplt.Title(label="Even less Boring Grid of Rectangular Pixels")
     ),
 )
 

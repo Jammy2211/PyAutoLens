@@ -67,7 +67,8 @@ a fast way to visualize the result.
 aplt.Tracer.subplot_tracer(
     tracer=result.max_log_likelihood_tracer, grid=mask.geometry.unmasked_grid
 )
-aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """

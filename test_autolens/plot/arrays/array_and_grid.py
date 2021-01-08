@@ -14,7 +14,7 @@ plotter = aplt.MatPlot2D(
     cmap=aplt.Cmap(
         cmap="gray", norm="symmetric_log", vmin=-0.13, vmax=20, linthresh=0.02
     ),
-    grid_scatter=aplt.GridScatter(marker="+", colors="cyan", size=450),
+    grid_scatter=aplt.GridScatter(marker="+", colors="cyan", s=450),
 )
 
 grid = al.GridIrregular(grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])

@@ -258,7 +258,8 @@ The best-fit solution (i.e. the maximum log likelihood) is stored in the `result
 """
 
 # %%
-aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """

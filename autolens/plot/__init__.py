@@ -3,6 +3,7 @@ from autoarray.plot.mat_wrap.wrap.wrap_base import (
     Figure,
     Cmap,
     Colorbar,
+    ColorbarTickParams,
     TickParams,
     YTicks,
     XTicks,

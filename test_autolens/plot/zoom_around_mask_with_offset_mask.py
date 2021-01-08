@@ -29,4 +29,5 @@ masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
-aplt.FitImaging.subplot_fit_imaging(fit=fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
+fit_imaging_plotter.subplot_fit_imaging()

@@ -83,12 +83,15 @@ print(mask[48:53, 48:53])  # Whereas central pixels are `False` and therefore un
 
 # %%
 """
-We can use an `Imaging` `Plotter`.to compare the mask and the image - this is useful if we really want to `tailor` a 
+We can use an `ImagingPlotter`.to compare the mask and the image - this is useful if we really want to `tailor` a 
 mask to the lensed source's light (which in this example, we won't).
 """
 
 # %%
-aplt.ImagingPlotter.image(imaging=imaging, mask=mask)
+visuals_2d = aplt.Visuals2D(mask=mask)
+
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
+imaging_plotter.figure_image()
 
 # %%
 """
@@ -203,7 +206,9 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-aplt.Tracer.figure_image(tracer=tracer, grid=masked_imaging.grid)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=masked_imaging.grid)
+tracer_plotter.figure_image()
+
 
 # %%
 """

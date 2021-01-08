@@ -6,6 +6,7 @@ from autofit.exc import FitException
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
 from autogalaxy.pipeline.phase.interferometer.analysis import Attributes as AgAttributes
+from autogalaxy.plot.mat_wrap import lensing_visuals, lensing_include
 from autolens.fit import fit
 from autolens.pipeline import visualizer as vis
 from autolens.pipeline.phase.dataset import analysis as analysis_dataset
@@ -188,6 +189,9 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         fit = self.masked_interferometer_fit_for_tracer(
             tracer=tracer, hyper_background_noise=hyper_background_noise
         )
+
+        tracer._preload_critical_curves = tracer.critical_curves
+        tracer._preload_caustics = tracer.caustics
 
         visualizer = vis.Visualizer(visualize_path=paths.image_path)
         visualizer.visualize_interferometer(

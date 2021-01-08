@@ -55,7 +55,10 @@ mask = al.Mask2D.circular_annular(
     outer_radius=2.8,
 )
 
-aplt.ImagingPlotter.image(imaging=imaging, mask=mask)
+visuals_2d = aplt.Visuals2D(mask=mask)
+
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
+imaging_plotter.figure_image()
 
 # %%
 """
@@ -142,7 +145,8 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
-aplt.ImagingPlotter.image(imaging=imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
+imaging_plotter.figure_image()
 
 # %%
 """
@@ -159,7 +163,10 @@ mask = al.Mask2D.circular_annular(
     outer_radius=3.2,
 )
 
-aplt.ImagingPlotter.image(imaging=imaging, mask=mask)
+visuals_2d = aplt.Visuals2D(mask=mask)
+
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
+imaging_plotter.figure_image()
 
 masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 

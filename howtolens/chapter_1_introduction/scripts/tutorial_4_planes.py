@@ -162,13 +162,13 @@ Lets inspect our `Grid`'s - I bet our source-plane isn't the boring uniform `Gri
 aplt.plane.plane_grid(
     plane=image_plane,
     grid=image_plane_grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Image-plane Grid")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Image-plane Grid")),
 )
 
 aplt.plane.plane_grid(
     plane=source_plane,
     grid=source_plane_grid,
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Source-plane Grid")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid")),
 )
 
 # %%
@@ -181,7 +181,7 @@ aplt.plane.plane_grid(
     plane=source_plane,
     grid=source_plane_grid,
     axis_limits=[-0.1, 0.1, -0.1, 0.1],
-    plotter=aplt.MatPlot2D(labels=aplt.Labels(title="Source-plane Grid")),
+    plotter=aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid")),
 )
 
 # %%
@@ -194,7 +194,7 @@ row of the image-grid running from the left - as we said it would!)
 """
 
 # %%
-aplt.Plane.subplot_image_and_source_plane(
+aplt.Plane.subplot_with_source_grid(
     image_plane=image_plane,
     source_plane=source_plane,
     grid=image_plane_grid,
@@ -275,14 +275,14 @@ both would appear perfect symmetric and smooth! Implementing a more robust calcu
 """
 
 # %%
-aplt.Plane.subplot_image_and_source_plane(
+aplt.Plane.subplot_with_source_grid(
     image_plane=image_plane,
     source_plane=source_plane,
     grid=image_plane_grid,
     include=aplt.Include2D(critical_curves=True, caustics=True),
 )
 
-aplt.Plane.subplot_image_and_source_plane(
+aplt.Plane.subplot_with_source_grid(
     image_plane=image_plane,
     source_plane=source_plane,
     grid=image_plane_grid,

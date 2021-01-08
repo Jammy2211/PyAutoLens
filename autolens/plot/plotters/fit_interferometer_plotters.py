@@ -57,7 +57,7 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
 
         visuals_2d.mask = None
 
-        return visuals_2d + lensing_visuals.Visuals2D(
+        return visuals_2d + visuals_2d.__class__(
             light_profile_centres=self.extract_2d(
                 "light_profile_centres", self.tracer.planes[0].light_profile_centres
             ),
@@ -65,7 +65,7 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
                 "mass_profile_centres", self.tracer.planes[0].mass_profile_centres
             ),
             critical_curves=self.extract_2d(
-                "critical_curves", self.tracer.critical_curves
+                "critical_curves", self.tracer.critical_curves, "critical_curves"
             ),
         )
 

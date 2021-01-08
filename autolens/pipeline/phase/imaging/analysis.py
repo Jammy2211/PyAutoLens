@@ -4,6 +4,7 @@ from autoarray.inversion import pixelizations as pix
 from autoarray.exc import PixelizationException, InversionException, GridException
 from autofit.exc import FitException
 from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
+from autogalaxy.plot.mat_wrap import lensing_visuals, lensing_include
 from autolens.fit import fit
 from autolens.pipeline import visualizer as vis
 from autolens.pipeline.phase.dataset import analysis as analysis_dataset
@@ -183,7 +184,11 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_background_noise=hyper_background_noise,
         )
 
+        tracer._preload_critical_curves = tracer.critical_curves
+        tracer._preload_caustics = tracer.caustics
+
         visualizer = vis.Visualizer(visualize_path=paths.image_path)
+
         visualizer.visualize_imaging(imaging=self.masked_imaging.imaging)
         visualizer.visualize_fit_imaging(fit=fit, during_analysis=during_analysis)
         visualizer.visualize_tracer(

@@ -110,7 +110,10 @@ We can use a `Profile` `Plotter`.to plot this image.
 """
 
 # %%
-aplt.LightProfile.figure_image(light_profile=sersic_light_profile, grid=grid)
+light_profile_plotter = aplt.LightProfilePlotter(
+    light_profile=sersic_light_profile, grid=grid
+)
+light_profile_plotter.figure_image()
 
 # %%
 """

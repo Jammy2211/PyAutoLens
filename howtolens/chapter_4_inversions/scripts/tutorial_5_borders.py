@@ -40,12 +40,13 @@ imaging = al.Imaging.from_fits(
     pixel_scales=0.05,
 )
 
-aplt.Imaging.subplot_imaging(imaging=imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
+imaging_plotter.subplot_imaging()
 
 # %%
 """
 So, what is a border? In the image-plane, a border is the set of exterior pixels in a mask that are at, well, its 
-border. Lets plot the image with a circular `Mask2D`, and tell our `Imaging` `Plotter`.to plot the border as well.
+border. Lets plot the image with a circular `Mask2D`, and tell our `ImagingPlotter`.to plot the border as well.
 """
 
 # %%
@@ -191,8 +192,9 @@ a quick look.
 """
 
 # %%
-aplt.Tracer.figure_deflections_y(tracer=fit.tracer, grid=fit.grid)
-aplt.Tracer.figure_deflections_x(tracer=fit.tracer, grid=fit.grid)
+tracer_plotter = aplt.TracerPlotter(tracer=fit.tracer, grid=fit.grid)
+tracer_plotter.figure_deflections_y()
+tracer_plotter.figure_deflections_x()
 
 # %%
 """

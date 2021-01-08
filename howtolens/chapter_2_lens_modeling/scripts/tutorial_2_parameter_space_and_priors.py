@@ -212,7 +212,8 @@ print(
 
 result = phase.run(dataset=imaging, mask=mask)
 
-aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 print("Dynesty has finished run - you may now continue the notebook.")
 

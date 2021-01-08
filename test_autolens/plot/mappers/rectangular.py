@@ -37,6 +37,6 @@ aplt.MapperObj(
     mapper=mapper,
     include=aplt.Include2D(inversion_grid=True, mapper_source_pixelization_grid=True),
     plotter=aplt.MatPlot2D(
-        labels=aplt.Labels(title="Slightly less Boring Grid of Rectangular Pixels")
+        title=aplt.Title(label="Slightly less Boring Grid of Rectangular Pixels")
     ),
 )
