@@ -30,7 +30,7 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
         )
 
     @property
-    def visuals_with_include_2d(self) -> "vis.Visuals2D":
+    def visuals_with_include_2d(self) -> lensing_visuals.Visuals2D:
         """
         Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
 

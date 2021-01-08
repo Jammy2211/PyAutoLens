@@ -8,7 +8,7 @@ from autolens.fit import fit as f
 import numpy as np
 
 
-class FitImagingPlotter(fit_imaging_plotters.FitImagingPlotter):
+class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
     def __init__(
         self,
         fit: f.FitImaging,
@@ -25,7 +25,7 @@ class FitImagingPlotter(fit_imaging_plotters.FitImagingPlotter):
         )
 
     @property
-    def visuals_with_include_2d(self) -> "vis.Visuals2D":
+    def visuals_with_include_2d(self) -> lensing_visuals.Visuals2D:
         """
         Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
 
