@@ -190,8 +190,11 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             tracer=tracer, hyper_background_noise=hyper_background_noise
         )
 
-        tracer._preload_critical_curves = tracer.critical_curves
-        tracer._preload_caustics = tracer.caustics
+        include_2d = lensing_include.Include2D()
+        tracer._preload_critical_curves = (
+            tracer.critical_curves if include_2d.critical_curves else None
+        )
+        tracer._preload_caustics = tracer.caustics if include_2d.caustics else None
 
         visualizer = vis.Visualizer(visualize_path=paths.image_path)
         visualizer.visualize_interferometer(

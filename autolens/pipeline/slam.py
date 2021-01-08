@@ -8,7 +8,7 @@ from autolens.pipeline import setup
 
 from typing import Union
 
-import copy
+import os
 
 
 class AbstractSLaMPipeline:
@@ -350,6 +350,19 @@ class SLaM:
                 )
 
         self.setup_subhalo = setup_subhalo
+
+    def path_prefix_from(self, *folder_names: [str]):
+
+        folder_names_new = []
+
+        for folder_name in folder_names:
+            if len(folder_name) < 255:
+                folder_names_new.append(folder_name)
+            else:
+                folder_names_new.append(folder_name[: len(folder_name) // 2])
+                folder_names_new.append(folder_name[len(folder_name) // 2 :])
+
+        return os.path.join(*folder_names_new)
 
     @property
     def source_parametric_tag(self) -> str:

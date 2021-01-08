@@ -1,15 +1,9 @@
-import copy
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 from os import path
 
 from autoconf import conf
-import autofit as af
-import autoarray as aa
-from autoarray.plot.mat_wrap.wrap import wrap_base
-from autoarray.plot.plotters import inversion_plotters
-from autogalaxy.plot.plotters import fit_galaxy_plotters, hyper_plotters
-from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include
+from autogalaxy.plot.plotters import hyper_plotters
 from autogalaxy.pipeline import visualizer
 from autolens.plot.plotters import (
     fit_interferometer_plotters,
