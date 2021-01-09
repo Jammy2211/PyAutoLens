@@ -1,27 +1,27 @@
-from autoconf import conf
-from autoarray.inversion import pixelizations as pix
-from autoarray.exc import InversionException, GridException
-from autofit.exc import FitException
-from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
-from autolens.fit import fit
-from autolens.pipeline import visualizer
-from autolens.pipeline.phase.dataset import analysis as analysis_dataset
-
-import copy
+from autogalaxy.pipeline.phase.abstract import analysis as ag_analysis
+from autolens.fit import fit_positions
+from autolens.pipeline import visualizer as vis
+from autolens.lens import ray_tracing
 
 
-class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
-    def __init__(self, positions, solver, imaging, cosmology, results=None):
+class Analysis(ag_analysis.Analysis):
+    def __init__(
+        self, positions, noise_map, solver, imaging, settings, cosmology, results
+    ):
 
-        super().__init__(cosmology=cosmology, results=results)
+        super().__init__(settings=settings, cosmology=cosmology)
 
+        self.positions = positions
+        self.noise_map = noise_map
         self.solver = solver
-
-        self.visualizer = visualizer.PhasePositionsVisualizer(
-            positions=positions, imaging=imaging, results=results
-        )
-
         self.imaging = imaging
+        self.results = results
+
+    def tracer_for_instance(self, instance):
+
+        return ray_tracing.Tracer.from_galaxies(
+            galaxies=instance.galaxies, cosmology=self.cosmology
+        )
 
     def log_likelihood_function(self, instance):
         """
@@ -39,42 +39,25 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
         """
 
         tracer = self.tracer_for_instance(instance=instance)
+        fit = self.positions_fit_for_tracer(tracer=tracer)
+        return fit.log_likelihood
 
-        try:
-            fit = self.positions_fit_for_tracer(tracer=tracer)
+    def positions_fit_for_tracer(self, tracer):
 
-            return fit.figure_of_merit
-        except (GridException) as e:
-            raise FitException from e
-
-    def positions_fit_for_tracer(self, tracer, hyper_image_sky, hyper_background_noise):
-
-        return fit.FitImaging(
-            masked_imaging=self.masked_dataset,
+        return fit_positions.FitPositionsImagePlane(
+            positions=self.positions,
+            noise_map=self.noise_map,
+            positions_solver=self.solver,
             tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
         )
 
     def visualize(self, paths, instance, during_analysis):
 
-        instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
-        hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
-        hyper_background_noise = self.hyper_background_noise_for_instance(
-            instance=instance
-        )
 
-        fit = self.positions_fit_for_tracer(
-            tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-        )
+        visualizer = vis.Visualizer(visualize_path=paths.image_path)
 
-        try:
-            visualizer.visualize_ray_tracing(
-                tracer=fit.tracer, during_analysis=during_analysis
-            )
-            visualizer.visualize_fit(fit=fit, during_analysis=during_analysis)
-        except Exception:
-            pass
+
+class Attributes:
+    def __init__(self, cosmology):
+        self.cosmology = cosmology

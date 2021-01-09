@@ -2,7 +2,6 @@ from os import path
 import autofit as af
 from astropy import cosmology as cosmo
 from autogalaxy.pipeline.phase import abstract
-from autogalaxy.pipeline.phase.imaging.phase import Attributes as AgAttributes
 from autolens.pipeline.phase.settings import SettingsPhasePositions
 from autolens.pipeline.phase.positions.analysis import Analysis
 from autolens.pipeline.phase.positions.result import Result
@@ -15,13 +14,11 @@ class PhasePositions(abstract.AbstractPhase):
     Analysis = Analysis
     Result = Result
 
-    @af.convert_paths
     def __init__(
         self,
-        paths,
         *,
         search,
-        solver,
+        positions_solver,
         galaxies=None,
         settings=SettingsPhasePositions(),
         cosmology=cosmo.Planck15,
@@ -41,19 +38,12 @@ class PhasePositions(abstract.AbstractPhase):
         """
 
         super().__init__(
-            paths,
-            search=search,
-            settings=settings,
-            galaxies=galaxies,
-            cosmology=cosmology,
+            search=search, settings=settings, galaxies=galaxies, cosmology=cosmology
         )
 
-        self.solver = solver
+        self.positions_solver = positions_solver
 
-    def make_attributes(self, analysis):
-        return Attributes(cosmology=self.cosmology)
-
-    def make_analysis(self, positions, imaging=None, results=None):
+    def make_analysis(self, positions, noise_map, imaging=None, results=None):
         """
         Returns an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -76,15 +66,56 @@ class PhasePositions(abstract.AbstractPhase):
 
         self.output_phase_info()
 
-        analysis = self.Analysis(
+        return self.Analysis(
             positions=positions,
-            solver=self.solver,
+            noise_map=noise_map,
+            solver=self.positions_solver,
             imaging=imaging,
+            settings=self.settings,
             cosmology=self.cosmology,
             results=results,
         )
 
-        return analysis
+    def run(
+        self,
+        positions,
+        noise_map,
+        imaging=None,
+        results=None,
+        info=None,
+        pickle_files=None,
+    ):
+        """
+        Run this phase.
+
+        Parameters
+        ----------
+        mask: Mask2D
+            The default masks passed in by the pipeline
+        results: autofit.tools.pipeline.ResultsCollection
+            An object describing the results of the last phase or None if no phase has been executed
+        dataset: scaled_array.ScaledSquarePixelArray
+            An masked_imaging that has been masked
+
+        Returns
+        -------
+        result: AbstractPhase.Result
+            A result object comprising the best fit model and other hyper_galaxies.
+        """
+
+        self.model = self.model.populate(results)
+
+        results = results or af.ResultsCollection()
+
+        analysis = self.make_analysis(
+            positions=positions, noise_map=noise_map, imaging=imaging, results=results
+        )
+
+        result = self.run_analysis(
+            analysis=analysis, info=info, pickle_files=pickle_files
+        )
+
+        return self.make_result(result=result, analysis=analysis)
 
     def output_phase_info(self):
 
@@ -92,14 +123,5 @@ class PhasePositions(abstract.AbstractPhase):
 
         with open(file_phase_info, "w") as phase_info:
             phase_info.write("Optimizer = {} \n".format(type(self.search).__name__))
-            phase_info.write(
-                "Positions Threshold = {} \n".format(self.settings.positions_threshold)
-            )
             phase_info.write("Cosmology = {} \n".format(self.cosmology))
-
             phase_info.close()
-
-
-class Attributes(AgAttributes):
-    def __init__(self, cosmology):
-        super().__init__(cosmology=cosmology)

@@ -1,6 +1,7 @@
 import autolens as al
 import numpy as np
 import pytest
+from autolens.mock import mock
 
 
 class MockTracerPositions:
@@ -10,15 +11,6 @@ class MockTracerPositions:
 
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
         return [self.positions]
-
-
-class MockPositionsSolver:
-    def __init__(self, model_positions):
-
-        self.model_positions = model_positions
-
-    def solve_from_tracer(self, tracer):
-        return self.model_positions
 
 
 class TestAbstractFitPositionsSourcePlane:
@@ -148,7 +140,7 @@ class TestFitPositionsImagePlane:
             [[(3.0, 1.0), (2.0, 3.0)], [(3.0, 3.0)]]
         )
 
-        positions_solver = MockPositionsSolver(model_positions=model_positions)
+        positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
 
         fit = al.FitPositionsImagePlane(
             positions=positions,

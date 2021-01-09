@@ -88,6 +88,6 @@ class SettingsPhaseInterferometer(settings.SettingsPhaseInterferometer):
 
 
 class SettingsPhasePositions:
-    def __init__(self, lens):
+    def __init__(self):
 
-        self.lens = lens
+        pass

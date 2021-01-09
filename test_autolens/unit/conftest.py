@@ -133,6 +133,16 @@ def make_masked_interferometer_7_grid():
     return fixtures.make_masked_interferometer_7_grid()
 
 
+@pytest.fixture(name="positions_x2")
+def make_positions_x2():
+    return fixtures.make_positions_x2()
+
+
+@pytest.fixture(name="positions_x2_noise_map")
+def make_positions_x2_noise_map():
+    return fixtures.make_positions_noise_map_x2()
+
+
 # GALAXIES #
 
 
@@ -218,6 +228,11 @@ def make_phase_imaging_7x7():
 @pytest.fixture(name="phase_interferometer_7")
 def make_phase_interferometer_7(mask_7x7):
     return fixtures.make_phase_interferometer_7()
+
+
+@pytest.fixture(name="phase_positions_x2")
+def make_phase_positions_x2():
+    return fixtures.make_phase_positions_x2()
 
 
 @pytest.fixture(name="hyper_galaxy_image_0_7x7")

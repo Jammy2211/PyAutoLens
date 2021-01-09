@@ -140,3 +140,12 @@ class MockResults(af.ResultsCollection):
 
     def __len__(self):
         return len(self.__result_list)
+
+
+class MockPositionsSolver:
+    def __init__(self, model_positions):
+
+        self.model_positions = model_positions
+
+    def solve_from_tracer(self, tracer):
+        return self.model_positions

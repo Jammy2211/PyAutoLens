@@ -73,8 +73,10 @@ from .pipeline.slam import (
 )
 from .pipeline.phase.settings import SettingsPhaseImaging
 from .pipeline.phase.settings import SettingsPhaseInterferometer
+from .pipeline.phase.settings import SettingsPhasePositions
 from .pipeline.phase.imaging.phase import PhaseImaging
 from .pipeline.phase.interferometer.phase import PhaseInterferometer
+from .pipeline.phase.positions.phase import PhasePositions
 from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 
