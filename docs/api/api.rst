@@ -12,7 +12,7 @@ Data Structures
    :toctree: generated/
 
    Array
-   Values
+   ValuesIrregularGrouped
    Grid
    GridIterate
    GridInterpolate

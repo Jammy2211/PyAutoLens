@@ -128,13 +128,13 @@ class PhaseDataset(dataset.PhaseDataset):
 
             positions_fits = fit_positions.FitPositionsSourcePlaneMaxSeparation(
                 positions=aa.GridIrregularGrouped(grid=positions),
+                noise_map=None,
                 tracer=results.last.max_log_likelihood_tracer,
-                noise_value=1.0,
             )
 
             positions_threshold = (
                 self.settings.settings_lens.auto_positions_factor
-                * np.max(positions_fits.maximum_separations)
+                * np.max(positions_fits.max_separation_of_source_plane_positions)
             )
 
         else:

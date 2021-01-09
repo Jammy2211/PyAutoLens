@@ -184,7 +184,8 @@ And indeed, we get a reasonably good model and fit to the data - in a much short
 """
 
 # %%
-aplt.FitImaging.subplot_fit_imaging(fit=phase1_result.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=phase1_result.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """
@@ -305,7 +306,8 @@ Look at that, the right lens model, again!
 """
 
 # %%
-aplt.FitImaging.subplot_fit_imaging(fit=phase2_result.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=phase2_result.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """

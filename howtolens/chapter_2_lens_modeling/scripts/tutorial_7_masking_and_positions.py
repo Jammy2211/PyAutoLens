@@ -43,7 +43,7 @@ imaging = al.Imaging.from_fits(
 # %%
 """
 When it comes to determining an appropriate mask for this image, the best approach is to set up a `Mask2D` and pass it 
-to a `Imaging` plotter. You can then check visually if the mask is an appropriate size or not. 
+to a `Imaging` mat_plot_2d. You can then check visually if the mask is an appropriate size or not. 
 
 Below, we choose an inner radius that cuts into our lensed source galaxy - clearly this isn't a good mask.
 """

@@ -6,7 +6,7 @@ Tutorial 5: Ray Tracing
 In the last tutorial, our use of `Plane`'s was a bit clunky. We manually had to input `Grid`'s to trace them, and keep
 track of which `Grid`'s were the image-plane`s and which were the source planes. It was easy to make mistakes!
 
-Fotunately, in **PyAutoLens**, you won't actually spend much hands-on time with the `Plane` objects. Instead, you'll
+Fortunately, in **PyAutoLens**, you won't actually spend much hands-on time with the `Plane` objects. Instead, you'll
 primarily use the `ray-tracing` module, which we'll cover in this example. Lets look at how easy it is to setup the
 same lens-plane + source-plane strong lens configuration as the previous tutorial, but with a lot less lines of code!
 """
@@ -116,7 +116,8 @@ This image appears as the Einstein ring we saw in the previous tutorial.
 """
 
 # %%
-aplt.Tracer.figure_image(tracer=tracer, grid=image_plane_grid)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=image_plane_grid)
+tracer_plotter.figure_image()
 
 # %%
 """
@@ -141,42 +142,31 @@ print(traced_grids[1].in_2d[0, 2])
 
 # %%
 """
-We can use the plane_plotter to plot these grids, like we did before.
+We can use the TracerPlotter to plot these planes and grids.
 """
 
 # %%
-plotter = aplt.MatPlot2D(title=aplt.Title(label="Image-plane Grid"))
+include_2d = aplt.Include2D(grid=True)
 
-aplt.plane.plane_grid(plane=tracer.image_plane, grid=traced_grids[0], plotter=plotter)
-
-plotter = aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid"))
-
-aplt.plane.plane_grid(plane=tracer.source_plane, grid=traced_grids[1], plotter=plotter)
-
-aplt.plane.plane_grid(
-    plane=tracer.source_plane,
-    grid=traced_grids[1],
-    axis_limits=[-0.1, 0.1, -0.1, 0.1],
-    plotter=plotter,
+tracer_plotter = aplt.TracerPlotter(
+    tracer=tracer, grid=image_plane_grid, include_2d=include_2d
 )
+tracer_plotter.figure_plane_image_of_plane(plane_index=0)
+tracer_plotter.figure_plane_image_of_plane(plane_index=1)
 
 # %%
 """
 **PyAutoLens** has tools for plotting a `Tracer`. A ray-tracing subplot plots the following:
 
 1) The image, computed by tracing the source-`Galaxy`'s light `forwards` through the `Tracer`.
-
 2) The source-plane image, showing the source-`Galaxy`'s true appearance (i.e. if it were not lensed).
-
 3) The image-plane convergence, computed using the lens `Galaxy`'s total mass distribution.
-
 4) The image-plane gravitational potential, computed using the lens `Galaxy`'s total mass distribution.
-
 5) The image-plane deflection angles, computed using the lens `Galaxy`'s total mass distribution.
 """
 
 # %%
-aplt.Tracer.subplot_tracer(tracer=tracer, grid=image_plane_grid)
+tracer_plotter.subplot_tracer()
 
 # %%
 """
@@ -239,12 +229,61 @@ commented out again for convenience)
 """
 
 # %%
-aplt.Tracer.figure_convergence(tracer=tracer, grid=image_plane_grid)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=image_plane_grid)
+tracer_plotter.figure_convergence()
 
-# aplt.Tracer.potential(tracer=tracer, grid=image_plane_grid)
-# aplt.Tracer.deflections_y(tracer=tracer, grid=image_plane_grid)
-# aplt.Tracer.deflections_x(tracer=tracer, grid=image_plane_grid)
-# aplt.Tracer.image(tracer=tracer, grid=image_plane_grid)
+# tracer_plotter.potential()
+# tracer_plotter.deflections_y()
+# tracer_plotter.deflections_x()
+# tracer_plotter.image()
+
+# %%
+"""
+In the previous tutorial, we plotted the critical curves on the convergence map of a `MassProfile`. We now introduce
+the 'caustic' which is a critical curve mapped to the source-plane. This is computed by calculating the the deflection 
+angles of the `Tracer` at the critical curves and ray-tracing them to the source plane.
+
+As discussed in the previous tutorial, critical curves mark regions of infinite magnification. Thus, if a source
+appears near a caustic in the source plane it will appear significantly brighter than its true luminosity. 
+
+We can plot both the critical curve and caustic using an `Include2D` object. Note how the critical curve appears
+only for the image-plane grid, whereas the caustic only appears in the source plane.
+
+NOTE: Again, numerical issues make the caustic appear 'jagged' when it should be smooth.
+"""
+
+# %%
+include_2d = aplt.Include2D(critical_curves=True, caustics=True)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=image_plane_grid)
+
+tracer_plotter.figure_plane_grid_of_plane(plane_index=0)
+tracer_plotter.figure_plane_grid_of_plane(plane_index=1)
+
+
+# %%
+"""
+We can also plot the caustic on the source-plane image.
+"""
+
+# %%
+tracer_plotter.figure_plane_image_of_plane(plane_index=1)
+
+# %%
+"""
+Caustics also mark the regions in the source-plane where the multiplicity of the strong lens changes. That if,
+if a source crosses a caustic, it goes from 2 images to 1 image. Try and show this yourself by changing the (y,x) 
+centre of the source-plane galaxy's light profile!
+"""
+
+# %%
+sersic_light_profile = al.lp.SphericalSersic(
+    centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=1.0
+)
+source_galaxy = al.Galaxy(redshift=1.0, light=sersic_light_profile)
+tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=image_plane_grid)
+tracer_plotter.figure_plane_image_of_plane(plane_index=1)
 
 # %%
 """
@@ -254,11 +293,10 @@ potential / deflection angles, when the two are identical?
 Afterall, only `MassProfile`'s contribute to these quantities, and only the image-plane has galaxies with 
 measureable  `MassProfile`'s! There are two reasons:
 
-__Convenience__:  You could always write `tracer.image_plane.convergence` and 
-`aplt.Plane.convergence(plane=tracer.image_plane)`. However, code appears neater if you can just 
- write `tracer.convergence` and `aplt.Tracer.convergence(tracer=tracer).
+__Convenience__:  You could always write `tracer.image_plane.convergence_from_grid(grid=grid)`. However, code 
+appears neater if you can just write `tracer.convergence_from_grid(grid=grid)`.
 
-__Multi-plane lensin__g:
+__Multi-plane Lensing__:
  
  For now, we're focused on the simplest lensing configuration possible, an image-plane + source-plane configuration. 
  However, there are strong lens system where there are more than 2 planes! 

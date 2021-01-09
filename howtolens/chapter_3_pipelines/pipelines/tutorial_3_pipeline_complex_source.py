@@ -58,6 +58,14 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     pipeline_name = "pipeline__complex_source"
 
     """
+    A pipelines takes the `path_prefix` as input, which together with the `pipeline_name` specifies the path structure 
+    of the output. In the pipeline runner we pass the `path_prefix` f"howtolens/c3_t1_lens_and_source", making the
+    output of this pipeline `autolens_workspace/output/howtolens/c3_t3_complex_source/pipeline__complex_source`.
+    """
+
+    path_prefix = path.join(path_prefix, pipeline_name)
+
+    """
     Phase 1: Initialize the lens`s mass model using a simple source.
     
     This won't fit the complicated structure of the source, but it`ll give us a reasonable estimate of the
@@ -152,5 +160,5 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     )
 
     return al.PipelineDataset(
-        pipeline_name, path_prefix, phase1, phase2, phase3, phase4
+        pipeline_name, path_prefix, None, phase1, phase2, phase3, phase4
     )

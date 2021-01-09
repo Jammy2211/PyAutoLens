@@ -97,17 +97,19 @@ Lets have a quick look at the appearance of our lens galaxy and its satellite.
 """
 
 # %%
-aplt.galaxy.image(
-    galaxy=lens_galaxy,
-    grid=grid,
-    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Galaxy")),
-)
+mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Lens Galaxy"))
 
-aplt.galaxy.image(
-    galaxy=lens_satellite,
-    grid=grid,
-    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Satellite")),
+galaxy_plotter = aplt.GalaxyPlotter(
+    galaxy=lens_galaxy, grid=grid, mat_plot_2d=mat_plot_2d
 )
+galaxy_plotter.figure_image()
+
+mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Lens Satellite"))
+
+galaxy_plotter = aplt.GalaxyPlotter(
+    galaxy=lens_satellite, grid=grid, mat_plot_2d=mat_plot_2d
+)
+galaxy_plotter.figure_image()
 
 # %%
 """
@@ -115,26 +117,32 @@ And their deflection angles - note that the satellite doesn`t contribute as much
 """
 
 # %%
-aplt.galaxy.deflections_y(
-    galaxy=lens_galaxy,
-    grid=grid,
-    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Galaxy Deflections (y)")),
+
+mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Lens Galaxy Deflections (y)"))
+
+galaxy_plotter = aplt.GalaxyPlotter(
+    galaxy=lens_galaxy, grid=grid, mat_plot_2d=mat_plot_2d
 )
-aplt.galaxy.deflections_y(
-    galaxy=lens_satellite,
-    grid=grid,
-    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Satellite Deflections (y)")),
-)
-aplt.galaxy.deflections_x(
-    galaxy=lens_galaxy,
-    grid=grid,
-    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Galalxy Deflections (x)")),
-)
-aplt.galaxy.deflections_x(
-    galaxy=lens_satellite,
-    grid=grid,
-    plotter=aplt.MatPlot2D(title=aplt.Title(label="Lens Satellite Deflections (x)")),
-)
+galaxy_plotter.figure_deflections_y()
+
+# NOTE: It would be annoying to have to reset the title for every plot using the following code:
+
+# mat_plot_2d = aplt.MatPlot2D(
+#     title=aplt.Title(label="Lens Galalxy Deflections (x)")
+# )
+# galaxy_plotter = aplt.GalaxyPlotter(galaxy=lens_galaxy, grid=grid, mat_plot_2d=mat_plot_2d)
+
+# We can set the title more conveniently as follows:
+
+galaxy_plotter.set_title("Lens Galalxy Deflections (x)")
+galaxy_plotter.figure_deflections_x()
+
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=lens_satellite, grid=grid)
+galaxy_plotter.set_title("Lens Satellite Deflections (y)")
+galaxy_plotter.figure_deflections_y()
+galaxy_plotter.set_title("Lens Satellite Deflections (x)")
+galaxy_plotter.figure_deflections_x()
+
 
 # %%
 """
@@ -176,17 +184,16 @@ Lets look at our source galaxies (before lensing)
 """
 
 # %%
-aplt.galaxy.image(
-    galaxy=source_galaxy_0,
-    grid=grid,
-    plotter=aplt.MatPlot2D(title=aplt.Title(label="Source Galaxy 0")),
-)
 
-aplt.galaxy.image(
-    galaxy=source_galaxy_1,
-    grid=grid,
-    plotter=aplt.MatPlot2D(title=aplt.Title(label="Source Galaxy 1")),
+galaxy_plotter = aplt.GalaxyPlotter(
+    galaxy=source_galaxy_0, grid=grid, mat_plot_2d=mat_plot_2d
 )
+galaxy_plotter.set_title("Source Galaxy 0")
+galaxy_plotter.figure_image()
+
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=source_galaxy_1, grid=grid)
+galaxy_plotter.set_title("Source Galaxy 1")
+galaxy_plotter.figure_image()
 
 
 # %%
@@ -222,21 +229,17 @@ We can next plot the tracer`s `Profile` image, which is compute as follows:
 
 # %%
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+tracer_plotter.set_title("Image")
 tracer_plotter.figure_image()
 
 # %%
 """
-As we did previously, we can extract the `Grid`'s of each plane and inspect the source-plane grid.
+As we did previously, we can plot the `Grid` of the source plane and inspect the source-plane grid.
 """
 
 # %%
-traced_grids = tracer.traced_grids_of_planes_from_grid(grid=grid)
-
-aplt.plane.plane_grid(
-    plane=tracer.source_plane,
-    grid=traced_grids[1],
-    plotter=aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid")),
-)
+tracer_plotter.set_title("Source-plane Grid")
+tracer_plotter.figure_plane_grid_of_plane(plane_index=1)
 
 # %%
 """
@@ -244,11 +247,9 @@ We can zoom in on the `centre` of the source-plane.
 """
 
 # %%
-aplt.plane.plane_grid(
-    plane=tracer.source_plane,
-    grid=traced_grids[1],
-    axis_limits=[-0.2, 0.2, -0.2, 0.2],
-    plotter=aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid")),
+tracer_plotter.set_title("Source-plane Grid")
+tracer_plotter.figure_plane_grid_of_plane(
+    plane_index=1, axis_limits=[-0.2, 0.2, -0.2, 0.2]
 )
 
 # %%
@@ -258,8 +259,10 @@ a cosmology, our unit can be converted to kiloparsecs! (This cell can take a bit
 """
 
 # %%
-plotter = aplt.MatPlot2D(units=aplt.Units(in_kpc=True))
-aplt.Tracer.subplot_tracer(tracer=tracer, grid=grid, plotter=plotter)
+mat_plot_2d = aplt.MatPlot2D(units=aplt.Units(in_kpc=True))
+
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
+tracer_plotter.subplot_tracer()
 
 # %%
 """
@@ -315,7 +318,7 @@ And with that, we've completed tutorial 6. Try the following:
  1) By changing the lens and source galaxy redshifts, does the image of the `Tracer` change at all?
 
  2) What happens to the cosmological quantities as you change these redshifts? Do you remember enough of your 
-       cosmology lectures to predict how quantities like the angular diameter distance change as a function of redshift?
+    cosmology lectures to predict how quantities like the angular diameter distance change as a function of redshift?
 
  3) The `Tracer` has a small delay in being computed, whereas other tracers were almost instant. What do you think 
     is the cause of this slow-down?

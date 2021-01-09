@@ -11,7 +11,7 @@ from autoarray.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.structures.arrays import Array, Values
+from autoarray.structures.arrays import Array, ValuesIrregularGrouped
 from autoarray.structures.grids import (
     Grid,
     GridIterate,
@@ -48,7 +48,10 @@ from . import plot
 from .dataset.imaging import MaskedImaging, SimulatorImaging
 from .dataset.interferometer import MaskedInterferometer, SimulatorInterferometer
 from .fit.fit import FitImaging, FitInterferometer
-from .fit.fit_positions import FitPositionsSourcePlaneMaxSeparation
+from .fit.fit_positions import (
+    FitPositionsSourcePlaneMaxSeparation,
+    FitPositionsImagePlane,
+)
 from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
 from .lens.positions_solver import PositionsFinder

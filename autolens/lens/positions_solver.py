@@ -305,7 +305,7 @@ class PositionsFinder(AbstractPositionsSolver):
         return grids.GridIrregularGrouped(
             grid=[
                 self.solve(lensing_obj=tracer, source_plane_coordinate=centre)
-                for centre in tracer.light_profile_centres.in_grouped_list[-1]
+                for centre in tracer.light_profile_centres
             ]
         )
 

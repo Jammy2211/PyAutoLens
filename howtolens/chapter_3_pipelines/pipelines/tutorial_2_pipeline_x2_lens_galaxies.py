@@ -62,6 +62,14 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     pipeline_name = "pipeline__x2_galaxies"
 
     """
+    A pipelines takes the `path_prefix` as input, which together with the `pipeline_name` specifies the path structure 
+    of the output. In the pipeline runner we pass the `path_prefix` f"howtolens/c3_t1_lens_and_source", making the
+    output of this pipeline `autolens_workspace/output/howtolens/c3_t2_x2_galaxies/pipeline__x2_galaxies`.
+    """
+
+    path_prefix = path.join(path_prefix, pipeline_name)
+
+    """
     Phase 1: Fit the left lens `Galaxy`'s light, where we:
 
         1) Fix the centres to (0.0, -1.0), the pixel we know the left `Galaxy`'s light centre peaks.
@@ -225,5 +233,5 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     )
 
     return al.PipelineDataset(
-        pipeline_name, path_prefix, phase1, phase2, phase3, phase4
+        pipeline_name, path_prefix, None, phase1, phase2, phase3, phase4
     )

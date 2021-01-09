@@ -76,10 +76,10 @@ class SettingsLens:
         if positions is not None and self.positions_threshold is not None:
 
             positions_fit = fit_positions.FitPositionsSourcePlaneMaxSeparation(
-                positions=positions, tracer=tracer, noise_value=1.0
+                positions=positions, noise_map=None, tracer=tracer
             )
 
-            if not positions_fit.maximum_separation_within_threshold(
+            if not positions_fit.max_separation_within_threshold(
                 self.positions_threshold
             ):
                 raise exc.RayTracingException

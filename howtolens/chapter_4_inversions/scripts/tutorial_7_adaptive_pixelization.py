@@ -79,10 +79,11 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include2D(mask=True))
-aplt.FitImaging.subplot_of_plane(
-    fit=fit, plane_index=1, include=aplt.Include2D(mask=True)
-)
+include_2d = aplt.Include2D(mask=True)
+
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
+fit_imaging_plotter.subplot_fit_imaging()
+fit_imaging_plotter.subplot_of_plane(plane_index=1)
 
 # %%
 """
@@ -96,10 +97,10 @@ So what is wrong with the grid? Well, lets think about the source reconstruction
 """
 
 # %%
-aplt.Inversion.figure_reconstruction(
-    inversion=fit.inversion,
-    include=aplt.Include2D(mapper_source_pixelization_grid=True),
-)
+include_2d = aplt.Include2D(mapper_source_pixelization_grid=True)
+
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
+fit_imaging_plotter.subplot_of_plane(plane_index=1)
 
 # %%
 """
@@ -133,7 +134,10 @@ We can plot this `Grid` over the image, to see that it is a coarse `Grid` over-l
 """
 
 # %%
-aplt.ImagingPlotter.image(imaging=imaging, grid=image_plane_sparse_grid, mask=mask)
+visuals_2d = aplt.Visuals2D(grid=image_plane_sparse_grid, mask=mask)
+
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
+imaging_plotter.figure_image()
 
 # %%
 """
@@ -156,17 +160,13 @@ If we look at the lens fit, we'll see that our source-plane no longer uses recta
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(
-    fit=fit,
-    include=aplt.Include2D(
-        mask=True,
-        mapper_data_pixelization_grid=True,
-        mapper_source_pixelization_grid=True,
-    ),
+include_2d = aplt.Include2D(
+    mask=True, mapper_data_pixelization_grid=True, mapper_source_pixelization_grid=True
 )
-aplt.FitImaging.subplot_of_plane(
-    fit=fit, plane_index=1, include=aplt.Include2D(mask=True)
-)
+
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
+fit_imaging_plotter.subplot_fit_imaging()
+fit_imaging_plotter.subplot_of_plane(plane_index=1)
 
 # %%
 """
@@ -174,10 +174,8 @@ And we can take a closer inspection of the `Inversion` itself.
 """
 
 # %%
-aplt.Inversion.figure_reconstruction(
-    inversion=fit.inversion,
-    include=aplt.Include2D(mapper_source_pixelization_grid=True),
-)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
+fit_imaging_plotter.subplot_of_plane(plane_index=1)
 
 # %%
 """

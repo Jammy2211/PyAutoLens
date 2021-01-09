@@ -85,9 +85,10 @@ we're going to plot our `Mapper` alongside the image we used to generate the sou
 """
 
 # %%
-aplt.Mapper.subplot_image_and_mapper(
-    image=imaging.image, mapper=mapper, include=aplt.Include2D(inversion_grid=True)
-)
+include_2d = aplt.Include2D(mapper_source_full_grid=True)
+
+mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
+mapper_plotter.subplot_image_and_mapper(image=imaging.image)
 
 # %%
 """
@@ -96,10 +97,8 @@ both the image and source-plane.
 """
 
 # %%
-aplt.Mapper.subplot_image_and_mapper(
+mapper_plotter.subplot_image_and_mapper(
     image=imaging.image,
-    mapper=mapper,
-    include=aplt.Include2D(inversion_grid=True),
     full_indexes=[
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
@@ -115,25 +114,19 @@ to the image.
 """
 
 # %%
-aplt.Mapper.subplot_image_and_mapper(
-    image=imaging.image,
-    mapper=mapper,
-    include=aplt.Include2D(inversion_grid=True),
-    pixelization_indexes=[[312]],
+mapper_plotter.subplot_image_and_mapper(
+    image=imaging.image, pixelization_indexes=[[312]]
 )
 
 # %%
 """
-And there we have it - multiple imaging in all its glory. Try changing the source-pixel indexes of the line below. 
+And there we have it, multiple imaging in all its glory. Try changing the source-pixel indexes of the line below. 
 This will give you a feel for how different regions of the source-plane map to the image.
 """
 
 # %%
-aplt.Mapper.subplot_image_and_mapper(
-    image=imaging.image,
-    mapper=mapper,
-    include=aplt.Include2D(inversion_grid=True),
-    pixelization_indexes=[[312, 318], [412]],
+mapper_plotter.subplot_image_and_mapper(
+    image=imaging.image, pixelization_indexes=[[312, 318], [412]]
 )
 
 # %%
@@ -149,10 +142,8 @@ Lets just have a quick look at these edges pixels:
 """
 
 # %%
-aplt.Mapper.subplot_image_and_mapper(
+mapper_plotter.subplot_image_and_mapper(
     image=imaging.image,
-    mapper=mapper,
-    include=aplt.Include2D(inversion_grid=True),
     pixelization_indexes=[[0, 1, 2, 3, 4, 5, 6, 7], [620, 621, 622, 623, 624]],
 )
 
@@ -210,11 +201,10 @@ Lets have another look.
 """
 
 # %%
-aplt.Mapper.subplot_image_and_mapper(
-    image=masked_imaging.image,
-    mapper=mapper,
-    include=aplt.Include2D(mask=True, inversion_grid=True),
-)
+include_2d = aplt.Include2D(mask=True, mapper_source_full_grid=True)
+
+mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
+mapper_plotter.subplot_image_and_mapper(image=masked_imaging.image)
 
 # %%
 """
@@ -224,11 +214,8 @@ been reading up, this diamond is called the `caustic`).
 """
 
 # %%
-aplt.Mapper.subplot_image_and_mapper(
-    image=masked_imaging.image,
-    mapper=mapper,
-    include=aplt.Include2D(mask=True, inversion_grid=True),
-    pixelization_indexes=[[312], [314], [316], [318]],
+mapper_plotter.subplot_image_and_mapper(
+    image=masked_imaging.image, pixelization_indexes=[[312], [314], [316], [318]]
 )
 
 # %%

@@ -169,8 +169,11 @@ a later tutorial.)
 """
 
 # %%
-aplt.MassProfile.figure_deflections_y(mass_profile=sis_mass_profile, grid=grid)
-aplt.MassProfile.figure_deflections_x(mass_profile=sis_mass_profile, grid=grid)
+mass_profile_plottter = aplt.MassProfilePlotter(
+    mass_profile=sis_mass_profile, grid=grid
+)
+mass_profile_plottter.figure_deflections_y()
+mass_profile_plottter.figure_deflections_x()
 
 # %%
 """
@@ -198,11 +201,9 @@ Plotting them is equally straight forward.
 """
 
 # %%
-aplt.MassProfile.figure_convergence(mass_profile=sis_mass_profile, grid=grid)
-
-aplt.MassProfile.figure_potential(mass_profile=sis_mass_profile, grid=grid)
-
-aplt.MassProfile.figure_magnification(mass_profile=sis_mass_profile, grid=grid)
+mass_profile_plottter.figure_convergence()
+mass_profile_plottter.figure_potential()
+mass_profile_plottter.figure_magnification()
 
 # %%
 """
