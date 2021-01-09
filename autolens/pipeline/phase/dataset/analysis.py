@@ -1,7 +1,7 @@
 import autofit as af
 from autolens.lens import ray_tracing
+from autolens.pipeline import visualizer as vis
 from os import path
-import os
 import pickle
 from typing import List
 import json
@@ -50,8 +50,9 @@ class Analysis:
         with open(stochastic_log_evidences_pickle_file, "wb") as f:
             pickle.dump(stochastic_log_evidences, f)
 
-        self.visualizer.visualize_stochastic_histogram(
-            paths=paths,
+        visualizer = vis.Visualizer(visualize_path=paths.image_path)
+
+        visualizer.visualize_stochastic_histogram(
             log_evidences=stochastic_log_evidences,
             max_log_evidence=np.max(samples.log_likelihoods),
             histogram_bins=self.settings.settings_lens.stochastic_histogram_bins,
