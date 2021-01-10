@@ -18,7 +18,7 @@ light_profile = al.lp.EllipticalExponential(
 solver = al.PositionsSolver(
     grid=grid,
     use_upscaling=True,
-    pixel_scale_precision=0.001,
+    pixel_scale_precision=0.00001,
     magnification_threshold=0.0,
 )
 

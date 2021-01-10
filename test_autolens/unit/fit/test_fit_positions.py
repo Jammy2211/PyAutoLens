@@ -149,6 +149,14 @@ class TestFitPositionsImagePlane:
             positions_solver=positions_solver,
         )
 
+        assert fit.model_positions_all.in_grouped_list == [
+            [(3.0, 1.0), (2.0, 3.0)],
+            [(3.0, 3.0)],
+        ]
+        assert fit.model_positions.in_grouped_list == [
+            [(3.0, 1.0), (2.0, 3.0)],
+            [(3.0, 3.0)],
+        ]
         assert fit.noise_map.in_grouped_list == [[0.5, 1.0], [1.0]]
         assert fit.residual_map.in_grouped_list == [
             [np.sqrt(10.0), np.sqrt(2.0)],
@@ -165,3 +173,46 @@ class TestFitPositionsImagePlane:
         assert fit.chi_squared == pytest.approx(42.0, 1.0e-4)
         assert fit.noise_normalization == pytest.approx(4.12733, 1.0e-4)
         assert fit.log_likelihood == pytest.approx(-23.06366, 1.0e-4)
+
+    def test__more_model_positions_than_data_positions__pairs_closest_positions(self):
+
+        tracer = MockTracerPositions(positions=None)
+
+        positions = al.GridIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)], [(3.0, 3.0)]])
+
+        noise_map = al.ValuesIrregularGrouped([[0.5, 1.0], [1.0]])
+
+        model_positions = al.GridIrregularGrouped(
+            [[(3.0, 1.0), (2.0, 3.0), (1.0, 0.0), (0.0, 1.0)], [(3.0, 3.0), (4.0, 4.0)]]
+        )
+
+        positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
+
+        fit = al.FitPositionsImagePlane(
+            positions=positions,
+            noise_map=noise_map,
+            tracer=tracer,
+            positions_solver=positions_solver,
+        )
+
+        assert fit.model_positions_all.in_grouped_list == [
+            [(3.0, 1.0), (2.0, 3.0), (1.0, 0.0), (0.0, 1.0)],
+            [(3.0, 3.0), (4.0, 4.0)],
+        ]
+        assert fit.model_positions.in_grouped_list == [
+            [(1.0, 0.0), (2.0, 3.0)],
+            [(3.0, 3.0)],
+        ]
+        assert fit.noise_map.in_grouped_list == [[0.5, 1.0], [1.0]]
+        assert fit.residual_map.in_grouped_list == [[1.0, np.sqrt(2.0)], [0.0]]
+        assert fit.normalized_residual_map.in_grouped_list == [
+            [2.0, np.sqrt(2.0) / 1.0],
+            [0.0],
+        ]
+        assert fit.chi_squared_map.in_grouped_list == [
+            [4.0, np.sqrt(2.0) ** 2.0],
+            [0.0],
+        ]
+        assert fit.chi_squared == pytest.approx(6.0, 1.0e-4)
+        assert fit.noise_normalization == pytest.approx(4.12733, 1.0e-4)
+        assert fit.log_likelihood == pytest.approx(-5.06366, 1.0e-4)

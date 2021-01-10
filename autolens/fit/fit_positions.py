@@ -95,7 +95,10 @@ class FitPositionsImagePlane:
         """
         self.positions = positions
         self.positions_solver = positions_solver
-        self.model_positions = positions_solver.solve_from_tracer(tracer=tracer)
+        self.model_positions_all = positions_solver.solve_from_tracer(tracer=tracer)
+        self.model_positions = self.model_positions_all.grid_of_closest_from_grid_pair(
+            grid_pair=self.positions
+        )
         self.noise_map = noise_map
 
     @property
