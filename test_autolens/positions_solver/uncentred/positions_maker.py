@@ -18,7 +18,9 @@ from os import path
 
 """The pickle path is where the `Tracer` and `Positions` are output, so they can be loaded by other scripts."""
 
-pickle_path = path.join("{}".format(os.path.dirname(os.path.realpath(__file__))), "pickles")
+pickle_path = path.join(
+    "{}".format(os.path.dirname(os.path.realpath(__file__))), "pickles"
+)
 os.makedirs(pickle_path, exist_ok=True)
 
 """A high resolution grid is used to ensure positions are computed to a given accuracy."""
@@ -35,7 +37,7 @@ lensing geometries.
 
 mass_profile_model = af.PriorModel(al.mp.EllipticalIsothermal)
 
-mass_profile_model.centre.centre_0= af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
+mass_profile_model.centre.centre_0 = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
 mass_profile_model.centre.centre_0 = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
 mass_profile_model.elliptical_comps.elliptical_comps_0 = af.UniformPrior(
     lower_limit=-1.0, upper_limit=1.0
@@ -43,9 +45,7 @@ mass_profile_model.elliptical_comps.elliptical_comps_0 = af.UniformPrior(
 mass_profile_model.elliptical_comps.elliptical_comps_1 = af.UniformPrior(
     lower_limit=-1.0, upper_limit=1.0
 )
-mass_profile_model.einstein_radius = af.UniformPrior(
-    lower_limit=0.3, upper_limit=2.0
-)
+mass_profile_model.einstein_radius = af.UniformPrior(lower_limit=0.3, upper_limit=2.0)
 
 light_profile_model = af.PriorModel(al.lp.EllipticalExponential)
 light_profile_model.centre.centre_0 = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)

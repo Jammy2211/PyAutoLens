@@ -206,7 +206,7 @@ computationally expensive exercise, but does make going through these tutorials 
 
 Furthermore, in a Jupyter notebook, if you run the `NonLinearSearch` (using the phase.run command below) you won't 
 be able to continue the notebook until it has finished. For this reason, we recommend that you run the non-linear
-search in these tutorials not via your Juypter notebook, but instead by running the tutorial script found in the
+search in these tutorials not via your Jupyter notebook, but instead by running the tutorial script found in the
 `chapter_2_lens_modeling/scripts` folder. This can be run either using the `python3 tutoial_1_non_linear_search.py` 
 command on your command line or via your IDE (if you are using one).
 

@@ -1,6 +1,7 @@
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 from os import path
+import os
 
 from autoconf import conf
 from autogalaxy.plot.plotters import hyper_plotters
@@ -246,6 +247,15 @@ class Visualizer(visualizer.Visualizer):
 
         if plot_setting("other", "stochastic_histogram"):
 
+            filename = path.join(
+                self.visualize_path, "other", "stochastic_histogram.png"
+            )
+
+            try:
+                os.makedirs(filename)
+            except FileExistsError:
+                pass
+
             (mu, sigma) = norm.fit(log_evidences)
             n, bins, patches = plt.hist(x=log_evidences, bins=histogram_bins, density=1)
             y = norm.pdf(bins, mu, sigma)
@@ -253,8 +263,5 @@ class Visualizer(visualizer.Visualizer):
             plt.xlabel("log evidence")
             plt.title("Stochastic Log Evidence Histogram")
             plt.axvline(max_log_evidence, color="r")
-            plt.savefig(
-                path.join(self.visualize_path, "other", "stochastic_histogram.png"),
-                bbox_inches="tight",
-            )
+            plt.savefig(filename, bbox_inches="tight")
             plt.close()

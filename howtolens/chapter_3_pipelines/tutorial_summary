@@ -11,7 +11,7 @@ with me to add it to the examples. We really have no idea what science people ar
 **PyAutoLens**, so we have no idea of the weird and wonderful pipelines people will craft along the way!
 
 You should also checkout the 'autolens_workspace/runners' folder, where the corresponding runners which import and run these
-pipeines are found. The example runners come as both a Python scripts and Juypter notebooks. I personally prefer to use
+pipeines are found. The example runners come as both a Python scripts and Jupyter notebooks. I personally prefer to use
 runners as Python scripts, but others prefer notebooks. You should experiment with using both and figure out your own
 personal preference. Its nice to keep pipelines and runners separate, as it encourages one to separate the analysis
 (which the pipeline defines) from the data that analysis is run on (which the runner loads).

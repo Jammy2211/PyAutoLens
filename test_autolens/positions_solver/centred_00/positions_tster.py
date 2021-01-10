@@ -74,6 +74,4 @@ for i in range(iters):
     visuals_2d = aplt.Visuals2D(positions=positions_plot)
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figure_image(
-        visuals_2d=visuals_2d
-    )
+    tracer_plotter.figure_image(visuals_2d=visuals_2d)

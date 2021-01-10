@@ -14,7 +14,7 @@ class AbstractPositionsSolver:
         self,
         use_upscaling=True,
         upscale_factor=2,
-        magnification_threshold=0.0,
+        magnification_threshold=0.1,
         distance_from_source_centre=None,
         distance_from_mass_profile_centre=None,
     ):
@@ -27,9 +27,11 @@ class AbstractPositionsSolver:
 
     def grid_with_points_below_magnification_threshold_removed(self, lensing_obj, grid):
 
-        magnifications = lensing_obj.magnification_irregular_from_grid(grid=grid)
-
-        print(magnifications)
+        magnifications = np.abs(
+            lensing_obj.magnification_irregular_from_grid(
+                grid=grid, buffer=grid.pixel_scale
+            )
+        )
 
         grid_mag = []
 
@@ -37,7 +39,9 @@ class AbstractPositionsSolver:
             if magnification > self.magnification_threshold:
                 grid_mag.append(grid[index, :])
 
-        return grids.GridIrregularGroupedUniform(grid=grid_mag, pixel_scales=grid.pixel_scales)
+        return grids.GridIrregularGroupedUniform(
+            grid=grid_mag, pixel_scales=grid.pixel_scales
+        )
 
     def grid_with_coordinates_from_mass_profile_centre_removed(self, lensing_obj, grid):
         """Remove all coordinates from a grid which are within the distance_from_mass_profile_centre attribute of any
@@ -229,7 +233,6 @@ class AbstractPositionsSolver:
         )
 
 
-
 class PositionsSolver(AbstractPositionsSolver):
     def __init__(
         self,
@@ -336,12 +339,11 @@ class PositionsSolver(AbstractPositionsSolver):
             source_plane_coordinate=source_plane_coordinate,
         )
 
-        coordinates_list = self.grid_with_points_below_magnification_threshold_removed(
-            lensing_obj=lensing_obj,
-            grid=coordinates_list
+        coordinates_list = self.grid_with_coordinates_from_mass_profile_centre_removed(
+            lensing_obj=lensing_obj, grid=coordinates_list
         )
 
-        coordinates_list = self.grid_with_coordinates_from_mass_profile_centre_removed(
+        coordinates_list = self.grid_with_points_below_magnification_threshold_removed(
             lensing_obj=lensing_obj, grid=coordinates_list
         )
 
@@ -382,6 +384,10 @@ class PositionsSolver(AbstractPositionsSolver):
             ),
             source_plane_coordinate=source_plane_coordinate,
             distance=self.distance_from_source_centre,
+        )
+
+        coordinates_list = self.grid_with_points_below_magnification_threshold_removed(
+            lensing_obj=lensing_obj, grid=coordinates_list
         )
 
         return grids.GridIrregularGrouped(grid=coordinates_list)

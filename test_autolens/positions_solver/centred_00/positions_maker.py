@@ -1,4 +1,3 @@
-
 """
 __Positions Maker__
 
@@ -43,9 +42,7 @@ mass_profile_model.elliptical_comps.elliptical_comps_0 = af.UniformPrior(
 mass_profile_model.elliptical_comps.elliptical_comps_1 = af.UniformPrior(
     lower_limit=-1.0, upper_limit=1.0
 )
-mass_profile_model.einstein_radius = af.UniformPrior(
-    lower_limit=0.3, upper_limit=2.0
-)
+mass_profile_model.einstein_radius = af.UniformPrior(lower_limit=0.3, upper_limit=2.0)
 
 iters = 50
 

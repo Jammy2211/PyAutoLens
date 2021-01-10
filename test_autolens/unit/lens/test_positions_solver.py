@@ -82,26 +82,34 @@ class TestAbstractPositionsSolver:
 
         sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
-        grid = grids.GridIrregularGroupedUniform(grid=[(1.0, 0.0), (0.1, 0.0)], pixel_scales=2.0)
+        grid = grids.GridIrregularGroupedUniform(
+            grid=[(1.0, 0.0), (0.1, 0.0)], pixel_scales=0.01
+        )
 
-        magnification = sis.magnification_irregular_from_grid(grid=grid)
+        magnification = np.abs(
+            sis.magnification_irregular_from_grid(grid=grid, buffer=grid.pixel_scale)
+        )
 
-        assert magnification[0] > 0.0
-        assert magnification[1] < 0.0
+        assert magnification[0] > 1000.0
+        assert magnification[1] < 1000.0
+
+        solver = pos.AbstractPositionsSolver(magnification_threshold=1000.0)
+
+        positions = solver.grid_with_points_below_magnification_threshold_removed(
+            lensing_obj=sis, grid=grid
+        )
+
+        assert positions.in_grouped_list == [[(1.0, 0.0)]]
+        assert positions.pixel_scales == (0.01, 0.01)
 
         solver = pos.AbstractPositionsSolver(magnification_threshold=0.0)
 
-        positions = solver.grid_with_points_below_magnification_threshold_removed(lensing_obj=sis, grid=grid)
-
-        assert positions.in_grouped_list == [[(1.0, 0.0)]]
-        assert positions.pixel_scales == (2.0, 2.0)
-
-        solver = pos.AbstractPositionsSolver(magnification_threshold=-100000.0)
-
-        positions = solver.grid_with_points_below_magnification_threshold_removed(lensing_obj=sis, grid=grid)
+        positions = solver.grid_with_points_below_magnification_threshold_removed(
+            lensing_obj=sis, grid=grid
+        )
 
         assert positions.in_grouped_list == [[(1.0, 0.0), (0.1, 0.0)]]
-        assert positions.pixel_scales == (2.0, 2.0)
+        assert positions.pixel_scales == (0.01, 0.01)
 
 
 class TestPositionSolver:
@@ -115,10 +123,8 @@ class TestPositionSolver:
 
         positions = solver.solve(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
 
-        assert positions[0] == pytest.approx(np.array([0.003125, 1.109375]), 1.0e-4)
-        assert positions[1] == pytest.approx(np.array([-0.003125, 1.109375]), 1.0e-4)
-
-        stop
+        assert positions[0] == pytest.approx(np.array([0.003125, -0.890625]), 1.0e-4)
+        assert positions[3] == pytest.approx(np.array([-0.003125, 1.109375]), 1.0e-4)
 
         grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
 
@@ -140,8 +146,6 @@ class TestPositionSolver:
         coordinates = solver.solve(
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
         )
-
-        print(coordinates)
 
         assert coordinates.in_grouped_list[0][0] == pytest.approx(
             (1.028125, -0.003125), 1.0e-4

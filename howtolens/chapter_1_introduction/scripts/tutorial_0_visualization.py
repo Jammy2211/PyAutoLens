@@ -108,7 +108,7 @@ imaging_plotter.figure_image()
 # %%
 """
 Many matplotlib options can be customized, but for now we're only concerned with making sure figures display cleanly in 
-your Juypter Notebooks. However, for future reference, a comprehensive API reference guide of all options and what 
+your Jupyter Notebooks. However, for future reference, a comprehensive API reference guide of all options and what 
 `matplotlib` methods they wrap can be found in at`autolens_workspace/plot`. You should check this out once you are
 more familiar with PyAutoLens.
 
@@ -131,7 +131,7 @@ displaying figures correctly:
 Don't worry about all the other files or options listed for now, as they`ll make a lot more sense once you are familiar 
 with **PyAutoLens**.
 
-(Note that you will need to reset your Juypter notebook server for these changes to take effect, so make sure you 
+(Note that you will need to reset your Jupyter notebook server for these changes to take effect, so make sure you 
 have the right values using the `mat_plot_2d` object in the cell above beforehand!)
 
 In addition to individual `figures` which use a `mat_plot_2d` to plot them, **PyAutoLens** also uses this object to 
