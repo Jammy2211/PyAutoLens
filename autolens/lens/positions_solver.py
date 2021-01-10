@@ -14,14 +14,30 @@ class AbstractPositionsSolver:
         self,
         use_upscaling=True,
         upscale_factor=2,
+        magnification_threshold=0.0,
         distance_from_source_centre=None,
         distance_from_mass_profile_centre=None,
     ):
 
         self.use_upscaling = use_upscaling
         self.upscale_factor = upscale_factor
+        self.magnification_threshold = magnification_threshold
         self.distance_from_source_centre = distance_from_source_centre
         self.distance_from_mass_profile_centre = distance_from_mass_profile_centre
+
+    def grid_with_points_below_magnification_threshold_removed(self, lensing_obj, grid):
+
+        magnifications = lensing_obj.magnification_irregular_from_grid(grid=grid)
+
+        print(magnifications)
+
+        grid_mag = []
+
+        for index, magnification in enumerate(magnifications):
+            if magnification > self.magnification_threshold:
+                grid_mag.append(grid[index, :])
+
+        return grids.GridIrregularGroupedUniform(grid=grid_mag, pixel_scales=grid.pixel_scales)
 
     def grid_with_coordinates_from_mass_profile_centre_removed(self, lensing_obj, grid):
         """Remove all coordinates from a grid which are within the distance_from_mass_profile_centre attribute of any
@@ -213,13 +229,15 @@ class AbstractPositionsSolver:
         )
 
 
-class PositionsFinder(AbstractPositionsSolver):
+
+class PositionsSolver(AbstractPositionsSolver):
     def __init__(
         self,
         grid,
         use_upscaling=True,
         pixel_scale_precision=None,
         upscale_factor=2,
+        magnification_threshold=0.0,
         distance_from_source_centre=None,
         distance_from_mass_profile_centre=None,
     ):
@@ -247,9 +265,10 @@ class PositionsFinder(AbstractPositionsSolver):
             8 neighbors. Depending on how the `PositionFinder` is being used these can be removed.
         """
 
-        super(PositionsFinder, self).__init__(
+        super(PositionsSolver, self).__init__(
             use_upscaling=use_upscaling,
             upscale_factor=upscale_factor,
+            magnification_threshold=magnification_threshold,
             distance_from_source_centre=distance_from_source_centre,
             distance_from_mass_profile_centre=distance_from_mass_profile_centre,
         )
@@ -315,6 +334,11 @@ class PositionsFinder(AbstractPositionsSolver):
             lensing_obj=lensing_obj,
             grid=self.grid,
             source_plane_coordinate=source_plane_coordinate,
+        )
+
+        coordinates_list = self.grid_with_points_below_magnification_threshold_removed(
+            lensing_obj=lensing_obj,
+            grid=coordinates_list
         )
 
         coordinates_list = self.grid_with_coordinates_from_mass_profile_centre_removed(

@@ -54,7 +54,7 @@ from .fit.fit_positions import (
 )
 from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
-from .lens.positions_solver import PositionsFinder
+from .lens.positions_solver import PositionsSolver
 from .pipeline.setup import (
     SetupPipeline,
     SetupHyper,

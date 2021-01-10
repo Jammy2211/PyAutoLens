@@ -37,7 +37,7 @@ grid = al.Grid.uniform(
 
 """Use a `PositionsSolver` which uses grid upscaling."""
 
-solver = al.PositionsFinder(
+solver = al.PositionsSolver(
     grid=grid,
     use_upscaling=True,
     pixel_scale_precision=0.0000001,

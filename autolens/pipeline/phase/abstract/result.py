@@ -66,7 +66,7 @@ class Result(result.Result):
 
         grid = self.analysis.masked_dataset.mask.geometry.unmasked_grid_sub_1
 
-        solver = pos.PositionsFinder(grid=grid, pixel_scale_precision=0.001)
+        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.001)
 
         try:
             multiple_images = [
