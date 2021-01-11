@@ -253,7 +253,7 @@ class Visualizer(visualizer.Visualizer):
 
             try:
                 os.makedirs(filename)
-            except FileExistsError:
+            except FileExistsError or IsADirectoryError:
                 pass
 
             (mu, sigma) = norm.fit(log_evidences)

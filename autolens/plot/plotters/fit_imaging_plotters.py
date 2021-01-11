@@ -159,10 +159,16 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
             The plane from which the model image is generated.
         """
 
-        self.mat_plot_2d.plot_array(
-            array=self.fit.model_images_of_planes[plane_index],
-            visuals_2d=self.visuals_with_include_2d,
-        )
+        if self.fit.inversion is None or plane_index == 0:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.model_images_of_planes[plane_index],
+                visuals_2d=self.visuals_with_include_2d,
+            )
+
+        else:
+
+            self.inversion_plotter.figure_reconstructed_image()
 
     @abstract_plotters.for_figure_with_index
     def figure_plane_image_of_plane(self, plane_index):

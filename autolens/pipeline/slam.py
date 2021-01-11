@@ -488,13 +488,20 @@ class SLaM:
             )
         else:
             light_tag = ""
+
         mass_tag = (
             f"__{self.pipeline_mass.setup_mass.tag}"
             if self.pipeline_mass.setup_mass is not None
             else ""
         )
 
-        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
+        smbh_tag = (
+            f"__{self.pipeline_mass.setup_smbh.tag}"
+            if self.pipeline_mass.setup_smbh is not None
+            else ""
+        )
+
+        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{smbh_tag}{source_tag}"
 
     def lens_for_mass_pipeline_from_results(
         self, results: af.ResultsCollection, mass: af.PriorModel, shear: af.PriorModel
