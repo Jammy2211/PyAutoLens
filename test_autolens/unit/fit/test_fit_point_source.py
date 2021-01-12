@@ -5,16 +5,17 @@ from autolens.mock import mock
 
 
 class MockTracerPositions:
-    def __init__(self, positions=None, magnifications=None):
+    def __init__(self, positions=None, magnification=None, flux_hack=None):
 
         self.positions = positions
-        self.magnifications = magnifications
+        self.magnification = magnification
+        self.flux_hack = flux_hack
 
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
         return [self.positions]
 
     def magnification_irregular_from_grid(self, grid):
-        return
+        return self.magnification
 
 
 class TestAbstractFitPositionsSourcePlane:
@@ -223,22 +224,32 @@ class TestFitPositionsImage:
 
 
 # class TestFitFluxes:
-#     def test__two_sets_of_fluxes__residuals_likelihood_correct(self):
+#     def test__one_set_of_fluxes__residuals_likelihood_correct(self):
 #
-#         tracer = MockTracerPositions(magnifications=None)
+#         fluxes = al.ValuesIrregularGrouped([[1.0, 2.0]])
 #
-#         fluxes = al.ValuesIrregularGrouped([[1.0, 2.0], [3.0]])
+#         noise_map = al.ValuesIrregularGrouped([[3.0, 1.0]])
 #
-#         noise_map = al.ValuesIrregularGrouped([[1.0, 1.0], [1.0]])
-#
-#         positions = al.GridIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)], [(3.0, 3.0)]])
+#         positions = al.GridIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)]])
 #
 #         tracer = MockTracerPositions(
-#             magnifications=al.ValuesIrregularGrouped([[1.0, 1.0], [2.0]])
+#             magnification=2,
+#             flux_hack=2.0
 #         )
 #
 #         fit = al.FitFluxes(
-#             fluxes=fluxes, noise_map=noise_map, positions=positions, tracer=tracer
+#             fluxes=fluxes,
+#             noise_map=noise_map,
+#             positions=positions,
+#             tracer=tracer
 #         )
 #
-#         assert fit.residual_map.in_grouped_list == [[]]
+#         assert fit.fluxes.in_grouped_list == [[1.0, 2.0]]
+#         assert fit.noise_map.in_grouped_list == [[3.0, 1.0]]
+#         assert fit.model_fluxes.in_grouped_list == [[4.0, 4.0]]
+#         assert fit.residual_map.in_grouped_list == [[-3.0, -2.0]]
+#         assert fit.normalized_residual_map.in_grouped_list == [[-1.0, -2.0]]
+#         assert fit.chi_squared_map.in_grouped_list == [[1.0, 4.0]]
+#         assert fit.chi_squared == pytest.approx(5.0, 1.0e-4)
+#         assert fit.noise_normalization == pytest.approx(5.87297, 1.0e-4)
+#         assert fit.log_likelihood == pytest.approx(-5.43648, 1.0e-4)

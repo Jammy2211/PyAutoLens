@@ -42,6 +42,14 @@ def make_positions_noise_map_x2():
     return al.ValuesIrregularGrouped(values=[[1.0, 1.0]])
 
 
+def make_fluxes_x2():
+    return al.ValuesIrregularGrouped(values=[[1.0, 2.0]])
+
+
+def make_fluxes_noise_map_x2():
+    return al.ValuesIrregularGrouped(values=[[1.0, 1.0]])
+
+
 def make_tracer_x1_plane_7x7():
     return al.Tracer.from_galaxies(galaxies=[make_gal_x1_lp()])
 

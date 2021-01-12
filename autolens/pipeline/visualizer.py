@@ -247,14 +247,24 @@ class Visualizer(visualizer.Visualizer):
 
         if plot_setting("other", "stochastic_histogram"):
 
-            filename = path.join(
-                self.visualize_path, "other", "stochastic_histogram.png"
+            file_path =  path.join(
+                self.visualize_path, "other",
             )
 
             try:
-                os.makedirs(filename)
+                os.makedirs(file_path)
             except FileExistsError or IsADirectoryError:
                 pass
+
+            filename = path.join(
+               file_path, "stochastic_histogram.png"
+            )
+
+            if path.exists(filename):
+                try:
+                    os.rmdir(filename)
+                except Exception:
+                    pass
 
             (mu, sigma) = norm.fit(log_evidences)
             n, bins, patches = plt.hist(x=log_evidences, bins=histogram_bins, density=1)

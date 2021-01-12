@@ -1,7 +1,7 @@
 from autoarray.structures import arrays, grids
 from autoarray.util import fit_util
 from autoarray.fit.fit import FitData
-
+import numpy as np
 
 class AbstractFitPositionsSourcePlane:
     def __init__(self, positions, noise_map, tracer):
@@ -126,13 +126,29 @@ class FitPositionsImage(FitData):
 
 class FitFluxes(FitData):
 
-    pass
+    def __init__(self, fluxes, noise_map, positions, tracer):
 
-#
-#     def __init__(self, fluxes, noise_map, positions, tracer):
-#
-#         self.magnifications = tracer.magnification_irregular_from_grid(grid=positions)
-#
-#         model_fluxes =
-#
-#         fluxes =
+        # TODO : The fluxes, positions etc that come into here will be IrregularGrouped structures with dictionary inputs.
+        # TODO : We need them as numpy array sso that we caninherit and subtract efficiently. Easy to do.
+        # TODO : These can be generated from PointSourceData classes.
+
+        self.positions = positions
+        self.magnifications = abs(tracer.magnification_irregular_from_grid(grid=positions))
+
+        model_fluxes = arrays.ValuesIrregularGrouped(values=[magnification * tracer.flux_hack for magnification in self.magnifications])
+
+        super().__init__(
+            data=fluxes,
+            noise_map=noise_map,
+            model_data=model_fluxes,
+            mask=None,
+            inversion=None,
+        )
+
+    @property
+    def fluxes(self):
+        return self.data
+
+    @property
+    def model_fluxes(self):
+        return self.model_data

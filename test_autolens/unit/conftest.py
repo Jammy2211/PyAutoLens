@@ -143,6 +143,16 @@ def make_positions_x2_noise_map():
     return fixtures.make_positions_noise_map_x2()
 
 
+@pytest.fixture(name="fluxes_x2")
+def make_fluxes_x2():
+    return fixtures.make_fluxes_x2()
+
+
+@pytest.fixture(name="fluxes_x2_noise_map")
+def make_fluxes_x2_noise_map():
+    return fixtures.make_fluxes_noise_map_x2()
+
+
 # GALAXIES #
 
 

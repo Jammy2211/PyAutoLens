@@ -29,7 +29,7 @@ class TestMakeAnalysis:
         assert isinstance(phase_positions_x2.settings, al.SettingsPhasePositions)
 
         analysis = phase_positions_x2.make_analysis(
-            positions=positions_x2, noise_map=positions_x2_noise_map
+            positions=positions_x2, positions_noise_map=positions_x2_noise_map
         )
 
         assert analysis.positions.in_grouped_list == positions_x2.in_grouped_list
@@ -43,7 +43,7 @@ class TestMakeAnalysis:
 
         phase_positions_x2.make_analysis(
             positions=positions_x2,
-            noise_map=positions_x2_noise_map,
+            positions_noise_map=positions_x2_noise_map,
             results=mock.MockResults(),
         )
 

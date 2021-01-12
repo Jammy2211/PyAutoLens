@@ -234,16 +234,14 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
         self.open_subplot_figure(number_subplots=number_subplots)
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-
         self.figure_image()
 
         if self.tracer.has_mass_profile:
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
+            self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
             self.figure_convergence()
 
             self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
-
             self.figure_potential()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
@@ -251,14 +249,12 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
         self.figure_plane_image_of_plane(plane_index=len(self.tracer.planes) - 1)
 
         if self.tracer.has_mass_profile:
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
+            self.setup_subplot(number_subplots=number_subplots, subplot_index=5)
             self.figure_deflections_y()
 
             self.setup_subplot(number_subplots=number_subplots, subplot_index=6)
-
             self.figure_deflections_x()
 
         self.mat_plot_2d.output.subplot_to_figure()
-
         self.mat_plot_2d.figure.close()
