@@ -4,6 +4,7 @@ from autolens.fit import fit_point_source
 from autolens.pipeline import visualizer as vis
 from autolens.lens import ray_tracing
 
+import numba
 
 class Analysis(ag_analysis.Analysis):
     def __init__(
@@ -45,7 +46,7 @@ class Analysis(ag_analysis.Analysis):
 
         try:
             fit_positions = self.fit_positions_for_tracer(tracer=tracer)
-        except AttributeError as e:
+        except (AttributeError, numba.errors.TypingError) as e:
             raise FitException from e
 
         log_likelihood_positions = fit_positions.log_likelihood
