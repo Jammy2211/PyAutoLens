@@ -1,5 +1,6 @@
-from autoarray.structures import arrays
+from autoarray.structures import arrays, grids
 from autoarray.util import fit_util
+from autoarray.fit.fit import FitData
 
 
 class AbstractFitPositionsSourcePlane:
@@ -58,7 +59,7 @@ class AbstractFitPositionsSourcePlane:
         return self.max_separation_of_source_plane_positions <= threshold
 
 
-class FitPositionsSourcePlaneMaxSeparation(AbstractFitPositionsSourcePlane):
+class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
     def __init__(self, positions, noise_map, tracer):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
@@ -81,7 +82,7 @@ class FitPositionsSourcePlaneMaxSeparation(AbstractFitPositionsSourcePlane):
     #     return -0.5 * sum(self.chi_squared_map)
 
 
-class FitPositionsImagePlane:
+class FitPositionsImage(FitData):
     def __init__(self, positions, noise_map, tracer, positions_solver):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
@@ -93,54 +94,45 @@ class FitPositionsImagePlane:
         noise_value : float
             The noise-value assumed when computing the log likelihood.
         """
-        self.positions = positions
+
         self.positions_solver = positions_solver
         self.model_positions_all = positions_solver.solve_from_tracer(tracer=tracer)
-        self.model_positions = self.model_positions_all.grid_of_closest_from_grid_pair(
-            grid_pair=self.positions
+
+        model_positions = self.model_positions_all.grid_of_closest_from_grid_pair(
+            grid_pair=positions
         )
-        self.noise_map = noise_map
+
+        super().__init__(
+            data=positions,
+            noise_map=noise_map,
+            model_data=model_positions,
+            mask=None,
+            inversion=None,
+        )
 
     @property
-    def residual_map(self):
+    def positions(self):
+        return self.data
+
+    @property
+    def model_positions(self):
+        return self.model_data
+
+    @property
+    def residual_map(self) -> grids.GridIrregularGrouped:
         residual_positions = self.positions - self.model_positions
         return residual_positions.distances_from_coordinate(coordinate=(0.0, 0.0))
 
-    @property
-    def normalized_residual_map(self):
-        return fit_util.normalized_residual_map_from(
-            residual_map=self.residual_map, noise_map=self.noise_map
-        )
 
-    @property
-    def chi_squared_map(self):
-        return fit_util.chi_squared_map_from(
-            residual_map=self.residual_map, noise_map=self.noise_map
-        )
+class FitFluxes(FitData):
 
-    @property
-    def chi_squared(self) -> float:
-        """
-        Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
-        """
-        return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map)
+    pass
 
-    @property
-    def noise_normalization(self) -> float:
-        """
-        Returns the noise-map normalization term of the noise-map, summing the noise_map value in every pixel as:
-
-        [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
-        """
-        return fit_util.noise_normalization_from(noise_map=self.noise_map)
-
-    @property
-    def log_likelihood(self) -> float:
-        """
-        Returns the log likelihood of each model data point's fit to the dataset, where:
-
-        Log Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
-        """
-        return fit_util.log_likelihood_from(
-            chi_squared=self.chi_squared, noise_normalization=self.noise_normalization
-        )
+#
+#     def __init__(self, fluxes, noise_map, positions, tracer):
+#
+#         self.magnifications = tracer.magnification_irregular_from_grid(grid=positions)
+#
+#         model_fluxes =
+#
+#         fluxes =

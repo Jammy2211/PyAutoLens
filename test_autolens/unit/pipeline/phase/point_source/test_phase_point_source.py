@@ -20,7 +20,7 @@ class TestMakeAnalysis:
     def test__positions__settings_inputs_are_used_in_positions(
         self, positions_x2, positions_x2_noise_map
     ):
-        phase_positions_x2 = al.PhasePositions(
+        phase_positions_x2 = al.PhasePointSource(
             settings=al.SettingsPhasePositions(),
             search=mock.MockSearch(),
             positions_solver=mock.MockPositionsSolver(model_positions=positions_x2),

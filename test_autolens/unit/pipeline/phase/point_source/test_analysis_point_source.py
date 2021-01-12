@@ -18,7 +18,7 @@ class TestFit:
         self, positions_x2, positions_x2_noise_map, samples_with_result
     ):
 
-        phase_positions_x2 = al.PhasePositions(
+        phase_positions_x2 = al.PhasePointSource(
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
                 source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
@@ -29,7 +29,7 @@ class TestFit:
 
         result = phase_positions_x2.run(
             positions=positions_x2,
-            noise_map=positions_x2_noise_map,
+            positions_noise_map=positions_x2_noise_map,
             results=mock.MockResults(),
         )
         assert isinstance(result.instance.galaxies[0], al.Galaxy)
@@ -42,7 +42,7 @@ class TestFit:
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
-        phase_positions_x2 = al.PhasePositions(
+        phase_positions_x2 = al.PhasePointSource(
             galaxies=dict(lens=lens_galaxy),
             settings=al.SettingsPhasePositions(),
             search=mock.MockSearch(),
@@ -61,7 +61,7 @@ class TestFit:
 
         positions_solver = mock.MockPositionsSolver(model_positions=positions_x2)
 
-        fit = al.FitPositionsImagePlane(
+        fit = al.FitPositionsImage(
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
             tracer=tracer,
@@ -74,7 +74,7 @@ class TestFit:
         model_positions = al.GridIrregularGrouped([[(0.0, 1.0), (1.0, 2.0)]])
         positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
 
-        phase_positions_x2 = al.PhasePositions(
+        phase_positions_x2 = al.PhasePointSource(
             galaxies=dict(lens=lens_galaxy),
             settings=al.SettingsPhasePositions(),
             search=mock.MockSearch(),
@@ -89,7 +89,7 @@ class TestFit:
         instance = phase_positions_x2.model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
 
-        fit = al.FitPositionsImagePlane(
+        fit = al.FitPositionsImage(
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
             tracer=tracer,

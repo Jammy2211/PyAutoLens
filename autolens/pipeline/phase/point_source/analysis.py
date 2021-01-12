@@ -1,5 +1,5 @@
 from autogalaxy.pipeline.phase.abstract import analysis as ag_analysis
-from autolens.fit import fit_positions
+from autolens.fit import fit_point_source
 from autolens.pipeline import visualizer as vis
 from autolens.lens import ray_tracing
 
@@ -44,7 +44,7 @@ class Analysis(ag_analysis.Analysis):
 
     def positions_fit_for_tracer(self, tracer):
 
-        return fit_positions.FitPositionsImagePlane(
+        return fit_point_source.FitPositionsImage(
             positions=self.positions,
             noise_map=self.noise_map,
             positions_solver=self.solver,

@@ -119,7 +119,7 @@ def make_phase_interferometer_7():
 
 
 def make_phase_positions_x2():
-    return al.PhasePositions(
+    return al.PhasePointSource(
         positions_solver=MockPositionsSolver(model_positions=make_positions_x2()),
         search=MockSearch(name="test_phase"),
     )

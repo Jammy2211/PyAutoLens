@@ -3,11 +3,11 @@ import autofit as af
 from astropy import cosmology as cosmo
 from autogalaxy.pipeline.phase import abstract
 from autolens.pipeline.phase.settings import SettingsPhasePositions
-from autolens.pipeline.phase.positions.analysis import Analysis
-from autolens.pipeline.phase.positions.result import Result
+from autolens.pipeline.phase.point_source.analysis import Analysis
+from autolens.pipeline.phase.point_source.result import Result
 
 
-class PhasePositions(abstract.AbstractPhase):
+class PhasePointSource(abstract.AbstractPhase):
 
     galaxies = af.PhaseProperty("galaxies")
 
@@ -79,7 +79,7 @@ class PhasePositions(abstract.AbstractPhase):
     def run(
         self,
         positions,
-        noise_map,
+        positions_noise_map,
         imaging=None,
         results=None,
         info=None,
@@ -108,7 +108,10 @@ class PhasePositions(abstract.AbstractPhase):
         results = results or af.ResultsCollection()
 
         analysis = self.make_analysis(
-            positions=positions, noise_map=noise_map, imaging=imaging, results=results
+            positions=positions,
+            noise_map=positions_noise_map,
+            imaging=imaging,
+            results=results,
         )
 
         result = self.run_analysis(

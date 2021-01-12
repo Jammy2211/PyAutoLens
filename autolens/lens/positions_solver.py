@@ -1,12 +1,6 @@
 from autoarray import decorator_util
 import numpy as np
-from autoarray.util import grid_util, mask_util
-
-from autoarray.structures import abstract_structure, grids
-
-from autolens import exc
-
-import copy
+from autoarray.structures import grids
 
 
 class AbstractPositionsSolver:

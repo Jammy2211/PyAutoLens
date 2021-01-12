@@ -5,12 +5,16 @@ from autolens.mock import mock
 
 
 class MockTracerPositions:
-    def __init__(self, positions, noise=None):
+    def __init__(self, positions=None, magnifications=None):
+
         self.positions = positions
-        self.noise = noise
+        self.magnifications = magnifications
 
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
         return [self.positions]
+
+    def magnification_irregular_from_grid(self, grid):
+        return
 
 
 class TestAbstractFitPositionsSourcePlane:
@@ -20,7 +24,7 @@ class TestAbstractFitPositionsSourcePlane:
         noise_map = al.ValuesIrregularGrouped([[1.0, 1.0]])
 
         tracer = MockTracerPositions(positions=positions)
-        fit = al.FitPositionsSourcePlaneMaxSeparation(
+        fit = al.FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=noise_map, tracer=tracer
         )
 
@@ -37,7 +41,7 @@ class TestAbstractFitPositionsSourcePlane:
         noise_map = al.ValuesIrregularGrouped([[1.0, 1.0], [1.0]])
 
         tracer = MockTracerPositions(positions=positions)
-        fit = al.FitPositionsSourcePlaneMaxSeparation(
+        fit = al.FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=noise_map, tracer=tracer
         )
 
@@ -64,13 +68,13 @@ class TestAbstractFitPositionsSourcePlane:
         noise_map = al.ValuesIrregularGrouped([[1.0, 1.0]])
 
         positions = al.GridIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]])
-        fit = al.FitPositionsSourcePlaneMaxSeparation(
+        fit = al.FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=noise_map, tracer=tracer
         )
         assert fit.max_separation_within_threshold(threshold=0.01)
 
         positions = al.GridIrregularGrouped([[(1.2, 0.0), (-1.0, 0.0)]])
-        fit = al.FitPositionsSourcePlaneMaxSeparation(
+        fit = al.FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=noise_map, tracer=tracer
         )
         assert fit.max_separation_within_threshold(threshold=0.3)
@@ -98,7 +102,7 @@ class TestAbstractFitPositionsSourcePlane:
 #
 #         tracer = MockTracerPositions(positions=positions)
 #
-#         fit = al.FitPositionsSourcePlaneMaxSeparation(
+#         fit = al.FitPositionsSourceMaxSeparation(
 #             positions=positions, noise_map=noise_map, tracer=tracer,
 #         )
 #         assert fit.chi_squared_map[0] == 1.0
@@ -106,7 +110,7 @@ class TestAbstractFitPositionsSourcePlane:
 #         assert fit.chi_squared_map[2] == pytest.approx(18.0, 1e-4)
 #         assert fit.figure_of_merit == pytest.approx(-0.5 * (1.0 + 18 + 18), 1e-4)
 #
-#         fit = al.FitPositionsSourcePlaneMaxSeparation(
+#         fit = al.FitPositionsSourceMaxSeparation(
 #             positions=positions, noise_map=noise_map, tracer=tracer,
 #         )
 #         assert fit.chi_squared_map[0] == (1.0 / 2.0) ** 2.0
@@ -127,7 +131,7 @@ class TestAbstractFitPositionsSourcePlane:
 #         )
 
 
-class TestFitPositionsImagePlane:
+class TestFitPositionsImage:
     def test__two_sets_of_positions__residuals_likelihood_correct(self):
 
         tracer = MockTracerPositions(positions=None)
@@ -142,7 +146,7 @@ class TestFitPositionsImagePlane:
 
         positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
 
-        fit = al.FitPositionsImagePlane(
+        fit = al.FitPositionsImage(
             positions=positions,
             noise_map=noise_map,
             tracer=tracer,
@@ -188,7 +192,7 @@ class TestFitPositionsImagePlane:
 
         positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
 
-        fit = al.FitPositionsImagePlane(
+        fit = al.FitPositionsImage(
             positions=positions,
             noise_map=noise_map,
             tracer=tracer,
@@ -216,3 +220,25 @@ class TestFitPositionsImagePlane:
         assert fit.chi_squared == pytest.approx(6.0, 1.0e-4)
         assert fit.noise_normalization == pytest.approx(4.12733, 1.0e-4)
         assert fit.log_likelihood == pytest.approx(-5.06366, 1.0e-4)
+
+
+# class TestFitFluxes:
+#     def test__two_sets_of_fluxes__residuals_likelihood_correct(self):
+#
+#         tracer = MockTracerPositions(magnifications=None)
+#
+#         fluxes = al.ValuesIrregularGrouped([[1.0, 2.0], [3.0]])
+#
+#         noise_map = al.ValuesIrregularGrouped([[1.0, 1.0], [1.0]])
+#
+#         positions = al.GridIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)], [(3.0, 3.0)]])
+#
+#         tracer = MockTracerPositions(
+#             magnifications=al.ValuesIrregularGrouped([[1.0, 1.0], [2.0]])
+#         )
+#
+#         fit = al.FitFluxes(
+#             fluxes=fluxes, noise_map=noise_map, positions=positions, tracer=tracer
+#         )
+#
+#         assert fit.residual_map.in_grouped_list == [[]]

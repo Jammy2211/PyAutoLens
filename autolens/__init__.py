@@ -48,9 +48,10 @@ from . import plot
 from .dataset.imaging import MaskedImaging, SimulatorImaging
 from .dataset.interferometer import MaskedInterferometer, SimulatorInterferometer
 from .fit.fit import FitImaging, FitInterferometer
-from .fit.fit_positions import (
-    FitPositionsSourcePlaneMaxSeparation,
-    FitPositionsImagePlane,
+from .fit.fit_point_source import (
+    FitPositionsSourceMaxSeparation,
+    FitPositionsImage,
+    FitFluxes,
 )
 from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
@@ -76,7 +77,7 @@ from .pipeline.phase.settings import SettingsPhaseInterferometer
 from .pipeline.phase.settings import SettingsPhasePositions
 from .pipeline.phase.imaging.phase import PhaseImaging
 from .pipeline.phase.interferometer.phase import PhaseInterferometer
-from .pipeline.phase.positions.phase import PhasePositions
+from .pipeline.phase.point_source.phase import PhasePointSource
 from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 

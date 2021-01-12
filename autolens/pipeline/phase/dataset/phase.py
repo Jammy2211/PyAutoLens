@@ -1,6 +1,6 @@
 import autoarray as aa
 import autogalaxy as ag
-from autolens.fit import fit_positions
+from autolens.fit import fit_point_source
 from autogalaxy.pipeline.phase import dataset
 from autolens.pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from autolens import exc
@@ -126,7 +126,7 @@ class PhaseDataset(dataset.PhaseDataset):
             if positions is None:
                 return None
 
-            positions_fits = fit_positions.FitPositionsSourcePlaneMaxSeparation(
+            positions_fits = fit_point_source.FitPositionsSourceMaxSeparation(
                 positions=aa.GridIrregularGrouped(grid=positions),
                 noise_map=None,
                 tracer=results.last.max_log_likelihood_tracer,
