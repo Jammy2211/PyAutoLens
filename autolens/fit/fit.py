@@ -137,6 +137,27 @@ class FitImaging(aa_fit.FitImaging):
         return model_images_of_planes
 
     @property
+    def subtracted_images_of_planes(self):
+
+        subtracted_images_of_planes = []
+
+        model_images_of_planes = self.model_images_of_planes
+
+        for galaxy_index in range(len(self.tracer.planes)):
+
+            other_planes_model_images = [
+                model_image
+                for i, model_image in enumerate(model_images_of_planes)
+                if i != galaxy_index
+            ]
+
+            subtracted_image = self.image - sum(other_planes_model_images)
+
+            subtracted_images_of_planes.append(subtracted_image)
+
+        return subtracted_images_of_planes
+
+    @property
     def unmasked_blurred_image(self):
         return self.tracer.unmasked_blurred_image_from_grid_and_psf(
             grid=self.grid, psf=self.masked_imaging.psf

@@ -151,13 +151,13 @@ light_profile_plotter = aplt.LightProfilePlotter(
     light_profile=fit.tracer.source_plane.galaxies[0].bulge, grid=source_plane_grid
 )
 light_profile_plotter.set_title("Bulge Image")
-light_profile_plotter.figure_image()
+light_profile_plotter.figures()
 
 light_profile_plotter = aplt.LightProfilePlotter(
     light_profile=fit.tracer.source_plane.galaxies[0].disk, grid=source_plane_grid
 )
 light_profile_plotter.set_title("Disk Image")
-light_profile_plotter.figure_image()
+light_profile_plotter.figures()
 
 # %%
 """

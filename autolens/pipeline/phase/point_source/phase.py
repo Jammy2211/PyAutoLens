@@ -43,7 +43,15 @@ class PhasePointSource(abstract.AbstractPhase):
 
         self.positions_solver = positions_solver
 
-    def make_analysis(self, positions, positions_noise_map, fluxes=None, fluxes_noise_map=None, imaging=None, results=None):
+    def make_analysis(
+        self,
+        positions,
+        positions_noise_map,
+        fluxes=None,
+        fluxes_noise_map=None,
+        imaging=None,
+        results=None,
+    ):
         """
         Returns an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.

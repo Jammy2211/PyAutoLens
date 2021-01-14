@@ -6,9 +6,19 @@ from autolens.lens import ray_tracing
 
 import numba
 
+
 class Analysis(ag_analysis.Analysis):
     def __init__(
-        self, positions, noise_map, fluxes, fluxes_noise_map, solver, imaging, settings, cosmology, results
+        self,
+        positions,
+        noise_map,
+        fluxes,
+        fluxes_noise_map,
+        solver,
+        imaging,
+        settings,
+        cosmology,
+        results,
     ):
 
         super().__init__(settings=settings, cosmology=cosmology)

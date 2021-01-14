@@ -112,7 +112,7 @@ include_2d = aplt.Include2D(mask=True)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
-fit_imaging_plotter.subplot_of_plane(plane_index=1)
+fit_imaging_plotter.subplot_of_planes(plane_index=1)
 
 # %%
 """
@@ -148,7 +148,7 @@ correct_fit = perform_fit_with_lens__source_galaxy(
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=correct_fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
-fit_imaging_plotter.subplot_of_plane(plane_index=1)
+fit_imaging_plotter.subplot_of_planes(plane_index=1)
 
 print("Bayesian Evidence of Incorrect Fit:")
 print(fit.log_evidence)
@@ -202,7 +202,7 @@ imaging_plotter = aplt.ImagingPlotter(
 imaging_plotter.subplot_imaging()
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_imaging_plotter.subplot_of_plane(plane_index=1)
+fit_imaging_plotter.subplot_of_planes(plane_index=1)
 
 # %%
 """
@@ -262,7 +262,7 @@ include_2d = aplt.Include2D(mask=True)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
-fit_imaging_plotter.subplot_of_plane(plane_index=1)
+fit_imaging_plotter.subplot_of_planes(plane_index=1)
 
 
 # %%
@@ -290,7 +290,7 @@ include_2d = aplt.Include2D(mask=True)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
-fit_imaging_plotter.subplot_of_plane(plane_index=1)
+fit_imaging_plotter.subplot_of_planes(plane_index=1)
 
 
 # %%

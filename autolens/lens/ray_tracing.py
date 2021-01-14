@@ -748,7 +748,6 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
 
 class Tracer(AbstractTracerData):
-
     @property
     def flux_hack(self):
         """This is a placeholder to get flux modeling working for Nan Li before I do this proeprly. with dictionaries."""

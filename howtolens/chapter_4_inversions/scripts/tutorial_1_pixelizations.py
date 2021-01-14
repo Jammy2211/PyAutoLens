@@ -82,7 +82,7 @@ include_2d = aplt.Include2D(
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
 mapper_plotter.set_title("Fairly Boring Grid of Rectangular Pixels")
-mapper_plotter.figure_mapper()
+mapper_plotter.figure()
 
 # %%
 """
@@ -111,7 +111,7 @@ include_2d = aplt.Include2D(
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
 mapper_plotter.set_title("Slightly less Boring Grid of Rectangular Pixels")
-mapper_plotter.figure_mapper()
+mapper_plotter.figure()
 
 # %%
 """
@@ -139,7 +139,7 @@ include_2d = aplt.Include2D(
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
 mapper_plotter.set_title("Even less Boring Grid of Rectangular Pixels")
-mapper_plotter.figure_mapper()
+mapper_plotter.figure()
 
 # %%
 """

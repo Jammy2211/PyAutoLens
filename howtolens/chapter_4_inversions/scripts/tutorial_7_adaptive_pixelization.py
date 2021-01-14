@@ -83,7 +83,7 @@ include_2d = aplt.Include2D(mask=True)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
-fit_imaging_plotter.subplot_of_plane(plane_index=1)
+fit_imaging_plotter.subplot_of_planes(plane_index=1)
 
 # %%
 """
@@ -100,7 +100,7 @@ So what is wrong with the grid? Well, lets think about the source reconstruction
 include_2d = aplt.Include2D(mapper_source_pixelization_grid=True)
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_imaging_plotter.subplot_of_plane(plane_index=1)
+fit_imaging_plotter.subplot_of_planes(plane_index=1)
 
 # %%
 """
@@ -166,7 +166,7 @@ include_2d = aplt.Include2D(
 
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_imaging_plotter.subplot_fit_imaging()
-fit_imaging_plotter.subplot_of_plane(plane_index=1)
+fit_imaging_plotter.subplot_of_planes(plane_index=1)
 
 # %%
 """
@@ -175,7 +175,7 @@ And we can take a closer inspection of the `Inversion` itself.
 
 # %%
 fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_imaging_plotter.subplot_of_plane(plane_index=1)
+fit_imaging_plotter.subplot_of_planes(plane_index=1)
 
 # %%
 """

@@ -1,6 +1,7 @@
 from autoarray.plot.mat_wrap.wrap.wrap_base import (
     Units,
     Figure,
+    Axis,
     Cmap,
     Colorbar,
     ColorbarTickParams,

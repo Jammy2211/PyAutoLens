@@ -11,6 +11,7 @@ class SettingsLens:
         positions_threshold=None,
         auto_positions_factor=None,
         auto_positions_minimum_threshold=None,
+        auto_einstein_mass_factor=None,
         stochastic_likelihood_resamples=None,
         stochastic_samples: int = 250,
         stochastic_histogram_bins: int = 10,
@@ -19,6 +20,7 @@ class SettingsLens:
         self.positions_threshold = positions_threshold
         self.auto_positions_factor = auto_positions_factor
         self.auto_positions_minimum_threshold = auto_positions_minimum_threshold
+        self.auto_einstein_mass_factor = auto_einstein_mass_factor
         self.stochastic_likelihood_resamples = stochastic_likelihood_resamples
         self.stochastic_samples = stochastic_samples
         self.stochastic_histogram_bins = stochastic_histogram_bins

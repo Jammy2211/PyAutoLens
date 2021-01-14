@@ -4,7 +4,6 @@ from os import path
 
 import pytest
 from autoconf import conf
-import autofit as af
 import autolens as al
 from autolens.pipeline import visualizer as vis
 
@@ -114,7 +113,7 @@ class TestVisualizer:
             path.join(plot_path, "model_image_of_plane_1.png") not in plot_patch.paths
         )
         assert path.join(plot_path, "plane_image_of_plane_0.png") in plot_patch.paths
-        assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
+        assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
 
         image = al.util.array.numpy_array_2d_from_fits(
             file_path=path.join(plot_path, "fits", "image.fits"), hdu=0

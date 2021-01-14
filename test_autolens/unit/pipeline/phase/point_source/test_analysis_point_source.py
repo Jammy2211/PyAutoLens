@@ -149,31 +149,31 @@ class TestFit:
     #
     #     assert fit_positions.log_likelihood + fit_fluxes.log_likelihood == fit_figure_of_merit
 
-        # model_positions = al.GridIrregularGrouped([[(0.0, 1.0), (1.0, 2.0)]])
-        # positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
-        #
-        # phase_positions_x2 = al.PhasePointSource(
-        #     galaxies=dict(lens=lens_galaxy),
-        #     settings=al.SettingsPhasePositions(),
-        #     search=mock.MockSearch(),
-        #     positions_solver=positions_solver,
-        # )
-        #
-        # analysis = phase_positions_x2.make_analysis(
-        #     positions=positions_x2,
-        #     positions_noise_map=positions_x2_noise_map,
-        #     results=mock.MockResults(),
-        # )
-        # instance = phase_positions_x2.model.instance_from_unit_vector([])
-        # fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
-        #
-        # fit_positions = al.FitPositionsImage(
-        #     positions=positions_x2,
-        #     noise_map=positions_x2_noise_map,
-        #     tracer=tracer,
-        #     positions_solver=positions_solver,
-        # )
-        #
-        # assert fit_positions.residual_map.in_grouped_list == [[1.0, 1.0]]
-        # assert fit_positions.chi_squared == 2.0
-        # assert fit_positions.log_likelihood == fit_figure_of_merit
+    # model_positions = al.GridIrregularGrouped([[(0.0, 1.0), (1.0, 2.0)]])
+    # positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
+    #
+    # phase_positions_x2 = al.PhasePointSource(
+    #     galaxies=dict(lens=lens_galaxy),
+    #     settings=al.SettingsPhasePositions(),
+    #     search=mock.MockSearch(),
+    #     positions_solver=positions_solver,
+    # )
+    #
+    # analysis = phase_positions_x2.make_analysis(
+    #     positions=positions_x2,
+    #     positions_noise_map=positions_x2_noise_map,
+    #     results=mock.MockResults(),
+    # )
+    # instance = phase_positions_x2.model.instance_from_unit_vector([])
+    # fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
+    #
+    # fit_positions = al.FitPositionsImage(
+    #     positions=positions_x2,
+    #     noise_map=positions_x2_noise_map,
+    #     tracer=tracer,
+    #     positions_solver=positions_solver,
+    # )
+    #
+    # assert fit_positions.residual_map.in_grouped_list == [[1.0, 1.0]]
+    # assert fit_positions.chi_squared == 2.0
+    # assert fit_positions.log_likelihood == fit_figure_of_merit

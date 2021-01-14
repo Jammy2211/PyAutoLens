@@ -1,4 +1,4 @@
-from autoarray.plot.plotters import abstract_plotters
+from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.plot.plotters import fit_interferometer_plotters
 from autoarray.plot.plotters import inversion_plotters
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
@@ -94,76 +94,67 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
             include_2d=self.include_2d,
         )
 
-    @abstract_plotters.for_figure
-    def figure_image(self):
-        """Plot the model image of a specific plane of a lens fit.
+    def figures(
+        self,
+        visibilities=False,
+        noise_map=False,
+        signal_to_noise_map=False,
+        model_visibilities=False,
+        residual_map_real=False,
+        residual_map_imag=False,
+        normalized_residual_map_real=False,
+        normalized_residual_map_imag=False,
+        chi_squared_map_real=False,
+        chi_squared_map_imag=False,
+        image=False,
+    ):
 
-        Set *autolens.datas.arrays.plotter.plotter* for a description of all input parameters not described below.
+        super().figures(
+            visibilities=visibilities,
+            noise_map=noise_map,
+            signal_to_noise_map=signal_to_noise_map,
+            model_visibilities=model_visibilities,
+            residual_map_real=residual_map_real,
+            residual_map_imag=residual_map_imag,
+            normalized_residual_map_real=normalized_residual_map_real,
+            normalized_residual_map_imag=normalized_residual_map_imag,
+            chi_squared_map_real=chi_squared_map_real,
+            chi_squared_map_imag=chi_squared_map_imag,
+        )
 
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
-        plane_indexes : [int]
-            The plane from which the model image is generated.
-        """
+        if image:
 
-        if self.fit.inversion is None:
-            self.tracer_plotter.figure_image()
-        else:
-            self.inversion_plotter.figure_reconstructed_image()
+            if self.fit.inversion is None:
+                self.tracer_plotter.figures(image=True)
+            else:
+                self.inversion_plotter.figures(reconstructed_image=True)
 
-    @abstract_plotters.for_figure_with_index
-    def figure_plane_image_of_plane(self, plane_index):
-        """Plot the model image of a specific plane of a lens fit.
+    def figures_of_planes(self, plane_image, plane_index=None):
 
-        Set *autolens.datas.arrays.plotter.plotter* for a description of all input parameters not described below.
+        if plane_image:
 
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
-        plane_indexes : [int]
-            The plane from which the model image is generated.
-        """
+            if not self.tracer.planes[plane_index].has_pixelization:
 
-        if not self.tracer.planes[plane_index].has_pixelization:
+                self.tracer_plotter.figures_of_planes(
+                    plane_image=True, plane_index=plane_index
+                )
 
-            self.tracer_plotter.figure_plane_image_of_plane(plane_index=plane_index)
+            elif self.tracer.planes[plane_index].has_pixelization:
 
-        elif self.tracer.planes[plane_index].has_pixelization:
+                self.inversion_plotter.figures(reconstruction=True)
 
-            self.inversion_plotter.figure_reconstruction()
-
-    @abstract_plotters.for_subplot
     def subplot_fit_real_space(self):
 
-        number_subplots = 2
+        if self.fit.inversion is None:
 
-        self.open_subplot_figure(number_subplots=number_subplots)
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-
-        self.figure_image()
-
-        if not self.tracer.planes[-1].has_pixelization:
-
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
-
-        else:
-
-            aspect_inv = self.mat_plot_2d.figure.aspect_for_subplot_from_grid(
-                grid=self.fit.inversion.mapper.source_full_grid
+            self.tracer_plotter.subplot(
+                image=True, source_plane=True, auto_filename="subplot_fit_real_space"
             )
 
-            self.setup_subplot(
-                number_subplots=number_subplots,
-                subplot_index=2,
-                aspect=float(aspect_inv),
+        elif self.fit.inversion is not None:
+
+            self.inversion_plotter.subplot(
+                reconstructed_image=True,
+                reconstruction=True,
+                auto_filename="subplot_fit_real_space",
             )
-
-        self.figure_plane_image_of_plane(plane_index=-1)
-
-        self.mat_plot_2d.output.subplot_to_figure()
-
-        self.mat_plot_2d.figure.close()

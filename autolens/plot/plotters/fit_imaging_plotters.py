@@ -1,3 +1,4 @@
+from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.plot.plotters import abstract_plotters
 from autoarray.plot.plotters import inversion_plotters
 from autoarray.plot.plotters import fit_imaging_plotters
@@ -91,119 +92,15 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
         inversion_plotter.visuals_2d.border = None
         return inversion_plotter
 
-    @abstract_plotters.for_figure_with_index
-    def figure_subtracted_image_of_plane(self, plane_index):
-        """Plot the model image of a specific plane of a lens fit.
-    
-        Set *autolens.datas.arrays.plotter.plotter* for a description of all input parameters not described below.
-    
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
-        image_index : int
-            The index of the datas in the datas-set of which the model image is plotted.
-        plane_indexes : int
-            The plane from which the model image is generated.
-        """
-
-        if self.tracer.total_planes > 1:
-
-            other_planes_model_images = [
-                model_image
-                for i, model_image in enumerate(self.fit.model_images_of_planes)
-                if i != plane_index
-            ]
-
-            subtracted_image = self.fit.image - sum(other_planes_model_images)
-
-        else:
-
-            subtracted_image = self.fit.image
-
-        try:
-            vmin = self.mat_plot_2d.cmap.kwargs["vmin"]
-        except KeyError:
-            vmin = None
-
-        try:
-            vmax = self.mat_plot_2d.cmap.kwargs["vmax"]
-        except KeyError:
-            vmax = None
-
-        self.mat_plot_2d.cmap.kwargs["vmin"] = np.max(
-            self.fit.model_images_of_planes[plane_index]
-        )
-        self.mat_plot_2d.cmap.kwargs["vmax"] = np.min(
-            self.fit.model_images_of_planes[plane_index]
-        )
-
-        self.mat_plot_2d.plot_array(
-            array=subtracted_image, visuals_2d=self.visuals_with_include_2d
-        )
-
-        self.mat_plot_2d.cmap.kwargs["vmin"] = vmin
-        self.mat_plot_2d.cmap.kwargs["vmax"] = vmax
-
-    @abstract_plotters.for_figure_with_index
-    def figure_model_image_of_plane(self, plane_index):
-        """Plot the model image of a specific plane of a lens fit.
-    
-        Set *autolens.datas.arrays.plotter.plotter* for a description of all input parameters not described below.
-    
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
-        plane_indexes : [int]
-            The plane from which the model image is generated.
-        """
-
-        if self.fit.inversion is None or plane_index == 0:
-
-            self.mat_plot_2d.plot_array(
-                array=self.fit.model_images_of_planes[plane_index],
-                visuals_2d=self.visuals_with_include_2d,
-            )
-
-        else:
-
-            self.inversion_plotter.figure_reconstructed_image()
-
-    @abstract_plotters.for_figure_with_index
-    def figure_plane_image_of_plane(self, plane_index):
-        """Plot the model image of a specific plane of a lens fit.
-
-        Set *autolens.datas.arrays.plotter.plotter* for a description of all input parameters not described below.
-
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
-        plane_indexes : [int]
-            The plane from which the model image is generated.
-        """
-
-        if not self.tracer.planes[plane_index].has_pixelization:
-
-            self.tracer_plotter.figure_plane_image_of_plane(plane_index=plane_index)
-
-        elif self.tracer.planes[plane_index].has_pixelization:
-
-            self.inversion_plotter.figure_reconstruction()
-
-    def figure_individuals(
+    def figures(
         self,
-        plot_image=False,
-        plot_noise_map=False,
-        plot_signal_to_noise_map=False,
-        plot_model_image=False,
-        plot_residual_map=False,
-        plot_normalized_residual_map=False,
-        plot_chi_squared_map=False,
-        plot_subtracted_images_of_planes=False,
-        plot_model_images_of_planes=False,
-        plot_plane_images_of_planes=False,
+        image=False,
+        noise_map=False,
+        signal_to_noise_map=False,
+        model_image=False,
+        residual_map=False,
+        normalized_residual_map=False,
+        chi_squared_map=False,
     ):
         """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -220,43 +117,110 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
             in the python interpreter window.
         """
 
-        super(FitImagingPlotter, self).figure_individuals(
-            plot_image=plot_image,
-            plot_noise_map=plot_noise_map,
-            plot_signal_to_noise_map=plot_signal_to_noise_map,
-            plot_model_image=plot_model_image,
-            plot_residual_map=plot_residual_map,
-            plot_normalized_residual_map=plot_normalized_residual_map,
-            plot_chi_squared_map=plot_chi_squared_map,
+        super(FitImagingPlotter, self).figures(
+            image=image,
+            noise_map=noise_map,
+            signal_to_noise_map=signal_to_noise_map,
+            model_image=model_image,
+            residual_map=residual_map,
+            normalized_residual_map=normalized_residual_map,
+            chi_squared_map=chi_squared_map,
         )
 
-        if plot_subtracted_images_of_planes:
+    def plane_indexes_from_plane_index(self, plane_index):
 
-            for plane_index in range(self.tracer.total_planes):
-                self.figure_subtracted_image_of_plane(plane_index=plane_index)
+        if plane_index is None:
+            return range(len(self.fit.tracer.planes))
+        else:
+            return [plane_index]
 
-        if plot_model_images_of_planes:
+    def figures_of_planes(
+        self,
+        subtracted_image=False,
+        model_image=False,
+        plane_image=False,
+        plane_index=None,
+    ):
+        """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
-            for plane_index in range(self.tracer.total_planes):
-                self.figure_model_image_of_plane(plane_index=plane_index)
+        The visualization and output type can be fully customized.
 
-        if plot_plane_images_of_planes:
+        Parameters
+        -----------
+        fit : autolens.lens.fitting.Fitter
+            Class containing fit between the model datas_ and observed lens datas_ (including residual_map, chi_squared_map etc.)
+        output_path : str
+            The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
+        output_format : str
+            How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
+            in the python interpreter window.
+        """
 
-            for plane_index in range(self.tracer.total_planes):
-                self.figure_plane_image_of_plane(plane_index=plane_index)
+        plane_indexes = self.plane_indexes_from_plane_index(plane_index=plane_index)
 
-    def subplots_of_all_planes(self):
+        for plane_index in plane_indexes:
 
-        for plane_index in range(self.tracer.total_planes):
+            if subtracted_image:
 
-            if (
-                self.tracer.planes[plane_index].has_light_profile
-                or self.tracer.planes[plane_index].has_pixelization
-            ):
-                self.subplot_of_plane(plane_index=plane_index)
+                try:
+                    vmin = self.mat_plot_2d.cmap.kwargs["vmin"]
+                except KeyError:
+                    vmin = None
 
-    @abstract_plotters.for_subplot_with_index
-    def subplot_of_plane(self, plane_index):
+                try:
+                    vmax = self.mat_plot_2d.cmap.kwargs["vmax"]
+                except KeyError:
+                    vmax = None
+
+                self.mat_plot_2d.cmap.kwargs["vmin"] = np.max(
+                    self.fit.model_images_of_planes[plane_index]
+                )
+                self.mat_plot_2d.cmap.kwargs["vmax"] = np.min(
+                    self.fit.model_images_of_planes[plane_index]
+                )
+
+                self.mat_plot_2d.plot_array(
+                    array=self.fit.subtracted_images_of_planes[plane_index],
+                    visuals_2d=self.visuals_with_include_2d,
+                    auto_labels=mp.AutoLabels(
+                        title=f"Subtracted Image of Plane {plane_index}",
+                        filename=f"subtracted_image_of_plane_{plane_index}",
+                    ),
+                )
+
+                self.mat_plot_2d.cmap.kwargs["vmin"] = vmin
+                self.mat_plot_2d.cmap.kwargs["vmax"] = vmax
+
+            if model_image:
+
+                if self.fit.inversion is None or plane_index == 0:
+
+                    self.mat_plot_2d.plot_array(
+                        array=self.fit.model_images_of_planes[plane_index],
+                        visuals_2d=self.visuals_with_include_2d,
+                        auto_labels=mp.AutoLabels(
+                            title=f"Model Image of Plane {plane_index}",
+                            filename=f"model_image_of_plane_{plane_index}",
+                        ),
+                    )
+
+                else:
+
+                    self.inversion_plotter.figures(reconstructed_image=True)
+
+            if plane_image:
+
+                if not self.tracer.planes[plane_index].has_pixelization:
+
+                    self.tracer_plotter.figures_of_planes(
+                        plane_image=True, plane_index=plane_index
+                    )
+
+                elif self.tracer.planes[plane_index].has_pixelization:
+
+                    self.inversion_plotter.figures(reconstruction=True)
+
+    def subplot_of_planes(self, plane_index=None):
         """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
         The visualization and output type can be fully customized.
@@ -274,40 +238,27 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
             in the python interpreter window.
         """
 
-        number_subplots = 4
+        plane_indexes = self.plane_indexes_from_plane_index(plane_index=plane_index)
 
-        self.open_subplot_figure(number_subplots=number_subplots)
+        for plane_index in plane_indexes:
 
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+            number_subplots = 4
 
-        self.figure_image()
+            self.open_subplot_figure(number_subplots=number_subplots)
 
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+            self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+            self.figures(image=True)
 
-        self.figure_subtracted_image_of_plane(plane_index=plane_index)
+            self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+            self.figures_of_planes(subtracted_image=True, plane_index=plane_index)
 
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
-
-        self.figure_model_image_of_plane(plane_index=plane_index)
-
-        if not self.tracer.planes[plane_index].has_pixelization:
+            self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+            self.figures_of_planes(model_image=True, plane_index=plane_index)
 
             self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+            self.figures_of_planes(plane_image=True, plane_index=plane_index)
 
-        else:
-
-            aspect_inv = self.mat_plot_2d.figure.aspect_for_subplot_from_grid(
-                grid=self.fit.inversion.mapper.source_full_grid
+            self.mat_plot_2d.output.subplot_to_figure(
+                auto_filename=f"subplot_of_plane_{plane_index}"
             )
-
-            self.setup_subplot(
-                number_subplots=number_subplots,
-                subplot_index=4,
-                aspect=float(aspect_inv),
-            )
-
-        self.figure_plane_image_of_plane(plane_index=plane_index)
-
-        self.mat_plot_2d.output.subplot_to_figure()
-
-        self.mat_plot_2d.figure.close()
+            self.mat_plot_2d.figure.close()

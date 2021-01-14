@@ -72,20 +72,20 @@ def simulate_interferometer_from_instrument(instrument, dataset_name, galaxies):
         interferometer=interferometer, plotter=plotter
     )
 
-    aplt.Interferometer.figure_individuals(
-        interferometer=interferometer, plot_visibilities=True, plotter=plotter
+    aplt.Interferometer.figures(
+        interferometer=interferometer, visibilities=True, plotter=plotter
     )
 
     aplt.Tracer.subplot_tracer(tracer=tracer, grid=grid, plotter=plotter)
 
-    aplt.Tracer.figure_individuals(
+    aplt.Tracer.figures(
         tracer=tracer,
         grid=grid,
-        plot_image=True,
-        plot_source_plane=True,
-        plot_convergence=True,
-        plot_potential=True,
-        plot_deflections=True,
+        image=True,
+        source_plane=True,
+        convergence=True,
+        potential=True,
+        deflections=True,
         plotter=plotter,
     )
 

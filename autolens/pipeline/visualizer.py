@@ -39,25 +39,28 @@ class Visualizer(visualizer.Visualizer):
 
             tracer_plotter.subplot_tracer()
 
-        tracer_plotter.figure_individuals(
-            plot_image=should_plot("image"),
-            plot_source_plane=should_plot("source_plane_image"),
-            plot_convergence=should_plot("convergence"),
-            plot_potential=should_plot("potential"),
-            plot_deflections=should_plot("deflections"),
-            plot_magnification=should_plot("magnification"),
+        tracer_plotter.figures(
+            image=should_plot("image"),
+            source_plane=should_plot("source_plane_image"),
+            convergence=should_plot("convergence"),
+            potential=should_plot("potential"),
+            deflections_y=should_plot("deflections"),
+            deflections_x=should_plot("deflections"),
+            magnification=should_plot("magnification"),
         )
 
         if not during_analysis:
 
             if should_plot("all_at_end_png"):
 
-                tracer_plotter.figure_individuals(
-                    plot_image=True,
-                    plot_source_plane=True,
-                    plot_convergence=True,
-                    plot_potential=True,
-                    plot_deflections=True,
+                tracer_plotter.figures(
+                    image=True,
+                    source_plane=True,
+                    convergence=True,
+                    potential=True,
+                    deflections_y=True,
+                    deflections_x=True,
+                    magnification=True,
                 )
 
             if should_plot("all_at_end_fits"):
@@ -73,12 +76,14 @@ class Visualizer(visualizer.Visualizer):
                     include_2d=self.include_2d,
                 )
 
-                tracer_plotter.figure_individuals(
-                    plot_image=True,
-                    plot_source_plane=True,
-                    plot_convergence=True,
-                    plot_potential=True,
-                    plot_deflections=True,
+                tracer_plotter.figures(
+                    image=True,
+                    source_plane=True,
+                    convergence=True,
+                    potential=True,
+                    deflections_y=True,
+                    deflections_x=True,
+                    magnification=True,
                 )
 
     def visualize_fit_imaging(self, fit, during_analysis, subfolders="fit_imaging"):
@@ -91,42 +96,48 @@ class Visualizer(visualizer.Visualizer):
             fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 
-        fit_imaging_plotter.figure_individuals(
-            plot_image=should_plot("data"),
-            plot_noise_map=should_plot("noise_map"),
-            plot_signal_to_noise_map=should_plot("signal_to_noise_map"),
-            plot_model_image=should_plot("model_data"),
-            plot_residual_map=should_plot("residual_map"),
-            plot_chi_squared_map=should_plot("chi_squared_map"),
-            plot_normalized_residual_map=should_plot("normalized_residual_map"),
-            plot_subtracted_images_of_planes=should_plot("subtracted_images_of_planes"),
-            plot_model_images_of_planes=should_plot("model_images_of_planes"),
-            plot_plane_images_of_planes=should_plot("plane_images_of_planes"),
+        fit_imaging_plotter.figures(
+            image=should_plot("data"),
+            noise_map=should_plot("noise_map"),
+            signal_to_noise_map=should_plot("signal_to_noise_map"),
+            model_image=should_plot("model_data"),
+            residual_map=should_plot("residual_map"),
+            chi_squared_map=should_plot("chi_squared_map"),
+            normalized_residual_map=should_plot("normalized_residual_map"),
+        )
+
+        fit_imaging_plotter.figures_of_planes(
+            subtracted_image=should_plot("subtracted_images_of_planes"),
+            model_image=should_plot("model_images_of_planes"),
+            plane_image=should_plot("plane_images_of_planes"),
         )
 
         if should_plot("subplot_fit"):
             fit_imaging_plotter.subplot_fit_imaging()
 
         if should_plot("subplots_of_planes_fits"):
-            fit_imaging_plotter.subplots_of_all_planes()
+            fit_imaging_plotter.subplot_of_planes()
 
         if not during_analysis:
 
             if should_plot("all_at_end_png"):
-                fit_imaging_plotter.figure_individuals(
-                    plot_image=True,
-                    plot_noise_map=True,
-                    plot_signal_to_noise_map=True,
-                    plot_model_image=True,
-                    plot_residual_map=True,
-                    plot_normalized_residual_map=True,
-                    plot_chi_squared_map=True,
-                    plot_subtracted_images_of_planes=True,
-                    plot_model_images_of_planes=True,
-                    plot_plane_images_of_planes=True,
+
+                fit_imaging_plotter.figures(
+                    image=True,
+                    noise_map=True,
+                    signal_to_noise_map=True,
+                    model_image=True,
+                    residual_map=True,
+                    normalized_residual_map=True,
+                    chi_squared_map=True,
+                )
+
+                fit_imaging_plotter.figures_of_planes(
+                    subtracted_image=True, model_image=True, plane_image=True
                 )
 
             if should_plot("all_at_end_fits"):
+
                 mat_plot_2d = self.mat_plot_2d_from(
                     subfolders="fit_imaging/fits", format="fits"
                 )
@@ -135,16 +146,18 @@ class Visualizer(visualizer.Visualizer):
                     fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
                 )
 
-                fit_imaging_plotter.figure_individuals(
-                    plot_image=True,
-                    plot_noise_map=True,
-                    plot_signal_to_noise_map=True,
-                    plot_model_image=True,
-                    plot_residual_map=True,
-                    plot_normalized_residual_map=True,
-                    plot_chi_squared_map=True,
-                    plot_subtracted_images_of_planes=True,
-                    plot_model_images_of_planes=True,
+                fit_imaging_plotter.figures(
+                    image=True,
+                    noise_map=True,
+                    signal_to_noise_map=True,
+                    model_image=True,
+                    residual_map=True,
+                    normalized_residual_map=True,
+                    chi_squared_map=True,
+                )
+
+                fit_imaging_plotter.figures_of_planes(
+                    subtracted_image=True, model_image=True
                 )
 
     def visualize_fit_interferometer(
@@ -167,28 +180,34 @@ class Visualizer(visualizer.Visualizer):
             fit_interferometer_plotter.subplot_fit_interferometer()
             fit_interferometer_plotter.subplot_fit_real_space()
 
-        fit_interferometer_plotter.figure_individuals(
-            plot_visibilities=should_plot("data"),
-            plot_noise_map=should_plot("noise_map"),
-            plot_signal_to_noise_map=should_plot("signal_to_noise_map"),
-            plot_model_visibilities=should_plot("model_data"),
-            plot_residual_map=should_plot("residual_map"),
-            plot_chi_squared_map=should_plot("chi_squared_map"),
-            plot_normalized_residual_map=should_plot("normalized_residual_map"),
+        fit_interferometer_plotter.figures(
+            visibilities=should_plot("data"),
+            noise_map=should_plot("noise_map"),
+            signal_to_noise_map=should_plot("signal_to_noise_map"),
+            model_visibilities=should_plot("model_data"),
+            residual_map_real=should_plot("residual_map"),
+            chi_squared_map_real=should_plot("chi_squared_map"),
+            normalized_residual_map_real=should_plot("normalized_residual_map"),
+            residual_map_imag=should_plot("residual_map"),
+            chi_squared_map_imag=should_plot("chi_squared_map"),
+            normalized_residual_map_imag=should_plot("normalized_residual_map"),
         )
 
         if not during_analysis:
 
             if should_plot("all_at_end_png"):
 
-                fit_interferometer_plotter.figure_individuals(
-                    plot_visibilities=True,
-                    plot_noise_map=True,
-                    plot_signal_to_noise_map=True,
-                    plot_model_visibilities=True,
-                    plot_residual_map=True,
-                    plot_normalized_residual_map=True,
-                    plot_chi_squared_map=True,
+                fit_interferometer_plotter.figures(
+                    visibilities=True,
+                    noise_map=True,
+                    signal_to_noise_map=True,
+                    model_visibilities=True,
+                    residual_map_real=True,
+                    chi_squared_map_real=True,
+                    normalized_residual_map_real=True,
+                    residual_map_imag=True,
+                    chi_squared_map_imag=True,
+                    normalized_residual_map_imag=True,
                 )
 
             if should_plot("all_at_end_fits"):
@@ -201,14 +220,17 @@ class Visualizer(visualizer.Visualizer):
                     fit=fit, include_2d=self.include_2d, mat_plot_2d=mat_plot_2d
                 )
 
-                fit_interferometer_plotter.figure_individuals(
-                    plot_visibilities=True,
-                    plot_noise_map=True,
-                    plot_signal_to_noise_map=True,
-                    plot_model_visibilities=True,
-                    plot_residual_map=True,
-                    plot_normalized_residual_map=True,
-                    plot_chi_squared_map=True,
+                fit_interferometer_plotter.figures(
+                    visibilities=True,
+                    noise_map=True,
+                    signal_to_noise_map=True,
+                    model_visibilities=True,
+                    residual_map_real=True,
+                    chi_squared_map_real=True,
+                    normalized_residual_map_real=True,
+                    residual_map_imag=True,
+                    chi_squared_map_imag=True,
+                    normalized_residual_map_imag=True,
                 )
 
     def visualize_hyper_images(
@@ -247,18 +269,14 @@ class Visualizer(visualizer.Visualizer):
 
         if plot_setting("other", "stochastic_histogram"):
 
-            file_path =  path.join(
-                self.visualize_path, "other",
-            )
+            file_path = path.join(self.visualize_path, "other")
 
             try:
                 os.makedirs(file_path)
             except FileExistsError or IsADirectoryError:
                 pass
 
-            filename = path.join(
-               file_path, "stochastic_histogram.png"
-            )
+            filename = path.join(file_path, "stochastic_histogram.png")
 
             if path.exists(filename):
                 try:

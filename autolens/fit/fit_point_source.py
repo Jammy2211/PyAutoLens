@@ -3,6 +3,7 @@ from autoarray.util import fit_util
 from autoarray.fit.fit import FitData
 import numpy as np
 
+
 class AbstractFitPositionsSourcePlane:
     def __init__(self, positions, noise_map, tracer):
         """Given a positions dataset, which is a list of positions with names that associated them to model source
@@ -125,7 +126,6 @@ class FitPositionsImage(FitData):
 
 
 class FitFluxes(FitData):
-
     def __init__(self, fluxes, noise_map, positions, tracer):
 
         # TODO : The fluxes, positions etc that come into here will be IrregularGrouped structures with dictionary inputs.
@@ -133,9 +133,16 @@ class FitFluxes(FitData):
         # TODO : These can be generated from PointSourceData classes.
 
         self.positions = positions
-        self.magnifications = abs(tracer.magnification_irregular_from_grid(grid=positions))
+        self.magnifications = abs(
+            tracer.magnification_irregular_from_grid(grid=positions)
+        )
 
-        model_fluxes = arrays.ValuesIrregularGrouped(values=[magnification * tracer.flux_hack for magnification in self.magnifications])
+        model_fluxes = arrays.ValuesIrregularGrouped(
+            values=[
+                magnification * tracer.flux_hack
+                for magnification in self.magnifications
+            ]
+        )
 
         super().__init__(
             data=fluxes,

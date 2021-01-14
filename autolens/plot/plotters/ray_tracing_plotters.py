@@ -1,5 +1,6 @@
 from autoarray.structures import arrays, grids
 from autoarray.plot.plotters import abstract_plotters
+from autoarray.plot.mat_wrap import mat_plot as mp
 from autogalaxy.plot.plotters import lensing_obj_plotter
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
 from autogalaxy.plot.plotters import plane_plotters
@@ -139,42 +140,16 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             include_2d=self.include_2d,
         )
 
-    @abstract_plotters.for_figure
-    def figure_image(self):
-        self.mat_plot_2d.plot_array(
-            array=self.tracer.image_from_grid(grid=self.grid),
-            visuals_2d=self.visuals_with_include_2d,
-        )
-
-    @abstract_plotters.for_figure
-    def figure_contribution_map(self):
-
-        self.mat_plot_2d.plot_array(
-            array=self.tracer.contribution_map, visuals_2d=self.visuals_with_include_2d
-        )
-
-    @abstract_plotters.for_figure_with_index
-    def figure_plane_image_of_plane(self, plane_index):
-
-        plane_plotter = self.plane_plotter_from(plane_index=plane_index)
-
-        plane_plotter.figure_plane_image()
-
-    @abstract_plotters.for_figure_with_index
-    def figure_plane_grid_of_plane(self, plane_index, indexes=None, axis_limits=None):
-
-        plane_plotter = self.plane_plotter_from(plane_index=plane_index)
-
-        plane_plotter.figure_plane_grid(indexes=indexes, axis_limits=axis_limits)
-
-    def figure_individuals(
+    def figures(
         self,
-        plot_image=False,
-        plot_source_plane=False,
-        plot_convergence=False,
-        plot_potential=False,
-        plot_deflections=False,
-        plot_magnification=False,
+        image=False,
+        source_plane=False,
+        convergence=False,
+        potential=False,
+        deflections_y=False,
+        deflections_x=False,
+        magnification=False,
+        contribution_map=False,
     ):
         """Plot the observed _tracer of an analysis, using the `Imaging` class object.
     
@@ -192,27 +167,80 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             in the python interpreter window.
         """
 
-        if plot_image:
-            self.figure_image()
+        if image:
 
-        if plot_source_plane:
-            self.figure_plane_image_of_plane(plane_index=len(self.tracer.planes) - 1)
+            self.mat_plot_2d.plot_array(
+                array=self.tracer.image_from_grid(grid=self.grid),
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(title="Image", filename="image"),
+            )
 
-        if plot_convergence:
-            self.figure_convergence()
+        if source_plane:
+            self.figures_of_planes(
+                plane_image=True, plane_index=len(self.tracer.planes) - 1
+            )
 
-        if plot_potential:
-            self.figure_potential()
+        super().figures(
+            convergence=convergence,
+            potential=potential,
+            deflections_y=deflections_y,
+            deflections_x=deflections_x,
+            magnification=magnification,
+        )
 
-        if plot_deflections:
-            self.figure_deflections_y()
-            self.figure_deflections_x()
+        if contribution_map:
 
-        if plot_magnification:
-            self.figure_magnification()
+            self.mat_plot_2d.plot_array(
+                array=self.tracer.contribution_map,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Contribution Map", filename="contribution_map"
+                ),
+            )
 
-    @abstract_plotters.for_subplot
-    def subplot_tracer(self):
+    def plane_indexes_from_plane_index(self, plane_index):
+
+        if plane_index is None:
+            return range(len(self.tracer.planes))
+        else:
+            return [plane_index]
+
+    def figures_of_planes(self, plane_image=False, plane_grid=False, plane_index=None):
+
+        plane_indexes = self.plane_indexes_from_plane_index(plane_index=plane_index)
+
+        for plane_index in plane_indexes:
+
+            plane_plotter = self.plane_plotter_from(plane_index=plane_index)
+
+            if plane_image:
+
+                plane_plotter.figures(
+                    plane_image=True,
+                    title_suffix=f" Of Plane {plane_index}",
+                    filename_suffix=f"_of_plane_{plane_index}",
+                )
+
+            if plane_grid:
+
+                plane_plotter.figures(
+                    plane_grid=True,
+                    title_suffix=f" Of Plane {plane_index}",
+                    filename_suffix=f"_of_plane_{plane_index}",
+                )
+
+    def subplot(
+        self,
+        image=False,
+        source_plane=False,
+        convergence=False,
+        potential=False,
+        deflections_y=False,
+        deflections_x=False,
+        magnification=False,
+        contribution_map=False,
+        auto_filename="subplot_tracer",
+    ):
         """Plot the observed _tracer of an analysis, using the `Imaging` class object.
 
         The visualization and output type can be fully customized.
@@ -229,32 +257,24 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             in the python interpreter window.
         """
 
-        number_subplots = 6
+        self._subplot_custom_plot(
+            image=image,
+            source_plane=source_plane,
+            convergence=convergence,
+            potential=potential,
+            deflections_y=deflections_y,
+            deflections_x=deflections_x,
+            magnification=magnification,
+            contribution_map=contribution_map,
+            auto_labels=mp.AutoLabels(filename=auto_filename),
+        )
 
-        self.open_subplot_figure(number_subplots=number_subplots)
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-        self.figure_image()
-
-        if self.tracer.has_mass_profile:
-
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
-            self.figure_convergence()
-
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
-            self.figure_potential()
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
-
-        self.figure_plane_image_of_plane(plane_index=len(self.tracer.planes) - 1)
-
-        if self.tracer.has_mass_profile:
-
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=5)
-            self.figure_deflections_y()
-
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=6)
-            self.figure_deflections_x()
-
-        self.mat_plot_2d.output.subplot_to_figure()
-        self.mat_plot_2d.figure.close()
+    def subplot_tracer(self):
+        return self.subplot(
+            image=True,
+            source_plane=True,
+            convergence=True,
+            potential=True,
+            deflections_y=True,
+            deflections_x=True,
+        )

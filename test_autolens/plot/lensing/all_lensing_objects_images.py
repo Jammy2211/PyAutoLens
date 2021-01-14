@@ -22,11 +22,11 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-aplt.LightProfile.figure_image(light_profile=lens_galaxy.light, grid=grid)
+aplt.LightProfile.figures(light_profile=lens_galaxy.light, grid=grid)
 aplt.galaxy.image(galaxy=lens_galaxy, grid=grid)
 aplt.plane.image(plane=tracer.image_plane, grid=grid)
 
-aplt.Tracer.figure_image(
+aplt.Tracer.figures(
     tracer=tracer,
     grid=grid,
     include=aplt.Include2D(critical_curves=True),
