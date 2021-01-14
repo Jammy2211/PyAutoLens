@@ -242,23 +242,14 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
 
         for plane_index in plane_indexes:
 
-            number_subplots = 4
+            self.open_subplot_figure(number_subplots=4)
 
-            self.open_subplot_figure(number_subplots=number_subplots)
-
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
             self.figures(image=True)
-
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
             self.figures_of_planes(subtracted_image=True, plane_index=plane_index)
-
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
             self.figures_of_planes(model_image=True, plane_index=plane_index)
-
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
             self.figures_of_planes(plane_image=True, plane_index=plane_index)
 
             self.mat_plot_2d.output.subplot_to_figure(
                 auto_filename=f"subplot_of_plane_{plane_index}"
             )
-            self.mat_plot_2d.figure.close()
+            self.close_subplot_figure()

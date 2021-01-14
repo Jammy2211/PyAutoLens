@@ -28,33 +28,26 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
             include_2d=self.include_2d,
         )
 
-    @abstract_plotters.for_subplot
     def subplot_detection_imaging(
         self, fit_imaging_detect, detection_array, mass_array
     ):
-        number_subplots = 4
 
-        self.open_subplot_figure(number_subplots=number_subplots)
+        self.open_subplot_figure(number_subplots=4)
 
         self.set_title("Image")
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
         fit_imaging_plotter = self.fit_imaging_plotter_from(
             fit_imaging=fit_imaging_detect
         )
         fit_imaging_plotter.figures(image=True)
 
         self.set_title("Signal-To-Noise Map")
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
         fit_imaging_plotter.figures(signal_to_noise_map=True)
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
         self.mat_plot_2d.plot_array(
             array=detection_array,
             visuals_2d=self.visuals_2d,
             auto_labels=mp.AutoLabels(title="Increase in Log Evidence"),
         )
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
         self.mat_plot_2d.plot_array(
             array=mass_array,
@@ -65,9 +58,8 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_detection_imaging"
         )
-        self.mat_plot_2d.figure.close()
+        self.close_subplot_figure()
 
-    @abstract_plotters.for_subplot
     def subplot_detection_fits(self, fit_imaging_before, fit_imaging_detect):
         """
         A subplot comparing the normalized residuals, chi-squared map and source reconstructions of the model-fits
@@ -88,44 +80,36 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
             Object for plotting PyAutoLens data-stuctures as subplots via Matplotlib.
         """
 
-        number_subplots = 6
+        self.open_subplot_figure(number_subplots=6)
 
-        self.open_subplot_figure(number_subplots=number_subplots)
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
         self.set_title("Normalized Residuals (No Subhalo)")
         fit_imaging_plotter_before = self.fit_imaging_plotter_from(
             fit_imaging=fit_imaging_before
         )
         fit_imaging_plotter_before.figures(normalized_residual_map=True)
 
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
         self.set_title("Chi-Squared Map (No Subhalo)")
         fit_imaging_plotter_before.figures(chi_squared_map=True)
 
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
         self.set_title("Source Reconstruction (No Subhalo)")
         fit_imaging_plotter_before.figures_of_planes(plane_image=True, plane_index=1)
         fit_imaging_plotter_detect = self.fit_imaging_plotter_from(
             fit_imaging=fit_imaging_detect
         )
 
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
         self.set_title("Normailzed Residuals (With Subhalo)")
         fit_imaging_plotter_detect.figures(normalized_residual_map=True)
 
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=5)
         self.set_title("Chi-Squared Map (With Subhalo)")
         fit_imaging_plotter_detect.figures(chi_squared_map=True)
 
         self.set_title("Source Reconstruction (With Subhalo)")
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=6)
         fit_imaging_plotter_detect.figures_of_planes(plane_image=True, plane_index=1)
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_detection_fits"
         )
-        self.mat_plot_2d.figure.close()
+        self.close_subplot_figure()
 
 
 def agg_max_log_likelihood_from_aggregator(aggregator):
