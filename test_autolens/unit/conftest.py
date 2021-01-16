@@ -14,13 +14,13 @@ directory = path.dirname(path.realpath(__file__))
 # Lens Datasets #
 
 
-@pytest.fixture(name="config", autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "..", "config"),
-        path.join(directory, "..", "pipeline", "output"),
+@pytest.fixture(autouse=True)
+def set_config_path(request):
+
+    conf.instance.push(
+        new_path=path.join(directory, "config"),
+        output_path=path.join(directory, "output"),
     )
-    return conf.instance
 
 
 @pytest.fixture(name="mask_7x7")
@@ -73,9 +73,9 @@ def make_noise_map_7x7():
     return fixtures.make_noise_map_7x7()
 
 
-@pytest.fixture(name="positions_7x7")
-def make_positions_7x7():
-    return fixtures.make_positions_7x7()
+@pytest.fixture(name="grid_irregular_grouped_7x7")
+def make_grid_irregular_grouped_7x7():
+    return fixtures.make_grid_irregular_grouped_7x7()
 
 
 @pytest.fixture(name="psf_3x3")
@@ -96,6 +96,11 @@ def make_imaging_7x7():
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7():
     return fixtures.make_masked_imaging_7x7()
+
+
+@pytest.fixture(name="masked_imaging_no_blur_7x7")
+def make_masked_imaging_no_blur_7x7():
+    return fixtures.make_masked_imaging_no_blur_7x7()
 
 
 @pytest.fixture(name="visibilities_mask_7")
@@ -131,6 +136,26 @@ def make_masked_interferometer_7():
 @pytest.fixture(name="masked_interferometer_7_grid")
 def make_masked_interferometer_7_grid():
     return fixtures.make_masked_interferometer_7_grid()
+
+
+@pytest.fixture(name="positions_x2")
+def make_positions_x2():
+    return fixtures.make_positions_x2()
+
+
+@pytest.fixture(name="positions_x2_noise_map")
+def make_positions_x2_noise_map():
+    return fixtures.make_positions_noise_map_x2()
+
+
+@pytest.fixture(name="fluxes_x2")
+def make_fluxes_x2():
+    return fixtures.make_fluxes_x2()
+
+
+@pytest.fixture(name="fluxes_x2_noise_map")
+def make_fluxes_x2_noise_map():
+    return fixtures.make_fluxes_noise_map_x2()
 
 
 # GALAXIES #
@@ -220,6 +245,11 @@ def make_phase_interferometer_7(mask_7x7):
     return fixtures.make_phase_interferometer_7()
 
 
+@pytest.fixture(name="phase_positions_x2")
+def make_phase_positions_x2():
+    return fixtures.make_phase_positions_x2()
+
+
 @pytest.fixture(name="hyper_galaxy_image_0_7x7")
 def make_hyper_galaxy_image_0_7x7():
     return fixtures.make_hyper_galaxy_image_0_7x7()
@@ -235,7 +265,7 @@ def make_hyper_galaxy_image_path_dict_7x7():
     return fixtures.make_hyper_galaxy_image_path_dict_7x7()
 
 
-@pytest.fixture(name="include_all")
+@pytest.fixture(name="include_2d_all")
 def make_include_all():
     return fixtures.make_include_all()
 

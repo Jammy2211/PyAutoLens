@@ -2,6 +2,7 @@ from os import path
 
 import pytest
 
+from autoconf import conf
 import autofit as af
 import autolens as al
 
@@ -13,7 +14,12 @@ class MockClass:
 
 
 @pytest.fixture(name="label_config")
-def make_label_config(config):
+def make_label_config():
+
+    config = conf.Config(
+        path.join(directory, "config"), path.join(directory, "default")
+    )
+
     return config["notation"]["label"]
 
 

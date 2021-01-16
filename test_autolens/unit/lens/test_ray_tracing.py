@@ -1688,7 +1688,9 @@ class TestAbstractTracerLensing:
                 g0_convergence + g1_convergence + g2_convergence, 1.0e-4
             )
 
-        def test__galaxy_entered_2_times__grid_is_positions(self, positions_7x7):
+        def test__galaxy_entered_2_times__grid_is_positions(
+            self, grid_irregular_grouped_7x7
+        ):
 
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -1699,21 +1701,23 @@ class TestAbstractTracerLensing:
                 mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            g0_convergence = g0.convergence_from_grid(grid=positions_7x7)
+            g0_convergence = g0.convergence_from_grid(grid=grid_irregular_grouped_7x7)
 
-            g1_convergence = g1.convergence_from_grid(grid=positions_7x7)
+            g1_convergence = g1.convergence_from_grid(grid=grid_irregular_grouped_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_convergence = tracer.image_plane.convergence_from_grid(
-                grid=positions_7x7
+                grid=grid_irregular_grouped_7x7
             )
 
             source_plane_convergence = tracer.source_plane.convergence_from_grid(
-                grid=positions_7x7
+                grid=grid_irregular_grouped_7x7
             )
 
-            tracer_convergence = tracer.convergence_from_grid(grid=positions_7x7)
+            tracer_convergence = tracer.convergence_from_grid(
+                grid=grid_irregular_grouped_7x7
+            )
 
             assert image_plane_convergence.in_grouped_list[0][0] == pytest.approx(
                 g0_convergence.in_grouped_list[0][0]
@@ -1811,7 +1815,9 @@ class TestAbstractTracerLensing:
                 g0_potential + g1_potential + g2_potential, 1.0e-4
             )
 
-        def test__galaxy_entered_2_times__grid_is_positions(self, positions_7x7):
+        def test__galaxy_entered_2_times__grid_is_positions(
+            self, grid_irregular_grouped_7x7
+        ):
 
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -1822,21 +1828,23 @@ class TestAbstractTracerLensing:
                 mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            g0_potential = g0.potential_from_grid(grid=positions_7x7)
+            g0_potential = g0.potential_from_grid(grid=grid_irregular_grouped_7x7)
 
-            g1_potential = g1.potential_from_grid(grid=positions_7x7)
+            g1_potential = g1.potential_from_grid(grid=grid_irregular_grouped_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_potential = tracer.image_plane.potential_from_grid(
-                grid=positions_7x7
+                grid=grid_irregular_grouped_7x7
             )
 
             source_plane_potential = tracer.source_plane.potential_from_grid(
-                grid=positions_7x7
+                grid=grid_irregular_grouped_7x7
             )
 
-            tracer_potential = tracer.potential_from_grid(grid=positions_7x7)
+            tracer_potential = tracer.potential_from_grid(
+                grid=grid_irregular_grouped_7x7
+            )
 
             assert image_plane_potential.in_grouped_list[0][0] == pytest.approx(
                 g0_potential.in_grouped_list[0][0] + g1_potential.in_grouped_list[0][0],
@@ -1940,7 +1948,9 @@ class TestAbstractTracerLensing:
                 g0_deflections + g1_deflections + g2_deflections, 1.0e-4
             )
 
-        def test__galaxy_entered_2_times__grid_is_positions(self, positions_7x7):
+        def test__galaxy_entered_2_times__grid_is_positions(
+            self, grid_irregular_grouped_7x7
+        ):
 
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -1951,18 +1961,18 @@ class TestAbstractTracerLensing:
                 mass_profile=al.mp.SphericalIsothermal(einstein_radius=2.0),
             )
 
-            g0_deflections = g0.deflections_from_grid(grid=positions_7x7)
+            g0_deflections = g0.deflections_from_grid(grid=grid_irregular_grouped_7x7)
 
-            g1_deflections = g1.deflections_from_grid(grid=positions_7x7)
+            g1_deflections = g1.deflections_from_grid(grid=grid_irregular_grouped_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_deflections = tracer.image_plane.deflections_from_grid(
-                grid=positions_7x7
+                grid=grid_irregular_grouped_7x7
             )
 
             tracer_deflections = tracer.deflections_of_planes_summed_from_grid(
-                grid=positions_7x7
+                grid=grid_irregular_grouped_7x7
             )
 
             assert image_plane_deflections.in_grouped_list[0][0][0] == pytest.approx(
@@ -2225,6 +2235,9 @@ class TestAbstractTracerLensing:
         def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(
             self,
         ):
+
+            grid = al.Grid.uniform(shape_2d=(50, 50), pixel_scales=0.15)
+
             sis_0 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.2)
 
             sis_1 = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.4)
@@ -2246,10 +2259,9 @@ class TestAbstractTracerLensing:
                 planes=[plane, al.Plane(redshift=1.0)], cosmology=cosmo.Planck15
             )
 
-            assert (
-                tracer.einstein_mass_angular_via_tangential_critical_curve
-                == pytest.approx(np.pi * 2.0 ** 2.0, 1.0e-1)
-            )
+            einstein_mass = tracer.einstein_mass_angular_from_grid(grid=grid)
+
+            assert einstein_mass == pytest.approx(np.pi * 2.0 ** 2.0, 1.0e-1)
 
 
 class TestAbstractTracerData:
@@ -2826,7 +2838,7 @@ class TestAbstractTracerData:
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
-            traced_pixelization_grids = tracer.traced_sparse_grids_of_planes_from_grid(
+            traced_pixelization_grids, sparse_image_grid = tracer.traced_sparse_grids_of_planes_from_grid(
                 grid=sub_grid_7x7
             )
 
@@ -2857,7 +2869,7 @@ class TestAbstractTracerData:
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
-            traced_pixelization_grids = tracer.traced_sparse_grids_of_planes_from_grid(
+            traced_pixelization_grids, sparse_image_grid = tracer.traced_sparse_grids_of_planes_from_grid(
                 grid=sub_grid_7x7
             )
 
@@ -2909,7 +2921,7 @@ class TestAbstractTracerData:
                 ]
             )
 
-            traced_pixelization_grids = tracer.traced_sparse_grids_of_planes_from_grid(
+            traced_pixelization_grids, sparse_image_grid = tracer.traced_sparse_grids_of_planes_from_grid(
                 grid=sub_grid_7x7
             )
 
@@ -2939,7 +2951,7 @@ class TestAbstractTracerData:
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
-            traced_pixelization_grids = tracer.traced_sparse_grids_of_planes_from_grid(
+            traced_pixelization_grids, sparse_image_grid = tracer.traced_sparse_grids_of_planes_from_grid(
                 grid=sub_grid_7x7
             )
 

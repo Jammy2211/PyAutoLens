@@ -11,7 +11,7 @@ from autoarray.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.structures.arrays import Array, Values
+from autoarray.structures.arrays import Array, ValuesIrregularGrouped
 from autoarray.structures.grids import (
     Grid,
     GridIterate,
@@ -48,10 +48,14 @@ from . import plot
 from .dataset.imaging import MaskedImaging, SimulatorImaging
 from .dataset.interferometer import MaskedInterferometer, SimulatorInterferometer
 from .fit.fit import FitImaging, FitInterferometer
-from .fit.fit_positions import FitPositionsSourcePlaneMaxSeparation
+from .fit.fit_point_source import (
+    FitPositionsSourceMaxSeparation,
+    FitPositionsImage,
+    FitFluxes,
+)
 from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
-from .lens.positions_solver import PositionsFinder
+from .lens.positions_solver import PositionsSolver
 from .pipeline.setup import (
     SetupPipeline,
     SetupHyper,
@@ -70,8 +74,10 @@ from .pipeline.slam import (
 )
 from .pipeline.phase.settings import SettingsPhaseImaging
 from .pipeline.phase.settings import SettingsPhaseInterferometer
+from .pipeline.phase.settings import SettingsPhasePositions
 from .pipeline.phase.imaging.phase import PhaseImaging
 from .pipeline.phase.interferometer.phase import PhaseInterferometer
+from .pipeline.phase.point_source.phase import PhasePointSource
 from .pipeline.phase.extensions.stochastic_phase import StochasticPhase
 from .pipeline.phase.phase_galaxy import PhaseGalaxy
 
@@ -79,4 +85,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = '1.9.3'
+__version__ = '1.10.0'

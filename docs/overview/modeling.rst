@@ -63,7 +63,8 @@ The ``PhaseImaging`` object above returned a 'result', or ``Result`` object. Thi
     aplt.Tracer.subplot_tracer(
         tracer=result.max_log_likelihood_tracer, grid=mask.geometry.masked_grid
     )
-    aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+    fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 Here's what the model-fit of the model which maximizes the log likelihood looks like, providing good residuals and
 low chi-squared values:

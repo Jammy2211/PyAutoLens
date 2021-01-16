@@ -76,13 +76,13 @@ By plotting our mapper, we now see our `Pixelization`. Its a fairly boring `Grid
 """
 
 # %%
-aplt.MapperObj(
-    mapper=mapper,
-    include=aplt.Include(inversion_grid=False, inversion_pixelization_grid=False),
-    plotter=aplt.Plotter(
-        labels=aplt.Labels(title="Fairly Boring Grid of Rectangular Pixels")
-    ),
+include_2d = aplt.Include2D(
+    mapper_source_full_grid=False, mapper_source_pixelization_grid=False
 )
+
+mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
+mapper_plotter.set_title("Fairly Boring Grid of Rectangular Pixels")
+mapper_plotter.figure()
 
 # %%
 """
@@ -92,11 +92,11 @@ pixelization_grid tells us where the pixel centers are located.
 
 # %%
 print("Rectangular Grid Pixel Centre 1:")
-print(mapper.pixelization_grid[0])
+print(mapper.source_pixelization_grid[0])
 print("Rectangular Grid Pixel Centre 2:")
-print(mapper.pixelization_grid[1])
+print(mapper.source_pixelization_grid[1])
 print("Rectangular Grid Pixel Centre 3:")
-print(mapper.pixelization_grid[2])
+print(mapper.source_pixelization_grid[2])
 print("etc.")
 
 # %%
@@ -105,13 +105,13 @@ Infact, we can plot these centre on our `Grid` - to make it look slightly less b
 """
 
 # %%
-aplt.MapperObj(
-    mapper=mapper,
-    include=aplt.Include(inversion_grid=False, inversion_pixelization_grid=True),
-    plotter=aplt.Plotter(
-        labels=aplt.Labels(title="Slightly less Boring Grid of Rectangular Pixels")
-    ),
+include_2d = aplt.Include2D(
+    mapper_source_full_grid=False, mapper_source_pixelization_grid=False
 )
+
+mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
+mapper_plotter.set_title("Slightly less Boring Grid of Rectangular Pixels")
+mapper_plotter.figure()
 
 # %%
 """
@@ -121,10 +121,10 @@ The `Mapper` also has the (source-plane) `Grid` that we passed when we set it up
 # %%
 print("Source Grid Pixel 1")
 print(source_plane_grid[0])
-print(mapper.grid[0])
+print(mapper.source_full_grid[0])
 print("Source Grid Pixel 2")
 print(source_plane_grid[1])
-print(mapper.grid[1])
+print(mapper.source_full_grid[1])
 print("etc.")
 
 # %%
@@ -133,13 +133,22 @@ We can over-lay the `Grid` on top. Its starting to look a bit less boring now!
 """
 
 # %%
-aplt.MapperObj(
-    mapper=mapper,
-    include=aplt.Include(inversion_grid=True, inversion_pixelization_grid=True),
-    plotter=aplt.Plotter(
-        labels=aplt.Labels(title="Even less Boring Grid of Rectangular Pixels")
-    ),
+
+include_2d = aplt.Include2D(
+    mapper_source_full_grid=True, mapper_source_pixelization_grid=True
 )
+
+mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
+mapper_plotter.set_title("Even less Boring Grid of Rectangular Pixels")
+mapper_plotter.figure()
+
+mat_plot_2d = aplt.MatPlot2D(axis=aplt.Axis(extent=[-0.3, 0.3, -0.3, 0.3]))
+
+mapper_plotter = aplt.MapperPlotter(
+    mapper=mapper, mat_plot_2d=mat_plot_2d, include_2d=include_2d
+)
+mapper_plotter.set_title("Zoomed Grid of Rectangular Pixels")
+mapper_plotter.figure()
 
 # %%
 """
@@ -148,9 +157,9 @@ size and dimensions.
 """
 
 # %%
-print(mapper.pixelization_grid.shape_2d_scaled)
-print(mapper.pixelization_grid.scaled_maxima)
-print(mapper.pixelization_grid.scaled_minima)
+print(mapper.source_pixelization_grid.shape_2d_scaled)
+print(mapper.source_pixelization_grid.scaled_maxima)
+print(mapper.source_pixelization_grid.scaled_minima)
 
 # %%
 """

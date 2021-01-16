@@ -84,7 +84,10 @@ When plotted, the lens light`s is clearly visible in the centre of the image.
 """
 
 # %%
-aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
+imaging_plotter = aplt.ImagingPlotter(
+    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
+)
+imaging_plotter.subplot_imaging()
 
 # %%
 """
@@ -181,7 +184,8 @@ And indeed, we get a reasonably good model and fit to the data - in a much short
 """
 
 # %%
-aplt.FitImaging.subplot_fit_imaging(fit=phase1_result.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=phase1_result.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """
@@ -302,7 +306,8 @@ Look at that, the right lens model, again!
 """
 
 # %%
-aplt.FitImaging.subplot_fit_imaging(fit=phase2_result.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=phase2_result.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """
@@ -357,8 +362,8 @@ the centres of the light and mass profiles and the alignment between their ellip
 want to pass priors *and* change the model parameterization.
 
 To do this, we have to use the ``.riorModel__ object in AutoFit, which allows us to turn light and mass profiles into 
-`model components` whose parameters have priors that can be manipulated in an analogous fashion to to ``.alaxyModel__.
-In fact, the individual components of the ``.alaxyModel__ class have been ``.riorModel__`s all along! 
+`model components` whose parameters have priors that can be manipulated in an analogous fashion to to `GalaxyModel`.
+In fact, the individual components of the `GalaxyModel` class have been ``.riorModel__`s all along! 
 """
 
 # %%
@@ -368,7 +373,7 @@ print(source.bulge)
 
 # %%
 """
-We can thus set up the ``.alaxyModel__ we desire, by first creating the individual ``.riorModel__`s of each
+We can thus set up the `GalaxyModel` we desire, by first creating the individual ``.riorModel__`s of each
 component and then passing the priors of each individual parameter. 
 """
 
@@ -396,7 +401,7 @@ lens = al.GalaxyModel(redshift=0.5, bulge=sersic, mass=mass)
 
 # %%
 """
-We now create and run the phase, using the lens ``.alaxyModel__ we created above.
+We now create and run the phase, using the lens `GalaxyModel` we created above.
 """
 
 # %%
@@ -412,7 +417,7 @@ phase2_pass = al.PhaseImaging(
     ),
 )
 
-# phase2_pass.run(dataset=imaging, mask=mask)
+phase2_pass.run(dataset=imaging, mask=mask)
 
 # %%
 """

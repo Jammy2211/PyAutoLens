@@ -3,7 +3,7 @@ introduce pipelines, a concept we mentioned many times in the previous chapter. 
 phases together, so that we can seamlessly navigate the complex non-linear parameter spaces that come when fitting
 realistic lens models.
 
-In this chapter, every tutorial will come as two files, a Juypter notebook 'pipeline_runner' and a python script which
+In this chapter, every tutorial will come as two files, a Jupyter notebook 'pipeline_runner' and a python script which
 is the pipeline itself. For each tutorial, begin with the pipeline runner file. Midway through the tutorial, you'll be
 told to checkout the pipeline script itself, before finishing the tutorial by returning to the pipeline runner.
 

@@ -22,11 +22,6 @@ import autolens.plot as aplt
 
 # %%
 """
-we'll need the path to the chapter in this tutorial to load the dataset from your hard-disk.
-"""
-
-# %%
-"""
 The `dataset_path` specifies where the data was output in the last tutorial, which is the directory 
 `autolens_workspace/dataset/howtolens/chapter_1`.
 """
@@ -83,21 +78,22 @@ print(mask[48:53, 48:53])  # Whereas central pixels are `False` and therefore un
 
 # %%
 """
-We can use an `Imaging` `Plotter`.to compare the mask and the image - this is useful if we really want to `tailor` a 
+We can use an `ImagingPlotter`.to compare the mask and the image - this is useful if we really want to `tailor` a 
 mask to the lensed source's light (which in this example, we won't).
+
+However, the mask is not an attribute of the `Imaging` object. Thus, we cannot use `Include2D(mask=True)` to plot it, 
+as the `Imaging` doesn't know what the mask is!
+
+To manually plot an object over the figure of another object, we can pass it to the `Visuals2D` object and then use
+this in the `ImagingPlotter`. Note that the `Visuals2D` object can be used to customize the appearance of *any* figure
+in PyAutoLens and is therefore a powerful means by which to create custom visuals!
 """
 
 # %%
-aplt.Imaging.image(imaging=imaging, mask=mask)
+visuals_2d = aplt.Visuals2D(mask=mask)
 
-# %%
-"""
-The `mask` automatically `zooms` our plot around the masked region only - meaning that if our image is very large, we 
-focus-in on the lens and source galaxies.
-
-You'll see this is an option for pretty much every `Plotter` in **PyAutoLens**, and is something we'll do often throughout 
-the tutorials.
-"""
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
+imaging_plotter.figures(image=True)
 
 # %%
 """
@@ -117,7 +113,19 @@ to fit it with a lens model:
 # %%
 masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
-aplt.Imaging.image(imaging=masked_imaging.imaging)
+# %%
+"""
+Note that because the `Mask2D` is now an attribute of the `MaskedImaging` we can plot it using `Include2D`.
+
+Because it is an attribute, the `mask` now also automatically `zooms` our plot around the masked region only. This 
+means that if our image is very large, we focus-in on the lens and source galaxies.
+"""
+
+# %%
+include_2d = aplt.Include2D(mask=True)
+
+imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging, include_2d=include_2d)
+imaging_plotter.figures(image=True)
 
 # %%
 """
@@ -203,7 +211,8 @@ source_galaxy = al.Galaxy(
 
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-aplt.Tracer.image(tracer=tracer, grid=masked_imaging.grid)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=masked_imaging.grid)
+tracer_plotter.figures(image=True)
 
 # %%
 """
@@ -225,7 +234,10 @@ To fit the image, we pass the `MaskedImaging` and `Tracer` to a `FitImaging` obj
 # %%
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+include_2d = aplt.Include2D(mask=True)
+
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """
@@ -305,7 +317,8 @@ If we use this data to perform a fit, we can immediately note how the resolution
 # %%
 fit_custom = al.FitImaging(masked_imaging=masked_imaging_custom, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit_custom, include=aplt.Include(mask=True))
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit_custom, include_2d=include_2d)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """
@@ -348,7 +361,8 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """
@@ -396,7 +410,8 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=fit, include=aplt.Include(mask=True))
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """

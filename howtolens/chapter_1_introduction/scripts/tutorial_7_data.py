@@ -70,7 +70,8 @@ Lets look at the `Tracer`'s image - this is the image we'll be simulating.
 """
 
 # %%
-aplt.Tracer.image(tracer=tracer, grid=grid)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+tracer_plotter.figures(image=True)
 
 # %%
 """
@@ -84,13 +85,13 @@ normal_image = tracer.image_from_grid(grid=grid)
 padded_image = tracer.padded_image_from_grid_and_psf_shape(
     grid=grid, psf_shape_2d=psf.shape_2d
 )
-print(normal_image.shape)
-print(padded_image.shape)
+print(normal_image.shape_2d)
+print(padded_image.shape_2d)
 
 # %%
 """
-Now, to simulate the `Imaging` data, we pass the `Tracer` and `Grid` to the `Imaging` module`s simulate function. This adds
-the following effects to the image:
+Now, to simulate the `Imaging` data, we pass the `Tracer` and `Grid` to the `Imaging` module`s simulate function. 
+This adds the following effects to the image:
 
  1) Telescope optics: Using the Point Spread Function above.
  2) The Background Sky: Although the image that is returned is automatically background sky subtracted.
@@ -110,17 +111,14 @@ Lets plot the image - we can see the image has been blurred due to the telescope
 """
 
 # %%
-aplt.Imaging.image(imaging=imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
+imaging_plotter.figures(image=True)
 
 # %%
 """
-Output these files to.fits files, we'll begin to analyze them in the next tutorial!
-"""
+We'll now output these files to.fits files, we'll begin to analyze them in the next tutorial!
 
-# %%
-"""
 The `dataset_path` specifies where the data is output, this time in the directory `chapter_path/data`.
-
 """
 
 # %%

@@ -37,7 +37,7 @@ grid = al.Grid.uniform(
 
 """Use a `PositionsSolver` which uses grid upscaling."""
 
-solver = al.PositionsFinder(
+solver = al.PositionsSolver(
     grid=grid,
     use_upscaling=True,
     pixel_scale_precision=0.0000001,
@@ -87,9 +87,9 @@ for i in range(40, 41):
 
     print(positions)
 
-    aplt.Tracer.image(
+    aplt.Tracer.figures(
         tracer=tracer,
         grid=grid,
         positions=positions_plot,
-        include=aplt.Include(origin=False, critical_curves=True, caustics=False),
+        include=aplt.Include2D(origin=False, critical_curves=True, caustics=False),
     )

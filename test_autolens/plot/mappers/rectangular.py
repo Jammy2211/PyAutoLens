@@ -35,8 +35,8 @@ mapper = rectangular.mapper_from_grid_and_sparse_grid(grid=source_plane_grid)
 # slightly less boring!
 aplt.MapperObj(
     mapper=mapper,
-    include=aplt.Include(inversion_grid=True, inversion_pixelization_grid=True),
-    plotter=aplt.Plotter(
-        labels=aplt.Labels(title="Slightly less Boring Grid of Rectangular Pixels")
+    include=aplt.Include2D(inversion_grid=True, mapper_source_pixelization_grid=True),
+    plotter=aplt.MatPlot2D(
+        title=aplt.Title(label="Slightly less Boring Grid of Rectangular Pixels")
     ),
 )

@@ -21,6 +21,7 @@ workspace_path = str(here())
 print(f"Working Directory has been set to `{workspace_path}`")
 
 from os import path
+import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
@@ -49,7 +50,10 @@ mask = al.Mask2D.circular(
 )
 
 
-aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
+imaging_plotter = aplt.ImagingPlotter(
+    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
+)
+imaging_plotter.subplot_imaging()
 
 # %%
 """
@@ -79,7 +83,28 @@ __Pipeline_Setup_And_Tagging__:
 
 We will use the standardized `Setup` objects in this pipeline, which as discussed in chapter 3 provide us with 
 covenient and standardized tools to compose a lens model and tags the output paths. 
+"""
 
+# %%
+"""
+__HYPER SETUP__
+
+In chapter 5, we will introduce hyper-mode, which pushes lens modeling with PyAutoLens to the limit. This model uses 
+the `SetupHyper` to determine which hyper-mode features are used during the model-fit.
+
+In this tutorial's pipeline, you'll note we extend phase 2 with a `hyper` phase to refit and improve the parameters
+of the `Pixelization` and `Regularization`. This isn't using any of the advanced hyper-mode features that we'll cover
+in chapter 5, but gives us a simple way to better set up our `Inversion` and is used throughout all the PyAutoLens
+template pipelines.
+
+In the `SetupHyper` below, we specify the `DynestyStatic` non-linear search used to perform this model-fit.
+"""
+
+# %%
+hyper = al.SetupHyper(hyper_search_with_inversion=af.DynestyStatic(n_live_points=50))
+
+# %%
+"""
 We saw the `SetupMassTotal` object in the previous chapter, which:
 
 For this pipeline the pipeline setup customizes and tags:

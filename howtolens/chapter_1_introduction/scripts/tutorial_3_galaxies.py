@@ -71,11 +71,12 @@ print("etc.")
 
 # %%
 """
-A galaxy `Plotter` allows us to the plot the image, just like the `Profile` plotters did for a `LightProfile`'s.
+A galaxy `Plotter` allows us to the plot the image, just like the `Profile` mat_plot_2d did for a `LightProfile`'s.
 """
 
 # %%
-aplt.Galaxy.image(galaxy=galaxy_with_light_profile, grid=grid)
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=galaxy_with_light_profile, grid=grid)
+galaxy_plotter.figures(image=True)
 
 # %%
 """
@@ -110,15 +111,16 @@ If we plot the galaxy, we see 3 blobs of light!
 """
 
 # %%
-aplt.Galaxy.image(galaxy=galaxy_with_3_light_profiles, grid=grid)
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=galaxy_with_3_light_profiles, grid=grid)
+galaxy_plotter.figures(image=True)
 
 # %%
 """
-We can also plot each individual `LightProfile` using the `subplot` galaxy plotter.
+We can also plot each individual `LightProfile` using the `subplot` galaxy mat_plot_2d.
 """
 
 # %%
-aplt.Galaxy.image_subplot(galaxy=galaxy_with_3_light_profiles, grid=grid)
+galaxy_plotter.subplot_of_light_profiles()
 
 # %%
 """
@@ -146,9 +148,8 @@ like the `LightProfile` image's above)
 """
 
 # %%
-aplt.Galaxy.deflections_y(galaxy=galaxy_with_3_mass_profiles, grid=grid)
-
-aplt.Galaxy.deflections_x(galaxy=galaxy_with_3_mass_profiles, grid=grid)
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=galaxy_with_3_mass_profiles, grid=grid)
+galaxy_plotter.figures(deflections_y=True, deflections_x=True)
 
 # %%
 """
@@ -156,9 +157,7 @@ I wonder what 3 summed convergence maps or potential`s look like ;)
 """
 
 # %%
-aplt.Galaxy.convergence(galaxy=galaxy_with_3_mass_profiles, grid=grid)
-
-aplt.Galaxy.potential(galaxy=galaxy_with_3_mass_profiles, grid=grid)
+galaxy_plotter.figures(convergence=True, potential=True)
 
 # %%
 """
@@ -214,15 +213,10 @@ Suffice to say, the `Galaxy`'s images, convergence, potential and deflections lo
 """
 
 # %%
-aplt.Galaxy.image(galaxy=galaxy_with_many_profiles, grid=grid)
-
-aplt.Galaxy.convergence(galaxy=galaxy_with_many_profiles, grid=grid)
-
-aplt.Galaxy.potential(galaxy=galaxy_with_many_profiles, grid=grid)
-
-aplt.Galaxy.deflections_y(galaxy=galaxy_with_many_profiles, grid=grid)
-
-aplt.Galaxy.deflections_x(galaxy=galaxy_with_many_profiles, grid=grid)
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=galaxy_with_many_profiles, grid=grid)
+galaxy_plotter.figures(
+    image=True, convergence=True, potential=True, deflections_y=True, deflections_x=True
+)
 
 # %%
 """

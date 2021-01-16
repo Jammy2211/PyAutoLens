@@ -18,20 +18,7 @@ possible - so just pretend the diagonal lines coming from the observer and sourc
 
 # %%
 """
-Observer                  Image-Plane               Source-Plane
-
-(z=0, Earth)               (z = 0.5)                (z = 1.0)
-
-         ----------------------------------------------
-        /                                              \ <---- This is one of the source's light-rays
-       /                      --                        \
-  p   /                      /  \                      __
-  |  /                      /   \                     /  \
- /\  \                      \   /                     \__/
-      \                     \__/                 Source Galaxy (s)
-       \                Lens Galaxy(s)                /
-         \                                           / <----- And this is its other light-ray
-          ------------------------------------------/
+[Schematic of Gravitational Lensing](https://i.imgur.com/zB6tIdI.jpg)
 """
 
 # %%
@@ -118,12 +105,12 @@ print(deflections.in_2d[0, 1, 1])
 
 # %%
 """
-_Plane_ plotters exist, which work analogously to `Profile` plotters and `Galaxy` plotters.
+_Plane_ mat_plot_2d exist, which work analogously to `Profile` mat_plot_2d and `Galaxy` mat_plot_2d.
 """
 
 # %%
-aplt.Plane.deflections_y(plane=image_plane, grid=image_plane_grid)
-aplt.Plane.deflections_x(plane=image_plane, grid=image_plane_grid)
+plane_plotter = aplt.PlanePlotter(plane=image_plane, grid=image_plane_grid)
+plane_plotter.figures(deflections_y=True, deflections_x=True)
 
 # %%
 """
@@ -159,17 +146,20 @@ Lets inspect our `Grid`'s - I bet our source-plane isn't the boring uniform `Gri
 """
 
 # %%
-aplt.Plane.plane_grid(
-    plane=image_plane,
-    grid=image_plane_grid,
-    plotter=aplt.Plotter(labels=aplt.Labels(title="Image-plane Grid")),
-)
+mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Image-plane Grid"))
 
-aplt.Plane.plane_grid(
-    plane=source_plane,
-    grid=source_plane_grid,
-    plotter=aplt.Plotter(labels=aplt.Labels(title="Source-plane Grid")),
+plane_plotter = aplt.PlanePlotter(
+    plane=image_plane, grid=image_plane_grid, mat_plot_2d=mat_plot_2d
 )
+plane_plotter.figures(plane_grid=True)
+
+mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid"))
+
+plane_plotter = aplt.PlanePlotter(
+    plane=source_plane, grid=source_plane_grid, mat_plot_2d=mat_plot_2d
+)
+plane_plotter.figures(plane_grid=True)
+
 
 # %%
 """
@@ -177,12 +167,16 @@ We can zoom in on the `centre` of the source-plane (remembering the lens galaxy 
 """
 
 # %%
-aplt.Plane.plane_grid(
-    plane=source_plane,
-    grid=source_plane_grid,
-    axis_limits=[-0.1, 0.1, -0.1, 0.1],
-    plotter=aplt.Plotter(labels=aplt.Labels(title="Source-plane Grid")),
+mat_plot_2d = aplt.MatPlot2D(
+    title=aplt.Title(label="Source-plane Grid Zoomed"),
+    axis=aplt.Axis(extent=[-0.1, 0.1, -0.1, 0.1]),
 )
+
+plane_plotter = aplt.PlanePlotter(
+    plane=source_plane, grid=source_plane_grid, mat_plot_2d=mat_plot_2d
+)
+
+plane_plotter.figures(plane_grid=True)
 
 # %%
 """
@@ -194,21 +188,27 @@ row of the image-grid running from the left - as we said it would!)
 """
 
 # %%
-aplt.Plane.image_and_source_plane_subplot(
-    image_plane=image_plane,
-    source_plane=source_plane,
-    grid=image_plane_grid,
+
+visuals_2d = aplt.Visuals2D(
     indexes=[
         range(0, 50),
         range(500, 550),
         [1350, 1450, 1550, 1650, 1750, 1850, 1950, 2050, 2150, 2250],
         [6250, 8550, 8450, 8350, 8250, 8150, 8050, 7950, 7850, 7750],
-    ],
+    ]
 )
+
+plane_plotter = aplt.PlanePlotter(
+    plane=image_plane,
+    grid=image_plane_grid,
+    visuals_2d=visuals_2d,
+    mat_plot_2d=mat_plot_2d,
+)
+plane_plotter.subplot_with_source_grid()
 
 # %%
 """
-Clearly, the source-plane`s `Grid` is very different to the image-planes! It's not uniform and its certranly not boring!
+Clearly, the source-plane`s `Grid` is very different to the image-planes! It's not uniform and its certainly not boring!
 
 We can now ask the question - `what does our source-galaxy look like in the image-plane`? That is, to us, the observer 
 on Earth, how does the source-galaxy appear after lensing?. To do this, we simple trace the source `Galaxy`'s light 
@@ -216,7 +216,8 @@ back from the source-plane grid.
 """
 
 # %%
-aplt.Plane.image(plane=source_plane, grid=source_plane_grid)
+plane_plotter = aplt.PlanePlotter(plane=source_plane, grid=source_plane_grid)
+plane_plotter.figures(plane_image=True)
 
 # %%
 """
@@ -240,54 +241,49 @@ possible!
 """
 
 # %%
-aplt.Plane.plane_image(
-    plane=source_plane, grid=source_plane_grid, include=aplt.Include(grid=True)
+include_2d = aplt.Include2D(grid=True)
+
+plane_plotter = aplt.PlanePlotter(
+    plane=source_plane, grid=source_plane_grid, include_2d=include_2d
 )
+plane_plotter.figures(plane_image=True)
 
 # %%
 """
-Plotting the `Grid` over the plane image obscures its appearance, which isn't ideal. We can of course tell **PyAutoLens** 
-not to plot the grid.
+Plotting the `Grid` over the plane image obscures its appearance, which isn't ideal. We can of course 
+tell **PyAutoLens** not to plot the grid.
 """
 
 # %%
-aplt.Plane.plane_image(
-    plane=source_plane, grid=source_plane_grid, include=aplt.Include(grid=False)
+include_2d = aplt.Include2D(grid=False)
+
+plane_plotter = aplt.PlanePlotter(
+    plane=source_plane, grid=source_plane_grid, include_2d=include_2d
 )
+plane_plotter.figures(plane_image=True)
 
 # %%
 """
-For `MassProfile`'s, you can also plot their 'critical curve' and 'caustics', which for those unfamiliar with lensing 
-are defined as follows:
+For `MassProfile`'s, you can also plot their 'critical curves', which for those unfamiliar with lensing are lines of 
+infinite magnification where the `MassProfile` perfectly `focuses` light rays. Source light near a critical curve 
+appears much brighter than its true luminosity!
 
-__Critical Curve__: Lines of infinite magnification where the `MassProfile` perfectly `focuses` light rays. Source light near a 
- critical curve appears much brighter than its true luminosity!
-
-__Caustic__: Given the deflection angles of the `MassProfile` at the critical curves, the caustic is where the 
- critical curve `maps` too.
+In the next tutorial, we'll also plot the 'caustics', which are the 'critical_curves' mapped to the source-plane.
         
 You may be surprised that the inner critical curve does not appear symmetric, but instead is a non-circular jagged 
-shape. As a result of this, the corresponding caustic in the source plane also appears jaggedy. 
- 
-This is a numerical issue with the way that **PyAutoLens** computes the critical curves and caustics - without this issue
+shape. This is a numerical issue with the way that **PyAutoLens** computes the critical curve, without this issue
 both would appear perfect symmetric and smooth! Implementing a more robust calculation of these quantities is on the
-**PyAutoLens** featre list, but for now you'll just have to accept this aspect of the visualization is sub-optimal!
+**PyAutoLens** feature list, but for now you'll just have to accept this aspect of the visualization is sub-optimal!
 """
 
 # %%
-aplt.Plane.image_and_source_plane_subplot(
-    image_plane=image_plane,
-    source_plane=source_plane,
-    grid=image_plane_grid,
-    include=aplt.Include(critical_curves=True, caustics=True),
-)
+include_2d = aplt.Include2D(critical_curves=True)
 
-aplt.Plane.image_and_source_plane_subplot(
-    image_plane=image_plane,
-    source_plane=source_plane,
-    grid=image_plane_grid,
-    include=aplt.Include(critical_curves=False, caustics=False),
+plane_plotter = aplt.PlanePlotter(
+    plane=image_plane, grid=image_plane_grid, include_2d=include_2d
 )
+plane_plotter.figures(convergence=True)
+
 
 # %%
 """

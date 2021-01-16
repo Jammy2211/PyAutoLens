@@ -223,6 +223,7 @@ class SetupHyper(setup.SetupHyper):
             return self.hyper_galaxy_from_galaxy_model_and_instance(
                 galaxy_model=result.hyper.model.galaxies.lens,
                 galaxy_instance=result.hyper.instance.galaxies.lens,
+                noise_factor_is_model=noise_factor_is_model,
             )
 
         return self.hyper_galaxy_from_galaxy_model_and_instance(
@@ -266,6 +267,7 @@ class SetupHyper(setup.SetupHyper):
             return self.hyper_galaxy_from_galaxy_model_and_instance(
                 galaxy_model=result.hyper.model.galaxies.source,
                 galaxy_instance=result.hyper.instance.galaxies.source,
+                noise_factor_is_model=noise_factor_is_model,
             )
 
         return self.hyper_galaxy_from_galaxy_model_and_instance(
@@ -278,6 +280,9 @@ class SetupHyper(setup.SetupHyper):
     ):
 
         hyper_galaxy = af.PriorModel(g.HyperGalaxy)
+
+        if galaxy_model.hyper_galaxy is None:
+            return None
 
         if noise_factor_is_model:
 

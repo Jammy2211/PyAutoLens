@@ -58,7 +58,10 @@ mask = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
-aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
+imaging_plotter = aplt.ImagingPlotter(
+    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
+)
+imaging_plotter.subplot_imaging()
 
 # %%
 """
@@ -193,9 +196,9 @@ tracer = al.Tracer.from_galaxies(
 
 true_fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
-aplt.FitImaging.subplot_fit_imaging(fit=true_fit)
-
-aplt.FitImaging.subplot_of_plane(fit=true_fit, plane_index=1)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=true_fit)
+fit_imaging_plotter.subplot_fit_imaging()
+fit_imaging_plotter.subplot_of_planes(plane_index=1)
 
 
 # %%

@@ -210,7 +210,7 @@ class TestTracer:
 
         grid = al.Grid.from_mask(mask=mask)
 
-        solver = al.PositionsFinder(grid=grid, pixel_scale_precision=0.001)
+        solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.001)
 
         multiple_images_manual_0 = solver.solve(
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)

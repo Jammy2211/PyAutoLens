@@ -62,12 +62,15 @@ result = phase.run(dataset=imaging, mask=mask)
 In the previous tutorials, we saw that this result contains the maximum log likelihood tracer and fit, which provide
 a fast way to visualize the result.
 
-(Uncomment the line below to pllot the tracer).
+(Uncomment the line below to plot the tracer).
 """
-aplt.Tracer.subplot_tracer(
+tracer_plotter = aplt.TracerPlotter(
     tracer=result.max_log_likelihood_tracer, grid=mask.geometry.unmasked_grid
 )
-aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+tracer_plotter.subplot_tracer()
+
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """

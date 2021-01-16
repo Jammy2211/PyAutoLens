@@ -37,7 +37,7 @@ grid = al.Grid.uniform(
 
 """Use a `PositionsSolver` which uses grid upscaling."""
 
-solver = al.PositionsFinder(grid=grid, pixel_scale_precision=0.01, upscale_factor=3)
+solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01, upscale_factor=3)
 
 iters = 50
 
@@ -68,12 +68,10 @@ for i in range(iters):
     print(in_positions_true)
 
     positions_plot = al.GridIrregularGrouped(
-        coordinates=[positions.in_grouped_list[0], positions_true.in_grouped_list[0]]
+        grid=[positions.in_grouped_list[0], positions_true.in_grouped_list[0]]
     )
 
-    aplt.Tracer.image(
-        tracer=tracer,
-        grid=grid,
-        positions=positions_plot,
-        include=aplt.Include(origin=False, critical_curves=True, caustics=False),
-    )
+    visuals_2d = aplt.Visuals2D(positions=positions_plot)
+
+    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+    tracer_plotter.figure_image(visuals_2d=visuals_2d)

@@ -12,7 +12,7 @@ Data Structures
    :toctree: generated/
 
    Array
-   Values
+   ValuesIrregularGrouped
    Grid
    GridIterate
    GridInterpolate
@@ -202,7 +202,7 @@ Plots
    :toctree: generated/
 
    Plotter
-   SubPlotter
+   Plotter
    Include
 
 **Matplotlib Objects**
@@ -211,28 +211,28 @@ Plots
    :toctree: generated/
 
    Figure
-   ColorMap
-   ColorBar
+   Cmap
+   Colorbar
    Ticks
    Labels
    Legend
    Units
    Output
-   OriginScatterer
-   MaskScatterer
-   BorderScatterer
-   GridScatterer
-   PositionsScatterer
-   IndexScatterer
-   PixelizationGridScatterer
-   Liner
+   OriginScatter
+   MaskScatter
+   BorderScatter
+   GridScatter
+   PositionsScatter
+   IndexScatter
+   PixelizationGridScatter
+   Line
    ArrayOverlayer
    VoronoiDrawer
-   LightProfileCentreScatterer
-   MassProfileCentreScatterer
-   MultipleImagesScatterer
-   CriticalCurvesLiner
-   CausticsLiner
+   LightProfileCentreScatter
+   MassProfileCentreScatter
+   MultipleImagesScatter
+   CriticalCurvesPlot
+   CausticsPlot
 
 **Plots:**
 

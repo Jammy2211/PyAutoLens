@@ -8,7 +8,7 @@ from autolens.pipeline import setup
 
 from typing import Union
 
-import copy
+import os
 
 
 class AbstractSLaMPipeline:
@@ -237,7 +237,7 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
 
         if self.setup_smbh is not None:
             return self.setup_smbh.smbh_from_centre(
-                centre=results.last.instance.galaxies.lens.sersic.centre
+                centre=results.last.instance.galaxies.lens.bulge.centre
             )
 
     def shear_from_result(self, result: af.Result, as_instance=False):
@@ -350,6 +350,19 @@ class SLaM:
                 )
 
         self.setup_subhalo = setup_subhalo
+
+    def path_prefix_from(self, *folder_names: [str]):
+
+        folder_names_new = []
+
+        for folder_name in folder_names:
+            if len(folder_name) < 255:
+                folder_names_new.append(folder_name)
+            else:
+                folder_names_new.append(folder_name[: len(folder_name) // 2])
+                folder_names_new.append(folder_name[len(folder_name) // 2 :])
+
+        return os.path.join(*folder_names_new)
 
     @property
     def source_parametric_tag(self) -> str:
@@ -475,13 +488,20 @@ class SLaM:
             )
         else:
             light_tag = ""
+
         mass_tag = (
             f"__{self.pipeline_mass.setup_mass.tag}"
             if self.pipeline_mass.setup_mass is not None
             else ""
         )
 
-        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
+        smbh_tag = (
+            f"__{self.pipeline_mass.setup_smbh.tag}"
+            if self.pipeline_mass.setup_smbh is not None
+            else ""
+        )
+
+        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{smbh_tag}{source_tag}"
 
     def lens_for_mass_pipeline_from_results(
         self, results: af.ResultsCollection, mass: af.PriorModel, shear: af.PriorModel

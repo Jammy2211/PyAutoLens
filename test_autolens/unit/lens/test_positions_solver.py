@@ -1,3 +1,4 @@
+from autoarray.structures import grids
 import autolens as al
 from autolens.lens import positions_solver as pos
 
@@ -77,20 +78,53 @@ class TestAbstractPositionsSolver:
 
         assert (grid == grid_util).all()
 
+    def test__grid_with_points_below_magnification_threshold_removed(self):
 
-class TestPositionFinder:
+        sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+
+        grid = grids.GridIrregularGroupedUniform(
+            grid=[(1.0, 0.0), (0.1, 0.0)], pixel_scales=0.01
+        )
+
+        magnification = np.abs(
+            sis.magnification_irregular_from_grid(grid=grid, buffer=grid.pixel_scale)
+        )
+
+        assert magnification[0] > 1000.0
+        assert magnification[1] < 1000.0
+
+        solver = pos.AbstractPositionsSolver(magnification_threshold=1000.0)
+
+        positions = solver.grid_with_points_below_magnification_threshold_removed(
+            lensing_obj=sis, grid=grid
+        )
+
+        assert positions.in_grouped_list == [[(1.0, 0.0)]]
+        assert positions.pixel_scales == (0.01, 0.01)
+
+        solver = pos.AbstractPositionsSolver(magnification_threshold=0.0)
+
+        positions = solver.grid_with_points_below_magnification_threshold_removed(
+            lensing_obj=sis, grid=grid
+        )
+
+        assert positions.in_grouped_list == [[(1.0, 0.0), (0.1, 0.0)]]
+        assert positions.pixel_scales == (0.01, 0.01)
+
+
+class TestPositionSolver:
     def test__positions_found_for_simple_mass_profiles(self):
 
         grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05)
 
         sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
-        solver = al.PositionsFinder(grid=grid, pixel_scale_precision=0.01)
+        solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
 
         positions = solver.solve(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
 
-        assert positions[0] == pytest.approx(np.array([0.003125, -0.89062]), 1.0e-4)
-        assert positions[1] == pytest.approx(np.array([-0.003125, -0.89062]), 1.0e-4)
+        assert positions[0] == pytest.approx(np.array([0.003125, -0.890625]), 1.0e-4)
+        assert positions[3] == pytest.approx(np.array([-0.003125, 1.109375]), 1.0e-4)
 
         grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
 
@@ -107,7 +141,7 @@ class TestPositionFinder:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        solver = pos.PositionsFinder(grid=grid, pixel_scale_precision=0.01)
+        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
 
         coordinates = solver.solve(
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
@@ -145,7 +179,7 @@ class TestPositionFinder:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        solver = pos.PositionsFinder(grid=grid, pixel_scale_precision=0.01)
+        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
 
         coordinates = solver.solve_from_tracer(tracer=tracer)
 
@@ -181,7 +215,7 @@ class TestPositionFinder:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        solver = pos.PositionsFinder(grid=grid, pixel_scale_precision=0.01)
+        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
 
         position_manual_0 = solver.solve(
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
@@ -206,7 +240,7 @@ class TestPositionFinder:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g2, g3])
 
-        solver = pos.PositionsFinder(grid=grid, pixel_scale_precision=0.01)
+        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
 
         positions = solver.solve_from_tracer(tracer=tracer)
 

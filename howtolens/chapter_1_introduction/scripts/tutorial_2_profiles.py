@@ -110,7 +110,10 @@ We can use a `Profile` `Plotter`.to plot this image.
 """
 
 # %%
-aplt.LightProfile.image(light_profile=sersic_light_profile, grid=grid)
+light_profile_plotter = aplt.LightProfilePlotter(
+    light_profile=sersic_light_profile, grid=grid
+)
+light_profile_plotter.figures()
 
 # %%
 """
@@ -166,8 +169,10 @@ a later tutorial.)
 """
 
 # %%
-aplt.MassProfile.deflections_y(mass_profile=sis_mass_profile, grid=grid)
-aplt.MassProfile.deflections_x(mass_profile=sis_mass_profile, grid=grid)
+mass_profile_plottter = aplt.MassProfilePlotter(
+    mass_profile=sis_mass_profile, grid=grid
+)
+mass_profile_plottter.figures(deflections_y=True, deflections_x=True)
 
 # %%
 """
@@ -195,11 +200,7 @@ Plotting them is equally straight forward.
 """
 
 # %%
-aplt.MassProfile.convergence(mass_profile=sis_mass_profile, grid=grid)
-
-aplt.MassProfile.potential(mass_profile=sis_mass_profile, grid=grid)
-
-aplt.MassProfile.magnification(mass_profile=sis_mass_profile, grid=grid)
+mass_profile_plottter.figures(convergence=True, potential=True, magnification=True)
 
 # %%
 """

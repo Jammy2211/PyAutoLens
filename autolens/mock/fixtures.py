@@ -1,6 +1,7 @@
 import autolens as al
 from autogalaxy.mock.fixtures import *
 from autofit.mock.mock import MockSearch
+from autolens.mock.mock import MockPositionsSolver
 
 
 def make_masked_imaging_7x7():
@@ -31,6 +32,22 @@ def make_masked_interferometer_7_grid():
             grid_class=al.Grid, sub_size=1, transformer_class=aa.TransformerDFT
         ),
     )
+
+
+def make_positions_x2():
+    return al.GridIrregularGrouped(grid=[[(1.0, 1.0), (2.0, 2.0)]])
+
+
+def make_positions_noise_map_x2():
+    return al.ValuesIrregularGrouped(values=[[1.0, 1.0]])
+
+
+def make_fluxes_x2():
+    return al.ValuesIrregularGrouped(values=[[1.0, 2.0]])
+
+
+def make_fluxes_noise_map_x2():
+    return al.ValuesIrregularGrouped(values=[[1.0, 1.0]])
 
 
 def make_tracer_x1_plane_7x7():
@@ -106,4 +123,11 @@ def make_phase_imaging_7x7():
 def make_phase_interferometer_7():
     return al.PhaseInterferometer(
         search=MockSearch(name="test_phase"), real_space_mask=make_mask_7x7()
+    )
+
+
+def make_phase_positions_x2():
+    return al.PhasePointSource(
+        positions_solver=MockPositionsSolver(model_positions=make_positions_x2()),
+        search=MockSearch(name="test_phase"),
     )

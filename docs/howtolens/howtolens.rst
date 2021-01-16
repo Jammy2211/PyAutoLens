@@ -42,7 +42,7 @@ that images and figures display correctly in your Jupyter notebooks.
 Jupyter Notebooks
 -----------------
 
-The tutorials are supplied as Juypter Notebooks, which come with a '.ipynb' suffix. For those new to Python, Juypter
+The tutorials are supplied as Jupyter Notebooks, which come with a '.ipynb' suffix. For those new to Python, Jupyter
 Notebooks are a different way to write, view and use Python code. Compared to the traditional Python scripts, they
 allow:
 
@@ -51,7 +51,7 @@ allow:
 - Text script to appear between the blocks of code.
 
 This makes them an ideal way for us to present the HowToFit lecture series, therefore I recommend you get yourself
-a Juypter notebook viewer (https://jupyter.org/) if you havent done so already.
+a Jupyter notebook viewer (https://jupyter.org/) if you havent done so already.
 
 If you *really* want to use Python scripts, all tutorials are supplied a .py python files in the 'scripts' folder of
 each chapter.

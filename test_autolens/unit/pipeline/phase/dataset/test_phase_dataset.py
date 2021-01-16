@@ -79,6 +79,68 @@ class TestMakeAnalysis:
         #         dataset=imaging_7x7, results=mock.MockResults()
         #     )
 
+    def test__auto_einstein_radius_is_used__einstein_radius_used_in_analysis(
+        self, imaging_7x7, mask_7x7
+    ):
+        # If position threshold is input (not None) and positions are input, make the positions part of the lens dataset.
+
+        class MockTracer:
+            def __init__(self, einstein_radius_via_tangential_critical_curve):
+
+                self.einstein_radius_via_tangential_critical_curve = (
+                    einstein_radius_via_tangential_critical_curve
+                )
+
+            def einstein_radius_from_grid(self, grid):
+                return self.einstein_radius_via_tangential_critical_curve
+
+            @property
+            def has_mass_profile(self):
+                return True
+
+        phase_imaging_7x7 = al.PhaseImaging(
+            search=mock.MockSearch("test_phase"),
+            settings=al.SettingsPhaseImaging(
+                settings_lens=al.SettingsLens(auto_einstein_radius_factor=None)
+            ),
+        )
+        tracer = MockTracer(einstein_radius_via_tangential_critical_curve=2.0)
+
+        phase_imaging_7x7.modify_settings(
+            dataset=imaging_7x7,
+            results=mock.MockResults(max_log_likelihood_tracer=tracer),
+        )
+
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
+        )
+
+        assert analysis.settings.settings_lens.einstein_radius_estimate == None
+
+        phase_imaging_7x7 = al.PhaseImaging(
+            search=mock.MockSearch("test_phase"),
+            settings=al.SettingsPhaseImaging(
+                settings_lens=al.SettingsLens(auto_einstein_radius_factor=1.0)
+            ),
+        )
+
+        tracer = MockTracer(einstein_radius_via_tangential_critical_curve=2.0)
+
+        phase_imaging_7x7.modify_settings(
+            dataset=imaging_7x7,
+            results=mock.MockResults(max_log_likelihood_tracer=tracer),
+        )
+
+        analysis = phase_imaging_7x7.make_analysis(
+            dataset=imaging_7x7,
+            mask=mask_7x7,
+            results=mock.MockResults(max_log_likelihood_tracer=tracer),
+        )
+
+        print(analysis.settings.settings_lens.einstein_radius_estimate)
+
+        assert analysis.settings.settings_lens.einstein_radius_estimate == 2.0
+
     def test__use_border__determines_if_border_pixel_relocation_is_used(
         self, imaging_7x7, mask_7x7
     ):
@@ -115,8 +177,12 @@ class TestMakeAnalysis:
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
-        assert fit.inversion.mapper.grid[4][0] == pytest.approx(97.19584, 1.0e-2)
-        assert fit.inversion.mapper.grid[4][1] == pytest.approx(-3.699999, 1.0e-2)
+        assert fit.inversion.mapper.source_full_grid[4][0] == pytest.approx(
+            97.19584, 1.0e-2
+        )
+        assert fit.inversion.mapper.source_full_grid[4][1] == pytest.approx(
+            -3.699999, 1.0e-2
+        )
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=[lens_galaxy, source_galaxy],
@@ -141,7 +207,9 @@ class TestMakeAnalysis:
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
-        assert fit.inversion.mapper.grid[4][0] == pytest.approx(200.0, 1.0e-4)
+        assert fit.inversion.mapper.source_full_grid[4][0] == pytest.approx(
+            200.0, 1.0e-4
+        )
 
 
 class TestAutoPositions:

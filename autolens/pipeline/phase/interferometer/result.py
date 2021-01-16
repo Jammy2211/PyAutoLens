@@ -79,7 +79,7 @@ class Result(dataset.Result):
     def hyper_model_visibilities(self):
 
         hyper_model_visibilities = aa.Visibilities.zeros(
-            shape_1d=(self.max_log_likelihood_fit.visibilities.shape_1d,)
+            shape_1d=(self.max_log_likelihood_fit.figure_visibilities.shape_1d,)
         )
 
         for path, galaxy in self.path_galaxy_tuples:

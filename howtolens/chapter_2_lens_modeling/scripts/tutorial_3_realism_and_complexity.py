@@ -71,7 +71,10 @@ When plotted, the lens light`s is clearly visible in the centre of the image.
 """
 
 # %%
-aplt.Imaging.subplot_imaging(imaging=imaging, mask=mask)
+imaging_plotter = aplt.ImagingPlotter(
+    imaging=imaging, visuals_2d=aplt.Visuals2D(mask=mask)
+)
+imaging_plotter.subplot_imaging()
 
 # %%
 """
@@ -127,7 +130,8 @@ And lets look at the fit to the `Imaging` data, which as we are used to fits the
 """
 
 # %%
-aplt.FitImaging.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """
@@ -180,7 +184,10 @@ And lets look at the fit to the `Imaging` data, which is clearly worse than our 
 """
 
 # %%
-aplt.FitImaging.subplot_fit_imaging(fit=result_local_maxima.max_log_likelihood_fit)
+fit_imaging_plotter = aplt.FitImagingPlotter(
+    fit=result_local_maxima.max_log_likelihood_fit
+)
+fit_imaging_plotter.subplot_fit_imaging()
 
 # %%
 """
