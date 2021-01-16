@@ -1,4 +1,5 @@
 from autoconf import conf
+from autoarray.structures import grids
 from autolens import exc
 from autolens.fit import fit_point_source
 
@@ -11,7 +12,8 @@ class SettingsLens:
         positions_threshold=None,
         auto_positions_factor=None,
         auto_positions_minimum_threshold=None,
-        auto_einstein_mass_factor=None,
+        auto_einstein_radius_factor: float = None,
+        auto_einstein_radius_count: int = 250,
         stochastic_likelihood_resamples=None,
         stochastic_samples: int = 250,
         stochastic_histogram_bins: int = 10,
@@ -20,10 +22,14 @@ class SettingsLens:
         self.positions_threshold = positions_threshold
         self.auto_positions_factor = auto_positions_factor
         self.auto_positions_minimum_threshold = auto_positions_minimum_threshold
-        self.auto_einstein_mass_factor = auto_einstein_mass_factor
+        self.auto_einstein_radius_factor = auto_einstein_radius_factor
+        self.auto_einstein_radius_count = auto_einstein_radius_count
         self.stochastic_likelihood_resamples = stochastic_likelihood_resamples
         self.stochastic_samples = stochastic_samples
         self.stochastic_histogram_bins = stochastic_histogram_bins
+
+        self.einstein_radius_estimate = None
+        self.einstein_radius_count = None
 
     @property
     def tag(self):
@@ -86,8 +92,42 @@ class SettingsLens:
             ):
                 raise exc.RayTracingException
 
+    def check_einstein_radius_with_threshold_via_tracer(self, tracer, grid):
+
+        if self.einstein_radius_estimate is None:
+            return
+
+        if self.einstein_radius_count > self.auto_einstein_radius_count:
+            return
+
+        try:
+            einstein_radius_tracer = tracer.einstein_radius_from_grid(grid=grid)
+        except Exception:
+            raise exc.RayTracingException
+
+        fractional_value = (
+            self.auto_einstein_radius_factor * self.einstein_radius_estimate
+        )
+
+        einstein_radius_lower = self.einstein_radius_estimate - fractional_value
+        einstein_radius_upper = self.einstein_radius_estimate + fractional_value
+
+        if (einstein_radius_tracer < einstein_radius_lower) or (
+            einstein_radius_tracer > einstein_radius_upper
+        ):
+            raise exc.RayTracingException
+
+        self.einstein_radius_count += 1
+
     def modify_positions_threshold(self, positions_threshold):
 
         settings = copy.copy(self)
         settings.positions_threshold = positions_threshold
+        return settings
+
+    def modify_einstein_radius_estimate(self, einstein_radius_estimate):
+
+        settings = copy.copy(self)
+        settings.einstein_radius_estimate = einstein_radius_estimate
+        settings.einstein_radius_count = 0
         return settings

@@ -85,9 +85,17 @@ we're going to plot our `Mapper` alongside the image we used to generate the sou
 """
 
 # %%
+visuals_2d = aplt.Visuals2D(
+    indexes=[
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+    ]
+)
 include_2d = aplt.Include2D(mapper_source_full_grid=True)
 
-mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
+mapper_plotter = aplt.MapperPlotter(
+    mapper=mapper, visuals_2d=visuals_2d, include_2d=include_2d
+)
 mapper_plotter.subplot_image_and_mapper(image=imaging.image)
 
 # %%
@@ -97,13 +105,7 @@ both the image and source-plane.
 """
 
 # %%
-mapper_plotter.subplot_image_and_mapper(
-    image=imaging.image,
-    full_indexes=[
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
-    ],
-)
+mapper_plotter.subplot_image_and_mapper(image=imaging.image)
 
 # %%
 """
@@ -114,9 +116,12 @@ to the image.
 """
 
 # %%
-mapper_plotter.subplot_image_and_mapper(
-    image=imaging.image, pixelization_indexes=[[312]]
+visuals_2d = aplt.Visuals2D(pixelization_indexes=[[312]])
+mapper_plotter = aplt.MapperPlotter(
+    mapper=mapper, visuals_2d=visuals_2d, include_2d=include_2d
 )
+
+mapper_plotter.subplot_image_and_mapper(image=imaging.image)
 
 # %%
 """
@@ -125,9 +130,12 @@ This will give you a feel for how different regions of the source-plane map to t
 """
 
 # %%
-mapper_plotter.subplot_image_and_mapper(
-    image=imaging.image, pixelization_indexes=[[312, 318], [412]]
+visuals_2d = aplt.Visuals2D(pixelization_indexes=[[312, 318], [412]])
+mapper_plotter = aplt.MapperPlotter(
+    mapper=mapper, visuals_2d=visuals_2d, include_2d=include_2d
 )
+
+mapper_plotter.subplot_image_and_mapper(image=imaging.image)
 
 # %%
 """
@@ -142,10 +150,14 @@ Lets just have a quick look at these edges pixels:
 """
 
 # %%
-mapper_plotter.subplot_image_and_mapper(
-    image=imaging.image,
-    pixelization_indexes=[[0, 1, 2, 3, 4, 5, 6, 7], [620, 621, 622, 623, 624]],
+visuals_2d = aplt.Visuals2D(
+    pixelization_indexes=[[0, 1, 2, 3, 4, 5, 6, 7], [620, 621, 622, 623, 624]]
 )
+mapper_plotter = aplt.MapperPlotter(
+    mapper=mapper, visuals_2d=visuals_2d, include_2d=include_2d
+)
+
+mapper_plotter.subplot_image_and_mapper(image=imaging.image)
 
 # %%
 """
@@ -169,7 +181,7 @@ Lets quickly confirm the annuli capture the source's light.
 visuals_2d = aplt.Visuals2D(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
-imaging_plotter.figure_image()
+imaging_plotter.figures(image=True)
 
 # %%
 """
@@ -214,9 +226,12 @@ been reading up, this diamond is called the `caustic`).
 """
 
 # %%
-mapper_plotter.subplot_image_and_mapper(
-    image=masked_imaging.image, pixelization_indexes=[[312], [314], [316], [318]]
+visuals_2d = aplt.Visuals2D(pixelization_indexes=[[312], [314], [316], [318]])
+mapper_plotter = aplt.MapperPlotter(
+    mapper=mapper, visuals_2d=visuals_2d, include_2d=include_2d
 )
+
+mapper_plotter.subplot_image_and_mapper(image=masked_imaging.image)
 
 # %%
 """

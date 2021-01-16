@@ -37,7 +37,7 @@ magnification = np.nan_to_num(magnification)
 print(magnification)
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, visuals_2d=visuals_2d)
-tracer_plotter.figure_image()
+tracer_plotter.figures(image=True)
 
 
 mat_plot_2d = aplt.MatPlot2D(

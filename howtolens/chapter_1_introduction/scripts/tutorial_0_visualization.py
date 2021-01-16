@@ -79,7 +79,7 @@ We can plot an image as follows:
 
 # %%
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
-imaging_plotter.figure_image()
+imaging_plotter.figures(image=True)
 
 # %%
 """
@@ -103,7 +103,7 @@ mat_plot_2d = aplt.MatPlot2D(
 )
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, mat_plot_2d=mat_plot_2d)
-imaging_plotter.figure_image()
+imaging_plotter.figures(image=True)
 
 # %%
 """
@@ -176,13 +176,13 @@ include_2d = aplt.Include2D(origin=True)
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, mat_plot_2d=mat_plot_2d, include_2d=include_2d
 )
-imaging_plotter.figure_image()
+imaging_plotter.figures(image=True)
 
 include_2d = aplt.Include2D(origin=False)
 imaging_plotter = aplt.ImagingPlotter(
     imaging=imaging, mat_plot_2d=mat_plot_2d, include_2d=include_2d
 )
-imaging_plotter.figure_image()
+imaging_plotter.figures(image=True)
 
 # %%
 """

@@ -4,7 +4,6 @@ from autoarray.inversion import pixelizations as pix
 from autoarray.exc import PixelizationException, InversionException, GridException
 from autofit.exc import FitException
 from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
-from autogalaxy.plot.mat_wrap import lensing_include
 from autolens.fit import fit
 from autolens.pipeline import visualizer as vis
 from autolens.pipeline.phase.dataset import analysis as analysis_dataset
@@ -48,6 +47,10 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
 
         self.settings.settings_lens.check_positions_trace_within_threshold_via_tracer(
             tracer=tracer, positions=self.masked_dataset.positions
+        )
+
+        self.settings.settings_lens.check_einstein_radius_with_threshold_via_tracer(
+            tracer=tracer, grid=self.masked_dataset.grid
         )
 
         hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
@@ -183,12 +186,6 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
         )
-
-        include_2d = lensing_include.Include2D()
-        tracer._preload_critical_curves = (
-            tracer.critical_curves if include_2d.critical_curves else None
-        )
-        tracer._preload_caustics = tracer.caustics if include_2d.caustics else None
 
         visualizer = vis.Visualizer(visualize_path=paths.image_path)
 

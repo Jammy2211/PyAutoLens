@@ -1,4 +1,4 @@
-autoconf==0.7.4
+autoconf==0.7.5
 astropy>=3.0.0
 numpydoc>=1.0.0
 matplotlib>=3.0.3

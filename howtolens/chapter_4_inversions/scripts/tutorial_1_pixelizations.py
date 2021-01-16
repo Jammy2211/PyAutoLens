@@ -133,12 +133,21 @@ We can over-lay the `Grid` on top. Its starting to look a bit less boring now!
 """
 
 # %%
+
 include_2d = aplt.Include2D(
     mapper_source_full_grid=True, mapper_source_pixelization_grid=True
 )
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
 mapper_plotter.set_title("Even less Boring Grid of Rectangular Pixels")
+mapper_plotter.figure()
+
+mat_plot_2d = aplt.MatPlot2D(axis=aplt.Axis(extent=[-0.3, 0.3, -0.3, 0.3]))
+
+mapper_plotter = aplt.MapperPlotter(
+    mapper=mapper, mat_plot_2d=mat_plot_2d, include_2d=include_2d
+)
+mapper_plotter.set_title("Zoomed Grid of Rectangular Pixels")
 mapper_plotter.figure()
 
 # %%

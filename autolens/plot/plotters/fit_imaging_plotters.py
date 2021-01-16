@@ -61,7 +61,9 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
                 "mass_profile_centres", self.tracer.planes[0].mass_profile_centres
             ),
             critical_curves=self.extract_2d(
-                "critical_curves", self.tracer.critical_curves, "critical_curves"
+                "critical_curves",
+                self.tracer.critical_curves_from_grid(grid=self.fit.grid),
+                "critical_curves",
             ),
         )
 
@@ -79,13 +81,12 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
             include_2d=self.include_2d,
         )
 
-    @property
-    def inversion_plotter(self):
+    def inversion_plotter_of_plane(self, plane_index):
         inversion_plotter = inversion_plotters.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.tracer_plotter.visuals_with_include_2d_of_plane(
-                plane_index=1
+                plane_index=plane_index
             ),
             include_2d=self.include_2d,
         )
@@ -206,7 +207,8 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
 
                 else:
 
-                    self.inversion_plotter.figures(reconstructed_image=True)
+                    inversion_plotter = self.inversion_plotter_of_plane(plane_index=0)
+                    inversion_plotter.figures(reconstructed_image=True)
 
             if plane_image:
 
@@ -218,7 +220,8 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
 
                 elif self.tracer.planes[plane_index].has_pixelization:
 
-                    self.inversion_plotter.figures(reconstruction=True)
+                    inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
+                    inversion_plotter.figures(reconstruction=True)
 
     def subplot_of_planes(self, plane_index=None):
         """Plot the model datas_ of an analysis, using the *Fitter* class object.

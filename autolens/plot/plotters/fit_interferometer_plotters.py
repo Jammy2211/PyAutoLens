@@ -65,7 +65,9 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
                 "mass_profile_centres", self.tracer.planes[0].mass_profile_centres
             ),
             critical_curves=self.extract_2d(
-                "critical_curves", self.tracer.critical_curves, "critical_curves"
+                "critical_curves",
+                self.tracer.critical_curves_from_grid(grid=self.fit.grid),
+                "critical_curves",
             ),
         )
 

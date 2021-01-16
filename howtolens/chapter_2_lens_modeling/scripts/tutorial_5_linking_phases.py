@@ -417,7 +417,7 @@ phase2_pass = al.PhaseImaging(
     ),
 )
 
-# phase2_pass.run(dataset=imaging, mask=mask)
+phase2_pass.run(dataset=imaging, mask=mask)
 
 # %%
 """

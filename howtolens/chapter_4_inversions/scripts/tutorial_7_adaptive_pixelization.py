@@ -137,7 +137,7 @@ We can plot this `Grid` over the image, to see that it is a coarse `Grid` over-l
 visuals_2d = aplt.Visuals2D(grid=image_plane_sparse_grid, mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
-imaging_plotter.figure_image()
+imaging_plotter.figures(image=True)
 
 # %%
 """

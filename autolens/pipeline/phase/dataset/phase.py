@@ -35,7 +35,28 @@ class PhaseDataset(dataset.PhaseDataset):
         self.settings.settings_lens = self.settings.settings_lens.modify_positions_threshold(
             positions_threshold=positions_threshold
         )
-        #   self.check_positions(positions=dataset.positions)
+
+        if self.settings.settings_lens.auto_einstein_radius_factor is not None:
+
+            if results is not None:
+
+                if results.last is not None:
+
+                    if results.last.max_log_likelihood_tracer.has_mass_profile:
+
+                        einstein_radius = results.last.max_log_likelihood_tracer.einstein_radius_from_grid(
+                            grid=dataset.data.mask.geometry.unmasked_grid_sub_1
+                        )
+
+                        self.settings.settings_lens = self.settings.settings_lens.modify_einstein_radius_estimate(
+                            einstein_radius_estimate=einstein_radius
+                        )
+
+        else:
+
+            self.settings.settings_lens = self.settings.settings_lens.modify_einstein_radius_estimate(
+                einstein_radius_estimate=None
+            )
 
         preload_sparse_grids_of_planes = self.preload_pixelization_grids_of_planes_from_results(
             results=results
@@ -173,17 +194,6 @@ class PhaseDataset(dataset.PhaseDataset):
                 else:
                     return results.last.max_log_likelihood_pixelization_grids_of_planes
         return None
-
-    def check_positions(self, positions):
-
-        if (
-            self.settings.settings_lens.positions_threshold is not None
-            and positions is None
-        ):
-            raise exc.PhaseException(
-                "You have specified for a phase to use positions, but not input positions to the "
-                "pipeline when you ran it."
-            )
 
     def extend_with_stochastic_phase(
         self,

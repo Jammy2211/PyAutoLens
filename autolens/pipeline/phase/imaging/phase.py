@@ -3,8 +3,6 @@ import autofit as af
 from astropy import cosmology as cosmo
 from autolens.pipeline.phase import dataset
 from autolens.dataset import imaging
-from autoarray.inversion import pixelizations as pix
-from autoarray.inversion import regularization as reg
 from autolens.pipeline.phase.settings import SettingsPhaseImaging
 from autolens.pipeline.phase.imaging.analysis import Analysis
 from autolens.pipeline.phase.imaging.result import Result

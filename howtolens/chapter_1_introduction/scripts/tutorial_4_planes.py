@@ -110,8 +110,7 @@ _Plane_ mat_plot_2d exist, which work analogously to `Profile` mat_plot_2d and `
 
 # %%
 plane_plotter = aplt.PlanePlotter(plane=image_plane, grid=image_plane_grid)
-plane_plotter.figure_deflections_y()
-plane_plotter.figure_deflections_x()
+plane_plotter.figures(deflections_y=True, deflections_x=True)
 
 # %%
 """
@@ -152,14 +151,14 @@ mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Image-plane Grid"))
 plane_plotter = aplt.PlanePlotter(
     plane=image_plane, grid=image_plane_grid, mat_plot_2d=mat_plot_2d
 )
-plane_plotter.figure_plane_grid()
+plane_plotter.figures(plane_grid=True)
 
 mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid"))
 
 plane_plotter = aplt.PlanePlotter(
     plane=source_plane, grid=source_plane_grid, mat_plot_2d=mat_plot_2d
 )
-plane_plotter.figure_plane_grid()
+plane_plotter.figures(plane_grid=True)
 
 
 # %%
@@ -168,7 +167,16 @@ We can zoom in on the `centre` of the source-plane (remembering the lens galaxy 
 """
 
 # %%
-plane_plotter.figure_plane_grid(axis_limits=[-0.1, 0.1, -0.1, 0.1])
+mat_plot_2d = aplt.MatPlot2D(
+    title=aplt.Title(label="Source-plane Grid Zoomed"),
+    axis=aplt.Axis(extent=[-0.1, 0.1, -0.1, 0.1]),
+)
+
+plane_plotter = aplt.PlanePlotter(
+    plane=source_plane, grid=source_plane_grid, mat_plot_2d=mat_plot_2d
+)
+
+plane_plotter.figures(plane_grid=True)
 
 # %%
 """
@@ -180,10 +188,8 @@ row of the image-grid running from the left - as we said it would!)
 """
 
 # %%
-plane_plotter = aplt.PlanePlotter(
-    plane=image_plane, grid=image_plane_grid, mat_plot_2d=mat_plot_2d
-)
-plane_plotter.subplot_with_source_grid(
+
+visuals_2d = aplt.Visuals2D(
     indexes=[
         range(0, 50),
         range(500, 550),
@@ -191,6 +197,14 @@ plane_plotter.subplot_with_source_grid(
         [6250, 8550, 8450, 8350, 8250, 8150, 8050, 7950, 7850, 7750],
     ]
 )
+
+plane_plotter = aplt.PlanePlotter(
+    plane=image_plane,
+    grid=image_plane_grid,
+    visuals_2d=visuals_2d,
+    mat_plot_2d=mat_plot_2d,
+)
+plane_plotter.subplot_with_source_grid()
 
 # %%
 """
@@ -203,7 +217,7 @@ back from the source-plane grid.
 
 # %%
 plane_plotter = aplt.PlanePlotter(plane=source_plane, grid=source_plane_grid)
-plane_plotter.figure_plane_image()
+plane_plotter.figures(plane_image=True)
 
 # %%
 """
@@ -232,7 +246,7 @@ include_2d = aplt.Include2D(grid=True)
 plane_plotter = aplt.PlanePlotter(
     plane=source_plane, grid=source_plane_grid, include_2d=include_2d
 )
-plane_plotter.figure_plane_image()
+plane_plotter.figures(plane_image=True)
 
 # %%
 """
@@ -246,7 +260,7 @@ include_2d = aplt.Include2D(grid=False)
 plane_plotter = aplt.PlanePlotter(
     plane=source_plane, grid=source_plane_grid, include_2d=include_2d
 )
-plane_plotter.figure_plane_image()
+plane_plotter.figures(plane_image=True)
 
 # %%
 """
@@ -268,7 +282,7 @@ include_2d = aplt.Include2D(critical_curves=True)
 plane_plotter = aplt.PlanePlotter(
     plane=image_plane, grid=image_plane_grid, include_2d=include_2d
 )
-plane_plotter.figure_convergence()
+plane_plotter.figures(convergence=True)
 
 
 # %%

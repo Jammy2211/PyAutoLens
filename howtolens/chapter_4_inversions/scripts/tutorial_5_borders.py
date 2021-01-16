@@ -143,7 +143,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
 include_2d = aplt.Include2D(mapper_source_full_grid=True)
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figure_plane_image_of_plane(plane_index=1)
+fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 # %%
 """
@@ -162,7 +162,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
 inversion_plotter = aplt.InversionPlotter(
     inversion=fit.inversion, include_2d=include_2d
 )
-inversion_plotter.figure_reconstruction()
+inversion_plotter.figures(reconstruction=True)
 
 # %%
 """
@@ -174,13 +174,9 @@ Lets quickly check this using a `Mapper` `Plotter`.
 """
 
 # %%
-include_2d = aplt.Include2D(mapper_source_full_grid=True)
 
-mapper_plotter = aplt.MapperPlotter(mapper=fit.inversion.mapper, include_2d=include_2d)
-
-mapper_plotter.subplot_image_and_mapper(
-    image=fit.masked_imaging.image,
-    full_indexes=[
+visuals_2d = aplt.Visuals2D(
+    indexes=[
         [3578, 3579, 3580, 3581, 3582],
         [3678, 3679, 3680, 3681, 3682],
         [3778, 3779, 3780, 3781, 3782],
@@ -188,8 +184,15 @@ mapper_plotter.subplot_image_and_mapper(
         [3978, 3979, 3980, 3981, 3982],
         [4078, 4079, 4080, 4081, 4082],
         [4178, 4179, 4180, 4181, 4182],
-    ],
+    ]
 )
+include_2d = aplt.Include2D(mapper_source_full_grid=True)
+
+mapper_plotter = aplt.MapperPlotter(
+    mapper=fit.inversion.mapper, visuals_2d=visuals_2d, include_2d=include_2d
+)
+
+mapper_plotter.subplot_image_and_mapper(image=fit.masked_imaging.image)
 
 # %%
 """
@@ -200,8 +203,7 @@ a quick look.
 
 # %%
 tracer_plotter = aplt.TracerPlotter(tracer=fit.tracer, grid=fit.grid)
-tracer_plotter.figure_deflections_y()
-tracer_plotter.figure_deflections_x()
+tracer_plotter.figures(deflections_y=True, deflections_x=True)
 
 # %%
 """
@@ -241,7 +243,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figure_plane_image_of_plane(plane_index=1)
+fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 # %%
 """
@@ -263,12 +265,14 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figure_plane_image_of_plane(plane_index=1)
+fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
-mapper_plotter = aplt.MapperPlotter(mapper=fit.inversion.mapper, include_2d=include_2d)
-mapper_plotter.subplot_image_and_mapper(
-    image=fit.masked_imaging.image, full_indexes=[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]
+visuals_2d = aplt.Visuals2D(indexes=[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]])
+
+mapper_plotter = aplt.MapperPlotter(
+    mapper=fit.inversion.mapper, visuals_2d=visuals_2d, include_2d=include_2d
 )
+mapper_plotter.subplot_image_and_mapper(image=fit.masked_imaging.image)
 
 # %%
 """
@@ -377,7 +381,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 include_2d = aplt.Include2D(mapper_source_full_grid=True, border=True)
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figure_plane_image_of_plane(plane_index=1)
+fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 # %%
 """
@@ -394,7 +398,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figure_plane_image_of_plane(plane_index=1)
+fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 # %%
 """
@@ -418,7 +422,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figure_plane_image_of_plane(plane_index=1)
+fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 mask_circular = al.Mask2D.circular(
     shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.7
@@ -431,7 +435,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figure_plane_image_of_plane(plane_index=1)
+fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 
 mask_circular = al.Mask2D.circular(
@@ -445,7 +449,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figure_plane_image_of_plane(plane_index=1)
+fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 
 mask_circular = al.Mask2D.circular(
@@ -459,7 +463,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figure_plane_image_of_plane(plane_index=1)
+fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 # %%
 """

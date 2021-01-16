@@ -102,14 +102,14 @@ mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Lens Galaxy"))
 galaxy_plotter = aplt.GalaxyPlotter(
     galaxy=lens_galaxy, grid=grid, mat_plot_2d=mat_plot_2d
 )
-galaxy_plotter.figure_image()
+galaxy_plotter.figures(image=True)
 
 mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Lens Satellite"))
 
 galaxy_plotter = aplt.GalaxyPlotter(
     galaxy=lens_satellite, grid=grid, mat_plot_2d=mat_plot_2d
 )
-galaxy_plotter.figure_image()
+galaxy_plotter.figures(image=True)
 
 # %%
 """
@@ -123,7 +123,7 @@ mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Lens Galaxy Deflections (y)
 galaxy_plotter = aplt.GalaxyPlotter(
     galaxy=lens_galaxy, grid=grid, mat_plot_2d=mat_plot_2d
 )
-galaxy_plotter.figure_deflections_y()
+galaxy_plotter.figures(deflections_y=True)
 
 # NOTE: It would be annoying to have to reset the title for every plot using the following code:
 
@@ -135,13 +135,13 @@ galaxy_plotter.figure_deflections_y()
 # We can set the title more conveniently as follows:
 
 galaxy_plotter.set_title("Lens Galalxy Deflections (x)")
-galaxy_plotter.figure_deflections_x()
+galaxy_plotter.figures(deflections_x=True)
 
 galaxy_plotter = aplt.GalaxyPlotter(galaxy=lens_satellite, grid=grid)
 galaxy_plotter.set_title("Lens Satellite Deflections (y)")
-galaxy_plotter.figure_deflections_y()
+galaxy_plotter.figures(deflections_y=True)
 galaxy_plotter.set_title("Lens Satellite Deflections (x)")
-galaxy_plotter.figure_deflections_x()
+galaxy_plotter.figures(deflections_x=True)
 
 
 # %%
@@ -189,11 +189,11 @@ galaxy_plotter = aplt.GalaxyPlotter(
     galaxy=source_galaxy_0, grid=grid, mat_plot_2d=mat_plot_2d
 )
 galaxy_plotter.set_title("Source Galaxy 0")
-galaxy_plotter.figure_image()
+galaxy_plotter.figures(image=True)
 
 galaxy_plotter = aplt.GalaxyPlotter(galaxy=source_galaxy_1, grid=grid)
 galaxy_plotter.set_title("Source Galaxy 1")
-galaxy_plotter.figure_image()
+galaxy_plotter.figures(image=True)
 
 
 # %%
@@ -230,7 +230,7 @@ We can next plot the tracer`s `Profile` image, which is compute as follows:
 # %%
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
 tracer_plotter.set_title("Image")
-tracer_plotter.figure_image()
+tracer_plotter.figures(image=True)
 
 # %%
 """
@@ -239,7 +239,7 @@ As we did previously, we can plot the `Grid` of the source plane and inspect the
 
 # %%
 tracer_plotter.set_title("Source-plane Grid")
-tracer_plotter.figure_plane_grid_of_plane(plane_index=1)
+tracer_plotter.figures_of_planes(plane_grid=True, plane_index=1)
 
 # %%
 """
@@ -247,10 +247,12 @@ We can zoom in on the `centre` of the source-plane.
 """
 
 # %%
+
+mat_plot_2d = aplt.MatPlot2D(axis=aplt.Axis(extent=[-0.2, 0.2, -0.2, 0.2]))
+
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
 tracer_plotter.set_title("Source-plane Grid")
-tracer_plotter.figure_plane_grid_of_plane(
-    plane_index=1, axis_limits=[-0.2, 0.2, -0.2, 0.2]
-)
+tracer_plotter.figures_of_planes(plane_grid=True, plane_index=1)
 
 # %%
 """

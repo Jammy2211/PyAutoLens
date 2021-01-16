@@ -127,16 +127,16 @@ different ways
 
 # %%
 tracer_plotter = aplt.TracerPlotter(tracer=fit.tracer, grid=masked_imaging.grid)
-tracer_plotter.figure_image()
+tracer_plotter.figures(image=True)
 
 source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=masked_imaging.grid)[1]
 plane_plotter = aplt.PlanePlotter(plane=tracer.source_plane, grid=source_plane_grid)
-plane_plotter.figure_image()
+plane_plotter.figures(image=True)
 
 galaxy_plotter = aplt.GalaxyPlotter(
     galaxy=fit.tracer.source_plane.galaxies[0], grid=source_plane_grid
 )
-galaxy_plotter.figure_image()
+galaxy_plotter.figures(image=True)
 
 # %%
 """

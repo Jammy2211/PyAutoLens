@@ -148,7 +148,7 @@ mat_plot_2d = aplt.MatPlot2D(cmap=aplt.Cmap(vmax=0.5, vmin=-0.5))
 inversion_plotter = aplt.InversionPlotter(
     inversion=no_regularization_fit.inversion, mat_plot_2d=mat_plot_2d
 )
-inversion_plotter.figure_reconstruction()
+inversion_plotter.figures(reconstruction=True)
 
 # %%
 """

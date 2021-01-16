@@ -172,8 +172,7 @@ a later tutorial.)
 mass_profile_plottter = aplt.MassProfilePlotter(
     mass_profile=sis_mass_profile, grid=grid
 )
-mass_profile_plottter.figure_deflections_y()
-mass_profile_plottter.figure_deflections_x()
+mass_profile_plottter.figures(deflections_y=True, deflections_x=True)
 
 # %%
 """
@@ -201,9 +200,7 @@ Plotting them is equally straight forward.
 """
 
 # %%
-mass_profile_plottter.figure_convergence()
-mass_profile_plottter.figure_potential()
-mass_profile_plottter.figure_magnification()
+mass_profile_plottter.figures(convergence=True, potential=True, magnification=True)
 
 # %%
 """

@@ -93,7 +93,7 @@ in PyAutoLens and is therefore a powerful means by which to create custom visual
 visuals_2d = aplt.Visuals2D(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
-imaging_plotter.figure_image()
+imaging_plotter.figures(image=True)
 
 # %%
 """
@@ -125,7 +125,7 @@ means that if our image is very large, we focus-in on the lens and source galaxi
 include_2d = aplt.Include2D(mask=True)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=masked_imaging, include_2d=include_2d)
-imaging_plotter.figure_image()
+imaging_plotter.figures(image=True)
 
 # %%
 """
@@ -212,7 +212,7 @@ source_galaxy = al.Galaxy(
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=masked_imaging.grid)
-tracer_plotter.figure_image()
+tracer_plotter.figures(image=True)
 
 # %%
 """

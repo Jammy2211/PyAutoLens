@@ -93,14 +93,18 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
 
         if plane_index == 0:
             critical_curves = self.extract_2d(
-                "critical_curves", self.lensing_obj.critical_curves, "critical_curves"
+                "critical_curves",
+                self.lensing_obj.critical_curves_from_grid(grid=self.grid),
+                "critical_curves",
             )
         else:
             critical_curves = None
 
         if plane_index == 1:
             caustics = self.extract_2d(
-                "caustics", self.lensing_obj.caustics, "caustics"
+                "caustics",
+                self.lensing_obj.caustics_from_grid(grid=self.grid),
+                "caustics",
             )
         else:
             caustics = None

@@ -58,7 +58,7 @@ mask = al.Mask2D.circular_annular(
 visuals_2d = aplt.Visuals2D(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
-imaging_plotter.figure_image()
+imaging_plotter.figures(image=True)
 
 # %%
 """
@@ -121,8 +121,7 @@ Our `Inversion` has a reconstructed image and `Pixeilzation`, whcih we can plot 
 include_2d = aplt.Include2D(mask=True)
 
 inversion_plotter = aplt.InversionPlotter(inversion=inversion, include_2d=include_2d)
-inversion_plotter.figure_reconstructed_image()
-inversion_plotter.figure_reconstruction()
+inversion_plotter.figures(reconstructed_image=True, reconstruction=True)
 
 # %%
 """
@@ -144,9 +143,7 @@ imaging = al.Imaging.from_fits(
 )
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
-imaging_plotter.figure_image()
-
-# %%
+imaging_plotter.figures(image=True)  # %%
 """
 This code is doing all the the same as above (setup the `Mask2D`, `Galaxy`'s `Tracer`, `Mapper`, ec.).
 """
@@ -164,7 +161,7 @@ mask = al.Mask2D.circular_annular(
 visuals_2d = aplt.Visuals2D(mask=mask)
 
 imaging_plotter = aplt.ImagingPlotter(imaging=imaging, visuals_2d=visuals_2d)
-imaging_plotter.figure_image()
+imaging_plotter.figures(image=True)
 
 masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
 
@@ -187,9 +184,7 @@ Lets inspect the complex source reconstruction.
 
 # %%
 inversion_plotter = aplt.InversionPlotter(inversion=inversion, include_2d=include_2d)
-inversion_plotter.figure_reconstructed_image()
-inversion_plotter.figure_reconstruction()
-
+inversion_plotter.figures(reconstructed_image=True, reconstruction=True)
 
 # %%
 """
