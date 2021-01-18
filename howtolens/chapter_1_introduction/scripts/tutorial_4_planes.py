@@ -11,14 +11,13 @@ line of sight, such that the foreground `Galaxy`'s mass (represented as `MassPro
 as `LightProfile`'s) of the background source galaxy(s).
 
 When the alignment is just right and the lens is just massive enough, the background source galaxy appears multiple
-times. The schematic below shows a crude drawing of such a system, where two light-rays from the source are bending
-around the lens galaxy and into the observer (light should bend `smoothly`, but drawing this on a keyboard wasn`t
-possible - so just pretend the diagonal lines coming from the observer and source are less jagged)
+times. The schematic below shows such a system, where two light-rays from the source are bending
+around the lens galaxy and into the observer (light should bend smoothly)
 """
 
 # %%
 """
-[Schematic of Gravitational Lensing](https://i.imgur.com/zB6tIdI.jpg)
+![Schematic of Gravitational Lensing](https://i.imgur.com/zB6tIdI.jpg)
 """
 
 # %%

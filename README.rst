@@ -16,7 +16,7 @@ PyAutoLens
 |license| |nbsp| |code-style| |nbsp| |arXiv|
 
 When two or more galaxies are aligned perfectly down our line-of-sight, the background galaxy appears multiple times.
-This is called strong gravitational lensing, & **PyAutoLens** makes it simple to model strong gravitational lenses,
+This is called strong gravitational lensing and **PyAutoLens** makes it simple to model strong gravitational lenses,
 like this one:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/development/imageaxis.png
@@ -24,44 +24,13 @@ like this one:
 Getting Started
 ---------------
 
-To get started checkout our `readthedocs <https://pyautolens.readthedocs.io/>`_,
-where you'll find the installation guide, a complete overview of **PyAutoLens**'s features, examples
-scripts and the `HowToLens Jupyter notebook tutorials <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
-which introduces new users to **PyAutoLens**.
+You can try **PyAutoLens** now by following the `overview Jupyter Notebook on
+Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/664a86aa84ddf8fdf044e2e4e7db21876ac1de91?filepath=overview.ipynb>`_.
 
-Installation
-------------
-
-**PyAutoLens** requires Python 3.6+ and you can install it via ``pip`` or ``conda`` (see
-`this link <https://pyautolens.readthedocs.io/en/latest/installation/conda.html>`_
-for ``conda`` instructions).
-
-.. code-block:: bash
-
-    pip install autolens
-
-Next, clone the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_, which includes
-**PyAutoLens** configuration files, example scripts and more!
-
-.. code-block:: bash
-
-   cd /path/on/your/computer/you/want/to/put/the/autolens_workspace
-   git clone https://github.com/Jammy2211/autolens_workspace --depth 1
-   cd autolens_workspace
-
-Finally, run ``welcome.py`` in the ``autolens_workspace`` to get started!
-
-.. code-block:: bash
-
-   python3 welcome.py
-
-If your installation had an error, check the
-`troubleshooting section <https://pyautolens.readthedocs.io/en/latest/installation/troubleshooting.html>`_ on
-our readthedocs.
-
-If you would prefer to Fork or Clone the **PyAutoLens** GitHub repo, checkout the
-`cloning section <https://pyautolens.readthedocs.io/en/latest/installation/source.html>`_ on our
-readthedocs.
+On `readthedocs <https://pyautolens.readthedocs.io/>`_ you'll find the installation guide, a complete overview
+of **PyAutoLens**'s features, examples scripts, and
+the `HowToLens Jupyter notebook tutorials <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_ which
+introduces new users to **PyAutoLens**.
 
 API Overview
 ------------
@@ -120,7 +89,8 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     plotting the image of the lensed source.
     """
 
-    aplt.Tracer.image(tracer=tracer, grid=grid)
+    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+    tracer_plotter.figures(image=True)
 
 With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates
 a simple analysis which fits the lens galaxy's mass with an ``EllipticalIsothermal`` and the source galaxy's light

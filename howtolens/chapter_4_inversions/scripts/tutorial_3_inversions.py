@@ -3,7 +3,7 @@
 Tutorial 3: Inversions
 ======================
 
-We've covered `Mapper``., which, if I haven`t emphasised it enough yet, map things. Now, we're going to look at how we
+We've covered `Mapper``., which, if I haven't emphasised it enough yet, map things. Now, we're going to look at how we
 can use these `Mapper`'s (which map things) to reconstruct the source galaxy - I hope you're excited!
 """
 
@@ -208,10 +208,12 @@ To begin, lets consider some random mappings between our mapper`s source-pixels 
 """
 
 # %%
-mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
-mapper_plotter.subplot_image_and_mapper(
-    image=masked_imaging.image, pixelization_indexes=[[445], [285], [313], [132], [11]]
+visuals_2d = aplt.Visuals2D(pixelization_indexes=[[445], [285], [313], [132], [11]])
+
+mapper_plotter = aplt.MapperPlotter(
+    mapper=mapper, visuals_2d=visuals_2d, include_2d=include_2d
 )
+mapper_plotter.subplot_image_and_mapper(image=masked_imaging.image)
 
 # %%
 """

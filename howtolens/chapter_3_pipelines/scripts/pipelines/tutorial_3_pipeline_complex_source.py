@@ -152,5 +152,5 @@ def make_pipeline(path_prefix, settings, redshift_lens=0.5, redshift_source=1.0)
     )
 
     return al.PipelineDataset(
-        pipeline_name, path_prefix, phase1, phase2, phase3, phase4
+        pipeline_name, path_prefix, None, phase1, phase2, phase3, phase4
     )

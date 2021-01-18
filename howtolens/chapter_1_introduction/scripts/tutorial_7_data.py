@@ -85,6 +85,7 @@ normal_image = tracer.image_from_grid(grid=grid)
 padded_image = tracer.padded_image_from_grid_and_psf_shape(
     grid=grid, psf_shape_2d=psf.shape_2d
 )
+
 print(normal_image.shape_2d)
 print(padded_image.shape_2d)
 

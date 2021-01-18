@@ -179,7 +179,7 @@ source-code, so I can promise you its well written, well documented and thorough
 directory if you're curious how to test code well!).
 
 Okay, enough self-serving praise for **PyAutoLens**, lets wrap up the chapter. You`ve learn a lot in this chapter, but 
-what you haven`t learnt is how to `model` a real strong gravitational lens.
+what you haven't learnt is how to `model` a real strong gravitational lens.
 
 In the real world, we've no idea what the `correct` set of light and `MassProfile` parameters are that will give a 
 good fit to a lens. Lens modeling is the process of finding the lens model which provides the best-fit, and that will 

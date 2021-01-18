@@ -54,7 +54,7 @@ mask = al.Mask2D.circular(
 
 # %%
 """
-When plotted, the lens light`s is clearly visible in the centre of the image.
+When plotted, the lens light's is clearly visible in the centre of the image.
 """
 
 # %%
@@ -187,6 +187,8 @@ Lets check that we get a good model and fit to the data.
 """
 We can use the result to tell us how many iterations Dynesty took to convergence on the solution.
 """
+
+# %%
 print("Total Dynesty Iterations (If you skip running the phase, this is ~ 500000):")
 # print(result_slow.samples.total_samples)
 
@@ -233,6 +235,7 @@ Lets check that this search, despite its faster sampling settings, still gives u
 And now lets confirm it uses significantly fewer iterations.
 """
 
+# %%
 print("Total Dynesty Iterations:")
 print("Slow settings: ~500000")
 # print(result_slow.samples.total_samples)
@@ -264,7 +267,7 @@ likelihood regions of parameter space are.
 
 Unlike Dynesty, this algorithm requires us to specify how many iterations it should perform to find the global 
 maxima solutions. Here, an iteration is the number of samples performed by every particle, so the total number of
-iterations is n_particles * iters. Lets try a total of ? iterations, a factor ? less than our Dynesty runs above. 
+iterations is n_particles * iters. Lets try a total of 50000 iterations, a factor 10 less than our Dynesty runs above. 
 """
 
 # %%

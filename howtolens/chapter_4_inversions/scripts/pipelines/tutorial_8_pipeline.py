@@ -11,7 +11,7 @@ The pipeline is three phases:
 Phase 1:
 
     Fit the lens mass model and source `LightProfile`.
-    
+
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: EllipticalSersic
     Prior Passing: None.
@@ -20,7 +20,7 @@ Phase 1:
 Phase 2:
 
     Fit the source `Inversion` using the lens `MassProfile` inferred in phase 1.
-    
+
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: VoronoiMagnification + Constant
     Prior Passing: Lens & Mass (instance -> phase1).
@@ -29,7 +29,7 @@ Phase 2:
 Phase 3:
 
     Refines the lens light and mass models using the source `Inversion` of phase 2.
-    
+
     Lens Mass: EllipticalIsothermal + ExternalShear
     Source Light: VoronoiMagnification + Constant
     Prior Passing: Lens Mass (model -> phase 1), Source `Inversion` (instance -> phase 2)
@@ -38,7 +38,6 @@ Phase 3:
 
 
 def make_pipeline(setup, settings):
-
     ### SETUP PIPELINE AND PHASE NAMES, TAGS AND PATHS ###
 
     pipeline_name = "pipeline__inversion"
@@ -50,7 +49,11 @@ def make_pipeline(setup, settings):
         2) The `Pixelization` and `Regularization` scheme of the pipeline (fitted in phases 3 & 4).
     """
 
-    path_prefix = f"{setup.path_prefix}/{pipeline_name}/{setup.tag}"
+    path_prefix = path.join(setup.path_prefix, pipeline_name)
+
+    """
+    Phase 1: Fit the lens`s `MassProfile`'s and source galaxy.
+    """
 
     phase1 = al.PhaseImaging(
         search=af.DynestyStatic(
@@ -64,9 +67,6 @@ def make_pipeline(setup, settings):
         ),
         settings=settings,
     )
-
-    phase1.search.facc = 0.3
-    phase1.search.const_efficiency_mode = True
 
     """
     Phase 2: Fit the input pipeline `Pixelization` & `Regularization`, where we:
@@ -109,16 +109,14 @@ def make_pipeline(setup, settings):
     )
 
     """
-    We now `extend` phase 1 with an additional `inversion phase` which uses the maximum log likelihood mass model of 
+    We now `extend` phase 1 with an additional `hyper phase` which uses the maximum log likelihood mass model of 
     phase 1 above to refine the `Inversion`, by fitting only the parameters of the `Pixelization` and `Regularization`
     (in this case, the shape of the `VoronoiMagnification` and `Regularization` coefficient of the `Constant`.
 
-    The the `Inversion` phase results are accessible as attributes of the phase results and used in phase 3 below.
+    The `hyper` phase results are accessible as attributes of the phase results and used in phase 3 below.
     """
 
-    phase2 = phase2.extend_with_inversion_phase(
-        hyper_search=af.DynestyStatic(n_live_points=50)
-    )
+    phase2 = phase2.extend_with_hyper_phase(setup_hyper=setup.hyper)
 
     """
     Phase 3: Fit the lens`s mass using the input pipeline `Pixelization` & `Regularization`, where we:
@@ -137,11 +135,11 @@ def make_pipeline(setup, settings):
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase2.result.inversion.instance.galaxies.source.pixelization,
-                regularization=phase2.result.inversion.instance.galaxies.source.regularization,
+                pixelization=phase2.result.hyper.instance.galaxies.source.pixelization,
+                regularization=phase2.result.hyper.instance.galaxies.source.regularization,
             ),
         ),
         settings=settings,
     )
 
-    return al.PipelineDataset(pipeline_name, path_prefix, phase1, phase2, phase3)
+    return al.PipelineDataset(pipeline_name, path_prefix, None, phase1, phase2, phase3)

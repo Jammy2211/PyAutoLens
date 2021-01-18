@@ -136,8 +136,8 @@ def make_pipeline(setup, settings):
             ),
             source=al.GalaxyModel(
                 redshift=1.0,
-                pixelization=phase2.result.inversion.instance.galaxies.source.pixelization,
-                regularization=phase2.result.inversion.instance.galaxies.source.regularization,
+                pixelization=phase2.result.hyper.instance.galaxies.source.pixelization,
+                regularization=phase2.result.hyper.instance.galaxies.source.regularization,
             ),
         ),
         settings=settings,

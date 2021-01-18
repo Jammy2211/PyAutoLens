@@ -213,10 +213,10 @@ and uncomment the lines below!
 """
 
 # %%
-# print(`Potential:`)
+# print("Potential:")
 # print(tracer.potential_from_grid(grid=image_plane_grid))
 # print(tracer.image_plane.potential_from_grid(grid=image_plane_grid))
-# print(`Deflections:`)
+# print("Deflections:")
 # print(tracer.deflections_from_grid(grid=image_plane_grid))
 # print(tracer.deflections_from_grid(grid=image_plane_grid))
 # print(tracer.image_plane.deflections_from_grid(grid=image_plane_grid))

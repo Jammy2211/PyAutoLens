@@ -116,7 +116,7 @@ source = al.GalaxyModel(redshift=1.0, bulge=al.lp.EllipticalExponential)
 
 # %%
 """
-You haven`t actually seen a line like this one before. By setting a parameter to a number (and not a prior) it is be 
+You haven't actually seen a line like this one before. By setting a parameter to a number (and not a prior) it is be 
 removed from non-linear parameter space and always fixed to that value. Pretty neat, huh?
 """
 
@@ -278,7 +278,7 @@ source.bulge.effective_radius = af.GaussianPrior(
 # %%
 """
 Lets setup and run the phase. As expected, it gives us the correct lens model. However, it does so significantly faster 
-than we're used to - I didn`t have to edit the config files to get this phase to run fast!
+than we're used to - I didn't have to edit the config files to get this phase to run fast!
 """
 
 # %%
@@ -361,9 +361,9 @@ The priors passed above retained the model parameterization of phase 1, includin
 the centres of the light and mass profiles and the alignment between their elliptical components. However, we often 
 want to pass priors *and* change the model parameterization.
 
-To do this, we have to use the ``.riorModel__ object in AutoFit, which allows us to turn light and mass profiles into 
+To do this, we have to use the `PriorModel` object in AutoFit, which allows us to turn light and mass profiles into 
 `model components` whose parameters have priors that can be manipulated in an analogous fashion to to `GalaxyModel`.
-In fact, the individual components of the `GalaxyModel` class have been ``.riorModel__`s all along! 
+In fact, the individual components of the `GalaxyModel` class have been `PriorModel`'s all along! 
 """
 
 # %%
@@ -373,7 +373,7 @@ print(source.bulge)
 
 # %%
 """
-We can thus set up the `GalaxyModel` we desire, by first creating the individual ``.riorModel__`s of each
+We can thus set up the `GalaxyModel`  we desire, by first creating the individual `PriorModel`'s of each
 component and then passing the priors of each individual parameter. 
 """
 
@@ -401,7 +401,11 @@ lens = al.GalaxyModel(redshift=0.5, bulge=sersic, mass=mass)
 
 # %%
 """
+<<<<<<< HEAD
 We now create and run the phase, using the lens `GalaxyModel` we created above.
+=======
+We now create and run the phase, using the lens `GalaxyModel`  we created above.
+>>>>>>> 56afab9d8197a33dd3c50ce716ede9bb89276eac
 """
 
 # %%
@@ -431,7 +435,9 @@ these priors?
 
 Lets say I link two parameters as follows:
  
+ ```
  mass.einstein_radius = phase1_result.model.galaxies.lens.mass.einstein_radius
+```
 
 By invoking the `model` attribute, the prioris passed following 3 rules:
 
@@ -440,14 +446,15 @@ By invoking the `model` attribute, the prioris passed following 3 rules:
 
  2) The mean of the GaussianPrior is the median PDF value of the parameter estimated in phase 1.
     
- This ensures that the initial sampling of the new phase`s non-linear starts by searching the region of non-linear 
+ This ensures that the initial sampling of the new phase's non-linear starts by searching the region of non-linear 
  parameter space that correspond to highest log likelihood solutions in the previous phase. Thus, we're setting 
  our priors to look in the `correct` regions of parameter space.
 
  3) The sigma of the Gaussian will use the maximum of two values: 
    
  (i) the 1D error of the parameter computed at an input sigma value (default sigma=3.0).
- (ii) The value specified for the profile in the `config/priors/*.json` config file`s `width_modifer` 
+ 
+ (ii) The value specified for the profile in the `config/priors/*.json` config file's `width_modifer` 
  field (check these files out now).
 
  The idea here is simple. We want a value of sigma that gives a GaussianPrior wide enough to search a broad 
@@ -455,7 +462,7 @@ By invoking the `model` attribute, the prioris passed following 3 rules:
  to be narrow enough that we don't search too much of parameter space, as this will be slow or risk leading us 
  into an incorrect solution! A natural choice is the errors of the parameter from the previous phase.
        
- Unfortunately, this doesn`t always work. Lens modeling is prone to an effect called `over-fitting` where we 
+ Unfortunately, this doesn't always work. Lens modeling is prone to an effect called `over-fitting` where we 
  underestimate the errors on our lens model parameters. This is especially true when we take the shortcuts in 
  early phases - fast `NonLinearSearch` settings, simplified lens models, etc.
     
@@ -488,11 +495,13 @@ the relative value from a previous phase.
 
 We can customize how priors are passed from the results of a phase and `NonLinearSearch` by inputting to the search 
 a PriorPasser object:
-"""
 
+```
 search = af.DynestyStatic(
     prior_passer=af.PriorPasser(sigma=2.0, use_widths=False, use_errors=True)
 )
+```
+"""
 
 # %%
 """
@@ -507,14 +516,14 @@ you should not need to change these values to get lens modeling to work proficie
 __EXAMPLE__
 
 Lets go through an example using a real parameter. Lets say in phase 1 we fit the lens `Galaxy`'s light with an 
-elliptical Sersic profile, and we estimate that its sersic index is equal to 4.0 +- 2.0 where the error value of 2.0 
+elliptical Sersic profile, and we estimate that its sersic index is equal to 4.0 ± 2.0 where the error value of 2.0 
 was computed at 3.0 sigma confidence. To pass this as a prior to phase 2, we would write:
 
  lens.bulge.sersic_index = phase1.result.model.lens.bulge.sersic_index
 
 The prior on the lens `Galaxy`'s sersic `LightProfile` in phase 2 would thus be a GaussianPrior, with mean=4.0 and 
-sigma=2.0. If we had used a sigma value of 1.0 to compute the error, which reduced the estimate from 4.0 +- 2.0 to 
-4.0 +- 1.0, the sigma of the Gaussian prior would instead be 1.0. 
+sigma=2.0. If we had used a sigma value of 1.0 to compute the error, which reduced the estimate from 4.0 ± 2.0 to 
+4.0 ± 1.0, the sigma of the Gaussian prior would instead be 1.0. 
 
 If the error on the Sersic index in phase 1 had been really small, lets say, 0.01, we would instead use the value of the 
 Sersic index width in the priors config file to set sigma instead. In this case, the prior config file specifies 

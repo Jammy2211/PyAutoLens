@@ -596,8 +596,8 @@ class SLaM:
                 ),
             )
 
-    def _source_parametric_from_results(
-        self, results: af.ResultsCollection, source_is_model: bool = True
+    def _source_parametric_from_result(
+        self, result: af.Result, source_is_model: bool = True
     ) -> ag.GalaxyModel:
         """
          Pass a parametric source `PriorModel` as a `model` or `instance` from a previous pipeline.
@@ -616,16 +616,16 @@ class SLaM:
             Contains the `PriorModel`'s of the source's bulge, disk, etc.
         """
         hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_result(
-            result=results.last
+            result=result
         )
 
         if source_is_model:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_source,
-                bulge=results.last.model.galaxies.source.bulge,
-                disk=results.last.model.galaxies.source.disk,
-                envelope=results.last.model.galaxies.source.envelope,
+                bulge=result.model.galaxies.source.bulge,
+                disk=result.model.galaxies.source.disk,
+                envelope=result.model.galaxies.source.envelope,
                 hyper_galaxy=hyper_galaxy,
             )
 
@@ -633,14 +633,14 @@ class SLaM:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_source,
-                bulge=results.last.instance.galaxies.source.bulge,
-                disk=results.last.instance.galaxies.source.disk,
-                envelope=results.last.instance.galaxies.source.envelope,
+                bulge=result.instance.galaxies.source.bulge,
+                disk=result.instance.galaxies.source.disk,
+                envelope=result.instance.galaxies.source.envelope,
                 hyper_galaxy=hyper_galaxy,
             )
 
-    def _source_inversion_from_results(
-        self, results: af.ResultsCollection, source_is_model: bool = False
+    def _source_inversion_from_result(
+        self, result: af.Result, source_is_model: bool = False
     ) -> ag.GalaxyModel:
         """
          Pass an inversion source `PriorModel` as a `model` or `instance` from a previous pipeline.
@@ -659,7 +659,7 @@ class SLaM:
             Contains the `PriorModel`'s of the source's pixelization, regularization, etc.
         """
         hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_result(
-            result=results.last
+            result=result.last
         )
 
         if not self.setup_hyper.hyper_fixed_after_source:
@@ -668,8 +668,8 @@ class SLaM:
 
                 return ag.GalaxyModel(
                     redshift=self.redshift_source,
-                    pixelization=results.last.hyper.instance.galaxies.source.pixelization,
-                    regularization=results.last.hyper.model.galaxies.source.regularization,
+                    pixelization=result.hyper.instance.galaxies.source.pixelization,
+                    regularization=result.hyper.model.galaxies.source.regularization,
                     hyper_galaxy=hyper_galaxy,
                 )
 
@@ -677,8 +677,8 @@ class SLaM:
 
                 return ag.GalaxyModel(
                     redshift=self.redshift_source,
-                    pixelization=results.last.hyper.instance.galaxies.source.pixelization,
-                    regularization=results.last.hyper.instance.galaxies.source.regularization,
+                    pixelization=result.hyper.instance.galaxies.source.pixelization,
+                    regularization=result.hyper.instance.galaxies.source.regularization,
                     hyper_galaxy=hyper_galaxy,
                 )
 
@@ -688,8 +688,8 @@ class SLaM:
 
                 return ag.GalaxyModel(
                     redshift=self.redshift_source,
-                    pixelization=results.last.instance.galaxies.source.pixelization,
-                    regularization=results.last.model.galaxies.source.regularization,
+                    pixelization=result.instance.galaxies.source.pixelization,
+                    regularization=result.model.galaxies.source.regularization,
                     hyper_galaxy=hyper_galaxy,
                 )
 
@@ -697,13 +697,13 @@ class SLaM:
 
                 return ag.GalaxyModel(
                     redshift=self.redshift_source,
-                    pixelization=results.last.instance.galaxies.source.pixelization,
-                    regularization=results.last.instance.galaxies.source.regularization,
+                    pixelization=result.instance.galaxies.source.pixelization,
+                    regularization=result.instance.galaxies.source.regularization,
                     hyper_galaxy=hyper_galaxy,
                 )
 
-    def source_from_results(
-        self, results: af.ResultsCollection, source_is_model: bool = False
+    def source_from_result(
+        self, result: af.Result, source_is_model: bool = False
     ) -> ag.GalaxyModel:
         """
         Setup the source model using the previous pipeline and phase results.
@@ -727,17 +727,15 @@ class SLaM:
 
         if self.pipeline_source_inversion is None:
 
-            return self._source_parametric_from_results(
-                results=results, source_is_model=source_is_model
+            return self._source_parametric_from_result(
+                result=result, source_is_model=source_is_model
             )
 
-        else:
+        return self._source_inversion_from_result(
+            result=result, source_is_model=source_is_model
+        )
 
-            return self._source_inversion_from_results(
-                results=results, source_is_model=source_is_model
-            )
-
-    def source_from_results_model_if_parametric(self, results: af.ResultsCollection):
+    def source_from_result_model_if_parametric(self, result: af.Result):
         """Setup the source model for a Mass pipeline using the previous pipeline and phase results.
 
         The source light model is not specified by the pipeline Mass pipeline (e.g. the previous pipelines are used to
@@ -754,10 +752,10 @@ class SLaM:
             The result of the previous source pipeline.  
         """
         if self.pipeline_source_inversion is None:
-            return self.source_from_results(results=results, source_is_model=True)
-        return self.source_from_results(results=results, source_is_model=False)
+            return self.source_from_result(result=result, source_is_model=True)
+        return self.source_from_result(result=result, source_is_model=False)
 
-    def source_for_subhalo_pipeline_from_results(self, results: af.ResultsCollection):
-        return self.source_from_results(
-            results=results, source_is_model=self.setup_subhalo.source_is_model
+    def source_for_subhalo_pipeline_from_results(self, result: af.Result):
+        return self.source_from_result(
+            result=result, source_is_model=self.setup_subhalo.source_is_model
         )
