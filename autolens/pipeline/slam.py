@@ -659,7 +659,7 @@ class SLaM:
             Contains the `PriorModel`'s of the source's pixelization, regularization, etc.
         """
         hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_result(
-            result=result.last
+            result=result
         )
 
         if not self.setup_hyper.hyper_fixed_after_source:

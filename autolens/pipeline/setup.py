@@ -284,11 +284,7 @@ class SetupHyper(setup.SetupHyper):
         if galaxy_model.hyper_galaxy is None:
             return None
 
-        if noise_factor_is_model:
-
-            hyper_galaxy.noise_factor = galaxy_model.hyper_galaxy.noise_factor
-
-        else:
+        if not noise_factor_is_model:
 
             hyper_galaxy.noise_factor = galaxy_instance.hyper_galaxy.noise_factor
 
