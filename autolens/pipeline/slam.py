@@ -233,11 +233,11 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
             return f"__{conf.instance['notation']['setup_tags']['pipeline']['light_is_model']}"
         return f"__{conf.instance['notation']['setup_tags']['pipeline']['light_is_instance']}"
 
-    def smbh_prior_model_from_results(self, results: af.ResultsCollection):
+    def smbh_prior_model_from_result(self, result: af.Result):
 
         if self.setup_smbh is not None:
             return self.setup_smbh.smbh_from_centre(
-                centre=results.last.instance.galaxies.lens.bulge.centre
+                centre=result.instance.galaxies.lens.bulge.centre
             )
 
     def shear_from_result(self, result: af.Result, as_instance=False):
@@ -503,8 +503,8 @@ class SLaM:
 
         return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{smbh_tag}{source_tag}"
 
-    def lens_for_mass_pipeline_from_results(
-        self, results: af.ResultsCollection, mass: af.PriorModel, shear: af.PriorModel
+    def lens_for_mass_pipeline_from_result(
+        self, result: af.Result, mass: af.PriorModel, shear: af.PriorModel
     ) -> ag.GalaxyModel:
         """Setup the lens model for a `Mass` pipeline using the previous `Light` pipeline and phase results.
 
@@ -533,13 +533,13 @@ class SLaM:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_lens,
-                bulge=results.last.instance.galaxies.lens.bulge,
-                disk=results.last.instance.galaxies.lens.disk,
-                envelope=results.last.instance.galaxies.lens.envelope,
+                bulge=result.instance.galaxies.lens.bulge,
+                disk=result.instance.galaxies.lens.disk,
+                envelope=result.instance.galaxies.lens.envelope,
                 mass=mass,
                 shear=shear,
                 hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
-                    result=results.last
+                    result=result
                 ),
             )
 
@@ -547,18 +547,18 @@ class SLaM:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_lens,
-                bulge=results.last.model.galaxies.lens.bulge,
-                disk=results.last.model.galaxies.lens.disk,
-                envelope=results.last.model.galaxies.lens.envelope,
+                bulge=result.model.galaxies.lens.bulge,
+                disk=result.model.galaxies.lens.disk,
+                envelope=result.model.galaxies.lens.envelope,
                 mass=mass,
                 shear=shear,
                 hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
-                    result=results.last
+                    result=result
                 ),
             )
 
-    def lens_for_subhalo_pipeline_from_results(
-        self, results: af.ResultsCollection
+    def lens_for_subhalo_pipeline_from_result(
+        self, result: af.Result
     ) -> ag.GalaxyModel:
         """
         Pass the lens `PriorModel` as a `model` or `instance` from the `MassPipeline` to the `SubhaloPipeline`.
@@ -578,10 +578,10 @@ class SLaM:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_lens,
-                mass=results.last.model.galaxies.lens.mass,
-                shear=results.last.model.galaxies.lens.shear,
+                mass=result.model.galaxies.lens.mass,
+                shear=result.model.galaxies.lens.shear,
                 hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
-                    result=results.last
+                    result=result
                 ),
             )
 
@@ -589,10 +589,10 @@ class SLaM:
 
             return ag.GalaxyModel(
                 redshift=self.redshift_lens,
-                mass=results.last.instance.galaxies.lens.mass,
-                shear=results.last.instance.galaxies.lens.shear,
+                mass=result.instance.galaxies.lens.mass,
+                shear=result.instance.galaxies.lens.shear,
                 hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
-                    result=results.last
+                    result=result
                 ),
             )
 
@@ -755,7 +755,7 @@ class SLaM:
             return self.source_from_result(result=result, source_is_model=True)
         return self.source_from_result(result=result, source_is_model=False)
 
-    def source_for_subhalo_pipeline_from_results(self, result: af.Result):
+    def source_for_subhalo_pipeline_from_result(self, result: af.Result):
         return self.source_from_result(
             result=result, source_is_model=self.setup_subhalo.source_is_model
         )
