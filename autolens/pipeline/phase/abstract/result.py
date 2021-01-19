@@ -64,7 +64,7 @@ class Result(result.Result):
 
         # TODO : In the future, the multiple image positions functioon wil use an in-built adaptive grid.
 
-        grid = self.analysis.masked_dataset.mask.geometry.unmasked_grid_sub_1
+        grid = self.analysis.masked_dataset.mask.unmasked_grid_sub_1
 
         solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.001)
 

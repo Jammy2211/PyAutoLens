@@ -30,7 +30,7 @@ def critical_curve_via_magnification_from_tracer_and_grid(tracer, grid):
         contour_x, contour_y = contours[jj].T
         pixel_coord = np.stack((contour_x, contour_y), axis=-1)
 
-        critical_curve = grid.geometry.grid_scaled_from_grid_pixels_1d_for_marching_squares(
+        critical_curve = grid.mask.grid_scaled_from_grid_pixels_1d_for_marching_squares(
             grid_pixels_1d=pixel_coord, shape_2d=magnification.sub_shape_2d
         )
 
@@ -2159,10 +2159,10 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7.geometry.unmasked_grid_sub_1, redshift=0.3
+                grid=sub_grid_7x7.mask.unmasked_grid_sub_1, redshift=0.3
             )
 
-            assert (grid_at_redshift == sub_grid_7x7.geometry.unmasked_grid_sub_1).all()
+            assert (grid_at_redshift == sub_grid_7x7.mask.unmasked_grid_sub_1).all()
 
     class TestContributionMap:
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):

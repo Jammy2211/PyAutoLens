@@ -45,7 +45,7 @@ class PhaseDataset(dataset.PhaseDataset):
                     if results.last.max_log_likelihood_tracer.has_mass_profile:
 
                         einstein_radius = results.last.max_log_likelihood_tracer.einstein_radius_from_grid(
-                            grid=dataset.data.mask.geometry.unmasked_grid_sub_1
+                            grid=dataset.data.mask.unmasked_grid_sub_1
                         )
 
                         self.settings.settings_lens = self.settings.settings_lens.modify_einstein_radius_estimate(

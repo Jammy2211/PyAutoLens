@@ -80,7 +80,7 @@ and ``FitImaging`` objects and which can easily be plotted.
 
 .. code-block:: bash
 
-    tracer_plotter = aplt.TracerPlotter(tracer=result.max_log_likelihood_tracer, grid=mask.geometry.masked_grid)
+    tracer_plotter = aplt.TracerPlotter(tracer=result.max_log_likelihood_tracer, grid=mask.masked_grid)
     tracer_plotter.subplot_tracer()
 
     fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)

@@ -41,7 +41,7 @@ _Tracer_, which when we fit it to ``data`` data in the uv-plane is mapped to Fou
         shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
     )
 
-    aplt.Tracer.image(tracer=tracer, grid=real_space_mask.geometry.masked_grid)
+    aplt.Tracer.image(tracer=tracer, grid=real_space_mask.masked_grid)
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/image.png
   :width: 400
