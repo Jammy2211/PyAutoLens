@@ -152,7 +152,7 @@ class MockFit:
 
 class MockTracer:
     def __init__(
-        self, traced_grid=None, einstein_radius=None, magnification=None, flux_hack=None
+        self, traced_grid=None, einstein_radius=None, einstein_mass=None, magnification=None, flux_hack=None
     ):
 
         self.positions = traced_grid
@@ -160,6 +160,7 @@ class MockTracer:
         self.flux_hack = flux_hack
 
         self.einstein_radius = einstein_radius
+        self.einstein_mass = einstein_mass
 
     @property
     def has_mass_profile(self):
@@ -173,6 +174,9 @@ class MockTracer:
 
     def einstein_radius_from_grid(self, grid):
         return self.einstein_radius
+
+    def einstein_mass_angular_from_grid(self, grid):
+        return self.einstein_mass
 
 
 class MockPositionsSolver:

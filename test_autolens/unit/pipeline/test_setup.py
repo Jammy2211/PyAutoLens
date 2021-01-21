@@ -91,7 +91,7 @@ class TestSetupMassLightDark:
 
         grid = al.Grid.uniform(shape_2d=(200, 200), pixel_scales=0.05)
 
-        tracer = mock.MockTracer(einstein_radius=1.0)
+        tracer = mock.MockTracer(einstein_radius=1.0, einstein_mass=4.0)
         fit = mock.MockFit(grid=grid)
 
         result = mock.MockResult(
@@ -113,14 +113,17 @@ class TestSetupMassLightDark:
         setup = al.SetupMassLightDark(bulge_prior_model=bulge_prior_model)
 
         setup.update_stellar_mass_priors_from_result(
-            result=result, einstein_radius_range=[0.9, 1.1], bins=10
+            prior_model=bulge_prior_model,
+            result=result,
+            einstein_mass_range=[0.001, 10.0],
+            bins=10
         )
 
         assert setup.bulge_prior_model.mass_to_light_ratio.lower_limit == pytest.approx(
-            0.276162, 1.0e-1
+            0.00040519, 1.0e-1
         )
         assert setup.bulge_prior_model.mass_to_light_ratio.upper_limit == pytest.approx(
-            0.3629541, 1.0e-1
+            4.051935, 1.0e-1
         )
 
 

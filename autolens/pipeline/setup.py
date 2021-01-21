@@ -467,66 +467,40 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
         )
 
     def update_stellar_mass_priors_from_result(
-        self, result, einstein_radius_range, bins=100
+        self, prior_model, result, einstein_mass_range, bins=100
     ):
 
+        if prior_model is None:
+            return None
+
         grid = result.max_log_likelihood_fit.grid
+
         einstein_radius = result.max_log_likelihood_tracer.einstein_radius_from_grid(
             grid=grid
         )
 
-        einstein_radius_lower = einstein_radius_range[0] * einstein_radius
+        einstein_mass = result.max_log_likelihood_tracer.einstein_mass_angular_from_grid(
+            grid=grid
+        )
 
-        einstein_radius_upper = einstein_radius_range[1] * einstein_radius
+        einstein_mass_lower = einstein_mass_range[0] * einstein_mass
+        einstein_mass_upper = einstein_mass_range[1] * einstein_mass
 
-        if self.bulge_prior_model is not None:
+        instance = prior_model.instance_from_prior_medians()
 
-            bulge = self.bulge_prior_model.instance_from_prior_medians()
+        mass_to_light_ratio_lower = instance.normalization_from_mass_angular_and_radius(
+            mass_angular=einstein_mass_lower, radius=einstein_radius, bins=bins
+        )
+        mass_to_light_ratio_upper = instance.normalization_from_mass_angular_and_radius(
+            mass_angular=einstein_mass_upper, radius=einstein_radius, bins=bins
+        )
 
-            mass_to_light_ratio_lower = bulge.normalization_from_einstein_radius(
-                einstein_radius=einstein_radius_lower, bins=bins
-            )
-            mass_to_light_ratio_upper = bulge.normalization_from_einstein_radius(
-                einstein_radius=einstein_radius_upper, bins=bins
-            )
+        prior_model.mass_to_light_ratio = af.LogUniformPrior(
+            lower_limit=mass_to_light_ratio_lower,
+            upper_limit=mass_to_light_ratio_upper,
+        )
 
-            self.bulge_prior_model.mass_to_light_ratio = af.LogUniformPrior(
-                lower_limit=mass_to_light_ratio_lower,
-                upper_limit=mass_to_light_ratio_upper,
-            )
-
-        if self.disk_prior_model is not None:
-
-            disk = self.disk_prior_model.instance_from_prior_medians()
-
-            mass_to_light_ratio_lower = disk.normalization_from_einstein_radius(
-                einstein_radius=einstein_radius_lower, bins=bins
-            )
-            mass_to_light_ratio_upper = disk.normalization_from_einstein_radius(
-                einstein_radius=einstein_radius_upper, bins=bins
-            )
-
-            self.disk_prior_model.mass_to_light_ratio = af.LogUniformPrior(
-                lower_limit=mass_to_light_ratio_lower,
-                upper_limit=mass_to_light_ratio_upper,
-            )
-
-        if self.envelope_prior_model is not None:
-
-            envelope = self.envelope_prior_model.instance_from_prior_medians()
-
-            mass_to_light_ratio_lower = envelope.normalization_from_einstein_radius(
-                einstein_radius=einstein_radius_lower, bins=bins
-            )
-            mass_to_light_ratio_upper = envelope.normalization_from_einstein_radius(
-                einstein_radius=einstein_radius_upper, bins=bins
-            )
-
-            self.envelope_prior_model.mass_to_light_ratio = af.LogUniformPrior(
-                lower_limit=mass_to_light_ratio_lower,
-                upper_limit=mass_to_light_ratio_upper,
-            )
-
+        return prior_model
 
 class SetupSourceParametric(setup.SetupLightParametric):
     def __init__(
