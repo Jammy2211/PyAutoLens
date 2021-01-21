@@ -23,7 +23,9 @@ class TestLogLikelihoodFunction:
         self, phase_imaging_7x7, imaging_7x7, mask_7x7
     ):
 
-        imaging_7x7.positions = al.GridIrregularGrouped([[(1.0, 100.0), (200.0, 2.0)]])
+        imaging_7x7.positions = al.GridIrregularGrouped(
+            [[(1.0, 100.0), (200.0, 2.0)]]
+        )
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(

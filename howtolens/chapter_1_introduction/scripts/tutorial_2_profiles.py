@@ -113,7 +113,7 @@ We can use a `Profile` `Plotter`.to plot this image.
 light_profile_plotter = aplt.LightProfilePlotter(
     light_profile=sersic_light_profile, grid=grid
 )
-light_profile_plotter.figures()
+light_profile_plotter.figures(image=True)
 
 # %%
 """

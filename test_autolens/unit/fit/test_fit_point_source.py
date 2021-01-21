@@ -4,27 +4,13 @@ import pytest
 from autolens.mock import mock
 
 
-class MockTracerPositions:
-    def __init__(self, positions=None, magnification=None, flux_hack=None):
-
-        self.positions = positions
-        self.magnification = magnification
-        self.flux_hack = flux_hack
-
-    def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
-        return [self.positions]
-
-    def magnification_irregular_from_grid(self, grid):
-        return self.magnification
-
-
 class TestAbstractFitPositionsSourcePlane:
     def test__furthest_separation_of_source_plane_positions(self):
 
         positions = al.GridIrregularGrouped(grid=[[(0.0, 0.0), (0.0, 1.0)]])
         noise_map = al.ValuesIrregularGrouped([[1.0, 1.0]])
 
-        tracer = MockTracerPositions(positions=positions)
+        tracer = mock.MockTracer(traced_grid=positions)
         fit = al.FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=noise_map, tracer=tracer
         )
@@ -41,7 +27,7 @@ class TestAbstractFitPositionsSourcePlane:
         )
         noise_map = al.ValuesIrregularGrouped([[1.0, 1.0], [1.0]])
 
-        tracer = MockTracerPositions(positions=positions)
+        tracer = mock.MockTracer(traced_grid=positions)
         fit = al.FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=noise_map, tracer=tracer
         )
@@ -135,7 +121,7 @@ class TestAbstractFitPositionsSourcePlane:
 class TestFitPositionsImage:
     def test__two_sets_of_positions__residuals_likelihood_correct(self):
 
-        tracer = MockTracerPositions(positions=None)
+        tracer = mock.MockTracer(traced_grid=None)
 
         positions = al.GridIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)], [(3.0, 3.0)]])
 
@@ -181,7 +167,7 @@ class TestFitPositionsImage:
 
     def test__more_model_positions_than_data_positions__pairs_closest_positions(self):
 
-        tracer = MockTracerPositions(positions=None)
+        tracer = mock.MockTracer(traced_grid=None)
 
         positions = al.GridIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)], [(3.0, 3.0)]])
 
@@ -232,7 +218,7 @@ class TestFitPositionsImage:
 #
 #         positions = al.GridIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)]])
 #
-#         tracer = MockTracerPositions(
+#         tracer = mokc.MockTracer(
 #             magnification=2,
 #             flux_hack=2.0
 #         )

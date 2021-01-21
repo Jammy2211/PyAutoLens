@@ -1,6 +1,10 @@
 import autofit as af
 import autolens as al
 
+from autolens.mock import mock
+
+import pytest
+
 
 class TestSetupHyper:
     def test__hyper_galaxies_names_and_tag_for_lens_and_source(self):
@@ -80,6 +84,44 @@ class TestSetupSource:
         setup = al.SetupSourceParametric()
 
         assert setup.tag == "source[parametric__bulge_sersic]"
+
+
+class TestSetupMassLightDark:
+    def test__update_stellar_mass_priors_using_einstein_radius(self):
+
+        grid = al.Grid.uniform(shape_2d=(200, 200), pixel_scales=0.05)
+
+        tracer = mock.MockTracer(einstein_radius=1.0)
+        fit = mock.MockFit(grid=grid)
+
+        result = mock.MockResult(
+            max_log_likelihood_tracer=tracer, max_log_likelihood_fit=fit
+        )
+
+        bulge_prior_model = af.PriorModel(al.lmp.SphericalSersic)
+
+        bulge_prior_model.intensity = af.UniformPrior(
+            lower_limit=0.99, upper_limit=1.01
+        )
+        bulge_prior_model.effective_radius = af.UniformPrior(
+            lower_limit=0.99, upper_limit=1.01
+        )
+        bulge_prior_model.sersic_index = af.UniformPrior(
+            lower_limit=2.99, upper_limit=3.01
+        )
+
+        setup = al.SetupMassLightDark(bulge_prior_model=bulge_prior_model)
+
+        setup.update_stellar_mass_priors_from_result(
+            result=result, einstein_radius_range=[0.9, 1.1], bins=10
+        )
+
+        assert setup.bulge_prior_model.mass_to_light_ratio.lower_limit == pytest.approx(
+            0.276162, 1.0e-1
+        )
+        assert setup.bulge_prior_model.mass_to_light_ratio.upper_limit == pytest.approx(
+            0.3629541, 1.0e-1
+        )
 
 
 class TestSetupSubhalo:

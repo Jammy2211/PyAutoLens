@@ -6,7 +6,6 @@ import pytest
 import autofit as af
 from autofit.mapper.prior.prior import TuplePrior
 import autolens as al
-from autolens import exc
 from autolens.mock import mock
 
 pytestmark = pytest.mark.filterwarnings(
@@ -84,27 +83,13 @@ class TestMakeAnalysis:
     ):
         # If position threshold is input (not None) and positions are input, make the positions part of the lens dataset.
 
-        class MockTracer:
-            def __init__(self, einstein_radius_via_tangential_critical_curve):
-
-                self.einstein_radius_via_tangential_critical_curve = (
-                    einstein_radius_via_tangential_critical_curve
-                )
-
-            def einstein_radius_from_grid(self, grid):
-                return self.einstein_radius_via_tangential_critical_curve
-
-            @property
-            def has_mass_profile(self):
-                return True
-
         phase_imaging_7x7 = al.PhaseImaging(
             search=mock.MockSearch("test_phase"),
             settings=al.SettingsPhaseImaging(
                 settings_lens=al.SettingsLens(auto_einstein_radius_factor=None)
             ),
         )
-        tracer = MockTracer(einstein_radius_via_tangential_critical_curve=2.0)
+        tracer = mock.MockTracer(einstein_radius=2.0)
 
         phase_imaging_7x7.modify_settings(
             dataset=imaging_7x7,
@@ -124,7 +109,7 @@ class TestMakeAnalysis:
             ),
         )
 
-        tracer = MockTracer(einstein_radius_via_tangential_critical_curve=2.0)
+        tracer = mock.MockTracer(einstein_radius=2.0)
 
         phase_imaging_7x7.modify_settings(
             dataset=imaging_7x7,
@@ -136,8 +121,6 @@ class TestMakeAnalysis:
             mask=mask_7x7,
             results=mock.MockResults(max_log_likelihood_tracer=tracer),
         )
-
-        print(analysis.settings.settings_lens.einstein_radius_estimate)
 
         assert analysis.settings.settings_lens.einstein_radius_estimate == 2.0
 

@@ -615,9 +615,7 @@ class SLaM:
         ag.GalaxyModel
             Contains the `PriorModel`'s of the source's bulge, disk, etc.
         """
-        hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_result(
-            result=result
-        )
+        hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_result(result=result)
 
         if source_is_model:
 
@@ -658,9 +656,7 @@ class SLaM:
         ag.GalaxyModel
             Contains the `PriorModel`'s of the source's pixelization, regularization, etc.
         """
-        hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_result(
-            result=result
-        )
+        hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_result(result=result)
 
         if not self.setup_hyper.hyper_fixed_after_source:
 

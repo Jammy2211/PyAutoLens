@@ -120,7 +120,7 @@ We can also plot each individual `LightProfile` using the `subplot` galaxy mat_p
 """
 
 # %%
-galaxy_plotter.subplot_of_light_profiles()
+galaxy_plotter.subplot_of_light_profiles(image=True)
 
 # %%
 """
