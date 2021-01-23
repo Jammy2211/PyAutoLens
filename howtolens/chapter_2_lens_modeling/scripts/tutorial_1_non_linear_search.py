@@ -56,12 +56,11 @@ picture that a `NonLinearSearch` in **PyAutoLens** operates as follows:
 
 # %%
 #%matplotlib inline
-
-from pyprojroot import here
-
-workspace_path = str(here())
-#%cd $workspace_path
-print(f"Working Directory has been set to `{workspace_path}`")
+# %matplotlib inline
+# from pyprojroot import here
+# workspace_path = str(here())
+# %cd $workspace_path
+# print(f"Working Directory has been set to `{workspace_path}`")
 
 from os import path
 import autofit as af  # <- This library is used for non-linear fitting.

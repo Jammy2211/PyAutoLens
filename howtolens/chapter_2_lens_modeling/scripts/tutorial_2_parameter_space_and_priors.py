@@ -37,7 +37,7 @@ down analytically and its undoubtedly very complex and non-linear. Fortunately, 
 it, and find the solutions which maximize our log_likelihood function!
 
 Lets inspect the results of the last tutorial's non-linear search. we're going to look at what are called `Probability
-density functions` or `PDF`s for short. These represent where the highest log likelihood regions of parameter space were
+density functions` or `PDF's for short. These represent where the highest log likelihood regions of parameter space were
 found for each parameter.
 
 Navigate to the image folder in `autolens_workspace/output/howtolens/phase_t1_non_linear_search`
@@ -90,12 +90,11 @@ and inspecting config files like light_profiles.json. The convention is as follo
 
 # %%
 #%matplotlib inline
-
-from pyprojroot import here
-
-workspace_path = str(here())
-#%cd $workspace_path
-print(f"Working Directory has been set to `{workspace_path}`")
+# %matplotlib inline
+# from pyprojroot import here
+# workspace_path = str(here())
+# %cd $workspace_path
+# print(f"Working Directory has been set to `{workspace_path}`")
 
 from os import path
 import autolens as al

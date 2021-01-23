@@ -16,12 +16,11 @@ regime of 30-40+ parameters in our non-linear search. Even with a pipeline, that
 
 # %%
 #%matplotlib inline
-
-from pyprojroot import here
-
-workspace_path = str(here())
-#%cd $workspace_path
-print(f"Working Directory has been set to `{workspace_path}`")
+# %matplotlib inline
+# from pyprojroot import here
+# workspace_path = str(here())
+# %cd $workspace_path
+# print(f"Working Directory has been set to `{workspace_path}`")
 
 from os import path
 import autolens as al

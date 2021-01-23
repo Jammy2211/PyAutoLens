@@ -35,12 +35,11 @@ first phase, we can use its results to tune the priors of our second phase. For 
 
 # %%
 #%matplotlib inline
-
-from pyprojroot import here
-
-workspace_path = str(here())
-#%cd $workspace_path
-print(f"Working Directory has been set to `{workspace_path}`")
+# %matplotlib inline
+# from pyprojroot import here
+# workspace_path = str(here())
+# %cd $workspace_path
+# print(f"Working Directory has been set to `{workspace_path}`")
 
 import numpy as np
 from os import path

@@ -23,12 +23,11 @@ In future exercises, we'll fit even more complex models, with some 20-30+ non-li
 
 # %%
 #%matplotlib inline
-
-from pyprojroot import here
-
-workspace_path = str(here())
-#%cd $workspace_path
-print(f"Working Directory has been set to `{workspace_path}`")
+# %matplotlib inline
+# from pyprojroot import here
+# workspace_path = str(here())
+# %cd $workspace_path
+# print(f"Working Directory has been set to `{workspace_path}`")
 
 from os import path
 import autolens as al

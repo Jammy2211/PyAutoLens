@@ -466,42 +466,6 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
             f"{self.align_bulge_dark_centre_tag}]"
         )
 
-    def update_stellar_mass_priors_from_result(
-        self, prior_model, result, einstein_mass_range, bins=100
-    ):
-
-        if prior_model is None:
-            return None
-
-        grid = result.max_log_likelihood_fit.grid
-
-        einstein_radius = result.max_log_likelihood_tracer.einstein_radius_from_grid(
-            grid=grid
-        )
-
-        einstein_mass = result.max_log_likelihood_tracer.einstein_mass_angular_from_grid(
-            grid=grid
-        )
-
-        einstein_mass_lower = einstein_mass_range[0] * einstein_mass
-        einstein_mass_upper = einstein_mass_range[1] * einstein_mass
-
-        instance = prior_model.instance_from_prior_medians()
-
-        mass_to_light_ratio_lower = instance.normalization_from_mass_angular_and_radius(
-            mass_angular=einstein_mass_lower, radius=einstein_radius, bins=bins
-        )
-        mass_to_light_ratio_upper = instance.normalization_from_mass_angular_and_radius(
-            mass_angular=einstein_mass_upper, radius=einstein_radius, bins=bins
-        )
-
-        prior_model.mass_to_light_ratio = af.LogUniformPrior(
-            lower_limit=mass_to_light_ratio_lower,
-            upper_limit=mass_to_light_ratio_upper,
-        )
-
-        return prior_model
-
 class SetupSourceParametric(setup.SetupLightParametric):
     def __init__(
         self,

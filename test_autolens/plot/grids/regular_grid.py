@@ -2,7 +2,8 @@ import autolens as al
 
 grid = al.Grid.uniform(shape_2d=(10, 10), pixel_scales=1.0)
 
-aplt.Grid(grid=grid)
+grid_plotter = aplt.GridPlotter(grid=grid)
+grid_plotter.figure()
 
 grid = al.Grid.uniform(shape_2d=(10, 10), pixel_scales=1.0, origin=(5.0, 5.0))
 
