@@ -152,7 +152,12 @@ class MockFit:
 
 class MockTracer:
     def __init__(
-        self, traced_grid=None, einstein_radius=None, einstein_mass=None, magnification=None, flux_hack=None
+        self,
+        traced_grid=None,
+        einstein_radius=None,
+        einstein_mass=None,
+        magnification=None,
+        flux_hack=None,
     ):
 
         self.positions = traced_grid

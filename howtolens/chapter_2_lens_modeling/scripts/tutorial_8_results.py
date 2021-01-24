@@ -38,7 +38,7 @@ imaging = al.Imaging.from_fits(
 )
 
 mask = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
 phase = al.PhaseImaging(
@@ -46,7 +46,9 @@ phase = al.PhaseImaging(
         path_prefix="howtolens", name="phase_t1_non_linear_search", n_live_points=40
     ),
     settings=al.SettingsPhaseImaging(
-        settings_masked_imaging=al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+        settings_masked_imaging=al.SettingsMaskedImaging(
+            grid_class=al.Grid2D, sub_size=2
+        )
     ),
     galaxies=af.CollectionPriorModel(
         lens_galaxy=al.GalaxyModel(redshift=0.5, mass=al.mp.SphericalIsothermal),

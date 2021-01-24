@@ -66,7 +66,7 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
 
         Parameters
         ----------
-        shape_2d : (int, int)
+        shape_native : (int, int)
             The shape of the observation. Note that we do not simulator a full Imaging frame (e.g. 2000 x 2000 pixels for \
             Hubble imaging), but instead just a cut-out around the strong lens.
         pixel_scales : float
@@ -115,7 +115,7 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
 
         image = tracer.image_from_grid(grid=grid)
 
-        return self.from_image(image=image.in_1d_binned, name=name)
+        return self.from_image(image=image.slim_binned, name=name)
 
     def from_galaxies_and_grid(self, galaxies, grid, name=None):
         """Simulate imaging data for this data, as follows:
@@ -139,13 +139,13 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
 
     def from_deflections_and_galaxies(self, deflections, galaxies, name=None):
 
-        grid = grids.Grid.uniform(
-            shape_2d=deflections.shape_2d,
+        grid = grids.Grid2D.uniform(
+            shape_native=deflections.shape_native,
             pixel_scales=deflections.pixel_scales,
             sub_size=1,
         )
 
-        deflected_grid = grid - deflections.in_1d_binned
+        deflected_grid = grid - deflections.slim_binned
 
         image = sum(map(lambda g: g.image_from_grid(grid=deflected_grid), galaxies))
 

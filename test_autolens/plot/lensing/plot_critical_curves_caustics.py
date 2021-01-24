@@ -4,7 +4,7 @@ import autolens.plot as aplt
 plotter = aplt.MatPlot2D()
 plotter = aplt.MatPlot2D()
 
-grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
+grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=2)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,

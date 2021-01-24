@@ -49,11 +49,11 @@ def test__all_individual_plotter(
     assert path.join(plot_path, "magnification.png") in plot_patch.paths
 
     tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy = al.HyperGalaxy()
-    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_model_image = al.Array.ones(
-        shape_2d=(7, 7), pixel_scales=0.1
+    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_model_image = al.Array2D.ones(
+        shape_native=(7, 7), pixel_scales=0.1
     )
-    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy_image = al.Array.ones(
-        shape_2d=(7, 7), pixel_scales=0.1
+    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy_image = al.Array2D.ones(
+        shape_native=(7, 7), pixel_scales=0.1
     )
 
     tracer_plotter.figures(contribution_map=True)

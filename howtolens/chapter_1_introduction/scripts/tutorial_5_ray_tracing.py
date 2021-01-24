@@ -3,8 +3,8 @@
 Tutorial 5: Ray Tracing
 =======================
 
-In the last tutorial, our use of `Plane`'s was a bit clunky. We manually had to input `Grid`'s to trace them, and keep
-track of which `Grid`'s were the image-plane`s and which were the source planes. It was easy to make mistakes!
+In the last tutorial, our use of `Plane`'s was a bit clunky. We manually had to input `Grid2D`'s to trace them, and keep
+track of which `Grid2D`'s were the image-plane`s and which were the source planes. It was easy to make mistakes!
 
 Fortunately, in **PyAutoLens**, you won't actually spend much hands-on time with the `Plane` objects. Instead, you'll
 primarily use the `ray-tracing` module, which we'll cover in this example. Lets look at how easy it is to setup the
@@ -24,11 +24,13 @@ import autolens.plot as aplt
 
 # %%
 """
-Let use the same `Grid` we've all grown to know and love by now!
+Let use the same `Grid2D` we've all grown to know and love by now!
 """
 
 # %%
-image_plane_grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
+image_plane_grid = al.Grid2D.uniform(
+    shape_native=(100, 100), pixel_scales=0.05, sub_size=2
+)
 
 # %%
 """
@@ -58,7 +60,7 @@ print(source_galaxy)
 
 # %%
 """
-Now, lets use the lens and source galaxies to ray-trace our `Grid`, using a `Tracer` from the ray-tracing module. 
+Now, lets use the lens and source galaxies to ray-trace our `Grid2D`, using a `Tracer` from the ray-tracing module. 
 When we pass our galaxies into the `Tracer` below, the following happens:
 
 1) The galaxies are ordered in ascending redshift.
@@ -95,7 +97,7 @@ print(tracer.source_plane)
 The most convenient part of the `Tracer` is we can use it to create fully `ray-traced` images, without manually 
 setting up the `Plane`'s to do this. The function below does the following
 
-1) Using the lens-total mass distribution, the deflection angle of every image-plane `Grid` coordinate is computed.
+1) Using the lens-total mass distribution, the deflection angle of every image-plane `Grid2D` coordinate is computed.
 2) These deflection angles are used to trace every image-plane coordinate to a source-plane coordinate.
 3) The light of each traced source-plane coordinate is evaluated using the source-plane `Galaxy`'s `LightProfile`.
 """
@@ -103,11 +105,11 @@ setting up the `Plane`'s to do this. The function below does the following
 # %%
 traced_image = tracer.image_from_grid(grid=image_plane_grid)
 print("traced image pixel 1")
-print(traced_image.in_2d[0, 0])
+print(traced_image.native[0, 0])
 print("traced image pixel 2")
-print(traced_image.in_2d[0, 1])
+print(traced_image.native[0, 1])
 print("traced image pixel 3")
-print(traced_image.in_2d[0, 2])
+print(traced_image.native[0, 2])
 
 # %%
 """
@@ -120,7 +122,7 @@ tracer_plotter.figures(image=True)
 
 # %%
 """
-We can also use the `Tracer` to compute the traced `Grid` of every plane, instead of getting the traced image itself:
+We can also use the `Tracer` to compute the traced `Grid2D` of every plane, instead of getting the traced image itself:
 """
 
 # %%
@@ -128,16 +130,16 @@ traced_grids = tracer.traced_grids_of_planes_from_grid(grid=image_plane_grid)
 
 # %%
 """
-And the source-plane`s `Grid` has been deflected.
+And the source-plane`s `Grid2D` has been deflected.
 """
 
 # %%
 print("grid source-plane coordinate 1")
-print(traced_grids[1].in_2d[0, 0])
+print(traced_grids[1].native[0, 0])
 print("grid source-plane coordinate 2")
-print(traced_grids[1].in_2d[0, 1])
+print(traced_grids[1].native[0, 1])
 print("grid source-plane coordinate 3")
-print(traced_grids[1].in_2d[0, 2])
+print(traced_grids[1].native[0, 2])
 
 # %%
 """
@@ -169,21 +171,21 @@ tracer_plotter.subplot_tracer()
 
 # %%
 """
-Just like for a plane, these quantities attributes can be computed by passing a `Grid` (converted to 2D ndarrays
+Just like for a plane, these quantities attributes can be computed by passing a `Grid2D` (converted to 2D ndarrays
 the same dimensions as our input grid!).
 """
 
 # %%
 convergence = tracer.convergence_from_grid(grid=image_plane_grid)
 
-print("Tracer - Convergence - `Grid` coordinate 1:")
-print(convergence.in_2d[0, 0])
-print("Tracer - Convergence - `Grid` coordinate 2:")
-print(convergence.in_2d[0, 1])
-print("Tracer - Convergence - `Grid` coordinate 3:")
-print(convergence.in_2d[0, 2])
-print("Tracer - Convergence - `Grid` coordinate 101:")
-print(convergence.in_2d[1, 0])
+print("Tracer - Convergence - `Grid2D` coordinate 1:")
+print(convergence.native[0, 0])
+print("Tracer - Convergence - `Grid2D` coordinate 2:")
+print(convergence.native[0, 1])
+print("Tracer - Convergence - `Grid2D` coordinate 3:")
+print(convergence.native[0, 2])
+print("Tracer - Convergence - `Grid2D` coordinate 101:")
+print(convergence.native[1, 0])
 
 # %%
 """
@@ -196,14 +198,14 @@ image_plane_convergence = tracer.image_plane.convergence_from_grid(
     grid=image_plane_grid
 )
 
-print("Image-Plane - Convergence - `Grid` coordinate 1:")
-print(image_plane_convergence.in_2d[0, 0])
-print("Image-Plane - Convergence - `Grid` coordinate 2:")
-print(image_plane_convergence.in_2d[0, 1])
-print("Image-Plane - Convergence - `Grid` coordinate 3:")
-print(image_plane_convergence.in_2d[0, 2])
-print("Image-Plane - Convergence - `Grid` coordinate 101:")
-print(image_plane_convergence.in_2d[1, 0])
+print("Image-Plane - Convergence - `Grid2D` coordinate 1:")
+print(image_plane_convergence.native[0, 0])
+print("Image-Plane - Convergence - `Grid2D` coordinate 2:")
+print(image_plane_convergence.native[0, 1])
+print("Image-Plane - Convergence - `Grid2D` coordinate 3:")
+print(image_plane_convergence.native[0, 2])
+print("Image-Plane - Convergence - `Grid2D` coordinate 101:")
+print(image_plane_convergence.native[1, 0])
 
 # %%
 """

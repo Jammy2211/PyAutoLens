@@ -27,8 +27,8 @@ from astropy import cosmology
 
 # %%
 """
-To begin, lets setup the `Grid`'s we'll ray-trace using. Lets do something crazy, and use a higher resolution `Grid` 
-then before and set the sub `Grid` size to 4x4 per pixel!
+To begin, lets setup the `Grid2D`'s we'll ray-trace using. Lets do something crazy, and use a higher resolution `Grid2D` 
+then before and set the sub `Grid2D` size to 4x4 per pixel!
 
 Every pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
 
@@ -36,7 +36,7 @@ Lets also stop calling it the `image_plane_grid`, and just remember from now on 
 """
 
 # %%
-grid = al.Grid.uniform(shape_2d=(200, 200), pixel_scales=0.025, sub_size=2)
+grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.025, sub_size=2)
 
 # %%
 """
@@ -44,8 +44,8 @@ Every pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
 """
 
 # %%
-print(grid.sub_shape_2d)
-print(grid.sub_shape_1d)
+print(grid.sub_shape_native)
+print(grid.sub_shape_slim)
 
 # %%
 """
@@ -214,7 +214,7 @@ tracer = al.Tracer.from_galaxies(
 """
 We can next plot the tracer`s `Profile` image, which is compute as follows:
 
- 1) First, using the image-plane `Grid`, the images of the lens galaxy and its satellite are computed.
+ 1) First, using the image-plane `Grid2D`, the images of the lens galaxy and its satellite are computed.
 
  2) Using the `MassProfile`'s of the lens and satellite, their deflection angles are computed.
 
@@ -233,11 +233,11 @@ tracer_plotter.figures(image=True)
 
 # %%
 """
-As we did previously, we can plot the `Grid` of the source plane and inspect the source-plane grid.
+As we did previously, we can plot the `Grid2D` of the source plane and inspect the source-plane grid.
 """
 
 # %%
-tracer_plotter.set_title("Source-plane Grid")
+tracer_plotter.set_title("Source-plane Grid2D")
 tracer_plotter.figures_of_planes(plane_grid=True, plane_index=1)
 
 # %%
@@ -250,7 +250,7 @@ We can zoom in on the `centre` of the source-plane.
 mat_plot_2d = aplt.MatPlot2D(axis=aplt.Axis(extent=[-0.2, 0.2, -0.2, 0.2]))
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
-tracer_plotter.set_title("Source-plane Grid")
+tracer_plotter.set_title("Source-plane Grid2D")
 tracer_plotter.figures_of_planes(plane_grid=True, plane_index=1)
 
 # %%

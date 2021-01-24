@@ -466,6 +466,7 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
             f"{self.align_bulge_dark_centre_tag}]"
         )
 
+
 class SetupSourceParametric(setup.SetupLightParametric):
     def __init__(
         self,

@@ -102,7 +102,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
     @property
     def light_profile_centres(self):
         """
-        Returns the light profile centres of the tracer as a `GridIrregularGrouped` object, which structures the centres
+        Returns the light profile centres of the tracer as a `Grid2DIrregularGrouped` object, which structures the centres
             in lists according to which plane they come from.
 
             Fo example, if the tracer has two planes, the first with one light profile and second with two light profiles
@@ -115,7 +115,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
             The centres of light-sheets are filtered out, as their centres are not relevant to lensing calculations
 
         """
-        return grids.GridIrregularGrouped(
+        return grids.Grid2DIrregularGrouped(
             [
                 list(plane.light_profile_centres)
                 for plane in self.planes
@@ -138,7 +138,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
     @property
     def mass_profile_centres(self):
         """
-        Returns the mass profile centres of the tracer as a `GridIrregularGrouped` object, which structures the centres
+        Returns the mass profile centres of the tracer as a `Grid2DIrregularGrouped` object, which structures the centres
             in lists according to which plane they come from.
 
             Fo example, if the tracer has two planes, the first with one mass profile and second with two mass profiles
@@ -151,7 +151,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
             The centres of mass-sheets are filtered out, as their centres are not relevant to lensing calculations
 
         """
-        return grids.GridIrregularGrouped(
+        return grids.Grid2DIrregularGrouped(
             [
                 list(plane.mass_profile_centres)
                 for plane in self.planes
@@ -226,7 +226,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
                         scaling_factor * traced_deflections[previous_plane_index]
                     )
 
-                    # TODO : Setup as GridInterpolate
+                    # TODO : Setup as Grid2DInterpolate
 
                     scaled_grid -= scaled_deflections
 
@@ -273,9 +273,11 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         return images_of_planes
 
-    def padded_image_from_grid_and_psf_shape(self, grid, psf_shape_2d):
+    def padded_image_from_grid_and_psf_shape(self, grid, psf_shape_native):
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=psf_shape_2d)
+        padded_grid = grid.padded_grid_from_kernel_shape(
+            kernel_shape_native=psf_shape_native
+        )
 
         return self.image_from_grid(grid=padded_grid)
 
@@ -305,7 +307,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         Parameters
         ----------
-        grid : ndsrray or aa.Grid
+        grid : ndsrray or aa.Grid2D
             The image-plane grid which is traced to the redshift.
         redshift : float
             The redshift the image-plane grid is traced to.
@@ -381,14 +383,14 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         """
 
         if not self.has_light_profile:
-            return np.zeros(shape=grid.shape_1d)
+            return np.zeros(shape=grid.shape_slim)
 
         image = self.image_from_grid(grid=grid)
 
         blurring_image = self.image_from_grid(grid=blurring_grid)
 
         return psf.convolved_array_from_array_2d_and_mask(
-            array_2d=image.in_2d_binned + blurring_image.in_2d_binned, mask=grid.mask
+            array_2d=image.native_binned + blurring_image.native_binned, mask=grid.mask
         )
 
     def blurred_images_of_planes_from_grid_and_psf(self, grid, psf, blurring_grid):
@@ -429,7 +431,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         """
 
         if not self.has_light_profile:
-            return np.zeros(shape=grid.shape_1d)
+            return np.zeros(shape=grid.shape_slim)
 
         image = self.image_from_grid(grid=grid)
 
@@ -469,7 +471,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
     def unmasked_blurred_image_from_grid_and_psf(self, grid, psf):
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=psf.shape_2d)
+        padded_grid = grid.padded_grid_from_kernel_shape(
+            kernel_shape_native=psf.shape_native
+        )
 
         padded_image = self.image_from_grid(grid=padded_grid)
 
@@ -479,7 +483,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
     def unmasked_blurred_image_of_planes_from_grid_and_psf(self, grid, psf):
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=psf.shape_2d)
+        padded_grid = grid.padded_grid_from_kernel_shape(
+            kernel_shape_native=psf.shape_native
+        )
 
         traced_padded_grids = self.traced_grids_of_planes_from_grid(grid=padded_grid)
 
@@ -502,7 +508,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         unmasked_blurred_images_of_planes_and_galaxies = []
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=psf.shape_2d)
+        padded_grid = grid.padded_grid_from_kernel_shape(
+            kernel_shape_native=psf.shape_native
+        )
 
         traced_padded_grids = self.traced_grids_of_planes_from_grid(grid=padded_grid)
 

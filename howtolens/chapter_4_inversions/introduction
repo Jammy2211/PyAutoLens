@@ -7,7 +7,7 @@ was just too complex, and even a well crafted pipeline couldn't fix the problem 
 In this chapter, we'll learn about `Pixelization`'., `Mapper`'. and inversions. These tools allow us to reconstruct the
 source-galaxy's without an analytic `LightProfile`, but instead a pixel-grid. In doing so, we make no assumption about
 the source's morphology, breaking the simplifying assumptions inherent to analytic `LightProfile`'. (e.g. symmetry).
-Remarkably, pixels `Grid` use just a couple of non-linear parameters, meaning the 30+ non-linear parameters we required
+Remarkably, pixels `Grid2D` use just a couple of non-linear parameters, meaning the 30+ non-linear parameters we required
 to fit complex-sources before are going to be reduced to just 3 or 4!
 
 In particular, you'll learn how we:

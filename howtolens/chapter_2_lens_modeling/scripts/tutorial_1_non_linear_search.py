@@ -116,7 +116,7 @@ The non-linear fit also needs a `Mask2D`, lets use a 3.0" circle.
 
 # %%
 mask = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
 imaging_plotter = aplt.ImagingPlotter(
@@ -149,7 +149,7 @@ source_galaxy_model = al.GalaxyModel(redshift=1.0, bulge=al.lp.SphericalExponent
 We can use a `SettingsPhaseImaging` object to customize how a `Tracer` and `FitImaging` are used to fit the `Imaging` 
 dataset. Below, we specify:
 
- - That a regular `Grid` is used to fit create the model-image when fitting the data 
+ - That a regular `Grid2D` is used to fit create the model-image when fitting the data 
  (see `autolens_workspace/examples/grids.py` for a description of grids).
  - The sub-grid size of this grid.
 
@@ -162,7 +162,7 @@ discuss this and phase settings in more detail in a later tutorial.
 """
 
 # %%
-settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
 
 settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
 

@@ -42,12 +42,12 @@ imaging = al.Imaging.from_fits(
 
 # %%
 """
-Now, lets set up our `Grid`'s (using the image above).
+Now, lets set up our `Grid2D`'s (using the image above).
 """
 
 # %%
-grid = al.Grid.uniform(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=1
+grid = al.Grid2D.uniform(
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, sub_size=1
 )
 
 # %%
@@ -90,7 +90,7 @@ visuals_2d = aplt.Visuals2D(
         [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
     ]
 )
-include_2d = aplt.Include2D(mapper_source_full_grid=True)
+include_2d = aplt.Include2D(mapper_source_grid_slim=True)
 
 mapper_plotter = aplt.MapperPlotter(
     mapper=mapper, visuals_2d=visuals_2d, include_2d=include_2d
@@ -165,7 +165,7 @@ Lets use an annular `Mask2D`, which will capture the ring-like shape of the lens
 
 # %%
 mask = al.Mask2D.circular_annular(
-    shape_2d=imaging.shape_2d,
+    shape_native=imaging.shape_native,
     pixel_scales=imaging.pixel_scales,
     inner_radius=1.0,
     outer_radius=2.2,
@@ -199,7 +199,7 @@ source_plane_grid = tracer.traced_grids_of_planes_from_grid(grid=masked_imaging.
 
 # %%
 """
-Finally, we use the masked source-plane `Grid` to setup a new `Mapper` (using the same rectangular 25 x 25 
+Finally, we use the masked source-plane `Grid2D` to setup a new `Mapper` (using the same rectangular 25 x 25 
 _Pixelization_ as before).
 """
 
@@ -212,7 +212,7 @@ Lets have another look.
 """
 
 # %%
-include_2d = aplt.Include2D(mask=True, mapper_source_full_grid=True)
+include_2d = aplt.Include2D(mask=True, mapper_source_grid_slim=True)
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
 mapper_plotter.subplot_image_and_mapper(image=masked_imaging.image)

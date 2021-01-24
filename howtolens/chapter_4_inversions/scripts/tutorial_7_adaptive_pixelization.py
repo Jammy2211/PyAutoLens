@@ -4,7 +4,7 @@ Tutorial 7: Adaptive Pixelization
 =================================
 
 In this tutorial we'll use a new `Pixelization`, called the VoronoiMagnification `Pixelization`. This pixelization
-doesn`t use a uniform `Grid` of rectangular pixels, but instead uses an irregular `Voronoi` pixels. So, why do we
+doesn`t use a uniform `Grid2D` of rectangular pixels, but instead uses an irregular `Voronoi` pixels. So, why do we
 want to do that? Lets take another quick look at the rectangular grid..
 """
 
@@ -42,7 +42,10 @@ imaging = al.Imaging.from_fits(
 )
 
 mask = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=3.0
+    shape_native=imaging.shape_native,
+    pixel_scales=imaging.pixel_scales,
+    sub_size=2,
+    radius=3.0,
 )
 
 imaging_plotter = aplt.ImagingPlotter(
@@ -118,7 +121,7 @@ the source-plane, we could reconstruct the source using far fewer pixels. That`d
 efficiency and increasing the Bayesian log evidence. This is what the Voronoi `Pixelization` does.
 
 To achieve this, we first compute an `image-plane sparse grid`, which is a set of sparse coordinates in the image-plane 
-that will be ray-traced to the source-plane and define the centres of our source-pixel grid. We compute this `Grid` 
+that will be ray-traced to the source-plane and define the centres of our source-pixel grid. We compute this `Grid2D` 
 directly from a `Pixelization`, by passing it a grid.
 """
 
@@ -129,7 +132,7 @@ image_plane_sparse_grid = adaptive.sparse_grid_from_grid(grid=masked_imaging.gri
 
 # %%
 """
-We can plot this `Grid` over the image, to see that it is a coarse `Grid` over-laying the image itself.
+We can plot this `Grid2D` over the image, to see that it is a coarse `Grid2D` over-laying the image itself.
 """
 
 # %%
@@ -141,7 +144,7 @@ imaging_plotter.figures(image=True)
 # %%
 """
 When we pass a `Tracer` a source galaxy with this `Pixelization` it automatically computes the ray-traced source-plane 
-Voronoi `Pixelization` using the `Grid` above. Thus, our Voronoi `Pixelization`.s used by the tracer`s fit.
+Voronoi `Pixelization` using the `Grid2D` above. Thus, our Voronoi `Pixelization`.s used by the tracer`s fit.
 """
 
 # %%
@@ -178,7 +181,7 @@ fit_imaging_plotter.subplot_of_planes(plane_index=1)
 
 # %%
 """
-Clearly, this is an improvement. we're using fewer pixels than the rectangular `Grid` (400, instead of 1600), but 
+Clearly, this is an improvement. we're using fewer pixels than the rectangular `Grid2D` (400, instead of 1600), but 
 reconstructing our source is far greater detail. A win all around? It sure is.
 
 On our rectangular grid, we regularized each source pixel with its 4 neighbors. We compared their fluxes, summed 
@@ -192,6 +195,6 @@ effectively fitting just noise. We may achieve even better solutions if the cent
 reconstructed using even more pixels. So, how do we improve on this? Well, you'll have to wait until chapter 5, 
 when we introduce **PyAutoLens**`s adaptive functionality, or `hyper-mode`.
 
-In the mean time, you may wish to experiment with using both Rectangular and VoronoiMagnification `Grid`'s to fit 
+In the mean time, you may wish to experiment with using both Rectangular and VoronoiMagnification `Grid2D`'s to fit 
 lenses which can be easily achieve by changing the input pixeliation given to a pipeline.
 """

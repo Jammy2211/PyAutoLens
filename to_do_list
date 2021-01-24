@@ -52,7 +52,7 @@ Refactor:
 
 Bugs:
 
-    - Check if grid from relocated grid ruins Grid API an types for multiplane.
+    - Check if grid from relocated grid ruins Grid2D API an types for multiplane.
 
 Future:
 

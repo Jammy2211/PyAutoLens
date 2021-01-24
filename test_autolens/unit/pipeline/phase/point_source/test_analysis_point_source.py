@@ -71,7 +71,7 @@ class TestFit:
         assert fit_positions.chi_squared == 0.0
         assert fit_positions.log_likelihood == fit_figure_of_merit
 
-        model_positions = al.GridIrregularGrouped([[(0.0, 1.0), (1.0, 2.0)]])
+        model_positions = al.Grid2DIrregularGrouped([[(0.0, 1.0), (1.0, 2.0)]])
         positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
 
         phase_positions_x2 = al.PhasePointSource(
@@ -149,7 +149,7 @@ class TestFit:
     #
     #     assert fit_positions.log_likelihood + fit_fluxes.log_likelihood == fit_figure_of_merit
 
-    # model_positions = al.GridIrregularGrouped([[(0.0, 1.0), (1.0, 2.0)]])
+    # model_positions = al.Grid2DIrregularGrouped([[(0.0, 1.0), (1.0, 2.0)]])
     # positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
     #
     # phase_positions_x2 = al.PhasePointSource(

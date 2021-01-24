@@ -23,19 +23,19 @@ import autolens.plot as aplt
 # %%
 """
 To simulate an image, we need to model the telescope's optics. we'll do this by convolving the image with a 
-Point-Spread Function using a `Kernel` object, which we can simulate as a Gaussian.
+Point-Spread Function using a `Kernel2D` object, which we can simulate as a Gaussian.
 """
 
 # %%
-psf = al.Kernel.from_gaussian(shape_2d=(11, 11), sigma=0.1, pixel_scales=0.1)
+psf = al.Kernel2D.from_gaussian(shape_native=(11, 11), sigma=0.1, pixel_scales=0.1)
 
 # %%
 """
-To simulate `Imaging` dataset, we use a `Grid`, like usual.
+To simulate `Imaging` dataset, we use a `Grid2D`, like usual.
 """
 
 # %%
-grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.1, sub_size=2)
+grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1, sub_size=2)
 
 # %%
 """
@@ -82,15 +82,15 @@ specifically for simulating an image, which pads the array it is computed on bas
 # %%
 normal_image = tracer.image_from_grid(grid=grid)
 padded_image = tracer.padded_image_from_grid_and_psf_shape(
-    grid=grid, psf_shape_2d=psf.shape_2d
+    grid=grid, psf_shape_native=psf.shape_native
 )
 
-print(normal_image.shape_2d)
-print(padded_image.shape_2d)
+print(normal_image.shape_native)
+print(padded_image.shape_native)
 
 # %%
 """
-Now, to simulate the `Imaging` data, we pass the `Tracer` and `Grid` to the `Imaging` module`s simulate function. 
+Now, to simulate the `Imaging` data, we pass the `Tracer` and `Grid2D` to the `Imaging` module`s simulate function. 
 This adds the following effects to the image:
 
  1) Telescope optics: Using the Point Spread Function above.

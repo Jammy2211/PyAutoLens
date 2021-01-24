@@ -33,7 +33,7 @@ class AbstractPositionsSolver:
             if magnification > self.magnification_threshold:
                 grid_mag.append(grid[index, :])
 
-        return grids.GridIrregularGroupedUniform(
+        return grids.Grid2DIrregularGroupedUniform(
             grid=grid_mag, pixel_scales=grid.pixel_scales
         )
 
@@ -53,7 +53,7 @@ class AbstractPositionsSolver:
         lensing_obj : autogalaxy.LensingObject
             An object which has a deflection_from_grid method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
-        grid : autoarray.GridIrregularGroupedUniform or ndarray
+        grid : autoarray.Grid2DIrregularGroupedUniform or ndarray
             A gridd of (y,x) Cartesian coordinates for which their distances to the mass profile centres are computed,
             with points within the threshold removed.
         """
@@ -61,7 +61,7 @@ class AbstractPositionsSolver:
 
             pixel_scales = grid.pixel_scales
 
-            for centre in lensing_obj.mass_profile_centres.in_1d_list:
+            for centre in lensing_obj.mass_profile_centres.in_list:
 
                 distances_1d = np.sqrt(
                     np.square(grid[:, 0] - centre[0])
@@ -70,11 +70,11 @@ class AbstractPositionsSolver:
 
                 grid = grid_outside_distance_mask_from(
                     distances_1d=distances_1d,
-                    grid_1d=grid,
+                    grid_slim=grid,
                     outside_distance=self.distance_from_mass_profile_centre,
                 )
 
-            return grids.GridIrregularGroupedUniform(
+            return grids.Grid2DIrregularGroupedUniform(
                 grid=grid, pixel_scales=pixel_scales
             )
 
@@ -126,7 +126,7 @@ class AbstractPositionsSolver:
             upscale_factor=upscale_factor,
         )
 
-        return grids.GridIrregularGroupedUniform(
+        return grids.Grid2DIrregularGroupedUniform(
             grid=grid_buffed,
             pixel_scales=(
                 pixel_scales[0] / upscale_factor,
@@ -153,7 +153,7 @@ class AbstractPositionsSolver:
         lensing_obj : autogalaxy.LensingObject
             An object which has a deflection_from_grid method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
-        grid : autoarray.GridIrregularGroupedUniform or ndarray
+        grid : autoarray.Grid2DIrregularGroupedUniform or ndarray
             A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
             their neighbors are found.
         source_plane_coordinate : (y,x)
@@ -166,16 +166,18 @@ class AbstractPositionsSolver:
             coordinate=source_plane_coordinate
         )
 
-        neighbors, has_neighbors = grid_square_neighbors_1d_from(shape_1d=grid.shape[0])
+        neighbors, has_neighbors = grid_square_neighbors_1d_from(
+            shape_slim=grid.shape[0]
+        )
 
         grid_peaks = grid_peaks_from(
             distance_1d=source_plane_distances,
-            grid_1d=grid,
+            grid_slim=grid,
             neighbors=neighbors.astype("int"),
             has_neighbors=has_neighbors,
         )
 
-        return grids.GridIrregularGroupedUniform(
+        return grids.Grid2DIrregularGroupedUniform(
             grid=grid_peaks, pixel_scales=grid.pixel_scales
         )
 
@@ -200,7 +202,7 @@ class AbstractPositionsSolver:
             lensing_obj : autogalaxy.LensingObject
                 An object which has a deflection_from_grid method for performing lensing calculations, for example a
                 `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
-            grid : autoarray.GridIrregularGroupedUniform or ndarray
+            grid : autoarray.Grid2DIrregularGroupedUniform or ndarray
                 A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
                 their neighbors are found.
             source_plane_coordinate : (y,x)
@@ -219,10 +221,12 @@ class AbstractPositionsSolver:
         )
 
         grid_within_distance_of_centre = grid_within_distance(
-            distances_1d=source_plane_distances, grid_1d=grid, within_distance=distance
+            distances_1d=source_plane_distances,
+            grid_slim=grid,
+            within_distance=distance,
         )
 
-        return grids.GridIrregularGroupedUniform(
+        return grids.Grid2DIrregularGroupedUniform(
             grid=grid_within_distance_of_centre, pixel_scales=grid.pixel_scales
         )
 
@@ -270,7 +274,7 @@ class PositionsSolver(AbstractPositionsSolver):
             distance_from_mass_profile_centre=distance_from_mass_profile_centre,
         )
 
-        self.grid = grid.in_1d_binned
+        self.grid = grid.slim_binned
         self.pixel_scale_precision = pixel_scale_precision
 
     def refined_coordinates_from_coordinate(
@@ -318,7 +322,7 @@ class PositionsSolver(AbstractPositionsSolver):
     def solve_from_tracer(self, tracer):
         """Needs work - idea is it solves for all image plane multiple image positions using the redshift distribution of
         the tracer."""
-        return grids.GridIrregularGrouped(
+        return grids.Grid2DIrregularGrouped(
             grid=[
                 self.solve(lensing_obj=tracer, source_plane_coordinate=centre)
                 for centre in tracer.light_profile_centres
@@ -343,7 +347,7 @@ class PositionsSolver(AbstractPositionsSolver):
 
         if not self.use_upscaling:
 
-            return grids.GridIrregularGrouped(grid=coordinates_list)
+            return grids.Grid2DIrregularGrouped(grid=coordinates_list)
 
         pixel_scale = self.grid.pixel_scale
 
@@ -373,7 +377,7 @@ class PositionsSolver(AbstractPositionsSolver):
 
         coordinates_list = self.grid_within_distance_of_source_plane_centre(
             lensing_obj=lensing_obj,
-            grid=grids.GridIrregularGroupedUniform(
+            grid=grids.Grid2DIrregularGroupedUniform(
                 grid=coordinates_list, pixel_scales=(pixel_scale, pixel_scale)
             ),
             source_plane_coordinate=source_plane_coordinate,
@@ -384,7 +388,7 @@ class PositionsSolver(AbstractPositionsSolver):
             lensing_obj=lensing_obj, grid=coordinates_list
         )
 
-        return grids.GridIrregularGrouped(grid=coordinates_list)
+        return grids.Grid2DIrregularGrouped(grid=coordinates_list)
 
 
 @decorator_util.jit()
@@ -434,7 +438,7 @@ def grid_buffed_around_coordinate_from(
 
     Parameters
     ----------
-    grid_1d : np.ndarray
+    grid_slim : np.ndarray
         The irregular 1D grid of (y,x) coordinates over which a square uniform grid is overlaid.
     pixel_scales : (float, float)
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
@@ -442,7 +446,7 @@ def grid_buffed_around_coordinate_from(
 
     total_coordinates = (upscale_factor * (2 * buffer + 1)) ** 2
 
-    grid_1d = np.zeros(shape=(total_coordinates, 2))
+    grid_slim = np.zeros(shape=(total_coordinates, 2))
 
     grid_index = 0
 
@@ -470,13 +474,13 @@ def grid_buffed_around_coordinate_from(
     for y in range(edge_start, edge_end):
         for x in range(edge_start, edge_end):
 
-            grid_1d[grid_index, 0] = (
+            grid_slim[grid_index, 0] = (
                 coordinate[0]
                 - y * pixel_scales_upscaled[0]
                 - y_upscale_half
                 + y_odd_pixel_scale
             )
-            grid_1d[grid_index, 1] = (
+            grid_slim[grid_index, 1] = (
                 coordinate[1]
                 + x * pixel_scales_upscaled[1]
                 + x_upscale_half
@@ -484,21 +488,21 @@ def grid_buffed_around_coordinate_from(
             )
             grid_index += 1
 
-    return grid_1d
+    return grid_slim
 
 
 @decorator_util.jit()
-def pair_coordinate_to_closest_pixel_on_grid(coordinate, grid_1d):
+def pair_coordinate_to_closest_pixel_on_grid(coordinate, grid_slim):
 
-    squared_distances = np.square(grid_1d[:, 0] - coordinate[0]) + np.square(
-        grid_1d[:, 1] - coordinate[1]
+    squared_distances = np.square(grid_slim[:, 0] - coordinate[0]) + np.square(
+        grid_slim[:, 1] - coordinate[1]
     )
 
     return np.argmin(squared_distances)
 
 
 @decorator_util.jit()
-def grid_square_neighbors_1d_from(shape_1d):
+def grid_square_neighbors_1d_from(shape_slim):
     """
     From a (y,x) grid of coordinates, determine the 8 neighors of every coordinate on the grid which has 8
     neighboring (y,x) coordinates.
@@ -529,16 +533,16 @@ def grid_square_neighbors_1d_from(shape_1d):
 
     Parameters
     ----------
-    shape_1d : np.ndarray
+    shape_slim : np.ndarray
         The irregular 1D grid of (y,x) coordinates over which a square uniform grid is overlaid.
     pixel_scales : (float, float)
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
     """
 
-    shape_of_edge = int(np.sqrt(shape_1d))
+    shape_of_edge = int(np.sqrt(shape_slim))
 
-    has_neighbors = np.full(shape=shape_1d, fill_value=False)
-    neighbors_1d = np.full(shape=(shape_1d, 8), fill_value=-1.0)
+    has_neighbors = np.full(shape=shape_slim, fill_value=False)
+    neighbors_1d = np.full(shape=(shape_slim, 8), fill_value=-1.0)
 
     index = 0
 
@@ -564,7 +568,7 @@ def grid_square_neighbors_1d_from(shape_1d):
 
 
 @decorator_util.jit()
-def grid_peaks_from(distance_1d, grid_1d, neighbors, has_neighbors):
+def grid_peaks_from(distance_1d, grid_slim, neighbors, has_neighbors):
     """Given an input grid of (y,x) coordinates and a 1d array of their distances to the centre of the source,
     determine the coordinates which are closer to the source than their 8 neighboring pixels.
 
@@ -575,7 +579,7 @@ def grid_peaks_from(distance_1d, grid_1d, neighbors, has_neighbors):
     ----------
     distance_1d : np.ndarray
         The distance of every (y,x) grid coordinate to the centre of the source in the source-plane.
-    grid_1d : np.ndarray
+    grid_slim : np.ndarray
         The irregular 1D grid of (y,x) coordinates whose distances to the source are compared.
     neighbors : np.ndarray
         A 2D array of shape [pixels, 8] giving the 1D index of every grid pixel to its 8 neighboring pixels.
@@ -585,7 +589,7 @@ def grid_peaks_from(distance_1d, grid_1d, neighbors, has_neighbors):
     """
     peaks_list = []
 
-    for grid_index in range(grid_1d.shape[0]):
+    for grid_index in range(grid_slim.shape[0]):
 
         if has_neighbors[grid_index]:
 
@@ -602,17 +606,17 @@ def grid_peaks_from(distance_1d, grid_1d, neighbors, has_neighbors):
                 and distance <= distance_1d[neighbors[grid_index, 7]]
             ):
 
-                peaks_list.append(grid_1d[grid_index])
+                peaks_list.append(grid_slim[grid_index])
 
     return peaks_list
 
 
 @decorator_util.jit()
-def grid_within_distance(distances_1d, grid_1d, within_distance):
+def grid_within_distance(distances_1d, grid_slim, within_distance):
 
     grid_within_size = 0
 
-    for grid_index in range(grid_1d.shape[0]):
+    for grid_index in range(grid_slim.shape[0]):
         if distances_1d[grid_index] < within_distance:
             grid_within_size += 1
 
@@ -620,20 +624,20 @@ def grid_within_distance(distances_1d, grid_1d, within_distance):
 
     grid_within_index = 0
 
-    for grid_index in range(grid_1d.shape[0]):
+    for grid_index in range(grid_slim.shape[0]):
         if distances_1d[grid_index] < within_distance:
 
-            grid_within[grid_within_index, :] = grid_1d[grid_index, :]
+            grid_within[grid_within_index, :] = grid_slim[grid_index, :]
             grid_within_index += 1
 
     return grid_within
 
 
 @decorator_util.jit()
-def grid_outside_distance_mask_from(distances_1d, grid_1d, outside_distance):
+def grid_outside_distance_mask_from(distances_1d, grid_slim, outside_distance):
     grid_outside_size = 0
 
-    for grid_index in range(grid_1d.shape[0]):
+    for grid_index in range(grid_slim.shape[0]):
         if distances_1d[grid_index] > outside_distance:
             grid_outside_size += 1
 
@@ -641,9 +645,9 @@ def grid_outside_distance_mask_from(distances_1d, grid_1d, outside_distance):
 
     grid_outside_index = 0
 
-    for grid_index in range(grid_1d.shape[0]):
+    for grid_index in range(grid_slim.shape[0]):
         if distances_1d[grid_index] > outside_distance:
-            grid_outside[grid_outside_index, :] = grid_1d[grid_index, :]
+            grid_outside[grid_outside_index, :] = grid_slim[grid_index, :]
             grid_outside_index += 1
 
     return grid_outside

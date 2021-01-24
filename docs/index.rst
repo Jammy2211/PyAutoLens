@@ -32,7 +32,7 @@ Strong lensing provides astronomers with an invaluable tool to study a diverse r
 The past decade has seen the discovery of many hundreds of new strong lenses, however the modeling of a strong lens is historically a
 time-intensive process that requires significant human intervention to perform, restricting the scope of any scientific
 analysis. In the next decade of order of `one hundred thousand` strong lenses will be discovered by surveys such as
-Euclid, the Vera Rubin Observatory and Square Kilometer Array.
+Euclid, the Vera Rubin Observatory and Square Kilometer Array2D.
 
 How does PyAutoLens Work?
 =========================
@@ -41,7 +41,7 @@ A strong lens system can be quickly assembled from abstracted objects. A ``Galax
 more ``LightProfile``'s and ``MassProfile``'s, which represent its two dimensional distribution of starlight and mass.
 ``Galaxy``’s lie at a particular distance (redshift) from the observer, and are grouped into ``Plane``'s. Raytracing
 through multiple ``Plane``'s is achieved by passing them to a ``Tracer`` with an ``astropy`` Cosmology. By passing
-these objects a ``Grid`` strong lens sightlines are computed, including multi-plane ray-tracing. All of these
+these objects a ``Grid2D`` strong lens sightlines are computed, including multi-plane ray-tracing. All of these
 objects are extensible, making it straightforward to compose highly customized lensing system. The example code
 below shows this in action:
 
@@ -55,8 +55,8 @@ below shows this in action:
     coordinates are used.
     """
 
-    grid = al.Grid.uniform(
-        shape_2d=(50, 50),
+    grid = al.Grid2D.uniform(
+        shape_native=(50, 50),
         pixel_scales=0.05,  # <- Conversion from pixel units to arc-seconds.
     )
 
@@ -89,7 +89,7 @@ below shows this in action:
     )
 
     """
-    We can use the Grid and Tracer to perform many lensing calculations, for example
+    We can use the Grid2D and Tracer to perform many lensing calculations, for example
     plotting the image of the lensed source.
     """
 
@@ -126,7 +126,7 @@ code below shows how to setup and fit a lens model to a dataset:
     """Create a mask for the data, which we setup as a 3.0" circle."""
 
     mask = al.Mask2D.circular(
-        shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
+        shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
     )
 
     """

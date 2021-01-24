@@ -52,13 +52,15 @@ import autolens.plot as aplt
 
 # %%
 """
-As always, we need a `Grid`, where our `Grid` is the coordinates we `trace` from the image-plane to the source-plane in 
-the lensing configuration above. Our `Grid` is therefore no longer just a `grid`, but an image-plane `Grid` representing 
+As always, we need a `Grid2D`, where our `Grid2D` is the coordinates we `trace` from the image-plane to the source-plane in 
+the lensing configuration above. Our `Grid2D` is therefore no longer just a `grid`, but an image-plane `Grid2D` representing 
 our image-plane coordinates. Thus, lets name as such.
 """
 
 # %%
-image_plane_grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
+image_plane_grid = al.Grid2D.uniform(
+    shape_native=(100, 100), pixel_scales=0.05, sub_size=1
+)
 
 # %%
 """
@@ -87,19 +89,19 @@ image_plane = al.Plane(galaxies=[lens_galaxy])
 
 # %%
 """
-Just like we did with `Galaxy`'s we can compute quantities from the `Plane` by passing it a `Grid`.
+Just like we did with `Galaxy`'s we can compute quantities from the `Plane` by passing it a `Grid2D`.
 """
 
 # %%
 deflections = image_plane.deflections_from_grid(grid=image_plane_grid)
 
-print("deflection-angles of `Plane`'s `Grid` pixel 0:")
-print(deflections.in_2d[0, 0, 0])
-print(deflections.in_2d[0, 0, 0])
+print("deflection-angles of `Plane`'s `Grid2D` pixel 0:")
+print(deflections.native[0, 0, 0])
+print(deflections.native[0, 0, 0])
 
-print("deflection-angles of `Plane`'s `Grid` pixel 1:")
-print(deflections.in_2d[0, 1, 1])
-print(deflections.in_2d[0, 1, 1])
+print("deflection-angles of `Plane`'s `Grid2D` pixel 1:")
+print(deflections.native[0, 1, 1])
+print(deflections.native[0, 1, 1])
 
 # %%
 """
@@ -120,19 +122,19 @@ deflection angles, we can subtract the two to determine the source-plane`s lense
 
 source_plane_coordinates = image_plane_coordinates - image_plane_deflection_angles
 
-Therefore, we can use our image_plane to `trace` its `Grid` to the source-plane...
+Therefore, we can use our image_plane to `trace` its `Grid2D` to the source-plane...
 """
 
 # %%
 source_plane_grid = image_plane.traced_grid_from_grid(grid=image_plane_grid)
-print("Traced source-plane coordinates of `Grid` pixel 0:")
-print(source_plane_grid.in_2d[0, 0, :])
-print("Traced source-plane coordinates of `Grid` pixel 1:")
-print(source_plane_grid.in_2d[0, 1, :])
+print("Traced source-plane coordinates of `Grid2D` pixel 0:")
+print(source_plane_grid.native[0, 0, :])
+print("Traced source-plane coordinates of `Grid2D` pixel 1:")
+print(source_plane_grid.native[0, 1, :])
 
 # %%
 """
-... and use this `Grid` to setup the source-plane
+... and use this `Grid2D` to setup the source-plane
 """
 
 # %%
@@ -140,18 +142,18 @@ source_plane = al.Plane(galaxies=[source_galaxy])
 
 # %%
 """
-Lets inspect our `Grid`'s - I bet our source-plane isn't the boring uniform `Grid` we plotted in the first tutorial!
+Lets inspect our `Grid2D`'s - I bet our source-plane isn't the boring uniform `Grid2D` we plotted in the first tutorial!
 """
 
 # %%
-mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Image-plane Grid"))
+mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Image-plane Grid2D"))
 
 plane_plotter = aplt.PlanePlotter(
     plane=image_plane, grid=image_plane_grid, mat_plot_2d=mat_plot_2d
 )
 plane_plotter.figures(plane_grid=True)
 
-mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid"))
+mat_plot_2d = aplt.MatPlot2D(title=aplt.Title(label="Source-plane Grid2D"))
 
 plane_plotter = aplt.PlanePlotter(
     plane=source_plane, grid=source_plane_grid, mat_plot_2d=mat_plot_2d
@@ -166,7 +168,7 @@ We can zoom in on the `centre` of the source-plane (remembering the lens galaxy 
 
 # %%
 mat_plot_2d = aplt.MatPlot2D(
-    title=aplt.Title(label="Source-plane Grid Zoomed"),
+    title=aplt.Title(label="Source-plane Grid2D Zoomed"),
     axis=aplt.Axis(extent=[-0.1, 0.1, -0.1, 0.1]),
 )
 
@@ -181,7 +183,7 @@ plane_plotter.figures(plane_grid=True)
 We can also plot both `Plane`'s next to one another, and highlight specific points. This means we can see how different 
 image pixels map to the source-plane (and visa versa).
 
-(We are inputting the indexes of the `Grid` into `indexes` - the first set of indexes go from 0 -> 50, which is the top 
+(We are inputting the indexes of the `Grid2D` into `indexes` - the first set of indexes go from 0 -> 50, which is the top 
 row of the image-grid running from the left - as we said it would!)
 """
 
@@ -206,7 +208,7 @@ plane_plotter.subplot_with_source_grid()
 
 # %%
 """
-Clearly, the source-plane`s `Grid` is very different to the image-planes! It's not uniform and its certainly not boring!
+Clearly, the source-plane`s `Grid2D` is very different to the image-planes! It's not uniform and its certainly not boring!
 
 We can now ask the question - `what does our source-galaxy look like in the image-plane`? That is, to us, the observer 
 on Earth, how does the source-galaxy appear after lensing?. To do this, we simple trace the source `Galaxy`'s light 
@@ -248,7 +250,7 @@ plane_plotter.figures(plane_image=True)
 
 # %%
 """
-Plotting the `Grid` over the plane image obscures its appearance, which isn't ideal. We can of course 
+Plotting the `Grid2D` over the plane image obscures its appearance, which isn't ideal. We can of course 
 tell **PyAutoLens** not to plot the grid.
 """
 
@@ -286,7 +288,7 @@ plane_plotter.figures(convergence=True)
 # %%
 """
 And, we're done. This is the first tutorial covering strong-lensing and I highly recommend you take a moment to really 
-mess about with the code above to see what sort of lensed images you can form. Pay attention to the source-plane `Grid` - 
+mess about with the code above to see what sort of lensed images you can form. Pay attention to the source-plane `Grid2D` - 
 its appearance can change a lot!
 
 In particular, try:

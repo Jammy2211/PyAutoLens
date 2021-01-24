@@ -42,7 +42,7 @@ this we can use a ``Mask2D`` object, which for this example we'll create as a 3.
 .. code-block:: bash
 
     mask = al.Mask2D.circular(
-        shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
+        shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
     )
 
     masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)

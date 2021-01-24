@@ -100,7 +100,7 @@ class PhaseDataset(dataset.PhaseDataset):
 
             # TODO : Coorrdinates refascotr will sort out index call here
 
-            if isinstance(updated_positions, aa.GridIrregularGrouped):
+            if isinstance(updated_positions, aa.Grid2DIrregularGrouped):
                 if updated_positions.in_grouped_list:
                     if len(updated_positions.in_grouped_list[0]) > 1:
                         return updated_positions
@@ -148,7 +148,7 @@ class PhaseDataset(dataset.PhaseDataset):
                 return None
 
             positions_fits = fit_point_source.FitPositionsSourceMaxSeparation(
-                positions=aa.GridIrregularGrouped(grid=positions),
+                positions=aa.Grid2DIrregularGrouped(grid=positions),
                 noise_map=None,
                 tracer=results.last.max_log_likelihood_tracer,
             )

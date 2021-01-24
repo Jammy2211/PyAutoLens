@@ -47,7 +47,7 @@ Lets create an annular `Mask2D` which traces the stongly lensed source ring.
 
 # %%
 mask = al.Mask2D.circular_annular(
-    shape_2d=imaging.shape_2d,
+    shape_native=imaging.shape_native,
     pixel_scales=imaging.pixel_scales,
     sub_size=1,
     inner_radius=0.5,
@@ -91,7 +91,7 @@ rectangular = al.pix.Rectangular(shape=(25, 25))
 
 mapper = rectangular.mapper_from_grid_and_sparse_grid(grid=source_plane_grid)
 
-include_2d = aplt.Include2D(mask=True, mapper_source_full_grid=True)
+include_2d = aplt.Include2D(mask=True, mapper_source_grid_slim=True)
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
 mapper_plotter.subplot_image_and_mapper(image=masked_imaging.image)
@@ -150,7 +150,7 @@ This code is doing all the the same as above (setup the `Mask2D`, `Galaxy`'s `Tr
 # %%
 
 mask = al.Mask2D.circular_annular(
-    shape_2d=imaging.shape_2d,
+    shape_native=imaging.shape_native,
     pixel_scales=imaging.pixel_scales,
     sub_size=1,
     inner_radius=0.1,
@@ -274,6 +274,6 @@ And, we're done, here are a few questions to get you thinking about `Inversion``
  the `best-fit`? Is there a risk that we're going to fit other things in the image than just the lensed source 
  galaxy? What happens if you reduce the `regularization_coefficient` above to zero?
 
- 2) The exterior pixels in the `Rectangular` `Grid`.have no image-pixels in them. However, they are still given a 
+ 2) The exterior pixels in the `Rectangular` `Grid2D`.have no image-pixels in them. However, they are still given a 
  reconstructed flux. If this value isn't` coming from a util to an image-pixel, where is it be coming from?
 """

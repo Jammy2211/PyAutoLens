@@ -10,7 +10,7 @@ imaging = instrument_util.load_test_imaging(
     dataset_name="light_sersic__source_sersic", instrument="vro"
 )
 mask = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d,
+    shape_native=imaging.shape_native,
     pixel_scales=imaging.pixel_scales,
     radius=3.0,
     centre=(4.0, 4.0),

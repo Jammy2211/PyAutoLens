@@ -34,7 +34,7 @@ def pixel_scale_from_instrument(instrument):
 
 def grid_from_instrument(instrument):
     """
-    Returns the `Grid` from an instrument type based on real observations.
+    Returns the `Grid2D` from an instrument type based on real observations.
 
     These options are representative of VRO, Euclid, HST, over-sampled HST and Adaptive Optics image.
 
@@ -44,15 +44,15 @@ def grid_from_instrument(instrument):
         A string giving the resolution of the desired instrument (VRO | Euclid | HST | HST_Up | AO).
     """
     if instrument in "vro":
-        return al.GridIterate.uniform(shape_2d=(80, 80), pixel_scales=0.2)
+        return al.Grid2DIterate.uniform(shape_native=(80, 80), pixel_scales=0.2)
     elif instrument in "euclid":
-        return al.GridIterate.uniform(shape_2d=(120, 120), pixel_scales=0.1)
+        return al.Grid2DIterate.uniform(shape_native=(120, 120), pixel_scales=0.1)
     elif instrument in "hst":
-        return al.GridIterate.uniform(shape_2d=(200, 200), pixel_scales=0.05)
+        return al.Grid2DIterate.uniform(shape_native=(200, 200), pixel_scales=0.05)
     elif instrument in "hst_up":
-        return al.GridIterate.uniform(shape_2d=(300, 300), pixel_scales=0.03)
+        return al.Grid2DIterate.uniform(shape_native=(300, 300), pixel_scales=0.03)
     elif instrument in "ao":
-        return al.GridIterate.uniform(shape_2d=(800, 800), pixel_scales=0.01)
+        return al.Grid2DIterate.uniform(shape_native=(800, 800), pixel_scales=0.01)
     else:
         raise ValueError("An invalid instrument was entered - ", instrument)
 
@@ -69,25 +69,25 @@ def psf_from_instrument(instrument):
         A string giving the resolution of the desired instrument (VRO | Euclid | HST | HST_Up | AO).
     """
     if instrument in "vro":
-        return al.Kernel.from_gaussian(
-            shape_2d=(31, 31), sigma=0.5, pixel_scales=0.2, renormalize=True
+        return al.Kernel2D.from_gaussian(
+            shape_native=(31, 31), sigma=0.5, pixel_scales=0.2, renormalize=True
         )
 
     elif instrument in "euclid":
-        return al.Kernel.from_gaussian(
-            shape_2d=(31, 31), sigma=0.1, pixel_scales=0.1, renormalize=True
+        return al.Kernel2D.from_gaussian(
+            shape_native=(31, 31), sigma=0.1, pixel_scales=0.1, renormalize=True
         )
     elif instrument in "hst":
-        return al.Kernel.from_gaussian(
-            shape_2d=(31, 31), sigma=0.05, pixel_scales=0.05, renormalize=True
+        return al.Kernel2D.from_gaussian(
+            shape_native=(31, 31), sigma=0.05, pixel_scales=0.05, renormalize=True
         )
     elif instrument in "hst_up":
-        return al.Kernel.from_gaussian(
-            shape_2d=(31, 31), sigma=0.05, pixel_scales=0.03, renormalize=True
+        return al.Kernel2D.from_gaussian(
+            shape_native=(31, 31), sigma=0.05, pixel_scales=0.03, renormalize=True
         )
     elif instrument in "ao":
-        return al.Kernel.from_gaussian(
-            shape_2d=(31, 31), sigma=0.025, pixel_scales=0.01, renormalize=True
+        return al.Kernel2D.from_gaussian(
+            shape_native=(31, 31), sigma=0.025, pixel_scales=0.01, renormalize=True
         )
 
     else:

@@ -57,7 +57,7 @@ the next tutorial)
 def perform_fit_with_source_galaxy(imaging, source_galaxy):
 
     mask = al.Mask2D.circular_annular(
-        shape_2d=imaging.shape_2d,
+        shape_native=imaging.shape_native,
         pixel_scales=imaging.pixel_scales,
         sub_size=2,
         inner_radius=0.3,
@@ -124,7 +124,7 @@ fit_imaging_plotter.subplot_fit_imaging()
 So, what`s happening here? Why does reducing the `Regularization` do this to our source reconstruction?
 
 When our `Inversion` reconstructs a source, it doesn`t *just* compute the set of fluxes that best-fit the image. It 
-also `regularizes` this solution, going to every pixel on our rectangular `Grid` and comparing its reconstructed flux 
+also `regularizes` this solution, going to every pixel on our rectangular `Grid2D` and comparing its reconstructed flux 
 with its 4 neighboring pixels. If the difference in flux is large the solution is penalized, reducing its log 
 likelihood. You can think of this as us applying a prior that our source galaxy solution is `smooth`.
 

@@ -58,8 +58,8 @@ def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7, sample
         ),
         settings=al.SettingsPhaseImaging(
             settings_masked_imaging=al.SettingsMaskedImaging(
-                grid_class=al.GridIterate,
-                grid_inversion_class=al.GridInterpolate,
+                grid_class=al.Grid2DIterate,
+                grid_inversion_class=al.Grid2DInterpolate,
                 fractional_accuracy=0.5,
                 sub_steps=[2],
                 pixel_scales_interp=0.1,
@@ -78,8 +78,8 @@ def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7, sample
 
     for masked_imaging in masked_imaging_gen:
         assert (masked_imaging.imaging.image == imaging_7x7.image).all()
-        assert isinstance(masked_imaging.grid, al.GridIterate)
-        assert isinstance(masked_imaging.grid_inversion, al.GridInterpolate)
+        assert isinstance(masked_imaging.grid, al.Grid2DIterate)
+        assert isinstance(masked_imaging.grid_inversion, al.Grid2DInterpolate)
         assert masked_imaging.grid.sub_steps == [2]
         assert masked_imaging.grid.fractional_accuracy == 0.5
         assert masked_imaging.grid_inversion.pixel_scales_interp == (0.1, 0.1)
@@ -119,8 +119,8 @@ def test__masked_interferometer_generator_from_aggregator(
         settings=al.SettingsPhaseInterferometer(
             settings_masked_interferometer=al.SettingsMaskedInterferometer(
                 transformer_class=al.TransformerDFT,
-                grid_class=al.GridIterate,
-                grid_inversion_class=al.GridInterpolate,
+                grid_class=al.Grid2DIterate,
+                grid_inversion_class=al.Grid2DInterpolate,
                 fractional_accuracy=0.5,
                 sub_steps=[2],
                 pixel_scales_interp=0.1,
@@ -146,8 +146,8 @@ def test__masked_interferometer_generator_from_aggregator(
             == interferometer_7.visibilities
         ).all()
         assert (masked_interferometer.real_space_mask == mask_7x7).all()
-        assert isinstance(masked_interferometer.grid, al.GridIterate)
-        assert isinstance(masked_interferometer.grid_inversion, al.GridInterpolate)
+        assert isinstance(masked_interferometer.grid, al.Grid2DIterate)
+        assert isinstance(masked_interferometer.grid_inversion, al.Grid2DInterpolate)
         assert masked_interferometer.grid.sub_steps == [2]
         assert masked_interferometer.grid.fractional_accuracy == 0.5
         assert masked_interferometer.grid_inversion.pixel_scales_interp == (0.1, 0.1)
@@ -229,7 +229,7 @@ class MockAggregator:
 #
 #     array = al.agg.grid_search_result_as_array(aggregator=aggregator)
 #
-#     assert array.in_2d == pytest.approx(np.array([[3.0, 2.0], [1.0, 4.0]]), 1.0e4)
+#     assert array.native == pytest.approx(np.array([[3.0, 2.0], [1.0, 4.0]]), 1.0e4)
 #     assert array.pixel_scales == (1.0, 1.0)
 
 
@@ -242,13 +242,13 @@ class MockAggregator:
 #         grid_search_result=grid_search_result
 #     )
 #
-#     print(array.in_2d)
+#     print(array.native)
 #
 #     array = al.agg.grid_search_subhalo_masses_as_array_from_grid_search_result(
 #         grid_search_result=grid_search_result
 #     )
 #
-#     print(array.in_2d)
+#     print(array.native)
 #
 #     array = al.agg.grid_search_subhalo_centres_as_array_from_grid_search_result(
 #         grid_search_result=grid_search_result

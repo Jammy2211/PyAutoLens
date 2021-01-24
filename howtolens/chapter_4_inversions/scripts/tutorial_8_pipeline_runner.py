@@ -45,7 +45,7 @@ imaging = al.Imaging.from_fits(
 )
 
 mask = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
 

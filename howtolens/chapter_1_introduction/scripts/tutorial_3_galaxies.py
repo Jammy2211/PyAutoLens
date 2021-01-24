@@ -26,11 +26,11 @@ import autolens.plot as aplt
 
 # %%
 """
-Lets use an identical `Grid` to the previous example.
+Lets use an identical `Grid2D` to the previous example.
 """
 
 # %%
-grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
+grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=2)
 
 # %%
 """
@@ -53,19 +53,19 @@ print(galaxy_with_light_profile)
 
 # %%
 """
-In the previous example, we passed `Grid`'s to the `LightProfile` module to compute its image. We can do the exact same 
+In the previous example, we passed `Grid2D`'s to the `LightProfile` module to compute its image. We can do the exact same 
 with `Galaxy`'s to again compute the `Galaxy`'s image.
 """
 
 # %%
 galaxy_image = galaxy_with_light_profile.image_from_grid(grid=grid)
 
-print("intensity of `Grid` pixel 0:")
-print(galaxy_image.in_2d[0, 0])
-print("intensity of `Grid` pixel 1:")
-print(galaxy_image.in_2d[0, 1])
-print("intensity of `Grid` pixel 2:")
-print(galaxy_image.in_2d[0, 2])
+print("intensity of `Grid2D` pixel 0:")
+print(galaxy_image.native[0, 0])
+print("intensity of `Grid2D` pixel 1:")
+print(galaxy_image.native[0, 1])
+print("intensity of `Grid2D` pixel 2:")
+print(galaxy_image.native[0, 2])
 print("etc.")
 
 # %%

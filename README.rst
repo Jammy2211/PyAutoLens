@@ -51,8 +51,8 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     coordinates are used.
     """
 
-    grid = al.Grid.uniform(
-        shape_2d=(50, 50),
+    grid = al.Grid2D.uniform(
+        shape_native=(50, 50),
         pixel_scales=0.05,  # <- Conversion from pixel units to arc-seconds.
     )
 
@@ -85,7 +85,7 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     )
 
     """
-    We can use the Grid and Tracer to perform many lensing calculations, for example
+    We can use the Grid2D and Tracer to perform many lensing calculations, for example
     plotting the image of the lensed source.
     """
 
@@ -114,7 +114,7 @@ with an ``EllipticalSersic``.
     """Create a mask for the data, which we setup as a 3.0" circle."""
 
     mask = al.Mask2D.circular(
-        shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
+        shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
     )
 
     """

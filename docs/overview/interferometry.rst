@@ -38,7 +38,7 @@ _Tracer_, which when we fit it to ``data`` data in the uv-plane is mapped to Fou
 .. code-block:: bash
 
     real_space_mask = al.Mask2D.circular(
-        shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
+        shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
     )
 
     aplt.Tracer.image(tracer=tracer, grid=real_space_mask.masked_grid)
@@ -140,7 +140,7 @@ Gaussian noise to the visibilities:
 
 .. code-block:: bash
 
-    grid = al.Grid.uniform(shape_2d=(151, 151), pixel_scales=0.05, sub_size=4)
+    grid = al.Grid2D.uniform(shape_native=(151, 151), pixel_scales=0.05, sub_size=4)
 
     simulator = al.SimulatorInterferometer(
         uv_wavelengths=uv_wavelengths,

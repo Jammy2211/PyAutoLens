@@ -17,18 +17,18 @@ plotter = aplt.MatPlot2D(
     grid_scatter=aplt.GridScatter(marker="+", colors="cyan", s=450),
 )
 
-grid = al.GridIrregular(grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+grid = al.Grid2DIrregular(grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
 
 print(grid)
 
-vector_field = al.VectorFieldIrregular(
+vector_field = al.VectorField2DIrregular(
     vectors=[(1.0, 2.0), (2.0, 1.0)], grid=[(-1.0, 0.0), (-2.0, 0.0)]
 )
 
-aplt.Array(
-    array=array.in_2d,
+aplt.Array2D(
+    array=array.native,
     grid=grid,
-    positions=al.GridIrregularGrouped([(0.0, 1.0), (0.0, 2.0)]),
+    positions=al.Grid2DIrregularGrouped([(0.0, 1.0), (0.0, 2.0)]),
     vector_field=vector_field,
     patches=vector_field.elliptical_patches,
     plotter=plotter,

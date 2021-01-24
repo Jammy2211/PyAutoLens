@@ -124,7 +124,7 @@ class TestTracer:
             np.array([0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80]), 1.0e-1
         )
 
-        assert result.source_plane_inversion_centres.in_1d_list == [(0.0, 0.0)]
+        assert result.source_plane_inversion_centres.in_list == [(0.0, 0.0)]
 
         lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
         source = al.Galaxy(redshift=1.0)
@@ -200,7 +200,9 @@ class TestTracer:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        mask = al.Mask2D.unmasked(shape_2d=(100, 100), pixel_scales=0.05, sub_size=1)
+        mask = al.Mask2D.unmasked(
+            shape_native=(100, 100), pixel_scales=0.05, sub_size=1
+        )
 
         result.analysis.masked_dataset.mask = mask
 
@@ -208,7 +210,7 @@ class TestTracer:
             result.image_plane_multiple_image_positions_of_source_plane_centres
         )
 
-        grid = al.Grid.from_mask(mask=mask)
+        grid = al.Grid2D.from_mask(mask=mask)
 
         solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.001)
 

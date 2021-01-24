@@ -12,7 +12,7 @@ imaging = instrument_util.load_test_imaging(
 )
 
 mask = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d,
+    shape_native=imaging.shape_native,
     pixel_scales=imaging.pixel_scales,
     radius=2.0,
     centre=(3.0, 3.0),
@@ -43,7 +43,7 @@ masked_imaging = al.MaskedImaging(
     imaging=imaging,
     mask=mask,
     settings=al.SettingsMaskedImaging(
-        grid_class=al.GridInterpolate, pixel_scales_interp=0.1, sub_size=1
+        grid_class=al.Grid2DInterpolate, pixel_scales_interp=0.1, sub_size=1
     ),
 )
 

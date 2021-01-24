@@ -24,27 +24,27 @@ To use **PyAutoLens** we first import autolens and the plot module.
    import autolens as al
    import autolens.plot as aplt
 
-To describe the deflection of light due to the lens galaxy's mass, **PyAutoLens** uses ``Grid`` data structures, which
+To describe the deflection of light due to the lens galaxy's mass, **PyAutoLens** uses ``Grid2D`` data structures, which
 are two-dimensional Cartesian grids of (y,x) coordinates.
 
-Below, we create and plot a uniform Cartesian ``Grid`` (the ``pixel_scales`` describes the conversion from pixel
+Below, we create and plot a uniform Cartesian ``Grid2D`` (the ``pixel_scales`` describes the conversion from pixel
 units to arc-seconds):
 
 .. code-block:: bash
 
-    grid = al.Grid.uniform(
-        shape_2d=(50, 50), pixel_scales=0.05
+    grid = al.Grid2D.uniform(
+        shape_native=(50, 50), pixel_scales=0.05
     )
-    grid_plotter = aplt.GridPlotter(grid=grid)
+    grid_plotter = aplt.Grid2DPlotter(grid=grid)
     grid_plotter.figure()
 
-This is what our ``Grid`` looks like:
+This is what our ``Grid2D`` looks like:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/grid.png
   :width: 400
   :alt: Alternative text
 
-We will ray-trace this ``Grid``'s (y,x) coordinates to calculate how a lens galaxy's mass deflects the source galaxy's
+We will ray-trace this ``Grid2D``'s (y,x) coordinates to calculate how a lens galaxy's mass deflects the source galaxy's
 light.
 
 This requires analytic functions representing the light and mass distributions of galaxies. **PyAutoLens**
@@ -60,7 +60,7 @@ uses ``Profile`` objects for this, such as the ``EllipticalSersic`` ``LightProfi
         sersic_index=4.0,
     )
 
-By passing this ``Profile`` a ``Grid``, we can evaluate the light at every coordinate on that ``Grid``, creating an
+By passing this ``Profile`` a ``Grid2D``, we can evaluate the light at every coordinate on that ``Grid2D``, creating an
 image of the ``LightProfile``:
 
 .. code-block:: bash

@@ -123,7 +123,7 @@ A gravitational lens system can be quickly assembled from Python object which pr
 of the different components of a strong lens. A `Galaxy` object contains one or more `LightProfile`'s and `MassProfile`'s, 
 which represent its two dimensional distribution of starlight and mass. `Galaxy`’s lie at a particular distance 
 (redshift) from the observer, and are grouped into `Plane`'s. Raytracing through multiple `Plane`s is achieved by 
-passing them to a `Tracer` with an `astropy` Cosmology. By passing any of these objects a `Grid` strong lens quantities 
+passing them to a `Tracer` with an `astropy` Cosmology. By passing any of these objects a `Grid2D` strong lens quantities 
 can be computed, including multi-plane ray-tracing sightlines [@McCully2014]. All of these objects are extensible, making it 
 straightforward to compose highly customized lensing system. Ray-tracing calculations are optimized using the 
 packages `NumPy` [@numpy], `numba` [@numba] and `pyquad` [@pyquad], ensuring `PyAutoLens` runs efficiently.

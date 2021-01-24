@@ -127,7 +127,7 @@ we'll create and use a 3.0" `Mask2D` again.
 
 # %%
 mask = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=3.0
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
 )
 
 imaging_plotter = aplt.ImagingPlotter(
@@ -180,11 +180,11 @@ source.bulge.effective_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.3
 # %%
 """
 Like in the previous tutorial, we use a `SettingsPhaseImaging` object to specify our model-fitting procedure uses a 
-regular `Grid`.
+regular `Grid2D`.
 """
 
 # %%
-settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
 
 settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
 

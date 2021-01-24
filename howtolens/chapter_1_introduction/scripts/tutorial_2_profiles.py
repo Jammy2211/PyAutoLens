@@ -3,8 +3,8 @@
 Tutorial 2: Profiles
 ====================
 
-In this example, we'll create a `Grid` of Cartesian $(y,x)$ coordinates and pass it to the `light_profiles`  module to
-create images on this `Grid` and the `mass_profiles` module to create deflection-angle maps on this grid.
+In this example, we'll create a `Grid2D` of Cartesian $(y,x)$ coordinates and pass it to the `light_profiles`  module to
+create images on this `Grid2D` and the `mass_profiles` module to create deflection-angle maps on this grid.
 """
 
 # %%
@@ -20,11 +20,11 @@ import autolens.plot as aplt
 
 # %%
 """
-Lets use the same `Grid` as the previous tutorial (if you skipped that tutorial, I recommend you go back to it!)
+Lets use the same `Grid2D` as the previous tutorial (if you skipped that tutorial, I recommend you go back to it!)
 """
 
 # %%
-grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
+grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=2)
 
 # %%
 """
@@ -53,7 +53,7 @@ print(sersic_light_profile)
 
 # %%
 """
-We can pass a `Grid` to a `LightProfile` to compute its intensity at every `Grid` coordinate, using a `_from_grid`
+We can pass a `Grid2D` to a `LightProfile` to compute its intensity at every `Grid2D` coordinate, using a `_from_grid`
 method
 """
 
@@ -62,17 +62,17 @@ light_image = sersic_light_profile.image_from_grid(grid=grid)
 
 # %%
 """
-Much like the `Grid` objects in the previous tutorials, these functions return **PyAutoLens** `Array` objects which are 
+Much like the `Grid2D` objects in the previous tutorials, these functions return **PyAutoLens** `Array2D` objects which are 
 accessible in both 2D and 1D.
 """
 
 # %%
-print(light_image.shape_2d)
-print(light_image.shape_1d)
-print(light_image.in_2d[0, 0])
-print(light_image.in_1d[0])
-print(light_image.in_2d)
-print(light_image.in_1d)
+print(light_image.shape_native)
+print(light_image.shape_slim)
+print(light_image.native[0, 0])
+print(light_image.slim[0])
+print(light_image.native)
+print(light_image.slim)
 
 # %%
 """
@@ -81,9 +81,9 @@ which in this case is a 200 x 200 grid.
 """
 
 # %%
-print(light_image.sub_shape_2d)
-print(light_image.sub_shape_1d)
-print(light_image.in_2d[0, 0])
+print(light_image.sub_shape_native)
+print(light_image.sub_shape_slim)
+print(light_image.native[0, 0])
 print(light_image[0])
 
 # %%
@@ -94,18 +94,18 @@ computing intensities at only one pixel coordinate inside a full pixel does not 
 """
 
 # %%
-print("intensity of top-left `Grid` pixel:")
-print(light_image.in_2d_binned[0, 0])
-print(light_image.in_1d_binned[0])
+print("intensity of top-left `Grid2D` pixel:")
+print(light_image.native_binned[0, 0])
+print(light_image.slim_binned[0])
 
 # %%
 """
-If you find these 2D and 1D `Array`'s confusing - I wouldn't worry about it. From here on, we'll pretty much just use 
-these `Array`'s as they returned to us from functions and not think about if they should be in 2D or 1D. Nevertheless, 
+If you find these 2D and 1D `Array2D`'s confusing - I wouldn't worry about it. From here on, we'll pretty much just use 
+these `Array2D`'s as they returned to us from functions and not think about if they should be in 2D or 1D. Nevertheless, 
 its important that you understand **PyAutoLens** offers these 2D and 1D representations - as it`ll help us later when we 
 cover fititng lens data!
 
-We can use a `Profile` `Plotter`.to plot this image.
+We can use a `ProfilePlotter`to plot this image.
 """
 
 # %%
@@ -132,8 +132,8 @@ print(sis_mass_profile)
 
 # %%
 """
-Just like above, we can pass a `Grid` to a `MassProfile` to compute its deflection angles. These are returned as the 
-`Grid``s we used in the previous tutorials, so have full access to the 2D / 1D methods and mappings. And, just like 
+Just like above, we can pass a `Grid2D` to a `MassProfile` to compute its deflection angles. These are returned as the 
+`Grid2D``s we used in the previous tutorials, so have full access to the 2D / 1D methods and mappings. And, just like 
 the image above, they are computed on the sub-grid, so that we can bin up their values to compute more accurate 
 deflection angles.
 
@@ -145,23 +145,23 @@ about what they mean in tutorial 4!).
 # %%
 mass_profile_deflections = sis_mass_profile.deflections_from_grid(grid=grid)
 
-print("deflection-angles of `Grid` sub-pixel 0:")
-print(mass_profile_deflections.in_2d[0, 0])
-print("deflection-angles of `Grid` sub-pixel 1:")
-print(mass_profile_deflections.in_2d[0, 1])
+print("deflection-angles of `Grid2D` sub-pixel 0:")
+print(mass_profile_deflections.native[0, 0])
+print("deflection-angles of `Grid2D` sub-pixel 1:")
+print(mass_profile_deflections.native[0, 1])
 print()
-print("deflection-angles of `Grid` pixel 0:")
-print(mass_profile_deflections.in_2d_binned[0, 1])
+print("deflection-angles of `Grid2D` pixel 0:")
+print(mass_profile_deflections.native_binned[0, 1])
 print()
-print("deflection-angles of central `Grid` pixels:")
-print(mass_profile_deflections.in_2d_binned[49, 49])
-print(mass_profile_deflections.in_2d_binned[49, 50])
-print(mass_profile_deflections.in_2d_binned[50, 49])
-print(mass_profile_deflections.in_2d_binned[50, 50])
+print("deflection-angles of central `Grid2D` pixels:")
+print(mass_profile_deflections.native_binned[49, 49])
+print(mass_profile_deflections.native_binned[49, 50])
+print(mass_profile_deflections.native_binned[50, 49])
+print(mass_profile_deflections.native_binned[50, 50])
 
 # %%
 """
-A `Profile` `Plotter`.can plot these deflection angles.
+A `ProfilePlotter`can plot these deflection angles.
 
 (The black and red lines are the `critical curve` and `caustic` of the `MassProfile`. we'll cover what these are in 
 a later tutorial.)
@@ -183,7 +183,7 @@ images of below:
    - Potential: The gravitational of the `MassProfile` again in convenient dimensionless units.
    - Magnification: Describes how much brighter each image-pixel appears due to focusing of light rays by the `MassProfile`.
 
-Extracting `Array`'s of these quantities from **PyAutoLens** is exactly the same as for the image and deflection angles above.
+Extracting `Array2D`'s of these quantities from **PyAutoLens** is exactly the same as for the image and deflection angles above.
 """
 
 # %%

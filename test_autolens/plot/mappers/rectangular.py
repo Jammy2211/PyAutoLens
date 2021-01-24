@@ -6,7 +6,7 @@ import autolens.plot as aplt
 
 # Lets setup a lensed source-plane grid, using a lens galaxy and tracer (our source galaxy doesn't have a light profile,
 # as we're going to reconstruct its light using a pixelization).
-grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
+grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=2)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -37,6 +37,6 @@ aplt.MapperObj(
     mapper=mapper,
     include=aplt.Include2D(inversion_grid=True, mapper_source_pixelization_grid=True),
     plotter=aplt.MatPlot2D(
-        title=aplt.Title(label="Slightly less Boring Grid of Rectangular Pixels")
+        title=aplt.Title(label="Slightly less Boring Grid2D of Rectangular Pixels")
     ),
 )

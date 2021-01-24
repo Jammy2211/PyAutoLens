@@ -36,17 +36,17 @@ class TestImagePassing:
         result.instance.galaxies.lens = al.Galaxy(redshift=0.5)
 
         image_dict = result.image_galaxy_dict
-        assert (image_dict[("galaxies", "lens")].in_2d == np.zeros((7, 7))).all()
+        assert (image_dict[("galaxies", "lens")].native == np.zeros((7, 7))).all()
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
     def test__stochastic_log_evidences(self, masked_imaging_7x7):
 
-        lens_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         lens_hyper_image[4] = 10.0
-        source_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        source_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         source_hyper_image[4] = 10.0
-        hyper_model_image = al.Array.full(
-            fill_value=0.5, shape_2d=(3, 3), pixel_scales=0.1
+        hyper_model_image = al.Array2D.full(
+            fill_value=0.5, shape_native=(3, 3), pixel_scales=0.1
         )
 
         hyper_galaxy_image_path_dict = {

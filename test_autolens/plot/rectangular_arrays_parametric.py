@@ -10,7 +10,7 @@ imaging = instrument_util.load_test_imaging(
     dataset_name="light_sersic__source_sersic", instrument="vro"
 )
 mask = al.Mask2D.elliptical(
-    shape=imaging.shape_2d,
+    shape=imaging.shape_native,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius=3.0,
     axis_ratio=0.5,

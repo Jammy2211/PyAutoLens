@@ -11,6 +11,6 @@ sersic = al.EllipticalSersic(
     sersic_index=4.0,
 )
 
-aplt.Array.profile.luminosity_within_circle_in_electrons_per_second_as_function_of_radius(
+aplt.Array2D.profile.luminosity_within_circle_in_electrons_per_second_as_function_of_radius(
     light_profile=sersic, minimum_radius=1.0e-4, maximum_radius=10.0
 )

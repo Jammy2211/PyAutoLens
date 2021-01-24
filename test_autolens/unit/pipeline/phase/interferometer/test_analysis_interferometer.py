@@ -21,7 +21,7 @@ class TestLogLikelihoodFunction:
     def test__positions_do_not_trace_within_threshold__raises_exception(
         self, phase_interferometer_7, interferometer_7, mask_7x7, visibilities_mask_7
     ):
-        interferometer_7.positions = al.GridIrregularGrouped(
+        interferometer_7.positions = al.Grid2DIrregularGrouped(
             [[(1.0, 100.0), (200.0, 2.0)]]
         )
 
@@ -171,12 +171,12 @@ class TestFit:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        lens_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         lens_hyper_image[4] = 10.0
-        source_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        source_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         source_hyper_image[4] = 10.0
-        hyper_model_image = al.Array.full(
-            fill_value=0.5, shape_2d=(3, 3), pixel_scales=0.1
+        hyper_model_image = al.Array2D.full(
+            fill_value=0.5, shape_native=(3, 3), pixel_scales=0.1
         )
 
         hyper_galaxy_image_path_dict = {

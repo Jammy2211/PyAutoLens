@@ -23,8 +23,8 @@ class TestMakeAnalysis:
             search=mock.MockSearch("phase_interferometer_7"),
             settings=al.SettingsPhaseInterferometer(
                 settings_masked_interferometer=al.SettingsMaskedInterferometer(
-                    grid_class=al.Grid,
-                    grid_inversion_class=al.Grid,
+                    grid_class=al.Grid2D,
+                    grid_inversion_class=al.Grid2D,
                     sub_size=3,
                     signal_to_noise_limit=1.0,
                 ),
@@ -56,14 +56,14 @@ class TestMakeAnalysis:
             dataset=interferometer_7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        assert isinstance(analysis.masked_dataset.grid, al.Grid)
-        assert isinstance(analysis.masked_dataset.grid_inversion, al.Grid)
+        assert isinstance(analysis.masked_dataset.grid, al.Grid2D)
+        assert isinstance(analysis.masked_dataset.grid_inversion, al.Grid2D)
         assert isinstance(analysis.masked_dataset.transformer, al.TransformerNUFFT)
 
         phase_interferometer_7 = al.PhaseInterferometer(
             settings=al.SettingsPhaseInterferometer(
                 settings_masked_interferometer=al.SettingsMaskedInterferometer(
-                    grid_class=al.GridIterate,
+                    grid_class=al.Grid2DIterate,
                     sub_size=3,
                     fractional_accuracy=0.99,
                     sub_steps=[2],
@@ -78,7 +78,7 @@ class TestMakeAnalysis:
             dataset=interferometer_7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        assert isinstance(analysis.masked_dataset.grid, al.GridIterate)
+        assert isinstance(analysis.masked_dataset.grid, al.Grid2DIterate)
         assert analysis.masked_dataset.grid.sub_size == 1
         assert analysis.masked_dataset.grid.fractional_accuracy == 0.99
         assert analysis.masked_dataset.grid.sub_steps == [2]
@@ -161,25 +161,29 @@ class TestHyperMethods:
         instance.galaxies = galaxies
 
         hyper_galaxy_image_path_dict = {
-            ("galaxies", "lens"): al.Array.ones(shape_2d=(3, 3), pixel_scales=1.0),
-            ("galaxies", "source"): al.Array.full(
-                fill_value=2.0, shape_2d=(3, 3), pixel_scales=1.0
+            ("galaxies", "lens"): al.Array2D.ones(
+                shape_native=(3, 3), pixel_scales=1.0
+            ),
+            ("galaxies", "source"): al.Array2D.full(
+                fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
             ),
         }
 
         hyper_galaxy_visibilities_path_dict = {
-            ("galaxies", "lens"): al.Visibilities.full(fill_value=4.0, shape_1d=(7,)),
-            ("galaxies", "source"): al.Visibilities.full(fill_value=5.0, shape_1d=(7,)),
+            ("galaxies", "lens"): al.Visibilities.full(fill_value=4.0, shape_slim=(7,)),
+            ("galaxies", "source"): al.Visibilities.full(
+                fill_value=5.0, shape_slim=(7,)
+            ),
         }
 
         results = mock.MockResults(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-            hyper_model_image=al.Array.full(
-                fill_value=3.0, shape_2d=(3, 3), pixel_scales=1.0
+            hyper_model_image=al.Array2D.full(
+                fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0
             ),
             hyper_galaxy_visibilities_path_dict=hyper_galaxy_visibilities_path_dict,
             hyper_model_visibilities=al.Visibilities.full(
-                fill_value=6.0, shape_1d=(7,)
+                fill_value=6.0, shape_slim=(7,)
             ),
             mask=mask_7x7,
             use_as_hyper_dataset=True,
@@ -200,16 +204,16 @@ class TestHyperMethods:
         )
 
         assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].in_2d
+            analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].native
             == np.ones((3, 3))
         ).all()
 
         assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].in_2d
+            analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].native
             == 2.0 * np.ones((3, 3))
         ).all()
 
-        assert (analysis.hyper_model_image.in_2d == 3.0 * np.ones((3, 3))).all()
+        assert (analysis.hyper_model_image.native == 3.0 * np.ones((3, 3))).all()
 
         assert (
             analysis.hyper_galaxy_visibilities_path_dict[("galaxies", "lens")]

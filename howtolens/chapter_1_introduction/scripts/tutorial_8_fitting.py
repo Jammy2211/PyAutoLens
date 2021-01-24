@@ -43,7 +43,7 @@ The `imaging` is an `Imaging` object, which is a package of all components of th
  2) The Point Spread Function (PSF).
  3) Its noise-map.
     
-Which are all stored as `Array` objects.
+Which are all stored as `Array2D` objects.
 """
 
 # %%
@@ -63,13 +63,16 @@ the edges where the signal is entirely background sky and noise.
 
 For the image we simulated, a 3" circular `Mask2D` will do the job.
 
-A `Mask2D` also takes the `sub_size` parameter we are used to giving a grid. This does what it does for a `Grid` - 
+A `Mask2D` also takes the `sub_size` parameter we are used to giving a grid. This does what it does for a `Grid2D` - 
 defining the (masked) sub-grid used to calculate lensing quantities from a mask.
 """
 
 # %%
 mask = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
+    shape_native=imaging.shape_native,
+    pixel_scales=imaging.pixel_scales,
+    sub_size=1,
+    radius=3.0,
 )
 
 print(mask)  # 1 = True, which means the pixel is masked. Edge pixels are indeed masked.
@@ -105,7 +108,7 @@ to fit it with a lens model:
 
  2) The mask, so that only the regions of the image with a signal are fitted.
 
- 3) A `Grid` aligned to the `Imaging` data's pixels, so the tracer`s image is generated on the same (masked) `Grid` 
+ 3) A `Grid2D` aligned to the `Imaging` data's pixels, so the tracer`s image is generated on the same (masked) `Grid2D` 
  as the image.
 """
 
@@ -156,34 +159,34 @@ values are masked and are therefore zeros.
 
 # %%
 print("The 2D Masked Image and 1D Image of unmasked entries")
-print(masked_imaging.image.shape_2d)
-print(masked_imaging.image.shape_1d)
-print(masked_imaging.image.in_2d)
-print(masked_imaging.image.in_1d)
+print(masked_imaging.image.shape_native)
+print(masked_imaging.image.shape_slim)
+print(masked_imaging.image.native)
+print(masked_imaging.image.slim)
 print()
 print("The 2D Masked Noise-Map and 1D Noise-Map of unmasked entries")
-print(masked_imaging.noise_map.shape_2d)
-print(masked_imaging.noise_map.shape_1d)
-print(masked_imaging.noise_map.in_2d)
-print(masked_imaging.noise_map.in_1d)
+print(masked_imaging.noise_map.shape_native)
+print(masked_imaging.noise_map.shape_slim)
+print(masked_imaging.noise_map.native)
+print(masked_imaging.noise_map.slim)
 
 # %%
 """
-The masked data also has a `Grid`, where only coordinates which are not masked are included (the masked 2D values are 
+The masked data also has a `Grid2D`, where only coordinates which are not masked are included (the masked 2D values are 
 set to [0.0. 0.0]).
 """
 
 # %%
-print("Masked Grid")
-print(masked_imaging.grid.in_2d)
-print(masked_imaging.grid.in_1d)
+print("Masked Grid2D")
+print(masked_imaging.grid.native)
+print(masked_imaging.grid.slim)
 
 # %%
 """
 To fit an image, create an image using a `Tracer`. Lets use the same `Tracer` we simulated the `Imaging` instrument with 
 (thus, our fit is `perfect`).
 
-Its worth noting that below, we use the `MaskedImaging`'s `Grid` to setup the `Tracer`. This ensures that our 
+Its worth noting that below, we use the `MaskedImaging`'s `Grid2D` to setup the `Tracer`. This ensures that our 
 image-plane image is the same resolution and alignment as our lens data's masked image.
 """
 
@@ -246,16 +249,16 @@ don't specify where we'll get all zeros, as the edges were masked:
 
 # %%
 print("Model-Image:")
-print(fit.model_image.in_2d)
-print(fit.model_image.in_1d)
+print(fit.model_image.native)
+print(fit.model_image.slim)
 print()
 print("Residual Maps:")
-print(fit.residual_map.in_2d)
-print(fit.residual_map.in_1d)
+print(fit.residual_map.native)
+print(fit.residual_map.slim)
 print()
 print("Chi-Squareds Maps:")
-print(fit.chi_squared_map.in_2d)
-print(fit.chi_squared_map.in_1d)
+print(fit.chi_squared_map.native)
+print(fit.chi_squared_map.slim)
 
 # %%
 """
@@ -263,17 +266,17 @@ Of course, the central unmasked pixels have non-zero values.
 """
 
 # %%
-model_image = fit.model_image.in_2d
+model_image = fit.model_image.native
 print(model_image[48:53, 48:53])
 print()
 
-residual_map = fit.residual_map.in_2d
+residual_map = fit.residual_map.native
 print("Residuals Central Pixels:")
 print(residual_map[48:53, 48:53])
 print()
 
 print("Chi-Squareds Central Pixels:")
-chi_squared_map = fit.chi_squared_map.in_2d
+chi_squared_map = fit.chi_squared_map.native
 print(chi_squared_map[48:53, 48:53])
 
 # %%
@@ -292,7 +295,7 @@ We can customize the `MaskedImaging` we set up, using the `SettingsMaskedImaging
 
 For example, we can: 
 
- - Specify the `Grid` used by the `MaskedImaging` to fit the data, where we below increase it from its default value of
+ - Specify the `Grid2D` used by the `MaskedImaging` to fit the data, where we below increase it from its default value of
    2 to 5.
  
  - Bin-up the masked `Imaging` by a factor 2. This decreases the resolution of the data losing us  information, but 
@@ -301,7 +304,7 @@ For example, we can:
 
 # %%
 settings_masked_imaging = al.SettingsMaskedImaging(
-    grid_class=al.Grid, sub_size=4, bin_up_factor=2
+    grid_class=al.Grid2D, sub_size=4, bin_up_factor=2
 )
 
 masked_imaging_custom = al.MaskedImaging(

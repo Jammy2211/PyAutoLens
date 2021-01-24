@@ -30,8 +30,8 @@ pickle_path = f"{path}/pickles"
 """The initial grid for position solver which is upscaled iteratively by the solver."""
 
 # %%
-grid = al.Grid.uniform(
-    shape_2d=(2000, 2000),
+grid = al.Grid2D.uniform(
+    shape_native=(2000, 2000),
     pixel_scales=0.005,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
@@ -56,7 +56,7 @@ for i in range(40, 41):
         source_plane_coordinate=tracer.source_plane.galaxies[0].light.centre,
     )
 
-    positions_true = al.GridIrregularGrouped.load(
+    positions_true = al.Grid2DIrregularGrouped.load(
         file_path=pickle_path, filename=f"positions_{str(i)}"
     )
 
@@ -69,7 +69,7 @@ for i in range(40, 41):
             positions_true=positions_true, positions=positions, threshold=0.1
         )
 
-        positions_plot = al.GridIrregularGrouped(
+        positions_plot = al.Grid2DIrregularGrouped(
             coordinates=[
                 positions.in_grouped_list[0],
                 positions_true.in_grouped_list[0],
@@ -81,7 +81,7 @@ for i in range(40, 41):
         minimum_separations = None
         in_positions_true = None
 
-        positions_plot = al.GridIrregularGrouped(
+        positions_plot = al.Grid2DIrregularGrouped(
             coordinates=[positions_true.in_grouped_list[0]]
         )
 

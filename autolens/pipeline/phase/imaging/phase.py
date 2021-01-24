@@ -104,7 +104,7 @@ class PhaseImaging(dataset.PhaseDataset):
             )
             phase_info.write(
                 "PSF shape = {} \n".format(
-                    self.settings.settings_masked_imaging.psf_shape_2d
+                    self.settings.settings_masked_imaging.psf_shape_native
                 )
             )
             phase_info.write(

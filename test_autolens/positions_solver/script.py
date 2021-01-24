@@ -2,10 +2,10 @@ import autolens as al
 import autolens.plot as aplt
 import numpy as np
 
-# mask = al.Mask2D.circular_annular(shape_2d=(200, 200), pixel_scales=0.05, inner_radius=0.3, outer_radius=3.0)
-# grid = al.Grid.from_mask(mask=mask)
+# mask = al.Mask2D.circular_annular(shape_native=(200, 200), pixel_scales=0.05, inner_radius=0.3, outer_radius=3.0)
+# grid = al.Grid2D.from_mask(mask=mask)
 
-grid = al.Grid.uniform(shape_2d=(200, 200), pixel_scales=0.05)
+grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.05)
 
 mass_profile = al.mp.EllipticalIsothermal(
     centre=(0.001, 0.001), elliptical_comps=(0.1, 0.1), einstein_radius=1.0

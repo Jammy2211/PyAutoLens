@@ -25,7 +25,7 @@ Lets setup a lensed source-plane grid, using a lens galaxy and `Tracer` (our sou
 """
 
 # %%
-grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
+grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=2)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -51,9 +51,9 @@ rectangular = al.pix.Rectangular(shape=(25, 25))
 
 # %%
 """
-By itself, a `Pixelization`.oesn`t tell us much. It has no `Grid` of coordinates, no image, and nothing which tells it 
+By itself, a `Pixelization`.oesn`t tell us much. It has no `Grid2D` of coordinates, no image, and nothing which tells it 
 about the lens we're fitting. This information comes when we use the `Pixelization` to set up a `Mapper`. we'll use 
-the (traced) source-plane `Grid` to set up this mapper.
+the (traced) source-plane `Grid2D` to set up this mapper.
 """
 
 # %%
@@ -69,18 +69,18 @@ print(type(mapper))
 
 # %%
 """
-By plotting our mapper, we now see our `Pixelization`. Its a fairly boring `Grid` of rectangular pixels.
+By plotting our mapper, we now see our `Pixelization`. Its a fairly boring `Grid2D` of rectangular pixels.
 
 (we'll cover what the `inversion` means in a later tutorial).
 """
 
 # %%
 include_2d = aplt.Include2D(
-    mapper_source_full_grid=False, mapper_source_pixelization_grid=False
+    mapper_source_grid_slim=False, mapper_source_pixelization_grid=False
 )
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
-mapper_plotter.set_title("Fairly Boring Grid of Rectangular Pixels")
+mapper_plotter.set_title("Fairly Boring Grid2D of Rectangular Pixels")
 mapper_plotter.figure()
 
 # %%
@@ -90,55 +90,55 @@ pixelization_grid tells us where the pixel centers are located.
 """
 
 # %%
-print("Rectangular Grid Pixel Centre 1:")
+print("Rectangular Grid2D Pixel Centre 1:")
 print(mapper.source_pixelization_grid[0])
-print("Rectangular Grid Pixel Centre 2:")
+print("Rectangular Grid2D Pixel Centre 2:")
 print(mapper.source_pixelization_grid[1])
-print("Rectangular Grid Pixel Centre 3:")
+print("Rectangular Grid2D Pixel Centre 3:")
 print(mapper.source_pixelization_grid[2])
 print("etc.")
 
 # %%
 """
-Infact, we can plot these centre on our `Grid` - to make it look slightly less boring!
+Infact, we can plot these centre on our `Grid2D` - to make it look slightly less boring!
 """
 
 # %%
 include_2d = aplt.Include2D(
-    mapper_source_full_grid=False, mapper_source_pixelization_grid=False
+    mapper_source_grid_slim=False, mapper_source_pixelization_grid=False
 )
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
-mapper_plotter.set_title("Slightly less Boring Grid of Rectangular Pixels")
+mapper_plotter.set_title("Slightly less Boring Grid2D of Rectangular Pixels")
 mapper_plotter.figure()
 
 # %%
 """
-The `Mapper` also has the (source-plane) `Grid` that we passed when we set it up. Lets check they`re the same.
+The `Mapper` also has the (source-plane) `Grid2D` that we passed when we set it up. Lets check they`re the same.
 """
 
 # %%
-print("Source Grid Pixel 1")
+print("Source Grid2D Pixel 1")
 print(source_plane_grid[0])
-print(mapper.source_full_grid[0])
-print("Source Grid Pixel 2")
+print(mapper.source_grid_slim[0])
+print("Source Grid2D Pixel 2")
 print(source_plane_grid[1])
-print(mapper.source_full_grid[1])
+print(mapper.source_grid_slim[1])
 print("etc.")
 
 # %%
 """
-We can over-lay the `Grid` on top. Its starting to look a bit less boring now!
+We can over-lay the `Grid2D` on top. Its starting to look a bit less boring now!
 """
 
 # %%
 
 include_2d = aplt.Include2D(
-    mapper_source_full_grid=True, mapper_source_pixelization_grid=True
+    mapper_source_grid_slim=True, mapper_source_pixelization_grid=True
 )
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include_2d)
-mapper_plotter.set_title("Even less Boring Grid of Rectangular Pixels")
+mapper_plotter.set_title("Even less Boring Grid2D of Rectangular Pixels")
 mapper_plotter.figure()
 
 mat_plot_2d = aplt.MatPlot2D(axis=aplt.Axis(extent=[-0.3, 0.3, -0.3, 0.3]))
@@ -146,7 +146,7 @@ mat_plot_2d = aplt.MatPlot2D(axis=aplt.Axis(extent=[-0.3, 0.3, -0.3, 0.3]))
 mapper_plotter = aplt.MapperPlotter(
     mapper=mapper, mat_plot_2d=mat_plot_2d, include_2d=include_2d
 )
-mapper_plotter.set_title("Zoomed Grid of Rectangular Pixels")
+mapper_plotter.set_title("Zoomed Grid2D of Rectangular Pixels")
 mapper_plotter.figure()
 
 # %%
@@ -156,7 +156,7 @@ size and dimensions.
 """
 
 # %%
-print(mapper.source_pixelization_grid.shape_2d_scaled)
+print(mapper.source_pixelization_grid.shape_native_scaled)
 print(mapper.source_pixelization_grid.scaled_maxima)
 print(mapper.source_pixelization_grid.scaled_minima)
 

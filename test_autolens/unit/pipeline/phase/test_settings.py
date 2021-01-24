@@ -5,12 +5,12 @@ def test__tag__mixture_of_values():
 
     settings = al.SettingsPhaseImaging(
         settings_masked_imaging=al.SettingsMaskedImaging(
-            grid_class=al.Grid,
-            grid_inversion_class=al.Grid,
+            grid_class=al.Grid2D,
+            grid_inversion_class=al.Grid2D,
             sub_size=2,
             signal_to_noise_limit=2,
             bin_up_factor=None,
-            psf_shape_2d=None,
+            psf_shape_native=None,
         ),
         settings_lens=al.SettingsLens(positions_threshold=2.0),
     )
@@ -30,12 +30,12 @@ def test__tag__mixture_of_values():
 
     settings = al.SettingsPhaseImaging(
         settings_masked_imaging=al.SettingsMaskedImaging(
-            grid_class=al.GridIterate,
-            grid_inversion_class=al.GridInterpolate,
+            grid_class=al.Grid2DIterate,
+            grid_inversion_class=al.Grid2DInterpolate,
             fractional_accuracy=0.5,
             pixel_scales_interp=0.3,
             bin_up_factor=3,
-            psf_shape_2d=(2, 2),
+            psf_shape_native=(2, 2),
         ),
         settings_lens=al.SettingsLens(
             positions_threshold=1.0, auto_positions_factor=0.5
@@ -63,8 +63,8 @@ def test__tag__mixture_of_values():
 
     settings = al.SettingsPhaseInterferometer(
         settings_masked_interferometer=al.SettingsMaskedInterferometer(
-            grid_class=al.GridIterate,
-            grid_inversion_class=al.GridInterpolate,
+            grid_class=al.Grid2DIterate,
+            grid_inversion_class=al.Grid2DInterpolate,
             fractional_accuracy=0.5,
             pixel_scales_interp=0.3,
             transformer_class=al.TransformerDFT,

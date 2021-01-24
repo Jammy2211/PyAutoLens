@@ -49,7 +49,7 @@ Below, we choose an inner radius that cuts into our lensed source galaxy - clear
 
 # %%
 mask = al.Mask2D.circular_annular(
-    shape_2d=imaging.shape_2d,
+    shape_native=imaging.shape_native,
     pixel_scales=imaging.pixel_scales,
     inner_radius=1.4,
     outer_radius=2.4,
@@ -67,7 +67,7 @@ So, lets decrease the inner radius to correct for this.
 
 # %%
 mask = al.Mask2D.circular_annular(
-    shape_2d=imaging.shape_2d,
+    shape_native=imaging.shape_native,
     pixel_scales=imaging.pixel_scales,
     inner_radius=0.6,
     outer_radius=2.4,
@@ -81,11 +81,11 @@ imaging_plotter.subplot_imaging()
 # %%
 """
 Like in the previous tutorial, we use a `SettingsPhaseImaging` object to specify our model-fitting procedure uses a 
-regular `Grid`.
+regular `Grid2D`.
 """
 
 # %%
-settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
 
 settings = al.SettingsPhaseImaging(settings_masked_imaging=settings_masked_imaging)
 
@@ -150,13 +150,13 @@ one another (which is controlled by the `position_threshold` parameter input int
 We can easily check the image-positions are accurate by plotting them using our `ImagingPlotter`.(they are the magenta 
 dots on the image).
 
-To specify these positions, we use the `GridIrregularGrouped` object, which is used by **PyAutoLens** in general to specify (y,x)
+To specify these positions, we use the `Grid2DIrregularGrouped` object, which is used by **PyAutoLens** in general to specify (y,x)
 coordinates.
 """
 
 # %%
 
-positions = al.GridIrregularGrouped(
+positions = al.Grid2DIrregularGrouped(
     grid=[(1.6, 0.0), (0.0, 1.6), (-1.6, 0.0), (0.0, -1.6)]
 )
 
@@ -181,7 +181,7 @@ imaging = al.Imaging(
     positions=positions,
 )
 
-settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
 settings_lens = al.SettingsLens(positions_threshold=2.0)
 
 settings = al.SettingsPhaseImaging(
@@ -248,7 +248,7 @@ These are plotted in different colours to represent that they trace from differe
 """
 
 # %%
-positions = al.GridIrregularGrouped(
+positions = al.Grid2DIrregularGrouped(
     grid=[[(2.65, 0.0), (-0.55, 0.0)], [(-2.65, 0.0), (0.55, 0.0)]]
 )
 
@@ -270,7 +270,7 @@ imaging = al.Imaging(
     positions=positions,
 )
 
-settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid, sub_size=2)
+settings_masked_imaging = al.SettingsMaskedImaging(grid_class=al.Grid2D, sub_size=2)
 settings_lens = al.SettingsLens(positions_threshold=2.0)
 
 settings = al.SettingsPhaseImaging(

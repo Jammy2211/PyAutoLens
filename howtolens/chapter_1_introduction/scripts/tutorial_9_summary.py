@@ -5,8 +5,8 @@ Tutorial 9: Summary
 
 In this chapter, you`ve learnt how create and fit strong lenses with **PyAutoLens**. In particular, you`ve learnt:
 
- 1) **PyAutoLens** uses Cartesian `Grid`'s of $(y,x)$ coordinates to perform ray-tracing.
- 2) These `Grid`'s are combined with light and mass profiles to compute images, convergences, potentials and
+ 1) **PyAutoLens** uses Cartesian `Grid2D`'s of $(y,x)$ coordinates to perform ray-tracing.
+ 2) These `Grid2D`'s are combined with light and mass profiles to compute images, convergences, potentials and
  deflection angles.
  3) Profiles are combined to make galaxies.
  4) Collections of galaxies (at the same redshift) form a plane.
@@ -58,7 +58,10 @@ imaging = al.Imaging.from_fits(
 )
 
 mask = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=3.0
+    shape_native=imaging.shape_native,
+    pixel_scales=imaging.pixel_scales,
+    sub_size=2,
+    radius=3.0,
 )
 
 masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)

@@ -7,7 +7,7 @@ from autolens.mock import mock
 class TestAbstractFitPositionsSourcePlane:
     def test__furthest_separation_of_source_plane_positions(self):
 
-        positions = al.GridIrregularGrouped(grid=[[(0.0, 0.0), (0.0, 1.0)]])
+        positions = al.Grid2DIrregularGrouped(grid=[[(0.0, 0.0), (0.0, 1.0)]])
         noise_map = al.ValuesIrregularGrouped([[1.0, 1.0]])
 
         tracer = mock.MockTracer(traced_grid=positions)
@@ -22,7 +22,7 @@ class TestAbstractFitPositionsSourcePlane:
         assert fit.max_separation_within_threshold(threshold=2.0) == True
         assert fit.max_separation_within_threshold(threshold=0.5) == False
 
-        positions = al.GridIrregularGrouped(
+        positions = al.Grid2DIrregularGrouped(
             grid=[[(0.0, 0.0), (0.0, 1.0), (0.0, 3.0)], [(0.0, 0.0)]]
         )
         noise_map = al.ValuesIrregularGrouped([[1.0, 1.0], [1.0]])
@@ -54,13 +54,13 @@ class TestAbstractFitPositionsSourcePlane:
 
         noise_map = al.ValuesIrregularGrouped([[1.0, 1.0]])
 
-        positions = al.GridIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]])
+        positions = al.Grid2DIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]])
         fit = al.FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=noise_map, tracer=tracer
         )
         assert fit.max_separation_within_threshold(threshold=0.01)
 
-        positions = al.GridIrregularGrouped([[(1.2, 0.0), (-1.0, 0.0)]])
+        positions = al.Grid2DIrregularGrouped([[(1.2, 0.0), (-1.0, 0.0)]])
         fit = al.FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=noise_map, tracer=tracer
         )
@@ -71,7 +71,7 @@ class TestAbstractFitPositionsSourcePlane:
 # class TestFitPositionsSourcePlane:
 #     def test__likelihood__is_sum_of_separations_divided_by_noise(self):
 #
-#         positions = al.GridIrregularGrouped(
+#         positions = al.Grid2DIrregularGrouped(
 #             [
 #                 [(0.0, 0.0), (0.0, 1.0), (0.0, 0.5)],
 #                 [(0.0, 0.0), (0.0, 0.0), (3.0, 3.0)],
@@ -123,11 +123,11 @@ class TestFitPositionsImage:
 
         tracer = mock.MockTracer(traced_grid=None)
 
-        positions = al.GridIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)], [(3.0, 3.0)]])
+        positions = al.Grid2DIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)], [(3.0, 3.0)]])
 
         noise_map = al.ValuesIrregularGrouped([[0.5, 1.0], [1.0]])
 
-        model_positions = al.GridIrregularGrouped(
+        model_positions = al.Grid2DIrregularGrouped(
             [[(3.0, 1.0), (2.0, 3.0)], [(3.0, 3.0)]]
         )
 
@@ -169,11 +169,11 @@ class TestFitPositionsImage:
 
         tracer = mock.MockTracer(traced_grid=None)
 
-        positions = al.GridIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)], [(3.0, 3.0)]])
+        positions = al.Grid2DIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)], [(3.0, 3.0)]])
 
         noise_map = al.ValuesIrregularGrouped([[0.5, 1.0], [1.0]])
 
-        model_positions = al.GridIrregularGrouped(
+        model_positions = al.Grid2DIrregularGrouped(
             [[(3.0, 1.0), (2.0, 3.0), (1.0, 0.0), (0.0, 1.0)], [(3.0, 3.0), (4.0, 4.0)]]
         )
 
@@ -216,7 +216,7 @@ class TestFitPositionsImage:
 #
 #         noise_map = al.ValuesIrregularGrouped([[3.0, 1.0]])
 #
-#         positions = al.GridIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)]])
+#         positions = al.Grid2DIrregularGrouped([[(0.0, 0.0), (3.0, 4.0)]])
 #
 #         tracer = mokc.MockTracer(
 #             magnification=2,

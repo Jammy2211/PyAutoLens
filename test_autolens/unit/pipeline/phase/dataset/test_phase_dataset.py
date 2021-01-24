@@ -26,7 +26,7 @@ class TestMakeAnalysis:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]]),
+            positions=al.Grid2DIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -142,7 +142,7 @@ class TestMakeAnalysis:
             galaxies=[lens_galaxy, source_galaxy],
             settings=al.SettingsPhaseImaging(
                 settings_masked_imaging=al.SettingsMaskedImaging(
-                    grid_inversion_class=al.Grid
+                    grid_inversion_class=al.Grid2D
                 ),
                 settings_pixelization=al.SettingsPixelization(use_border=True),
             ),
@@ -160,10 +160,10 @@ class TestMakeAnalysis:
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
-        assert fit.inversion.mapper.source_full_grid[4][0] == pytest.approx(
+        assert fit.inversion.mapper.source_grid_slim[4][0] == pytest.approx(
             97.19584, 1.0e-2
         )
-        assert fit.inversion.mapper.source_full_grid[4][1] == pytest.approx(
+        assert fit.inversion.mapper.source_grid_slim[4][1] == pytest.approx(
             -3.699999, 1.0e-2
         )
 
@@ -171,7 +171,7 @@ class TestMakeAnalysis:
             galaxies=[lens_galaxy, source_galaxy],
             settings=al.SettingsPhaseImaging(
                 settings_masked_imaging=al.SettingsMaskedImaging(
-                    grid_inversion_class=al.Grid
+                    grid_inversion_class=al.Grid2D
                 ),
                 settings_pixelization=al.SettingsPixelization(use_border=False),
             ),
@@ -190,7 +190,7 @@ class TestMakeAnalysis:
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
-        assert fit.inversion.mapper.source_full_grid[4][0] == pytest.approx(
+        assert fit.inversion.mapper.source_grid_slim[4][0] == pytest.approx(
             200.0, 1.0e-4
         )
 
@@ -208,7 +208,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
+            positions=al.Grid2DIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -233,7 +233,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
+            positions=al.Grid2DIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -260,7 +260,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
+            positions=al.Grid2DIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -274,7 +274,7 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer,
-            updated_positions=al.GridIrregularGrouped(grid=[[(2.0, 2.0)]]),
+            updated_positions=al.Grid2DIrregularGrouped(grid=[[(2.0, 2.0)]]),
             updated_positions_threshold=0.3,
         )
 
@@ -291,7 +291,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
+            positions=al.Grid2DIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -307,7 +307,9 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer_x1_plane,
-            updated_positions=al.GridIrregularGrouped(grid=[[(2.0, 2.0), (3.0, 3.0)]]),
+            updated_positions=al.Grid2DIrregularGrouped(
+                grid=[[(2.0, 2.0), (3.0, 3.0)]]
+            ),
             updated_positions_threshold=0.3,
         )
 
@@ -325,7 +327,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
+            positions=al.Grid2DIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -339,7 +341,9 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer,
-            updated_positions=al.GridIrregularGrouped(grid=[[(2.0, 2.0), (3.0, 3.0)]]),
+            updated_positions=al.Grid2DIrregularGrouped(
+                grid=[[(2.0, 2.0), (3.0, 3.0)]]
+            ),
             updated_positions_threshold=0.3,
         )
 
@@ -359,7 +363,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridIrregularGrouped([[(2.0, 2.0)]]),
+            positions=al.Grid2DIrregularGrouped([[(2.0, 2.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -371,7 +375,7 @@ class TestAutoPositions:
 
         results = mock.MockResults(
             max_log_likelihood_tracer=tracer,
-            positions=al.GridIrregularGrouped(grid=[[(3.0, 3.0), (4.0, 4.0)]]),
+            positions=al.Grid2DIrregularGrouped(grid=[[(3.0, 3.0), (4.0, 4.0)]]),
             updated_positions_threshold=0.3,
         )
 
@@ -395,7 +399,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridIrregularGrouped([[(1.0, 1.0)]]),
+            positions=al.Grid2DIrregularGrouped([[(1.0, 1.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -421,7 +425,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]]),
+            positions=al.Grid2DIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -449,7 +453,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]]),
+            positions=al.Grid2DIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(
@@ -479,7 +483,7 @@ class TestAutoPositions:
         imaging_7x7 = al.Imaging(
             image=image_7x7,
             noise_map=noise_map_7x7,
-            positions=al.GridIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]]),
+            positions=al.Grid2DIrregularGrouped([[(1.0, 0.0), (-1.0, 0.0)]]),
         )
 
         phase_imaging_7x7 = al.PhaseImaging(

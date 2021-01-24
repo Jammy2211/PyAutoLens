@@ -22,7 +22,7 @@ def test__subhalo_detection_sub_plot(
     plot_path,
     plot_patch,
 ):
-    arr = al.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
+    arr = al.Array2D.manual_native(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
 
     subhalo_plotter = aplt.SubhaloPlotter(
         include_2d=include_2d_all,

@@ -50,7 +50,10 @@ border. Lets plot the image with a circular `Mask2D`, and tell our `ImagingPlott
 
 # %%
 mask_circular = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.5
+    shape_native=imaging.shape_native,
+    pixel_scales=imaging.pixel_scales,
+    sub_size=2,
+    radius=2.5,
 )
 masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask_circular)
 
@@ -68,7 +71,7 @@ part of its border!
 
 # %%
 mask_annular = al.Mask2D.circular_annular(
-    shape_2d=imaging.shape_2d,
+    shape_native=imaging.shape_native,
     pixel_scales=imaging.pixel_scales,
     sub_size=2,
     inner_radius=0.8,
@@ -139,7 +142,7 @@ fit = perform_fit_with_source_galaxy_mask_and_border(
     settings_pixelization=al.SettingsPixelization(use_border=False),
 )
 
-include_2d = aplt.Include2D(mapper_source_full_grid=True)
+include_2d = aplt.Include2D(mapper_source_grid_slim=True)
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
@@ -165,7 +168,7 @@ inversion_plotter.figures(reconstruction=True)
 
 # %%
 """
-Woah - whats happened? There are lots of extra points on our source-plane `Grid` which trace to extremely large radii 
+Woah - whats happened? There are lots of extra points on our source-plane `Grid2D` which trace to extremely large radii 
 away from the central regions of the source-plane! These points are traced image-pixels (just like all the other points) 
 which correspond to the central image-pixels that our annular `Mask2D` masked but that our circular `Mask2D` didn`t!
 
@@ -185,7 +188,7 @@ visuals_2d = aplt.Visuals2D(
         [4178, 4179, 4180, 4181, 4182],
     ]
 )
-include_2d = aplt.Include2D(mapper_source_full_grid=True)
+include_2d = aplt.Include2D(mapper_source_grid_slim=True)
 
 mapper_plotter = aplt.MapperPlotter(
     mapper=fit.inversion.mapper, visuals_2d=visuals_2d, include_2d=include_2d
@@ -231,7 +234,7 @@ Lets quickly use a larger circular `Mask2D` to confirm that these pixels do exis
 
 # %%
 mask_circular_large = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, radius=4.0
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=4.0
 )
 
 fit = perform_fit_with_source_galaxy_mask_and_border(
@@ -316,7 +319,10 @@ effects of the border in a moment.
 
 # %%
 mask_circular = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.8
+    shape_native=imaging.shape_native,
+    pixel_scales=imaging.pixel_scales,
+    sub_size=2,
+    radius=2.8,
 )
 
 masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask_circular)
@@ -377,7 +383,7 @@ fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     settings_pixelization=al.SettingsPixelization(use_border=False),
 )
 
-include_2d = aplt.Include2D(mapper_source_full_grid=True, border=True)
+include_2d = aplt.Include2D(mapper_source_grid_slim=True, border=True)
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
@@ -411,7 +417,10 @@ choose a big enough mask, the border won't be able to relocate all of the demani
 # %%
 
 mask_circular = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.5
+    shape_native=imaging.shape_native,
+    pixel_scales=imaging.pixel_scales,
+    sub_size=2,
+    radius=2.5,
 )
 fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
@@ -424,21 +433,10 @@ fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
 fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 mask_circular = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.7
-)
-fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
-    imaging=imaging,
-    source_galaxy=source_galaxy,
-    mask=mask_circular,
-    settings_pixelization=al.SettingsPixelization(use_border=True),
-)
-
-fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
-fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
-
-
-mask_circular = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=2.9
+    shape_native=imaging.shape_native,
+    pixel_scales=imaging.pixel_scales,
+    sub_size=2,
+    radius=2.7,
 )
 fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,
@@ -452,7 +450,27 @@ fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
 
 
 mask_circular = al.Mask2D.circular(
-    shape_2d=imaging.shape_2d, pixel_scales=imaging.pixel_scales, sub_size=2, radius=3.1
+    shape_native=imaging.shape_native,
+    pixel_scales=imaging.pixel_scales,
+    sub_size=2,
+    radius=2.9,
+)
+fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
+    imaging=imaging,
+    source_galaxy=source_galaxy,
+    mask=mask_circular,
+    settings_pixelization=al.SettingsPixelization(use_border=True),
+)
+
+fit_plotter = aplt.FitImagingPlotter(fit=fit, include_2d=include_2d)
+fit_plotter.figures_of_planes(plane_image=True, plane_index=1)
+
+
+mask_circular = al.Mask2D.circular(
+    shape_native=imaging.shape_native,
+    pixel_scales=imaging.pixel_scales,
+    sub_size=2,
+    radius=3.1,
 )
 fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(
     imaging=imaging,

@@ -1,7 +1,7 @@
 import autolens as al
 import autolens.plot as aplt
 
-grid = al.Grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=4)
+grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=4)
 
 sis_mass_profile = al.mp.EllipticalIsothermal(
     centre=(1.0, 1.0), einstein_radius=1.6, axis_ratio=0.7

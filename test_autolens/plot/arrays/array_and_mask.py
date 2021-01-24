@@ -9,7 +9,7 @@ imaging = instrument_util.load_test_imaging(
 array = imaging.image
 
 mask = al.Mask2D.elliptical(
-    shape_2d=imaging.shape_2d,
+    shape_native=imaging.shape_native,
     pixel_scales=imaging.pixel_scales,
     major_axis_radius=3.0,
     axis_ratio=1.0,
@@ -17,4 +17,4 @@ mask = al.Mask2D.elliptical(
     centre=(3.0, 0.0),
 )
 
-aplt.Array(array=array, mask=mask)
+aplt.Array2D(array=array, mask=mask)
