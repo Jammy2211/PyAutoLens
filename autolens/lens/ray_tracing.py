@@ -273,10 +273,10 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         return images_of_planes
 
-    def padded_image_from_grid_and_psf_shape(self, grid, psf_shape_native):
+    def padded_image_from_grid_and_psf_shape(self, grid, psf_shape_2d):
 
         padded_grid = grid.padded_grid_from_kernel_shape(
-            kernel_shape_native=psf_shape_native
+            kernel_shape_native=psf_shape_2d
         )
 
         return self.image_from_grid(grid=padded_grid)

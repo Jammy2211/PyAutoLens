@@ -82,7 +82,7 @@ specifically for simulating an image, which pads the array it is computed on bas
 # %%
 normal_image = tracer.image_from_grid(grid=grid)
 padded_image = tracer.padded_image_from_grid_and_psf_shape(
-    grid=grid, psf_shape_native=psf.shape_native
+    grid=grid, psf_shape_2d=psf.shape_native
 )
 
 print(normal_image.shape_native)

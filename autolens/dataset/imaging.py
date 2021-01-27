@@ -26,7 +26,7 @@ class MaskedImaging(imaging.MaskedImaging):
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
             sub-grid.
-        psf_shape_native : (int, int)
+        psf_shape_2d : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         positions : [[]]
@@ -118,7 +118,7 @@ class SimulatorImaging(imaging.SimulatorImaging):
         """
 
         image = tracer.padded_image_from_grid_and_psf_shape(
-            grid=grid, psf_shape_native=self.psf.shape_native
+            grid=grid, psf_shape_2d=self.psf.shape_native
         )
 
         imaging = self.from_image(image=image.slim_binned, name=name)

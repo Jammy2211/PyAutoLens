@@ -10,7 +10,7 @@ def test__tag__mixture_of_values():
             sub_size=2,
             signal_to_noise_limit=2,
             bin_up_factor=None,
-            psf_shape_native=None,
+            psf_shape_2d=None,
         ),
         settings_lens=al.SettingsLens(positions_threshold=2.0),
     )
@@ -35,7 +35,7 @@ def test__tag__mixture_of_values():
             fractional_accuracy=0.5,
             pixel_scales_interp=0.3,
             bin_up_factor=3,
-            psf_shape_native=(2, 2),
+            psf_shape_2d=(2, 2),
         ),
         settings_lens=al.SettingsLens(
             positions_threshold=1.0, auto_positions_factor=0.5

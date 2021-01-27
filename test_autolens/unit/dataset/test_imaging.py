@@ -32,7 +32,7 @@ class TestMaskedImaging:
         masked_imaging_7x7 = al.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
-            settings=al.SettingsMaskedImaging(psf_shape_native=(3, 3)),
+            settings=al.SettingsMaskedImaging(psf_shape_2d=(3, 3)),
         )
 
         grid = al.Grid2D.from_mask(mask=sub_mask_7x7)

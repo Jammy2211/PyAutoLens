@@ -1494,7 +1494,7 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             padded_tracer_image = tracer.padded_image_from_grid_and_psf_shape(
-                grid=sub_grid_7x7, psf_shape_native=(3, 3)
+                grid=sub_grid_7x7, psf_shape_2d=(3, 3)
             )
 
             assert padded_tracer_image.shape_native == (9, 9)
@@ -1530,7 +1530,7 @@ class TestAbstractTracerLensing:
             )
 
             padded_tracer_image = tracer.padded_image_from_grid_and_psf_shape(
-                grid=sub_grid_7x7, psf_shape_native=(3, 3)
+                grid=sub_grid_7x7, psf_shape_2d=(3, 3)
             )
 
             assert padded_tracer_image.shape_native == (9, 9)
@@ -1564,7 +1564,7 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             padded_tracer_image = tracer.padded_image_from_grid_and_psf_shape(
-                grid=grid_iterate_7x7, psf_shape_native=(3, 3)
+                grid=grid_iterate_7x7, psf_shape_2d=(3, 3)
             )
 
             assert padded_tracer_image.shape_native == (9, 9)

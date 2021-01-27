@@ -52,7 +52,7 @@ class TestMakeAnalysis:
                     sub_size=3,
                     signal_to_noise_limit=1.0,
                     bin_up_factor=2,
-                    psf_shape_native=(3, 3),
+                    psf_shape_2d=(3, 3),
                 ),
                 settings_pixelization=al.SettingsPixelization(
                     use_border=False, is_stochastic=True
@@ -67,7 +67,7 @@ class TestMakeAnalysis:
             == 1.0
         )
         assert phase_imaging_7x7.settings.settings_masked_imaging.bin_up_factor == 2
-        assert phase_imaging_7x7.settings.settings_masked_imaging.psf_shape_native == (
+        assert phase_imaging_7x7.settings.settings_masked_imaging.psf_shape_2d == (
             3,
             3,
         )
@@ -244,7 +244,7 @@ class TestMakeAnalysis:
 
         search = phase_info.readline()
         sub_size = phase_info.readline()
-        psf_shape_native = phase_info.readline()
+        psf_shape_2d = phase_info.readline()
         positions_threshold = phase_info.readline()
         cosmology = phase_info.readline()
 
@@ -252,7 +252,7 @@ class TestMakeAnalysis:
 
         assert search == "Optimizer = MockSearch \n"
         assert sub_size == "Sub-grid size = 2 \n"
-        assert psf_shape_native == "PSF shape = None \n"
+        assert psf_shape_2d == "PSF shape = None \n"
         assert positions_threshold == "Positions Threshold = None \n"
         assert (
             cosmology

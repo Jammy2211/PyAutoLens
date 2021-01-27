@@ -1,5 +1,5 @@
 autoconf==0.7.5
-autofit==0.71.5
+autofit==0.72.0
 autoarray==0.17.0
 autogalaxy==0.17.1
 astropy>=3.0.0

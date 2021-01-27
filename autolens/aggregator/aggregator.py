@@ -88,7 +88,7 @@ def masked_imaging_from_agg_obj(
      outputs such that the function can use the *Aggregator*'s map function to to create a `MaskImaging` generator.
 
      The `MaskImaging` is created following the same method as the PyAutoLens `Phase` classes, including using the
-     *meta_dataset* instance output by the phase to load inputs of the `MaskImaging` (e.g. psf_shape_native).
+     *meta_dataset* instance output by the phase to load inputs of the `MaskImaging` (e.g. psf_shape_2d).
 
     Parameters
     ----------
@@ -204,7 +204,7 @@ def masked_interferometer_from_agg_obj(
 
     The *MaskedInterferometer* is created following the same method as the PyAutoLens `Phase` classes, including
     using the *meta_dataset* instance output by the phase to load inputs of the *MaskedInterferometer*
-    (e.g. psf_shape_native).
+    (e.g. psf_shape_2d).
 
     Parameters
     ----------
