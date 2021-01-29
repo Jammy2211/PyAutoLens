@@ -174,7 +174,7 @@ class MockTracer:
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
         return [self.positions]
 
-    def magnification_irregular_from_grid(self, grid):
+    def magnification_via_hessian_from_grid(self, grid):
         return self.magnification
 
     def einstein_radius_from_grid(self, grid):

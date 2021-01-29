@@ -87,7 +87,7 @@ class TestAbstractPositionsSolver:
         )
 
         magnification = np.abs(
-            sis.magnification_irregular_from_grid(grid=grid, buffer=grid.pixel_scale)
+            sis.magnification_via_hessian_from_grid(grid=grid, buffer=grid.pixel_scale)
         )
 
         assert magnification[0] > 1000.0

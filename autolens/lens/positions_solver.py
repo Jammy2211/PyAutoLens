@@ -22,7 +22,7 @@ class AbstractPositionsSolver:
     def grid_with_points_below_magnification_threshold_removed(self, lensing_obj, grid):
 
         magnifications = np.abs(
-            lensing_obj.magnification_irregular_from_grid(
+            lensing_obj.magnification_via_hessian_from_grid(
                 grid=grid, buffer=grid.pixel_scale
             )
         )

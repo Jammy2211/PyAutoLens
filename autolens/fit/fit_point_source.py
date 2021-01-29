@@ -134,7 +134,7 @@ class FitFluxes(FitData):
 
         self.positions = positions
         self.magnifications = abs(
-            tracer.magnification_irregular_from_grid(grid=positions)
+            tracer.magnification_via_hessian_from_grid(grid=positions)
         )
 
         model_fluxes = arrays.ValuesIrregularGrouped(
