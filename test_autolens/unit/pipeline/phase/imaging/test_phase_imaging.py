@@ -16,30 +16,6 @@ pytestmark = pytest.mark.filterwarnings(
 directory = path.dirname(path.realpath(__file__))
 
 
-class TestPhase:
-    def test__extend_with_hyper_and_pixelizations(self):
-        phase = al.PhaseImaging(search=mock.MockSearch())
-
-        phase_extended = phase.extend_with_stochastic_phase()
-
-        galaxies = af.ModelInstance()
-        galaxies.lens = al.Galaxy(
-            redshift=0.5,
-            light=al.lp.SphericalSersic(),
-            mass=al.mp.SphericalIsothermal(),
-        )
-        galaxies.source = al.Galaxy(
-            redshift=1.0,
-            pixelization=al.pix.VoronoiBrightnessImage,
-            regularization=al.reg.AdaptiveBrightness,
-        )
-
-        model = phase_extended.make_model(instance=galaxies)
-
-        assert isinstance(model.lens.mass.einstein_radius, af.UniformPrior)
-        assert isinstance(model.lens.light.intensity, float)
-
-
 class TestMakeAnalysis:
     def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
         self, imaging_7x7, mask_7x7
@@ -67,10 +43,7 @@ class TestMakeAnalysis:
             == 1.0
         )
         assert phase_imaging_7x7.settings.settings_masked_imaging.bin_up_factor == 2
-        assert phase_imaging_7x7.settings.settings_masked_imaging.psf_shape_2d == (
-            3,
-            3,
-        )
+        assert phase_imaging_7x7.settings.settings_masked_imaging.psf_shape_2d == (3, 3)
         assert phase_imaging_7x7.settings.settings_pixelization.use_border == False
         assert phase_imaging_7x7.settings.settings_pixelization.is_stochastic == True
 

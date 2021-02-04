@@ -549,7 +549,7 @@ class TestExtensions:
             regularization=al.reg.AdaptiveBrightness(),
         )
 
-        phase = al.PhaseImaging(search=mock.MockSearch())
+        phase = al.PhaseImaging(search=mock.MockSearch(), galaxies=af.CollectionPriorModel(lens=al.GalaxyModel(redshift=0.5)))
 
         phase_extended = phase.extend_with_stochastic_phase()
 
@@ -592,7 +592,7 @@ class TestExtensions:
         )
 
         phase = al.PhaseInterferometer(
-            search=mock.MockSearch(), real_space_mask=mask_7x7
+            search=mock.MockSearch(), real_space_mask=mask_7x7, galaxies=af.CollectionPriorModel(lens=al.GalaxyModel(redshift=0.5))
         )
 
         phase_extended = phase.extend_with_stochastic_phase()

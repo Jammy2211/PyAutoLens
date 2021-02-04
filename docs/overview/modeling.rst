@@ -72,7 +72,7 @@ give a good fit to the data to guide it where to guess subsequent model. An anim
 below,  where initial lens models give a poor fit to the data but gradually improve (increasing the likelihood) as more
 iterations are performed.
 
-.. image:: https://github.com/Jammy2211/autolens_files/blob/main/lensmodel.gif
+.. image:: https://media.githubusercontent.com/media/Jammy2211/autolens_files/main/lensmodel.gif
   :width: 600
 
 The ``PhaseImaging`` object above returns a ``Result`` object, which contains the maximum log likelihood ``Tracer``

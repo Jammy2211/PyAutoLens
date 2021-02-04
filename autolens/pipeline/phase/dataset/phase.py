@@ -1,3 +1,4 @@
+from autofit.exc import PriorException
 import autoarray as aa
 import autogalaxy as ag
 from autolens.fit import fit_point_source
@@ -204,6 +205,12 @@ class PhaseDataset(dataset.PhaseDataset):
         stochastic_method="gaussian",
         stochastic_sigma=0.0,
     ):
+
+        if not hasattr(self.model.galaxies, "lens"):
+            raise PriorException(
+                "Cannot extend a phase with a stochastic phase if the lens galaxy `GalaxyModel` "
+                "is not named `lens`. "
+            )
 
         if stochastic_search is None:
             stochastic_search = self.search.copy_with_name_extension(extension="")
