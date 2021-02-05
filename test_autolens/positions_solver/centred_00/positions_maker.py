@@ -23,8 +23,8 @@ pickle_path = f"{path}/pickles"
 
 """A high resolution grid is used to ensure positions are computed to a given accuracy."""
 
-grid = al.Grid.uniform(
-    shape_2d=(600, 600),
+grid = al.Grid2D.uniform(
+    shape_native=(600, 600),
     pixel_scales=0.01,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 

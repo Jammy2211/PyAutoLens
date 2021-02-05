@@ -19,15 +19,6 @@ workspace_path = str(here())
 import os
 import sys
 
-os.system("git clone https://github.com/Jammy2211/autolens_workspace --depth 1")
-os.system(f"cp -r autolens_workspace/dataset {workspace_path}")
-os.system(f"cp -r autolens_workspace/config {workspace_path}")
-os.system("rm -rf autolens_workspace")
-
-os.system("git clone https://github.com/Jammy2211/autolens_files --depth 1")
-os.system(f"cp -r autolens_files/output {workspace_path}")
-os.system("rm -rf autolens_files")
-
 sys.path.insert(0, os.path.abspath("."))
 
 # -- Project information -----------------------------------------------------
@@ -38,7 +29,7 @@ copyright = "2020, James Nightingale, Richard Hayes"
 author = "James Nightingale, Richard Hayes"
 
 # The full version, including alpha/beta/rc tags
-release = "1.0.16"
+release = "1.10.0"
 master_doc = "index"
 
 

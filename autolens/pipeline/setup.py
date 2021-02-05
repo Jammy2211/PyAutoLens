@@ -1,5 +1,6 @@
 import autofit as af
 from autoconf import conf
+from autoarray.structures import grids
 from autogalaxy.pipeline import setup
 from autoarray.inversion import pixelizations as pix, regularization as reg
 from autogalaxy.profiles import (
@@ -284,11 +285,7 @@ class SetupHyper(setup.SetupHyper):
         if galaxy_model.hyper_galaxy is None:
             return None
 
-        if noise_factor_is_model:
-
-            hyper_galaxy.noise_factor = galaxy_model.hyper_galaxy.noise_factor
-
-        else:
+        if not noise_factor_is_model:
 
             hyper_galaxy.noise_factor = galaxy_instance.hyper_galaxy.noise_factor
 
@@ -397,6 +394,7 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
             lmp.LightMassProfile
         ) = lmp.EllipticalExponential,
         envelope_prior_model: af.PriorModel(lmp.LightMassProfile) = None,
+        dark_prior_model: af.PriorModel(mp.MassProfile) = mp.EllipticalNFWMCRLudlow,
         mass_centre: (float, float) = None,
         constant_mass_to_light_ratio: bool = False,
         align_bulge_dark_centre: bool = False,
@@ -436,6 +434,7 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
             bulge_prior_model=bulge_prior_model,
             disk_prior_model=disk_prior_model,
             envelope_prior_model=envelope_prior_model,
+            dark_prior_model=dark_prior_model,
             mass_centre=mass_centre,
             constant_mass_to_light_ratio=constant_mass_to_light_ratio,
             align_bulge_dark_centre=align_bulge_dark_centre,

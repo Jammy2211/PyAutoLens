@@ -87,7 +87,7 @@ class Result(dataset.Result):
     @property
     def hyper_model_image(self):
 
-        hyper_model_image = aa.Array.manual_mask(
+        hyper_model_image = aa.Array2D.manual_mask(
             array=np.zeros(self.mask.mask_sub_1.pixels_in_mask),
             mask=self.mask.mask_sub_1,
         )

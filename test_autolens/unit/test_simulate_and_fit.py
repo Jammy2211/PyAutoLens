@@ -9,9 +9,9 @@ import pytest
 
 def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
-    grid = al.GridIterate.uniform(shape_2d=(11, 11), pixel_scales=0.2)
+    grid = al.Grid2DIterate.uniform(shape_native=(11, 11), pixel_scales=0.2)
 
-    psf = al.Kernel.manual_2d(
+    psf = al.Kernel2D.manual_native(
         array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]], pixel_scales=0.2
     )
 
@@ -34,7 +34,9 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
 
     imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
-    imaging.noise_map = al.Array.ones(shape_2d=imaging.image.shape_2d, pixel_scales=0.2)
+    imaging.noise_map = al.Array2D.ones(
+        shape_native=imaging.image.shape_native, pixel_scales=0.2
+    )
 
     file_path = path.join(
         "{}".format(path.dirname(path.realpath(__file__))),
@@ -64,13 +66,16 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
     )
 
     mask = al.Mask2D.circular(
-        shape_2d=imaging.image.shape_2d, pixel_scales=0.2, sub_size=2, radius=0.8
+        shape_native=imaging.image.shape_native,
+        pixel_scales=0.2,
+        sub_size=2,
+        radius=0.8,
     )
 
     masked_imaging = al.MaskedImaging(
         imaging=imaging,
         mask=mask,
-        settings=al.SettingsMaskedImaging(grid_class=al.GridIterate),
+        settings=al.SettingsMaskedImaging(grid_class=al.Grid2DIterate),
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -88,10 +93,10 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
 
 def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
-    grid = al.Grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=1)
+    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, sub_size=1)
 
-    psf = al.Kernel.from_gaussian(
-        shape_2d=(3, 3), pixel_scales=0.2, sigma=0.75, renormalize=True
+    psf = al.Kernel2D.from_gaussian(
+        shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, renormalize=True
     )
 
     lens_galaxy = al.Galaxy(
@@ -110,7 +115,9 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
     )
 
     imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
-    imaging.noise_map = al.Array.ones(shape_2d=imaging.image.shape_2d, pixel_scales=0.2)
+    imaging.noise_map = al.Array2D.ones(
+        shape_native=imaging.image.shape_native, pixel_scales=0.2
+    )
 
     file_path = path.join(
         "{}".format(path.dirname(path.realpath(__file__))),
@@ -140,7 +147,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
     )
 
     mask = al.Mask2D.circular(
-        shape_2d=simulator.image.shape_2d, pixel_scales=0.2, radius=0.8
+        shape_native=simulator.image.shape_native, pixel_scales=0.2, radius=0.8
     )
 
     masked_imaging = al.MaskedImaging(
@@ -163,7 +170,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
 
 def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normalization_correct():
 
-    grid = al.Grid.uniform(shape_2d=(51, 51), pixel_scales=0.1, sub_size=2)
+    grid = al.Grid2D.uniform(shape_native=(51, 51), pixel_scales=0.1, sub_size=2)
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
@@ -217,7 +224,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     visibilities_mask = np.full(fill_value=False, shape=(7,))
 
     real_space_mask = al.Mask2D.unmasked(
-        shape_2d=(51, 51), pixel_scales=0.1, sub_size=2
+        shape_native=(51, 51), pixel_scales=0.1, sub_size=2
     )
 
     masked_interferometer = al.MaskedInterferometer(

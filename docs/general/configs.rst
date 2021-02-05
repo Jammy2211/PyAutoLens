@@ -92,7 +92,7 @@ to implement this adaptive grid.
     convergence_threshold -> float
         The threshold value of convergence at which the 4 sides of the bounding box described above are located.
     pixels -> int
-        The shape_2d of the grid inside the bounding box from which the lensing quantitiy is computed (e.g. it is shape
+        The shape_native of the grid inside the bounding box from which the lensing quantitiy is computed (e.g. it is shape
         (pixels, pixels)).
 
 [inversion]
@@ -277,13 +277,13 @@ grids
 
 **interpolate.ini**
 
-The `GridInterpolate` class speeds up the calculation of lensing quantities such as the potential or deflection angles
+The `Grid2DInterpolate` class speeds up the calculation of lensing quantities such as the potential or deflection angles
 by computing them on a grid of reduced resolution and interpolating the results to a grid at the native resolution of
 the data. This is important for certain mass profiles, where the calculations require computationally expensive
 numerical integration.
 
 The *interpolate.ini* specifies for every `LightProfile` and `MassProfile` in **PyAutoLens** whether, when a
-`GridInterpolate` object is passed into a from grid method (e.g deflections_from_grid) the calculation should be
+`Grid2DInterpolate` object is passed into a from grid method (e.g deflections_from_grid) the calculation should be
 performed using interpolation or by computing every value on the grid explicitly at native resolution.
 
 The default *interpolate.ini* config file supplied with the **PyAutoLens** workspace specifies `False` for every

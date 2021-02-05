@@ -316,7 +316,7 @@ def grid_search_result_as_array(
     )
 
 
-def grid_search_subhalo_masses_as_array(aggregator: af.Aggregator) -> al.Array:
+def grid_search_subhalo_masses_as_array(aggregator: af.Aggregator) -> al.Array2D:
 
     grid_search_result_gen = aggregator.values("grid_search_result")
 
@@ -333,7 +333,7 @@ def grid_search_subhalo_masses_as_array(aggregator: af.Aggregator) -> al.Array:
     )
 
 
-def grid_search_subhalo_centres_as_array(aggregator: af.Aggregator) -> al.Array:
+def grid_search_subhalo_centres_as_array(aggregator: af.Aggregator) -> al.Array2D:
 
     grid_search_result_gen = aggregator.values("grid_search_result")
 
@@ -354,7 +354,7 @@ def grid_search_log_evidences_as_array_from_grid_search_result(
     grid_search_result,
     use_log_evidences=True,
     use_stochastic_log_evidences: bool = False,
-) -> al.Array:
+) -> al.Array2D:
 
     if grid_search_result.no_dimensions != 2:
         raise exc.AggregatorException(
@@ -396,12 +396,12 @@ def grid_search_log_evidences_as_array_from_grid_search_result(
             for value in values
         ]
 
-    return al.Array.manual_yx_and_values(
+    return al.Array2D.manual_yx_and_values(
         y=[centre[0] for centre in grid_search_result.physical_centres_lists],
         x=[centre[1] for centre in grid_search_result.physical_centres_lists],
         values=values,
         pixel_scales=grid_search_result.physical_step_sizes,
-        shape_2d=grid_search_result.shape,
+        shape_native=grid_search_result.shape,
     )
 
 
@@ -420,12 +420,12 @@ def grid_search_subhalo_masses_as_array_from_grid_search_result(
         for res in results
     ]
 
-    return al.Array.manual_yx_and_values(
+    return al.Array2D.manual_yx_and_values(
         y=[centre[0] for centre in grid_search_result.physical_centres_lists],
         x=[centre[1] for centre in grid_search_result.physical_centres_lists],
         values=masses,
         pixel_scales=grid_search_result.physical_step_sizes,
-        shape_2d=grid_search_result.shape,
+        shape_native=grid_search_result.shape,
     )
 
 

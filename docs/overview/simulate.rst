@@ -6,12 +6,16 @@ Simulating Lenses
 **PyAutoLens** provides tool for simulating strong lens data-sets, which can be used to test lens modeling pipelines
 and train neural networks to recognise and analyse images of strong lenses.
 
-Simulating strong lenses begins by creating a *SimulatorImaging* object, which represents how a image is acquired and
-processed when on a telescope CCD. This includes accounting for the exposure time in determine the signal to noise,
-blurring the ``data`` due to the telescope optics, the background sky during taking the exposure and noise due to Poisson
-counts of the signal:
+Simulating strong lens images uses a *SimulatorImaging* object, which models the process that an instrument like the
+Hubble Space Telescope goes through observe a strong lens. This includes accounting for the exposure time to
+determine the signal-to-noise of the data, blurring the observed light of the strong lens with the telescope optics
+and accounting for the background sky in the exposure which adds Poisson noise:
 
 .. code-block:: bash
+
+    psf = al.Kernel2D.from_gaussian(
+        shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
+    )
 
     simulator = al.SimulatorImaging(
         exposure_time=300.0,
@@ -20,8 +24,8 @@ counts of the signal:
         add_poisson_noise=True,
     )
 
-Once we have a simulator, we can use it to create an imaging dataset (an image, noise-map, PSF) by pasing it a tracer
-and grid:
+Once we have a simulator, we can use it to create an imaging dataset which consists of an image, noise-map and
+Point Spread Function (PSF) by passing it a tracer and grid:
 
 .. code-block:: bash
 
@@ -41,9 +45,10 @@ Here is what our dataset looks like:
   :width: 400
   :alt: Alternative text
 
-The ``autolens_workspace`` includes example simulators for various existing and upcoming telescopes, for example the
-Vera Rubin Observatry, Euclid, the Hubble Space Telescope and Keck Adaptive Optics Imaging. Below, we show what the
-image above looks like for these different instruments.
+The `autolens_workspace` includes many example simulators for simulating strong lenses with a range of different
+physical properties and for creating imaging datasets for a variety of telescopes (e.g. Hubble, Euclid).
+
+Below, we show what a strong lens looks like for different instruments.
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/simulating/vro_image.png
   :width: 400

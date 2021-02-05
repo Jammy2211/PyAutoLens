@@ -14,7 +14,7 @@ class AbstractFitPositionsSourcePlane:
 
         Parameters
         -----------
-        positions : grids.GridIrregularGrouped
+        positions : grids.Grid2DIrregularGrouped
             The (y,x) arc-second coordinates of named positions which the log_likelihood is computed using. Positions
             are paired to galaxies in the `Tracer` using their names.
         tracer : ray_tracing.Tracer
@@ -67,7 +67,7 @@ class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
 
         Parameters
         -----------
-        positions : grids.GridIrregularGrouped
+        positions : grids.Grid2DIrregularGrouped
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value : float
             The noise-value assumed when computing the log likelihood.
@@ -90,7 +90,7 @@ class FitPositionsImage(FitData):
 
         Parameters
         -----------
-        positions : grids.GridIrregularGrouped
+        positions : grids.Grid2DIrregularGrouped
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value : float
             The noise-value assumed when computing the log likelihood.
@@ -120,7 +120,7 @@ class FitPositionsImage(FitData):
         return self.model_data
 
     @property
-    def residual_map(self) -> grids.GridIrregularGrouped:
+    def residual_map(self) -> grids.Grid2DIrregularGrouped:
         residual_positions = self.positions - self.model_positions
         return residual_positions.distances_from_coordinate(coordinate=(0.0, 0.0))
 
@@ -134,7 +134,7 @@ class FitFluxes(FitData):
 
         self.positions = positions
         self.magnifications = abs(
-            tracer.magnification_irregular_from_grid(grid=positions)
+            tracer.magnification_via_hessian_from_grid(grid=positions)
         )
 
         model_fluxes = arrays.ValuesIrregularGrouped(

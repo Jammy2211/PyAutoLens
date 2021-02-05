@@ -15,12 +15,18 @@ you do them on your own computer by installation **PyAutoFit** and downloading t
 - **Inversions** - How to perform pixelized reconstructions of the source-galaxy.
 - **Hyper-Mode** - How to use **PyAutoLens** advanced modeling features that adapt the model to the strong lens being analysed.
 
-Config File Path
-----------------
+How to Tackle HowToLens
+-----------------------
 
-If, when running the first notebook, you get an error related to config files, this most likely means that
-**PyAutoLens** is unable to find the config files in your autofit workspace. Checkout the
-`configs section <https://pyautolens.readthedocs.io/en/latest/general/configs.html>`_ for a description of how to fix this.
+The HowToLens lecture series current sits at 5 chapters, and each will take more than a couple of days to go through
+properly. You probably want to be modeling lenses with PyAutoLens faster than that! Furthermore, the concepts in the
+later chapters are pretty challenging, and familiarity with PyAutoLens and lens modeling is desirable before you tackle
+them.
+
+Therefore, we recommend that you complete chapters 1 & 2 and then apply what you've learnt to the modeling of simulated
+and real strong lenses imaging, using the scripts found in the 'autolens_workspace/examples' folder. Once you're happy
+with the results and confident with your use of PyAutoLens, you can then begin to cover the advanced functionality
+covered in chapters 3, 4 & 5.
 
 Lensing Theory
 --------------
@@ -38,6 +44,13 @@ Visualization
 Before beginning the **HowToLens** lecture series, in chapter 1 you should do 'tutorial_0_visualization'. This will
 take you through how **PyAutoLens** interfaces with matplotlib to perform visualization and will get you setup such
 that images and figures display correctly in your Jupyter notebooks.
+
+Config File Path
+----------------
+
+If, when running the first notebook, you get an error related to config files, this most likely means that
+**PyAutoLens** is unable to find the config files in your autofit workspace. Checkout the
+`configs section <https://pyautolens.readthedocs.io/en/latest/general/configs.ipynb>`_ for a description of how to fix this.
 
 Jupyter Notebooks
 -----------------
@@ -71,17 +84,3 @@ which is why we use an auto-formatter to produce the code in a standardized form
 and would like to adapt it to your own code, check out the Python auto-code formatter 'black'.
 
 https://github.com/python/black
-
-
-How to Tackle HowToLens
------------------------
-
-The HowToLens lecture series current sits at 5 chapters, and each will take more than a couple of days to go through
-properly. You probably want to be modeling lenses with PyAutoLens faste than that! Furthermore, the concepts in the
-later chapters are pretty challenging, and familiarity with PyAutoLens and lens modeling is desirable before you tackle
-them.
-
-Therefore, we recommend that you complete chapters 1 & 2 and then apply what you've learnt to the modeling of simulated
-and real strong lenses imaging, using the scripts found in the 'autolens_workspace/examples' folder. Once you're happy
-with the results and confident with your use of PyAutoLens, you can then begin to cover the advanced functionality
-covered in chapters 3, 4 & 5.

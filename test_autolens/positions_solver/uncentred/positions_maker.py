@@ -25,8 +25,8 @@ os.makedirs(pickle_path, exist_ok=True)
 
 """A high resolution grid is used to ensure positions are computed to a given accuracy."""
 
-grid = al.Grid.uniform(
-    shape_2d=(200, 200),
+grid = al.Grid2D.uniform(
+    shape_native=(200, 200),
     pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 

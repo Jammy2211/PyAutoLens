@@ -51,14 +51,15 @@ class TestCheckPositionsTrace:
 
         settings = al.SettingsLens(positions_threshold=50.0)
         settings.check_positions_trace_within_threshold_via_tracer(
-            tracer=tracer, positions=al.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]])
+            tracer=tracer,
+            positions=al.Grid2DIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]]),
         )
 
         settings = al.SettingsLens(positions_threshold=0.0)
         with pytest.raises(exc.RayTracingException):
             settings.check_positions_trace_within_threshold_via_tracer(
                 tracer=tracer,
-                positions=al.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]]),
+                positions=al.Grid2DIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]]),
             )
 
         # No mass profile - doesnt raise exception
@@ -68,7 +69,8 @@ class TestCheckPositionsTrace:
         )
 
         settings.check_positions_trace_within_threshold_via_tracer(
-            tracer=tracer, positions=al.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]])
+            tracer=tracer,
+            positions=al.Grid2DIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]]),
         )
 
         # Single plane - doesnt raise exception
@@ -78,14 +80,15 @@ class TestCheckPositionsTrace:
         )
 
         settings.check_positions_trace_within_threshold_via_tracer(
-            tracer=tracer, positions=al.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]])
+            tracer=tracer,
+            positions=al.Grid2DIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]]),
         )
 
 
 class TestCheckEinsteinRadius:
     def test__einstein_radius_outside_auto_range__raises_exception(self):
 
-        grid = al.Grid.uniform(shape_2d=(40, 40), pixel_scales=0.2)
+        grid = al.Grid2D.uniform(shape_native=(40, 40), pixel_scales=0.2)
 
         settings = al.SettingsLens(auto_einstein_radius_factor=0.2)
         settings = settings.modify_einstein_radius_estimate(

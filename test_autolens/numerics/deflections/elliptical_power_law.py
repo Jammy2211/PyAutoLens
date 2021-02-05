@@ -3,7 +3,7 @@
 
 # In this test_autoarray, we'll pass a grid to a power-law profile and compute deflection angles. We will check if
 # the pyquad integrator crashes for certain values of (y,x) coordinates.
-grid = al.Grid.uniform(shape_2d=(25, 25), pixel_scales=0.005)
+grid = al.Grid2D.uniform(shape_native=(25, 25), pixel_scales=0.005)
 
 y_centres = [0.01, 0.005, 0.001, 0.0001, 0.00000001, 0.0]
 

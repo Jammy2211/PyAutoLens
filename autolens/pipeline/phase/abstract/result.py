@@ -17,7 +17,7 @@ class Result(result.Result):
         return self.analysis.tracer_for_instance(instance=instance)
 
     @property
-    def source_plane_light_profile_centres(self) -> grids.GridIrregularGrouped:
+    def source_plane_light_profile_centres(self) -> grids.Grid2DIrregularGrouped:
         """Return a list of all light profiles centres of all galaxies in the most-likely tracer's source-plane.
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
@@ -25,7 +25,7 @@ class Result(result.Result):
         return self.max_log_likelihood_tracer.source_plane.light_profile_centres
 
     @property
-    def source_plane_inversion_centres(self) -> grids.GridIrregularGrouped:
+    def source_plane_inversion_centres(self) -> grids.Grid2DIrregularGrouped:
         """Return a list of all centres of a pixelized source reconstruction in the source-plane of the most likely fit.
         The brightest source pixel(s) are used to determine these centres.
 
@@ -39,7 +39,7 @@ class Result(result.Result):
             return []
 
     @property
-    def source_plane_centres(self) -> grids.GridIrregularGrouped:
+    def source_plane_centres(self) -> grids.Grid2DIrregularGrouped:
         """Combine the source-plane light profile and inversion centres (see above) into a single list of source-plane
         centres.
 
@@ -50,12 +50,12 @@ class Result(result.Result):
             self.source_plane_inversion_centres
         )
 
-        return grids.GridIrregularGrouped(grid=centres)
+        return grids.Grid2DIrregularGrouped(grid=centres)
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(
         self,
-    ) -> grids.GridIrregularGrouped:
+    ) -> grids.Grid2DIrregularGrouped:
         """Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
         the multiple image position of the source(s) in the image-plane..
 
@@ -64,7 +64,7 @@ class Result(result.Result):
 
         # TODO : In the future, the multiple image positions functioon wil use an in-built adaptive grid.
 
-        grid = self.analysis.masked_dataset.mask.geometry.unmasked_grid_sub_1
+        grid = self.analysis.masked_dataset.mask.unmasked_grid_sub_1
 
         solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.001)
 
@@ -76,7 +76,7 @@ class Result(result.Result):
                 )
                 for centre in self.source_plane_centres.in_grouped_list[0]
             ]
-            return grids.GridIrregularGrouped(grid=multiple_images)
+            return grids.Grid2DIrregularGrouped(grid=multiple_images)
         except IndexError:
             return None
 

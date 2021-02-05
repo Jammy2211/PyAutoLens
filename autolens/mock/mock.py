@@ -13,6 +13,7 @@ class MockResult(af.MockResult):
         mask=None,
         model_image=None,
         max_log_likelihood_tracer=None,
+        max_log_likelihood_fit=None,
         hyper_galaxy_image_path_dict=None,
         hyper_model_image=None,
         hyper_galaxy_visibilities_path_dict=None,
@@ -44,6 +45,7 @@ class MockResult(af.MockResult):
         self.model_image = model_image
         self.unmasked_model_image = model_image
         self.max_log_likelihood_tracer = max_log_likelihood_tracer
+        self.max_log_likelihood_fit = max_log_likelihood_fit
         self.pixelization = pixelization
         self.use_as_hyper_dataset = use_as_hyper_dataset
         self.positions = positions
@@ -140,6 +142,46 @@ class MockResults(af.ResultsCollection):
 
     def __len__(self):
         return len(self.__result_list)
+
+
+class MockFit:
+    def __init__(self, grid):
+
+        self.grid = grid
+
+
+class MockTracer:
+    def __init__(
+        self,
+        traced_grid=None,
+        einstein_radius=None,
+        einstein_mass=None,
+        magnification=None,
+        flux_hack=None,
+    ):
+
+        self.positions = traced_grid
+        self.magnification = magnification
+        self.flux_hack = flux_hack
+
+        self.einstein_radius = einstein_radius
+        self.einstein_mass = einstein_mass
+
+    @property
+    def has_mass_profile(self):
+        return True
+
+    def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
+        return [self.positions]
+
+    def magnification_via_hessian_from_grid(self, grid):
+        return self.magnification
+
+    def einstein_radius_from_grid(self, grid):
+        return self.einstein_radius
+
+    def einstein_mass_angular_from_grid(self, grid):
+        return self.einstein_mass
 
 
 class MockPositionsSolver:

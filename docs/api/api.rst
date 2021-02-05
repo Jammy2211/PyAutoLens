@@ -11,13 +11,13 @@ Data Structures
 .. autosummary::
    :toctree: generated/
 
-   Array
+   Array2D
    ValuesIrregularGrouped
-   Grid
-   GridIterate
-   GridInterpolate
-   GridIrregularGrouped
-   Kernel
+   Grid2D
+   Grid2DIterate
+   Grid2DInterpolate
+   Grid2DIrregularGrouped
+   Kernel2D
    Convolver
    Visibilities
    TransformerDFT
@@ -239,8 +239,8 @@ Plots
 .. autosummary::
    :toctree: generated/
 
-   Array
-   Grid
+   Array2D
+   Grid2D
    Line
    MapperObj
    Imaging

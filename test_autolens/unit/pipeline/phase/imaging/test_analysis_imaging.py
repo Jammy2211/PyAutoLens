@@ -23,7 +23,9 @@ class TestLogLikelihoodFunction:
         self, phase_imaging_7x7, imaging_7x7, mask_7x7
     ):
 
-        imaging_7x7.positions = al.GridIrregularGrouped([[(1.0, 100.0), (200.0, 2.0)]])
+        imaging_7x7.positions = al.Grid2DIrregularGrouped(
+            [[(1.0, 100.0), (200.0, 2.0)]]
+        )
 
         phase_imaging_7x7 = al.PhaseImaging(
             galaxies=dict(
@@ -150,10 +152,10 @@ class TestFit:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        lens_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         lens_hyper_image[4] = 10.0
-        hyper_model_image = al.Array.full(
-            fill_value=0.5, shape_2d=(3, 3), pixel_scales=0.1
+        hyper_model_image = al.Array2D.full(
+            fill_value=0.5, shape_native=(3, 3), pixel_scales=0.1
         )
 
         hyper_galaxy_image_path_dict = {("galaxies", "lens"): lens_hyper_image}
@@ -214,12 +216,12 @@ class TestFit:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        lens_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         lens_hyper_image[4] = 10.0
-        source_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        source_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         source_hyper_image[4] = 10.0
-        hyper_model_image = al.Array.full(
-            fill_value=0.5, shape_2d=(3, 3), pixel_scales=0.1
+        hyper_model_image = al.Array2D.full(
+            fill_value=0.5, shape_native=(3, 3), pixel_scales=0.1
         )
 
         hyper_galaxy_image_path_dict = {
@@ -283,12 +285,12 @@ class TestFit:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        lens_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         lens_hyper_image[4] = 10.0
-        source_hyper_image = al.Array.ones(shape_2d=(3, 3), pixel_scales=0.1)
+        source_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         source_hyper_image[4] = 10.0
-        hyper_model_image = al.Array.full(
-            fill_value=0.5, shape_2d=(3, 3), pixel_scales=0.1
+        hyper_model_image = al.Array2D.full(
+            fill_value=0.5, shape_native=(3, 3), pixel_scales=0.1
         )
 
         hyper_galaxy_image_path_dict = {

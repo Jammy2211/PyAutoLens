@@ -11,18 +11,18 @@ from autoarray.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.structures.arrays import Array, ValuesIrregularGrouped
+from autoarray.structures.arrays import Array2D, ValuesIrregularGrouped
 from autoarray.structures.grids import (
-    Grid,
-    GridIterate,
-    GridInterpolate,
-    GridIrregular,
-    GridIrregularGrouped,
-    GridRectangular,
-    GridVoronoi,
+    Grid2D,
+    Grid2DIterate,
+    Grid2DInterpolate,
+    Grid2DIrregular,
+    Grid2DIrregularGrouped,
+    Grid2DRectangular,
+    Grid2DVoronoi,
 )
-from autoarray import VectorFieldIrregular
-from autoarray.structures.kernel import Kernel
+from autoarray import VectorField2DIrregular
+from autoarray.structures.kernel import Kernel2D
 from autoarray.structures.visibilities import Visibilities, VisibilitiesNoiseMap
 from autogalaxy import util
 from autogalaxy.dataset.imaging import SettingsMaskedImaging
@@ -85,4 +85,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = '1.10.0'
+__version__ = '1.11.0'

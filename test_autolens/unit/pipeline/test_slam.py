@@ -245,6 +245,6 @@ class TestSLaM:
         assert (
             slam.mass_tag == f"mass__"
             f"light[parametric__bulge_dev_sph__disk_exp_sph__centre_(0.00,0.00)]__"
-            f"mass[light_dark__bulge_sersic_grad__disk_exp__mlr_free__dark_nfw_sph_ludlow__with_shear]__"
+            f"mass[light_dark__bulge_sersic_grad__disk_exp__mlr_free__dark_nfw_ludlow__with_shear]__"
             f"source[inversion__pix_voro_mag__reg_adapt_bright]"
         )

@@ -16,30 +16,6 @@ pytestmark = pytest.mark.filterwarnings(
 directory = path.dirname(path.realpath(__file__))
 
 
-class TestPhase:
-    def test__extend_with_hyper_and_pixelizations(self):
-        phase = al.PhaseImaging(search=mock.MockSearch())
-
-        phase_extended = phase.extend_with_stochastic_phase()
-
-        galaxies = af.ModelInstance()
-        galaxies.lens = al.Galaxy(
-            redshift=0.5,
-            light=al.lp.SphericalSersic(),
-            mass=al.mp.SphericalIsothermal(),
-        )
-        galaxies.source = al.Galaxy(
-            redshift=1.0,
-            pixelization=al.pix.VoronoiBrightnessImage,
-            regularization=al.reg.AdaptiveBrightness,
-        )
-
-        model = phase_extended.make_model(instance=galaxies)
-
-        assert isinstance(model.lens.mass.einstein_radius, af.UniformPrior)
-        assert isinstance(model.lens.light.intensity, float)
-
-
 class TestMakeAnalysis:
     def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
         self, imaging_7x7, mask_7x7
@@ -47,8 +23,8 @@ class TestMakeAnalysis:
         phase_imaging_7x7 = al.PhaseImaging(
             settings=al.SettingsPhaseImaging(
                 settings_masked_imaging=al.SettingsMaskedImaging(
-                    grid_class=al.Grid,
-                    grid_inversion_class=al.Grid,
+                    grid_class=al.Grid2D,
+                    grid_inversion_class=al.Grid2D,
                     sub_size=3,
                     signal_to_noise_limit=1.0,
                     bin_up_factor=2,
@@ -75,13 +51,13 @@ class TestMakeAnalysis:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        assert isinstance(analysis.masked_dataset.grid, al.Grid)
-        assert isinstance(analysis.masked_dataset.grid_inversion, al.Grid)
+        assert isinstance(analysis.masked_dataset.grid, al.Grid2D)
+        assert isinstance(analysis.masked_dataset.grid_inversion, al.Grid2D)
 
         phase_imaging_7x7 = al.PhaseImaging(
             settings=al.SettingsPhaseImaging(
                 settings_masked_imaging=al.SettingsMaskedImaging(
-                    grid_class=al.GridIterate,
+                    grid_class=al.Grid2DIterate,
                     sub_size=3,
                     fractional_accuracy=0.99,
                     sub_steps=[2],
@@ -94,7 +70,7 @@ class TestMakeAnalysis:
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
 
-        assert isinstance(analysis.masked_dataset.grid, al.GridIterate)
+        assert isinstance(analysis.masked_dataset.grid, al.Grid2DIterate)
         assert analysis.masked_dataset.grid.sub_size == 1
         assert analysis.masked_dataset.grid.fractional_accuracy == 0.99
         assert analysis.masked_dataset.grid.sub_steps == [2]
@@ -117,12 +93,12 @@ class TestMakeAnalysis:
             dataset=imaging_7x7, mask=mask_7x7_1_pix, results=mock.MockResults()
         )
         assert (
-            analysis.masked_dataset.image.in_2d
-            == imaging_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
+            analysis.masked_dataset.image.native
+            == imaging_snr_limit.image.native * np.invert(mask_7x7_1_pix)
         ).all()
         assert (
-            analysis.masked_dataset.noise_map.in_2d
-            == imaging_snr_limit.noise_map.in_2d * np.invert(mask_7x7_1_pix)
+            analysis.masked_dataset.noise_map.native
+            == imaging_snr_limit.noise_map.native * np.invert(mask_7x7_1_pix)
         ).all()
 
     def test__masked_imaging_is_binned_up(self, imaging_7x7, mask_7x7_1_pix):
@@ -141,16 +117,16 @@ class TestMakeAnalysis:
             dataset=imaging_7x7, mask=mask_7x7_1_pix, results=mock.MockResults()
         )
         assert (
-            analysis.masked_dataset.image.in_2d
-            == binned_up_imaging.image.in_2d * np.invert(binned_up_mask)
+            analysis.masked_dataset.image.native
+            == binned_up_imaging.image.native * np.invert(binned_up_mask)
         ).all()
 
         assert (
             analysis.masked_dataset.psf == (1.0 / 9.0) * binned_up_imaging.psf
         ).all()
         assert (
-            analysis.masked_dataset.noise_map.in_2d
-            == binned_up_imaging.noise_map.in_2d * np.invert(binned_up_mask)
+            analysis.masked_dataset.noise_map.native
+            == binned_up_imaging.noise_map.native * np.invert(binned_up_mask)
         ).all()
 
         assert (analysis.masked_dataset.mask == binned_up_mask).all()
@@ -160,7 +136,7 @@ class TestMakeAnalysis:
             search=mock.MockSearch(),
             settings=al.SettingsPhaseImaging(
                 settings_masked_imaging=al.SettingsMaskedImaging(
-                    grid_inversion_class=al.Grid
+                    grid_inversion_class=al.Grid2D
                 )
             ),
         )
@@ -168,15 +144,15 @@ class TestMakeAnalysis:
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
-        assert isinstance(analysis.masked_imaging.grid, al.Grid)
-        assert isinstance(analysis.masked_imaging.grid_inversion, al.Grid)
+        assert isinstance(analysis.masked_imaging.grid, al.Grid2D)
+        assert isinstance(analysis.masked_imaging.grid_inversion, al.Grid2D)
 
         phase_imaging_7x7 = al.PhaseImaging(
             search=mock.MockSearch(),
             settings=al.SettingsPhaseImaging(
                 settings_masked_imaging=al.SettingsMaskedImaging(
-                    grid_class=al.GridIterate,
-                    grid_inversion_class=al.GridIterate,
+                    grid_class=al.Grid2DIterate,
+                    grid_inversion_class=al.Grid2DIterate,
                     fractional_accuracy=0.2,
                     sub_steps=[2, 3],
                 )
@@ -186,10 +162,10 @@ class TestMakeAnalysis:
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
-        assert isinstance(analysis.masked_imaging.grid, al.GridIterate)
+        assert isinstance(analysis.masked_imaging.grid, al.Grid2DIterate)
         assert analysis.masked_imaging.grid.fractional_accuracy == 0.2
         assert analysis.masked_imaging.grid.sub_steps == [2, 3]
-        assert isinstance(analysis.masked_imaging.grid_inversion, al.GridIterate)
+        assert isinstance(analysis.masked_imaging.grid_inversion, al.Grid2DIterate)
         assert analysis.masked_imaging.grid_inversion.fractional_accuracy == 0.2
         assert analysis.masked_imaging.grid_inversion.sub_steps == [2, 3]
 
@@ -197,8 +173,8 @@ class TestMakeAnalysis:
             search=mock.MockSearch(),
             settings=al.SettingsPhaseImaging(
                 settings_masked_imaging=al.SettingsMaskedImaging(
-                    grid_class=al.GridInterpolate,
-                    grid_inversion_class=al.GridInterpolate,
+                    grid_class=al.Grid2DInterpolate,
+                    grid_inversion_class=al.Grid2DInterpolate,
                     pixel_scales_interp=0.1,
                 )
             ),
@@ -207,9 +183,9 @@ class TestMakeAnalysis:
         analysis = phase_imaging_7x7.make_analysis(
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
         )
-        assert isinstance(analysis.masked_imaging.grid, al.GridInterpolate)
+        assert isinstance(analysis.masked_imaging.grid, al.Grid2DInterpolate)
         assert analysis.masked_imaging.grid.pixel_scales_interp == (0.1, 0.1)
-        assert isinstance(analysis.masked_imaging.grid_inversion, al.GridInterpolate)
+        assert isinstance(analysis.masked_imaging.grid_inversion, al.Grid2DInterpolate)
         assert analysis.masked_imaging.grid_inversion.pixel_scales_interp == (0.1, 0.1)
 
     def test__masks_image_and_noise_map_correctly(
@@ -220,12 +196,12 @@ class TestMakeAnalysis:
         )
 
         assert (
-            analysis.masked_imaging.image.in_2d
-            == imaging_7x7.image.in_2d * np.invert(mask_7x7)
+            analysis.masked_imaging.image.native
+            == imaging_7x7.image.native * np.invert(mask_7x7)
         ).all()
         assert (
-            analysis.masked_imaging.noise_map.in_2d
-            == imaging_7x7.noise_map.in_2d * np.invert(mask_7x7)
+            analysis.masked_imaging.noise_map.native
+            == imaging_7x7.noise_map.native * np.invert(mask_7x7)
         ).all()
 
     def test___phase_info_is_made(self, phase_imaging_7x7, imaging_7x7, mask_7x7):
@@ -288,16 +264,18 @@ class TestExtensions:
         instance.galaxies = galaxies
 
         hyper_galaxy_image_path_dict = {
-            ("galaxies", "lens"): al.Array.ones(shape_2d=(3, 3), pixel_scales=1.0),
-            ("galaxies", "source"): al.Array.full(
-                fill_value=2.0, shape_2d=(3, 3), pixel_scales=1.0
+            ("galaxies", "lens"): al.Array2D.ones(
+                shape_native=(3, 3), pixel_scales=1.0
+            ),
+            ("galaxies", "source"): al.Array2D.full(
+                fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
             ),
         }
 
         results = mock.MockResults(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-            hyper_model_image=al.Array.full(
-                fill_value=3.0, shape_2d=(3, 3), pixel_scales=1.0
+            hyper_model_image=al.Array2D.full(
+                fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0
             ),
             mask=mask_7x7,
             use_as_hyper_dataset=True,
@@ -315,13 +293,13 @@ class TestExtensions:
         )
 
         assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].in_2d
+            analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].native
             == np.ones((3, 3))
         ).all()
 
         assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].in_2d
+            analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].native
             == 2.0 * np.ones((3, 3))
         ).all()
 
-        assert (analysis.hyper_model_image.in_2d == 3.0 * np.ones((3, 3))).all()
+        assert (analysis.hyper_model_image.native == 3.0 * np.ones((3, 3))).all()

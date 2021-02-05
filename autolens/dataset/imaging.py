@@ -50,7 +50,7 @@ class SimulatorImaging(imaging.SimulatorImaging):
         self,
         exposure_time: float,
         background_sky_level: float = 0.0,
-        psf: kernel.Kernel = None,
+        psf: kernel.Kernel2D = None,
         renormalize_psf: bool = True,
         read_noise: float = None,
         add_poisson_noise: bool = True,
@@ -62,7 +62,7 @@ class SimulatorImaging(imaging.SimulatorImaging):
 
         Parameters
         ----------
-        psf : Kernel
+        psf : Kernel2D
             An arrays describing the PSF kernel of the image.
         exposure_time : float
             The exposure time of the simulated imaging.
@@ -118,12 +118,14 @@ class SimulatorImaging(imaging.SimulatorImaging):
         """
 
         image = tracer.padded_image_from_grid_and_psf_shape(
-            grid=grid, psf_shape_2d=self.psf.shape_2d
+            grid=grid, psf_shape_2d=self.psf.shape_native
         )
 
-        imaging = self.from_image(image=image.in_1d_binned, name=name)
+        imaging = self.from_image(image=image.slim_binned, name=name)
 
-        return imaging.trimmed_after_convolution_from(kernel_shape=self.psf.shape_2d)
+        return imaging.trimmed_after_convolution_from(
+            kernel_shape=self.psf.shape_native
+        )
 
     def from_galaxies_and_grid(self, galaxies, grid, name=None):
         """Simulate imaging data for this data, as follows:
@@ -147,13 +149,13 @@ class SimulatorImaging(imaging.SimulatorImaging):
 
     def from_deflections_and_galaxies(self, deflections, galaxies, name=None):
 
-        grid = grids.Grid.uniform(
-            shape_2d=deflections.shape_2d,
+        grid = grids.Grid2D.uniform(
+            shape_native=deflections.shape_native,
             pixel_scales=deflections.pixel_scales,
             sub_size=1,
         )
 
-        deflected_grid = grid - deflections.in_1d_binned
+        deflected_grid = grid - deflections.slim_binned
 
         image = sum(map(lambda g: g.image_from_grid(grid=deflected_grid), galaxies))
 

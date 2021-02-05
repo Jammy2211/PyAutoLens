@@ -11,7 +11,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
     def __init__(
         self,
         tracer: ray_tracing.Tracer,
-        grid: grids.Grid,
+        grid: grids.Grid2D,
         mat_plot_1d: lensing_mat_plot.MatPlot1D = lensing_mat_plot.MatPlot1D(),
         visuals_1d: lensing_visuals.Visuals1D = lensing_visuals.Visuals1D(),
         include_1d: lensing_include.Include1D = lensing_include.Include1D(),
@@ -82,7 +82,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
         """
 
         border = self.extract_2d(
-            "border", value=self.grid.mask.geometry.border_grid_sub_1.in_1d_binned
+            "border", value=self.grid.mask.border_grid_sub_1.slim_binned
         )
 
         if border is not None:
@@ -111,7 +111,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
-                "origin", value=grids.GridIrregular(grid=[self.grid.origin])
+                "origin", value=grids.Grid2DIrregular(grid=[self.grid.origin])
             ),
             border=border,
             light_profile_centres=self.extract_2d(

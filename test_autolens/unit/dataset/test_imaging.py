@@ -7,21 +7,21 @@ class TestMaskedImaging:
 
         masked_imaging_7x7 = al.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
 
-        assert (masked_imaging_7x7.image.in_1d == np.ones(9)).all()
+        assert (masked_imaging_7x7.image.slim == np.ones(9)).all()
 
         assert (
-            masked_imaging_7x7.image.in_2d == np.ones((7, 7)) * np.invert(sub_mask_7x7)
+            masked_imaging_7x7.image.native == np.ones((7, 7)) * np.invert(sub_mask_7x7)
         ).all()
 
-        assert (masked_imaging_7x7.noise_map.in_1d == 2.0 * np.ones(9)).all()
+        assert (masked_imaging_7x7.noise_map.slim == 2.0 * np.ones(9)).all()
         assert (
-            masked_imaging_7x7.noise_map.in_2d
+            masked_imaging_7x7.noise_map.native
             == 2.0 * np.ones((7, 7)) * np.invert(sub_mask_7x7)
         ).all()
 
-        assert (masked_imaging_7x7.psf.in_1d == (1.0 / 9.0) * np.ones(9)).all()
-        assert (masked_imaging_7x7.psf.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
-        assert masked_imaging_7x7.psf.shape_2d == (3, 3)
+        assert (masked_imaging_7x7.psf.slim == (1.0 / 9.0) * np.ones(9)).all()
+        assert (masked_imaging_7x7.psf.native == (1.0 / 9.0) * np.ones((3, 3))).all()
+        assert masked_imaging_7x7.psf.shape_native == (3, 3)
 
         assert type(masked_imaging_7x7.convolver) == al.Convolver
 
@@ -35,21 +35,23 @@ class TestMaskedImaging:
             settings=al.SettingsMaskedImaging(psf_shape_2d=(3, 3)),
         )
 
-        grid = al.Grid.from_mask(mask=sub_mask_7x7)
+        grid = al.Grid2D.from_mask(mask=sub_mask_7x7)
 
         assert (masked_imaging_7x7.grid == grid).all()
 
-        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
+        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_native=(3, 3))
 
-        assert (masked_imaging_7x7.blurring_grid.in_1d == blurring_grid_7x7).all()
+        assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_7x7).all()
         assert (masked_imaging_7x7.blurring_grid == blurring_grid).all()
 
 
 class TestSimulatorImaging:
     def test__from_tracer_and_grid__same_as_tracer_image(self):
-        psf = al.Kernel.from_gaussian(shape_2d=(7, 7), sigma=0.5, pixel_scales=1.0)
+        psf = al.Kernel2D.from_gaussian(
+            shape_native=(7, 7), sigma=0.5, pixel_scales=1.0
+        )
 
-        grid = al.Grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
+        grid = al.Grid2D.uniform(shape_native=(20, 20), pixel_scales=0.05, sub_size=1)
 
         lens_galaxy = al.Galaxy(
             redshift=0.5,
@@ -76,17 +78,17 @@ class TestSimulatorImaging:
             image=tracer.image_from_grid(grid=grid)
         )
 
-        assert imaging.shape_2d == (20, 20)
-        assert imaging.image.in_2d[0, 0] != imaging_via_image.image.in_2d[0, 0]
-        assert imaging.image.in_2d[10, 10] == imaging_via_image.image.in_2d[10, 10]
+        assert imaging.shape_native == (20, 20)
+        assert imaging.image.native[0, 0] != imaging_via_image.image.native[0, 0]
+        assert imaging.image.native[10, 10] == imaging_via_image.image.native[10, 10]
         assert (imaging.psf == imaging_via_image.psf).all()
         assert (imaging.noise_map == imaging_via_image.noise_map).all()
 
     def test__from_deflections_and_galaxies__same_as_calculation_using_tracer(self):
 
-        psf = al.Kernel.no_blur(pixel_scales=0.05)
+        psf = al.Kernel2D.no_blur(pixel_scales=0.05)
 
-        grid = al.Grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
+        grid = al.Grid2D.uniform(shape_native=(20, 20), pixel_scales=0.05, sub_size=1)
 
         lens_galaxy = al.Galaxy(
             redshift=0.5, mass=al.mp.EllipticalIsothermal(einstein_radius=1.6)
@@ -114,8 +116,8 @@ class TestSimulatorImaging:
             image=tracer.image_from_grid(grid=grid)
         )
 
-        assert imaging.shape_2d == (20, 20)
-        assert (imaging.image.in_2d == imaging_via_image.image.in_2d).all()
+        assert imaging.shape_native == (20, 20)
+        assert (imaging.image.native == imaging_via_image.image.native).all()
         assert (imaging.psf == imaging_via_image.psf).all()
         assert (imaging.noise_map == imaging_via_image.noise_map).all()
 
@@ -139,9 +141,9 @@ class TestSimulatorImaging:
             ),
         )
 
-        grid = al.Grid.uniform(shape_2d=(11, 11), pixel_scales=0.2, sub_size=1)
+        grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, sub_size=1)
 
-        psf = al.Kernel.no_blur(pixel_scales=0.2)
+        psf = al.Kernel2D.no_blur(pixel_scales=0.2)
 
         simulator = al.SimulatorImaging(
             psf=psf,
@@ -161,7 +163,7 @@ class TestSimulatorImaging:
             image=tracer.image_from_grid(grid=grid)
         )
 
-        assert imaging.shape_2d == (11, 11)
-        assert (imaging.image.in_2d == imaging_via_image.image.in_2d).all()
+        assert imaging.shape_native == (11, 11)
+        assert (imaging.image.native == imaging_via_image.image.native).all()
         assert (imaging.psf == imaging_via_image.psf).all()
         assert (imaging.noise_map == imaging_via_image.noise_map).all()

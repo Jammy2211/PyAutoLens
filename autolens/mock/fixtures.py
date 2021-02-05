@@ -29,13 +29,13 @@ def make_masked_interferometer_7_grid():
         visibilities_mask=make_visibilities_mask_7(),
         real_space_mask=make_mask_7x7(),
         settings=al.SettingsMaskedInterferometer(
-            grid_class=al.Grid, sub_size=1, transformer_class=aa.TransformerDFT
+            grid_class=al.Grid2D, sub_size=1, transformer_class=aa.TransformerDFT
         ),
     )
 
 
 def make_positions_x2():
-    return al.GridIrregularGrouped(grid=[[(1.0, 1.0), (2.0, 2.0)]])
+    return al.Grid2DIrregularGrouped(grid=[[(1.0, 1.0), (2.0, 2.0)]])
 
 
 def make_positions_noise_map_x2():

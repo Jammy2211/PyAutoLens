@@ -1,10 +1,8 @@
-from os import path
 import pickle
 import json
 import autofit as af
 from autogalaxy.pipeline.phase import abstract
 from autogalaxy.pipeline.phase import extensions
-
 from os import path
 import os
 import math
@@ -62,9 +60,7 @@ class StochasticPhase(extensions.HyperPhase):
                 stochastic_log_evidences = np.asarray(json.load(f))
         except FileNotFoundError:
             stochastic_log_evidences = results.last.stochastic_log_evidences
-            self.save_stochastic_log_evidences_to_json(
-                stochastic_log_evidences=stochastic_log_evidences
-            )
+            print(stochastic_log_evidences)
 
         self.search.paths.zip_remove()
 
@@ -91,23 +87,13 @@ class StochasticPhase(extensions.HyperPhase):
         phase.hyper_name = f"{phase.hyper_name}_{stochastic_tag}"
 
         phase.settings.log_likelihood_cap = log_likelihood_cap
-        #       phase.paths.tag = phase.settings.phase_tag_no_inversion
 
         phase.use_as_hyper_dataset = False
 
         phase.model = self.make_model(instance=results.last.instance)
-
-        # TODO : HACK
-
-        from autogalaxy.profiles import mass_profiles as mp
-
-        mass = af.PriorModel(mp.EllipticalPowerLaw)
-
-        mass.centre = af.last[-1].model.galaxies.lens.mass.centre
-        mass.elliptical_comps = af.last[-1].model.galaxies.lens.mass.elliptical_comps
-        mass.einstein_radius = af.last[-1].model.galaxies.lens.mass.einstein_radius
-
-        phase.model.galaxies.lens.mass = mass
+        phase.model.galaxies.lens.take_attributes(
+            source=results.last.model.galaxies.lens
+        )
 
         # TODO : Nasty hack to get log evidnees to copy, do something bettter in future.
 

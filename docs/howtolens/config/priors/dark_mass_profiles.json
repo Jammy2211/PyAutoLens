@@ -150,8 +150,8 @@
         },
         "mass_at_200": {
             "type": "LogUniform",
-            "lower_limit": 1000000.0,
-            "upper_limit": 100000000000.0,
+            "lower_limit":1e8,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -213,8 +213,8 @@
         },
         "mass_at_200": {
             "type": "LogUniform",
-            "lower_limit": 1000000.0,
-            "upper_limit": 100000000000.0,
+            "lower_limit":1e8,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -339,8 +339,8 @@
         },
         "mass_at_200": {
             "type": "LogUniform",
-            "lower_limit": 1000000.0,
-            "upper_limit": 100000000000.0,
+            "lower_limit":1e8,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -402,8 +402,8 @@
         },
         "mass_at_200": {
             "type": "LogUniform",
-            "lower_limit": 1000000.0,
-            "upper_limit": 100000000000.0,
+            "lower_limit":1e8,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
@@ -515,8 +515,8 @@
         },
         "mass_at_200": {
             "type": "LogUniform",
-            "lower_limit": 1000000.0,
-            "upper_limit": 100000000000.0,
+            "lower_limit":1e8,
+            "upper_limit": 1e15,
             "width_modifier": {
                 "type": "Relative",
                 "value": 0.5
