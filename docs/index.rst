@@ -220,11 +220,11 @@ strong gravitational lensing with **PyAutoLens**.
    :hidden:
 
    howtolens/howtolens
-   howtolens/chapter_1_introduction/index
-   howtolens/chapter_2_lens_modeling/index
-   howtolens/chapter_3_pipelines/index
-   howtolens/chapter_4_inversions/index
-   howtolens/chapter_5_hyper_mode/index
+   howtolens/chapter_1_introduction
+   howtolens/chapter_2_lens_modeling
+   howtolens/chapter_3_pipelines
+   howtolens/chapter_4_inversions
+   howtolens/chapter_5_hyper_mode
 
 .. toctree::
    :caption: API Reference:
@@ -238,7 +238,7 @@ strong gravitational lensing with **PyAutoLens**.
    :maxdepth: 1
    :hidden:
 
-   advanced/pipelines
+   advanced/database
+   advanced/chaining
    advanced/slam
-   advanced/aggregator
    advanced/hyper_mode

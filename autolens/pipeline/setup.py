@@ -394,6 +394,7 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
             lmp.LightMassProfile
         ) = lmp.EllipticalExponential,
         envelope_prior_model: af.PriorModel(lmp.LightMassProfile) = None,
+        dark_prior_model: af.PriorModel(mp.MassProfile) = mp.EllipticalNFWMCRLudlow,
         mass_centre: (float, float) = None,
         constant_mass_to_light_ratio: bool = False,
         align_bulge_dark_centre: bool = False,
@@ -433,6 +434,7 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
             bulge_prior_model=bulge_prior_model,
             disk_prior_model=disk_prior_model,
             envelope_prior_model=envelope_prior_model,
+            dark_prior_model=dark_prior_model,
             mass_centre=mass_centre,
             constant_mass_to_light_ratio=constant_mass_to_light_ratio,
             align_bulge_dark_centre=align_bulge_dark_centre,

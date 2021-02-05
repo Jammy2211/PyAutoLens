@@ -3,8 +3,8 @@ Chapter 5: Hyper Mode
 
 In chapter 5, we use **hyper-mode** to adapt our lens models to the specific strong lens we are fitting.
 
-Due to memory limitations on our readthedocs, whereas previous chapters were built to display on the readthedocs we have
-omitted this for chapter 5, instead linking directly to them on the ``autolens_workspace`` GitHub.
+You can start the tutorials right now by going to `our binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/HEAD>`_
+and navigating to the folder ``notebooks/howtolens/chapter_5_hyper_mode``. They are also on the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_.
 
 The chapter contains the following tutorials:
 
@@ -25,3 +25,4 @@ The chapter contains the following tutorials:
 
 `Tutorial 6: Hyper Pipeline  <https://github.com/Jammy2211/autolens_workspace/blob/master/howtolens/chapter_5_hyper_mode/tutorial_6_hyper_pipeline_runner.ipynb>`_
 - An example pipeline use hyper-mode.
+

@@ -50,7 +50,7 @@ Config File Path
 
 If, when running the first notebook, you get an error related to config files, this most likely means that
 **PyAutoLens** is unable to find the config files in your autofit workspace. Checkout the
-`configs section <https://pyautolens.readthedocs.io/en/latest/general/configs.html>`_ for a description of how to fix this.
+`configs section <https://pyautolens.readthedocs.io/en/latest/general/configs.ipynb>`_ for a description of how to fix this.
 
 Jupyter Notebooks
 -----------------

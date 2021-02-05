@@ -232,7 +232,7 @@ class TestSetupPipeline:
         assert (
             setup.tag == "setup__"
             "hyper[galaxies_lens__bg_sky__bg_noise]__"
-            "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_sph_ludlow__with_shear__align_bulge_dark_centre]"
+            "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_ludlow__with_shear__align_bulge_dark_centre]"
         )
 
         setup_source = al.SetupSourceInversion(
@@ -251,7 +251,7 @@ class TestSetupPipeline:
         assert (
             setup.tag == "setup__"
             "light[parametric__bulge_sersic__disk_exp__align_bulge_disk_centre__centre_(1.00,2.00)]__"
-            "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_sph_ludlow__no_shear__centre_(3.00,4.00)]__"
+            "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_ludlow__no_shear__centre_(3.00,4.00)]__"
             "source[inversion__pix_rect__reg_const]"
         )
 
@@ -261,7 +261,7 @@ class TestSetupPipeline:
 
         assert (
             setup.tag == "setup__"
-            "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_sph_ludlow__with_shear__align_bulge_dark_centre]"
+            "mass[light_dark__bulge_sersic__disk_exp__mlr_free__dark_nfw_ludlow__with_shear__align_bulge_dark_centre]"
         )
 
         smbh = al.SetupSMBH(smbh_centre_fixed=True)
