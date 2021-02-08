@@ -20,7 +20,7 @@ The chapter contains the following tutorials:
 `Tutorial 3: Galaxies <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_1_introduction/tutorial_3_galaxies.ipynb>`_
 - The objects that make up a strong lens.
 
-`Tutorial 4: Planes <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_1_introduction/tutorial_4 planes.ipynb>`_
+`Tutorial 4: Planes <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_1_introduction/tutorial_4_planes.ipynb>`_
 - Groups of galaxies at a common redshift.
 
 `Tutorial 5: Ray Tracing <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_1_introduction/tutorial_5_ray_tracing.ipynb>`_
@@ -32,7 +32,7 @@ The chapter contains the following tutorials:
 `Tutorial 7: Data <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_1_introduction/tutorial_7_data.ipynb>`_
 - Loading and inspecting telescope imaging data of a strong lens.
 
-`Tutorial 8: Fitting <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_1_introduction/tutorial_8_fittingn.ipynb>`_
+`Tutorial 8: Fitting <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_1_introduction/tutorial_8_fitting.ipynb>`_
 - Fitting data with a strong lens model.
 
 `Tutorial 9: Summary <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_1_introduction/tutorial_9_summary.ipynb>`_

@@ -7,5 +7,5 @@ Hyper Mode
 pixelization to the reconstructed source's intrinsic morphology.
 
 The readthedocs overview for **hyper-mode** is not written yet. However, checkout
-`Chapter 5 of the HowToLens lectures <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_5_hyper_mode/index.html>`_
+`Chapter 5 of the HowToLens lectures <https://pyautolens.readthedocs.io/en/latest/howtolens/chapter_5_hyper_mode.html>`_
 for a complete description of **hyper-mode**.

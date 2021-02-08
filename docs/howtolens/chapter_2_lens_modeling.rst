@@ -20,7 +20,7 @@ The chapter contains the following tutorials:
 `Tutorial 4: Dealing with Failure <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_4_dealing_with_failure.ipynb>`_
 - What to do when PyAutoLens finds an inaccurate lens model.
 
-`Tutorial 5: Linking Phases <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_5_linking_phases.ipynb>`_
+`Tutorial 5: Linking Phases <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_5_chaining_phases.ipynb>`_
 - Breaking the lens modeling procedure down into multiple fits.
 
 `Tutorial 6: Alternative Searches  <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_6_alternative_searches.ipynb>`_
