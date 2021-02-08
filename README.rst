@@ -26,8 +26,8 @@ like this one:
 Getting Started
 ---------------
 
-You can try **PyAutoLens** now by following the `overview Jupyter Notebook on
-Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/664a86aa84ddf8fdf044e2e4e7db21876ac1de91?filepath=overview.ipynb>`_.
+You can try **PyAutoLens** now by following the `introduction Jupyter Notebook on
+Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/3b48dbc1b0ee85e68a24394895702df78e465323?filepath=introduction.ipynb>`_.
 
 On `readthedocs <https://pyautolens.readthedocs.io/>`_ you'll find the installation guide, a complete overview
 of **PyAutoLens**'s features, examples scripts, and

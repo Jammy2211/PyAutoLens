@@ -3,7 +3,7 @@
 Lens Modeling
 -------------
 
-We can use a ``Tracer`` to fit ``data`` of a strong lens and use the ``Tracer``'s model-image to quantify its
+We can use a ``Tracer`` to fit data of a strong lens and use the ``Tracer``'s model-image to quantify its
 goodness-of-fit. Of course, when observe an image of a strong lens, we have no idea what ``LightProfile``'s and
 ``MassProfiles``'s we should give our ``Tracer`` to best reproduce the strong lens we observed:
 
@@ -74,6 +74,8 @@ iterations are performed.
 
 .. image:: https://media.githubusercontent.com/media/Jammy2211/autolens_files/main/lensmodel.gif
   :width: 600
+
+**Credit: Amy Etherington**
 
 The ``PhaseImaging`` object above returns a ``Result`` object, which contains the maximum log likelihood ``Tracer``
 and ``FitImaging`` objects and which can easily be plotted.

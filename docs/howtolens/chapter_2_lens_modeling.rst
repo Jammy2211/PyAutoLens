@@ -27,7 +27,7 @@ The chapter contains the following tutorials:
 - Using different non-linear searches to sample parameter space.
 
 `Tutorial 7: Masking and Positions <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_7_masking_and_positions.ipynb>`_
-- How to mask and mark positions on your ``data`` to improve the lens model.
+- How to mask and mark positions on your data to improve the lens model.
 
 `Tutorial 8: Results <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_8_results.ipynb>`_
 - Overview of the results available after successfully fitting a lens model.

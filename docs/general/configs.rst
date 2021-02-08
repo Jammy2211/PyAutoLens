@@ -208,7 +208,7 @@ priors
 These config files are found at 'autolens_workspace/config/priors' and they contain the default priors and related
 variables for every model-component in a project, using .json format files (as opposed to .ini. for most config files).
 
-The autolens workspace contains example json_prior files for the 1D ``data`` fitting problem. An example entry of the
+The autolens workspace contains example json_prior files for the 1D data fitting problem. An example entry of the
 json configs for the ``sigma`` parameter of the ``Gaussian`` class is as follows:
 
 .. code-block:: bash
@@ -250,7 +250,7 @@ notation
 
 The notation configs define the labels of every model-component parameter and its derived quantities, which are
 used when visualizing results (for example labeling the axis of the PDF triangle plots output by a non-linear search).
-Two examples using the 1D ``data`` fitting example for the config file **label.ini** are:
+Two examples using the 1D data fitting example for the config file **label.ini** are:
 
 [label]
     centre_0 -> str
