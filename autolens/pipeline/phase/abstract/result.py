@@ -84,7 +84,7 @@ class Result(result.Result):
                 source_plane_coordinate=self.source_plane_centre.in_list[0],
             )
             return grids.Grid2DIrregular(grid=multiple_images)
-        except IndexError:
+        except (AttributeError, IndexError):
             return None
 
     @property
