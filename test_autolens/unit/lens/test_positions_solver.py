@@ -82,7 +82,7 @@ class TestAbstractPositionsSolver:
 
         sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
-        grid = grids.Grid2DIrregularGroupedUniform(
+        grid = grids.Grid2DIrregularUniform(
             grid=[(1.0, 0.0), (0.1, 0.0)], pixel_scales=0.01
         )
 
@@ -99,7 +99,7 @@ class TestAbstractPositionsSolver:
             lensing_obj=sis, grid=grid
         )
 
-        assert positions.in_grouped_list == [[(1.0, 0.0)]]
+        assert positions.in_list == [(1.0, 0.0)]
         assert positions.pixel_scales == (0.01, 0.01)
 
         solver = pos.AbstractPositionsSolver(magnification_threshold=0.0)
@@ -108,7 +108,7 @@ class TestAbstractPositionsSolver:
             lensing_obj=sis, grid=grid
         )
 
-        assert positions.in_grouped_list == [[(1.0, 0.0), (0.1, 0.0)]]
+        assert positions.in_list == [(1.0, 0.0), (0.1, 0.0)]
         assert positions.pixel_scales == (0.01, 0.01)
 
 
@@ -147,105 +147,10 @@ class TestPositionSolver:
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
         )
 
-        assert coordinates.in_grouped_list[0][0] == pytest.approx(
-            (1.028125, -0.003125), 1.0e-4
-        )
-        assert coordinates.in_grouped_list[0][1] == pytest.approx(
-            (0.009375, -0.95312), 1.0e-4
-        )
-        assert coordinates.in_grouped_list[0][2] == pytest.approx(
-            (0.009375, 0.95312), 1.0e-4
-        )
-        assert coordinates.in_grouped_list[0][3] == pytest.approx(
-            (-1.028125, -0.003125), 1.0e-4
-        )
-
-    def test__same_as_above_using_solver_for_tracer_method(self):
-
-        grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
-
-        g0 = al.Galaxy(
-            redshift=0.5,
-            mass=al.mp.EllipticalIsothermal(
-                centre=(0.001, 0.001),
-                einstein_radius=1.0,
-                elliptical_comps=(0.0, 0.111111),
-            ),
-        )
-
-        g1 = al.Galaxy(
-            redshift=1.0, light=al.lp.EllipticalLightProfile(centre=(0.0, 0.0))
-        )
-
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
-
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
-
-        coordinates = solver.solve_from_tracer(tracer=tracer)
-
-        assert coordinates.in_grouped_list[0][0] == pytest.approx(
-            (1.028125, -0.003125), 1.0e-4
-        )
-        assert coordinates.in_grouped_list[0][1] == pytest.approx(
-            (0.009375, -0.95312), 1.0e-4
-        )
-        assert coordinates.in_grouped_list[0][2] == pytest.approx(
-            (0.009375, 0.95312), 1.0e-4
-        )
-        assert coordinates.in_grouped_list[0][3] == pytest.approx(
-            (-1.028125, -0.003125), 1.0e-4
-        )
-
-    def test__solver_for_tracer_method__multiple_source_planes_or_galaxies(self):
-
-        grid = al.Grid2D.uniform(shape_native=(50, 50), pixel_scales=0.05, sub_size=4)
-
-        g0 = al.Galaxy(
-            redshift=0.5,
-            mass=al.mp.EllipticalIsothermal(
-                centre=(0.0, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.055555)
-            ),
-        )
-
-        g1 = al.Galaxy(
-            redshift=1.0,
-            light_0=al.lp.EllipticalLightProfile(centre=(0.0, 0.0)),
-            light_1=al.lp.EllipticalLightProfile(centre=(0.1, 0.1)),
-        )
-
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
-
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
-
-        position_manual_0 = solver.solve(
-            lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
-        )
-
-        position_manual_1 = solver.solve(
-            lensing_obj=tracer, source_plane_coordinate=(0.1, 0.1)
-        )
-
-        positions = solver.solve_from_tracer(tracer=tracer)
-
-        assert position_manual_0.in_grouped_list[0] == positions.in_grouped_list[0]
-        assert position_manual_1.in_grouped_list[0] == positions.in_grouped_list[1]
-
-        g2 = al.Galaxy(
-            redshift=1.0, light=al.lp.EllipticalLightProfile(centre=(0.0, 0.0))
-        )
-
-        g3 = al.Galaxy(
-            redshift=1.0, light=al.lp.EllipticalLightProfile(centre=(0.1, 0.1))
-        )
-
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g2, g3])
-
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
-
-        positions = solver.solve_from_tracer(tracer=tracer)
-
-        assert position_manual_0.in_grouped_list[0] == positions.in_grouped_list[0]
-        assert position_manual_1.in_grouped_list[0] == positions.in_grouped_list[1]
+        assert coordinates.in_list[0] == pytest.approx((1.028125, -0.003125), 1.0e-4)
+        assert coordinates.in_list[1] == pytest.approx((0.009375, -0.95312), 1.0e-4)
+        assert coordinates.in_list[2] == pytest.approx((0.009375, 0.95312), 1.0e-4)
+        assert coordinates.in_list[3] == pytest.approx((-1.028125, -0.003125), 1.0e-4)
 
 
 class TestGridRemoveDuplicates:

@@ -1,7 +1,7 @@
 .. _pixelizations:
 
-Pixelized Source Reconstruction
--------------------------------
+Pixelized Sources
+-----------------
 
 **PyAutoLens** can reconstruct the light of the strong lensed source-galaxy using a pixel-grid, using a process
 called an ``Inversion``.

@@ -4,6 +4,7 @@ from autoarray.plot.mat_wrap import mat_plot as mp
 from autogalaxy.plot.plotters import lensing_obj_plotter
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
 from autogalaxy.plot.plotters import plane_plotters
+from autogalaxy.profiles import light_profiles, mass_profiles
 from autolens.lens import ray_tracing
 
 
@@ -116,11 +117,15 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             border=border,
             light_profile_centres=self.extract_2d(
                 "light_profile_centres",
-                self.tracer.planes[plane_index].light_profile_centres,
+                self.tracer.planes[plane_index].extract_attribute(
+                    cls=light_profiles.LightProfile, name="centre"
+                ),
             ),
             mass_profile_centres=self.extract_2d(
                 "mass_profile_centres",
-                self.tracer.planes[plane_index].mass_profile_centres,
+                self.tracer.planes[plane_index].extract_attribute(
+                    cls=mass_profiles.MassProfile, name="centre"
+                ),
             ),
             critical_curves=critical_curves,
             caustics=caustics,

@@ -1,7 +1,6 @@
 import copy
 
 from autoarray.dataset import imaging
-from autoarray.structures import arrays
 from autoarray.structures import grids
 from autoarray.structures import kernel
 from autogalaxy.dataset import imaging as im
@@ -9,6 +8,7 @@ from autolens.lens import ray_tracing
 
 
 class MaskedImaging(imaging.MaskedImaging):
+
     def __init__(self, imaging, mask, settings=im.SettingsMaskedImaging()):
         """
         The lens dataset is the collection of data (image, noise-map, PSF), a mask, grid, convolver \

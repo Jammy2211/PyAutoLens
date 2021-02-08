@@ -130,5 +130,6 @@ def test__subplot_of_planes(
     plot_patch.paths = []
 
     fit_imaging_plotter.subplot_of_planes(plane_index=0)
+
     assert path.join(plot_path, "subplot_of_plane_0.png") in plot_patch.paths
     assert path.join(plot_path, "subplot_of_plane_1.png") not in plot_patch.paths

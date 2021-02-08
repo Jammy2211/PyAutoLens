@@ -1,5 +1,6 @@
 import autofit as af
 from autofit.mock.mock import MockSearch, MockSamples
+from autogalaxy.mock.mock import MockLightProfile, MockMassProfile
 
 
 class MockResult(af.MockResult):
@@ -154,14 +155,18 @@ class MockTracer:
     def __init__(
         self,
         traced_grid=None,
-        einstein_radius=None,
-        einstein_mass=None,
+        attribute=None,
         magnification=None,
         flux_hack=None,
+        einstein_radius=None,
+        einstein_mass=None,
     ):
 
         self.positions = traced_grid
         self.magnification = magnification
+
+        self.attribute = attribute
+
         self.flux_hack = flux_hack
 
         self.einstein_radius = einstein_radius
@@ -170,6 +175,9 @@ class MockTracer:
     @property
     def has_mass_profile(self):
         return True
+
+    def extract_attribute(self, cls, name):
+        return [self.attribute]
 
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
         return [self.positions]
@@ -189,5 +197,5 @@ class MockPositionsSolver:
 
         self.model_positions = model_positions
 
-    def solve_from_tracer(self, tracer):
+    def solve(self, lensing_obj, source_plane_coordinate):
         return self.model_positions

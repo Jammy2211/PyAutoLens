@@ -1,7 +1,7 @@
-autoconf==0.7.6
-autofit==0.73.0
-autoarray==0.18.0
-autogalaxy==0.18.1
+autoconf==0.7.7
+autofit==0.73.1
+autoarray==0.18.2
+autogalaxy==0.18.3
 astropy>=3.0.0
 numpydoc>=1.0.0
 matplotlib>=3.0.3

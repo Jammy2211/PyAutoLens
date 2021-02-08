@@ -1,4 +1,5 @@
 from autoarray.structures import grids
+from autogalaxy.profiles import light_profiles as lp
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.pipeline.phase.abstract import result
 from autolens.lens import ray_tracing, positions_solver as pos
@@ -17,45 +18,53 @@ class Result(result.Result):
         return self.analysis.tracer_for_instance(instance=instance)
 
     @property
-    def source_plane_light_profile_centres(self) -> grids.Grid2DIrregularGrouped:
-        """Return a list of all light profiles centres of all galaxies in the most-likely tracer's source-plane.
+    def source_plane_light_profile_centre(self) -> grids.Grid2DIrregular:
+        """
+        Return a light profile centres of a galaxy in the most-likely tracer's source-plane. If there are multiple
+        light profiles, the first light profile's centre is returned.
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
-        multiple-image positions."""
-        return self.max_log_likelihood_tracer.source_plane.light_profile_centres
+        multiple-image positions.
+        """
+        centre = self.max_log_likelihood_tracer.source_plane.extract_attribute(
+            cls=lp.LightProfile, name="centre"
+        )
+        if centre is not None:
+            return grids.Grid2DIrregular(grid=[centre[0]])
 
     @property
-    def source_plane_inversion_centres(self) -> grids.Grid2DIrregularGrouped:
-        """Return a list of all centres of a pixelized source reconstruction in the source-plane of the most likely fit.
-        The brightest source pixel(s) are used to determine these centres.
+    def source_plane_inversion_centre(self) -> grids.Grid2DIrregular:
+        """
+        Returns the centre of the brightest source pixel(s) of an `Inversion`.
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
-        multiple-image positions."""
-        try:
+        multiple-image positions.
+        """
+        if self.max_log_likelihood_fit.inversion is not None:
             return (
                 self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre
             )
-        except AttributeError:
-            return []
 
     @property
-    def source_plane_centres(self) -> grids.Grid2DIrregularGrouped:
-        """Combine the source-plane light profile and inversion centres (see above) into a single list of source-plane
-        centres.
+    def source_plane_centre(self) -> grids.Grid2DIrregular:
+        """
+        Return the centre of a source-plane galaxy via the following criteria:
+
+        1) If the source plane contains only light profiles, return the first light's centre.
+        2) If it contains an `Inversion` return the centre of its brightest pixel instead.
 
         These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
-        (and thus tracer) by back-tracing the centres to the image plane via the mass model."""
-
-        centres = list(self.source_plane_light_profile_centres) + list(
-            self.source_plane_inversion_centres
-        )
-
-        return grids.Grid2DIrregularGrouped(grid=centres)
+        (and thus tracer) by back-tracing the centres to the image plane via the mass model.
+        """
+        if self.source_plane_inversion_centre is not None:
+            return self.source_plane_inversion_centre
+        elif self.source_plane_light_profile_centre is not None:
+            return self.source_plane_light_profile_centre
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(
         self,
-    ) -> grids.Grid2DIrregularGrouped:
+    ) -> grids.Grid2DIrregular:
         """Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
         the multiple image position of the source(s) in the image-plane..
 
@@ -69,15 +78,13 @@ class Result(result.Result):
         solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.001)
 
         try:
-            multiple_images = [
-                solver.solve(
-                    lensing_obj=self.max_log_likelihood_tracer,
-                    source_plane_coordinate=centre,
-                )
-                for centre in self.source_plane_centres.in_grouped_list[0]
-            ]
-            return grids.Grid2DIrregularGrouped(grid=multiple_images)
-        except IndexError:
+
+            multiple_images = solver.solve(
+                lensing_obj=self.max_log_likelihood_tracer,
+                source_plane_coordinate=self.source_plane_centre.in_list[0],
+            )
+            return grids.Grid2DIrregular(grid=multiple_images)
+        except (AttributeError, IndexError):
             return None
 
     @property

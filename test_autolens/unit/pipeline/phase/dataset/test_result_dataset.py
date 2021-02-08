@@ -55,7 +55,7 @@ class TestResult:
             ),
         )
 
-        imaging_7x7.positions = al.Grid2DIrregularGrouped([[(1.0, 1.0)]])
+        imaging_7x7.positions = al.Grid2DIrregular([[(1.0, 1.0)]])
 
         result = phase_imaging_7x7.run(
             dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()

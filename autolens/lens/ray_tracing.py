@@ -5,7 +5,7 @@ from os import path
 from astropy import cosmology as cosmo
 from autoarray.inversion import pixelizations as pix
 from autoarray.inversion import inversions as inv
-from autoarray.structures import grids
+from autoarray.structures import arrays, grids
 from autogalaxy import lensing
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.plane import plane as pl
@@ -92,6 +92,28 @@ class AbstractTracer(lensing.LensingObject, ABC):
         )
 
     @property
+    def point_source_dict(self):
+
+        point_source_dict = {}
+
+        for plane in self.planes:
+            for key, value in plane.point_source_dict.items():
+                point_source_dict[key] = value
+
+        return point_source_dict
+
+    @property
+    def point_source_plane_index_dict(self):
+
+        point_source_dict = {}
+
+        for index, plane in enumerate(self.planes):
+            for key, value in plane.point_source_dict.items():
+                point_source_dict[key] = index
+
+        return point_source_dict
+
+    @property
     def planes_with_light_profile(self):
         return list(filter(lambda plane: plane.has_light_profile, self.planes))
 
@@ -99,29 +121,151 @@ class AbstractTracer(lensing.LensingObject, ABC):
     def planes_with_mass_profile(self):
         return list(filter(lambda plane: plane.has_mass_profile, self.planes))
 
-    @property
-    def light_profile_centres(self):
+    def extract_attribute(self, cls, name):
         """
-        Returns the light profile centres of the tracer as a `Grid2DIrregularGrouped` object, which structures the centres
-            in lists according to which plane they come from.
+        Returns an attribute of a class in the tracer as a `ValueIrregular` or `Grid2DIrregular` object.
 
-            Fo example, if the tracer has two planes, the first with one light profile and second with two light profiles
-            this returns:
+        For example, if a tracer has an image-plane with a galaxy with two light profiles, the following:
 
-            [[(y0, x0)], [(y0, x0), (y1, x1)]]
+        `tracer.extract_attribute(cls=LightProfile, name="axis_ratio")`
 
-            This is used for visualization, for example plotting the centres of all light profiles colored by their galaxy.
+        would return:
 
-            The centres of light-sheets are filtered out, as their centres are not relevant to lensing calculations
+        ValuesIrregular(values=[axis_ratio_0, axis_ratio_1])
 
+        If the image plane has has two galaxies with two mass profiles and the source plane another galaxy with a
+        mass profile, the following:
+
+        `tracer.extract_attribute(cls=MassProfile, name="centres")`
+
+        would return:
+
+        GridIrregular2D(grid=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1), (centre_y_2, centre_x_2)])
+
+        This is used for visualization, for example plotting the centres of all mass profiles colored by their profile.
         """
-        return grids.Grid2DIrregularGrouped(
-            [
-                list(plane.light_profile_centres)
+
+        def extract(value, name):
+
+            try:
+                return getattr(value, name)
+            except (AttributeError, IndexError):
+                return None
+
+        attributes = [
+            extract(value, name)
+            for galaxy in self.galaxies
+            for value in galaxy.__dict__.values()
+            if isinstance(value, cls)
+        ]
+
+        if attributes == []:
+            return None
+        elif isinstance(attributes[0], float):
+            return arrays.ValuesIrregular(values=attributes)
+        elif isinstance(attributes[0], tuple):
+            return grids.Grid2DIrregular(grid=attributes)
+
+    def extract_attributes_of_planes(self, cls, name, filter_nones=False):
+        """
+        Returns an attribute of a class in the tracer as a list of `ValueIrregular` or `Grid2DIrregular` objects, where
+        the indexes of the list correspond to the tracer's planes.
+
+        For example, if a tracer has an image-plane with a galaxy with a light profile and a source-plane with a galaxy
+        with a light profile, the following:
+
+        `tracer.extract_attributes_of_planes(cls=LightProfile, name="axis_ratio")`
+
+        would return:
+
+        [ValuesIrregular(values=[axis_ratio_0]), ValuesIrregular(values=[axis_ratio_1])]
+
+        If the image plane has two galaxies with a mass profile each and the source plane another galaxy with a
+        mass profile, the following:
+
+        `tracer.extract_attributes_of_planes(cls=MassProfile, name="centres")`
+
+        would return:
+
+        [
+            Grid2DIrregular(grid=[(centre_y_0, centre_x_0)]),
+            Grid2DIrregular(grid=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1)])
+        ]
+
+        If a Profile does not have a certain entry, it is replaced with a None, although the nones can be removed
+        by setting `filter_nones=True`.
+
+        This is used for visualization, for example plotting the centres of all mass profiles colored by their profile.
+        """
+        if filter_nones:
+
+            return [
+                plane.extract_attribute(cls=cls, name=name)
                 for plane in self.planes
-                if plane.has_light_profile
+                if plane.extract_attribute(cls=cls, name=name) is not None
             ]
-        )
+
+        else:
+
+            return [
+                plane.extract_attribute(cls=cls, name=name) for plane in self.planes
+            ]
+
+    def extract_attributes_of_galaxies(self, cls, name, filter_nones=False):
+        """
+        Returns an attribute of a class in the tracer as a list of `ValueIrregular` or `Grid2DIrregular` objects, where
+        the indexes of the list correspond to the tracer's galaxies. If a plane has multiple galaxies they are split
+        into separate indexes int he list.
+
+        For example, if a tracer has an image-plane with a galaxy with a light profile and a source-plane with a galaxy
+        with a light profile, the following:
+
+        `tracer.extract_attributes_of_galaxies(cls=LightProfile, name="axis_ratio")`
+
+        would return:
+
+        [ValuesIrregular(values=[axis_ratio_0]), ValuesIrregular(values=[axis_ratio_1])]
+
+        If the image plane has two galaxies with a mass profile each and the source plane another galaxy with a
+        mass profile, the following:
+
+        `tracer.extract_attributes_of_galaxies(cls=MassProfile, name="centres")`
+
+        would return:
+
+        [
+            Grid2DIrregular(grid=[(centre_y_0, centre_x_0)]),
+            Grid2DIrregular(grid=[(centre_y_0, centre_x_0)])
+            Grid2DIrregular(grid=[(centre_y_0, centre_x_0)])
+        ]
+
+        If the first galaxy in the image plane in the example above had two mass profiles as well as the galaxy in the
+        source plane it would return:
+
+                [
+            Grid2DIrregular(grid=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1)]),
+            Grid2DIrregular(grid=[(centre_y_0, centre_x_0)])
+            Grid2DIrregular(grid=[(centre_y_0, centre_x_0, (centre_y_1, centre_x_1))])
+        ]
+
+        If a Profile does not have a certain entry, it is replaced with a None, although the nones can be removed
+        by setting `filter_nones=True`.
+
+        This is used for visualization, for example plotting the centres of all mass profiles colored by their profile.
+        """
+        if filter_nones:
+
+            return [
+                galaxy.extract_attribute(cls=cls, name=name)
+                for galaxy in self.galaxies
+                if galaxy.extract_attribute(cls=cls, name=name) is not None
+            ]
+
+        else:
+
+            return [
+                galaxy.extract_attribute(cls=cls, name=name) for galaxy in self.galaxies
+            ]
 
     @property
     def mass_profiles(self):
@@ -134,30 +278,6 @@ class AbstractTracer(lensing.LensingObject, ABC):
     @property
     def mass_profiles_of_planes(self):
         return [plane.mass_profiles for plane in self.planes if plane.has_mass_profile]
-
-    @property
-    def mass_profile_centres(self):
-        """
-        Returns the mass profile centres of the tracer as a `Grid2DIrregularGrouped` object, which structures the centres
-            in lists according to which plane they come from.
-
-            Fo example, if the tracer has two planes, the first with one mass profile and second with two mass profiles
-            this returns:
-
-            [[(y0, x0)], [(y0, x0), (y1, x1)]]
-
-            This is used for visualization, for example plotting the centres of all mass profiles colored by their galaxy.
-
-            The centres of mass-sheets are filtered out, as their centres are not relevant to lensing calculations
-
-        """
-        return grids.Grid2DIrregularGrouped(
-            [
-                list(plane.mass_profile_centres)
-                for plane in self.planes
-                if plane.has_mass_profile
-            ]
-        )
 
     @property
     def plane_indexes_with_pixelizations(self):

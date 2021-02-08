@@ -1,12 +1,14 @@
 from autoarray.structures import arrays, grids
 from autoarray.util import fit_util
 from autoarray.fit.fit import FitData
+from autogalaxy.profiles import point_sources as ps
 import numpy as np
 
 
 class AbstractFitPositionsSourcePlane:
     def __init__(self, positions, noise_map, tracer):
-        """Given a positions dataset, which is a list of positions with names that associated them to model source
+        """
+        Given a positions dataset, which is a list of positions with names that associated them to model source
         galaxies, use a `Tracer` to determine the traced coordinate positions in the source-plane.
 
         Different children of this abstract class are available which use the traced coordinates to define a chi-squared
@@ -14,7 +16,7 @@ class AbstractFitPositionsSourcePlane:
 
         Parameters
         -----------
-        positions : grids.Grid2DIrregularGrouped
+        positions : grids.Grid2DIrregular
             The (y,x) arc-second coordinates of named positions which the log_likelihood is computed using. Positions
             are paired to galaxies in the `Tracer` using their names.
         tracer : ray_tracing.Tracer
@@ -29,24 +31,22 @@ class AbstractFitPositionsSourcePlane:
         )[-1]
 
     @property
-    def furthest_separations_of_source_plane_positions(
-        self
-    ) -> arrays.ValuesIrregularGrouped:
+    def furthest_separations_of_source_plane_positions(self) -> arrays.ValuesIrregular:
         """
         Returns the furthest distance of every source-plane (y,x) coordinate to the other source-plane (y,x)
-        coordinates. This is performed separatly for each grouped set of source-plane coordinates.
+        coordinates.
 
         For example, for the following source-plane positions:
 
-        source_plane_positions = [[(0.0, 0.0), (0.0, 1.0), (0.0, 3.0)], [(0.0, 0.0), (1.0, 1.0)]]
+        source_plane_positions = [[(0.0, 0.0), (0.0, 1.0), (0.0, 3.0)]
 
         The returned furthest distances are:
 
-        source_plane_positions = [[3.0, 2.0, 3.0], [1.0, 1.0]
+        source_plane_positions = [3.0, 2.0, 3.0]
 
         Returns
         -------
-        arrays.ValuesIrregularGrouped
+        arrays.ValuesIrregular
             The further distances of every set of grouped source-plane coordinates the other source-plane coordinates
             that it is grouped with.
         """
@@ -67,7 +67,7 @@ class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
 
         Parameters
         -----------
-        positions : grids.Grid2DIrregularGrouped
+        positions : grids.Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value : float
             The noise-value assumed when computing the log likelihood.
@@ -90,16 +90,23 @@ class FitPositionsImage(FitData):
 
         Parameters
         -----------
-        positions : grids.Grid2DIrregularGrouped
+        positions : grids.Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value : float
             The noise-value assumed when computing the log likelihood.
         """
 
         self.positions_solver = positions_solver
-        self.model_positions_all = positions_solver.solve_from_tracer(tracer=tracer)
 
-        model_positions = self.model_positions_all.grid_of_closest_from_grid_pair(
+        source_plane_coordinate = tracer.extract_attribute(
+            cls=ps.PointSource, name="centre"
+        )[0]
+
+        model_positions = positions_solver.solve(
+            lensing_obj=tracer, source_plane_coordinate=source_plane_coordinate
+        )
+
+        model_positions = model_positions.grid_of_closest_from_grid_pair(
             grid_pair=positions
         )
 
@@ -120,28 +127,25 @@ class FitPositionsImage(FitData):
         return self.model_data
 
     @property
-    def residual_map(self) -> grids.Grid2DIrregularGrouped:
+    def residual_map(self) -> arrays.ValuesIrregular:
+
         residual_positions = self.positions - self.model_positions
+
         return residual_positions.distances_from_coordinate(coordinate=(0.0, 0.0))
 
 
 class FitFluxes(FitData):
     def __init__(self, fluxes, noise_map, positions, tracer):
 
-        # TODO : The fluxes, positions etc that come into here will be IrregularGrouped structures with dictionary inputs.
-        # TODO : We need them as numpy array sso that we caninherit and subtract efficiently. Easy to do.
-        # TODO : These can be generated from PointSourceData classes.
-
         self.positions = positions
         self.magnifications = abs(
             tracer.magnification_via_hessian_from_grid(grid=positions)
         )
 
-        model_fluxes = arrays.ValuesIrregularGrouped(
-            values=[
-                magnification * tracer.flux_hack
-                for magnification in self.magnifications
-            ]
+        flux = tracer.extract_attribute(cls=ps.PointSourceFlux, name="flux")[0]
+
+        model_fluxes = arrays.ValuesIrregular(
+            values=[magnification * flux for magnification in self.magnifications]
         )
 
         super().__init__(

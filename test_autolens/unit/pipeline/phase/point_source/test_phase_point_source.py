@@ -32,10 +32,8 @@ class TestMakeAnalysis:
             positions=positions_x2, positions_noise_map=positions_x2_noise_map
         )
 
-        assert analysis.positions.in_grouped_list == positions_x2.in_grouped_list
-        assert (
-            analysis.noise_map.in_grouped_list == positions_x2_noise_map.in_grouped_list
-        )
+        assert analysis.positions.in_list == positions_x2.in_list
+        assert analysis.noise_map.in_list == positions_x2_noise_map.in_list
 
     def test___phase_info_is_made(
         self, phase_positions_x2, positions_x2, positions_x2_noise_map
