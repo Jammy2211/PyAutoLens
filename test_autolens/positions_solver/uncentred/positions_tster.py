@@ -56,7 +56,7 @@ for i in range(40, 41):
         source_plane_coordinate=tracer.source_plane.galaxies[0].light.centre,
     )
 
-    positions_true = al.Grid2DIrregularGrouped.load(
+    positions_true = al.Grid2DIrregular.load(
         file_path=pickle_path, filename=f"positions_{str(i)}"
     )
 
@@ -69,7 +69,7 @@ for i in range(40, 41):
             positions_true=positions_true, positions=positions, threshold=0.1
         )
 
-        positions_plot = al.Grid2DIrregularGrouped(
+        positions_plot = al.Grid2DIrregular(
             coordinates=[
                 positions.in_grouped_list[0],
                 positions_true.in_grouped_list[0],
@@ -81,7 +81,7 @@ for i in range(40, 41):
         minimum_separations = None
         in_positions_true = None
 
-        positions_plot = al.Grid2DIrregularGrouped(
+        positions_plot = al.Grid2DIrregular(
             coordinates=[positions_true.in_grouped_list[0]]
         )
 

@@ -4,6 +4,7 @@ from autoarray.plot.plotters import inversion_plotters
 from autoarray.plot.plotters import fit_imaging_plotters
 from autolens.plot.plotters import ray_tracing_plotters
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
+from autogalaxy.profiles import light_profiles, mass_profiles
 from autolens.fit import fit as f
 
 import numpy as np
@@ -55,10 +56,16 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
 
         return visuals_2d + visuals_2d.__class__(
             light_profile_centres=self.extract_2d(
-                "light_profile_centres", self.tracer.planes[0].light_profile_centres
+                "light_profile_centres",
+                self.tracer.planes[0].extract_attribute(
+                    cls=light_profiles.LightProfile, name="centre"
+                ),
             ),
             mass_profile_centres=self.extract_2d(
-                "mass_profile_centres", self.tracer.planes[0].mass_profile_centres
+                "mass_profile_centres",
+                self.tracer.planes[0].extract_attribute(
+                    cls=mass_profiles.MassProfile, name="centre"
+                ),
             ),
             critical_curves=self.extract_2d(
                 "critical_curves",

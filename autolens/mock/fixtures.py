@@ -35,19 +35,19 @@ def make_masked_interferometer_7_grid():
 
 
 def make_positions_x2():
-    return al.Grid2DIrregularGrouped(grid=[[(1.0, 1.0), (2.0, 2.0)]])
+    return al.Grid2DIrregular(grid=[(1.0, 1.0), (2.0, 2.0)])
 
 
 def make_positions_noise_map_x2():
-    return al.ValuesIrregularGrouped(values=[[1.0, 1.0]])
+    return al.ValuesIrregular(values=[1.0, 1.0])
 
 
 def make_fluxes_x2():
-    return al.ValuesIrregularGrouped(values=[[1.0, 2.0]])
+    return al.ValuesIrregular(values=[1.0, 2.0])
 
 
 def make_fluxes_noise_map_x2():
-    return al.ValuesIrregularGrouped(values=[[1.0, 1.0]])
+    return al.ValuesIrregular(values=[1.0, 1.0])
 
 
 def make_tracer_x1_plane_7x7():

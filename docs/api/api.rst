@@ -12,11 +12,11 @@ Data Structures
    :toctree: generated/
 
    Array2D
-   ValuesIrregularGrouped
+   ValuesIrregular
    Grid2D
    Grid2DIterate
    Grid2DInterpolate
-   Grid2DIrregularGrouped
+   Grid2DIrregular
    Kernel2D
    Convolver
    Visibilities

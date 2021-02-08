@@ -11,13 +11,13 @@ from autoarray.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.structures.arrays import Array2D, ValuesIrregularGrouped
+from autoarray.structures.arrays import Array2D, ValuesIrregular
 from autoarray.structures.grids import (
     Grid2D,
     Grid2DIterate,
     Grid2DInterpolate,
     Grid2DIrregular,
-    Grid2DIrregularGrouped,
+    Grid2DIrregular,
     Grid2DRectangular,
     Grid2DVoronoi,
 )
@@ -37,6 +37,7 @@ from autogalaxy.pipeline.phase.extensions.hyper_phase import HyperPhase
 from autogalaxy.pipeline.pipeline import PipelineDataset
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles import (
+    point_sources as ps,
     light_profiles as lp,
     mass_profiles as mp,
     light_and_mass_profiles as lmp,
@@ -85,4 +86,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = '1.11.1'
+__version__ = "1.11.1"

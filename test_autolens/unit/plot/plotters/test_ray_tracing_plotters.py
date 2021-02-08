@@ -38,8 +38,6 @@ def test__all_individual_plotter(
         magnification=True,
     )
 
-    print(plot_patch.paths)
-
     assert path.join(plot_path, "image.png") in plot_patch.paths
     assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
     assert path.join(plot_path, "convergence.png") in plot_patch.paths
@@ -85,6 +83,7 @@ def test__all_individual_plotter(
 def test__tracer_sub_plot_output(
     tracer_x2_plane_7x7, sub_grid_7x7, include_2d_all, plot_path, plot_patch
 ):
+
     tracer_plotter = aplt.TracerPlotter(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_7x7,
