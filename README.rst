@@ -4,13 +4,16 @@ PyAutoLens: Open-Source Strong Lensing
 .. |nbsp| unicode:: 0xA0
     :trim:
 
+.. |binder| image:: https://mybinder.org/badge_logo.svg
+   :target: https://mybinder.org/v2/gh/Jammy2211/autofit_workspace/HEAD
+
 .. |code-style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
 .. |arXiv| image:: https://img.shields.io/badge/arXiv-1708.07377-blue
     :target: https://arxiv.org/abs/1708.07377
 
-|nbsp| |code-style| |nbsp| |arXiv|
+|binder| |nbsp| |code-style| |nbsp| |arXiv|
 
 `Installation Guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ |
 `readthedocs <https://pyautolens.readthedocs.io/en/latest/index.html>`_ |
