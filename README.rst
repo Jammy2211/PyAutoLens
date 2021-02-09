@@ -29,13 +29,18 @@ like this one:
 Getting Started
 ---------------
 
-You can try **PyAutoLens** now by following the `introduction Jupyter Notebook on
+The following links are useful for new starters:
+
+- Try **PyAutoLens** in a web browser (without installation) by following the `introduction Jupyter Notebook on
 Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/3b48dbc1b0ee85e68a24394895702df78e465323?filepath=introduction.ipynb>`_.
 
-On `readthedocs <https://pyautolens.readthedocs.io/>`_ you'll find the installation guide, a complete overview
-of **PyAutoLens**'s features, examples scripts, and
-the `HowToLens Jupyter notebook tutorials <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_ which
-introduces new users to **PyAutoLens**.
+- The **PyAutoLens** `documentation on readthedocs <https://pyautolens.readthedocs.io/en/latest>`_, which includes
+the `PyAutoLens installation guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ and
+an overview of **PyAutoLens**'s core features.
+
+- The `autolens_workspace GitHub repository <https://github.com/Jammy2211/autolens_workspace>`_, which includes example
+scripts and the `HowToLens Jupyter notebook tutorials <https://github.com/Jammy2211/autolens_workspace/tree/master/notebooks/howtolens>`_
+which give new users a step-by-step introduction to **PyAutoLens**.
 
 API Overview
 ------------
@@ -55,22 +60,23 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     To describe the deflection of light by mass, two-dimensional grids of (y,x) Cartesian
     coordinates are used.
     """
-
     grid = al.Grid2D.uniform(
         shape_native=(50, 50),
         pixel_scales=0.05,  # <- Conversion from pixel units to arc-seconds.
     )
 
-    """The lens galaxy has an EllipticalIsothermal MassProfile and is at redshift 0.5."""
-
+    """
+    The lens galaxy has an EllipticalIsothermal MassProfile and is at redshift 0.5.
+    """
     mass = al.mp.EllipticalIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.1, 0.05), einstein_radius=1.6
     )
 
     lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
 
-    """The source galaxy has an EllipticalExponential LightProfile and is at redshift 1.0."""
-
+    """
+    The source galaxy has an EllipticalExponential LightProfile and is at redshift 1.0.
+    """
     disk = al.lp.EllipticalExponential(
         centre=(0.3, 0.2),
         elliptical_comps=(0.05, 0.25),
@@ -84,7 +90,6 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     We create the strong lens using a Tracer, which uses the galaxies, their redshifts
     and an input cosmology to determine how light is deflected on its path to Earth.
     """
-
     tracer = al.Tracer.from_galaxies(
         galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
     )
@@ -93,7 +98,6 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     We can use the Grid2D and Tracer to perform many lensing calculations, for example
     plotting the image of the lensed source.
     """
-
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
     tracer_plotter.figures(image=True)
 
@@ -107,8 +111,9 @@ with an ``EllipticalSersic``.
     import autolens as al
     import autolens.plot as aplt
 
-    """Load Imaging data of the strong lens from the dataset folder of the workspace."""
-
+    """
+    Load Imaging data of the strong lens from the dataset folder of the workspace.
+    """
     imaging = al.Imaging.from_fits(
         image_path="/path/to/dataset/image.fits",
         noise_map_path="/path/to/dataset/noise_map.fits",
@@ -116,8 +121,9 @@ with an ``EllipticalSersic``.
         pixel_scales=0.1,
     )
 
-    """Create a mask for the data, which we setup as a 3.0" circle."""
-
+    """
+    Create a mask for the data, which we setup as a 3.0" circle.
+    """
     mask = al.Mask2D.circular(
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
     )
@@ -126,7 +132,6 @@ with an ``EllipticalSersic``.
     We model the lens galaxy using an EllipticalIsothermal MassProfile and
     the source galaxy using an EllipticalSersic LightProfile.
     """
-
     lens_mass_profile = al.mp.EllipticalIsothermal
     source_light_profile = al.lp.EllipticalSersic
 
@@ -134,7 +139,6 @@ with an ``EllipticalSersic``.
     To setup these profiles as model components whose parameters are free & fitted for
     we use the GalaxyModel class.
     """
-
     lens_galaxy_model = al.GalaxyModel(redshift=0.5, mass=lens_mass_profile)
     source_galaxy_model = al.GalaxyModel(redshift=1.0, disk=source_light_profile)
 
@@ -142,7 +146,6 @@ with an ``EllipticalSersic``.
     To perform the analysis we set up a phase, which takes our galaxy models & fits
     their parameters using a NonLinearSearch (in this case, Dynesty).
     """
-
     phase = al.PhaseImaging(
         search=af.DynestyStatic(name="phase[example]",n_live_points=50),
         galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
@@ -153,23 +156,20 @@ with an ``EllipticalSersic``.
     with the lens model & outputting the results (dynesty samples, visualization,
     etc.) to hard-disk.
     """
-
     result = phase.run(dataset=imaging, mask=mask)
 
     """
     The results contain information on the fit, for example the maximum likelihood
     model from the Dynesty parameter space search.
     """
-
     print(result.samples.max_log_likelihood_instance)
 
 Support
 -------
 
 Support for installation issues, help with lens modeling and using **PyAutoLens** is available by
-`raising an issue on the autolens_workspace GitHub page <https://github.com/Jammy2211/autolens_workspace/issues>`_. or
-joining the **PyAutoLens** `Slack channel <https://pyautolens.slack.com/>`_, where we also provide the latest updates on
-**PyAutoLens**.
+`raising an issue on the GitHub issues page <https://github.com/Jammy2211/PyAutoLens/issues>`_.
 
-Slack is invitation-only, so if you'd like to join send an `email <https://github.com/Jammy2211>`_ requesting an
-invite.
+We also offer support on the **PyAutoLens** `Slack channel <https://pyautolens.slack.com/>`_, where we also provide the
+latest updates on **PyAutoLens**. Slack is invitation-only, so if you'd like to join send
+an `email <https://github.com/Jammy2211>`_ requesting an invite.

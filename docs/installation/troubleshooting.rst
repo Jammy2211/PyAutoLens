@@ -6,29 +6,69 @@ Troubleshooting
 LLVMLite / numba
 ----------------
 
-The libraries **numba** and **llvmlite** cause known installation issues when installing via ``conda`` or ``pip``.
-Newer versions of llvmlite (> 0.32.1) raise an error during install due to a missing configuration file. To circumvent
-this the **PyAutoLens** requirements file requires that ``llvmlite<=0.32.1`` and ``numba<=0.47.0``.
+The libraries ``numba`` and ``llvmlite`` cause known installation issues when installing via ``conda`` or ``pip``.
 
-However, if your conda / Python environment already has either library installed with a version above these, it may
-raise an error along the lines of:
+There are three circumstances where these errors arise:
+
+**1) llvmlite and numba are already installed**
+
+In this case, the installation of autolens raises an exception like the one below:
 
 .. code-block:: bash
 
    Cannot uninstall 'llvmlite'. It is a distutils installed project and thus we cannot accurately determine which
    files belong to it which would lead to only a partial uninstall.
 
-This is why in the `installation via conda <https://pyautolens.readthedocs.io/en/latest/installation/conda.html>`_
-instructions we installed these libraries as part of the ``conda`` environment and ignored them when we installed
-``autolens`` via pip.
+This means that ``llvmlite`` and ``numba`` are already installed, which you can check as follows:
 
-**PyAutoLens** works fine with these newer versions, so if your environment already has ``llvmlite`` and ``numba``
-installed you can circumvent this error by simply not installing them when you install **PyAutoLens**:
+.. code-block:: bash
+
+   pip show llvmlite
+   pip show numba
+
+**PyAutoLens** works fine across many versions of lvvmlite and numba, so you should be ok to circumvent this error by
+simply not reinstalling these libraries when you install **PyAutoLens**:
 
 .. code-block:: bash
 
     pip install autolens --ignore-installed llvmlite numba
 
+**2) llvmlite and numba are not already installed**
+
+In this case, a depencdency error will arise where one of these libraries could not be installed. If you are trying to
+install via pip, we recommend you instead follow the `installation via conda <https://pyautolens.readthedocs.io/en/latest/installation/conda.html>`_ instructions
+which install these libraries as part of the ``conda`` environment.
+
+To install via pip, you can manually install the following versions of ``llvmite==0.32.1``, ``numba==0.47.0``
+and ``numpy==1.19.7``:
+
+.. code-block:: bash
+
+    pip install llvmlite==0.32.1
+    pip install numba==0.47.0
+    pip install numpy==1.19.7
+
+    pip install autolens --ignore-installed llvmlite numba numpy
+
+This may raise warnings, but **PyAutoLens** has been tested with this combination of versions which have had less
+installation issues.
+
+**3) The version of numba and numpy clash**
+
+If numba and numpy are not on versions compatible with one another the following error can arise when running autolens:
+
+.. code-block:: bash
+
+    TypeError: expected dtype object, got 'numpy.dtype[float64]'
+
+The easiest solution is to downgrade to ``numpy==1.19.7``:
+
+.. code-block:: bash
+
+    pip install numpy==1.19.7
+
+
+If you are still facing installation issues please `raise an issue on the GitHub issues page <https://github.com/Jammy2211/PyAutoLens/issues>`_.
 
 Current Working Directory
 -------------------------
