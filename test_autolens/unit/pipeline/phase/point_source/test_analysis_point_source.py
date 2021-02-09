@@ -21,7 +21,7 @@ class TestFit:
         phase_positions_x2 = al.PhasePointSource(
             galaxies=dict(
                 lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
-                source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+                source=al.GalaxyModel(redshift=1.0, point=al.ps.PointSource),
             ),
             search=mock.MockSearch(samples=samples_with_result),
             positions_solver=mock.MockPositionsSolver(model_positions=positions_x2),

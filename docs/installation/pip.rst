@@ -5,7 +5,7 @@ Installation with pip
 
 We strongly recommend that you install **PyAutoLens** in a
 `Python virtual environment <https://www.geeksforgeeks.org/python-virtual-environment/>`_, with the link attached
-describing what a virtual enviroment is and how to create one.
+describing what a virtual environment is and how to create one.
 
 **PyAutoLens** is via pip as follows:
 
@@ -25,7 +25,7 @@ the ``autolens_workspace``, reducing the download size):
    git clone https://github.com/Jammy2211/autolens_workspace --depth 1
    cd autolens_workspace
 
-Run the `welcome.py` script to get started!
+Run the ``welcome.py`` script to get started!
 
 .. code-block:: bash
 

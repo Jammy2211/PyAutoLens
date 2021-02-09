@@ -89,12 +89,13 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
         )
 
     def inversion_plotter_of_plane(self, plane_index):
+
         inversion_plotter = inversion_plotters.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.tracer_plotter.visuals_with_include_2d_of_plane(
-                plane_index=plane_index
-            ),
+            # visuals_2d=self.tracer_plotter.visuals_with_include_2d_of_plane(
+            #     plane_index=plane_index
+            # ),
             include_2d=self.include_2d,
         )
         inversion_plotter.visuals_2d.border = None
