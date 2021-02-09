@@ -31,16 +31,11 @@ Getting Started
 
 The following links are useful for new starters:
 
-- Try **PyAutoLens** in a web browser (without installation) by following the `introduction Jupyter Notebook on
-Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/3b48dbc1b0ee85e68a24394895702df78e465323?filepath=introduction.ipynb>`_.
+- `The introduction Jupyter Notebook on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/3b48dbc1b0ee85e68a24394895702df78e465323?filepath=introduction.ipynb>`_, where you can try **PyAutoLens** in a web browser (without installation).
 
-- The **PyAutoLens** `documentation on readthedocs <https://pyautolens.readthedocs.io/en/latest>`_, which includes
-the `PyAutoLens installation guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ and
-an overview of **PyAutoLens**'s core features.
+- `The PyAutoLens readthedocs <https://pyautolens.readthedocs.io/en/latest>`_, which includes `an installation guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ and an overview of **PyAutoLens**'s core features.
 
-- The `autolens_workspace GitHub repository <https://github.com/Jammy2211/autolens_workspace>`_, which includes example
-scripts and the `HowToLens Jupyter notebook tutorials <https://github.com/Jammy2211/autolens_workspace/tree/master/notebooks/howtolens>`_
-which give new users a step-by-step introduction to **PyAutoLens**.
+- `The autolens_workspace GitHub repository <https://github.com/Jammy2211/autolens_workspace>`_, which includes example scripts and the `HowToLens Jupyter notebook tutorials <https://github.com/Jammy2211/autolens_workspace/tree/master/notebooks/howtolens>`_ which give new users a step-by-step introduction to **PyAutoLens**.
 
 API Overview
 ------------
