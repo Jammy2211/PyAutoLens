@@ -94,7 +94,7 @@ class SettingsLens:
 
     def check_einstein_radius_with_threshold_via_tracer(self, tracer, grid):
 
-        if self.einstein_radius_estimate is None:
+        if self.einstein_radius_estimate is None or self.auto_einstein_radius_factor is None:
             return
 
         if self.einstein_radius_count > self.auto_einstein_radius_count:
