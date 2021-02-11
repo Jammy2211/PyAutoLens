@@ -11,6 +11,12 @@ with open(join(this_dir, "README.rst"), encoding="utf-8") as file:
 with open(join(this_dir, "requirements.txt")) as f:
     requirements = f.read().split("\n")
 
+requirements.extend([
+    'autofit==0.73.1',
+    'autoarray==0.18.3',
+    'autogalaxy==0.18.4'
+])
+
 setup(
     name="autofit",
     version=environ.get("VERSION", "1.0.dev0"),
