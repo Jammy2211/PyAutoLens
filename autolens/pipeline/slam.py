@@ -50,6 +50,7 @@ class AbstractSLaMPipeline:
 
 
 class SLaMPipelineSourceParametric(AbstractSLaMPipeline):
+
     def __init__(
         self,
         setup_light: ag_setup.SetupLightParametric = None,
@@ -81,6 +82,7 @@ class SLaMPipelineSourceParametric(AbstractSLaMPipeline):
         setup_source : SetupSourceParametric
             The setup of the source analysis (e.g. the `LightProfile`, `Pixelization` or `Regularization` used).
         """
+
         if setup_light is None:
             setup_light = ag_setup.SetupLightParametric()
 

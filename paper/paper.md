@@ -189,7 +189,7 @@ viewed on our [readthedocs](https://pyautolens.readthedocs.io/en/latest/howtolen
 - `NumPy` [@numpy]
 - `PyAutoFit` (https://github.com/rhayes777/PyAutoFit)
 - `PyLops` [@PyLops]
-- `PyMulitNest` [@pymultinest] [@multinest]
+- `PyMultiNest` [@pymultinest] [@multinest]
 - `PyNUFFT` [@pynufft]
 - `pyquad` [@pyquad]
 - `PySwarms` [@pyswarms]

@@ -269,7 +269,8 @@ def fit_interferometer_from_agg_obj(
     Parameters
     ----------
     aggregator : af.Aggregator
-        A PyAutoFit aggregator object containing the results of PyAutoLens model-fits."""
+        A PyAutoFit aggregator object containing the results of PyAutoLens model-fits.
+    """
     masked_interferometer = masked_interferometer_from_agg_obj(
         agg_obj=agg_obj, settings_masked_interferometer=settings_masked_interferometer
     )
