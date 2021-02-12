@@ -8,7 +8,6 @@ from autolens.lens import ray_tracing
 
 
 class MaskedImaging(imaging.MaskedImaging):
-
     def __init__(self, imaging, mask, settings=im.SettingsMaskedImaging()):
         """
         The lens dataset is the collection of data (image, noise-map, PSF), a mask, grid, convolver \

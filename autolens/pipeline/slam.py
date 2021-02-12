@@ -50,7 +50,6 @@ class AbstractSLaMPipeline:
 
 
 class SLaMPipelineSourceParametric(AbstractSLaMPipeline):
-
     def __init__(
         self,
         setup_light: ag_setup.SetupLightParametric = None,
