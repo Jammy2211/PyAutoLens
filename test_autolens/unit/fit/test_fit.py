@@ -6,9 +6,7 @@ from autogalaxy.mock.mock import MockLightProfile
 
 
 class TestFitImaging:
-
     class TestFitProperties:
-
         def test__total_inversions(self, masked_imaging_7x7):
 
             g0 = al.Galaxy(redshift=0.5)

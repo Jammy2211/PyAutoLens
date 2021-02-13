@@ -6,8 +6,8 @@ from autolens.lens import ray_tracing, positions_solver as pos
 
 import numpy as np
 
-class Result(result.Result):
 
+class Result(result.Result):
     @property
     def max_log_likelihood_plane(self):
         raise NotImplementedError()

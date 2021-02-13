@@ -1,8 +1,6 @@
 from autoarray.structures import arrays, grids
-from autoarray.util import fit_util
 from autoarray.fit.fit import FitData
 from autogalaxy.profiles import point_sources as ps
-import numpy as np
 
 
 class AbstractFitPositionsSourcePlane:

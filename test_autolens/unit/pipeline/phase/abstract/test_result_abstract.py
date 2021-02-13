@@ -16,7 +16,6 @@ directory = os.path.dirname(os.path.realpath(__file__))
 
 
 class TestTracer:
-
     def test__max_log_likelihood_tracer_available_as_result(
         self, imaging_7x7, mask_7x7, samples_with_result
     ):

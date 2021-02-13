@@ -17,7 +17,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 class TestMakeAnalysis:
-
     def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
         self, imaging_7x7, mask_7x7
     ):
