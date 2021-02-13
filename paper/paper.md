@@ -15,6 +15,9 @@ authors:
   - name: Ashley Kelly
     orcid: 0000-0003-3850-4469
     affiliation: 1
+  - name: Aristeidis Amvrosiadis
+    orcid: 0000-0002-4465-1564
+    affiliation: 1    
   - name: Amy Etherington
     affiliation: 1
   - name: Qiuhan He
@@ -25,8 +28,8 @@ authors:
     affiliation: 2
   - name: XiaoYue Cao
     affiliation: 3
-  - name: Aristeidis Amvrosiadis
-    orcid: 0000-0002-4465-1564
+  - name: Jonathan Frawley
+    orcid: 0000-0002-9437-7399
     affiliation: 1
   - name: Shaun Cole
     orcid: 0000-0002-5954-7903
@@ -77,15 +80,14 @@ bibliography: paper.bib
 Strong gravitational lensing, which can make a background source galaxy appears multiple times due to its light rays being 
 deflected by the mass of one or more foreground lens galaxies, provides astronomers with a powerful tool to study dark 
 matter, cosmology and the most distant Universe. `PyAutoLens` is an open-source Python 3.6+ package for strong 
-gravitational  lensing, with core features including fully automated strong lens modeling of galaxies and galaxy 
+gravitational lensing, with core features including fully automated strong lens modeling of galaxies and galaxy 
 clusters, support for direct imaging and interferometer datasets and comprehensive tools for simulating samples of 
 strong lenses. The API allows users to perform ray-tracing by using analytic light and mass profiles to build strong 
-lens systems. Accompanying `PyAutoLens` is the `autolens workspace`, which 
-includes example scripts, lens datasets and 
-the [HowToLens](https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html) lectures in Jupyter notebook format 
-which introduce non-experts to strong lensing using `PyAutoLens`. To get started readers should go to 
-our [readthedocs](https://pyautolens.readthedocs.io/en/latest/) and contact us to join 
-the [PyAutoLens Slack channel](https://pyautolens.slack.com/) where we are building our online community.
+lens systems. Accompanying `PyAutoLens` is the [autolens workspace](https://github.com/Jammy2211/autolens_workspace), which 
+includes example scripts, lens datasets and the [HowToLens](https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html) 
+lectures in Jupyter notebook format which introduce non-experts to strong lensing using `PyAutoLens`. Readers can 
+try `PyAutoLens` right now by going to [the introduction Jupyter notebook on Binder](https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/master) 
+or checkout the [readthedocs](https://pyautolens.readthedocs.io/en/latest/) for a complete overview of `PyAutoLens`'s features.
 
 # Background
 
@@ -97,8 +99,8 @@ below. The massive elliptical lens galaxy can be seen in the centre of the left 
 imaged source galaxy whose light has been distorted into an Einstein ring. The central panel shows a `PyAutoLens`
 reconstruction of the lensed source's light, where the foreground lens's light was simultaneously fitted for and 
 subtracted to reveal the source. The right panel shows a pixelized reconstruction of the source's unlensed light 
-distribution, which is created using a model of the lens galaxy's mass to trace backwards how the source's light is 
-gravitationally lensed.
+distribution performed by `PyAutoLens`, which is created using a model of the lens galaxy's mass to trace backwards 
+how the source's light is gravitationally lensed.
 
 ![Hubble Space Telescope imaging of the strong lens SLACSJ1430+1405 (left column), a fit to its lensed source galaxy (middle column) and unlensed source reconstruction (right column) using `PyAutoLens`.\label{figure:example}](imageaxis.png)
 
@@ -110,12 +112,16 @@ Strong lensing is a competitive test of cosmological models, for example the exp
 be inferred from the 'time-delay' between different image paths to the same distant quasar [@Suyu2016]. Strong lensing
 of galaxy clusters has also made many contributions to all these topics [@Jullo2010] [@Richard2014] [@Atek2015]. 
 
+# Statement of Need
+
 The past decade has seen the discovery of many hundreds of galaxy-scale and cluster-scale lenses, with high quality 
 imaging [@Bolton2012], interferometer [@Negrello2014] [@Enia2018] and spectroscopy [@Czoske2012] datasets now available. 
 Historically, the modeling of a strong lens is a time-intensive process that requires significant human intervention 
 to perform, restricting the scope and size of the scientific analysis. In the next decade of 
 order of _one hundred thousand_ strong lenses will be discovered by surveys such as Euclid, LSST and 
-SKA [@Collett2015], demanding an automated and widely available approach for strong lens analysis.  
+SKA [@Collett2015], demanding a widely available and automated approach for strong lens analysis. `PyAutoLens` aims to 
+meet this need, by making strong lens analysis accessible to the wider Astronomy community and enabling the automated 
+analysis of large samples of strong lenses.
 
 # Software API and Features
 
@@ -123,48 +129,50 @@ A gravitational lens system can be quickly assembled from Python object which pr
 of the different components of a strong lens. A `Galaxy` object contains one or more `LightProfile`'s and `MassProfile`'s, 
 which represent its two dimensional distribution of starlight and mass. `Galaxy`’s lie at a particular distance 
 (redshift) from the observer, and are grouped into `Plane`'s. Raytracing through multiple `Plane`s is achieved by 
-passing them to a `Tracer` with an `astropy` Cosmology. By passing any of these objects a `Grid2D` strong lens quantities 
-can be computed, including multi-plane ray-tracing sightlines [@McCully2014]. All of these objects are extensible, making it 
-straightforward to compose highly customized lensing system. Ray-tracing calculations are optimized using the 
-packages `NumPy` [@numpy], `numba` [@numba] and `pyquad` [@pyquad], ensuring `PyAutoLens` runs efficiently.
+passing them to a `Tracer` with an `astropy` Cosmology. By passing any of these objects a `Grid2D` object strong lens 
+quantities can be computed, including multi-plane ray-tracing sightlines [@McCully2014]. All of these objects are 
+extensible, making it straightforward to compose highly customized lensing system. Ray-tracing calculations are 
+optimized using the packages `NumPy` [@numpy], `numba` [@numba] and `pyquad` [@pyquad].
 
 To perform lens modeling, `PyAutoLens` adopts the probabilistic programming 
 language `PyAutoFit` (https://github.com/rhayes777/PyAutoFit). `PyAutoFit` allows users to compose a 
 lens model from `LightProfile`, `MassProfile` and `Galaxy` objects, customize the model parameterization and fit it to 
 data via a `NonLinearSearch` (e.g. `dynesty` [@dynesty], `emcee` [@emcee], `PySwarms` [@pyswarms]). By composing a 
-lens model with a `Pixelization` and `Regularizaion` object, the background source's light is modeled using a 
+lens model with a `Pixelization` and `Regularization` object, the background source's light is reconstructed using a 
 rectangular grid or Voronoi mesh that accounts for irregular galaxy morphologies which a `LightProfile` cannot 
-accurately capture. Lensed quasar and supernovae datasets can be fitted using a `PointSource`, which uses positions 
-and flux-ratios to fit the lens model. Strong lensing clusters containing many lens galaxies can also be 
-analysed with `PyAutoLens` using these objects.
+accurately capture. Lensed quasar and supernovae datasets can be fitted using a `PointSource`, which uses their observed 
+positions, flux-ratios and time-delays to fit the lens model. Strong lensing clusters consisting of any number of lens 
+galaxies can also be analysed with `PyAutoLens` using these objects.
 
-Automated lens modeling uses `PyAutoFit`'s transdimensional model-fitting pipelines, which break the model-fit into 
-a chained sequence of non-linear searches which pass information gained about simpler lens models fitted in earlier 
-phases to subsequent phases, which fit progressively more complex models. By granularizing the model-fitting 
+Automated lens modeling uses `PyAutoFit`'s non-linear search chaining feature, which breaks the model-fit into 
+a chained sequence of non-linear searches. These fits pass information gained about simpler lens models fitted by earlier 
+searches to subsequent searches, which fit progressively more complex models. By granularizing the model-fitting 
 procedure, automated pipelines that fit complex lens models without human intervention can be carefully crafted, with 
 example pipelines found on the [autolens workspace](https://github.com/Jammy2211/autolens_workspace). To ensure the 
-analysis and interpretation of fits to large lens datasets is feasible, the `PyAutoFit` aggregator tool allows lens 
-model results to be loaded from hard-disk to a Python script or Jupyter notebook. This uses memory-light `Python` 
-generators, ensuring it is practical for thousands of lenses.
+analysis and interpretation of fits to large lens datasets is feasible, `PyAutoFit`'s database tools write lens modeling 
+results to a relational database which can be loaded from hard-disk to a Python script or Jupyter notebook. This uses 
+memory-light `Python` generators, ensuring it is practical for thousands of lenses.
 
 `PyAutoLens` includes a comprehensive visualization library for the analysis of both direct imaging and submm / radio 
 interferometer datasets, tools for preprocessing data to formats suited to lens analysis and options to include 
-effects like the telescope optics and background sky subtraction in the model-fit. Interferometric analysis is 
-performed directly on the observed visibilities in Fourier space, circumventing issues associated with the incomplete 
-sampling of the uv-plane that give rise to artefacts that can bias the inferred mass model and source reconstruction 
-in real-space. To make feasible the analysis of `millions` of visibilities, `PyAutoLens` uses `PyNUFFT` [@pynufft] to 
-fit the visibilities via a non-uniform fast Fourier transform and `PyLops` [@PyLops] to express the memory-intensive 
-linear algebra calculations as efficient linear operators [@Powell2020]. Creating realistic simulations of imaging 
-and interferometer strong lensing datasets is possible, as performed by [@Alexander2019] [@Hermans2019] who 
-used `PyAutoLens` to train neural networks to detect strong lenses.
+effects like the telescope optics and background sky subtraction in the model-fit. Interferometer analysis is 
+performed directly on the observed visibilities in their native Fourier space, circumventing issues associated with the 
+incomplete sampling of the uv-plane that give rise to artefacts that can bias the inferred mass model and source 
+reconstruction in real-space. To make feasible the analysis of `millions` of visibilities, `PyAutoLens` 
+uses `PyNUFFT` [@pynufft] to fit the visibilities via a non-uniform fast Fourier transform and `PyLops` [@PyLops] to 
+express the memory-intensive linear algebra calculations as efficient linear operators [@Powell2020]. Creating 
+realistic simulations of imaging and interferometer strong lensing datasets is possible, as performed 
+by [@Alexander2019] [@Hermans2019] who used `PyAutoLens` to train neural networks to detect strong lenses.
  
 # Performance
 
 The analysis of direct imaging datasets and interferometer datasets (up to of order 1 million visibilities) are both 
 feasible on hardware with at least 4GB of RAM. The time it takes to perform lens modeling with `PyAutoLens` are 
 highly variable and depend on the size of the dataset being analysed and complexity of the model being fitted. They can 
-vary from minutes to thousands of CPU hours. For large jobs we recommend users install `PyAutoLens` on a HPC cluster and 
-documentation is included on how to set this up.
+vary from minutes to thousands of CPU hours. The run-times section on [readthedocs](https://pyautolens.readthedocs.io/en/latest/) 
+provides graphs showing the performance of the latest release of `PyAutoLens` and a calculator for estimating how long
+a lens model fit may take. For large jobs we recommend users install `PyAutoLens` on a HPC cluster and documentation is 
+provided on how to set this up.
  
 # Workspace and HowToLens Tutorials
 
@@ -172,8 +180,9 @@ documentation is included on how to set this up.
 contains example scripts for modeling and simulating strong lenses and tutorials on how to preprocess imaging and 
 interferometer datasets before a `PyAutoLens` analysis. Also included are the `HowToLens` tutorials, a five chapter 
 lecture series composed of over 30 Jupyter notebooks aimed at non-experts, introducing them to strong gravitational 
-lensing, Bayesian inference and teaching them how to use `PyAutoLens` for their scientific study. The lectures can be 
-viewed on our [readthedocs](https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html).
+lensing, Bayesian inference and teaching them how to use `PyAutoLens` for their scientific study. The lectures 
+are available on our [Binder](https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/HEAD) and may therefore be 
+taken without a local `PyAutoLens` installation.
 
 # Software Citations
 
