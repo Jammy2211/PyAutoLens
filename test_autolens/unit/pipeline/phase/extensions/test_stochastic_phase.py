@@ -89,7 +89,7 @@ class _TestStochasticPhase:
         phase = al.PhaseImaging(
             galaxies=dict(galaxy=galaxy),
             search=af.DynestyStatic(name="test_phase", n_live_points=1),
-            settings=al.SettingsPhaseImaging(bin_up_factor=2),
+            settings=al.SettingsPhaseImaging(),
         )
 
         phase_stochastic = phase.extend_with_stochastic_phase(
@@ -101,7 +101,7 @@ class _TestStochasticPhase:
         assert (
             path.join(
                 "test_phase",
-                "stochastic__settings__grid_sub_2__bin_2",
+                "stochastic__settings__grid_sub_2",
                 "dynesty_static__nlive_1",
             )
             in hyper_phase.paths.output_path

@@ -17,6 +17,7 @@ directory = path.dirname(path.realpath(__file__))
 
 
 class TestMakeAnalysis:
+
     def test__masked_imaging__settings_inputs_are_used_in_masked_imaging(
         self, imaging_7x7, mask_7x7
     ):
@@ -27,7 +28,6 @@ class TestMakeAnalysis:
                     grid_inversion_class=al.Grid2D,
                     sub_size=3,
                     signal_to_noise_limit=1.0,
-                    bin_up_factor=2,
                     psf_shape_2d=(3, 3),
                 ),
                 settings_pixelization=al.SettingsPixelization(
@@ -42,7 +42,6 @@ class TestMakeAnalysis:
             phase_imaging_7x7.settings.settings_masked_imaging.signal_to_noise_limit
             == 1.0
         )
-        assert phase_imaging_7x7.settings.settings_masked_imaging.bin_up_factor == 2
         assert phase_imaging_7x7.settings.settings_masked_imaging.psf_shape_2d == (3, 3)
         assert phase_imaging_7x7.settings.settings_pixelization.use_border == False
         assert phase_imaging_7x7.settings.settings_pixelization.is_stochastic == True
@@ -101,37 +100,8 @@ class TestMakeAnalysis:
             == imaging_snr_limit.noise_map.native * np.invert(mask_7x7_1_pix)
         ).all()
 
-    def test__masked_imaging_is_binned_up(self, imaging_7x7, mask_7x7_1_pix):
-        binned_up_imaging = imaging_7x7.binned_up_from(bin_up_factor=2)
-
-        binned_up_mask = mask_7x7_1_pix.binned_mask_from_bin_up_factor(bin_up_factor=2)
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            settings=al.SettingsPhaseImaging(
-                settings_masked_imaging=al.SettingsMaskedImaging(bin_up_factor=2)
-            ),
-            search=mock.MockSearch(),
-        )
-
-        analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7_1_pix, results=mock.MockResults()
-        )
-        assert (
-            analysis.masked_dataset.image.native
-            == binned_up_imaging.image.native * np.invert(binned_up_mask)
-        ).all()
-
-        assert (
-            analysis.masked_dataset.psf == (1.0 / 9.0) * binned_up_imaging.psf
-        ).all()
-        assert (
-            analysis.masked_dataset.noise_map.native
-            == binned_up_imaging.noise_map.native * np.invert(binned_up_mask)
-        ).all()
-
-        assert (analysis.masked_dataset.mask == binned_up_mask).all()
-
     def test__grid_classes_input__used_in_masked_imaging(self, imaging_7x7, mask_7x7):
+
         phase_imaging_7x7 = al.PhaseImaging(
             search=mock.MockSearch(),
             settings=al.SettingsPhaseImaging(
