@@ -4,8 +4,10 @@ from autogalaxy.galaxy import galaxy as g
 from autogalaxy.pipeline.phase.abstract import result
 from autolens.lens import ray_tracing, positions_solver as pos
 
+import numpy as np
 
 class Result(result.Result):
+
     @property
     def max_log_likelihood_plane(self):
         raise NotImplementedError()
@@ -30,7 +32,7 @@ class Result(result.Result):
             cls=lp.LightProfile, name="centre"
         )
         if centre is not None:
-            return grids.Grid2DIrregular(grid=[centre[0]])
+            return grids.Grid2DIrregular(grid=[np.asarray(centre[0])])
 
     @property
     def source_plane_inversion_centre(self) -> grids.Grid2DIrregular:

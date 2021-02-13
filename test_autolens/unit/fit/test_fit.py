@@ -6,7 +6,9 @@ from autogalaxy.mock.mock import MockLightProfile
 
 
 class TestFitImaging:
+
     class TestFitProperties:
+
         def test__total_inversions(self, masked_imaging_7x7):
 
             g0 = al.Galaxy(redshift=0.5)
@@ -1221,10 +1223,7 @@ class TestFitImaging:
             self, masked_imaging_7x7
         ):
 
-            # Ensures the inversion grid is used, as this would cause the test to fail.
-            masked_imaging_7x7.grid[0, 0] = -100.0
-
-            pix = al.pix.VoronoiBrightnessImage(pixels=9)
+            pix = al.pix.VoronoiBrightnessImage(pixels=5)
             reg = al.reg.Constant(coefficient=1.0)
 
             g0 = al.Galaxy(
@@ -2336,9 +2335,6 @@ class TestFitInterferometer:
         def test___stochastic_mode_gives_different_log_likelihoods(
             self, masked_interferometer_7
         ):
-
-            # Ensures the inversion grid is used, as this would cause the test to fail.
-            masked_interferometer_7.grid[0, 0] = -100.0
 
             pix = al.pix.VoronoiBrightnessImage(pixels=9)
             reg = al.reg.Constant(coefficient=1.0)
