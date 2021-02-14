@@ -12,14 +12,14 @@ with open(join(this_dir, "requirements.txt")) as f:
     requirements = f.read().split("\n")
 
 setup(
-    name="autofit",
+    name="autolens",
     version=environ.get("VERSION", "1.0.dev0"),
-    description="Classy Probabilistic Programming",
+    description="Open-Source Strong Lensing",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/rhayes777/AutoFit",
+    url="https://github.com/Jammy2211/PyAutoLens",
     author="James Nightingale and Richard Hayes",
-    author_email="richard@rghsoftware.co.uk",
+    author_email="james.w.nightingale@durham.ac.uk",
     include_package_data=True,
     license="MIT License",
     classifiers=[
