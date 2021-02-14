@@ -4,6 +4,7 @@ from autogalaxy.profiles import point_sources as ps
 
 
 class AbstractFitPositionsSourcePlane:
+
     def __init__(self, positions, noise_map, tracer):
         """
         Given a positions dataset, which is a list of positions with names that associated them to model source

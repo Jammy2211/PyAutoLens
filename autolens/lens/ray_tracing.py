@@ -463,8 +463,8 @@ class AbstractTracerLensing(AbstractTracer, ABC):
     def contribution_map(self):
 
         contribution_maps = self.contribution_maps_of_planes
-        if None in contribution_maps:
-            contribution_maps = [i for i in contribution_maps if i is not None]
+
+        contribution_maps = [i for i in contribution_maps if i is not None]
 
         if contribution_maps:
             return sum(contribution_maps)
