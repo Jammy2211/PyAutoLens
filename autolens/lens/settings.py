@@ -1,5 +1,4 @@
 from autoconf import conf
-from autoarray.structures import grids
 from autolens import exc
 from autolens.fit import fit_point_source
 

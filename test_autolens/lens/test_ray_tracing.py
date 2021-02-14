@@ -1923,7 +1923,6 @@ class TestAbstractTracerLensing:
             assert (grid_at_redshift == sub_grid_7x7.mask.unmasked_grid_sub_1).all()
 
     class TestContributionMap:
-
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
 
             hyper_model_image = al.Array2D.manual_native(
@@ -2024,7 +2023,6 @@ class TestAbstractTracerLensing:
 
 
 class TestAbstractTracerData:
-
     class TestBlurredProfileImages:
         def test__blurred_image_from_grid_and_psf(
             self, sub_grid_7x7, blurring_grid_7x7, psf_3x3
@@ -2832,7 +2830,6 @@ class TestAbstractTracerData:
             # )
 
     class TestHyperNoiseMap:
-
         def test__hyper_noise_maps_of_planes(self, sub_grid_7x7):
 
             noise_map_1d = al.Array2D.manual_native(

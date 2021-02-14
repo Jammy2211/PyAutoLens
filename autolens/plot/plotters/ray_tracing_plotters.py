@@ -1,5 +1,5 @@
-from autoarray.structures import arrays, grids
-from autoarray.plot.plotters import abstract_plotters
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.plot.mat_wrap import mat_plot as mp
 from autogalaxy.plot.plotters import lensing_obj_plotter
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
@@ -12,7 +12,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
     def __init__(
         self,
         tracer: ray_tracing.Tracer,
-        grid: grids.Grid2D,
+        grid: grid_2d.Grid2D,
         mat_plot_1d: lensing_mat_plot.MatPlot1D = lensing_mat_plot.MatPlot1D(),
         visuals_1d: lensing_visuals.Visuals1D = lensing_visuals.Visuals1D(),
         include_1d: lensing_include.Include1D = lensing_include.Include1D(),
@@ -112,7 +112,8 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
-                "origin", value=grids.Grid2DIrregular(grid=[self.grid.origin])
+                "origin",
+                value=grid_2d_irregular.Grid2DIrregular(grid=[self.grid.origin]),
             ),
             border=border,
             light_profile_centres=self.extract_2d(

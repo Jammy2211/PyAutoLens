@@ -1,8 +1,6 @@
-import copy
-
 from autoarray.dataset import interferometer
 from autoarray.operators import transformer
-from autoarray.structures import grids
+from autoarray.structures.grids.two_d import grid_2d
 from autogalaxy.dataset import interferometer as inter
 from autolens.lens import ray_tracing
 
@@ -139,7 +137,7 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
 
     def from_deflections_and_galaxies(self, deflections, galaxies, name=None):
 
-        grid = grids.Grid2D.uniform(
+        grid = grid_2d.Grid2D.uniform(
             shape_native=deflections.shape_native,
             pixel_scales=deflections.pixel_scales,
             sub_size=1,

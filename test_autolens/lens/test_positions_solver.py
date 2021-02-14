@@ -1,4 +1,3 @@
-from autoarray.structures import grids
 import autolens as al
 from autolens.lens import positions_solver as pos
 
@@ -82,7 +81,7 @@ class TestAbstractPositionsSolver:
 
         sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
-        grid = grids.Grid2DIrregularUniform(
+        grid = al.Grid2DIrregularUniform(
             grid=[(1.0, 0.0), (0.1, 0.0)], pixel_scales=0.01
         )
 

@@ -37,7 +37,7 @@ from autoarray.plot.plotters.structure_plotters import Array2DPlotter
 from autoarray.plot.plotters.structure_plotters import Frame2DPlotter
 from autoarray.plot.plotters.structure_plotters import Grid2DPlotter
 from autoarray.plot.plotters.structure_plotters import MapperPlotter
-from autoarray.plot.plotters.structure_plotters import Line1DPlotter
+from autoarray.plot.plotters.structure_plotters import Array1DPlotter
 from autoarray.plot.plotters.inversion_plotters import InversionPlotter
 from autoarray.plot.plotters.imaging_plotters import ImagingPlotter
 from autoarray.plot.plotters.interferometer_plotters import InterferometerPlotter

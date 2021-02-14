@@ -11,19 +11,22 @@ from autoarray.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.structures.arrays import Array2D, ValuesIrregular
-from autoarray.structures.grids import (
-    Grid2D,
-    Grid2DIterate,
-    Grid2DInterpolate,
-    Grid2DIrregular,
-    Grid2DIrregular,
-    Grid2DRectangular,
-    Grid2DVoronoi,
+from autoarray.structures.arrays.one_d.array_1d import Array1D
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.arrays.values import ValuesIrregular
+from autoarray.structures.grids.one_d.grid_1d import Grid1D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d_interpolate import Grid2DInterpolate
+from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregularUniform
+from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
+from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
+from autoarray.structures.vector_fields.vector_field_irregular import (
+    VectorField2DIrregular,
 )
-from autoarray import VectorField2DIrregular
-from autoarray.structures.kernel import Kernel2D
-from autoarray.structures.visibilities import Visibilities, VisibilitiesNoiseMap
+from autoarray.structures.kernel_2d import Kernel2D
+from autoarray.structures.visibilities import Visibilities
 from autogalaxy import util
 from autogalaxy.dataset.imaging import SettingsMaskedImaging
 from autogalaxy.dataset.interferometer import SettingsMaskedInterferometer

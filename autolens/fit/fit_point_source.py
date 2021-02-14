@@ -1,10 +1,10 @@
-from autoarray.structures import arrays, grids
+from autoarray.structures.arrays import values
+from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.fit.fit import FitData
 from autogalaxy.profiles import point_sources as ps
 
 
 class AbstractFitPositionsSourcePlane:
-
     def __init__(self, positions, noise_map, tracer):
         """
         Given a positions dataset, which is a list of positions with names that associated them to model source
@@ -15,7 +15,7 @@ class AbstractFitPositionsSourcePlane:
 
         Parameters
         -----------
-        positions : grids.Grid2DIrregular
+        positions : grid_2d_irregular.Grid2DIrregular
             The (y,x) arc-second coordinates of named positions which the log_likelihood is computed using. Positions
             are paired to galaxies in the `Tracer` using their names.
         tracer : ray_tracing.Tracer
@@ -30,7 +30,7 @@ class AbstractFitPositionsSourcePlane:
         )[-1]
 
     @property
-    def furthest_separations_of_source_plane_positions(self) -> arrays.ValuesIrregular:
+    def furthest_separations_of_source_plane_positions(self) -> values.ValuesIrregular:
         """
         Returns the furthest distance of every source-plane (y,x) coordinate to the other source-plane (y,x)
         coordinates.
@@ -45,7 +45,7 @@ class AbstractFitPositionsSourcePlane:
 
         Returns
         -------
-        arrays.ValuesIrregular
+        values.ValuesIrregular
             The further distances of every set of grouped source-plane coordinates the other source-plane coordinates
             that it is grouped with.
         """
@@ -66,7 +66,7 @@ class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
 
         Parameters
         -----------
-        positions : grids.Grid2DIrregular
+        positions : grid_2d_irregular.Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value : float
             The noise-value assumed when computing the log likelihood.
@@ -89,7 +89,7 @@ class FitPositionsImage(FitData):
 
         Parameters
         -----------
-        positions : grids.Grid2DIrregular
+        positions : grid_2d_irregular.Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value : float
             The noise-value assumed when computing the log likelihood.
@@ -126,7 +126,7 @@ class FitPositionsImage(FitData):
         return self.model_data
 
     @property
-    def residual_map(self) -> arrays.ValuesIrregular:
+    def residual_map(self) -> values.ValuesIrregular:
 
         residual_positions = self.positions - self.model_positions
 
@@ -143,7 +143,7 @@ class FitFluxes(FitData):
 
         flux = tracer.extract_attribute(cls=ps.PointSourceFlux, name="flux")[0]
 
-        model_fluxes = arrays.ValuesIrregular(
+        model_fluxes = values.ValuesIrregular(
             values=[magnification * flux for magnification in self.magnifications]
         )
 

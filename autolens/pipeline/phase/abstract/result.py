@@ -1,4 +1,4 @@
-from autoarray.structures import grids
+from autoarray.structures.grids.two_d import grid_2d_irregular
 from autogalaxy.profiles import light_profiles as lp
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.pipeline.phase.abstract import result
@@ -20,7 +20,7 @@ class Result(result.Result):
         return self.analysis.tracer_for_instance(instance=instance)
 
     @property
-    def source_plane_light_profile_centre(self) -> grids.Grid2DIrregular:
+    def source_plane_light_profile_centre(self) -> grid_2d_irregular.Grid2DIrregular:
         """
         Return a light profile centres of a galaxy in the most-likely tracer's source-plane. If there are multiple
         light profiles, the first light profile's centre is returned.
@@ -32,10 +32,10 @@ class Result(result.Result):
             cls=lp.LightProfile, name="centre"
         )
         if centre is not None:
-            return grids.Grid2DIrregular(grid=[np.asarray(centre[0])])
+            return grid_2d_irregular.Grid2DIrregular(grid=[np.asarray(centre[0])])
 
     @property
-    def source_plane_inversion_centre(self) -> grids.Grid2DIrregular:
+    def source_plane_inversion_centre(self) -> grid_2d_irregular.Grid2DIrregular:
         """
         Returns the centre of the brightest source pixel(s) of an `Inversion`.
 
@@ -48,7 +48,7 @@ class Result(result.Result):
             )
 
     @property
-    def source_plane_centre(self) -> grids.Grid2DIrregular:
+    def source_plane_centre(self) -> grid_2d_irregular.Grid2DIrregular:
         """
         Return the centre of a source-plane galaxy via the following criteria:
 
@@ -66,7 +66,7 @@ class Result(result.Result):
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(
         self,
-    ) -> grids.Grid2DIrregular:
+    ) -> grid_2d_irregular.Grid2DIrregular:
         """Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
         the multiple image position of the source(s) in the image-plane..
 
@@ -85,7 +85,7 @@ class Result(result.Result):
                 lensing_obj=self.max_log_likelihood_tracer,
                 source_plane_coordinate=self.source_plane_centre.in_list[0],
             )
-            return grids.Grid2DIrregular(grid=multiple_images)
+            return grid_2d_irregular.Grid2DIrregular(grid=multiple_images)
         except (AttributeError, IndexError):
             return None
 

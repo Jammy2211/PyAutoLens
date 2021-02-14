@@ -4,9 +4,9 @@ Citations & References
 ======================
 
 The bibtex entries for **PyAutoLens** and its affiliated software packages can be found
-`here <https://github.com/Jammy2211/PyAutoLens/blob/master/citations.bib>`_, with example text for citing **PyAutoLens**
-in `.tex format here <https://github.com/Jammy2211/PyAutoLens/blob/master/citations.tex>`_ format here and
-`.md format here <https://github.com/Jammy2211/PyAutoLens/blob/master/citations.md>`_. As shown in the examples, we
+`here <https://github.com/Jammy2211/PyAutoLens/blob/master/files/citations.bib>`_, with example text for citing **PyAutoLens**
+in `.tex format here <https://github.com/Jammy2211/PyAutoLens/blob/master/files/citations.tex>`_ format here and
+`.md format here <https://github.com/Jammy2211/PyAutoLens/blob/master/files/citations.md>`_. As shown in the examples, we
 would greatly appreciate it if you mention **PyAutoLens** by name and include a link to our GitHub page!
 
 You should also specify the non-linear search(es) you use in your analysis (e.g. Dynesty, Emcee, PySwarms, etc) in

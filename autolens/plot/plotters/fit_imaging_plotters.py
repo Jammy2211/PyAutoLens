@@ -1,5 +1,4 @@
 from autoarray.plot.mat_wrap import mat_plot as mp
-from autoarray.plot.plotters import abstract_plotters
 from autoarray.plot.plotters import inversion_plotters
 from autoarray.plot.plotters import fit_imaging_plotters
 from autolens.plot.plotters import ray_tracing_plotters

@@ -5,7 +5,9 @@ from os import path
 from astropy import cosmology as cosmo
 from autoarray.inversion import pixelizations as pix
 from autoarray.inversion import inversions as inv
-from autoarray.structures import arrays, grids
+from autoarray.structures.arrays import values
+from autoarray.structures.grids import grid_decorators
+from autoarray.structures.grids.two_d import grid_2d_irregular
 from autogalaxy import lensing
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.plane import plane as pl
@@ -162,9 +164,9 @@ class AbstractTracer(lensing.LensingObject, ABC):
         if attributes == []:
             return None
         elif isinstance(attributes[0], float):
-            return arrays.ValuesIrregular(values=attributes)
+            return values.ValuesIrregular(values=attributes)
         elif isinstance(attributes[0], tuple):
-            return grids.Grid2DIrregular(grid=attributes)
+            return grid_2d_irregular.Grid2DIrregular(grid=attributes)
 
     def extract_attributes_of_planes(self, cls, name, filter_nones=False):
         """
@@ -323,7 +325,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
 
 class AbstractTracerLensing(AbstractTracer, ABC):
-    @grids.grid_like_to_structure_list
+    @grid_decorators.grid_like_to_structure_list
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
         traced_grids = []
@@ -360,18 +362,18 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         return traced_grids
 
-    @grids.grid_like_to_structure
+    @grid_decorators.grid_like_to_structure
     def deflections_between_planes_from_grid(self, grid, plane_i=0, plane_j=-1):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    @grids.grid_like_to_structure
+    @grid_decorators.grid_like_to_structure
     def image_from_grid(self, grid):
         return sum(self.images_of_planes_from_grid(grid=grid))
 
-    @grids.grid_like_to_structure_list
+    @grid_decorators.grid_like_to_structure_list
     def images_of_planes_from_grid(self, grid):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
@@ -401,19 +403,19 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         return self.image_from_grid(grid=padded_grid)
 
-    @grids.grid_like_to_structure
+    @grid_decorators.grid_like_to_structure
     def convergence_from_grid(self, grid):
         return sum([plane.convergence_from_grid(grid=grid) for plane in self.planes])
 
-    @grids.grid_like_to_structure
+    @grid_decorators.grid_like_to_structure
     def potential_from_grid(self, grid):
         return sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
 
-    @grids.grid_like_to_structure
+    @grid_decorators.grid_like_to_structure
     def deflections_from_grid(self, grid):
         return self.deflections_between_planes_from_grid(grid=grid)
 
-    @grids.grid_like_to_structure
+    @grid_decorators.grid_like_to_structure
     def deflections_of_planes_summed_from_grid(self, grid):
         return sum([plane.deflections_from_grid(grid=grid) for plane in self.planes])
 
@@ -509,8 +511,8 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         blurring_image = self.image_from_grid(grid=blurring_grid)
 
-        return psf.convolved_array_from_array_2d_and_mask(
-            array_2d=image.native_binned + blurring_image.native_binned, mask=grid.mask
+        return psf.convolved_array_from_array_and_mask(
+            array=image.native_binned + blurring_image.native_binned, mask=grid.mask
         )
 
     def blurred_images_of_planes_from_grid_and_psf(self, grid, psf, blurring_grid):
