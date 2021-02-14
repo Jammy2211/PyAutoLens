@@ -1,0 +1,63 @@
+Fancy:
+
+    - sanity checks (PSF size, pixel scale > 0).
+    - Print HPC MODE ON if on.
+
+Positions:
+
+    - Split PositioonSolver and PositionSolverData, where latter uses a known position to define the starting grid
+      and remove all peaks by only keeping the closest. Do we need to be careful that the cloest solution isnt nearest the
+      source? Hmm.
+
+    - Positions dict used for source plane chisquared image chi ssqaured.
+
+
+Model Fitting:
+
+    - Find example where rwalk becomes inefficient (N > 30?) and try to show how rslice wins in this regime. Need to do
+      no prior initialization and prior initalization cases.
+
+Features:
+
+    - Stochastic mode, clean up with feature on github.
+    - Sanity checks on priors, e.g. intensity and effective radius, size of PSF up to 21x21.
+    - Self calibration.
+    - GradientSolver + Caustic grid refinement.
+    - Position solver + modeling.
+    - Summarize model.
+    - Simulated lensed image from discrete image grid.
+    - classmethods using realistic lens units.
+
+Readthedocs:
+
+    - Data description in General section.
+    - Advanced: - Pipelines, Aggregator, hyper mode, SLaM.
+    - Guide to model customization API.
+    - Mask2D / PSF issue when loading data (auto pad image).
+
+Workspace:
+
+    - AutoGalaxy Workspace.
+    - Background sky in image examples, better descriptioon of noise-map.
+    - Better desciption of what a good or bad noise-map and signal to noise-map looks like.
+    - Gaussian pipeline API.
+
+Optimization:
+
+    - Hack kmeans for speed via removing nearest neighbor.
+
+Refactor:
+
+    - Homogenize all units of autolens internally, removing types and documenting units with al.convert.
+
+Bugs:
+
+    - Check if grid from relocated grid ruins Grid2D API an types for multiplane.
+
+Future:
+
+    - Include output of data for a simulation (galaxies, imaging settings, etc).
+    - Population module for simulating large suites of 'realistic' lenses.
+    - Positional / Quasar modeling (time-delays, variable cosmology, PSF refinement).
+    - Multi-Imaging analysis.
+
