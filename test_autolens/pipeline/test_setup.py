@@ -8,6 +8,7 @@ import pytest
 
 class TestSetupHyper:
     def test__hyper_galaxies_names_and_tag_for_lens_and_source(self):
+
         setup = al.SetupHyper(hyper_galaxies_lens=False, hyper_galaxies_source=False)
         assert setup.hyper_galaxies is False
         assert setup.hyper_galaxies_tag == ""
@@ -158,10 +159,10 @@ class TestSetupSubhalo:
 
     def test__grid_size_tag(self):
 
-        setup = al.SetupSubhalo(grid_size=3)
+        setup = al.SetupSubhalo(number_of_steps=3)
         assert setup.grid_size_tag == "__grid_3"
 
-        setup = al.SetupSubhalo(grid_size=4)
+        setup = al.SetupSubhalo(number_of_steps=4)
         assert setup.grid_size_tag == "__grid_4"
 
     def test__subhalo_centre_tag(self):
@@ -205,7 +206,7 @@ class TestSetupSubhalo:
         setup = al.SetupSubhalo(
             mass_is_model=False,
             source_is_model=True,
-            grid_size=4,
+            number_of_steps=4,
             subhalo_instance=al.mp.SphericalNFWMCRLudlow(
                 centre=(2.0, 2.0), mass_at_200=1e10
             ),

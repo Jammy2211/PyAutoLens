@@ -597,9 +597,9 @@ class SetupSubhalo(setup.AbstractSetup):
         subhalo_search: af.NonLinearSearch = None,
         source_is_model: bool = True,
         mass_is_model: bool = True,
-        grid_size: int = 5,
         grid_dimension_arcsec: float = 3.0,
-        parallel: bool = False,
+        number_of_steps: int = 5,
+        number_of_cores: int = 1,
         subhalo_instance=None,
     ):
         """
@@ -621,8 +621,8 @@ class SetupSubhalo(setup.AbstractSetup):
         mass_is_model : bool
             If `True`, the mass is included as a model in the fit. If `False` its parameters are fixed to those
             inferred in a previous pipeline.
-        grid_size : int
-            The 2D dimensions of the grid (e.g. grid_size x grid_size) that the subhalo search is performed for.
+        number_of_steps : int
+            The 2D dimensions of the grid (e.g. number_of_steps x number_of_steps) that the subhalo search is performed for.
         grid_dimension_arcsec : float
             the arc-second dimensions of the grid in the y and x directions. An input value of 3.0" means the grid in
             all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
@@ -641,9 +641,9 @@ class SetupSubhalo(setup.AbstractSetup):
         self.subhalo_search = subhalo_search
         self.source_is_model = source_is_model
         self.mass_is_model = mass_is_model
-        self.grid_size = grid_size
+        self.number_of_steps = number_of_steps
         self.grid_dimensions_arcsec = grid_dimension_arcsec
-        self.parallel = parallel
+        self.number_of_cores = number_of_cores
         self.subhalo_instance = subhalo_instance
 
     @property
@@ -725,19 +725,19 @@ class SetupSubhalo(setup.AbstractSetup):
     @property
     def grid_size_tag(self) -> str:
         """
-        Tags the 2D dimensions of the grid (e.g. grid_size x grid_size) that the subhalo search is performed for.
+        Tags the 2D dimensions of the grid (e.g. number_of_steps x number_of_steps) that the subhalo search is performed for.
 
         For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
 
-        - grid_size=3 -> subhalo[grid_size_3]
-        - grid_size=4 -> subhalo[grid_size_4]
+        - number_of_steps=3 -> subhalo[grid_size_3]
+        - number_of_steps=4 -> subhalo[grid_size_4]
 
         Returns
         -------
         str
             The tag of the grid size.
         """
-        return f"__{conf.instance['notation']['setup_tags']['subhalo']['grid_size']}_{str(self.grid_size)}"
+        return f"__{conf.instance['notation']['setup_tags']['subhalo']['number_of_steps']}_{str(self.number_of_steps)}"
 
     @property
     def subhalo_centre_tag(self) -> str:
