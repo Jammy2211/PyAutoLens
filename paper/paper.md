@@ -125,7 +125,7 @@ analysis of large samples of strong lenses.
 
 # Software API and Features
 
-A gravitational lens system can be quickly assembled from Python object which provide abstract data representations 
+A gravitational lens system can be quickly assembled from Python objects which provide abstract data representations 
 of the different components of a strong lens. A `Galaxy` object contains one or more `LightProfile`'s and `MassProfile`'s, 
 which represent its two dimensional distribution of starlight and mass. `Galaxy`’s lie at a particular distance 
 (redshift) from the observer, and are grouped into `Plane`'s. Raytracing through multiple `Plane`s is achieved by 
