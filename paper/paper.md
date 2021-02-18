@@ -30,19 +30,19 @@ authors:
     affiliation: 3
   - name: Jonathan Frawley
     orcid: 0000-0002-9437-7399
-    affiliation: 1
+    affiliation: 4
   - name: Shaun Cole
     orcid: 0000-0002-5954-7903
     affiliation: 1
   - name: Andrea Enia
     orcid: 0000-0002-0200-2857
-    affiliation: 4
+    affiliation: 5
   - name: Carlos S. Frenk
     orcid: 0000-0002-2338-716X
     affiliation: 1
   - name: David R. Harvey
     orcid: 0000-0002-6066-6707
-    affiliation: 5 
+    affiliation: 6
   - name: Ran Li
     orcid: 0000-0003-3899-0612
     affiliation: 3
@@ -51,7 +51,7 @@ authors:
     affiliation: 1
   - name: Mattia Negrello
     orcid: 0000-0002-7925-7663
-    affiliation: 6
+    affiliation: 7
   - name: Andrew Robertson
     orcid: 0000-0002-0086-0524
     affiliation: 1
@@ -62,12 +62,14 @@ affiliations:
     index: 2
   - name: National Astronomical Observatories, Chinese Academy of Sciences, 20A Datun Road, Chaoyang District, Beijing 100012, China
     index: 3
-  - name: Dipartimento di Fisica e Astronomia, Università degli Studi di Bologna, Via Berti Pichat 6/2, I-40127 Bologna, Italy
+  - name: Advanced Research Computing, Durham University, Durham DH1 3LE
     index: 4
-  - name: Lorentz Institute, Leiden University, Niels Bohrweg 2, Leiden, NL-2333 CA, The Netherlands
+  - name: Dipartimento di Fisica e Astronomia, Università degli Studi di Bologna, Via Berti Pichat 6/2, I-40127 Bologna, Italy
     index: 5
-  - name: School of Physics and Astronomy, Cardiff University, The Parade, Cardiff CF24 3AA, UK
+  - name: Lorentz Institute, Leiden University, Niels Bohrweg 2, Leiden, NL-2333 CA, The Netherlands
     index: 6
+  - name: School of Physics and Astronomy, Cardiff University, The Parade, Cardiff CF24 3AA, UK
+    index: 7
 
 date: 26 October 2020
 codeRepository: https://github.com/Jammy2211/PyAutoLens
@@ -84,7 +86,7 @@ gravitational lensing, with core features including fully automated strong lens 
 clusters, support for direct imaging and interferometer datasets and comprehensive tools for simulating samples of 
 strong lenses. The API allows users to perform ray-tracing by using analytic light and mass profiles to build strong 
 lens systems. Accompanying `PyAutoLens` is the [autolens workspace](https://github.com/Jammy2211/autolens_workspace), which 
-includes example scripts, lens datasets and the [HowToLens](https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html) 
+includes example scripts, lens datasets and the `HowToLens`
 lectures in Jupyter notebook format which introduce non-experts to strong lensing using `PyAutoLens`. Readers can 
 try `PyAutoLens` right now by going to [the introduction Jupyter notebook on Binder](https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/master) 
 or checkout the [readthedocs](https://pyautolens.readthedocs.io/en/latest/) for a complete overview of `PyAutoLens`'s features.
@@ -137,12 +139,11 @@ optimized using the packages `NumPy` [@numpy], `numba` [@numba] and `pyquad` [@p
 To perform lens modeling, `PyAutoLens` adopts the probabilistic programming 
 language `PyAutoFit` (https://github.com/rhayes777/PyAutoFit). `PyAutoFit` allows users to compose a 
 lens model from `LightProfile`, `MassProfile` and `Galaxy` objects, customize the model parameterization and fit it to 
-data via a `NonLinearSearch` (e.g. `dynesty` [@dynesty], `emcee` [@emcee], `PySwarms` [@pyswarms]). By composing a 
+data via a `NonLinearSearch` (e.g., `dynesty` [@dynesty], `emcee` [@emcee], `PySwarms` [@pyswarms]). By composing a 
 lens model with a `Pixelization` and `Regularization` object, the background source's light is reconstructed using a 
-rectangular grid or Voronoi mesh that accounts for irregular galaxy morphologies which a `LightProfile` cannot 
-accurately capture. Lensed quasar and supernovae datasets can be fitted using a `PointSource`, which uses their observed 
-positions, flux-ratios and time-delays to fit the lens model. Strong lensing clusters consisting of any number of lens 
-galaxies can also be analysed with `PyAutoLens` using these objects.
+rectangular grid or Voronoi mesh that accounts for irregular galaxy morphologies. Lensed quasar and supernovae datasets 
+can be fitted using a `PointSource`, which uses their observed positions, flux-ratios and time-delays to fit the lens 
+model. Strong lensing clusters consisting of any number of lens galaxies can also be analysed with `PyAutoLens` using these objects.
 
 Automated lens modeling uses `PyAutoFit`'s non-linear search chaining feature, which breaks the model-fit into 
 a chained sequence of non-linear searches. These fits pass information gained about simpler lens models fitted by earlier 
@@ -158,7 +159,7 @@ interferometer datasets, tools for preprocessing data to formats suited to lens 
 effects like the telescope optics and background sky subtraction in the model-fit. Interferometer analysis is 
 performed directly on the observed visibilities in their native Fourier space, circumventing issues associated with the 
 incomplete sampling of the uv-plane that give rise to artefacts that can bias the inferred mass model and source 
-reconstruction in real-space. To make feasible the analysis of `millions` of visibilities, `PyAutoLens` 
+reconstruction in real-space. To make feasible the analysis of millions of visibilities, `PyAutoLens` 
 uses `PyNUFFT` [@pynufft] to fit the visibilities via a non-uniform fast Fourier transform and `PyLops` [@PyLops] to 
 express the memory-intensive linear algebra calculations as efficient linear operators [@Powell2020]. Creating 
 realistic simulations of imaging and interferometer strong lensing datasets is possible, as performed 
@@ -167,8 +168,8 @@ by [@Alexander2019] [@Hermans2019] who used `PyAutoLens` to train neural network
 # Performance
 
 The analysis of direct imaging datasets and interferometer datasets (up to of order 1 million visibilities) are both 
-feasible on hardware with at least 4GB of RAM. The time it takes to perform lens modeling with `PyAutoLens` are 
-highly variable and depend on the size of the dataset being analysed and complexity of the model being fitted. They can 
+feasible on hardware with at least 4GB of RAM. The time it takes to perform lens modeling with `PyAutoLens` is
+highly variable and depends on the size of the dataset being analysed and complexity of the model being fitted. They can 
 vary from minutes to thousands of CPU hours. The run-times section on [readthedocs](https://pyautolens.readthedocs.io/en/latest/) 
 provides graphs showing the performance of the latest release of `PyAutoLens` and a calculator for estimating how long
 a lens model fit may take. For large jobs we recommend users install `PyAutoLens` on a HPC cluster and documentation is 
@@ -196,10 +197,11 @@ taken without a local `PyAutoLens` installation.
 - `Matplotlib` [@matplotlib]
 - `numba` [@numba]
 - `NumPy` [@numpy]
-- `PyAutoFit` (https://github.com/rhayes777/PyAutoFit)
+- `PyAutoFit` [@pyautofit]
 - `PyLops` [@PyLops]
 - `PyMultiNest` [@pymultinest] [@multinest]
 - `PyNUFFT` [@pynufft]
+- `pyprojroot` (https://github.com/chendaniely/pyprojroot)
 - `pyquad` [@pyquad]
 - `PySwarms` [@pyswarms]
 - `scikit-image` [@scikit-image]
