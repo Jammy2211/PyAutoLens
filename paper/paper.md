@@ -210,6 +210,7 @@ taken without a local `PyAutoLens` installation.
 
 # Related Software
 
+- `AutoLens` [@Nightingale2015] [@Nightingale2018]
 - `gravlens` http://www.physics.rutgers.edu/~keeton/gravlens/manual.pdf
 - `lenstronomy` https://github.com/sibirrer/lenstronomy [@Birrer2018a]
 - `visilens` https://github.com/jspilker/visilens [@spilker16a]
