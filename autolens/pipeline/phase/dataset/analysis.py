@@ -14,6 +14,9 @@ class Analysis:
 
     def tracer_for_instance(self, instance):
 
+        if hasattr(instance, "perturbation"):
+            instance.galaxies.subhalo = instance.perturbation
+
         return ray_tracing.Tracer.from_galaxies(
             galaxies=instance.galaxies, cosmology=self.cosmology
         )

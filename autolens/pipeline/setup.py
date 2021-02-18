@@ -1,6 +1,5 @@
 import autofit as af
 from autoconf import conf
-from autoarray.structures import grids
 from autogalaxy.pipeline import setup
 from autoarray.inversion import pixelizations as pix, regularization as reg
 from autogalaxy.profiles import (
@@ -11,7 +10,7 @@ from autogalaxy.profiles import (
 from autogalaxy.hyper import hyper_data as hd
 from autogalaxy.galaxy import galaxy as g
 
-from typing import Union, Optional
+from typing import Tuple, Union, Optional
 
 
 class SetupHyper(setup.SetupHyper):
@@ -598,7 +597,7 @@ class SetupSubhalo(setup.AbstractSetup):
         source_is_model: bool = True,
         mass_is_model: bool = True,
         grid_dimension_arcsec: float = 3.0,
-        number_of_steps: int = 5,
+        number_of_steps: Union[Tuple[int], int] = 5,
         number_of_cores: int = 1,
         subhalo_instance=None,
     ):

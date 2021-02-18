@@ -530,6 +530,8 @@ class SLaM:
             Contains the `PriorModel`'s of the lens's light, mass, the shear, etc.
         """
 
+        smbh = self.pipeline_mass.smbh_prior_model_from_result(result=result)
+
         if not self.pipeline_mass.light_is_model:
 
             return ag.GalaxyModel(
@@ -539,6 +541,7 @@ class SLaM:
                 envelope=result.instance.galaxies.lens.envelope,
                 mass=mass,
                 shear=shear,
+                smbh=smbh,
                 hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
                     result=result
                 ),
@@ -553,6 +556,7 @@ class SLaM:
                 envelope=result.model.galaxies.lens.envelope,
                 mass=mass,
                 shear=shear,
+                smbh=smbh,
                 hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
                     result=result
                 ),
