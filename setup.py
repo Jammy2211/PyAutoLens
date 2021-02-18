@@ -13,7 +13,7 @@ with open(join(this_dir, "requirements.txt")) as f:
 
 setup(
     name="autolens",
-    version=environ.get("VERSION", "1.12.2"),
+    version=environ.get("VERSION", "1.13.0"),
     description="Open-Source Strong Lensing",
     long_description=long_description,
     long_description_content_type="text/markdown",
