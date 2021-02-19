@@ -1,7 +1,6 @@
 name: Run unittests
 
-on:
-  push
+on: [push, pull_request]
 
 jobs:
   unittest:
