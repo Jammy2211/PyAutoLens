@@ -9,6 +9,11 @@ jobs:
       matrix:
         python-version: [3.6, 3.7, 3.8]  # 3.9 not supported on numba as of 2020-02-11
     steps:
+    - name: Checkout PyAutoConf
+      uses: actions/checkout@v2
+      with:
+        repository: rhayes777/PyAutoConf
+        path: PyAutoConf
     - name: Checkout PyAutoFit
       uses: actions/checkout@v2
       with:
@@ -43,6 +48,7 @@ jobs:
       if: steps.cache-pip.outputs.cache-hit != 'true'
       run: |
         pip install pytest
+        pip install -r PyAutoConf/requirements.txt
         pip install -r PyAutoFit/requirements.txt
         pip install -r PyAutoArray/requirements.txt
         pip install -r PyAutoGalaxy/requirements.txt
@@ -51,6 +57,7 @@ jobs:
       run: |
         export ROOT_DIR=`pwd`
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoArray
+        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoConf
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoGalaxy
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoLens
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoFit

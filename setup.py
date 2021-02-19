@@ -12,8 +12,9 @@ with open(join(this_dir, "requirements.txt")) as f:
     requirements = f.read().split("\n")
 
 requirements.extend([
-    'autofit==0.73.1',
     'autoarray==0.19.0',
+    'autoconf==0.7.7',
+    'autofit==0.73.1',
     'autogalaxy==0.18.5'
 ])
 
