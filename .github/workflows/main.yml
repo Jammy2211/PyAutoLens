@@ -45,7 +45,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Install dependencies
-      if: steps.cache-pip.outputs.cache-hit != 'true'
+    #  if: steps.cache-pip.outputs.cache-hit != 'true'
       run: |
         pip3 install --upgrade pip
         pip3 install setuptools
