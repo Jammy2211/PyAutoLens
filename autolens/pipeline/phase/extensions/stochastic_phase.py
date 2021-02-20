@@ -60,7 +60,6 @@ class StochasticPhase(extensions.HyperPhase):
                 stochastic_log_evidences = np.asarray(json.load(f))
         except FileNotFoundError:
             stochastic_log_evidences = results.last.stochastic_log_evidences
-            print(stochastic_log_evidences)
 
         self.search.paths.zip_remove()
 

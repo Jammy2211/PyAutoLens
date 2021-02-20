@@ -19,8 +19,7 @@ def make_label_config():
     print(directory, "config")
 
     config = conf.Config(
-        path.join(directory, "config"),
-        output_path=path.join(directory, "output")
+        path.join(directory, "config"), output_path=path.join(directory, "output")
     )
 
     return config["notation"]["label"]
