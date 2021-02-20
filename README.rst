@@ -10,10 +10,13 @@ PyAutoLens: Open-Source Strong Lensing
 .. |code-style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
+.. |JOSS| image:: https://joss.theoj.org/papers/10.21105/joss.02825/status.svg
+   :target: https://doi.org/10.21105/joss.02825
+
 .. |arXiv| image:: https://img.shields.io/badge/arXiv-1708.07377-blue
     :target: https://arxiv.org/abs/1708.07377
 
-|binder| |nbsp| |code-style| |nbsp| |arXiv|
+|binder| |code-style| |JOSS| |arXiv|
 
 `Installation Guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ |
 `readthedocs <https://pyautolens.readthedocs.io/en/latest/index.html>`_ |
