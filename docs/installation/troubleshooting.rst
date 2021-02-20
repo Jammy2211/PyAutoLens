@@ -35,17 +35,36 @@ simply not reinstalling these libraries when you install **PyAutoLens**:
 
 **2) llvmlite and numba are not already installed**
 
-In this case, a depencdency error will arise where one of these libraries could not be installed. If you are trying to
+In this case, a dependency error will arise where one of these libraries could not be installed. If you are trying to
 install via pip, we recommend you instead follow the `installation via conda <https://pyautolens.readthedocs.io/en/latest/installation/conda.html>`_ instructions
 which install these libraries as part of the ``conda`` environment.
 
-To install via pip, you can manually install the following versions of ``llvmite==0.32.1``, ``numba==0.47.0``
-and ``numpy==1.19.7``:
+A common error for installing llvmlite is that a config file is missing:
+
+.. code-block:: bash
+
+   Failed to install - No such file or directory: 'llvm-config': 'llvm-config'
+
+The first solution to try is to upgrade your pip via one of the following commands:
+
+.. code-block:: bash
+
+    pip install --upgrade pip
+    pip3 install --upgrade pip
+
+You may then retry the autolens installation:
+
+.. code-block:: bash
+
+    pip install autolens
+
+In the above solution fails, you can manually install the following versions
+of ``llvmite==0.32.1``, ``numba==0.47.0`` and ``numpy==1.19.7`` which are known to work with **PyAutoLens**:
 
 .. code-block:: bash
 
     pip install llvmlite==0.32.1
-    pip install numba==0.47.0
+    pip install numba==0.47.0 -ignore-installed llvmlite
     pip install numpy==1.19.7
 
     pip install autolens --ignore-installed llvmlite numba numpy

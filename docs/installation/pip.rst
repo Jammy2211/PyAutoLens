@@ -7,10 +7,11 @@ We strongly recommend that you install **PyAutoLens** in a
 `Python virtual environment <https://www.geeksforgeeks.org/python-virtual-environment/>`_, with the link attached
 describing what a virtual environment is and how to create one.
 
-**PyAutoLens** is via pip as follows:
+**PyAutoLens** is installed via pip as follows (note that we first upgrade pip to ensure certain libraries install):
 
 .. code-block:: bash
 
+    pip install --upgrade pip
     pip install autolens
 
 If this raises no errors **PyAutoLens** is installed! If there is an error check out
