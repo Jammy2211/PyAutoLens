@@ -2,7 +2,7 @@ import autofit as af
 import autogalaxy as ag
 from autoconf import conf
 from autoarray.inversion import pixelizations as pix, regularization as reg
-from autogalaxy.profiles import light_profiles as lp, mass_profiles as mp
+from autogalaxy.profiles import mass_profiles as mp
 from autogalaxy.pipeline import setup as ag_setup
 from autolens.pipeline import setup
 
@@ -507,7 +507,8 @@ class SLaM:
     def lens_for_mass_pipeline_from_result(
         self, result: af.Result, mass: af.PriorModel, shear: af.PriorModel
     ) -> ag.GalaxyModel:
-        """Setup the lens model for a `Mass` pipeline using the previous `Light` pipeline and phase results.
+        """
+        Setup the lens model for a `Mass` pipeline using the previous `Light` pipeline and phase results.
 
         The lens light model is not specified by the `Mass` pipeline, so the `Light` pipelines are used to
         determine this. This function returns a `GalaxyModel` for the lens, where:
@@ -557,45 +558,6 @@ class SLaM:
                 mass=mass,
                 shear=shear,
                 smbh=smbh,
-                hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
-                    result=result
-                ),
-            )
-
-    def lens_for_subhalo_pipeline_from_result(
-        self, result: af.Result
-    ) -> ag.GalaxyModel:
-        """
-        Pass the lens `PriorModel` as a `model` or `instance` from the `MassPipeline` to the `SubhaloPipeline`.
-
-        Parameters
-        ----------
-        result : af.Result
-            The result of the previous mass pipeline.
-
-        Returns
-        -------
-        ag.GalaxyModel
-            Contains the `PriorModel`'s of the lens's mass, the shear, etc.
-        """
-
-        if self.setup_subhalo.mass_is_model:
-
-            return ag.GalaxyModel(
-                redshift=self.redshift_lens,
-                mass=result.model.galaxies.lens.mass,
-                shear=result.model.galaxies.lens.shear,
-                hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
-                    result=result
-                ),
-            )
-
-        else:
-
-            return ag.GalaxyModel(
-                redshift=self.redshift_lens,
-                mass=result.instance.galaxies.lens.mass,
-                shear=result.instance.galaxies.lens.shear,
                 hyper_galaxy=self.setup_hyper.hyper_galaxy_lens_from_result(
                     result=result
                 ),

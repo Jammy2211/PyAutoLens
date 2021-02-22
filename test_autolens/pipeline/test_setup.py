@@ -141,14 +141,6 @@ class TestSetupSubhalo:
         assert setup.subhalo_prior_model.cls is al.mp.EllipticalNFW
         assert setup.subhalo_prior_model_tag == "nfw"
 
-    def test__mass_is_model_tag(self):
-
-        setup = al.SetupSubhalo(mass_is_model=False)
-        assert setup.mass_is_model_tag == "__mass_is_instance"
-
-        setup = al.SetupSubhalo(mass_is_model=True)
-        assert setup.mass_is_model_tag == "__mass_is_model"
-
     def test__source_is_model_tag(self):
 
         setup = al.SetupSubhalo(source_is_model=False)
@@ -197,14 +189,10 @@ class TestSetupSubhalo:
 
     def test__tag(self):
 
-        setup = al.SetupSubhalo(mass_is_model=True, source_is_model=False)
-        assert (
-            setup.tag
-            == "subhalo[nfw_sph_ludlow__mass_is_model__source_is_instance__grid_5]"
-        )
+        setup = al.SetupSubhalo(source_is_model=False)
+        assert setup.tag == "subhalo[nfw_sph_ludlow__source_is_instance__grid_5]"
 
         setup = al.SetupSubhalo(
-            mass_is_model=False,
             source_is_model=True,
             number_of_steps=4,
             subhalo_instance=al.mp.SphericalNFWMCRLudlow(
@@ -213,7 +201,7 @@ class TestSetupSubhalo:
         )
         assert (
             setup.tag
-            == "subhalo[nfw_sph_ludlow__mass_is_instance__source_is_model__grid_4__centre_(2.00,2.00)__mass_1.0e+10]"
+            == "subhalo[nfw_sph_ludlow__source_is_model__grid_4__centre_(2.00,2.00)__mass_1.0e+10]"
         )
 
 
@@ -278,5 +266,5 @@ class TestSetupPipeline:
         assert (
             setup.tag == "setup__"
             "smbh[point_mass__centre_fixed]__"
-            "subhalo[nfw_sph_ludlow__mass_is_model__source_is_model__grid_5__centre_(1.00,2.00)__mass_1.0e+08]"
+            "subhalo[nfw_sph_ludlow__source_is_model__grid_5__centre_(1.00,2.00)__mass_1.0e+08]"
         )

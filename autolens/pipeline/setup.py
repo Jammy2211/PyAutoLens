@@ -595,7 +595,6 @@ class SetupSubhalo(setup.AbstractSetup):
         subhalo_prior_model: af.PriorModel(mp.MassProfile) = mp.SphericalNFWMCRLudlow,
         subhalo_search: af.NonLinearSearch = None,
         source_is_model: bool = True,
-        mass_is_model: bool = True,
         grid_dimension_arcsec: float = 3.0,
         number_of_steps: Union[Tuple[int], int] = 5,
         number_of_cores: int = 1,
@@ -617,9 +616,6 @@ class SetupSubhalo(setup.AbstractSetup):
         source_is_model : bool
             If `True`, the source is included as a model in the fit (for both `LightProfile` or `Inversion` sources).
             If `False` its parameters are fixed to those inferred in a previous pipeline.
-        mass_is_model : bool
-            If `True`, the mass is included as a model in the fit. If `False` its parameters are fixed to those
-            inferred in a previous pipeline.
         number_of_steps : int
             The 2D dimensions of the grid (e.g. number_of_steps x number_of_steps) that the subhalo search is performed for.
         grid_dimension_arcsec : float
@@ -639,7 +635,6 @@ class SetupSubhalo(setup.AbstractSetup):
 
         self.subhalo_search = subhalo_search
         self.source_is_model = source_is_model
-        self.mass_is_model = mass_is_model
         self.number_of_steps = number_of_steps
         self.grid_dimensions_arcsec = grid_dimension_arcsec
         self.number_of_cores = number_of_cores
@@ -665,7 +660,6 @@ class SetupSubhalo(setup.AbstractSetup):
         return (
             f"{self.component_name}["
             f"{self.subhalo_prior_model_tag}"
-            f"{self.mass_is_model_tag}"
             f"{self.source_is_model_tag}"
             f"{self.grid_size_tag}"
             f"{self.subhalo_centre_tag}"
@@ -692,20 +686,6 @@ class SetupSubhalo(setup.AbstractSetup):
             return ""
 
         return f"{conf.instance['notation']['prior_model_tags']['mass'][self.subhalo_prior_model.name]}"
-
-    @property
-    def mass_is_model_tag(self) -> str:
-        """
-        Tags if the lens mass model during the subhalo pipeline is model or instance.
-
-        For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
-
-        mass_is_model = `True` -> setup[mass_is_model]
-        mass_is_model = `False` -> subhalo[mass_is_instance]
-        """
-        if self.mass_is_model:
-            return f"__{conf.instance['notation']['setup_tags']['subhalo']['mass_is_model']}"
-        return f"__{conf.instance['notation']['setup_tags']['subhalo']['mass_is_instance']}"
 
     @property
     def source_is_model_tag(self) -> str:

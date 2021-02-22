@@ -16,6 +16,7 @@ from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.arrays.values import ValuesIrregular
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
 from autoarray.structures.grids.two_d.grid_2d_interpolate import Grid2DInterpolate
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
