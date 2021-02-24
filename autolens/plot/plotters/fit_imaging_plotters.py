@@ -49,9 +49,9 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
 
-        visuals_2d = super(FitImagingPlotter, self).visuals_with_include_2d
+        visuals_2d = super().visuals_with_include_2d
 
-        visuals_2d.mask = None
+        #      visuals_2d.mask = None
 
         return visuals_2d + visuals_2d.__class__(
             light_profile_centres=self.extract_2d(
