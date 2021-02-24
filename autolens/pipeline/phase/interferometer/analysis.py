@@ -6,20 +6,28 @@ from autofit.exc import FitException
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.pipeline.phase.dataset import analysis as ag_analysis
 from autogalaxy.pipeline.phase.interferometer.analysis import Attributes as AgAttributes
-from autogalaxy.plot.mat_wrap import lensing_visuals, lensing_include
 from autolens.fit import fit
 from autolens.pipeline import visualizer as vis
 from autolens.pipeline.phase.dataset import analysis as analysis_dataset
+from autoarray import preloads as pload
 
 
 class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
-    def __init__(self, masked_interferometer, settings, cosmology, results=None):
+    def __init__(
+        self,
+        masked_interferometer,
+        settings,
+        cosmology,
+        results=None,
+        preloads=pload.Preloads(),
+    ):
 
         super(Analysis, self).__init__(
             masked_dataset=masked_interferometer,
             settings=settings,
             cosmology=cosmology,
             results=results,
+            preloads=preloads,
         )
 
         result = ag_analysis.last_result_with_use_as_hyper_dataset(results=results)
@@ -129,6 +137,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             use_hyper_scaling=use_hyper_scalings,
             settings_pixelization=self.settings.settings_pixelization,
             settings_inversion=self.settings.settings_inversion,
+            preloads=self.preloads,
         )
 
     def stochastic_log_evidences_for_instance(self, instance):
@@ -163,6 +172,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                     hyper_background_noise=hyper_background_noise,
                     settings_pixelization=settings_pixelization,
                     settings_inversion=self.settings.settings_inversion,
+                    preloads=self.preloads,
                 ).log_evidence
             except (
                 PixelizationException,

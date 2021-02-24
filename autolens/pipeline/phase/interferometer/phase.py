@@ -3,11 +3,10 @@ import autofit as af
 from astropy import cosmology as cosmo
 from autolens.dataset import interferometer
 from autolens.pipeline.phase import dataset
-from autoarray.inversion import pixelizations as pix
-from autoarray.inversion import regularization as reg
 from autolens.pipeline.phase.settings import SettingsPhaseInterferometer
 from autolens.pipeline.phase.interferometer.analysis import Analysis
 from autolens.pipeline.phase.interferometer.result import Result
+from autoarray import preloads as pload
 
 
 class PhaseInterferometer(dataset.PhaseDataset):
@@ -58,7 +57,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
 
         self.real_space_mask = real_space_mask
 
-    def make_analysis(self, dataset, mask, results=None):
+    def make_analysis(self, dataset, mask, results=None, preloads=pload.Preloads()):
         """
         Returns an lens object. Also calls the prior passing and masked_interferometer modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -93,6 +92,7 @@ class PhaseInterferometer(dataset.PhaseDataset):
             settings=self.settings,
             cosmology=self.cosmology,
             results=results,
+            preloads=preloads,
         )
 
     def output_phase_info(self):

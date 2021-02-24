@@ -13,11 +13,13 @@ from autogalaxy.galaxy import galaxy as g
 from autogalaxy.plane import plane as pl
 from autogalaxy.util import cosmology_util
 from autogalaxy.util import plane_util
+from autoarray import preloads as pload
 
 
 class AbstractTracer(lensing.LensingObject, ABC):
     def __init__(self, planes, cosmology):
-        """Ray-tracer for a lens system with any number of planes.
+        """
+        Ray-tracer for a lens system with any number of planes.
 
         The redshift of these planes are specified by the redshits of the galaxies; there is a unique plane redshift \
         for every unique galaxy redshift (galaxies with identical redshifts are put in the same plane).
@@ -692,11 +694,14 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         return sparse_image_plane_grids_of_planes
 
     def traced_sparse_grids_of_planes_from_grid(
-        self, grid, settings_pixelization=pix.SettingsPixelization()
+        self,
+        grid,
+        settings_pixelization=pix.SettingsPixelization(),
+        preloads=pload.Preloads(),
     ):
 
         if (
-            settings_pixelization.preload_sparse_grids_of_planes is None
+            preloads.sparse_grids_of_planes is None
             or settings_pixelization.is_stochastic
         ):
 
@@ -706,9 +711,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         else:
 
-            sparse_image_plane_grids_of_planes = (
-                settings_pixelization.preload_sparse_grids_of_planes
-            )
+            sparse_image_plane_grids_of_planes = preloads.sparse_grids_of_planes
 
         traced_sparse_grids_of_planes = []
 
@@ -728,7 +731,10 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             return traced_sparse_grids_of_planes, sparse_image_plane_grids_of_planes[0]
 
     def mappers_of_planes_from_grid(
-        self, grid, settings_pixelization=pix.SettingsPixelization()
+        self,
+        grid,
+        settings_pixelization=pix.SettingsPixelization(),
+        preloads=pload.Preloads(),
     ):
 
         mappers_of_planes = []
@@ -736,7 +742,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         traced_sparse_grids_of_planes, sparse_image_plane_grid = self.traced_sparse_grids_of_planes_from_grid(
-            grid=grid, settings_pixelization=settings_pixelization
+            grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
         )
 
         for (plane_index, plane) in enumerate(self.planes):
@@ -762,11 +768,20 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         convolver,
         settings_pixelization=pix.SettingsPixelization(),
         settings_inversion=inv.SettingsInversion(),
+        preloads=pload.Preloads(),
     ):
 
-        mappers_of_planes = self.mappers_of_planes_from_grid(
-            grid=grid, settings_pixelization=settings_pixelization
-        )
+        if preloads.mapper is None:
+
+            mappers_of_planes = self.mappers_of_planes_from_grid(
+                grid=grid,
+                settings_pixelization=settings_pixelization,
+                preloads=preloads,
+            )
+
+        else:
+
+            mappers_of_planes = [preloads.mapper]
 
         return inv.InversionImagingMatrix.from_data_mapper_and_regularization(
             image=image,
@@ -775,6 +790,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],
             settings=settings_inversion,
+            preloads=preloads,
         )
 
     def inversion_interferometer_from_grid_and_data(
@@ -785,9 +801,10 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         transformer,
         settings_pixelization=pix.SettingsPixelization(),
         settings_inversion=inv.SettingsInversion(),
+        preloads=pload.Preloads(),
     ):
         mappers_of_planes = self.mappers_of_planes_from_grid(
-            grid=grid, settings_pixelization=settings_pixelization
+            grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
         )
 
         return inv.AbstractInversionInterferometer.from_data_mapper_and_regularization(

@@ -4,7 +4,7 @@ import autogalaxy as ag
 from autolens.fit import fit_point_source
 from autogalaxy.pipeline.phase import dataset
 from autolens.pipeline.phase.extensions.stochastic_phase import StochasticPhase
-from autolens import exc
+from autoarray import preloads as pload
 import numpy as np
 
 import copy
@@ -59,11 +59,45 @@ class PhaseDataset(dataset.PhaseDataset):
                 einstein_radius_estimate=None
             )
 
-        preload_sparse_grids_of_planes = self.preload_pixelization_grids_of_planes_from_results(
-            results=results
-        )
-        self.settings.settings_pixelization = self.settings.settings_pixelization.modify_preload(
-            preload_sparse_grids_of_planes=preload_sparse_grids_of_planes
+    def setup_preloads(self, results):
+
+        # Preload the source-plane grid of coordinates if the source parameters are fixed, skipping the KMeans.
+
+        sparse_grids_of_planes = None
+        blurred_mapping_matrix = None
+        curvature_matrix = None
+        mapper = None
+
+        if (
+            not self.is_hyper_phase
+            and results.last is not None
+            and self.pixelization is not None
+            and not self.pixelization_is_model
+        ):
+            if self.pixelization.__class__ is results.last.pixelization.__class__:
+                if hasattr(results.last, "hyper"):
+                    sparse_grids_of_planes = (
+                        results.last.hyper.max_log_likelihood_pixelization_grids_of_planes
+                    )
+                else:
+                    sparse_grids_of_planes = (
+                        results.last.max_log_likelihood_pixelization_grids_of_planes
+                    )
+
+        # Preload the blurred_mapping_matrix and curvature matrix calculation if only the parametric light profiles
+        # are being fitted.
+
+        if self.preload_inversion and not self.is_hyper_phase:
+            inversion = results.last.max_log_likelihood_fit.inversion
+            blurred_mapping_matrix = inversion.blurred_mapping_matrix
+            curvature_matrix = inversion.curvature_matrix
+            mapper = inversion.mapper
+
+        return pload.Preloads(
+            sparse_grids_of_planes=sparse_grids_of_planes,
+            mapper=mapper,
+            blurred_mapping_matrix=blurred_mapping_matrix,
+            curvature_matrix=curvature_matrix,
         )
 
     def updated_positions_from_positions_and_results(self, positions, results):
@@ -174,25 +208,6 @@ class PhaseDataset(dataset.PhaseDataset):
                 )
 
         return positions_threshold
-
-    def preload_pixelization_grids_of_planes_from_results(self, results):
-
-        if self.is_hyper_phase:
-            return None
-
-        if (
-            results.last is not None
-            and self.pixelization is not None
-            and not self.pixelization_is_model
-        ):
-            if self.pixelization.__class__ is results.last.pixelization.__class__:
-                if hasattr(results.last, "hyper"):
-                    return (
-                        results.last.hyper.max_log_likelihood_pixelization_grids_of_planes
-                    )
-                else:
-                    return results.last.max_log_likelihood_pixelization_grids_of_planes
-        return None
 
     def extend_with_stochastic_phase(
         self,

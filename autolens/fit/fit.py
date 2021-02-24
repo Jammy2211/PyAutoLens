@@ -4,6 +4,7 @@ from autoconf import conf
 from autoarray.fit import fit as aa_fit
 from autoarray.inversion import pixelizations as pix, inversions as inv
 from autogalaxy.galaxy import galaxy as g
+from autoarray import preloads as pload
 
 
 class FitImaging(aa_fit.FitImaging):
@@ -16,6 +17,7 @@ class FitImaging(aa_fit.FitImaging):
         use_hyper_scaling=True,
         settings_pixelization=pix.SettingsPixelization(),
         settings_inversion=inv.SettingsInversion(),
+        preloads=pload.Preloads(),
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
@@ -79,6 +81,7 @@ class FitImaging(aa_fit.FitImaging):
                 convolver=masked_imaging.convolver,
                 settings_pixelization=settings_pixelization,
                 settings_inversion=settings_inversion,
+                preloads=preloads,
             )
 
             model_image = self.blurred_image + inversion.mapped_reconstructed_image
@@ -189,6 +192,7 @@ class FitInterferometer(aa_fit.FitInterferometer):
         use_hyper_scaling=True,
         settings_pixelization=pix.SettingsPixelization(),
         settings_inversion=inv.SettingsInversion(),
+        preloads=pload.Preloads(),
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
@@ -245,6 +249,7 @@ class FitInterferometer(aa_fit.FitInterferometer):
                 transformer=masked_interferometer.transformer,
                 settings_pixelization=settings_pixelization,
                 settings_inversion=settings_inversion,
+                preloads=preloads,
             )
 
             model_visibilities = (

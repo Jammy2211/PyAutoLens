@@ -8,19 +8,28 @@ from autolens.fit import fit
 from autolens.pipeline import visualizer as vis
 from autolens.pipeline.phase.dataset import analysis as analysis_dataset
 from autogalaxy.pipeline.phase.imaging.analysis import Attributes as AgAttributes
+from autoarray import preloads as pload
 
 import numpy as np
 import copy
 
 
 class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
-    def __init__(self, masked_imaging, settings, cosmology, results=None):
+    def __init__(
+        self,
+        masked_imaging,
+        settings,
+        cosmology,
+        results=None,
+        preloads=pload.Preloads(),
+    ):
 
         super().__init__(
             masked_dataset=masked_imaging,
             settings=settings,
             cosmology=cosmology,
             results=results,
+            preloads=preloads,
         )
 
     @property
@@ -97,6 +106,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                             hyper_background_noise=hyper_background_noise,
                             settings_pixelization=settings_pixelization,
                             settings_inversion=self.settings.settings_inversion,
+                            preloads=self.preloads,
                         ).log_evidence
                     )
                 except (
@@ -121,6 +131,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
             use_hyper_scaling=use_hyper_scalings,
             settings_pixelization=self.settings.settings_pixelization,
             settings_inversion=self.settings.settings_inversion,
+            preloads=self.preloads,
         )
 
     def stochastic_log_evidences_for_instance(self, instance):
@@ -158,6 +169,7 @@ class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
                     hyper_background_noise=hyper_background_noise,
                     settings_pixelization=settings_pixelization,
                     settings_inversion=self.settings.settings_inversion,
+                    preloads=self.preloads,
                 ).log_evidence
             except (
                 PixelizationException,

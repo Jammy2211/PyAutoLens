@@ -6,6 +6,7 @@ from autolens.dataset import imaging
 from autolens.pipeline.phase.settings import SettingsPhaseImaging
 from autolens.pipeline.phase.imaging.analysis import Analysis
 from autolens.pipeline.phase.imaging.result import Result
+from autoarray import preloads as pload
 
 
 class PhaseImaging(dataset.PhaseDataset):
@@ -55,7 +56,7 @@ class PhaseImaging(dataset.PhaseDataset):
 
         self.is_hyper_phase = False
 
-    def make_analysis(self, dataset, mask, results=None):
+    def make_analysis(self, dataset, mask, results=None, preloads=pload.Preloads()):
         """
         Returns an lens object. Also calls the prior passing and masked_imaging modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -87,6 +88,7 @@ class PhaseImaging(dataset.PhaseDataset):
             settings=self.settings,
             cosmology=self.cosmology,
             results=results,
+            preloads=preloads,
         )
 
         return analysis
