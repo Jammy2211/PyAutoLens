@@ -93,6 +93,10 @@ class StochasticPhase(extensions.HyperPhase):
         phase.model.galaxies.lens.take_attributes(
             source=results.last.model.galaxies.lens
         )
+        if hasattr(phase.model.galaxies, "subhalo"):
+            phase.model.galaxies.subhalo.take_attributes(
+                source=results.last.model.galaxies.subhalo
+            )
 
         # TODO : Nasty hack to get log evidnees to copy, do something bettter in future.
 
