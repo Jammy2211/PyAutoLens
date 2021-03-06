@@ -17,7 +17,7 @@ requirements.extend(
 
 setup(
     name="autolens",
-    version=environ.get("VERSION", "1.13.0"),
+    version=environ.get("VERSION", "1.14.0"),
     description="Open-Source Strong Lensing",
     long_description=long_description,
     long_description_content_type="text/markdown",
