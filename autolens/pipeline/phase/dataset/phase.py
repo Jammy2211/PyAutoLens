@@ -224,6 +224,8 @@ class PhaseDataset(dataset.PhaseDataset):
         include_regularization=False,
         stochastic_method="gaussian",
         stochastic_sigma=0.0,
+        subhalo_centre_width=None,
+        subhalo_mass_at_200_log_uniform=True,
     ):
 
         if not hasattr(self.model.galaxies, "lens"):
@@ -252,4 +254,6 @@ class PhaseDataset(dataset.PhaseDataset):
             model_classes=tuple(model_classes),
             stochastic_method=stochastic_method,
             stochastic_sigma=stochastic_sigma,
+            subhalo_centre_width=subhalo_centre_width,
+            subhalo_mass_at_200_log_uniform=subhalo_mass_at_200_log_uniform,
         )

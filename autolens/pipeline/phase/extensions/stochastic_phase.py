@@ -18,6 +18,8 @@ class StochasticPhase(extensions.HyperPhase):
         model_classes=tuple(),
         stochastic_method="gaussian",
         stochastic_sigma=0.0,
+        subhalo_centre_width=None,
+        subhalo_mass_at_200_log_uniform=True,
     ):
 
         self.is_stochastic = True
@@ -27,6 +29,9 @@ class StochasticPhase(extensions.HyperPhase):
         super().__init__(
             phase=phase, hyper_search=hyper_search, model_classes=model_classes
         )
+
+        self.subhalo_centre_width = subhalo_centre_width
+        self.subhalo_mass_at_200_log_uniform = subhalo_mass_at_200_log_uniform
 
     @property
     def hyper_name(self):
@@ -94,9 +99,20 @@ class StochasticPhase(extensions.HyperPhase):
             source=results.last.model.galaxies.lens
         )
         if hasattr(phase.model.galaxies, "subhalo"):
+
             phase.model.galaxies.subhalo.take_attributes(
                 source=results.last.model.galaxies.subhalo
             )
+
+            if self.subhalo_centre_width is not None:
+                phase.model.galaxies.subhalo.mass.centre = results.last.model_absolute(
+                    a=self.subhalo_centre_width
+                ).galaxies.subhalo.mass.centre
+
+            if self.subhalo_mass_at_200_log_uniform:
+                phase.model.galaxies.subhalo.mass.mass_at_200 = af.LogUniformPrior(
+                    lower_limit=1e6, upper_limit=1e11
+                )
 
         # TODO : Nasty hack to get log evidnees to copy, do something bettter in future.
 

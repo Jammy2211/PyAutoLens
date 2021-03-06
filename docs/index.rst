@@ -21,8 +21,6 @@ reconstructions of the source's lensed and unlensed light distributions, which a
 galaxy's mass to trace backwards how the source's light is gravitationally lensed.
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/master/files/imageaxis.png
-  :width: 1100
-  :alt: Alternative text
 
 Strong lensing provides astronomers with an invaluable tool to study a diverse range of topics, including the
 `structure of galaxies <https://academic.oup.com/mnras/article-abstract/489/2/2049/5550746>`_,
