@@ -187,10 +187,7 @@ class TestAnalysisImaging:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        analysis = al.AnalysisImaging(
-            dataset=masked_imaging_7x7,
-            results=results,
-        )
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, results=results)
 
         stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
             instance=instance
@@ -207,10 +204,7 @@ class TestAnalysisImaging:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        analysis = al.AnalysisImaging(
-            dataset=masked_imaging_7x7,
-            results=results,
-        )
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, results=results)
 
         stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
             instance=instance

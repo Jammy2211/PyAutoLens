@@ -92,8 +92,8 @@ class AnalysisDataset(a.AnalysisDataset):
             histogram_bins=self.settings_lens.stochastic_histogram_bins,
         )
 
-class AnalysisImaging(AnalysisDataset):
 
+class AnalysisImaging(AnalysisDataset):
     @property
     def imaging(self):
         return self.dataset
@@ -270,4 +270,3 @@ class AnalysisImaging(AnalysisDataset):
         return res.ResultImaging(
             samples=samples, model=model, analysis=self, search=search
         )
-

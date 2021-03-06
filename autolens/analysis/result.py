@@ -133,7 +133,6 @@ class ResultDataset(Result, res.ResultDataset):
 
 
 class ResultImaging(ResultDataset):
-
     @property
     def max_log_likelihood_fit(self):
 
