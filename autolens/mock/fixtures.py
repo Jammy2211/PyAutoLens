@@ -29,7 +29,7 @@ def make_masked_interferometer_7_grid():
         visibilities_mask=make_visibilities_mask_7(),
         real_space_mask=make_mask_7x7(),
         settings=al.SettingsMaskedInterferometer(
-            grid_class=al.Grid2D, sub_size=1, transformer_class=aa.TransformerDFT
+            grid_class=al.Grid2D, sub_size=1, transformer_class=al.TransformerDFT
         ),
     )
 

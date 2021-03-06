@@ -3371,7 +3371,7 @@ class TestRegression:
         assert max_indexes == (1, 4)
 
         deflections = tracer.deflections_from_grid(grid=grid)
-        assert deflections.native[1, 4, 0] >= 0
+        assert deflections.native[1, 4, 0] >= -1e-8
         assert deflections.native[2, 4, 0] <= 0
         assert deflections.native[1, 4, 1] >= 0
         assert deflections.native[1, 3, 1] <= 0

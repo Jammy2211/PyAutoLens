@@ -88,10 +88,17 @@ class PhaseDataset(dataset.PhaseDataset):
         # are being fitted.
 
         if self.preload_inversion and not self.is_hyper_phase:
-            inversion = results.last.max_log_likelihood_fit.inversion
-            blurred_mapping_matrix = inversion.blurred_mapping_matrix
-            curvature_matrix = inversion.curvature_matrix
-            mapper = inversion.mapper
+
+            if hasattr(results.last, "hyper"):
+                inversion = results.last.hyper.max_log_likelihood_fit.inversion
+            else:
+                inversion = results.last.max_log_likelihood_fit.inversion
+
+            if inversion is not None:
+
+                blurred_mapping_matrix = inversion.blurred_mapping_matrix
+                curvature_matrix = inversion.curvature_matrix
+                mapper = inversion.mapper
 
         return pload.Preloads(
             sparse_grids_of_planes=sparse_grids_of_planes,
