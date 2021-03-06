@@ -9,8 +9,6 @@ import numpy as np
 
 
 class Analysis:
-    def plane_for_instance(self, instance):
-        raise NotImplementedError()
 
     def tracer_for_instance(self, instance):
 

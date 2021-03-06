@@ -34,7 +34,7 @@ class MockResult(af.MockResult):
             search=search,
         )
 
-        self.previous_model = model
+        self._model = model
         self.gaussian_tuples = None
         self.mask = None
         self.positions = None

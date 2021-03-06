@@ -15,6 +15,7 @@ import copy
 
 
 class Analysis(ag_analysis.Analysis, analysis_dataset.Analysis):
+
     def __init__(
         self,
         masked_imaging,

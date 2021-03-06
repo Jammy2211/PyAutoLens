@@ -24,7 +24,7 @@ class TestImagePassing:
 
         result = al.PhaseImaging.Result(
             samples=mock.MockSamples(max_log_likelihood_instance=instance),
-            previous_model=af.ModelMapper(),
+            model=af.ModelMapper(),
             analysis=analysis,
             search=None,
         )
