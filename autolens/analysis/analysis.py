@@ -28,7 +28,7 @@ class AnalysisDataset(a.AnalysisDataset):
         settings_pixelization=pix.SettingsPixelization(),
         settings_inversion=inv.SettingsInversion(),
         settings_lens=settings.SettingsLens(),
-        preloads=None,
+        preloads=pload.Preloads(),
     ):
 
         super().__init__(
