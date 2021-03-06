@@ -10,8 +10,8 @@ from autogalaxy.galaxy import galaxy as g
 from autogalaxy.analysis import result as res
 from autolens.lens import ray_tracing, positions_solver as pos
 
-class Result(res.Result):
 
+class Result(res.Result):
     @property
     def max_log_likelihood_tracer(self) -> ray_tracing.Tracer:
 
@@ -98,7 +98,6 @@ class Result(res.Result):
 
 
 class ResultDataset(Result, res.ResultDataset):
-
     @property
     def mask(self):
         return self.max_log_likelihood_fit.mask

@@ -20,7 +20,6 @@ from autolens.analysis import visualizer as vis
 
 
 class AnalysisDataset(a.AnalysisDataset):
-
     def __init__(
         self,
         dataset,
@@ -92,8 +91,8 @@ class AnalysisDataset(a.AnalysisDataset):
             histogram_bins=self.settings_lens.stochastic_histogram_bins,
         )
 
-class AnalysisImaging(AnalysisDataset):
 
+class AnalysisImaging(AnalysisDataset):
     @property
     def imaging(self):
         return self.dataset
@@ -137,15 +136,15 @@ class AnalysisImaging(AnalysisDataset):
                 hyper_background_noise=hyper_background_noise,
             ).figure_of_merit
         except (
-                PixelizationException,
-                InversionException,
-                GridException,
-                OverflowError,
+            PixelizationException,
+            InversionException,
+            GridException,
+            OverflowError,
         ) as e:
             raise FitException from e
 
     def imaging_fit_for_tracer(
-            self, tracer, hyper_image_sky, hyper_background_noise, use_hyper_scalings=True
+        self, tracer, hyper_image_sky, hyper_background_noise, use_hyper_scalings=True
     ):
 
         return fit.FitImaging(
@@ -168,7 +167,7 @@ class AnalysisImaging(AnalysisDataset):
             return
 
         if not isinstance(
-                tracer.pixelizations_of_planes[-1], pix.VoronoiBrightnessImage
+            tracer.pixelizations_of_planes[-1], pix.VoronoiBrightnessImage
         ):
             return
 
@@ -197,10 +196,10 @@ class AnalysisImaging(AnalysisDataset):
                     preloads=self.preloads,
                 ).log_evidence
             except (
-                    PixelizationException,
-                    InversionException,
-                    GridException,
-                    OverflowError,
+                PixelizationException,
+                InversionException,
+                GridException,
+                OverflowError,
             ) as e:
                 log_evidence = None
 
@@ -255,9 +254,8 @@ class AnalysisImaging(AnalysisDataset):
             )
 
     def save_results_for_aggregator(
-            self, paths: af.Paths, samples: af.OptimizerSamples
+        self, paths: af.Paths, samples: af.OptimizerSamples
     ):
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
             self.save_stochastic_outputs(paths=paths, samples=samples)
-

@@ -61,6 +61,7 @@ from .fit.fit_point_source import (
 from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
 from .lens.positions_solver import PositionsSolver
+from .analysis.analysis import AnalysisImaging
 from .pipeline.setup import (
     SetupPipeline,
     SetupHyper,

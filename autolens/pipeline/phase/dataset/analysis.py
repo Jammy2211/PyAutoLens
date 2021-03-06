@@ -9,7 +9,6 @@ import numpy as np
 
 
 class Analysis:
-
     def tracer_for_instance(self, instance):
 
         if hasattr(instance, "perturbation"):
