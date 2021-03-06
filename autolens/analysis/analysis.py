@@ -16,6 +16,7 @@ from autolens.lens import ray_tracing
 from autofit.exc import FitException
 from autolens.fit import fit
 from autolens.lens import settings
+from autolens.analysis import result as res
 from autolens.analysis import visualizer as vis
 
 
@@ -91,8 +92,8 @@ class AnalysisDataset(a.AnalysisDataset):
             histogram_bins=self.settings_lens.stochastic_histogram_bins,
         )
 
-
 class AnalysisImaging(AnalysisDataset):
+
     @property
     def imaging(self):
         return self.dataset
@@ -259,3 +260,14 @@ class AnalysisImaging(AnalysisDataset):
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
             self.save_stochastic_outputs(paths=paths, samples=samples)
+
+    def make_result(
+        self,
+        samples: af.PDFSamples,
+        model: af.CollectionPriorModel,
+        search: af.NonLinearSearch,
+    ):
+        return res.ResultImaging(
+            samples=samples, model=model, analysis=self, search=search
+        )
+
