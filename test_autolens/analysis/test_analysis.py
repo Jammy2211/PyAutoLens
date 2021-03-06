@@ -153,20 +153,7 @@ class TestAnalysisImaging:
         assert (fit.tracer.galaxies[0].hyper_galaxy_image == lens_hyper_image).all()
         assert fit_likelihood == fit.log_likelihood
 
-    def test__stochastic_histogram_for_instance(self, masked_imaging_7x7):
-
-        galaxies = af.ModelInstance()
-        galaxies.lens = al.Galaxy(
-            redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.2)
-        )
-        galaxies.source = al.Galaxy(
-            redshift=1.0,
-            pixelization=al.pix.VoronoiBrightnessImage(pixels=5),
-            regularization=al.reg.Constant(),
-        )
-
-        instance = af.ModelInstance()
-        instance.galaxies = galaxies
+    def test__stochastic_log_evidences_for_instance(self, masked_imaging_7x7):
 
         lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         lens_hyper_image[4] = 10.0
@@ -187,16 +174,46 @@ class TestAnalysisImaging:
             hyper_model_image=hyper_model_image,
         )
 
-        analysis = al.AnalysisImaging(
-            dataset=masked_imaging_7x7,
-            settings_lens=al.SettingsLens(stochastic_samples=2),
-            results=results,
-            cosmology=cosmo.Planck15,
+        galaxies = af.ModelInstance()
+        galaxies.lens = al.Galaxy(
+            redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
+        )
+        galaxies.source = al.Galaxy(
+            redshift=1.0,
+            pixelization=al.pix.VoronoiMagnification(shape=(3, 3)),
+            regularization=al.reg.Constant(),
         )
 
-        log_evidences = analysis.stochastic_log_evidences_for_instance(
+        instance = af.ModelInstance()
+        instance.galaxies = galaxies
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            results=results,
+        )
+
+        stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
             instance=instance
         )
 
-        assert len(log_evidences) == 2
-        assert log_evidences[0] != log_evidences[1]
+        assert stochastic_log_evidences == None
+
+        galaxies.source = al.Galaxy(
+            redshift=1.0,
+            pixelization=al.pix.VoronoiBrightnessImage(pixels=9),
+            regularization=al.reg.Constant(),
+        )
+
+        instance = af.ModelInstance()
+        instance.galaxies = galaxies
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            results=results,
+        )
+
+        stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
+            instance=instance
+        )
+
+        assert stochastic_log_evidences[0] != stochastic_log_evidences[1]
