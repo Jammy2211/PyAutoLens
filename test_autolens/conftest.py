@@ -272,7 +272,17 @@ def make_masked_interferometer_fit_x2_plane_inversion_7x7():
     return fixtures.make_masked_interferometer_fit_x2_plane_inversion_7x7()
 
 
-### Phases ###
+### Analysis ###
+
+
+@pytest.fixture(name="analysis_imaging_7x7")
+def make_analysis_imaging_7x7():
+    return fixtures.make_analysis_imaging_7x7()
+
+
+@pytest.fixture(name="analysis_interferometer_7")
+def make_analysis_interferometer_7():
+    return fixtures.make_analysis_interferometer_7()
 
 
 @pytest.fixture(name="phase_imaging_7x7")

@@ -18,7 +18,7 @@ directory = os.path.dirname(os.path.realpath(__file__))
 
 class TestResultAbstract:
     def test__max_log_likelihood_tracer_available_as_result(
-        self, masked_imaging_7x7, samples_with_result
+        self, analysis_imaging_7x7, samples_with_result
     ):
 
         model = af.CollectionPriorModel(
@@ -27,21 +27,17 @@ class TestResultAbstract:
             )
         )
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-
         search = mock.MockSearch("test_phase_2", samples=samples_with_result)
 
-        result = search.fit(model=model, analysis=analysis)
+        result = search.fit(model=model, analysis=analysis_imaging_7x7)
 
         assert isinstance(result.max_log_likelihood_tracer, al.Tracer)
         assert result.max_log_likelihood_tracer.galaxies[0].light.intensity == 1.0
         assert result.max_log_likelihood_tracer.galaxies[1].light.intensity == 2.0
 
     def test__max_log_likelihood_tracer_source_light_profile_centres_correct(
-        self, masked_imaging_7x7
+        self, analysis_imaging_7x7
     ):
-
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
         lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
 
@@ -53,7 +49,9 @@ class TestResultAbstract:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        result = res.Result(samples=samples, analysis=analysis, model=None, search=None)
+        result = res.Result(
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
+        )
 
         assert result.source_plane_light_profile_centre.in_list == [(1.0, 2.0)]
 
@@ -71,7 +69,9 @@ class TestResultAbstract:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        result = res.Result(samples=samples, analysis=analysis, model=None, search=None)
+        result = res.Result(
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
+        )
 
         assert result.source_plane_light_profile_centre.in_list == [(1.0, 2.0)]
 
@@ -79,15 +79,15 @@ class TestResultAbstract:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        result = res.Result(samples=samples, analysis=analysis, model=None, search=None)
+        result = res.Result(
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
+        )
 
         assert result.source_plane_light_profile_centre == None
 
     def test__max_log_likelihood_tracer_source_inversion_centres_correct(
-        self, masked_imaging_7x7
+        self, analysis_imaging_7x7
     ):
-
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
         lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
 
@@ -102,7 +102,7 @@ class TestResultAbstract:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.ResultImaging(
-            samples=samples, analysis=analysis, model=None, search=None
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
         assert result.source_plane_inversion_centre.in_list[0] == pytest.approx(
@@ -117,16 +117,14 @@ class TestResultAbstract:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.ResultImaging(
-            samples=samples, analysis=analysis, model=None, search=None
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
         assert result.source_plane_inversion_centre == None
 
     def test__max_log_likelihood_tracer_source_centres_correct(
-        self, masked_imaging_7x7
+        self, analysis_imaging_7x7
     ):
-
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
         lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
         source = al.Galaxy(
@@ -141,7 +139,7 @@ class TestResultAbstract:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.ResultImaging(
-            samples=samples, analysis=analysis, model=None, search=None
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
         assert result.source_plane_centre.in_list[0] == pytest.approx(
@@ -149,10 +147,8 @@ class TestResultAbstract:
         )
 
     def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_centres_and_separations(
-        self, masked_imaging_7x7
+        self, analysis_imaging_7x7
     ):
-
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
         lens = al.Galaxy(
             redshift=0.5,
@@ -176,7 +172,7 @@ class TestResultAbstract:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.ResultImaging(
-            samples=samples, analysis=analysis, model=None, search=None
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
         mask = al.Mask2D.unmasked(
@@ -203,25 +199,27 @@ class TestResultAbstract:
 
 class TestResultDataset:
     def test__results_include_mask__available_as_property(
-        self, masked_imaging_7x7, samples_with_result
+        self, analysis_imaging_7x7, masked_imaging_7x7, samples_with_result
     ):
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-
         result = res.ResultDataset(
-            samples=samples_with_result, analysis=analysis, model=None, search=None
+            samples=samples_with_result,
+            analysis=analysis_imaging_7x7,
+            model=None,
+            search=None,
         )
 
         assert (result.mask == masked_imaging_7x7.mask).all()
 
     def test__results_include_positions__available_as_property(
-        self, masked_imaging_7x7, samples_with_result
+        self, analysis_imaging_7x7, masked_imaging_7x7, samples_with_result
     ):
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-
         result = res.ResultDataset(
-            samples=samples_with_result, analysis=analysis, model=None, search=None
+            samples=samples_with_result,
+            analysis=analysis_imaging_7x7,
+            model=None,
+            search=None,
         )
 
         assert result.positions == None
@@ -240,10 +238,8 @@ class TestResultDataset:
         assert (result.positions[0] == np.array([1.0, 1.0])).all()
 
     def test__results_include_pixelization__available_as_property(
-        self, masked_imaging_7x7
+        self, analysis_imaging_7x7
     ):
-
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
         lens = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
         source = al.Galaxy(
@@ -257,7 +253,7 @@ class TestResultDataset:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.ResultDataset(
-            samples=samples, analysis=analysis, model=None, search=None
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
         assert isinstance(result.pixelization, al.pix.VoronoiMagnification)
@@ -277,17 +273,15 @@ class TestResultDataset:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.ResultDataset(
-            samples=samples, analysis=analysis, model=None, search=None
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
         assert isinstance(result.pixelization, al.pix.VoronoiBrightnessImage)
         assert result.pixelization.pixels == 6
 
     def test__results_of_phase_include_pixelization_grid__available_as_property(
-        self, masked_imaging_7x7
+        self, analysis_imaging_7x7
     ):
-
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
         galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
@@ -296,7 +290,7 @@ class TestResultDataset:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.ResultDataset(
-            samples=samples, analysis=analysis, model=None, search=None
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
         assert result.max_log_likelihood_pixelization_grids_of_planes == [None]
@@ -315,7 +309,7 @@ class TestResultDataset:
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.ResultDataset(
-            samples=samples, analysis=analysis, model=None, search=None
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
         assert result.max_log_likelihood_pixelization_grids_of_planes[-1].shape == (
@@ -325,21 +319,19 @@ class TestResultDataset:
 
 
 class TestResultImaging:
-    def test__result_imaging_is_returned(self, masked_imaging_7x7):
+    def test__result_imaging_is_returned(self, analysis_imaging_7x7):
 
         model = af.CollectionPriorModel(
             galaxies=af.CollectionPriorModel(galaxy_0=al.Galaxy(redshift=0.5))
         )
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-
         search = mock.MockSearch(name="test_phase")
 
-        result = search.fit(model=model, analysis=analysis)
+        result = search.fit(model=model, analysis=analysis_imaging_7x7)
 
         assert isinstance(result, res.ResultImaging)
 
-    def test___image_dict(self, masked_imaging_7x7):
+    def test___image_dict(self, analysis_imaging_7x7):
 
         galaxies = af.ModelInstance()
         galaxies.lens = al.Galaxy(redshift=0.5)
@@ -348,12 +340,10 @@ class TestResultImaging:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-
         result = res.ResultImaging(
             samples=mock.MockSamples(max_log_likelihood_instance=instance),
             model=af.ModelMapper(),
-            analysis=analysis,
+            analysis=analysis_imaging_7x7,
             search=None,
         )
 
