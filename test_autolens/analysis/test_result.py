@@ -201,6 +201,144 @@ class TestResultAbstract:
         assert multiple_images.in_list[0] == multiple_images_manual.in_list[0]
 
 
+class TestResultDataset:
+    def test__results_include_mask__available_as_property(
+        self, masked_imaging_7x7, samples_with_result
+    ):
+
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
+        result = res.ResultDataset(
+            samples=samples_with_result, analysis=analysis, model=None, search=None
+        )
+
+        assert (result.mask == masked_imaging_7x7.mask).all()
+
+    def test__results_include_positions__available_as_property(
+        self, masked_imaging_7x7, samples_with_result
+    ):
+
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
+        result = res.ResultDataset(
+            samples=samples_with_result, analysis=analysis, model=None, search=None
+        )
+
+        assert result.positions == None
+
+        masked_imaging_7x7.imaging.positions = al.Grid2DIrregular([[(1.0, 1.0)]])
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            settings_lens=al.SettingsLens(positions_threshold=1.0),
+        )
+
+        result = res.ResultDataset(
+            samples=samples_with_result, analysis=analysis, model=None, search=None
+        )
+
+        assert (result.positions[0] == np.array([1.0, 1.0])).all()
+
+    def test__results_of_phase_include_pixelization__available_as_property(
+        self, imaging_7x7, mask_7x7
+    ):
+        lens = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        source = al.Galaxy(
+            redshift=1.0,
+            pixelization=al.pix.VoronoiMagnification(shape=(2, 3)),
+            regularization=al.reg.Constant(),
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+
+        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+
+        phase_imaging_7x7 = al.PhaseImaging(
+            settings=al.SettingsPhaseImaging(),
+            search=mock.MockSearch("test_phase", samples=samples),
+        )
+
+        result = phase_imaging_7x7.run(
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
+        )
+
+        assert isinstance(result.pixelization, al.pix.VoronoiMagnification)
+        assert result.pixelization.shape == (2, 3)
+
+        lens = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        source = al.Galaxy(
+            redshift=1.0,
+            pixelization=al.pix.VoronoiBrightnessImage(pixels=6),
+            regularization=al.reg.Constant(),
+        )
+
+        source.hyper_galaxy_image = np.ones(9)
+
+        tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+
+        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+
+        phase_imaging_7x7 = al.PhaseImaging(
+            settings=al.SettingsPhaseImaging(),
+            search=mock.MockSearch("test_phase", samples=samples),
+        )
+
+        result = phase_imaging_7x7.run(
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
+        )
+
+        assert isinstance(result.pixelization, al.pix.VoronoiBrightnessImage)
+        assert result.pixelization.pixels == 6
+
+    def test__results_of_phase_include_pixelization_grid__available_as_property(
+        self, imaging_7x7, mask_7x7
+    ):
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy])
+
+        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+
+        phase_imaging_7x7 = al.PhaseImaging(
+            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
+            search=mock.MockSearch("test_phase_2", samples=samples),
+        )
+
+        result = phase_imaging_7x7.run(
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
+        )
+
+        assert result.max_log_likelihood_pixelization_grids_of_planes == [None]
+
+        lens = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        source = al.Galaxy(
+            redshift=1.0,
+            pixelization=al.pix.VoronoiBrightnessImage(pixels=6),
+            regularization=al.reg.Constant(),
+        )
+
+        source.hyper_galaxy_image = np.ones(9)
+
+        tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+
+        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+
+        phase_imaging_7x7 = al.PhaseImaging(
+            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
+            settings=al.SettingsPhaseImaging(),
+            search=mock.MockSearch("test_phase_2", samples=samples),
+        )
+
+        result = phase_imaging_7x7.run(
+            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
+        )
+
+        assert result.max_log_likelihood_pixelization_grids_of_planes[-1].shape == (
+            6,
+            2,
+        )
+
+
 class TestResultImaging:
     def test__result_imaging_is_returned(self, masked_imaging_7x7):
 

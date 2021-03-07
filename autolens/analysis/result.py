@@ -97,25 +97,25 @@ class Result(res.Result):
         return self.instance.path_instance_tuples_for_class(cls=g.Galaxy)
 
 
-class ResultDataset(Result, res.ResultDataset):
+class ResultDataset(Result):
     @property
     def mask(self):
-        return self.max_log_likelihood_fit.mask
+        return self.analysis.dataset.mask
 
     @property
     def positions(self):
-        return self.max_log_likelihood_fit.dataset.positions
+        return self.analysis.dataset.positions
 
     @property
     def pixelization(self):
-        for galaxy in self.max_log_likelihood_fit.tracer.galaxies:
+        for galaxy in self.max_log_likelihood_tracer.galaxies:
             if galaxy.pixelization is not None:
                 return galaxy.pixelization
 
     @property
     def max_log_likelihood_pixelization_grids_of_planes(self):
         return self.max_log_likelihood_tracer.sparse_image_plane_grids_of_planes_from_grid(
-            grid=self.max_log_likelihood_fit.grid
+            grid=self.analysis.dataset.grid
         )
 
     @property
