@@ -239,9 +239,12 @@ class TestResultDataset:
 
         assert (result.positions[0] == np.array([1.0, 1.0])).all()
 
-    def test__results_of_phase_include_pixelization__available_as_property(
-        self, imaging_7x7, mask_7x7
+    def test__results_include_pixelization__available_as_property(
+        self, masked_imaging_7x7
     ):
+
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
         lens = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
         source = al.Galaxy(
             redshift=1.0,
@@ -253,13 +256,8 @@ class TestResultDataset:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        phase_imaging_7x7 = al.PhaseImaging(
-            settings=al.SettingsPhaseImaging(),
-            search=mock.MockSearch("test_phase", samples=samples),
-        )
-
-        result = phase_imaging_7x7.run(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
+        result = res.ResultDataset(
+            samples=samples, analysis=analysis, model=None, search=None
         )
 
         assert isinstance(result.pixelization, al.pix.VoronoiMagnification)
@@ -278,34 +276,27 @@ class TestResultDataset:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        phase_imaging_7x7 = al.PhaseImaging(
-            settings=al.SettingsPhaseImaging(),
-            search=mock.MockSearch("test_phase", samples=samples),
-        )
-
-        result = phase_imaging_7x7.run(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
+        result = res.ResultDataset(
+            samples=samples, analysis=analysis, model=None, search=None
         )
 
         assert isinstance(result.pixelization, al.pix.VoronoiBrightnessImage)
         assert result.pixelization.pixels == 6
 
     def test__results_of_phase_include_pixelization_grid__available_as_property(
-        self, imaging_7x7, mask_7x7
+        self, masked_imaging_7x7
     ):
+
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
         galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
 
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy])
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
-            search=mock.MockSearch("test_phase_2", samples=samples),
-        )
-
-        result = phase_imaging_7x7.run(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
+        result = res.ResultDataset(
+            samples=samples, analysis=analysis, model=None, search=None
         )
 
         assert result.max_log_likelihood_pixelization_grids_of_planes == [None]
@@ -323,14 +314,8 @@ class TestResultDataset:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        phase_imaging_7x7 = al.PhaseImaging(
-            galaxies=dict(lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)),
-            settings=al.SettingsPhaseImaging(),
-            search=mock.MockSearch("test_phase_2", samples=samples),
-        )
-
-        result = phase_imaging_7x7.run(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
+        result = res.ResultDataset(
+            samples=samples, analysis=analysis, model=None, search=None
         )
 
         assert result.max_log_likelihood_pixelization_grids_of_planes[-1].shape == (
