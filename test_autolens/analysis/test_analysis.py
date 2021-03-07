@@ -4,10 +4,8 @@ import autofit as af
 import autolens as al
 from autolens import exc
 import pytest
-from astropy import cosmology as cosmo
-from autolens.fit.fit import FitImaging
+from autolens.analysis import result as res
 from autolens.mock import mock
-import numpy as np
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -46,6 +44,20 @@ class TestAnalysisDataset:
 
 
 class TestAnalysisImaging:
+    def test__make_result__result_imaging_is_returned(self, masked_imaging_7x7):
+
+        model = af.CollectionPriorModel(
+            galaxies=af.CollectionPriorModel(galaxy_0=al.Galaxy(redshift=0.5))
+        )
+
+        search = mock.MockSearch(name="test_phase")
+
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
+        result = search.fit(model=model, analysis=analysis)
+
+        assert isinstance(result, res.ResultImaging)
+
     def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, masked_imaging_7x7
     ):
@@ -89,7 +101,7 @@ class TestAnalysisImaging:
         fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
 
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = FitImaging(
+        fit = al.FitImaging(
             masked_imaging=masked_imaging_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
@@ -148,7 +160,7 @@ class TestAnalysisImaging:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
         assert (fit.tracer.galaxies[0].hyper_galaxy_image == lens_hyper_image).all()
         assert fit_likelihood == fit.log_likelihood

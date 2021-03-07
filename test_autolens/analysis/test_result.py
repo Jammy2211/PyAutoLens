@@ -319,18 +319,6 @@ class TestResultDataset:
 
 
 class TestResultImaging:
-    def test__result_imaging_is_returned(self, analysis_imaging_7x7):
-
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(galaxy_0=al.Galaxy(redshift=0.5))
-        )
-
-        search = mock.MockSearch(name="test_phase")
-
-        result = search.fit(model=model, analysis=analysis_imaging_7x7)
-
-        assert isinstance(result, res.ResultImaging)
-
     def test___image_dict(self, analysis_imaging_7x7):
 
         galaxies = af.ModelInstance()
