@@ -123,8 +123,10 @@ class TestResultAbstract:
         assert result.source_plane_inversion_centre == None
 
     def test__max_log_likelihood_tracer_source_centres_correct(
-        self, imaging_7x7, mask_7x7
+        self, masked_imaging_7x7
     ):
+
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
         lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
         source = al.Galaxy(
@@ -138,19 +140,19 @@ class TestResultAbstract:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        phase_dataset_7x7 = al.PhaseImaging(
-            search=mock.MockSearch("test_phase_2", samples=samples)
+        result = res.ResultImaging(
+            samples=samples, analysis=analysis, model=None, search=None
         )
 
-        result = phase_dataset_7x7.run(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
+        assert result.source_plane_centre.in_list[0] == pytest.approx(
+            (-0.833333, -0.833333), 1.0e-4
         )
-
-        assert result.source_plane_centre.in_list == [(0.0, 0.0)]
 
     def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_centres_and_separations(
-        self, imaging_7x7, mask_7x7
+        self, masked_imaging_7x7
     ):
+
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
         lens = al.Galaxy(
             redshift=0.5,
@@ -173,19 +175,15 @@ class TestResultAbstract:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        phase_dataset_7x7 = al.PhaseImaging(
-            search=mock.MockSearch("test_phase_2", samples=samples)
-        )
-
-        result = phase_dataset_7x7.run(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
+        result = res.ResultImaging(
+            samples=samples, analysis=analysis, model=None, search=None
         )
 
         mask = al.Mask2D.unmasked(
             shape_native=(100, 100), pixel_scales=0.05, sub_size=1
         )
 
-        result.analysis.masked_dataset.mask = mask
+        result.analysis.dataset.mask = mask
 
         multiple_images = (
             result.image_plane_multiple_image_positions_of_source_plane_centres
