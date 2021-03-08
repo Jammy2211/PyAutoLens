@@ -502,3 +502,13 @@ class AnalysisInterferometer(AnalysisDataset):
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
             self.save_stochastic_outputs(paths=paths, samples=samples)
+
+    def make_result(
+        self,
+        samples: af.PDFSamples,
+        model: af.CollectionPriorModel,
+        search: af.NonLinearSearch,
+    ):
+        return res.ResultInterferometer(
+            samples=samples, model=model, analysis=self, search=search
+        )

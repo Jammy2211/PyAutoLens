@@ -317,8 +317,6 @@ class TestResultDataset:
             2,
         )
 
-
-class TestResultImaging:
     def test___image_dict(self, analysis_imaging_7x7):
 
         galaxies = af.ModelInstance()
@@ -346,17 +344,11 @@ class TestResultImaging:
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
 
+class TestResultImaging:
+
+    pass
+
+
 class TestResultInterferometer:
-    def test__result_interferometer_is_returned(self, masked_interferometer_7):
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(galaxy_0=al.Galaxy(redshift=0.5))
-        )
-
-        analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
-
-        search = mock.MockSearch(name="test_phase")
-
-        result = search.fit(model=model, analysis=analysis)
-
-        assert isinstance(result, res.ResultInterferometer)
+    pass

@@ -226,20 +226,21 @@ class TestAnalysisImaging:
 
 
 class TestAnalysisInterferometer:
+    def test__make_result__result_interferometer_is_returned(
+        self, masked_interferometer_7
+    ):
 
-    # def test__make_result__result_interferometer_is_returned(self, masked_interferometer_7):
-    #
-    #     model = af.CollectionPriorModel(
-    #         galaxies=af.CollectionPriorModel(galaxy_0=al.Galaxy(redshift=0.5))
-    #     )
-    #
-    #     search = mock.MockSearch(name="test_phase")
-    #
-    #     analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
-    #
-    #     result = search.fit(model=model, analysis=analysis)
-    #
-    #     assert isinstance(result, res.ResultInterferometer)
+        model = af.CollectionPriorModel(
+            galaxies=af.CollectionPriorModel(galaxy_0=al.Galaxy(redshift=0.5))
+        )
+
+        search = mock.MockSearch(name="test_phase")
+
+        analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
+
+        result = search.fit(model=model, analysis=analysis)
+
+        assert isinstance(result, res.ResultInterferometer)
 
     def test__positions_do_not_trace_within_threshold__raises_exception(
         self, interferometer_7, mask_7x7, visibilities_mask_7

@@ -5,6 +5,7 @@ import json
 from autoconf import conf
 from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoarray.structures import visibilities
 from autogalaxy.profiles import light_profiles as lp
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.analysis import result as res
@@ -100,6 +101,10 @@ class Result(res.Result):
 
 class ResultDataset(Result):
     @property
+    def max_log_likelihood_fit(self):
+        raise NotImplementedError
+
+    @property
     def mask(self):
         return self.analysis.dataset.mask
 
@@ -118,51 +123,6 @@ class ResultDataset(Result):
         return self.max_log_likelihood_tracer.sparse_image_plane_grids_of_planes_from_grid(
             grid=self.analysis.dataset.grid
         )
-
-    @property
-    def stochastic_log_evidences(self):
-
-        stochastic_log_evidences_json_file = path.join(
-            self.search.paths.output_path, "stochastic_log_evidences.json"
-        )
-
-        try:
-            with open(stochastic_log_evidences_json_file, "r") as f:
-                return np.asarray(json.load(f))
-        except FileNotFoundError:
-            pass
-
-
-class ResultImaging(ResultDataset):
-    @property
-    def max_log_likelihood_fit(self):
-
-        hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
-            instance=self.instance
-        )
-
-        hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
-            instance=self.instance
-        )
-
-        return self.analysis.imaging_fit_for_tracer(
-            tracer=self.max_log_likelihood_tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-        )
-
-    @property
-    def unmasked_model_image(self):
-        return self.max_log_likelihood_fit.unmasked_blurred_image
-
-    @property
-    def unmasked_model_image_of_planes(self):
-        return self.max_log_likelihood_fit.unmasked_blurred_image_of_planes
-
-    @property
-    def unmasked_model_image_of_planes_and_galaxies(self):
-        fit = self.max_log_likelihood_fit
-        return fit.unmasked_blurred_image_of_planes_and_galaxies
 
     def image_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
         """
@@ -224,3 +184,130 @@ class ResultImaging(ResultDataset):
             hyper_model_image += self.hyper_galaxy_image_path_dict[path]
 
         return hyper_model_image
+
+    @property
+    def stochastic_log_evidences(self):
+
+        stochastic_log_evidences_json_file = path.join(
+            self.search.paths.output_path, "stochastic_log_evidences.json"
+        )
+
+        try:
+            with open(stochastic_log_evidences_json_file, "r") as f:
+                return np.asarray(json.load(f))
+        except FileNotFoundError:
+            pass
+
+
+class ResultImaging(ResultDataset):
+    @property
+    def max_log_likelihood_fit(self):
+
+        hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
+            instance=self.instance
+        )
+
+        hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
+            instance=self.instance
+        )
+
+        return self.analysis.imaging_fit_for_tracer(
+            tracer=self.max_log_likelihood_tracer,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+        )
+
+    @property
+    def unmasked_model_image(self):
+        return self.max_log_likelihood_fit.unmasked_blurred_image
+
+    @property
+    def unmasked_model_image_of_planes(self):
+        return self.max_log_likelihood_fit.unmasked_blurred_image_of_planes
+
+    @property
+    def unmasked_model_image_of_planes_and_galaxies(self):
+        fit = self.max_log_likelihood_fit
+        return fit.unmasked_blurred_image_of_planes_and_galaxies
+
+
+class ResultInterferometer(ResultDataset):
+    @property
+    def max_log_likelihood_fit(self):
+
+        hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
+            instance=self.instance
+        )
+
+        return self.analysis.masked_interferometer_fit_for_tracer(
+            tracer=self.max_log_likelihood_tracer,
+            hyper_background_noise=hyper_background_noise,
+        )
+
+    @property
+    def real_space_mask(self):
+        return self.max_log_likelihood_fit.masked_interferometer.real_space_mask
+
+    @property
+    def unmasked_model_visibilities(self):
+        return self.max_log_likelihood_fit.unmasked_blurred_image
+
+    @property
+    def unmasked_model_visibilities_of_planes(self):
+        return self.max_log_likelihood_fit.unmasked_blurred_image_of_planes
+
+    @property
+    def unmasked_model_visibilities_of_planes_and_galaxies(self):
+        fit = self.max_log_likelihood_fit
+        return fit.unmasked_blurred_image_of_planes_and_galaxies
+
+    def visibilities_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
+        """
+        Parameters
+        ----------
+        galaxy
+            A galaxy used in this phase
+
+        Returns
+        -------
+        ndarray or None
+            A numpy arrays giving the model visibilities of that galaxy
+        """
+        return self.max_log_likelihood_fit.galaxy_model_visibilities_dict[galaxy]
+
+    @property
+    def visibilities_galaxy_dict(self) -> {str: g.Galaxy}:
+        """
+        A dictionary associating galaxy names with model visibilities of those galaxies
+        """
+        return {
+            galaxy_path: self.visibilities_for_galaxy(galaxy)
+            for galaxy_path, galaxy in self.path_galaxy_tuples
+        }
+
+    @property
+    def hyper_galaxy_visibilities_path_dict(self):
+        """
+        A dictionary associating 1D hyper_galaxies galaxy visibilities with their names.
+        """
+
+        hyper_galaxy_visibilities_path_dict = {}
+
+        for path, galaxy in self.path_galaxy_tuples:
+            hyper_galaxy_visibilities_path_dict[path] = self.visibilities_galaxy_dict[
+                path
+            ]
+
+        return hyper_galaxy_visibilities_path_dict
+
+    @property
+    def hyper_model_visibilities(self):
+
+        hyper_model_visibilities = visibilities.Visibilities.zeros(
+            shape_slim=(self.max_log_likelihood_fit.visibilities.shape_slim,)
+        )
+
+        for path, galaxy in self.path_galaxy_tuples:
+            hyper_model_visibilities += self.hyper_galaxy_visibilities_path_dict[path]
+
+        return hyper_model_visibilities
