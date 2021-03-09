@@ -16,6 +16,36 @@ pytestmark = pytest.mark.filterwarnings(
 directory = path.dirname(path.realpath(__file__))
 
 
+class TestAnalysisAbstract:
+    def test__auto_einstein_radius_is_used__einstein_radius_used_in_analysis(
+        self, masked_imaging_7x7
+    ):
+
+        settings_lens = al.SettingsLens(auto_einstein_radius_factor=None)
+
+        tracer = mock.MockTracer(einstein_radius=2.0)
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            results=mock.MockResults(max_log_likelihood_tracer=tracer),
+            settings_lens=settings_lens,
+        )
+
+        assert analysis.settings_lens.einstein_radius_estimate == None
+
+        settings_lens = al.SettingsLens(auto_einstein_radius_factor=1.0)
+
+        tracer = mock.MockTracer(einstein_radius=2.0)
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            results=mock.MockResults(max_log_likelihood_tracer=tracer),
+            settings_lens=settings_lens,
+        )
+
+        assert analysis.settings_lens.einstein_radius_estimate == 2.0
+
+
 class TestAnalysisDataset:
     def test__positions_do_not_trace_within_threshold__raises_exception(
         self, masked_imaging_7x7
@@ -57,6 +87,31 @@ class TestAnalysisImaging:
         result = search.fit(model=model, analysis=analysis)
 
         assert isinstance(result, res.ResultImaging)
+
+    def test__positions_do_not_trace_within_threshold__raises_exception(
+        self, masked_imaging_7x7
+    ):
+
+        model = af.CollectionPriorModel(
+            galaxies=af.CollectionPriorModel(
+                lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
+                source=al.Galaxy(redshift=1.0),
+            )
+        )
+
+        masked_imaging_7x7.imaging.positions = al.Grid2DIrregular(
+            [(1.0, 100.0), (200.0, 2.0)]
+        )
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            settings_lens=al.SettingsLens(positions_threshold=0.01),
+        )
+
+        instance = model.instance_from_unit_vector([])
+
+        with pytest.raises(exc.RayTracingException):
+            analysis.log_likelihood_function(instance=instance)
 
     def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, masked_imaging_7x7

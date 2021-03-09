@@ -42,7 +42,59 @@ class AnalysisDataset(a.AnalysisDataset):
             preloads=preloads,
         )
 
+        settings_lens = self.modify_einstein_radius_estimate(
+            settings_lens=settings_lens, results=results
+        )
+
         self.settings_lens = settings_lens
+
+    def modify_einstein_radius_estimate(self, settings_lens, results):
+        """
+        Use a previously estimated lens model to estimate the Einstein Radius of the system, and use this Einstein
+        Radius as a resampling constrain in this `Analysis`'s model-fit, whereby mass models which do not produce this
+        Einstein mass within a certain range of values are discarded.
+
+        A typical use case is where we estimate an Einstein Mass by fitting a simple mass model (e.g. a  singular
+        isothermal ellipsoid) which is sufficient to provide an accurate estimate of the Einstein Mass, which we can
+        anticipate more complex mass models must reproduce. We then use this Einstein mass resampling to discard
+        unphysical models when we fit a more complex mass model (e.g. a power-law mass profile).
+
+        If the SettingsLens do not specify an `auto_einstein_radius_factor` or the previous results do not contain a
+        best-fit mass model, the settings are returned unmodified.
+
+        Parameters
+        ----------
+        settings_lens : SettingsLens
+            A class containig all lens modeling settings.
+        results : af.ResultsCollection
+            A list of all previous model-fits performed before this Analysis.
+
+        Returns
+        -------
+        SettingsLens
+            Modified lens settings which include the previously estimated Einstein Radius value and fractional range
+            outside of which unphysical models are discarded.
+        """
+
+        if (settings_lens.auto_einstein_radius_factor is not None) and (
+            results is not None
+        ):
+
+            if results.last is not None:
+
+                if results.last.max_log_likelihood_tracer.has_mass_profile:
+
+                    einstein_radius = results.last.max_log_likelihood_tracer.einstein_radius_from_grid(
+                        grid=self.dataset.data.mask.unmasked_grid_sub_1
+                    )
+
+                    return settings_lens.modify_einstein_radius_estimate(
+                        einstein_radius_estimate=einstein_radius
+                    )
+
+        return settings_lens.modify_einstein_radius_estimate(
+            einstein_radius_estimate=None
+        )
 
     def tracer_for_instance(self, instance):
 

@@ -108,7 +108,8 @@ class PhaseDataset(dataset.PhaseDataset):
         )
 
     def updated_positions_from_positions_and_results(self, positions, results):
-        """If automatic position updating is on, update the phase's positions using the results of the previous phase's
+        """
+        If automatic position updating is on, update the phase's positions using the results of the previous phase's
         lens model, by ray-tracing backwards the best-fit source centre(s) to the image-plane.
 
         The outcome of this function are as follows:

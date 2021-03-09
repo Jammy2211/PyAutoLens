@@ -5,7 +5,7 @@ from os import path
 import pytest
 from autoconf import conf
 import autolens as al
-from autolens.pipeline import visualizer as vis
+from autolens.analysis import visualizer as vis
 
 directory = path.dirname(path.realpath(__file__))
 

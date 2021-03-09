@@ -18,64 +18,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 class TestMakeAnalysis:
-    def test__positions_are_input__are_used_in_analysis(
-        self, image_7x7, noise_map_7x7, mask_7x7
-    ):
-        # If position threshold is input (not None) and positions are input, make the positions part of the lens dataset.
-
-        imaging_7x7 = al.Imaging(
-            image=image_7x7,
-            noise_map=noise_map_7x7,
-            positions=al.Grid2DIrregular([(1.0, 1.0), (2.0, 2.0)]),
-        )
-
-        phase_imaging_7x7 = al.PhaseImaging(
-            search=mock.MockSearch("test_phase"),
-            settings=al.SettingsPhaseImaging(
-                settings_lens=al.SettingsLens(positions_threshold=0.2)
-            ),
-        )
-
-        phase_imaging_7x7.modify_dataset(
-            dataset=imaging_7x7, results=mock.MockResults()
-        )
-        phase_imaging_7x7.modify_settings(
-            dataset=imaging_7x7, results=mock.MockResults()
-        )
-
-        analysis = phase_imaging_7x7.make_analysis(
-            dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults()
-        )
-
-        assert (
-            analysis.masked_dataset.positions.in_list[0] == np.array([1.0, 1.0])
-        ).all()
-        assert (
-            analysis.masked_dataset.positions.in_list[1] == np.array([2.0, 2.0])
-        ).all()
-        assert analysis.settings.settings_lens.positions_threshold == 0.2
-
-        # If position threshold is input (not None) and but no positions are supplied, raise an error
-
-        # with pytest.raises(exc.PhaseException):
-        #     imaging_7x7 = al.Imaging(
-        #         image=image_7x7, noise_map=noise_map_7x7, positions=None
-        #     )
-        #
-        #     phase_imaging_7x7 = al.PhaseImaging(
-        #         search=mock.MockSearch("test_phase"),
-        #         settings=al.SettingsPhaseImaging(
-        #             settings_lens=al.SettingsLens(positions_threshold=0.2)
-        #         ),
-        #     )
-        #
-        #     phase_imaging_7x7.modify_dataset(
-        #         dataset=imaging_7x7, results=mock.MockResults()
-        #     )
-        #     phase_imaging_7x7.modify_settings(
-        #         dataset=imaging_7x7, results=mock.MockResults()
-        #     )
-
     def test__auto_einstein_radius_is_used__einstein_radius_used_in_analysis(
         self, imaging_7x7, mask_7x7
     ):
