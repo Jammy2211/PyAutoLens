@@ -4,6 +4,8 @@ from os import path
 import pickle
 from typing import List
 import json
+from scipy.stats import norm
+import math
 from astropy import cosmology as cosmo
 
 from autoconf import conf
@@ -22,6 +24,7 @@ from autolens.lens import settings
 from autolens.analysis import result as res
 from autolens.analysis import result_util
 from autolens.analysis import visualizer as vis
+from autolens import exc
 
 
 class AnalysisDataset(a.AnalysisDataset):
@@ -195,6 +198,22 @@ class AnalysisDataset(a.AnalysisDataset):
             curvature_matrix=curvature_matrix,
         )
 
+    def log_likelihood_cap_from(self, stochastic_log_evidences_json_file):
+
+        try:
+            with open(stochastic_log_evidences_json_file, "r") as f:
+                stochastic_log_evidences = np.asarray(json.load(f))
+        except FileNotFoundError:
+            raise exc.AnalysisException(
+                "The file 'stochastic_log_evidences.json' could not be found in the output of the model-fitting results"
+                "in the analysis before the stochastic analysis. Rerun PyAutoLens with `stochastic_outputs=True` in the"
+                "`general.ini` configuration file."
+            )
+
+        mean, sigma = norm.fit(stochastic_log_evidences)
+
+        return mean
+
     def tracer_for_instance(self, instance):
 
         if hasattr(instance, "perturbation"):
@@ -206,6 +225,13 @@ class AnalysisDataset(a.AnalysisDataset):
 
     def stochastic_log_evidences_for_instance(self, instance) -> List[float]:
         raise NotImplementedError()
+
+    def save_settings(self, paths: af.Paths):
+
+        super().save_settings(paths=paths)
+
+        with open(f"{paths.pickle_path}/settings_lens.pickle", "wb+") as f:
+            pickle.dump(self.settings_lens, f)
 
     def save_stochastic_outputs(self, paths: af.Paths, samples: af.OptimizerSamples):
 

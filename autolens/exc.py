@@ -13,7 +13,7 @@ class PlottingException(Exception):
     pass
 
 
-class PhaseException(Exception):
+class AnalysisException(Exception):
     pass
 
 
