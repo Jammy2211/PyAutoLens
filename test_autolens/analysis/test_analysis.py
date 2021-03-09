@@ -18,6 +18,220 @@ directory = path.dirname(path.realpath(__file__))
 
 
 class TestAnalysisAbstract:
+    def test__auto_positions__updates_positions_correctly_using_results_tracer(
+        self, masked_imaging_7x7
+    ):
+
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
+        )
+
+        # Auto positioning is OFF, so use input positions + threshold.
+
+        settings_lens = al.SettingsLens(positions_threshold=0.1)
+
+        results = mock.MockResults(max_log_likelihood_tracer=tracer)
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 1.0)]),
+            settings_lens=settings_lens,
+            results=results,
+        )
+
+        assert analysis.positions.in_list == [(1.0, 1.0)]
+
+        # Auto positioning is ON, but there are no previous results, so use input positions.
+
+        settings_lens = al.SettingsLens(
+            positions_threshold=0.2, auto_positions_factor=2.0
+        )
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 1.0)]),
+            settings_lens=settings_lens,
+            results=results,
+        )
+
+        assert analysis.positions.in_list == [(1.0, 1.0)]
+
+        # Auto positioning is ON, there are previous results so use their new positions and threshold (which is
+        # multiplied by the auto_positions_factor). However, only one set of positions is computed from the previous
+        # result, to use input positions.
+
+        results = mock.MockResults(
+            max_log_likelihood_tracer=tracer,
+            updated_positions=al.Grid2DIrregular(grid=[(2.0, 2.0)]),
+            updated_positions_threshold=0.3,
+        )
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 1.0)]),
+            settings_lens=settings_lens,
+            results=results,
+        )
+
+        assert analysis.positions.in_list == [(1.0, 1.0)]
+
+        # Auto positioning is ON, but the tracer only has a single plane and thus no lensing, so use input positions.
+
+        settings_lens = al.SettingsLens(
+            positions_threshold=0.2, auto_positions_factor=1.0
+        )
+
+        tracer_x1_plane = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5)])
+
+        results = mock.MockResults(
+            max_log_likelihood_tracer=tracer_x1_plane,
+            updated_positions=al.Grid2DIrregular(grid=[(2.0, 2.0), (3.0, 3.0)]),
+            updated_positions_threshold=0.3,
+        )
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 1.0)]),
+            settings_lens=settings_lens,
+            results=results,
+        )
+
+        assert analysis.positions.in_list == [(1.0, 1.0)]
+
+        # Auto positioning is ON, there are previous results so use their new positions and threshold (which is
+        # multiplied by the auto_positions_factor). Multiple positions are available so these are now used.
+
+        settings_lens = al.SettingsLens(
+            positions_threshold=0.2, auto_positions_factor=2.0
+        )
+
+        results = mock.MockResults(
+            max_log_likelihood_tracer=tracer,
+            updated_positions=al.Grid2DIrregular(grid=[(2.0, 2.0), (3.0, 3.0)]),
+            updated_positions_threshold=0.3,
+        )
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 1.0)]),
+            settings_lens=settings_lens,
+            results=results,
+        )
+
+        assert analysis.positions.in_list == [(2.0, 2.0), (3.0, 3.0)]
+
+        # Auto positioning is Off, but there are previous results with updated positions relative to the input
+        # positions, so use those with their positions threshold.
+
+        settings_lens = al.SettingsLens(positions_threshold=0.1)
+
+        results = mock.MockResults(
+            max_log_likelihood_tracer=tracer,
+            positions=al.Grid2DIrregular(grid=[(3.0, 3.0), (4.0, 4.0)]),
+            updated_positions_threshold=0.3,
+        )
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 1.0)]),
+            settings_lens=settings_lens,
+            results=results,
+        )
+
+        assert analysis.positions.in_list == [(3.0, 3.0), (4.0, 4.0)]
+
+    def test__auto_positions__updates_positions_threshold_correctly_and_uses_auto_update_factor(
+        self, masked_imaging_7x7
+    ):
+
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
+        )
+
+        # Auto positioning is OFF, so use input positions + threshold.
+
+        settings_lens = al.SettingsLens(positions_threshold=0.1)
+
+        results = mock.MockResults(max_log_likelihood_tracer=tracer)
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 1.0)]),
+            settings_lens=settings_lens,
+            results=results,
+        )
+
+        assert analysis.settings_lens.positions_threshold == 0.1
+
+        # Auto positioning is ON, but there are no previous results, so use separate of postiions x positions factor..
+
+        settings_lens = al.SettingsLens(
+            positions_threshold=0.1, auto_positions_factor=1.0
+        )
+
+        results = mock.MockResults(max_log_likelihood_tracer=tracer)
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 0.0), (-1.0, 0.0)]),
+            settings_lens=settings_lens,
+            results=results,
+        )
+
+        assert analysis.settings_lens.positions_threshold == 2.0
+
+        # Auto position is ON, and same as above but with a factor of 3.0 which increases the threshold.
+
+        settings_lens = al.SettingsLens(
+            positions_threshold=0.2, auto_positions_factor=3.0
+        )
+
+        results = mock.MockResults(
+            max_log_likelihood_tracer=tracer, updated_positions_threshold=0.2
+        )
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 0.0), (-1.0, 0.0)]),
+            settings_lens=settings_lens,
+            results=results,
+        )
+
+        assert analysis.settings_lens.positions_threshold == 6.0
+
+        # Auto position is ON, and same as above but with a minimum auto positions threshold that rounds the value up.
+
+        settings_lens = al.SettingsLens(
+            positions_threshold=0.2,
+            auto_positions_factor=3.0,
+            auto_positions_minimum_threshold=10.0,
+        )
+
+        results = mock.MockResults(
+            max_log_likelihood_tracer=tracer, updated_positions_threshold=0.2
+        )
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 0.0), (-1.0, 0.0)]),
+            settings_lens=settings_lens,
+            results=results,
+        )
+
+        assert analysis.settings_lens.positions_threshold == 10.0
+
+        # Auto positioning is ON, but positions are None and it cannot find new positions so no threshold.
+
+        settings_lens = al.SettingsLens(auto_positions_factor=1.0)
+
+        results = mock.MockResults(max_log_likelihood_tracer=tracer)
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7, settings_lens=settings_lens, results=results
+        )
+
+        assert analysis.settings_lens.positions_threshold == None
+
     def test__auto_einstein_radius_is_used__einstein_radius_used_in_analysis(
         self, masked_imaging_7x7
     ):
@@ -48,31 +262,6 @@ class TestAnalysisAbstract:
 
 
 class TestAnalysisDataset:
-    def test__positions_do_not_trace_within_threshold__raises_exception(
-        self, masked_imaging_7x7
-    ):
-
-        masked_imaging_7x7.imaging.positions = al.Grid2DIrregular(
-            [(1.0, 100.0), (200.0, 2.0)]
-        )
-
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(
-                lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
-                source=al.Galaxy(redshift=1.0),
-            )
-        )
-
-        settings_lens = al.SettingsLens(positions_threshold=0.01)
-
-        analysis = al.AnalysisImaging(
-            dataset=masked_imaging_7x7, settings_lens=settings_lens
-        )
-        instance = model.instance_from_unit_vector([])
-
-        with pytest.raises(exc.RayTracingException):
-            analysis.log_likelihood_function(instance=instance)
-
     def test__use_border__determines_if_border_pixel_relocation_is_used(
         self, masked_imaging_7x7
     ):
@@ -154,12 +343,9 @@ class TestAnalysisImaging:
             )
         )
 
-        masked_imaging_7x7.imaging.positions = al.Grid2DIrregular(
-            [(1.0, 100.0), (200.0, 2.0)]
-        )
-
         analysis = al.AnalysisImaging(
             dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
             settings_lens=al.SettingsLens(positions_threshold=0.01),
         )
 
@@ -363,10 +549,9 @@ class TestAnalysisInterferometer:
             )
         )
 
-        interferometer_7.positions = al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)])
-
         analysis = al.AnalysisInterferometer(
             dataset=interferometer_7,
+            positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
             settings_lens=al.SettingsLens(positions_threshold=0.01),
         )
 

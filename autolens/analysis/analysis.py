@@ -9,6 +9,7 @@ from astropy import cosmology as cosmo
 from autoconf import conf
 import autofit as af
 from autofit.exc import FitException
+from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.inversion import pixelizations as pix, inversions as inv
 from autoarray import preloads as pload
 from autoarray.exc import PixelizationException, InversionException, GridException
@@ -18,6 +19,7 @@ from autolens.lens import ray_tracing
 from autolens.fit import fit
 from autolens.lens import settings
 from autolens.analysis import result as res
+from autolens.analysis import result_util
 from autolens.analysis import visualizer as vis
 
 
@@ -25,6 +27,7 @@ class AnalysisDataset(a.AnalysisDataset):
     def __init__(
         self,
         dataset,
+        positions: grid_2d_irregular.Grid2DIrregular = None,
         results=None,
         cosmology=cosmo.Planck15,
         settings_pixelization=pix.SettingsPixelization(),
@@ -32,6 +35,22 @@ class AnalysisDataset(a.AnalysisDataset):
         settings_lens=settings.SettingsLens(),
         preloads=pload.Preloads(),
     ):
+        """
+
+        Parameters
+        ----------
+        dataset
+        positions : grid_2d_irregular.Grid2DIrregular
+            Image-pixel coordinates in arc-seconds of bright regions of the lensed source that will map close to one
+            another in the source-plane(s) for an accurate mass model, which can be used to discard unphysical mass
+            models during model-fitting.
+        results
+        cosmology
+        settings_pixelization
+        settings_inversion
+        settings_lens
+        preloads
+        """
 
         super().__init__(
             dataset=dataset,
@@ -42,13 +61,41 @@ class AnalysisDataset(a.AnalysisDataset):
             preloads=preloads,
         )
 
-        settings_lens = self.modify_einstein_radius_estimate(
-            settings_lens=settings_lens, results=results
-        )
-
         self.settings_lens = settings_lens
 
-    def modify_einstein_radius_estimate(self, settings_lens, results):
+        self.positions = self.modify_positions(
+            positions=positions,
+            results=results,
+            auto_positions_factor=self.settings_lens.auto_positions_factor,
+        )
+
+        self.settings_lens = self.modify_positions_threshold(results=results)
+
+        self.settings_lens = self.modify_einstein_radius_estimate(results=results)
+
+    def modify_positions(self, positions, results, auto_positions_factor):
+
+        return result_util.updated_positions_from(
+            positions=positions,
+            results=results,
+            auto_positions_factor=auto_positions_factor,
+        )
+
+    def modify_positions_threshold(self, results):
+
+        positions_threshold = result_util.updated_positions_threshold_from(
+            positions=self.positions,
+            results=results,
+            positions_threshold=self.settings_lens.positions_threshold,
+            auto_positions_factor=self.settings_lens.auto_positions_factor,
+            auto_positions_minimum_threshold=self.settings_lens.auto_positions_minimum_threshold,
+        )
+
+        return self.settings_lens.modify_positions_threshold(
+            positions_threshold=positions_threshold
+        )
+
+    def modify_einstein_radius_estimate(self, results):
         """
         Use a previously estimated lens model to estimate the Einstein Radius of the system, and use this Einstein
         Radius as a resampling constrain in this `Analysis`'s model-fit, whereby mass models which do not produce this
@@ -76,7 +123,7 @@ class AnalysisDataset(a.AnalysisDataset):
             outside of which unphysical models are discarded.
         """
 
-        if (settings_lens.auto_einstein_radius_factor is not None) and (
+        if (self.settings_lens.auto_einstein_radius_factor is not None) and (
             results is not None
         ):
 
@@ -88,11 +135,11 @@ class AnalysisDataset(a.AnalysisDataset):
                         grid=self.dataset.data.mask.unmasked_grid_sub_1
                     )
 
-                    return settings_lens.modify_einstein_radius_estimate(
+                    return self.settings_lens.modify_einstein_radius_estimate(
                         einstein_radius_estimate=einstein_radius
                     )
 
-        return settings_lens.modify_einstein_radius_estimate(
+        return self.settings_lens.modify_einstein_radius_estimate(
             einstein_radius_estimate=None
         )
 
@@ -170,7 +217,7 @@ class AnalysisImaging(AnalysisDataset):
         tracer = self.tracer_for_instance(instance=instance)
 
         self.settings_lens.check_positions_trace_within_threshold_via_tracer(
-            tracer=tracer, positions=self.dataset.positions
+            tracer=tracer, positions=self.positions
         )
 
         self.settings_lens.check_einstein_radius_with_threshold_via_tracer(
@@ -329,6 +376,7 @@ class AnalysisInterferometer(AnalysisDataset):
     def __init__(
         self,
         dataset,
+        positions: grid_2d_irregular.Grid2DIrregular = None,
         results=None,
         cosmology=cosmo.Planck15,
         settings_pixelization=pix.SettingsPixelization(),
@@ -339,6 +387,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         super().__init__(
             dataset=dataset,
+            positions=positions,
             results=results,
             cosmology=cosmology,
             settings_pixelization=settings_pixelization,
@@ -385,7 +434,7 @@ class AnalysisInterferometer(AnalysisDataset):
         tracer = self.tracer_for_instance(instance=instance)
 
         self.settings_lens.check_positions_trace_within_threshold_via_tracer(
-            tracer=tracer, positions=self.dataset.positions
+            tracer=tracer, positions=self.positions
         )
 
         hyper_background_noise = self.hyper_background_noise_for_instance(
