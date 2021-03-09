@@ -13,6 +13,7 @@ from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.inversion import pixelizations as pix, inversions as inv
 from autoarray import preloads as pload
 from autoarray.exc import PixelizationException, InversionException, GridException
+from autogalaxy.analysis import model_util
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.analysis import analysis as a
 from autolens.lens import ray_tracing
@@ -141,6 +142,57 @@ class AnalysisDataset(a.AnalysisDataset):
 
         return self.settings_lens.modify_einstein_radius_estimate(
             einstein_radius_estimate=None
+        )
+
+    def modify_before_fit(self, model, paths: af.Paths):
+
+        self.preloads = self.setup_preloads(model=model)
+
+    def setup_preloads(self, model):
+
+        # Preload the source-plane grid of coordinates if the source parameters are fixed, skipping the KMeans.
+
+        sparse_grids_of_planes = None
+        blurred_mapping_matrix = None
+        curvature_matrix = None
+        mapper = None
+
+        if (
+            self.results.last is not None
+            and model_util.pixelization_from(model=model) is not None
+            and not model_util.pixelization_is_model_from(model=model)
+        ):
+            if model.pixelization.__class__ is self.results.last.pixelization.__class__:
+                if hasattr(self.results.last, "hyper"):
+                    sparse_grids_of_planes = (
+                        self.results.last.hyper.max_log_likelihood_pixelization_grids_of_planes
+                    )
+                else:
+                    sparse_grids_of_planes = (
+                        self.results.last.max_log_likelihood_pixelization_grids_of_planes
+                    )
+
+        # Preload the blurred_mapping_matrix and curvature matrix calculation if only the parametric light profiles
+        # are being fitted.
+
+        # if self.preload_inversion and not self.is_hyper_phase:
+        #
+        #     if hasattr(results.last, "hyper"):
+        #         inversion = results.last.hyper.max_log_likelihood_fit.inversion
+        #     else:
+        #         inversion = results.last.max_log_likelihood_fit.inversion
+        #
+        #     if inversion is not None:
+        #
+        #         blurred_mapping_matrix = inversion.blurred_mapping_matrix
+        #         curvature_matrix = inversion.curvature_matrix
+        #         mapper = inversion.mapper
+
+        return pload.Preloads(
+            sparse_grids_of_planes=sparse_grids_of_planes,
+            mapper=mapper,
+            blurred_mapping_matrix=blurred_mapping_matrix,
+            curvature_matrix=curvature_matrix,
         )
 
     def tracer_for_instance(self, instance):
