@@ -1,4 +1,5 @@
 from os import path
+import numpy as np
 
 import autofit as af
 import autolens as al
@@ -71,6 +72,60 @@ class TestAnalysisDataset:
 
         with pytest.raises(exc.RayTracingException):
             analysis.log_likelihood_function(instance=instance)
+
+    def test__use_border__determines_if_border_pixel_relocation_is_used(
+        self, masked_imaging_7x7
+    ):
+
+        model = af.CollectionPriorModel(
+            galaxies=af.CollectionPriorModel(
+                lens=al.Galaxy(
+                    redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=100.0)
+                ),
+                source=al.Galaxy(
+                    redshift=1.0,
+                    pixelization=al.pix.Rectangular(shape=(3, 3)),
+                    regularization=al.reg.Constant(coefficient=1.0),
+                ),
+            )
+        )
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            settings_pixelization=al.SettingsPixelization(use_border=True),
+        )
+
+        analysis.dataset.grid_inversion[4] = np.array([[500.0, 0.0]])
+
+        instance = model.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = analysis.imaging_fit_for_tracer(
+            tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
+        )
+
+        assert fit.inversion.mapper.source_grid_slim[4][0] == pytest.approx(
+            97.19584, 1.0e-2
+        )
+        assert fit.inversion.mapper.source_grid_slim[4][1] == pytest.approx(
+            -3.699999, 1.0e-2
+        )
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            settings_pixelization=al.SettingsPixelization(use_border=False),
+        )
+
+        analysis.dataset.grid_inversion[4] = np.array([300.0, 0.0])
+
+        instance = model.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = analysis.imaging_fit_for_tracer(
+            tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
+        )
+
+        assert fit.inversion.mapper.source_grid_slim[4][0] == pytest.approx(
+            200.0, 1.0e-4
+        )
 
 
 class TestAnalysisImaging:
