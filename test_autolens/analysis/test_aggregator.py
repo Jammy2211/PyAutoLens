@@ -24,21 +24,27 @@ def make_samples():
     return mock.MockSamples(max_log_likelihood_instance=tracer)
 
 
-def test__tracer_generator_from_aggregator(imaging_7x7, mask_7x7, samples):
-
-    phase_imaging_7x7 = al.PhaseImaging(
-        galaxies=dict(
+@pytest.fixture(name="model")
+def make_model():
+    return af.CollectionPriorModel(
+        galaxies=af.CollectionPriorModel(
             lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
             source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
-        ),
-        search=mock.MockSearch("test_phase_aggregator", samples=samples),
+        )
     )
 
-    phase_imaging_7x7.run(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults(samples=samples)
+
+def test__tracer_generator_from_aggregator(masked_imaging_7x7, samples, model):
+
+    search = mock.MockSearch(
+        paths=af.Paths(path_prefix="aggregator_tracer_gen"), samples=samples
     )
 
-    agg = af.Aggregator(directory=phase_imaging_7x7.paths.output_path)
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
+    search.fit(model=model, analysis=analysis)
+
+    agg = af.Aggregator(directory=search.paths.output_path)
 
     tracer_gen = al.agg.Tracer(aggregator=agg)
 
@@ -49,30 +55,31 @@ def test__tracer_generator_from_aggregator(imaging_7x7, mask_7x7, samples):
         assert tracer.galaxies[1].redshift == 1.0
 
 
-def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7, samples):
+def test__masked_imaging_generator_from_aggregator(
+    imaging_7x7, mask_7x7, samples, model
+):
 
-    phase_imaging_7x7 = al.PhaseImaging(
-        galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
-            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+    masked_imaging_7x7 = al.MaskedImaging(
+        imaging=imaging_7x7,
+        mask=mask_7x7,
+        settings=al.SettingsMaskedImaging(
+            grid_class=al.Grid2DIterate,
+            grid_inversion_class=al.Grid2DInterpolate,
+            fractional_accuracy=0.5,
+            sub_steps=[2],
+            pixel_scales_interp=0.1,
         ),
-        settings=al.SettingsPhaseImaging(
-            settings_masked_imaging=al.SettingsMaskedImaging(
-                grid_class=al.Grid2DIterate,
-                grid_inversion_class=al.Grid2DInterpolate,
-                fractional_accuracy=0.5,
-                sub_steps=[2],
-                pixel_scales_interp=0.1,
-            )
-        ),
-        search=mock.MockSearch("test_phase_aggregator", samples=samples),
     )
 
-    phase_imaging_7x7.run(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults(samples=samples)
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
+    search = mock.MockSearch(
+        paths=af.Paths(path_prefix="aggregator_masked_imaging_gen"), samples=samples
     )
 
-    agg = af.Aggregator(directory=phase_imaging_7x7.paths.output_path)
+    search.fit(model=model, analysis=analysis)
+
+    agg = af.Aggregator(directory=search.paths.output_path)
 
     masked_imaging_gen = al.agg.MaskedImaging(aggregator=agg)
 
@@ -85,58 +92,54 @@ def test__masked_imaging_generator_from_aggregator(imaging_7x7, mask_7x7, sample
         assert masked_imaging.grid_inversion.pixel_scales_interp == (0.1, 0.1)
 
 
-def test__fit_imaging_generator_from_aggregator(imaging_7x7, mask_7x7, samples):
+def test__fit_imaging_generator_from_aggregator(masked_imaging_7x7, samples, model):
 
-    phase_imaging_7x7 = al.PhaseImaging(
-        galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
-            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
-        ),
-        search=mock.MockSearch("test_phase_aggregator", samples=samples),
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
+    search = mock.MockSearch(
+        paths=af.Paths(path_prefix="aggregator_fit_imaging_gen"), samples=samples
     )
 
-    phase_imaging_7x7.run(
-        dataset=imaging_7x7, mask=mask_7x7, results=mock.MockResults(samples=samples)
-    )
+    search.fit(model=model, analysis=analysis)
 
-    agg = af.Aggregator(directory=phase_imaging_7x7.paths.output_path)
+    agg = af.Aggregator(directory=search.paths.output_path)
 
     fit_imaging_gen = al.agg.FitImaging(aggregator=agg)
 
     for fit_imaging in fit_imaging_gen:
-        assert (fit_imaging.masked_imaging.imaging.image == imaging_7x7.image).all()
+        assert (
+            fit_imaging.masked_imaging.imaging.image == masked_imaging_7x7.imaging.image
+        ).all()
 
 
 def test__masked_interferometer_generator_from_aggregator(
-    interferometer_7, visibilities_mask_7, mask_7x7, samples
+    interferometer_7, visibilities_mask_7, mask_7x7, samples, model
 ):
 
-    phase_interferometer_7x7 = al.PhaseInterferometer(
-        galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
-            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
-        ),
-        settings=al.SettingsPhaseInterferometer(
-            settings_masked_interferometer=al.SettingsMaskedInterferometer(
-                transformer_class=al.TransformerDFT,
-                grid_class=al.Grid2DIterate,
-                grid_inversion_class=al.Grid2DInterpolate,
-                fractional_accuracy=0.5,
-                sub_steps=[2],
-                pixel_scales_interp=0.1,
-            )
-        ),
-        search=mock.MockSearch("test_phase_aggregator", samples=samples),
+    masked_interferometer = al.MaskedInterferometer(
+        interferometer=interferometer_7,
+        visibilities_mask=visibilities_mask_7,
         real_space_mask=mask_7x7,
+        settings=al.SettingsMaskedInterferometer(
+            transformer_class=al.TransformerDFT,
+            grid_class=al.Grid2DIterate,
+            grid_inversion_class=al.Grid2DInterpolate,
+            fractional_accuracy=0.5,
+            sub_steps=[2],
+            pixel_scales_interp=0.1,
+        ),
     )
 
-    phase_interferometer_7x7.run(
-        dataset=interferometer_7,
-        mask=visibilities_mask_7,
-        results=mock.MockResults(samples=samples),
+    search = mock.MockSearch(
+        paths=af.Paths(path_prefix="aggregator_masked_interferometer_gen"),
+        samples=samples,
     )
 
-    agg = af.Aggregator(directory=phase_interferometer_7x7.paths.output_path)
+    analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
+
+    search.fit(model=model, analysis=analysis)
+
+    agg = af.Aggregator(directory=search.paths.output_path)
 
     masked_interferometer_gen = al.agg.MaskedInterferometer(aggregator=agg)
 
@@ -155,32 +158,25 @@ def test__masked_interferometer_generator_from_aggregator(
 
 
 def test__fit_interferometer_generator_from_aggregator(
-    interferometer_7, visibilities_mask_7, mask_7x7, samples
+    masked_interferometer_7, mask_7x7, samples, model
 ):
 
-    phase_interferometer_7x7 = al.PhaseInterferometer(
-        galaxies=dict(
-            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
-            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
-        ),
-        search=mock.MockSearch("test_phase_aggregator", samples=samples),
-        real_space_mask=mask_7x7,
+    search = mock.MockSearch(
+        paths=af.Paths(path_prefix="aggregator_fit_interferometer_gen"), samples=samples
     )
 
-    phase_interferometer_7x7.run(
-        dataset=interferometer_7,
-        mask=visibilities_mask_7,
-        results=mock.MockResults(samples=samples),
-    )
+    analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
 
-    agg = af.Aggregator(directory=phase_interferometer_7x7.paths.output_path)
+    search.fit(model=model, analysis=analysis)
+
+    agg = af.Aggregator(directory=search.paths.output_path)
 
     fit_interferometer_gen = al.agg.FitInterferometer(aggregator=agg)
 
     for fit_interferometer in fit_interferometer_gen:
         assert (
             fit_interferometer.masked_interferometer.interferometer.visibilities
-            == interferometer_7.visibilities
+            == masked_interferometer_7.interferometer.visibilities
         ).all()
         assert (
             fit_interferometer.masked_interferometer.real_space_mask == mask_7x7

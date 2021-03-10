@@ -97,7 +97,7 @@ def masked_imaging_from_agg_obj(
     """
 
     if settings_masked_imaging is None:
-        settings_masked_imaging = agg_obj.settings.settings_masked_imaging
+        settings_masked_imaging = agg_obj.settings_masked_dataset
 
     return al.MaskedImaging(
         imaging=agg_obj.dataset, mask=agg_obj.mask, settings=settings_masked_imaging
@@ -156,10 +156,10 @@ def fit_imaging_from_agg_obj(
     tracer = tracer_from_agg_obj(agg_obj=agg_obj)
 
     if settings_pixelization is None:
-        settings_pixelization = agg_obj.settings.settings_pixelization
+        settings_pixelization = agg_obj.settings_pixelization
 
     if settings_inversion is None:
-        settings_inversion = agg_obj.settings.settings_inversion
+        settings_inversion = agg_obj.settings_inversion
 
     return al.FitImaging(
         masked_imaging=masked_imaging,
@@ -213,7 +213,7 @@ def masked_interferometer_from_agg_obj(
     """
 
     if settings_masked_interferometer is None:
-        settings_masked_interferometer = agg_obj.settings.settings_masked_interferometer
+        settings_masked_interferometer = agg_obj.settings_masked_dataset
 
     return al.MaskedInterferometer(
         interferometer=agg_obj.dataset,
@@ -277,10 +277,10 @@ def fit_interferometer_from_agg_obj(
     tracer = tracer_from_agg_obj(agg_obj=agg_obj)
 
     if settings_pixelization is None:
-        settings_pixelization = agg_obj.settings.settings_pixelization
+        settings_pixelization = agg_obj.settings_pixelization
 
     if settings_inversion is None:
-        settings_inversion = agg_obj.settings.settings_inversion
+        settings_inversion = agg_obj.settings_inversion
 
     return al.FitInterferometer(
         masked_interferometer=masked_interferometer,

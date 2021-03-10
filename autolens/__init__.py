@@ -17,6 +17,7 @@ from autoarray.structures.arrays.values import ValuesIrregular
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
+from autoarray.structures.grids.two_d.grid_2d_interpolate import Grid2DInterpolate
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregularUniform
@@ -41,7 +42,7 @@ from autogalaxy.profiles import (
 )
 from autogalaxy import convert
 
-from . import aggregator as agg
+from .analysis import aggregator as agg
 from . import plot
 from .dataset.imaging import MaskedImaging, SimulatorImaging
 from .dataset.interferometer import MaskedInterferometer, SimulatorInterferometer
