@@ -3,7 +3,7 @@ import autogalaxy as ag
 from autoconf import conf
 from autoarray.inversion import pixelizations as pix, regularization as reg
 from autogalaxy.profiles import mass_profiles as mp
-from autogalaxy.pipeline import setup as ag_setup
+from autogalaxy.analysis import setup as ag_setup
 from autolens.pipeline import setup
 
 from typing import Union
@@ -219,21 +219,6 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
         self.setup_smbh = setup_smbh
         self.light_is_model = light_is_model
 
-    @property
-    def light_is_model_tag(self) -> str:
-        """
-        Tag for if the lens light of the mass pipeline and / or phase are fixed to a previous estimate, or varied
-        during he analysis, to customize phase names.
-
-        For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
-
-        light_is_model = `False` -> setup__
-        light_is_model = `True` -> setup___light_is_model
-        """
-        if self.light_is_model:
-            return f"__{conf.instance['notation']['setup_tags']['pipeline']['light_is_model']}"
-        return f"__{conf.instance['notation']['setup_tags']['pipeline']['light_is_instance']}"
-
     def smbh_prior_model_from_result(self, result: af.Result):
 
         if self.setup_smbh is not None:
@@ -282,7 +267,7 @@ class SLaM:
         Parameters
         ----------
         path_prefix : str or None
-            The prefix of folders between the output path of the pipeline and the pipeline name, tags and phase folders.
+            The prefix of folders between the output path and the search folder.
         redshift_lens : float
             The redshift of the lens galaxy used by the pipeline for converting arc-seconds to kpc, masses to solMass,
             etc.
@@ -364,145 +349,6 @@ class SLaM:
                 folder_names_new.append(folder_name[len(folder_name) // 2 :])
 
         return os.path.join(*folder_names_new)
-
-    @property
-    def source_parametric_tag(self) -> str:
-        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to."""
-
-        setup_tag = conf.instance["notation"]["setup_tags"]["names"]["source"]
-        hyper_tag = (
-            f"__{self.setup_hyper.tag_no_fixed}" if self.setup_hyper is not None else ""
-        )
-
-        if hyper_tag == "__":
-            hyper_tag = ""
-
-        source_tag = (
-            f"__{self.pipeline_source_parametric.setup_source.tag}"
-            if self.pipeline_source_parametric.setup_source is not None
-            else ""
-        )
-        if self.pipeline_light is not None:
-            light_tag = (
-                f"__{self.pipeline_source_parametric.setup_light.tag}"
-                if self.pipeline_source_parametric.setup_light is not None
-                else ""
-            )
-        else:
-            light_tag = ""
-        mass_tag = (
-            f"__{self.pipeline_source_parametric.setup_mass.tag}"
-            if self.pipeline_source_parametric.setup_mass is not None
-            else ""
-        )
-        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
-
-    @property
-    def source_inversion_tag(self) -> str:
-        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to."""
-
-        setup_tag = conf.instance["notation"]["setup_tags"]["names"]["source"]
-        hyper_tag = (
-            f"__{self.setup_hyper.tag_no_fixed}" if self.setup_hyper is not None else ""
-        )
-
-        if hyper_tag == "__":
-            hyper_tag = ""
-
-        source_tag = (
-            f"__{self.pipeline_source_inversion.setup_source.tag}"
-            if self.pipeline_source_inversion.setup_source is not None
-            else ""
-        )
-        if self.pipeline_light is not None:
-            light_tag = (
-                f"__{self.pipeline_source_inversion.setup_light.tag}"
-                if self.pipeline_source_inversion.setup_light is not None
-                else ""
-            )
-        else:
-            light_tag = ""
-        mass_tag = (
-            f"__{self.pipeline_source_inversion.setup_mass.tag}"
-            if self.pipeline_source_inversion.setup_mass is not None
-            else ""
-        )
-
-        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
-
-    @property
-    def source_tag(self) -> str:
-        if self.pipeline_source_inversion is None:
-            return self.source_parametric_tag
-        return self.source_inversion_tag
-
-    @property
-    def light_parametric_tag(self) -> str:
-        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to."""
-
-        setup_tag = conf.instance["notation"]["setup_tags"]["names"]["light"]
-        hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
-
-        if hyper_tag == "__":
-            hyper_tag = ""
-
-        source_tag = (
-            f"__{self.pipeline_light.setup_source.tag}"
-            if self.pipeline_light.setup_source is not None
-            else ""
-        )
-
-        light_tag = (
-            f"__{self.pipeline_light.setup_light.tag}"
-            if self.pipeline_light.setup_light is not None
-            else ""
-        )
-
-        mass_tag = (
-            f"__{self.pipeline_light.setup_mass.tag}"
-            if self.pipeline_light.setup_mass is not None
-            else ""
-        )
-
-        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}"
-
-    @property
-    def mass_tag(self) -> str:
-        """Generate the pipeline's overall tag, which customizes the 'setup' folder the results are output to."""
-
-        setup_tag = conf.instance["notation"]["setup_tags"]["names"]["mass"]
-        hyper_tag = f"__{self.setup_hyper.tag}" if self.setup_hyper is not None else ""
-
-        if hyper_tag == "__":
-            hyper_tag = ""
-
-        source_tag = (
-            f"__{self.pipeline_mass.setup_source.tag}"
-            if self.pipeline_mass.setup_source is not None
-            else ""
-        )
-        if self.pipeline_light is not None:
-            light_tag = (
-                f"__{self.pipeline_mass.setup_light.tag}"
-                if self.pipeline_mass.setup_light is not None
-                else ""
-            )
-        else:
-            light_tag = ""
-
-        mass_tag = (
-            f"__{self.pipeline_mass.setup_mass.tag}"
-            if self.pipeline_mass.setup_mass is not None
-            else ""
-        )
-
-        smbh_tag = (
-            f"__{self.pipeline_mass.setup_smbh.tag}"
-            if self.pipeline_mass.setup_smbh is not None
-            else ""
-        )
-
-        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{smbh_tag}{source_tag}"
 
     def lens_for_mass_pipeline_from_result(
         self, result: af.Result, mass: af.PriorModel, shear: af.PriorModel

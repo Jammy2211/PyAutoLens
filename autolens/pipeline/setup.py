@@ -1,6 +1,6 @@
 import autofit as af
 from autoconf import conf
-from autogalaxy.pipeline import setup
+from autogalaxy.analysis import setup
 from autoarray.inversion import pixelizations as pix, regularization as reg
 from autogalaxy.profiles import (
     light_profiles as lp,
@@ -31,10 +31,6 @@ class SetupHyper(setup.SetupHyper):
         in these phases.
 
         Users can write their own pipelines which do not use or require the *SetupHyper* class.
-
-        This class enables pipeline tagging, whereby the hyper setup of the pipeline is used in the template pipeline
-        scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
-        different models to a dataset in a structured path format.
 
         Parameters
         ----------
@@ -86,106 +82,6 @@ class SetupHyper(setup.SetupHyper):
             self.hyper_galaxy_names.append("source")
 
         self.hyper_fixed_after_source = hyper_fixed_after_source
-
-    @property
-    def tag(self):
-        """
-        Tag the pipeline according to the setup of the hyper feature, which customizes the pipeline output paths.
-
-        This includes tags for whether hyper-galaxies are used to scale the noise-map and whether the background sky or
-        noise are fitted for by the pipeline.
-
-        For the default configuration files in `config/notation/setup_tags.ini` example tags appear as:
-
-        - hyper[galaxies_lens__bg_sky]
-        - hyper[bg_sky__bg_noise__fixed_after_source]
-        """
-        if self.hypers_all_off:
-            return ""
-
-        return (
-            f"{self.component_name}["
-            f"{self.hyper_galaxies_tag}"
-            f"{self.hyper_image_sky_tag}"
-            f"{self.hyper_background_noise_tag}"
-            f"{self.hyper_fixed_after_source_tag}]"
-        )
-
-    @property
-    def tag_no_fixed(self):
-        """
-        Tag the pipeline according to the setup of the hyper feature, which customizes the pipeline output paths.
-
-        This tag is the same as the `tag` property but does not include the `hyper_fixed_after_source_tag`, and is
-        used to tag pipelines after the `source` pipeline that this tag specifically tags.
-
-        For the default configuration files in `config/notation/setup_tags.ini` example tags appear as:
-
-        - hyper[galaxies__bg_sky]
-        - hyper[bg_sky__bg_noise]
-        """
-        if self.hypers_all_off:
-            return ""
-
-        return (
-            f"{self.component_name}["
-            f"{self.hyper_galaxies_tag}"
-            f"{self.hyper_image_sky_tag}"
-            f"{self.hyper_background_noise_tag}]"
-        )
-
-    @property
-    def hyper_galaxies_tag(self) -> str:
-        """
-        Tag for if hyper-galaxies are used in a hyper pipeline to scale the noise-map duing model fitting, which
-        customizes the pipeline's output paths.
-
-        The tag is generated separately for the lens and souce galaxies and depends on the `hyper_galaxies_lens` and
-        `hyper_galaxies_source` bools of the `SetupHyper`.
-
-        For the the default configs tagging is performed as follows:
-
-        - `hyper_galaxies_lens=False`, `hyper_galaxies_source=False` -> No Tag
-        - `hyper_galaxies_lens=True`, `hyper_galaxies_source=False` -> hyper[galaxies_lens]
-        - `hyper_galaxies_lens=False`, `hyper_galaxies_source=True` -> hyper[galaxies_source]
-        - `hyper_galaxies_lens=True`, `hyper_galaxies_source=True` -> hyper[galaxies_lens_source]
-
-        This is used to generate an overall tag in `tag`.
-        """
-        if not self.hyper_galaxies:
-            return ""
-
-        hyper_galaxies_tag = conf.instance["notation"]["setup_tags"]["hyper"][
-            "hyper_galaxies"
-        ]
-
-        if self.hyper_galaxies_lens:
-            hyper_galaxies_lens_tag = f"_{conf.instance['notation']['setup_tags']['hyper']['hyper_galaxies_lens']}"
-        else:
-            hyper_galaxies_lens_tag = ""
-
-        if self.hyper_galaxies_source:
-            hyper_galaxies_source_tag = f"_{conf.instance['notation']['setup_tags']['hyper']['hyper_galaxies_source']}"
-        else:
-            hyper_galaxies_source_tag = ""
-
-        return (
-            f"{hyper_galaxies_tag}{hyper_galaxies_lens_tag}{hyper_galaxies_source_tag}"
-        )
-
-    @property
-    def hyper_fixed_after_source_tag(self) -> str:
-        """
-        Tag for if the hyper parameters are held fixed after the source pipeline.
-
-        For the the default configs tagging is performed as follows:
-
-        hyper_fixed_after_source = `False` -> No Tag
-        hyper_fixed_after_source = `True` -> hyper[other_tags_fixed]
-        """
-        if not self.hyper_fixed_after_source:
-            return ""
-        return f"__{conf.instance['notation']['setup_tags']['hyper']['hyper_fixed_after_source']}"
 
     def hyper_galaxy_lens_from_result(
         self, result: af.Result, noise_factor_is_model=False
@@ -301,20 +197,6 @@ class AbstractSetupMass:
     with_shear = None
 
     @property
-    def with_shear_tag(self) -> str:
-        """Generate a tag if an `ExternalShear` is included in the mass model of the pipeline  are
-        fixedto a previous estimate, or varied during the analysis, to customize pipeline output paths..
-
-        For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
-
-        with_shear = `False` -> setup__with_shear
-        with_shear = `True` -> setup___with_shear
-        """
-        if self.with_shear:
-            return f"__{conf.instance['notation']['setup_tags']['mass']['with_shear']}"
-        return f"__{conf.instance['notation']['setup_tags']['mass']['no_shear']}"
-
-    @property
     def shear_prior_model(self) -> af.PriorModel:
         """For a SLaM source pipeline, determine the shear model from the with_shear setting."""
         if self.with_shear:
@@ -335,10 +217,6 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
         assumptions about the bulge-disk model.
 
         Users can write their own pipelines which do not use or require the `SetupMassTotal` class.
-
-        This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
-        scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
-        different models to a dataset in a structured path format.
 
         Parameters
         ----------
@@ -363,26 +241,6 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
 
         self.with_shear = with_shear
 
-    @property
-    def tag(self) -> str:
-        """
-        Tag the pipeline according to the setup of the total mass pipeline which customizes the pipeline output paths.
-
-        This includes tags for the `MassProfile` `PriorModel`'s and the alignment of different components in the model.
-
-        For the default configuration files in `config/notation/setup_tags.ini` example tags appear as:
-
-        - mass[total__sie]
-        - mass[total__power_law__centre_(0.0,0.0)]
-        """
-        return (
-            f"{self.component_name}[total"
-            f"{self.mass_prior_model_tag}"
-            f"{self.with_shear_tag}"
-            f"{self.mass_centre_tag}"
-            f"{self.align_bulge_mass_centre_tag}]"
-        )
-
 
 class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
     def __init__(
@@ -404,10 +262,6 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
         about the bulge-disk model.
 
         Users can write their own pipelines which do not use or require the `SetupMassLightDark` class.
-
-        This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
-        scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
-        different models to a dataset in a structured path format.
 
         Parameters
         ----------
@@ -441,32 +295,6 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
 
         self.with_shear = with_shear
 
-    @property
-    def tag(self):
-        """
-        Tag the pipeline according to the setup of the decomposed light and dark mass pipeline which customizes
-        the pipeline output paths.
-
-        This includes tags for the `MassProfile` `PriorModel`'s and the alignment of different components in the model.
-
-        For the default configuration files in `config/notation/setup_tags.ini` example tags appear as:
-
-        - mass[light_dark__bulge_]
-        - mass[total_power_law__centre_(0.0,0.0)]
-        """
-
-        return (
-            f"{self.component_name}[light_dark"
-            f"{self.bulge_prior_model_tag}"
-            f"{self.disk_prior_model_tag}"
-            f"{self.envelope_prior_model_tag}"
-            f"{self.constant_mass_to_light_ratio_tag}"
-            f"{self.dark_prior_model_tag}"
-            f"{self.with_shear_tag}"
-            f"{self.mass_centre_tag}"
-            f"{self.align_bulge_dark_centre_tag}]"
-        )
-
 
 class SetupSourceParametric(setup.SetupLightParametric):
     def __init__(
@@ -484,10 +312,6 @@ class SetupSourceParametric(setup.SetupLightParametric):
         example controlling assumptions about the bulge-disk model.
 
         Users can write their own pipelines which do not use or require the *SetupLightParametric* class.
-
-        This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
-        scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
-        different models to a dataset in a structured path format.
 
         Parameters
         ----------
@@ -521,21 +345,6 @@ class SetupSourceParametric(setup.SetupLightParametric):
             align_bulge_envelope_centre=align_bulge_envelope_centre,
         )
 
-    @property
-    def component_name(self) -> str:
-        """
-        The name of the source component of a `source` pipeline which preceeds the `Setup` tag contained within square
-        brackets.
-
-        For the default configuration files this tag appears as `source[tag]`.
-
-        Returns
-        -------
-        str
-            The component name of the source pipeline.
-        """
-        return conf.instance["notation"]["setup_tags"]["names"]["source"]
-
 
 class SetupSourceInversion(setup.SetupLightInversion):
     def __init__(
@@ -549,10 +358,6 @@ class SetupSourceInversion(setup.SetupLightInversion):
         for example controlling the `Pixelization` and `Regularization` used by the `Inversion`.
 
         Users can write their own pipelines which do not use or require the `SetupLightInversion` class.
-
-        This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
-        scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
-        different models to a dataset in a structured path format.
 
         Parameters
         ----------
@@ -573,21 +378,6 @@ class SetupSourceInversion(setup.SetupLightInversion):
             inversion_pixels_fixed=inversion_pixels_fixed,
         )
 
-    @property
-    def component_name(self) -> str:
-        """
-        The name of the source component of a `source` pipeline which preceeds the `Setup` tag contained within square
-        brackets.
-
-        For the default configuration files this tag appears as `source[tag]`.
-
-        Returns
-        -------
-        str
-            The component name of the source pipeline.
-        """
-        return conf.instance["notation"]["setup_tags"]["names"]["source"]
-
 
 class SetupSubhalo(setup.AbstractSetup):
     def __init__(
@@ -604,10 +394,6 @@ class SetupSubhalo(setup.AbstractSetup):
         The setup of a subhalo pipeline, which controls how PyAutoLens template pipelines runs.
 
         Users can write their own pipelines which do not use or require the *SetupPipeline* class.
-
-        This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
-        scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
-        different models to a dataset in a structured path format.
 
         Parameters
         ----------
@@ -640,134 +426,6 @@ class SetupSubhalo(setup.AbstractSetup):
         self.number_of_cores = number_of_cores
         self.subhalo_instance = subhalo_instance
 
-    @property
-    def component_name(self) -> str:
-        """
-        The name of the subhalo component of a `subhalo` pipeline which preceeds the `Setup` tag contained within square
-        brackets.
-
-        For the default configuration files this tag appears as `subhalo[tag]`.
-
-        Returns
-        -------
-        str
-            The component name of the subhalo pipeline.
-        """
-        return conf.instance["notation"]["setup_tags"]["names"]["subhalo"]
-
-    @property
-    def tag(self):
-        return (
-            f"{self.component_name}["
-            f"{self.subhalo_prior_model_tag}"
-            f"{self.source_is_model_tag}"
-            f"{self.grid_size_tag}"
-            f"{self.subhalo_centre_tag}"
-            f"{self.subhalo_mass_at_200_tag}]"
-        )
-
-    @property
-    def subhalo_prior_model_tag(self) -> str:
-        """
-        The tag of the subhalo `PriorModel` the `MassProfile` class given to the `subhalo_prior_model`.
-
-        For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
-
-        - `EllipticalIsothermal` -> sie
-        - `EllipticalPowerLaw` -> power_law
-
-        Returns
-        -------
-        str
-            The tag of the subhalo prior model.
-        """
-
-        if self.subhalo_prior_model is None:
-            return ""
-
-        return f"{conf.instance['notation']['prior_model_tags']['mass'][self.subhalo_prior_model.name]}"
-
-    @property
-    def source_is_model_tag(self) -> str:
-        """
-        Tags if the lens source model during the subhalo pipeline is model or instance.
-
-        For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
-
-        source_is_model = `True` -> setup[source_is_model]
-        source_is_model = `False` -> subhalo[source_is_instance]
-        """
-        if self.source_is_model:
-            return f"__{conf.instance['notation']['setup_tags']['subhalo']['source_is_model']}"
-        return f"__{conf.instance['notation']['setup_tags']['subhalo']['source_is_instance']}"
-
-    @property
-    def grid_size_tag(self) -> str:
-        """
-        Tags the 2D dimensions of the grid (e.g. number_of_steps x number_of_steps) that the subhalo search is performed for.
-
-        For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
-
-        - number_of_steps=3 -> subhalo[grid_size_3]
-        - number_of_steps=4 -> subhalo[grid_size_4]
-
-        Returns
-        -------
-        str
-            The tag of the grid size.
-        """
-        return f"__{conf.instance['notation']['setup_tags']['subhalo']['number_of_steps']}_{str(self.number_of_steps)}"
-
-    @property
-    def subhalo_centre_tag(self) -> str:
-        """
-        Tags if the subhalo mass model centre of the pipeline is fixed to an input value, to customize pipeline
-        output paths.
-
-        For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
-
-        subhalo_centre = None -> setup
-        subhalo_centre = (1.0, 1.0) -> subhalo[centre_(1.0, 1.0)]
-        subhalo_centre = (3.0, -2.0) -> subhalo[centre_(3.0, -2.0)]
-        """
-        if self.subhalo_instance is None:
-            return ""
-        else:
-            y = "{0:.2f}".format(self.subhalo_instance.centre[0])
-            x = "{0:.2f}".format(self.subhalo_instance.centre[1])
-            return (
-                "__"
-                + conf.instance["notation"]["setup_tags"]["subhalo"]["subhalo_centre"]
-                + "_("
-                + y
-                + ","
-                + x
-                + ")"
-            )
-
-    @property
-    def subhalo_mass_at_200_tag(self) -> str:
-        """
-        Tags if the subhalo mass model mass_at_200 of the pipeline is fixed to an input value, to
-        customize pipeline output paths.
-
-        For the the default configuration files `config/notation/setup_tags.ini` tagging is performed as follows:
-
-        subhalo_mass_at_200 = None -> No Tag
-        subhalo_mass_at_200 = 1e8 -> subhalo[mass_1.0e+08]
-        subhalo_mass_at_200 = 1e9 -> subhalo[mass_1.0e+09]
-        """
-        if self.subhalo_instance is None:
-            return ""
-        else:
-
-            return (
-                "__"
-                + conf.instance["notation"]["setup_tags"]["subhalo"]["mass_at_200"]
-                + "_"
-                + "{0:.1e}".format(self.subhalo_instance.mass_at_200)
-            )
-
 
 class SetupPipeline(setup.SetupPipeline):
     def __init__(
@@ -790,14 +448,10 @@ class SetupPipeline(setup.SetupPipeline):
 
         Users can write their own pipelines which do not use or require the *SetupPipeline* class.
 
-        This class enables pipeline tagging, whereby the setup of the pipeline is used in the template pipeline
-        scripts to tag the output path of the results depending on the setup parameters. This allows one to fit
-        different models to a dataset in a structured path format.
-
         Parameters
         ----------
         path_prefix : str or None
-            The prefix of folders between the output path of the pipeline and the pipeline name, tags and phase folders.
+            The prefix of folders between the output path and the search folder.
         redshift_lens : float
             The redshift of the lens galaxy used by the pipeline for converting arc-seconds to kpc, masses to solMass,
             etc.
@@ -831,25 +485,3 @@ class SetupPipeline(setup.SetupPipeline):
         self.redshift_lens = redshift_lens
         self.redshift_source = redshift_source
         self.setup_subhalo = setup_subhalo
-
-    @property
-    def tag(self) -> str:
-        """
-        The overall pipeline tag, which customizes the 'setup' folder the results are output to.
-
-        For the the default configuration files `config/notation/setup_tags.ini` examples of tagging are as follows:
-
-        - setup__hyper[galaxies__bg_noise]__light[bulge_sersic__disk__exp_light_centre_(1.00,2.00)]
-        - "setup__smbh[point_mass__centre_fixed]"
-        """
-
-        setup_tag = conf.instance["notation"]["setup_tags"]["pipeline"]["pipeline"]
-
-        hyper_tag = self._pipeline_tag_from_setup(setup=self.setup_hyper)
-        light_tag = self._pipeline_tag_from_setup(setup=self.setup_light)
-        mass_tag = self._pipeline_tag_from_setup(setup=self.setup_mass)
-        source_tag = self._pipeline_tag_from_setup(setup=self.setup_source)
-        smbh_tag = self._pipeline_tag_from_setup(setup=self.setup_smbh)
-        subhalo_tag = self._pipeline_tag_from_setup(setup=self.setup_subhalo)
-
-        return f"{setup_tag}{hyper_tag}{light_tag}{mass_tag}{source_tag}{smbh_tag}{subhalo_tag}"
