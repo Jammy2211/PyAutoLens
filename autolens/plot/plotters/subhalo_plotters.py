@@ -1,5 +1,5 @@
 from autoarray.plot.mat_wrap import mat_plot as mp
-from autolens.aggregator import aggregator as agg
+from autolens.analysis import aggregator as agg
 from autoarray.plot.plotters import abstract_plotters
 import numpy as np
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals

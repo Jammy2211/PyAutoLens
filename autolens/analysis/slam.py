@@ -4,7 +4,7 @@ from autoconf import conf
 from autoarray.inversion import pixelizations as pix, regularization as reg
 from autogalaxy.profiles import mass_profiles as mp
 from autogalaxy.analysis import setup as ag_setup
-from autolens.pipeline import setup
+from autolens.analysis import setup
 
 from typing import Union
 

@@ -17,15 +17,11 @@ from autoarray.structures.arrays.values import ValuesIrregular
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
-from autoarray.structures.grids.two_d.grid_2d_interpolate import Grid2DInterpolate
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregularUniform
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
-from autoarray.structures.vector_fields.vector_field_irregular import (
-    VectorField2DIrregular,
-)
 from autoarray.structures.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
 from autogalaxy import util
@@ -37,7 +33,6 @@ from autogalaxy.galaxy.galaxy_data import GalaxyData
 from autogalaxy.galaxy.galaxy_model import GalaxyModel
 from autogalaxy.hyper import hyper_data
 from autogalaxy.analysis.setup import SetupLightParametric, SetupSMBH
-from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles import (
     point_sources as ps,
     light_profiles as lp,
@@ -60,7 +55,7 @@ from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
 from .lens.positions_solver import PositionsSolver
 from .analysis.analysis import AnalysisImaging, AnalysisInterferometer
-from .pipeline.setup import (
+from autolens.analysis.setup import (
     SetupPipeline,
     SetupHyper,
     SetupSourceParametric,
@@ -68,13 +63,6 @@ from .pipeline.setup import (
     SetupMassTotal,
     SetupMassLightDark,
     SetupSubhalo,
-)
-from .pipeline.slam import (
-    SLaMPipelineSourceParametric,
-    SLaMPipelineSourceInversion,
-    SLaMPipelineLightParametric,
-    SLaMPipelineMass,
-    SLaM,
 )
 
 from autoconf import conf
