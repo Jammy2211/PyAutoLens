@@ -4,41 +4,6 @@ from autolens import exc
 import pytest
 
 
-class TestTags:
-    def test__positions_threshold_tag(self):
-
-        settings = al.SettingsLens(positions_threshold=None)
-        assert settings.positions_threshold_tag == "pos_off"
-        settings = al.SettingsLens(positions_threshold=1.0)
-        assert settings.positions_threshold_tag == "pos_on"
-
-    def test__stochastic_likelihood_resamples_tag(self):
-
-        settings = al.SettingsLens(stochastic_likelihood_resamples=None)
-        assert settings.stochastic_likelihood_resamples_tag == ""
-        settings = al.SettingsLens(stochastic_likelihood_resamples=2)
-        assert settings.stochastic_likelihood_resamples_tag == "__lh_resamples_2"
-        settings = al.SettingsLens(stochastic_likelihood_resamples=3)
-        assert settings.stochastic_likelihood_resamples_tag == "__lh_resamples_3"
-
-    def test__tag(self):
-
-        settings = al.SettingsLens(
-            positions_threshold=1.0,
-            auto_positions_factor=2.56,
-            auto_positions_minimum_threshold=0.5,
-        )
-        assert settings.tag == "lens[pos_on]"
-
-        settings = al.SettingsLens(
-            positions_threshold=1.0,
-            auto_positions_factor=2.56,
-            auto_positions_minimum_threshold=0.5,
-            stochastic_likelihood_resamples=2,
-        )
-        assert settings.tag == "lens[pos_on__lh_resamples_2]"
-
-
 class TestCheckPositionsTrace:
     def test__positions_do_not_trace_within_threshold__raises_exception(self,):
 
