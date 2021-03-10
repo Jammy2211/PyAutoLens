@@ -5,7 +5,7 @@ import os
 
 from autoconf import conf
 from autogalaxy.plot.plotters import hyper_plotters
-from autogalaxy.pipeline import visualizer
+from autogalaxy.analysis import visualizer
 from autolens.plot.plotters import (
     fit_interferometer_plotters,
     ray_tracing_plotters,
