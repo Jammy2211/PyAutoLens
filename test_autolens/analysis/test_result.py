@@ -352,3 +352,8 @@ class TestResultImaging:
 class TestResultInterferometer:
 
     pass
+
+
+class TestResultPointsource:
+
+    pass

@@ -753,6 +753,28 @@ class TestAnalysisInterferometer:
 
 
 class TestAnalysisPointSource:
+    def test__make_result__result_imaging_is_returned(
+        self, positions_x2, positions_x2_noise_map
+    ):
+
+        model = af.CollectionPriorModel(
+            galaxies=af.CollectionPriorModel(
+                lens=al.Galaxy(redshift=0.5, light=al.ps.PointSource(centre=(0.0, 0.0)))
+            )
+        )
+
+        search = mock.MockSearch(name="test_phase")
+
+        solver = mock.MockPositionsSolver(model_positions=positions_x2)
+
+        analysis = al.AnalysisPointSource(
+            positions=positions_x2, noise_map=positions_x2_noise_map, solver=solver
+        )
+
+        result = search.fit(model=model, analysis=analysis)
+
+        assert isinstance(result, res.ResultPointSource)
+
     def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, positions_x2, positions_x2_noise_map
     ):
@@ -766,10 +788,7 @@ class TestAnalysisPointSource:
         solver = mock.MockPositionsSolver(model_positions=positions_x2)
 
         analysis = al.AnalysisPointSource(
-            positions=positions_x2,
-            noise_map=positions_x2_noise_map,
-            solver=solver,
-            results=mock.MockResults(),
+            positions=positions_x2, noise_map=positions_x2_noise_map, solver=solver
         )
 
         instance = model.instance_from_unit_vector([])
@@ -791,10 +810,7 @@ class TestAnalysisPointSource:
         solver = mock.MockPositionsSolver(model_positions=model_positions)
 
         analysis = al.AnalysisPointSource(
-            positions=positions_x2,
-            noise_map=positions_x2_noise_map,
-            solver=solver,
-            results=mock.MockResults(),
+            positions=positions_x2, noise_map=positions_x2_noise_map, solver=solver
         )
 
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
@@ -832,7 +848,6 @@ class TestAnalysisPointSource:
             fluxes=fluxes_x2,
             fluxes_noise_map=fluxes_x2_noise_map,
             solver=solver,
-            results=mock.MockResults(),
         )
 
         instance = model.instance_from_unit_vector([])
@@ -869,7 +884,6 @@ class TestAnalysisPointSource:
             fluxes=fluxes_x2,
             fluxes_noise_map=fluxes_x2_noise_map,
             solver=solver,
-            results=mock.MockResults(),
         )
 
         instance = model.instance_from_unit_vector([])

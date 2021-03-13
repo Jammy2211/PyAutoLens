@@ -311,3 +311,12 @@ class ResultInterferometer(ResultDataset):
             hyper_model_visibilities += self.hyper_galaxy_visibilities_path_dict[path]
 
         return hyper_model_visibilities
+
+
+class ResultPointSource(Result):
+    @property
+    def max_log_likelihood_fit(self):
+
+        return self.analysis.fit_positions_for_tracer(
+            tracer=self.max_log_likelihood_tracer
+        )

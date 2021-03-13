@@ -129,7 +129,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
             preloads=preloads,
         )
 
-        super(AnalysisLensing, self).__init__(
+        AnalysisLensing.__init__(
             self=self, settings_lens=settings_lens, cosmology=cosmology
         )
 
@@ -836,3 +836,13 @@ class AnalysisPointSource(AnalysisLensing):
         tracer = self.tracer_for_instance(instance=instance)
 
         visualizer = vis.Visualizer(visualize_path=paths.image_path)
+
+    def make_result(
+        self,
+        samples: af.PDFSamples,
+        model: af.CollectionPriorModel,
+        search: af.NonLinearSearch,
+    ):
+        return res.ResultPointSource(
+            samples=samples, model=model, analysis=self, search=search
+        )
