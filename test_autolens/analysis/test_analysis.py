@@ -367,13 +367,13 @@ class TestAnalysisImaging:
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
         instance = model.instance_from_unit_vector([])
-        fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
+        analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
         tracer = analysis.tracer_for_instance(instance=instance)
 
         fit = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
-        assert fit.log_likelihood == fit_figure_of_merit
+        assert fit.log_likelihood == analysis_log_likelihood
 
     def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
         self, masked_imaging_7x7
@@ -394,7 +394,7 @@ class TestAnalysisImaging:
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
         instance = model.instance_from_unit_vector([])
-        fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
+        analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.FitImaging(
@@ -404,7 +404,7 @@ class TestAnalysisImaging:
             hyper_background_noise=hyper_background_noise,
         )
 
-        assert fit.log_likelihood == fit_figure_of_merit
+        assert fit.log_likelihood == analysis_log_likelihood
 
     def test__uses_hyper_fit_correctly(self, masked_imaging_7x7):
 
@@ -441,7 +441,7 @@ class TestAnalysisImaging:
 
         instance.galaxies.lens.hyper_galaxy = hyper_galaxy
 
-        fit_likelihood = analysis.log_likelihood_function(instance=instance)
+        analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
         g0 = al.Galaxy(
             redshift=0.5,
@@ -459,7 +459,7 @@ class TestAnalysisImaging:
         fit = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
 
         assert (fit.tracer.galaxies[0].hyper_galaxy_image == lens_hyper_image).all()
-        assert fit_likelihood == fit.log_likelihood
+        assert analysis_log_likelihood == fit.log_likelihood
 
     def test__sets_up_hyper_galaxy_images__from_results(self, masked_imaging_7x7):
 
@@ -607,7 +607,7 @@ class TestAnalysisInterferometer:
         analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
 
         instance = model.instance_from_unit_vector([])
-        fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
+        analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
         tracer = analysis.tracer_for_instance(instance=instance)
 
@@ -615,7 +615,7 @@ class TestAnalysisInterferometer:
             masked_interferometer=masked_interferometer_7, tracer=tracer
         )
 
-        assert fit.log_likelihood == fit_figure_of_merit
+        assert fit.log_likelihood == analysis_log_likelihood
 
     def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
         self, masked_interferometer_7
@@ -634,7 +634,7 @@ class TestAnalysisInterferometer:
         analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
 
         instance = model.instance_from_unit_vector([])
-        fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
+        analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
         tracer = analysis.tracer_for_instance(instance=instance)
 
@@ -644,7 +644,7 @@ class TestAnalysisInterferometer:
             hyper_background_noise=hyper_background_noise,
         )
 
-        assert fit.log_likelihood == fit_figure_of_merit
+        assert fit.log_likelihood == analysis_log_likelihood
 
     def test__sets_up_hyper_galaxy_visibiltiies__from_results(self, masked_imaging_7x7):
 
@@ -750,3 +750,148 @@ class TestAnalysisInterferometer:
 
         assert len(log_evidences) == 2
         assert log_evidences[0] != log_evidences[1]
+
+
+class TestAnalysisPointSource:
+    def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
+        self, positions_x2, positions_x2_noise_map
+    ):
+
+        model = af.CollectionPriorModel(
+            galaxies=af.CollectionPriorModel(
+                lens=al.Galaxy(redshift=0.5, light=al.ps.PointSource(centre=(0.0, 0.0)))
+            )
+        )
+
+        solver = mock.MockPositionsSolver(model_positions=positions_x2)
+
+        analysis = al.AnalysisPointSource(
+            positions=positions_x2,
+            noise_map=positions_x2_noise_map,
+            solver=solver,
+            results=mock.MockResults(),
+        )
+
+        instance = model.instance_from_unit_vector([])
+        analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
+
+        tracer = analysis.tracer_for_instance(instance=instance)
+
+        fit_positions = al.FitPositionsImage(
+            positions=positions_x2,
+            noise_map=positions_x2_noise_map,
+            tracer=tracer,
+            positions_solver=solver,
+        )
+
+        assert fit_positions.chi_squared == 0.0
+        assert fit_positions.log_likelihood == analysis_log_likelihood
+
+        model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
+        solver = mock.MockPositionsSolver(model_positions=model_positions)
+
+        analysis = al.AnalysisPointSource(
+            positions=positions_x2,
+            noise_map=positions_x2_noise_map,
+            solver=solver,
+            results=mock.MockResults(),
+        )
+
+        analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
+
+        fit_positions = al.FitPositionsImage(
+            positions=positions_x2,
+            noise_map=positions_x2_noise_map,
+            tracer=tracer,
+            positions_solver=solver,
+        )
+
+        assert fit_positions.residual_map.in_list == [1.0, 1.0]
+        assert fit_positions.chi_squared == 2.0
+        assert fit_positions.log_likelihood == analysis_log_likelihood
+
+    def test__figure_of_merit__includes_fit_fluxes(
+        self, positions_x2, positions_x2_noise_map, fluxes_x2, fluxes_x2_noise_map
+    ):
+
+        model = af.CollectionPriorModel(
+            galaxies=af.CollectionPriorModel(
+                lens=al.Galaxy(
+                    redshift=0.5,
+                    sis=al.mp.SphericalIsothermal(einstein_radius=1.0),
+                    light=al.ps.PointSourceFlux(flux=1.0),
+                )
+            )
+        )
+
+        solver = mock.MockPositionsSolver(model_positions=positions_x2)
+
+        analysis = al.AnalysisPointSource(
+            positions=positions_x2,
+            noise_map=positions_x2_noise_map,
+            fluxes=fluxes_x2,
+            fluxes_noise_map=fluxes_x2_noise_map,
+            solver=solver,
+            results=mock.MockResults(),
+        )
+
+        instance = model.instance_from_unit_vector([])
+
+        analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
+
+        tracer = analysis.tracer_for_instance(instance=instance)
+
+        fit_positions = al.FitPositionsImage(
+            positions=positions_x2,
+            noise_map=positions_x2_noise_map,
+            tracer=tracer,
+            positions_solver=solver,
+        )
+
+        fit_fluxes = al.FitFluxes(
+            fluxes=fluxes_x2,
+            noise_map=fluxes_x2_noise_map,
+            positions=positions_x2,
+            tracer=tracer,
+        )
+
+        assert (
+            fit_positions.log_likelihood + fit_fluxes.log_likelihood
+            == analysis_log_likelihood
+        )
+
+        model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
+        solver = mock.MockPositionsSolver(model_positions=model_positions)
+
+        analysis = al.AnalysisPointSource(
+            positions=positions_x2,
+            noise_map=positions_x2_noise_map,
+            fluxes=fluxes_x2,
+            fluxes_noise_map=fluxes_x2_noise_map,
+            solver=solver,
+            results=mock.MockResults(),
+        )
+
+        instance = model.instance_from_unit_vector([])
+        analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
+
+        fit_positions = al.FitPositionsImage(
+            positions=positions_x2,
+            noise_map=positions_x2_noise_map,
+            tracer=tracer,
+            positions_solver=solver,
+        )
+
+        fit_fluxes = al.FitFluxes(
+            fluxes=fluxes_x2,
+            noise_map=fluxes_x2_noise_map,
+            positions=positions_x2,
+            tracer=tracer,
+        )
+
+        assert fit_positions.residual_map.in_list == [1.0, 1.0]
+        assert fit_positions.chi_squared == 2.0
+        assert (
+            fit_positions.log_likelihood + fit_fluxes.log_likelihood
+            == analysis_log_likelihood
+        )

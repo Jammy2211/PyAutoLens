@@ -1,12 +1,11 @@
 import numpy as np
-import copy
 from os import path
 import pickle
 from typing import List
 import json
 from scipy.stats import norm
-import math
 from astropy import cosmology as cosmo
+import numba
 
 from autoconf import conf
 import autofit as af
@@ -20,6 +19,7 @@ from autogalaxy.galaxy import galaxy as g
 from autogalaxy.analysis import analysis as a
 from autolens.lens import ray_tracing
 from autolens.fit import fit
+from autolens.fit import fit_point_source
 from autolens.lens import settings
 from autolens.analysis import result as res
 from autolens.analysis import result_util
@@ -27,76 +27,19 @@ from autolens.analysis import visualizer as vis
 from autolens import exc
 
 
-class AnalysisDataset(a.AnalysisDataset):
-    def __init__(
-        self,
-        dataset,
-        positions: grid_2d_irregular.Grid2DIrregular = None,
-        results=None,
-        cosmology=cosmo.Planck15,
-        settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=inv.SettingsInversion(),
-        settings_lens=settings.SettingsLens(),
-        preloads=pload.Preloads(),
-    ):
-        """
+class AnalysisLensing:
+    def __init__(self, settings_lens=settings.SettingsLens(), cosmology=cosmo.Planck15):
 
-        Parameters
-        ----------
-        dataset
-        positions : grid_2d_irregular.Grid2DIrregular
-            Image-pixel coordinates in arc-seconds of bright regions of the lensed source that will map close to one
-            another in the source-plane(s) for an accurate mass model, which can be used to discard unphysical mass
-            models during model-fitting.
-        results
-        cosmology
-        settings_pixelization
-        settings_inversion
-        settings_lens
-        preloads
-        """
-
-        super().__init__(
-            dataset=dataset,
-            results=results,
-            cosmology=cosmology,
-            settings_pixelization=settings_pixelization,
-            settings_inversion=settings_inversion,
-            preloads=preloads,
-        )
-
+        self.cosmology = cosmology
         self.settings_lens = settings_lens
 
-        self.positions = self.modify_positions(
-            positions=positions,
-            results=results,
-            auto_positions_factor=self.settings_lens.auto_positions_factor,
-        )
+    def tracer_for_instance(self, instance):
 
-        self.settings_lens = self.modify_positions_threshold(results=results)
+        if hasattr(instance, "perturbation"):
+            instance.galaxies.subhalo = instance.perturbation
 
-        self.settings_lens = self.modify_einstein_radius_estimate(results=results)
-
-    def modify_positions(self, positions, results, auto_positions_factor):
-
-        return result_util.updated_positions_from(
-            positions=positions,
-            results=results,
-            auto_positions_factor=auto_positions_factor,
-        )
-
-    def modify_positions_threshold(self, results):
-
-        positions_threshold = result_util.updated_positions_threshold_from(
-            positions=self.positions,
-            results=results,
-            positions_threshold=self.settings_lens.positions_threshold,
-            auto_positions_factor=self.settings_lens.auto_positions_factor,
-            auto_positions_minimum_threshold=self.settings_lens.auto_positions_minimum_threshold,
-        )
-
-        return self.settings_lens.modify_positions_threshold(
-            positions_threshold=positions_threshold
+        return ray_tracing.Tracer.from_galaxies(
+            galaxies=instance.galaxies, cosmology=self.cosmology
         )
 
     def modify_einstein_radius_estimate(self, results):
@@ -145,6 +88,81 @@ class AnalysisDataset(a.AnalysisDataset):
 
         return self.settings_lens.modify_einstein_radius_estimate(
             einstein_radius_estimate=None
+        )
+
+
+class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
+    def __init__(
+        self,
+        dataset,
+        positions: grid_2d_irregular.Grid2DIrregular = None,
+        results=None,
+        cosmology=cosmo.Planck15,
+        settings_pixelization=pix.SettingsPixelization(),
+        settings_inversion=inv.SettingsInversion(),
+        settings_lens=settings.SettingsLens(),
+        preloads=pload.Preloads(),
+    ):
+        """
+
+        Parameters
+        ----------
+        dataset
+        positions : grid_2d_irregular.Grid2DIrregular
+            Image-pixel coordinates in arc-seconds of bright regions of the lensed source that will map close to one
+            another in the source-plane(s) for an accurate mass model, which can be used to discard unphysical mass
+            models during model-fitting.
+        results
+        cosmology
+        settings_pixelization
+        settings_inversion
+        settings_lens
+        preloads
+        """
+
+        super().__init__(
+            dataset=dataset,
+            results=results,
+            cosmology=cosmology,
+            settings_pixelization=settings_pixelization,
+            settings_inversion=settings_inversion,
+            preloads=preloads,
+        )
+
+        super(AnalysisLensing, self).__init__(
+            self=self, settings_lens=settings_lens, cosmology=cosmology
+        )
+
+        self.positions = self.modify_positions(
+            positions=positions,
+            results=results,
+            auto_positions_factor=self.settings_lens.auto_positions_factor,
+        )
+
+        self.settings_lens = self.modify_positions_threshold(results=results)
+
+        self.settings_lens = self.modify_einstein_radius_estimate(results=results)
+
+    def modify_positions(self, positions, results, auto_positions_factor):
+
+        return result_util.updated_positions_from(
+            positions=positions,
+            results=results,
+            auto_positions_factor=auto_positions_factor,
+        )
+
+    def modify_positions_threshold(self, results):
+
+        positions_threshold = result_util.updated_positions_threshold_from(
+            positions=self.positions,
+            results=results,
+            positions_threshold=self.settings_lens.positions_threshold,
+            auto_positions_factor=self.settings_lens.auto_positions_factor,
+            auto_positions_minimum_threshold=self.settings_lens.auto_positions_minimum_threshold,
+        )
+
+        return self.settings_lens.modify_positions_threshold(
+            positions_threshold=positions_threshold
         )
 
     def modify_before_fit(self, model, paths: af.Paths):
@@ -218,15 +236,6 @@ class AnalysisDataset(a.AnalysisDataset):
         mean, sigma = norm.fit(stochastic_log_evidences)
 
         return mean
-
-    def tracer_for_instance(self, instance):
-
-        if hasattr(instance, "perturbation"):
-            instance.galaxies.subhalo = instance.perturbation
-
-        return ray_tracing.Tracer.from_galaxies(
-            galaxies=instance.galaxies, cosmology=self.cosmology
-        )
 
     def stochastic_log_evidences_for_instance(self, instance) -> List[float]:
         raise NotImplementedError()
@@ -746,3 +755,84 @@ class AttributesInterferometer(a.AttributesInterferometer):
         )
 
         self.positions = positions
+
+
+class AnalysisPointSource(AnalysisLensing):
+    def __init__(
+        self,
+        solver,
+        positions,
+        noise_map,
+        fluxes=None,
+        fluxes_noise_map=None,
+        results=None,
+        imaging=None,
+        cosmology=cosmo.Planck15,
+        settings_lens=settings.SettingsLens(),
+    ):
+
+        super().__init__(settings_lens=settings_lens, cosmology=cosmology)
+
+        self.positions = positions
+        self.noise_map = noise_map
+        self.fluxes = fluxes
+        self.fluxes_noise_map = fluxes_noise_map
+        self.solver = solver
+        self.imaging = imaging
+        self.results = results
+
+    def log_likelihood_function(self, instance):
+        """
+        Determine the fit of a lens galaxy and source galaxy to the masked_imaging in this lens.
+
+        Parameters
+        ----------
+        instance
+            A model instance with attributes
+
+        Returns
+        -------
+        fit : Fit
+            A fractional value indicating how well this model fit and the model masked_imaging itself
+        """
+
+        tracer = self.tracer_for_instance(instance=instance)
+
+        try:
+            fit_positions = self.fit_positions_for_tracer(tracer=tracer)
+        except (AttributeError, numba.errors.TypingError) as e:
+            raise FitException from e
+
+        log_likelihood_positions = fit_positions.log_likelihood
+
+        if self.fluxes is not None:
+            fit_fluxes = self.fit_fluxes_for_tracer(tracer=tracer)
+            log_likelihood_fluxes = fit_fluxes.log_likelihood
+        else:
+            log_likelihood_fluxes = 0.0
+
+        return log_likelihood_positions + log_likelihood_fluxes
+
+    def fit_positions_for_tracer(self, tracer):
+
+        return fit_point_source.FitPositionsImage(
+            positions=self.positions,
+            noise_map=self.noise_map,
+            positions_solver=self.solver,
+            tracer=tracer,
+        )
+
+    def fit_fluxes_for_tracer(self, tracer):
+
+        return fit_point_source.FitFluxes(
+            fluxes=self.fluxes,
+            noise_map=self.noise_map,
+            positions=self.positions,
+            tracer=tracer,
+        )
+
+    def visualize(self, paths, instance, during_analysis):
+
+        tracer = self.tracer_for_instance(instance=instance)
+
+        visualizer = vis.Visualizer(visualize_path=paths.image_path)
