@@ -110,7 +110,7 @@ class ResultDataset(Result):
 
     @property
     def positions(self):
-        return self.analysis.dataset.positions
+        return self.analysis.positions
 
     @property
     def pixelization(self):

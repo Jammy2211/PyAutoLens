@@ -105,8 +105,11 @@ class TestResultAbstract:
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
-        assert result.source_plane_inversion_centre.in_list[0] == pytest.approx(
-            (0.833333, -0.833333), 1.0e-4
+        assert (
+            result.source_plane_inversion_centre.in_list[0]
+            == result.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre.in_list[
+                0
+            ]
         )
 
         lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
@@ -224,10 +227,9 @@ class TestResultDataset:
 
         assert result.positions == None
 
-        masked_imaging_7x7.imaging.positions = al.Grid2DIrregular([[(1.0, 1.0)]])
-
         analysis = al.AnalysisImaging(
             dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([[(1.0, 1.0)]]),
             settings_lens=al.SettingsLens(positions_threshold=1.0),
         )
 
