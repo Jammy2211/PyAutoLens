@@ -109,6 +109,10 @@ class ResultDataset(Result):
         return self.analysis.dataset.mask
 
     @property
+    def grid(self):
+        return self.analysis.dataset.grid
+
+    @property
     def positions(self):
         return self.analysis.positions
 
