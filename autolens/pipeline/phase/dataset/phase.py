@@ -64,9 +64,10 @@ class PhaseDataset(dataset.PhaseDataset):
         # Preload the source-plane grid of coordinates if the source parameters are fixed, skipping the KMeans.
 
         sparse_grids_of_planes = None
-        blurred_mapping_matrix = None
-        curvature_matrix = None
         mapper = None
+        blurred_mapping_matrix = None
+        curvature_matrix_sparse_preload_indexes = None
+        curvature_matrix_sparse_preload_values = None
 
         if (
             not self.is_hyper_phase
@@ -96,15 +97,21 @@ class PhaseDataset(dataset.PhaseDataset):
 
             if inversion is not None:
 
-                blurred_mapping_matrix = inversion.blurred_mapping_matrix
-                curvature_matrix = inversion.curvature_matrix
                 mapper = inversion.mapper
+                blurred_mapping_matrix = inversion.blurred_mapping_matrix
+                curvature_matrix_sparse_preload_indexes = (
+                    inversion.curvature_matrix_sparse_preload_indexes
+                )
+                curvature_matrix_sparse_preload_values = (
+                    inversion.curvature_matrix_sparse_preload_values
+                )
 
         return pload.Preloads(
             sparse_grids_of_planes=sparse_grids_of_planes,
             mapper=mapper,
             blurred_mapping_matrix=blurred_mapping_matrix,
-            curvature_matrix=curvature_matrix,
+            curvature_matrix_sparse_preload_indexes=curvature_matrix_sparse_preload_indexes,
+            curvature_matrix_sparse_preload_values=curvature_matrix_sparse_preload_values,
         )
 
     def updated_positions_from_positions_and_results(self, positions, results):
