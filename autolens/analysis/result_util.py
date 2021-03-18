@@ -93,18 +93,14 @@ def updated_positions_threshold_from(
             tracer=results.last.max_log_likelihood_tracer,
         )
 
-        new_positions_threshold = auto_positions_factor * np.max(
+        positions_threshold = auto_positions_factor * np.max(
             positions_fits.max_separation_of_source_plane_positions
         )
-
-    else:
-
-        new_positions_threshold = positions_threshold
 
     if auto_positions_minimum_threshold is not None and positions_threshold is not None:
         if (positions_threshold < auto_positions_minimum_threshold) or (
             positions_threshold is None
         ):
-            new_positions_threshold = auto_positions_minimum_threshold
+            positions_threshold = auto_positions_minimum_threshold
 
-    return new_positions_threshold
+    return positions_threshold
