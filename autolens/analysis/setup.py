@@ -21,7 +21,7 @@ class SetupHyper(setup.SetupHyper):
         hyper_image_sky: Optional[type(hd.HyperImageSky)] = None,
         hyper_background_noise: Optional[type(hd.HyperBackgroundNoise)] = None,
         hyper_fixed_after_source: bool = False,
-        hyper_search: af.NonLinearSearch = None,
+        search: af.NonLinearSearch = None,
         evidence_tolerance: float = None,
     ):
         """
@@ -63,7 +63,7 @@ class SetupHyper(setup.SetupHyper):
             hyper_galaxies=hyper_galaxies,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
-            hyper_search=hyper_search,
+            search=search,
             evidence_tolerance=evidence_tolerance,
         )
 

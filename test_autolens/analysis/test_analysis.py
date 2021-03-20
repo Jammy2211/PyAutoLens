@@ -680,6 +680,8 @@ class TestAnalysisInterferometer:
             dataset=masked_imaging_7x7, results=results
         )
 
+        analysis.set_hyper_dataset(result=results.last)
+
         assert (
             analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].native
             == np.ones((3, 3))

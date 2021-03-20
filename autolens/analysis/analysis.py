@@ -169,7 +169,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
 
     def modify_before_fit(self, model, paths: af.Paths):
 
-    #    self.preloads = self.setup_preloads(model=model)
+        #    self.preloads = self.setup_preloads(model=model)
 
         return self
 
@@ -462,7 +462,11 @@ class AnalysisImaging(AnalysisDataset):
         search: af.NonLinearSearch,
     ):
         return res.ResultImaging(
-            samples=samples, model=model, analysis=self, search=search, use_as_hyper_dataset=self.use_result_as_hyper_dataset
+            samples=samples,
+            model=model,
+            analysis=self,
+            search=search,
+            use_as_hyper_dataset=self.use_result_as_hyper_dataset,
         )
 
     def make_attributes(self):
@@ -497,7 +501,7 @@ class AnalysisInterferometer(AnalysisDataset):
             settings_inversion=settings_inversion,
             settings_lens=settings_lens,
             preloads=preloads,
-            use_result_as_hyper_dataset=use_result_as_hyper_dataset
+            use_result_as_hyper_dataset=use_result_as_hyper_dataset,
         )
 
         result = res.last_result_with_use_as_hyper_dataset(results=results)
@@ -519,8 +523,10 @@ class AnalysisInterferometer(AnalysisDataset):
 
         super().set_hyper_dataset(result=result)
 
-        self.hyper_galaxy_image_path_dict = result.hyper_galaxy_image_path_dict
-        self.hyper_model_image = result.hyper_model_image
+        self.hyper_model_visibilities = result.hyper_model_visibilities
+        self.hyper_galaxy_visibilities_path_dict = (
+            result.hyper_galaxy_visibilities_path_dict
+        )
 
     def log_likelihood_function(self, instance):
         """
@@ -718,7 +724,11 @@ class AnalysisInterferometer(AnalysisDataset):
         search: af.NonLinearSearch,
     ):
         return res.ResultInterferometer(
-            samples=samples, model=model, analysis=self, search=search, use_as_hyper_dataset=self.use_result_as_hyper_dataset
+            samples=samples,
+            model=model,
+            analysis=self,
+            search=search,
+            use_as_hyper_dataset=self.use_result_as_hyper_dataset,
         )
 
     def make_attributes(self):
