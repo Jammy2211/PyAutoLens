@@ -307,7 +307,7 @@ def make_hyper_galaxy_image_path_dict_7x7():
 
 @pytest.fixture(name="include_2d_all")
 def make_include_all():
-    return fixtures.make_include_all()
+    return fixtures.make_include_2d_all()
 
 
 @pytest.fixture(name="samples_with_result")
