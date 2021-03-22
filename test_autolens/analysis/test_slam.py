@@ -8,7 +8,7 @@ class TestSLaMPipelineSource:
         setup_mass = al.SetupMassTotal(with_shear=True)
         pipeline_source = al.SLaMPipelineSourceParametric(setup_mass=setup_mass)
 
-        assert isinstance(pipeline_source.setup_mass.shear_prior_model, af.PriorModel)
+        assert isinstance(pipeline_source.setup_mass.shear_prior_model, af.Model)
 
         setup_mass = al.SetupMassTotal(with_shear=False)
         pipeline_source = al.SLaMPipelineSourceParametric(setup_mass=setup_mass)

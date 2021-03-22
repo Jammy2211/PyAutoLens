@@ -456,10 +456,7 @@ class AnalysisImaging(AnalysisDataset):
             self.save_stochastic_outputs(paths=paths, samples=samples)
 
     def make_result(
-        self,
-        samples: af.PDFSamples,
-        model: af.CollectionPriorModel,
-        search: af.NonLinearSearch,
+        self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
         return res.ResultImaging(
             samples=samples,
@@ -718,10 +715,7 @@ class AnalysisInterferometer(AnalysisDataset):
             self.save_stochastic_outputs(paths=paths, samples=samples)
 
     def make_result(
-        self,
-        samples: af.PDFSamples,
-        model: af.CollectionPriorModel,
-        search: af.NonLinearSearch,
+        self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
         return res.ResultInterferometer(
             samples=samples,
@@ -855,10 +849,7 @@ class AnalysisPointSource(AnalysisLensing):
         visualizer = vis.Visualizer(visualize_path=paths.image_path)
 
     def make_result(
-        self,
-        samples: af.PDFSamples,
-        model: af.CollectionPriorModel,
-        search: af.NonLinearSearch,
+        self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
         return res.ResultPointSource(
             samples=samples, model=model, analysis=self, search=search

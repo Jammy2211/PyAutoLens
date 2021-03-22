@@ -60,7 +60,7 @@ class SLaMPipelineSourceParametric(AbstractSLaMPipeline):
         Abstract class for parametric source `SLaMPipeline` object, which contains the `Setup` objects for a given
         Source, Light and Mass (SLaM) pipeline.
 
-        This object contains the setups for fits in a parametric source pipeline, using `LightProile` `PriorModel`'s to
+        This object contains the setups for fits in a parametric source pipeline, using `LightProile` `Model`'s to
         fit the source. The lens galaxy light and mass model-fits can be customized, with defaults using an
         `EllipticalSersic` bulge, `EllipticalExponential` disk and `EllipticalIsothermal` mass.
 
@@ -103,7 +103,7 @@ class SLaMPipelineSourceInversion(AbstractSLaMPipeline):
         Source, Light and Mass (SLaM) pipeline.
 
         This object contains the setups for fits in a inversion source pipeline, using `Pixelization` and
-        `Regularization` `PriorModel`'s to fit the  source. The lens galaxy light and mass model-fits assume the
+        `Regularization` `Model`'s to fit the  source. The lens galaxy light and mass model-fits assume the
         models fitted in a previous parametric source pipeline, using the results to set their parameter and priors.
 
         The SLaM pipelines are template pipelines used by PyAutoLens (see `autolens_workspace/slam`) which break the
@@ -128,12 +128,12 @@ class SLaMPipelineSourceInversion(AbstractSLaMPipeline):
         super().__init__(setup_source=setup_source)
 
     def shear_from_result(self, result: af.Result, as_instance=False):
-        """Return the shear `PriorModel` from a previous pipeline, where:
+        """Return the shear `Model` from a previous pipeline, where:
 
         1) If the shear was included in the *Source* pipeline and `with_shear` is `False` in the `Mass` object, it is
            returned using this pipeline result as a model.
         2) If the shear was not included in the *Source* pipeline and *with_shear* is `False` in the `Mass` object,
-            it is returned as a new *ExternalShear* PriorModel.
+            it is returned as a new *ExternalShear* Model.
         3) If `with_shear` is `True` in the `Mass` object, it is returned as None and omitted from the lens model.
 
         Parameters
@@ -158,7 +158,7 @@ class SLaMPipelineLightParametric(AbstractSLaMPipeline):
         Source, Light and Mass (SLaM) pipeline.
 
         The pipeline this object contains the setups for fits in a parametric light pipeline, where `LightProile`
-        `PriorModel`'s fit the lens's light. The lens galaxy mass and source galaxy light model-fits assume the models
+        `Model`'s fit the lens's light. The lens galaxy mass and source galaxy light model-fits assume the models
         fitted in previous source pipelines, using the results to set their parameter and priors.
 
         The SLaM pipelines are template pipelines used by PyAutoLens (see `autolens_workspace/slam`) which break the
@@ -192,7 +192,7 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
         and Mass (SLaM) pipeline.
 
         The pipeline this object contains the setups for fits in a total mass or light_dark mass pipeline, where
-        `MassProile` or `LightMassProfile` `PriorModel`'s fit the lens's mmass. The lens galaxy light and source galaxy
+        `MassProile` or `LightMassProfile` `Model`'s fit the lens's mmass. The lens galaxy light and source galaxy
         light models assume those fitted in previous source and light pipelines, using the results to set their
         parameter and priors.
 
@@ -227,12 +227,12 @@ class SLaMPipelineMass(AbstractSLaMPipeline):
             )
 
     def shear_from_result(self, result: af.Result, as_instance=False):
-        """Return the shear `PriorModel` from a previous pipeline, where:
+        """Return the shear `Model` from a previous pipeline, where:
 
         1) If the shear was included in the *Source* pipeline and `with_shear` is `False` in the `Mass` object, it is
            returned using this pipeline result as a model.
         2) If the shear was not included in the *Source* pipeline and *with_shear* is `False` in the `Mass` object,
-            it is returned as a new *ExternalShear* PriorModel.
+            it is returned as a new *ExternalShear* Model.
         3) If `with_shear` is `True` in the `Mass` object, it is returned as None and omitted from the lens model.
 
         Parameters
@@ -351,7 +351,7 @@ class SLaM:
         return os.path.join(*folder_names_new)
 
     def lens_for_mass_pipeline_from_result(
-        self, result: af.Result, mass: af.PriorModel, shear: af.PriorModel
+        self, result: af.Result, mass: af.Model, shear: af.Model
     ) -> ag.GalaxyModel:
         """
         Setup the lens model for a `Mass` pipeline using the previous `Light` pipeline and phase results.
@@ -374,7 +374,7 @@ class SLaM:
         Returns
         -------
         ag.GalaxyModel
-            Contains the `PriorModel`'s of the lens's light, mass, the shear, etc.
+            Contains the `Model`'s of the lens's light, mass, the shear, etc.
         """
 
         smbh = self.pipeline_mass.smbh_prior_model_from_result(result=result)
@@ -413,7 +413,7 @@ class SLaM:
         self, result: af.Result, source_is_model: bool = True
     ) -> ag.GalaxyModel:
         """
-         Pass a parametric source `PriorModel` as a `model` or `instance` from a previous pipeline.
+         Pass a parametric source `Model` as a `model` or `instance` from a previous pipeline.
 
         Parameters
         ----------
@@ -426,7 +426,7 @@ class SLaM:
         Returns
         -------
         ag.GalaxyModel
-            Contains the `PriorModel`'s of the source's bulge, disk, etc.
+            Contains the `Model`'s of the source's bulge, disk, etc.
         """
         hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_result(result=result)
 
@@ -454,7 +454,7 @@ class SLaM:
         self, result: af.Result, source_is_model: bool = False
     ) -> ag.GalaxyModel:
         """
-         Pass an inversion source `PriorModel` as a `model` or `instance` from a previous pipeline.
+         Pass an inversion source `Model` as a `model` or `instance` from a previous pipeline.
 
         Parameters
         ----------
@@ -467,7 +467,7 @@ class SLaM:
         Returns
         -------
         ag.GalaxyModel
-            Contains the `PriorModel`'s of the source's pixelization, regularization, etc.
+            Contains the `Model`'s of the source's pixelization, regularization, etc.
         """
         hyper_galaxy = self.setup_hyper.hyper_galaxy_source_from_result(result=result)
 

@@ -38,7 +38,7 @@ class TestSetupMassLightDark:
             max_log_likelihood_tracer=tracer, max_log_likelihood_fit=fit
         )
 
-        bulge_prior_model = af.PriorModel(al.lmp.SphericalSersic)
+        bulge_prior_model = af.Model(al.lmp.SphericalSersic)
 
         bulge_prior_model.intensity = af.UniformPrior(
             lower_limit=0.99, upper_limit=1.01

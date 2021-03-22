@@ -35,7 +35,7 @@ The mass-profile and source light profile in this example have fixed centre (0.0
 lensing geometries.
 """
 
-mass_profile_model = af.PriorModel(al.mp.EllipticalIsothermal)
+mass_profile_model = af.Model(al.mp.EllipticalIsothermal)
 
 mass_profile_model.centre.centre_0 = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
 mass_profile_model.centre.centre_0 = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
@@ -47,7 +47,7 @@ mass_profile_model.elliptical_comps.elliptical_comps_1 = af.UniformPrior(
 )
 mass_profile_model.einstein_radius = af.UniformPrior(lower_limit=0.3, upper_limit=2.0)
 
-light_profile_model = af.PriorModel(al.lp.EllipticalExponential)
+light_profile_model = af.Model(al.lp.EllipticalExponential)
 light_profile_model.centre.centre_0 = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
 light_profile_model.centre.centre_1 = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
 light_profile_model.elliptical_comps.elliptical_comps_0 = 0.2

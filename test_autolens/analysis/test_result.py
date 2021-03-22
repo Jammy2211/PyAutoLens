@@ -21,8 +21,8 @@ class TestResultAbstract:
         self, analysis_imaging_7x7, samples_with_result
     ):
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(
+        model = af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)
             )
         )

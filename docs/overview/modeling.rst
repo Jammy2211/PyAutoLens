@@ -62,7 +62,7 @@ To perform the model-fit, we create a ``PhaseImaging`` object and 'run' the phas
 
     phase = al.PhaseImaging(
         search=search,
-        galaxies=af.CollectionPriorModel(lens=lens_galaxy_model, source=source_galaxy_model),
+        galaxies=af.Collection(lens=lens_galaxy_model, source=source_galaxy_model),
     )
 
     result = phase.run(data=imaging, mask=mask)

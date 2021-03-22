@@ -266,8 +266,8 @@ class TestAnalysisDataset:
         self, masked_imaging_7x7
     ):
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(
+        model = af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(
                     redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=100.0)
                 ),
@@ -320,9 +320,7 @@ class TestAnalysisDataset:
 class TestAnalysisImaging:
     def test__make_result__result_imaging_is_returned(self, masked_imaging_7x7):
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(galaxy_0=al.Galaxy(redshift=0.5))
-        )
+        model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
         search = mock.MockSearch(name="test_phase")
 
@@ -336,8 +334,8 @@ class TestAnalysisImaging:
         self, masked_imaging_7x7
     ):
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(
+        model = af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
                 source=al.Galaxy(redshift=1.0),
             )
@@ -361,9 +359,7 @@ class TestAnalysisImaging:
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(lens=lens_galaxy)
-        )
+        model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
         instance = model.instance_from_unit_vector([])
@@ -386,10 +382,10 @@ class TestAnalysisImaging:
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
-        model = af.CollectionPriorModel(
+        model = af.Collection(
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
-            galaxies=af.CollectionPriorModel(lens=lens_galaxy),
+            galaxies=af.Collection(lens=lens_galaxy),
         )
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
@@ -559,9 +555,7 @@ class TestAnalysisInterferometer:
         self, masked_interferometer_7
     ):
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(galaxy_0=al.Galaxy(redshift=0.5))
-        )
+        model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
         search = mock.MockSearch(name="test_phase")
 
@@ -575,8 +569,8 @@ class TestAnalysisInterferometer:
         self, interferometer_7, mask_7x7, visibilities_mask_7
     ):
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(
+        model = af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
                 source=al.Galaxy(redshift=1.0),
             )
@@ -600,9 +594,7 @@ class TestAnalysisInterferometer:
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(lens=lens_galaxy)
-        )
+        model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
 
         analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
 
@@ -626,8 +618,8 @@ class TestAnalysisInterferometer:
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
         )
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(lens=lens_galaxy),
+        model = af.Collection(
+            galaxies=af.Collection(lens=lens_galaxy),
             hyper_background_noise=hyper_background_noise,
         )
 
@@ -759,8 +751,8 @@ class TestAnalysisPointSource:
         self, positions_x2, positions_x2_noise_map
     ):
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(
+        model = af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(redshift=0.5, light=al.ps.PointSource(centre=(0.0, 0.0)))
             )
         )
@@ -781,8 +773,8 @@ class TestAnalysisPointSource:
         self, positions_x2, positions_x2_noise_map
     ):
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(
+        model = af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(redshift=0.5, light=al.ps.PointSource(centre=(0.0, 0.0)))
             )
         )
@@ -832,8 +824,8 @@ class TestAnalysisPointSource:
         self, positions_x2, positions_x2_noise_map, fluxes_x2, fluxes_x2_noise_map
     ):
 
-        model = af.CollectionPriorModel(
-            galaxies=af.CollectionPriorModel(
+        model = af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(
                     redshift=0.5,
                     sis=al.mp.SphericalIsothermal(einstein_radius=1.0),

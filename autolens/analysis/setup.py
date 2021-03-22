@@ -85,7 +85,7 @@ class SetupHyper(setup.SetupHyper):
         self, result: af.Result, noise_factor_is_model=False
     ):
         """
-        Returns the `HyperGalaxy` `PriorModel` from a previous pipeline or phase of the lens galaxy in a template
+        Returns the `HyperGalaxy` `Model` from a previous pipeline or phase of the lens galaxy in a template
         PyAutoLens pipeline.
 
         The `HyperGalaxy` is extracted from the `hyper` phase of the previous pipeline, and by default has its
@@ -99,14 +99,14 @@ class SetupHyper(setup.SetupHyper):
         Parameters
         ----------
         index : int
-            The index of the previous phase the `HyperGalaxy` `PriorModel` is passed from.
+            The index of the previous phase the `HyperGalaxy` `Model` is passed from.
         noise_factor_is_model : bool
             If `True` the `noise_factor` of the `HyperGalaxy` is passed as a `model`, else it is passed as an
             `instance`.
 
         Returns
         -------
-        af.PriorModel(g.HyperGalaxy)
+        af.Model(g.HyperGalaxy)
             The hyper-galaxy that is passed to the next phase.
         """
 
@@ -129,7 +129,7 @@ class SetupHyper(setup.SetupHyper):
         self, result: af.Result, noise_factor_is_model=False
     ):
         """
-        Returns the `HyperGalaxy` `PriorModel` from a previous pipeline or phase of the source galaxy in a template
+        Returns the `HyperGalaxy` `Model` from a previous pipeline or phase of the source galaxy in a template
         PyAutosource pipeline.
 
         The `HyperGalaxy` is extracted from the `hyper` phase of the previous pipeline, and by default has its
@@ -143,14 +143,14 @@ class SetupHyper(setup.SetupHyper):
         Parameters
         ----------
         index : int
-            The index of the previous phase the `HyperGalaxy` `PriorModel` is passed from.
+            The index of the previous phase the `HyperGalaxy` `Model` is passed from.
         noise_factor_is_model : bool
             If `True` the `noise_factor` of the `HyperGalaxy` is passed as a `model`, else it is passed as an
             `instance`.
 
         Returns
         -------
-        af.PriorModel(g.HyperGalaxy)
+        af.Model(g.HyperGalaxy)
             The hyper-galaxy that is passed to the next phase.
         """
 
@@ -173,7 +173,7 @@ class SetupHyper(setup.SetupHyper):
         self, galaxy_model, galaxy_instance, noise_factor_is_model=False
     ):
 
-        hyper_galaxy = af.PriorModel(g.HyperGalaxy)
+        hyper_galaxy = af.Model(g.HyperGalaxy)
 
         if galaxy_model.hyper_galaxy is None:
             return None
@@ -195,16 +195,16 @@ class AbstractSetupMass:
     with_shear = None
 
     @property
-    def shear_prior_model(self) -> af.PriorModel:
+    def shear_prior_model(self) -> af.Model:
         """For a SLaM source pipeline, determine the shear model from the with_shear setting."""
         if self.with_shear:
-            return af.PriorModel(mp.ExternalShear)
+            return af.Model(mp.ExternalShear)
 
 
 class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
     def __init__(
         self,
-        mass_prior_model: af.PriorModel(mp.MassProfile) = mp.EllipticalPowerLaw,
+        mass_prior_model: af.Model(mp.MassProfile) = mp.EllipticalPowerLaw,
         with_shear=True,
         mass_centre: (float, float) = None,
         align_bulge_mass_centre: bool = False,
@@ -218,11 +218,11 @@ class SetupMassTotal(setup.SetupMassTotal, AbstractSetupMass):
 
         Parameters
         ----------
-        mass_prior_model : af.PriorModel(mp.MassProfile)
+        mass_prior_model : af.Model(mp.MassProfile)
             The `MassProfile` fitted by the `Pipeline` (the pipeline must specifically use this option to use this
             mass profile)
         with_shear : bool
-            If `True` the `ExternalShear` `PriorModel` is omitted from the galaxy model.
+            If `True` the `ExternalShear` `Model` is omitted from the galaxy model.
         mass_centre : (float, float) or None
            If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
            non-linear search.
@@ -244,12 +244,10 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
     def __init__(
         self,
         with_shear=True,
-        bulge_prior_model: af.PriorModel(lmp.LightMassProfile) = lmp.EllipticalSersic,
-        disk_prior_model: af.PriorModel(
-            lmp.LightMassProfile
-        ) = lmp.EllipticalExponential,
-        envelope_prior_model: af.PriorModel(lmp.LightMassProfile) = None,
-        dark_prior_model: af.PriorModel(mp.MassProfile) = mp.EllipticalNFWMCRLudlow,
+        bulge_prior_model: af.Model(lmp.LightMassProfile) = lmp.EllipticalSersic,
+        disk_prior_model: af.Model(lmp.LightMassProfile) = lmp.EllipticalExponential,
+        envelope_prior_model: af.Model(lmp.LightMassProfile) = None,
+        dark_prior_model: af.Model(mp.MassProfile) = mp.EllipticalNFWMCRLudlow,
         mass_centre: (float, float) = None,
         constant_mass_to_light_ratio: bool = False,
         align_bulge_dark_centre: bool = False,
@@ -264,13 +262,13 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
         Parameters
         ----------
         with_shear : bool
-           If `True` the `ExternalShear` `PriorModel` is omitted from the galaxy model.
-        bulge_prior_model : af.PriorModel or al.lmp.LightMassProfile
-            The `LightProfile` `PriorModel` used to represent the light distribution of a bulge.
-        disk_prior_model : af.PriorModel(al.lmp.LightMassProfile)
-            The `LightProfile` `PriorModel` used to represent the light distribution of a disk.
-        envelope_prior_model : af.PriorModel(al.lmp.LightMassProfile)
-            The `LightProfile` `PriorModel` used to represent the light distribution of a envelope.
+           If `True` the `ExternalShear` `Model` is omitted from the galaxy model.
+        bulge_prior_model : af.Model or al.lmp.LightMassProfile
+            The `LightProfile` `Model` used to represent the light distribution of a bulge.
+        disk_prior_model : af.Model(al.lmp.LightMassProfile)
+            The `LightProfile` `Model` used to represent the light distribution of a disk.
+        envelope_prior_model : af.Model(al.lmp.LightMassProfile)
+            The `LightProfile` `Model` used to represent the light distribution of a envelope.
         mass_centre : (float, float)
            If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
            non-linear search.
@@ -297,9 +295,9 @@ class SetupMassLightDark(setup.SetupMassLightDark, AbstractSetupMass):
 class SetupSourceParametric(setup.SetupLightParametric):
     def __init__(
         self,
-        bulge_prior_model: af.PriorModel(lp.LightProfile) = lp.EllipticalSersic,
-        disk_prior_model: af.PriorModel(lp.LightProfile) = None,
-        envelope_prior_model: af.PriorModel(lp.LightProfile) = None,
+        bulge_prior_model: af.Model(lp.LightProfile) = lp.EllipticalSersic,
+        disk_prior_model: af.Model(lp.LightProfile) = None,
+        envelope_prior_model: af.Model(lp.LightProfile) = None,
         light_centre: (float, float) = None,
         align_bulge_disk_centre: bool = True,
         align_bulge_disk_elliptical_comps: bool = False,
@@ -313,12 +311,12 @@ class SetupSourceParametric(setup.SetupLightParametric):
 
         Parameters
         ----------
-        bulge_prior_model : af.PriorModel(lp.LightProfile)
-            The `LightProfile` `PriorModel` used to represent the light distribution of a bulge.
-        disk_prior_model : af.PriorModel(lp.LightProfile)
-            The `LightProfile` `PriorModel` used to represent the light distribution of a disk.
-        envelope_prior_model : af.PriorModel(lp.LightProfile)
-            The `LightProfile` `PriorModel` used to represent the light distribution of a envelope.
+        bulge_prior_model : af.Model(lp.LightProfile)
+            The `LightProfile` `Model` used to represent the light distribution of a bulge.
+        disk_prior_model : af.Model(lp.LightProfile)
+            The `LightProfile` `Model` used to represent the light distribution of a disk.
+        envelope_prior_model : af.Model(lp.LightProfile)
+            The `LightProfile` `Model` used to represent the light distribution of a envelope.
         light_centre : (float, float) or None
            If input, a fixed (y,x) centre of the galaxy is used for the light profile model which is not treated as a
             free parameter by the non-linear search.
@@ -347,8 +345,8 @@ class SetupSourceParametric(setup.SetupLightParametric):
 class SetupSourceInversion(setup.SetupLightInversion):
     def __init__(
         self,
-        pixelization_prior_model: af.PriorModel(pix.Pixelization),
-        regularization_prior_model: af.PriorModel(reg.Regularization),
+        pixelization_prior_model: af.Model(pix.Pixelization),
+        regularization_prior_model: af.Model(reg.Regularization),
         inversion_pixels_fixed: float = None,
     ):
         """
@@ -359,10 +357,10 @@ class SetupSourceInversion(setup.SetupLightInversion):
 
         Parameters
         ----------
-        pixelization_prior_model : af.PriorModel(pix.Pixelization)
+        pixelization_prior_model : af.Model(pix.Pixelization)
            If the pipeline uses an `Inversion` to reconstruct the galaxy's source, this determines the `Pixelization`
            used.
-        regularization_prior_model : af.PriorModel(reg.Regularization)
+        regularization_prior_model : af.Model(reg.Regularization)
             If the pipeline uses an `Inversion` to reconstruct the galaxy's source, this determines the `Regularization`
             scheme used.
         inversion_pixels_fixed : float
@@ -380,7 +378,7 @@ class SetupSourceInversion(setup.SetupLightInversion):
 class SetupSubhalo(setup.AbstractSetup):
     def __init__(
         self,
-        subhalo_prior_model: af.PriorModel(mp.MassProfile) = mp.SphericalNFWMCRLudlow,
+        subhalo_prior_model: af.Model(mp.MassProfile) = mp.SphericalNFWMCRLudlow,
         subhalo_search: af.NonLinearSearch = None,
         source_is_model: bool = True,
         grid_dimension_arcsec: float = 3.0,
