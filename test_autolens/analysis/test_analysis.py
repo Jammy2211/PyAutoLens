@@ -18,33 +18,8 @@ directory = path.dirname(path.realpath(__file__))
 
 
 class TestAnalysisAbstract:
-    def test__auto_einstein_radius_is_used__einstein_radius_used_in_analysis(
-        self, masked_imaging_7x7
-    ):
 
-        settings_lens = al.SettingsLens(auto_einstein_radius_factor=None)
-
-        tracer = mock.MockTracer(einstein_radius=2.0)
-
-        analysis = al.AnalysisImaging(
-            dataset=masked_imaging_7x7,
-            results=mock.MockResults(max_log_likelihood_tracer=tracer),
-            settings_lens=settings_lens,
-        )
-
-        assert analysis.settings_lens.einstein_radius_estimate == None
-
-        settings_lens = al.SettingsLens(auto_einstein_radius_factor=1.0)
-
-        tracer = mock.MockTracer(einstein_radius=2.0)
-
-        analysis = al.AnalysisImaging(
-            dataset=masked_imaging_7x7,
-            results=mock.MockResults(max_log_likelihood_tracer=tracer),
-            settings_lens=settings_lens,
-        )
-
-        assert analysis.settings_lens.einstein_radius_estimate == 2.0
+    pass
 
 
 class TestAnalysisDataset:
