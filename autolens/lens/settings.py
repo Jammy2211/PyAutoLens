@@ -9,8 +9,6 @@ class SettingsLens:
     def __init__(
         self,
         positions_threshold=None,
-        auto_positions_factor=None,
-        auto_positions_minimum_threshold=None,
         auto_einstein_radius_factor: float = None,
         auto_einstein_radius_count: int = 250,
         stochastic_likelihood_resamples=None,
@@ -19,8 +17,6 @@ class SettingsLens:
     ):
 
         self.positions_threshold = positions_threshold
-        self.auto_positions_factor = auto_positions_factor
-        self.auto_positions_minimum_threshold = auto_positions_minimum_threshold
         self.auto_einstein_radius_factor = auto_einstein_radius_factor
         self.auto_einstein_radius_count = auto_einstein_radius_count
         self.stochastic_likelihood_resamples = stochastic_likelihood_resamples

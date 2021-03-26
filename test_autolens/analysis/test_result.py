@@ -184,9 +184,7 @@ class TestResultAbstract:
 
         result.analysis.dataset.mask = mask
 
-        multiple_images = (
-            result.image_plane_multiple_image_positions_of_source_plane_centres
-        )
+        multiple_images = result.image_plane_multiple_image_positions
 
         grid = al.Grid2D.from_mask(mask=mask)
 
@@ -198,6 +196,45 @@ class TestResultAbstract:
         )
 
         assert multiple_images.in_list[0] == multiple_images_manual.in_list[0]
+
+    def test__image_plane_multiple_image_positions_and_threshold(
+        self, analysis_imaging_7x7
+    ):
+
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[
+                al.Galaxy(
+                    redshift=0.5,
+                    mass=al.mp.EllipticalIsothermal(
+                        centre=(0.1, 0.0),
+                        einstein_radius=1.0,
+                        elliptical_comps=(0.0, 0.0),
+                    ),
+                ),
+                al.Galaxy(redshift=1.0, bulge=al.lp.SphericalSersic(centre=(0.0, 0.0))),
+            ]
+        )
+
+        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+
+        result = res.Result(
+            samples=samples, model=None, analysis=analysis_imaging_7x7, search=None
+        )
+
+        assert result.image_plane_multiple_image_positions.in_list[0][
+            0
+        ] == pytest.approx(1.0004, 1.0e-2)
+        assert result.image_plane_multiple_image_positions.in_list[1][
+            0
+        ] == pytest.approx(-1.0004, 1.0e-2)
+
+        assert result.positions_threshold_from() == pytest.approx(0.000973519, 1.0e-4)
+        assert result.positions_threshold_from(factor=5.0) == pytest.approx(
+            5.0 * 0.000973519, 1.0e-4
+        )
+        assert result.positions_threshold_from(minimum_threshold=0.2) == pytest.approx(
+            0.2, 1.0e-4
+        )
 
 
 class TestResultDataset:
@@ -281,7 +318,7 @@ class TestResultDataset:
         assert isinstance(result.pixelization, al.pix.VoronoiBrightnessImage)
         assert result.pixelization.pixels == 6
 
-    def test__results_of_phase_include_pixelization_grid__available_as_property(
+    def test__results_include_pixelization_grid__available_as_property(
         self, analysis_imaging_7x7
     ):
 

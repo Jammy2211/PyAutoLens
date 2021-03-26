@@ -10,6 +10,7 @@ from autogalaxy.profiles import light_profiles as lp
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.analysis import result as res
 from autogalaxy.analysis.result import last_result_with_use_as_hyper_dataset
+from autolens.fit import fit_point_source
 from autolens.lens import ray_tracing, positions_solver as pos
 
 
@@ -37,19 +38,6 @@ class Result(res.Result):
             return grid_2d_irregular.Grid2DIrregular(grid=[np.asarray(centre[0])])
 
     @property
-    def source_plane_inversion_centre(self) -> grid_2d_irregular.Grid2DIrregular:
-        """
-        Returns the centre of the brightest source pixel(s) of an `Inversion`.
-
-        These centres are used by automatic position updating to determine the best-fit lens model's image-plane
-        multiple-image positions.
-        """
-        if self.max_log_likelihood_fit.inversion is not None:
-            return (
-                self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre
-            )
-
-    @property
     def source_plane_centre(self) -> grid_2d_irregular.Grid2DIrregular:
         """
         Return the centre of a source-plane galaxy via the following criteria:
@@ -60,17 +48,15 @@ class Result(res.Result):
         These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
         (and thus tracer) by back-tracing the centres to the image plane via the mass model.
         """
-        if self.source_plane_inversion_centre is not None:
-            return self.source_plane_inversion_centre
-        elif self.source_plane_light_profile_centre is not None:
-            return self.source_plane_light_profile_centre
+        return self.source_plane_light_profile_centre
 
     @property
-    def image_plane_multiple_image_positions_of_source_plane_centres(
+    def image_plane_multiple_image_positions(
         self,
     ) -> grid_2d_irregular.Grid2DIrregular:
-        """Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
-        the multiple image position of the source(s) in the image-plane..
+        """
+        Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
+        the multiple image position of the source(s) in the image-plane.
 
         These image-plane positions are used by the next phase in a pipeline if automatic position updating is turned
         on."""
@@ -81,15 +67,57 @@ class Result(res.Result):
 
         solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.001)
 
-        try:
+        multiple_images = solver.solve(
+            lensing_obj=self.max_log_likelihood_tracer,
+            source_plane_coordinate=self.source_plane_centre.in_list[0],
+        )
 
-            multiple_images = solver.solve(
-                lensing_obj=self.max_log_likelihood_tracer,
-                source_plane_coordinate=self.source_plane_centre.in_list[0],
-            )
-            return grid_2d_irregular.Grid2DIrregular(grid=multiple_images)
-        except (AttributeError, IndexError):
-            return None
+        return grid_2d_irregular.Grid2DIrregular(grid=multiple_images)
+
+    def positions_threshold_from(self, factor=1.0, minimum_threshold=None) -> float:
+        """
+        Compute a new position threshold from these results corresponding to the image-plane multiple image positions of
+         the maximum log likelihood `Tracer` ray-traced to the source-plane.
+
+        First, we ray-trace forward the multiple-image's to the source-plane via the mass model to determine how far
+        apart they are separated. We take the maximum source-plane separation of these points and multiple this by
+        the auto_positions_factor to determine a new positions threshold. This value may also be rounded up to the
+        input `auto_positions_minimum_threshold`.
+
+        This is used for non-linear search chaining, specifically updating the position threshold of a new model-fit
+        using the maximum likelihood model of a previous search.
+
+        Parameters
+        ----------
+        factor : float
+            The value the computed threshold is multipled by to make the position threshold larger or smaller than the
+            maximum log likelihood model's threshold.
+        minimum_threshold : float
+            The output threshold is rounded up to this value if it is below it, to avoid extremely small threshold
+            values.
+
+        Returns
+        -------
+        float
+            The maximum source plane separation of this results maximum likelihood `Tracer` multiple images multipled
+            by `factor` and rounded up to the `threshold`.
+        """
+
+        positions = self.image_plane_multiple_image_positions
+
+        positions_fits = fit_point_source.FitPositionsSourceMaxSeparation(
+            positions=positions, noise_map=None, tracer=self.max_log_likelihood_tracer
+        )
+
+        positions_threshold = factor * np.max(
+            positions_fits.max_separation_of_source_plane_positions
+        )
+
+        if minimum_threshold is not None:
+            if positions_threshold < minimum_threshold:
+                return minimum_threshold
+
+        return positions_threshold
 
     @property
     def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:
@@ -121,6 +149,35 @@ class ResultDataset(Result):
         for galaxy in self.max_log_likelihood_tracer.galaxies:
             if galaxy.pixelization is not None:
                 return galaxy.pixelization
+
+    @property
+    def source_plane_centre(self) -> grid_2d_irregular.Grid2DIrregular:
+        """
+        Return the centre of a source-plane galaxy via the following criteria:
+
+        1) If the source plane contains only light profiles, return the first light's centre.
+        2) If it contains an `Inversion` return the centre of its brightest pixel instead.
+
+        These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
+        (and thus tracer) by back-tracing the centres to the image plane via the mass model.
+        """
+        if self.source_plane_inversion_centre is not None:
+            return self.source_plane_inversion_centre
+        elif self.source_plane_light_profile_centre is not None:
+            return self.source_plane_light_profile_centre
+
+    @property
+    def source_plane_inversion_centre(self) -> grid_2d_irregular.Grid2DIrregular:
+        """
+        Returns the centre of the brightest source pixel(s) of an `Inversion`.
+
+        These centres are used by automatic position updating to determine the best-fit lens model's image-plane
+        multiple-image positions.
+        """
+        if self.max_log_likelihood_fit.inversion is not None:
+            return (
+                self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre
+            )
 
     @property
     def max_log_likelihood_pixelization_grids_of_planes(self):
@@ -200,7 +257,11 @@ class ResultDataset(Result):
             with open(stochastic_log_evidences_json_file, "r") as f:
                 return np.asarray(json.load(f))
         except FileNotFoundError:
-            pass
+            self.analysis.save_stochastic_outputs(
+                paths=self.search.paths, samples=self.samples
+            )
+            with open(stochastic_log_evidences_json_file, "r") as f:
+                return np.asarray(json.load(f))
 
 
 class ResultImaging(ResultDataset):

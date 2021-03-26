@@ -33,7 +33,6 @@ from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
 from autogalaxy.galaxy.galaxy_data import GalaxyData
 from autogalaxy.galaxy.galaxy_model import GalaxyModel
 from autogalaxy.hyper import hyper_data
-from autogalaxy.analysis.setup import SetupLightParametric, SetupSMBH
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles import (
     point_sources as ps,
@@ -61,22 +60,7 @@ from .analysis.analysis import (
     AnalysisInterferometer,
     AnalysisPointSource,
 )
-from autolens.analysis.setup import (
-    SetupPipeline,
-    SetupHyper,
-    SetupSourceParametric,
-    SetupSourceInversion,
-    SetupMassTotal,
-    SetupMassLightDark,
-    SetupSubhalo,
-)
-from .analysis.slam import (
-    SLaMPipelineSourceParametric,
-    SLaMPipelineSourceInversion,
-    SLaMPipelineLightParametric,
-    SLaMPipelineMass,
-    SLaM,
-)
+from autolens.analysis.setup import SetupHyper
 
 from autoconf import conf
 

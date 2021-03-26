@@ -22,7 +22,6 @@ from autolens.fit import fit
 from autolens.fit import fit_point_source
 from autolens.lens import settings
 from autolens.analysis import result as res
-from autolens.analysis import result_util
 from autolens.analysis import visualizer as vis
 from autolens import exc
 
@@ -135,37 +134,9 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
             self=self, settings_lens=settings_lens, cosmology=cosmology
         )
 
-        self.positions = self.modify_positions(
-            positions=positions,
-            results=results,
-            auto_positions_factor=self.settings_lens.auto_positions_factor,
-        )
-
-        self.settings_lens = self.modify_positions_threshold(results=results)
+        self.positions = positions
 
         self.settings_lens = self.modify_einstein_radius_estimate(results=results)
-
-    def modify_positions(self, positions, results, auto_positions_factor):
-
-        return result_util.updated_positions_from(
-            positions=positions,
-            results=results,
-            auto_positions_factor=auto_positions_factor,
-        )
-
-    def modify_positions_threshold(self, results):
-
-        positions_threshold = result_util.updated_positions_threshold_from(
-            positions=self.positions,
-            results=results,
-            positions_threshold=self.settings_lens.positions_threshold,
-            auto_positions_factor=self.settings_lens.auto_positions_factor,
-            auto_positions_minimum_threshold=self.settings_lens.auto_positions_minimum_threshold,
-        )
-
-        return self.settings_lens.modify_positions_threshold(
-            positions_threshold=positions_threshold
-        )
 
     def modify_before_fit(self, model, paths: af.Paths):
 
@@ -246,7 +217,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
 
         super().save_settings(paths=paths)
 
-        with open(f"{paths.pickle_path}/settings_lens.pickle", "wb+") as f:
+        with open(path.join(paths.pickle_path, "settings_lens.pickle"), "wb+") as f:
             pickle.dump(self.settings_lens, f)
 
     def save_stochastic_outputs(self, paths: af.Paths, samples: af.OptimizerSamples):
@@ -449,11 +420,14 @@ class AnalysisImaging(AnalysisDataset):
             )
 
     def save_results_for_aggregator(
-        self, paths: af.Paths, samples: af.OptimizerSamples
+        self, paths: af.Paths, samples: af.OptimizerSamples, model: af.Collection
     ):
 
+        pixelization = model_util.pixelization_from(model=model)
+
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
-            self.save_stochastic_outputs(paths=paths, samples=samples)
+            if model_util.isinstance_or_prior(pixelization, pix.VoronoiBrightnessImage):
+                self.save_stochastic_outputs(paths=paths, samples=samples)
 
     def make_result(
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
@@ -708,7 +682,7 @@ class AnalysisInterferometer(AnalysisDataset):
             )
 
     def save_results_for_aggregator(
-        self, paths: af.Paths, samples: af.OptimizerSamples
+        self, paths: af.Paths, samples: af.OptimizerSamples, model: af.Collection
     ):
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
