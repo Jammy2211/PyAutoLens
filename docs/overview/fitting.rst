@@ -117,9 +117,9 @@ which is representative of our strong lens data! This task, called lens modeling
 Given a strong lens dataset, how do we determine a 'good' lens model? How do we determine the tracer (and therefore
 combination of light profiles, mass profiles and galaxies) that minimize the residuals and chi-squared values?
 
-This requires lens modeling, which uses a ``NonLinearSearch`` to fit many different tracers to the data.
+This requires lens modeling, which uses a non-linear search to fit many different tracers to the data.
 This model-fitting is handled by our project **PyAutoFit**, a probabilistic programming language for non-linear model
-fitting. Below, we setup our model as ``GalaxyModel`` objects, which repesent the galaxies we fit to our data:
+fitting.
 
 If you are unfamilar data and model fitting, and unsure what terms like 'residuals', 'chi-sqaured' or 'likelihood' mean,
 we'll explain all in chapter 1 of the **HowToLens** lecture series. Checkout the

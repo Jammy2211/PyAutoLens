@@ -47,7 +47,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
         self,
         dataset,
         positions: grid_2d_irregular.Grid2DIrregular = None,
-        results=None,
+        hyper_result=None,
         cosmology=cosmo.Planck15,
         settings_pixelization=pix.SettingsPixelization(),
         settings_inversion=inv.SettingsInversion(),
@@ -64,7 +64,6 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
             Image-pixel coordinates in arc-seconds of bright regions of the lensed source that will map close to one
             another in the source-plane(s) for an accurate mass model, which can be used to discard unphysical mass
             models during model-fitting.
-        results
         cosmology
         settings_pixelization
         settings_inversion
@@ -74,7 +73,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
 
         super().__init__(
             dataset=dataset,
-            results=results,
+            hyper_result=hyper_result,
             cosmology=cosmology,
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
@@ -97,6 +96,8 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
         return self
 
     def setup_preloads(self, model):
+
+        return pload.Preloads()
 
         if self.results is None:
             return pload.Preloads()
@@ -381,11 +382,7 @@ class AnalysisImaging(AnalysisDataset):
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
         return res.ResultImaging(
-            samples=samples,
-            model=model,
-            analysis=self,
-            search=search,
-            use_as_hyper_dataset=self.use_result_as_hyper_dataset,
+            samples=samples, model=model, analysis=self, search=search
         )
 
     def make_attributes(self):
@@ -402,7 +399,7 @@ class AnalysisInterferometer(AnalysisDataset):
         self,
         dataset,
         positions: grid_2d_irregular.Grid2DIrregular = None,
-        results=None,
+        hyper_result=None,
         cosmology=cosmo.Planck15,
         settings_pixelization=pix.SettingsPixelization(),
         settings_inversion=inv.SettingsInversion(),
@@ -414,7 +411,7 @@ class AnalysisInterferometer(AnalysisDataset):
         super().__init__(
             dataset=dataset,
             positions=positions,
-            results=results,
+            hyper_result=hyper_result,
             cosmology=cosmology,
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
@@ -423,11 +420,9 @@ class AnalysisInterferometer(AnalysisDataset):
             use_result_as_hyper_dataset=use_result_as_hyper_dataset,
         )
 
-        result = res.last_result_with_use_as_hyper_dataset(results=results)
+        if self.hyper_result is not None:
 
-        if result is not None:
-
-            self.set_hyper_dataset(result=result)
+            self.set_hyper_dataset(result=self.hyper_result)
 
         else:
 
@@ -640,11 +635,7 @@ class AnalysisInterferometer(AnalysisDataset):
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
         return res.ResultInterferometer(
-            samples=samples,
-            model=model,
-            analysis=self,
-            search=search,
-            use_as_hyper_dataset=self.use_result_as_hyper_dataset,
+            samples=samples, model=model, analysis=self, search=search
         )
 
     def make_attributes(self):
@@ -698,7 +689,6 @@ class AnalysisPointSource(AnalysisLensing):
         noise_map,
         fluxes=None,
         fluxes_noise_map=None,
-        results=None,
         imaging=None,
         cosmology=cosmo.Planck15,
         settings_lens=settings.SettingsLens(),
@@ -712,7 +702,6 @@ class AnalysisPointSource(AnalysisLensing):
         self.fluxes_noise_map = fluxes_noise_map
         self.solver = solver
         self.imaging = imaging
-        self.results = results
 
     def log_likelihood_function(self, instance):
         """

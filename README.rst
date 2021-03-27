@@ -135,26 +135,28 @@ with an ``EllipticalSersic``.
 
     """
     To setup these profiles as model components whose parameters are free & fitted for
-    we use the GalaxyModel class.
+    we set up each Galaxy as a Model and define the model as a Collection of all galaxies.
     """
-    lens_galaxy_model = al.GalaxyModel(redshift=0.5, mass=lens_mass_profile)
-    source_galaxy_model = al.GalaxyModel(redshift=1.0, disk=source_light_profile)
+    lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=lens_mass_profile)
+    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=source_light_profile)
+    model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
 
     """
-    To perform the analysis we set up a phase, which takes our galaxy models & fits
-    their parameters using a NonLinearSearch (in this case, Dynesty).
+    We define the non-linear search used to fit the model to the data (in this case, Dynesty).
     """
-    phase = al.PhaseImaging(
-        search=af.DynestyStatic(name="phase[example]",n_live_points=50),
-        galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
-    )
+    search = af.DynestyStatic(name="search[example]", n_live_points=50)
 
     """
-    We pass the imaging dataset and mask to the phase's run function, fitting it
-    with the lens model & outputting the results (dynesty samples, visualization,
-    etc.) to hard-disk.
+    We next set up the `Analysis`, which contains the `log likelihood function` that the
+    non-linear search calls to fit the lens model to the data.
     """
-    result = phase.run(dataset=imaging, mask=mask)
+    analysis = al.AnalysisImaging(dataset=masked_imaging)
+
+    """
+    To perform the model-fit we pass the model and analysis to the search's fit method. This will
+    output results (e.g., dynesty samples, model parameters, visualization) to hard-disk.
+    """
+    result = search.fit(model=model, analysis=analysis)
 
     """
     The results contain information on the fit, for example the maximum likelihood

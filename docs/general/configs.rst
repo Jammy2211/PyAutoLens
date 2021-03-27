@@ -12,7 +12,7 @@ By default, **PyAutoLens** looks for the config files in a ``config`` folder in 
 why we run autolens scripts from the ``autolens_workspace`` directory.
 
 The configuration path can also be set manually in a script using **PyAutoConf** and the following command (the path
-to the ``output`` folder where the results of a ``NonLinearSearch`` are stored is also set below):
+to the ``output`` folder where the results of a non-linear search are stored is also set below):
 
 .. code-block:: bash
 
@@ -29,14 +29,14 @@ This config file is found at 'autolens_workspace/config/general.ini' and contain
 
 [output]
     log_file -> str
-        The file name the logged output is written to (in the `NonLinearSearch` output folder).
+        The file name the logged output is written to (in the non-linear search output folder).
     log_level -> str
         The level of logging.
     model_results_decimal_places -> int
         The number of decimal places the estimated values and errors of all parameters in the model.results file are
         output to.
     remove_files -> bool
-        If True, all output files of a `NonLinearSearch` (e.g. samples, samples_backup, model.results, images, etc.)
+        If True, all output files of a non-linear search (e.g. samples, samples_backup, model.results, images, etc.)
         are deleted once the model-fit has completed.
 
         A .zip file of all output is always created before files are removed, thus results are not lost with this
@@ -48,10 +48,10 @@ This config file is found at 'autolens_workspace/config/general.ini' and contain
         user and the large number of files output by PyAutoLens can exceed this limit. By removing files the
         number of files is restricted only to the .zip files.
     skip_completed -> bool
-        If True, and if the results of a `NonLinearSearch` were completed in a previous run, then all processing steps
-        performed at the end of the `NonLinearSearch` (e.g. output of sample results, visualization, etc.) are skipped.
+        If True, and if the results of a non-linear search were completed in a previous run, then all processing steps
+        performed at the end of the non-linear search (e.g. output of sample results, visualization, etc.) are skipped.
 
-        If False, they are repeated, which can be used for updating visualization or the `NonLinearSearch` pickles
+        If False, they are repeated, which can be used for updating visualization or the non-linear search pickles
         to a new version of PyAutoLens.
     grid_results_interval -> int
         For a GridSearch non-linear optimization this interval sets after how many samples on the grid output is
@@ -105,7 +105,7 @@ to implement this adaptive grid.
         source_grid - The interpolated grid is zoomed to over-lay the source-plane reconstructed source and uses
         dimensions derived from the number of pixels used by the reconstruction.
     inversion_pixel_limit_overall -> int
-        The maximum number of pixels that may be assumed for an inversion during a `NonLinearSearch` fit.
+        The maximum number of pixels that may be assumed for an inversion during a non-linear search fit.
 
 [hyper]
     hyper_minimum_percent -> float
@@ -125,14 +125,14 @@ non_linear
 These config files are found at 'autolens_workspace/config/non_linear' and they contain the default settings used by
 every non-linear search. The [search], [settings] and [initialize] sections of the non-linear configs contains settings
 specific to certain non-linear searches, and the documentation for these variables should be found by inspecting the
-`API Documentation <https://pyautolens.readthedocs.io/en/latest/api/api.html>`_ of the relevent `NonLinearSearch` object.
+`API Documentation <https://pyautolens.readthedocs.io/en/latest/api/api.html>`_ of the relevent non-linear search object.
 
-The following config sections and variables are generic across all `NonLinearSearch` configs (e.g.
+The following config sections and variables are generic across all non-linear search configs (e.g.
 config/non_linear/nest/DynestyStatic.ini, config/non_linear/mcmc/Emcee.ini, etc.):
 
 [updates]
    iterations_per_update -> int
-        The number of iterations of the `NonLinearSearch` performed between every 'update', where an update performs
+        The number of iterations of the non-linear search performed between every 'update', where an update performs
         visualization of the maximum log likelihood model, backing-up of the samples, output of the model.results
         file and logging.
    visualize_every_update -> int
@@ -140,9 +140,9 @@ config/non_linear/nest/DynestyStatic.ini, config/non_linear/mcmc/Emcee.ini, etc.
         non-linear using the maximum log likelihood model. A visualization_interval of -1 turns off on-the-fly
         visualization.
    backup_every_update -> int
-        For every backup_every_update the results of the `NonLinearSearch` in the samples foler and backed up into the
-        samples_backup folder. A backup_every_update of -1 turns off backups during the `NonLinearSearch` (it is still
-        performed when the `NonLinearSearch` terminates).
+        For every backup_every_update the results of the non-linear search in the samples foler and backed up into the
+        samples_backup folder. A backup_every_update of -1 turns off backups during the non-linear search (it is still
+        performed when the non-linear search terminates).
    model_results_every_update -> int
         For every model_results_every_update the model.results file is updated with the maximum log likelihood model
         and parameter estimates with errors at 1 an 3 sigma confidence. A model_results_every_update of -1 turns off
@@ -154,7 +154,7 @@ config/non_linear/nest/DynestyStatic.ini, config/non_linear/mcmc/Emcee.ini, etc.
 
 [printing]
     silence -> bool
-        If True, the default print output of the `NonLinearSearch` is silcened and not printed by the Python
+        If True, the default print output of the non-linear search is silcened and not printed by the Python
         interpreter.
 
 [prior_passer]
@@ -168,12 +168,12 @@ use_widths=True
         cores the parallel run uses. If number_of_cores=1, the model-fit is performed in serial omitting the use
         of the multi-processing module.
 
-The output path of every `NonLinearSearch` is also 'tagged' using strings based on the [search] setting of the
+The output path of every non-linear search is also 'tagged' using strings based on the [search] setting of the
 non-linear search:
 
 [tag]
     name -> str
-        The name of the `NonLinearSearch` used to start the tag path of output results. For example for the non-linear
+        The name of the non-linear search used to start the tag path of output results. For example for the non-linear
         search DynestyStatic the default name tag is 'dynesty_static'.
 
 visualize
@@ -232,7 +232,7 @@ The sections of this example config set the following:
 
 json config
     type -> Prior
-        The default prior given to this parameter which is used by the `NonLinearSearch`. In the example above, a
+        The default prior given to this parameter which is used by the non-linear search. In the example above, a
         UniformPrior is used with lower_limit of 0.0 and upper_limit of 30.0. A GaussianPrior could be used by
         putting "Gaussian" in the "type" box, with "mean" and "sigma" used to set the default values. Any prior can be
         set in an analogous fashion (see the example configs).
@@ -254,7 +254,7 @@ Two examples using the 1D data fitting example for the config file **label.ini**
 
 [label]
     centre_0 -> str
-        The label given to that parameter for `NonLinearSearch` plots using that parameter, e.g. the PDF plots. For
+        The label given to that parameter for non-linear search plots using that parameter, e.g. the PDF plots. For
         example, if centre_1=x, the plot axis will be labeled 'x'.
 
 [subscript]
@@ -266,7 +266,7 @@ The **label_format.ini** config file specifies the format certain parameters are
 *model.results* file.
 
 The **tags.ini** config file specifies the tag of every `SettingsPhase`, *SetupPipeline* and *SLaM* input variable,
-where these tags customize the output path of the `NonLinearSearch` in a unique way based on how the model-fitting
+where these tags customize the output path of the non-linear search in a unique way based on how the model-fitting
 procedure is set up.
 
 Tags are self-explanatory and named after the input value of the class they are paired with. For a description of the

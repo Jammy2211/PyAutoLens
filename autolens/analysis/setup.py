@@ -41,9 +41,9 @@ class SetupHyper(setup.SetupHyper):
             the `SLaM` pipelines this is after the `SourcePipeline`. This allow Bayesian model comparison to be
             performed objected between later phases in a pipeline.
         hyper_search_no_inversion : af.NonLinearSearch or None
-            The `NonLinearSearch` used by every inversion phase.
+            The non-linear search used by every inversion phase.
         hyper_search_with_inversion : af.NonLinearSearch or None
-            The `NonLinearSearch` used by every hyper combined phase.
+            The non-linear search used by every hyper combined phase.
         evidence_tolerance : float
             The evidence tolerance of the non-linear searches used in the hyper phases, whereby higher values will
             lead them to end earlier at the expense of accuracy.

@@ -9,7 +9,6 @@ from autoarray.structures import visibilities
 from autogalaxy.profiles import light_profiles as lp
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.analysis import result as res
-from autogalaxy.analysis.result import last_result_with_use_as_hyper_dataset
 from autolens.fit import fit_point_source
 from autolens.lens import ray_tracing, positions_solver as pos
 

@@ -9,7 +9,7 @@ and navigating to the folder ``notebooks/howtolens/chapter_2_lens_modeling``. Th
 The chapter contains the following tutorials:
 
 `Tutorial 1: <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_1_non_linear_search.ipynb>`_
-- How a `NonLinearSearch` is used to fit a lens model.
+- How a non-linear search is used to fit a lens model.
 
 `Tutorial 2: Parameter Space And Priors <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_2_parameter_space_and_priors.ipynb>`_
 - The Concepts of a parameter space and priors.
@@ -23,14 +23,14 @@ The chapter contains the following tutorials:
 `Tutorial 5: Linking Phases <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_5_chaining_phases.ipynb>`_
 - Breaking the lens modeling procedure down into multiple fits.
 
-`Tutorial 6: Alternative Searches  <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_6_alternative_searches.ipynb>`_
+`Tutorial 6: Alternative Searches  <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_5_alternative_searches.ipynb>`_
 - Using different non-linear searches to sample parameter space.
 
-`Tutorial 7: Masking and Positions <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_7_masking_and_positions.ipynb>`_
+`Tutorial 7: Masking and Positions <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_6_masking_and_positions.ipynb>`_
 - How to mask and mark positions on your data to improve the lens model.
 
-`Tutorial 8: Results <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_8_results.ipynb>`_
+`Tutorial 8: Results <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_7_results.ipynb>`_
 - Overview of the results available after successfully fitting a lens model.
 
-`Tutorial 9: Need for Speed <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_9_need_for_speed.ipynb>`_
+`Tutorial 9: Need for Speed <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_8_need_for_speed.ipynb>`_
 - How to fit complex models whilst balancing efficiency and run-time.

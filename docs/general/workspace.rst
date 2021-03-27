@@ -15,7 +15,7 @@ Config
 
 Here, you'll find the configuration files used by **PyAutoLens** which customize:
 
-    - The default settings used by every `NonLinearSearch`.
+    - The default settings used by every non-linear search.
     - Visualization, including the backend used by *matplotlib*.
     - The priors and notation configs associated with the light and mass profiles used for lens model-fitting.
     - The behaviour of different (y,x) Cartesian grids used to perform lens calculations.

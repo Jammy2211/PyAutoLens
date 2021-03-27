@@ -24,18 +24,21 @@ We import it separately to **PyAutoLens**
 
     import autofit as af
 
-We compose the lens model that we fit to the data using ``GalaxyModel`` objects. These behave analogously to ``Galaxy``
-objects but their  ``LightProfile`` and ``MassProfile`` parameters are not specified and are instead determined by a
-fitting procedure.
+We compose the lens model that we fit to the data by ``Galaxy``'s to the ``Model`` object. Model galaxies behave
+analogously to a normal ``Galaxy`` object but their  ``LightProfile`` and ``MassProfile`` parameters are not specified
+and are instead determined by a fitting procedure.
 
 .. code-block:: bash
 
-    lens_galaxy_model = al.GalaxyModel(
+    lens_galaxy_model = af.Model(
+        al.Galaxy,
         redshift=0.5,
         bulge=al.lp.EllipticalDevVaucouleurs,
         mass=al.mp.EllipticalIsothermal
     )
-    source_galaxy_model = al.GalaxyModel(redshift=1.0, disk=al.lp.EllipticalExponential)
+    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllipticalExponential)
+
+    model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
 
 In the example above, we will fit our strong lens data with two galaxies:
 
@@ -45,30 +48,33 @@ In the example above, we will fit our strong lens data with two galaxies:
 
 The redshifts of the lens (z=0.5) and source(z=1.0) are fixed.
 
-We now choose the ``NonLinearSearch``, which is the fitting method used to determine the set of `LightProfile`
-and `MassProfile` parameters that best-fit our data by minimizing the *residuals* and *chi-squared* values and
+We now choose the non-linear search, which is the fitting method used to determine the set of ``LightProfile``
+and ``MassProfile`` parameters that best-fit our data by minimizing the *residuals* and *chi-squared* values and
 maximizing  its *log likelihood*.
 
-In this example we use `dynesty` (https://github.com/joshspeagle/dynesty), a nested sampling algorithm we find is
+In this example we use ``dynesty`` (https://github.com/joshspeagle/dynesty), a nested sampling algorithm we find is
 very effective at lens modeling.
 
 .. code-block:: bash
 
-    search = af.DynestyStatic(name="phase_example")
+    search = af.DynestyStatic(name="search_example")
 
-To perform the model-fit, we create a ``PhaseImaging`` object and 'run' the phase by passing it the dataset and mask.
+We next create an ``AnalysisImaging`` object, contains the ``log likelihood function`` that the non-linear search calls
+to fit the lens model to the data.
 
 .. code-block:: bash
 
-    phase = al.PhaseImaging(
-        search=search,
-        galaxies=af.Collection(lens=lens_galaxy_model, source=source_galaxy_model),
-    )
+    analysis = al.AnalysisImaging(dataset=masked_imaging)
 
-    result = phase.run(data=imaging, mask=mask)
+To perform the model-fit we pass the model and analysis to the search's fit method. This will
+output results (e.g., dynesty samples, model parameters, visualization) to hard-disk.
 
-The `NonLinearSearch` fits the lens model by guessing many lens models over and over iteratively, using the models which
-give a good fit to the data to guide it where to guess subsequent model. An animation of a `NonLinearSearch` is shown
+.. code-block:: bash
+
+    result = search.fit(model=model, analysis=analysis)
+
+The non-linear search fits the lens model by guessing many lens models over and over iteratively, using the models which
+give a good fit to the data to guide it where to guess subsequent model. An animation of a non-linear search is shown
 below,  where initial lens models give a poor fit to the data but gradually improve (increasing the likelihood) as more
 iterations are performed.
 
@@ -77,8 +83,8 @@ iterations are performed.
 
 **Credit: Amy Etherington**
 
-The ``PhaseImaging`` object above returns a ``Result`` object, which contains the maximum log likelihood ``Tracer``
-and ``FitImaging`` objects and which can easily be plotted.
+The fit above returns a ``Result`` object, which contains the maximum log likelihood ``Tracer`` and ``FitImaging``
+objects and which can easily be plotted.
 
 .. code-block:: bash
 
@@ -95,18 +101,19 @@ low chi-squared values:
   :width: 600
   :alt: Alternative text
 
-In fact, this ``Result`` object contains the full posterior information of our ``NonLinearSearch``, including all
+In fact, this ``Result`` object contains the full posterior information of our non-linear search, including all
 parameter samples, log likelihood values and tools to compute the errors on the lens model.
 
 The script ``autolens_workspace/examples/mdoel/result.py`` contains a full description of all information contained
 in a ``Result``.
 
-``GalaxyModel``'s can be fully customized, making it simple to parameterize and fit many different lens models using
-any combination of ``LightProfile``'s and ``MassProfile``'s light profiles:
+The galaxy ``Model``'s can be fully customized, making it simple to parameterize and fit many different lens models
+using any combination of ``LightProfile``'s and ``MassProfile``'s light profiles:
 
 .. code-block:: bash
 
-    lens_galaxy_model = al.GalaxyModel(
+    lens_galaxy_model = al.Model(
+        al.Galaxy,
         redshift=0.5,
         bulge=al.lp.EllipticalDevVaucouleurs,
         mass=al.mp.EllipticalIsothermal
@@ -116,21 +123,20 @@ any combination of ``LightProfile``'s and ``MassProfile``'s light profiles:
     This aligns the light and mass profile centres in the model, reducing the
     number of free parameter fitted for by Dynesty by 2.
     """
-
     lens_galaxy_model.bulge.centre = lens_galaxy_model.mass.centre
 
     """
     This fixes the lens galaxy light profile's effective radius to a value of
     0.8 arc-seconds, removing another free parameter.
     """
-
     lens_galaxy_model.bulge.effective_radius = 0.8
 
-    """This forces the mass profile's einstein radius to be above 1.0 arc-seconds."""
+    """
+    This forces the mass profile's einstein radius to be above 1.0 arc-seconds.
+    """
+    lens_galaxy_model.mass.add_assertion(lens_galaxy_model.mass.einstein_radius > 1.0)
 
-    lens_galaxy_model.mass.einstein_radius > 1.0
-
-The above fit used the `NonLinearSearch` ``dynesty``, but **PyAutoLens** supports many other methods and their
+The above fit used the non-linear search ``dynesty``, but **PyAutoLens** supports many other methods and their
 setting can be easily customized:
 
 .. code-block:: bash
@@ -151,7 +157,7 @@ setting can be easily customized:
     search = af.PySwarmsGlobal(name="pso_global", n_particles=50).
 
 Chapters 2 and 3 **HowToLens** lecture series give a comprehensive description of lens modeling, including a
-description of what a ``NonLinearSearch`` is and strategies to fit complex lens model to data in efficient and
+description of what a non-linear search is and strategies to fit complex lens model to data in efficient and
 robust ways.
 
 

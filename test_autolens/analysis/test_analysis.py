@@ -184,13 +184,12 @@ class TestAnalysisImaging:
 
         hyper_galaxy_image_path_dict = {("galaxies", "lens"): lens_hyper_image}
 
-        results = mock.MockResults(
-            use_as_hyper_dataset=True,
+        result = mock.MockResult(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=hyper_model_image,
         )
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, results=results)
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, hyper_result=result)
 
         hyper_galaxy = al.HyperGalaxy(
             contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
@@ -229,15 +228,14 @@ class TestAnalysisImaging:
             ),
         }
 
-        results = mock.MockResults(
+        result = mock.MockResult(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=al.Array2D.full(
                 fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0
             ),
-            use_as_hyper_dataset=True,
         )
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, results=results)
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, hyper_result=result)
 
         assert (
             analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].native
@@ -266,8 +264,7 @@ class TestAnalysisImaging:
             ("galaxies", "source"): source_hyper_image,
         }
 
-        results = mock.MockResults(
-            use_as_hyper_dataset=True,
+        result = mock.MockResult(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=hyper_model_image,
         )
@@ -285,7 +282,7 @@ class TestAnalysisImaging:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, results=results)
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, hyper_result=result)
 
         stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
             instance=instance
@@ -302,7 +299,7 @@ class TestAnalysisImaging:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, results=results)
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, hyper_result=result)
 
         stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
             instance=instance
@@ -417,7 +414,7 @@ class TestAnalysisInterferometer:
             ),
         }
 
-        results = mock.MockResults(
+        result = mock.MockResult(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=al.Array2D.full(
                 fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0
@@ -426,14 +423,13 @@ class TestAnalysisInterferometer:
             hyper_model_visibilities=al.Visibilities.full(
                 fill_value=6.0, shape_slim=(7,)
             ),
-            use_as_hyper_dataset=True,
         )
 
         analysis = al.AnalysisInterferometer(
-            dataset=masked_imaging_7x7, results=results
+            dataset=masked_imaging_7x7, hyper_result=result
         )
 
-        analysis.set_hyper_dataset(result=results.last)
+        analysis.set_hyper_dataset(result=result)
 
         assert (
             analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].native
@@ -487,8 +483,7 @@ class TestAnalysisInterferometer:
             ("galaxies", "source"): source_hyper_image,
         }
 
-        results = mock.MockResults(
-            use_as_hyper_dataset=True,
+        result = mock.MockResult(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=hyper_model_image,
         )
@@ -496,7 +491,7 @@ class TestAnalysisInterferometer:
         analysis = al.AnalysisInterferometer(
             dataset=masked_interferometer_7,
             settings_lens=al.SettingsLens(stochastic_samples=2),
-            results=results,
+            hyper_result=result,
         )
 
         log_evidences = analysis.stochastic_log_evidences_for_instance(

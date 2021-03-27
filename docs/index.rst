@@ -96,7 +96,7 @@ below shows this in action:
 To perform lens modeling, **PyAutoLens** adopts the probabilistic programming
 language `PyAutoFit <https://github.com/rhayes777/PyAutoFit>`_. **PyAutoFit** allows users to compose a
 lens model from ``LightProfile``, ``MassProfile`` and ``Galaxy`` objects, customize the model parameterization and
-fit it to data via a `NonLinearSearch` (e.g. `dynesty <https://github.com/joshspeagle/dynesty>`_,
+fit it to data via a non-linear search (e.g. `dynesty <https://github.com/joshspeagle/dynesty>`_,
 `emcee <https://github.com/dfm/emcee>`_ or `PySwarms <https://pyswarms.readthedocs.io/en/latest/>`_). The example
 code below shows how to setup and fit a lens model to a dataset:
 
@@ -107,61 +107,60 @@ code below shows how to setup and fit a lens model to a dataset:
     import autolens as al
     import autolens.plot as aplt
 
-    """In this example, we'll fit a simple lens galaxy + source galaxy system."""
-
-    dataset_path = "/path/to/dataset"
-    lens_name = "example_lens"
-
-    """Use the dataset path and lens name to load the imaging data."""
-
+    """
+    Load Imaging data of the strong lens from the dataset folder of the workspace.
+    """
     imaging = al.Imaging.from_fits(
-        image_path=f"{dataset_path}/{lens_name}/image.fits",
-        noise_map_path=f"{dataset_path}/{lens_name}/noise_map.fits",
-        psf_path=f"{dataset_path}/{lens_name}/psf.fits",
+        image_path="/path/to/dataset/image.fits",
+        noise_map_path="/path/to/dataset/noise_map.fits",
+        psf_path="/path/to/dataset/psf.fits",
         pixel_scales=0.1,
     )
 
-    """Create a mask for the data, which we setup as a 3.0" circle."""
-
+    """
+    Create a mask for the data, which we setup as a 3.0" circle.
+    """
     mask = al.Mask2D.circular(
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
     )
 
     """
-    We model our lens galaxy using an EllipticalIsothermal MassProfile &
-    our source galaxy as an EllipticalSersic LightProfile.
+    We model the lens galaxy using an EllipticalIsothermal MassProfile and
+    the source galaxy using an EllipticalSersic LightProfile.
     """
-
     lens_mass_profile = al.mp.EllipticalIsothermal
     source_light_profile = al.lp.EllipticalSersic
 
     """
-    To setup our model galaxies, we use the GalaxyModel class, which represents a
-    galaxy whose parameters are free & fitted for by PyAutoLens.
+    To setup these profiles as model components whose parameters are free & fitted for
+    we set up each Galaxy as a Model and define the model as a Collection of all galaxies.
     """
-
-    lens_galaxy_model = al.GalaxyModel(redshift=0.5, mass=lens_mass_profile)
-    source_galaxy_model = al.GalaxyModel(redshift=1.0, light=source_light_profile)
-
-    """
-    To perform the analysis we set up a phase, which takes our galaxy models & fits
-    their parameters using a `NonLinearSearch` (in this case, Dynesty).
-    """
-
-    phase = al.PhaseImaging(
-        galaxies=dict(lens=lens_galaxy_model, source=source_galaxy_model),
-        name="example/phase_example",
-        search=af.DynestyStatic(n_live_points=50),
-    )
+    lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=lens_mass_profile)
+    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=source_light_profile)
+    model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
 
     """
-    We pass the imaging `data` and `mask` to the phase, thereby fitting it with the lens
-    model & plot the resulting fit.
+    We define the non-linear search used to fit the model to the data (in this case, Dynesty).
     """
+    search = af.DynestyStatic(name="search[example]", n_live_points=50)
 
-    result = phase.run(dataset=imaging, mask=mask)
-    fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
-fit_imaging_plotter.subplot_fit_imaging()
+    """
+    We next set up the `Analysis`, which contains the `log likelihood function` that the
+    non-linear search calls to fit the lens model to the data.
+    """
+    analysis = al.AnalysisImaging(dataset=masked_imaging)
+
+    """
+    To perform the model-fit we pass the model and analysis to the search's fit method. This will
+    output results (e.g., dynesty samples, model parameters, visualization) to hard-disk.
+    """
+    result = search.fit(model=model, analysis=analysis)
+
+    """
+    The results contain information on the fit, for example the maximum likelihood
+    model from the Dynesty parameter space search.
+    """
+    print(result.samples.max_log_likelihood_instance)
 
 Getting Started
 ===============

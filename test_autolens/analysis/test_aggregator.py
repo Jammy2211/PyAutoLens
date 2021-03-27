@@ -28,8 +28,8 @@ def make_samples():
 def make_model():
     return af.Collection(
         galaxies=af.Collection(
-            lens=al.GalaxyModel(redshift=0.5, light=al.lp.EllipticalSersic),
-            source=al.GalaxyModel(redshift=1.0, light=al.lp.EllipticalSersic),
+            lens=af.Model(al.Galaxy, redshift=0.5, light=al.lp.EllipticalSersic),
+            source=af.Model(al.Galaxy, redshift=1.0, light=al.lp.EllipticalSersic),
         )
     )
 
