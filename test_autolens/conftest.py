@@ -285,19 +285,9 @@ def make_analysis_interferometer_7():
     return fixtures.make_analysis_interferometer_7()
 
 
-@pytest.fixture(name="phase_imaging_7x7")
-def make_phase_imaging_7x7():
-    return fixtures.make_phase_imaging_7x7()
-
-
-@pytest.fixture(name="phase_interferometer_7")
-def make_phase_interferometer_7(mask_7x7):
-    return fixtures.make_phase_interferometer_7()
-
-
-@pytest.fixture(name="phase_positions_x2")
-def make_phase_positions_x2():
-    return fixtures.make_phase_positions_x2()
+@pytest.fixture(name="analysis_point_source_x2")
+def make_analysis_point_source_x2():
+    return fixtures.make_analysis_point_source_x2()
 
 
 @pytest.fixture(name="hyper_galaxy_image_0_7x7")

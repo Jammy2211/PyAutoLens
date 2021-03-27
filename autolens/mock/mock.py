@@ -84,7 +84,7 @@ class MockResults(af.ResultsCollection):
         stochastic_log_evidences=None,
     ):
         """
-        A collection of results from previous phases. Results can be obtained using an index or the name of the phase
+        A collection of results from previous searchs. Results can be obtained using an index or the name of the search
         from whence they came.
         """
 
@@ -115,7 +115,7 @@ class MockResults(af.ResultsCollection):
     @property
     def last(self):
         """
-        The result of the last phase
+        The result of the last search
         """
         if len(self.__result_list) > 0:
             return self.__result_list[-1]
@@ -123,7 +123,7 @@ class MockResults(af.ResultsCollection):
 
     def __getitem__(self, item):
         """
-        Get the result of a previous phase by index
+        Get the result of a previous search by index
 
         Parameters
         ----------
@@ -133,7 +133,7 @@ class MockResults(af.ResultsCollection):
         Returns
         -------
         result: Result
-            The result of a previous phase
+            The result of a previous search
         """
         return self.__result_list[item]
 

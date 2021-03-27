@@ -83,7 +83,7 @@ class TestAnalysisImaging:
 
         model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
-        search = mock.MockSearch(name="test_phase")
+        search = mock.MockSearch(name="test_search")
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
@@ -315,7 +315,7 @@ class TestAnalysisInterferometer:
 
         model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
-        search = mock.MockSearch(name="test_phase")
+        search = mock.MockSearch(name="test_search")
 
         analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
 
@@ -513,7 +513,7 @@ class TestAnalysisPointSource:
             )
         )
 
-        search = mock.MockSearch(name="test_phase")
+        search = mock.MockSearch(name="test_search")
 
         solver = mock.MockPositionsSolver(model_positions=positions_x2)
 

@@ -237,11 +237,11 @@ json config
         putting "Gaussian" in the "type" box, with "mean" and "sigma" used to set the default values. Any prior can be
         set in an analogous fashion (see the example configs).
     width_modifier
-        When the results of a phase are linked to a subsequent phase to set up the priors of its non-linear search,
+        When the results of a search are passed to a subsequent search to set up the priors of its non-linear search,
         this entry describes how the Prior is passed. For a full description of prior passing, checkout the examples
         in 'autolens_workspace/examples/complex/linking'.
     gaussian_limits
-        When the results of a phase are linked to a subsequent phase, they are passed using a GaussianPrior. The
+        When the results of a search are passed to a subsequent search, they are passed using a GaussianPrior. The
         gaussian_limits set the physical lower and upper limits of this GaussianPrior, such that parameter samples
         can not go beyond these limits.
 
@@ -264,10 +264,6 @@ Two examples using the 1D data fitting example for the config file **label.ini**
 
 The **label_format.ini** config file specifies the format certain parameters are output as in output files like the
 *model.results* file.
-
-The **tags.ini** config file specifies the tag of every `SettingsPhase`, *SetupPipeline* and *SLaM* input variable,
-where these tags customize the output path of the non-linear search in a unique way based on how the model-fitting
-procedure is set up.
 
 Tags are self-explanatory and named after the input value of the class they are paired with. For a description of the
 settings themselves checkout the `API Documentation <https://pyautolens.readthedocs.io/en/latest/api/api.html>`_.

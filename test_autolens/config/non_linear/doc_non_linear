@@ -33,9 +33,9 @@ const_efficiency_mode : bool
 
     1) When the dimensionality of parameter space is low, e.g. < ~7 parameters.
     2) When the priors on the majority of model parameters are initialized using Gaussian priors centred on an accurate
-       model from a previous phase.
+       model from a previous search.
 
-    In your configs I would recommend this mode is switched off, switching it on for specific phases in custom pipeliines.
+    In your configs I would recommend this mode is switched off, switching it on for specific searchs in custom pipeliines.
 
 evidence_tolerance : float
 
@@ -43,8 +43,8 @@ evidence_tolerance : float
     the evidence_tolerance value. Thus, the higher the evidence_tolerance the sooner MultiNest will stop running. Higher
     tolerances provide more accurate parameter errors.
 
-    Pipelines include the log evidence tolerance as an input paramemter so that early phases stop quickly, given that a
-    precise estimate of parameter errors is not yet desired. Values of 100.0 / 1000.0 achieve this. For later phases
+    Pipelines include the log evidence tolerance as an input paramemter so that early searchs stop quickly, given that a
+    precise estimate of parameter errors is not yet desired. Values of 100.0 / 1000.0 achieve this. For later searchs
     when error estimates are wanted use 0.5 or less.
 
 multimodal : bool

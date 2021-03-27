@@ -27,7 +27,7 @@ class TestResultAbstract:
             )
         )
 
-        search = mock.MockSearch("test_phase_2", samples=samples_with_result)
+        search = mock.MockSearch("test_search_2", samples=samples_with_result)
 
         result = search.fit(model=model, analysis=analysis_imaging_7x7)
 

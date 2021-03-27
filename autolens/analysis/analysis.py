@@ -127,7 +127,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
         # Preload the blurred_mapping_matrix and curvature matrix calculation if only the parametric light profiles
         # are being fitted.
 
-        # if self.preload_inversion and not self.is_hyper_phase:
+        # if self.preload_inversion:
         #
         #     if hasattr(results.last, "hyper"):
         #         inversion = results.last.hyper.max_log_likelihood_fit.inversion
@@ -485,7 +485,7 @@ class AnalysisInterferometer(AnalysisDataset):
         self, instance: af.ModelInstance
     ) -> af.ModelInstance:
         """
-        Takes visibilities from the last result, if there is one, and associates them with galaxies in this phase
+        Takes visibilities from the last result, if there is one, and associates them with galaxies in this search
         where full-path galaxy names match.
 
         If the galaxy collection has a different name then an association is not made.

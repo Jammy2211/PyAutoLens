@@ -262,55 +262,12 @@ Lens Modeling
 
 .. currentmodule:: autolens
 
-**Phases:**
-
-.. autosummary::
-   :toctree: generated/
-
-   PhaseImaging
-   PhaseInterferometer
-
-**Settings:**
-
-.. autosummary::
-   :toctree: generated/
-
-   SettingsPhaseImaging
-   SettingsPhaseInterferometer
-
-**Pipelines:**
-
-.. autosummary::
-   :toctree: generated/
-
-   PipelineDataset
-
 **Setup:**
 
 .. autosummary::
    :toctree: generated/
 
     SetupHyper
-    SetupLightParametric
-    SetupLightParametric
-    SetupMassTotal
-    SetupMassLightDark
-    SetupSourceParametric
-    SetupSourceInversion
-    SetupSMBH
-    SetupSubhalo
-    SetupPipeline
-
-**SLaM:**
-
-.. autosummary::
-   :toctree: generated/
-
-   SLaM
-   SLaMPipelineSourceParametric
-   SLaMPipelineSourceInversion
-   SLaMPipelineLightParametric
-   SLaMPipelineMass
 
 ---------
 PyAutoFit

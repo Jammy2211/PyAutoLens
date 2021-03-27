@@ -124,18 +124,9 @@ def make_analysis_interferometer_7():
     return al.AnalysisInterferometer(dataset=make_masked_interferometer_7())
 
 
-def make_phase_imaging_7x7():
-    return al.PhaseImaging(search=MockSearch(name="test_phase"))
-
-
-def make_phase_interferometer_7():
-    return al.PhaseInterferometer(
-        search=MockSearch(name="test_phase"), real_space_mask=make_mask_7x7()
-    )
-
-
-def make_phase_positions_x2():
-    return al.PhasePointSource(
-        positions_solver=MockPositionsSolver(model_positions=make_positions_x2()),
-        search=MockSearch(name="test_phase"),
+def make_analysis_point_source_x2():
+    return al.AnalysisPointSource(
+        positions=make_positions_x2(),
+        noise_map=make_positions_noise_map_x2(),
+        solver=MockPositionsSolver(model_positions=make_positions_x2()),
     )

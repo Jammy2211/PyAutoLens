@@ -21,7 +21,7 @@ class SetupHyper(setup.SetupHyper):
         """
         The hyper setup of a pipeline, which controls how hyper-features in PyAutoLens template pipelines run,
         for example controlling whether hyper galaxies are used to scale the noise and the non-linear searches used
-        in these phases.
+        in these searchs.
 
         Users can write their own pipelines which do not use or require the *SetupHyper* class.
 
@@ -39,13 +39,11 @@ class SetupHyper(setup.SetupHyper):
         hyper_fixed_after_source : bool
             If `True`, the hyper parameters are fixed and not updated after a desnated pipeline in the analysis. For
             the `SLaM` pipelines this is after the `SourcePipeline`. This allow Bayesian model comparison to be
-            performed objected between later phases in a pipeline.
-        hyper_search_no_inversion : af.NonLinearSearch or None
-            The non-linear search used by every inversion phase.
-        hyper_search_with_inversion : af.NonLinearSearch or None
-            The non-linear search used by every hyper combined phase.
+            performed objected between later searchs in a pipeline.
+        search : af.NonLinearSearch or None
+            The non-linear search used by every hyper model-fit search.
         evidence_tolerance : float
-            The evidence tolerance of the non-linear searches used in the hyper phases, whereby higher values will
+            The evidence tolerance of the non-linear searches used in the hyper searchs, whereby higher values will
             lead them to end earlier at the expense of accuracy.
         """
         if hyper_galaxies_lens or hyper_galaxies_source:
@@ -79,21 +77,21 @@ class SetupHyper(setup.SetupHyper):
         self, result: af.Result, noise_factor_is_model=False
     ):
         """
-        Returns the `HyperGalaxy` `Model` from a previous pipeline or phase of the lens galaxy in a template
+        Returns the `HyperGalaxy` `Model` from a previous pipeline or search of the lens galaxy in a template
         PyAutoLens pipeline.
 
-        The `HyperGalaxy` is extracted from the `hyper` phase of the previous pipeline, and by default has its
-        parameters passed as instance's which are fixed in the next phase.
+        The `HyperGalaxy` is extracted from the `hyper` search of the previous pipeline, and by default has its
+        parameters passed as instance's which are fixed in the next search.
 
         If `noise_factor_is_model` is `True` the `noise_factor` parameter of the `HyperGalaxy` is passed as a model and
-        fitted for by the phase. This is typically used when the lens model complexity is updated and it is possible
-        that the noise-scaling performed in the previous phase (using a simpler lens light model) over-scales the
+        fitted for by the search. This is typically used when the lens model complexity is updated and it is possible
+        that the noise-scaling performed in the previous search (using a simpler lens light model) over-scales the
         noise for the new more complex light profile.
 
         Parameters
         ----------
         index : int
-            The index of the previous phase the `HyperGalaxy` `Model` is passed from.
+            The index of the previous search the `HyperGalaxy` `Model` is passed from.
         noise_factor_is_model : bool
             If `True` the `noise_factor` of the `HyperGalaxy` is passed as a `model`, else it is passed as an
             `instance`.
@@ -101,7 +99,7 @@ class SetupHyper(setup.SetupHyper):
         Returns
         -------
         af.Model(g.HyperGalaxy)
-            The hyper-galaxy that is passed to the next phase.
+            The hyper-galaxy that is passed to the next search.
         """
 
         if not self.hyper_galaxies_lens:
@@ -123,21 +121,21 @@ class SetupHyper(setup.SetupHyper):
         self, result: af.Result, noise_factor_is_model=False
     ):
         """
-        Returns the `HyperGalaxy` `Model` from a previous pipeline or phase of the source galaxy in a template
+        Returns the `HyperGalaxy` `Model` from a previous pipeline or search of the source galaxy in a template
         PyAutosource pipeline.
 
-        The `HyperGalaxy` is extracted from the `hyper` phase of the previous pipeline, and by default has its
-        parameters passed as instance's which are fixed in the next phase.
+        The `HyperGalaxy` is extracted from the `hyper` search of the previous pipeline, and by default has its
+        parameters passed as instance's which are fixed in the next search.
 
         If `noise_factor_is_model` is `True` the `noise_factor` parameter of the `HyperGalaxy` is passed as a model and
-        fitted for by the phase. This is typically used when the source model complexity is updated and it is possible
-        that the noise-scaling performed in the previous phase (using a simpler source light model) over-scales the
+        fitted for by the search. This is typically used when the source model complexity is updated and it is possible
+        that the noise-scaling performed in the previous search (using a simpler source light model) over-scales the
         noise for the new more complex light profile.
 
         Parameters
         ----------
         index : int
-            The index of the previous phase the `HyperGalaxy` `Model` is passed from.
+            The index of the previous search the `HyperGalaxy` `Model` is passed from.
         noise_factor_is_model : bool
             If `True` the `noise_factor` of the `HyperGalaxy` is passed as a `model`, else it is passed as an
             `instance`.
@@ -145,7 +143,7 @@ class SetupHyper(setup.SetupHyper):
         Returns
         -------
         af.Model(g.HyperGalaxy)
-            The hyper-galaxy that is passed to the next phase.
+            The hyper-galaxy that is passed to the next search.
         """
 
         if not self.hyper_galaxies_source:

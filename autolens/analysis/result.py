@@ -57,7 +57,7 @@ class Result(res.Result):
         Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
         the multiple image position of the source(s) in the image-plane.
 
-        These image-plane positions are used by the next phase in a pipeline if automatic position updating is turned
+        These image-plane positions are used by the next search in a pipeline if automatic position updating is turned
         on."""
 
         # TODO : In the future, the multiple image positions functioon wil use an in-built adaptive grid.
@@ -189,7 +189,7 @@ class ResultDataset(Result):
         Parameters
         ----------
         galaxy
-            A galaxy used in this phase
+            A galaxy used in this search
 
         Returns
         -------
@@ -330,7 +330,7 @@ class ResultInterferometer(ResultDataset):
         Parameters
         ----------
         galaxy
-            A galaxy used in this phase
+            A galaxy used in this search
 
         Returns
         -------
