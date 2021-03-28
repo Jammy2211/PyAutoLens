@@ -3,6 +3,8 @@ from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.fit.fit import FitData
 from autogalaxy.profiles import point_sources as ps
 
+from functools import partial
+
 
 class AbstractFitPositionsSourcePlane:
     def __init__(self, positions, noise_map, tracer):
@@ -100,12 +102,17 @@ class FitPositionsImage(FitData):
 
         self.point_source_profile = tracer.extract_profile(profile_name=name)
 
-        source_plane_coordinate = grid_2d_irregular.Grid2DIrregular(
-            grid=[self.point_source_profile.centre]
-        )
+        self.source_plane_coordinate = self.point_source_profile.centre
+
+        if len(tracer.planes) > 2:
+            upper_plane_index = tracer.extract_plane_index_of_profile(profile_name=name)
+        else:
+            upper_plane_index = None
 
         model_positions = positions_solver.solve(
-            lensing_obj=tracer, source_plane_coordinate=source_plane_coordinate
+            lensing_obj=tracer,
+            source_plane_coordinate=self.source_plane_coordinate,
+            upper_plane_index=upper_plane_index,
         )
 
         model_positions = model_positions.grid_of_closest_from_grid_pair(
@@ -141,8 +148,21 @@ class FitFluxes(FitData):
 
         self.name = name
         self.positions = positions
+
+        if len(tracer.planes) > 2:
+            upper_plane_index = tracer.extract_plane_index_of_profile(profile_name=name)
+            deflections_func = partial(
+                tracer.deflections_between_planes_from_grid,
+                plane_i=0,
+                plane_j=upper_plane_index,
+            )
+        else:
+            deflections_func = tracer.deflections_from_grid
+
         self.magnifications = abs(
-            tracer.magnification_via_hessian_from_grid(grid=positions)
+            tracer.magnification_via_hessian_from_grid(
+                grid=positions, deflections_func=deflections_func
+            )
         )
 
         self.point_source_profile = tracer.extract_profile(profile_name=name)

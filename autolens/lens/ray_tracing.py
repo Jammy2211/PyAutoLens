@@ -275,7 +275,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
     def extract_profile(self, profile_name):
         """
-        Returns a LightProfile` or `MassProfile` from the `Tracer` using the name of that component.
+        Returns a `LightProfile`, `MassProfile` or `PointSource` from the `Tracer` using the name of that component.
 
         For example, if a tracer has two galaxies, `lens` and `source` with `LightProfile`'s name `light_0` and
         `light_1`, the following:
@@ -288,6 +288,24 @@ class AbstractTracer(lensing.LensingObject, ABC):
             for name, profile in galaxy.__dict__.items():
                 if name == profile_name:
                     return profile
+
+    def extract_plane_index_of_profile(self, profile_name):
+        """
+        Returns the plane index of a  LightProfile`, `MassProfile` or `PointSource` from the `Tracer` using the name
+        of that component.
+
+        For example, if a tracer has two galaxies, `lens` and `source` with `LightProfile`'s name `light_0` and
+        `light_1`, the following:
+
+        `tracer.extract_profile(profile_name="light_1")`
+
+        Would return `plane_index=1` given the profile is in the source plane.
+        """
+        for plane_index, plane in enumerate(self.planes):
+            for galaxy in plane.galaxies:
+                for name, profile in galaxy.__dict__.items():
+                    if name == profile_name:
+                        return plane_index
 
     @property
     def mass_profiles(self):

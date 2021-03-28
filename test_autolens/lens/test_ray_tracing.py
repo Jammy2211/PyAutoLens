@@ -3309,6 +3309,34 @@ class TestExtractAttribute:
 
         assert profile.value == 0.6
 
+    def test__extract_plane_index_of_profile(self):
+
+        g0 = al.Galaxy(
+            redshift=0.5, mp_0=mock.MockMassProfile(value=0.9, value1=(1.0, 1.0))
+        )
+        g1 = al.Galaxy(
+            redshift=0.75, mp_1=mock.MockMassProfile(value=0.8, value1=(2.0, 2.0))
+        )
+        g2 = al.Galaxy(
+            redshift=1.0,
+            mp_2=mock.MockMassProfile(value=0.7),
+            mp_3=mock.MockMassProfile(value=0.6),
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2], cosmology=None)
+
+        plane_index = tracer.extract_plane_index_of_profile(profile_name="mp_0")
+
+        assert plane_index == 0
+
+        plane_index = tracer.extract_plane_index_of_profile(profile_name="mp_1")
+
+        assert plane_index == 1
+
+        plane_index = tracer.extract_plane_index_of_profile(profile_name="mp_3")
+
+        assert plane_index == 2
+
 
 class TestRegression:
     def test__centre_of_profile_in_right_place(self):

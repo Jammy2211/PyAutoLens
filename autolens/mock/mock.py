@@ -195,5 +195,5 @@ class MockPositionsSolver:
 
         self.model_positions = model_positions
 
-    def solve(self, lensing_obj, source_plane_coordinate):
+    def solve(self, lensing_obj, source_plane_coordinate, upper_plane_index=None):
         return self.model_positions

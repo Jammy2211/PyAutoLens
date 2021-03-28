@@ -745,7 +745,7 @@ class TestPositionSolver:
         assert coordinates.in_list[2] == pytest.approx((0.009375, 0.95312), 1.0e-4)
         assert coordinates.in_list[3] == pytest.approx((-1.028125, -0.003125), 1.0e-4)
 
-    def test__positions_found_for_multi_plane_tracer__no_magnification_used(self):
+    def test__positions_found_for_multi_plane_tracer(self):
 
         grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
 
@@ -786,3 +786,9 @@ class TestPositionSolver:
         assert coordinates_to_plane_1[0][0] == pytest.approx(
             coordinates_to_plane_2[0][0] * scaling_factor, 1.0e-1
         )
+
+        coordinates_to_plane_2_with_index = solver.solve(
+            lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0), upper_plane_index=2
+        )
+
+        assert coordinates_to_plane_2[0][0] == coordinates_to_plane_2_with_index[0][0]

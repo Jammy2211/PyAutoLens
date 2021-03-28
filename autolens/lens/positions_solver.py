@@ -144,7 +144,8 @@ class AbstractPositionsSolver:
         )
 
     def grid_peaks_from(self, deflections_func, grid, source_plane_coordinate):
-        """Find the 'peaks' of a grid of coordinates, where a peak corresponds to a (y,x) coordinate on the grid which
+        """
+        Find the 'peaks' of a grid of coordinates, where a peak corresponds to a (y,x) coordinate on the grid which
         traces closer to the input (y,x) source-plane coordinate than any of its 8 adjacent neighbors. This is
         performed by:
 
@@ -169,8 +170,10 @@ class AbstractPositionsSolver:
             The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
             for.
         """
+
         deflections = deflections_func(grid=grid)
         source_plane_grid = grid.grid_from_deflection_grid(deflection_grid=deflections)
+
         source_plane_distances = source_plane_grid.distances_from_coordinate(
             coordinate=source_plane_coordinate
         )
@@ -275,7 +278,7 @@ class PositionsSolver(AbstractPositionsSolver):
             8 neighbors. Depending on how the `PositionFinder` is being used these can be removed.
         """
 
-        super(PositionsSolver, self).__init__(
+        super().__init__(
             use_upscaling=use_upscaling,
             upscale_factor=upscale_factor,
             magnification_threshold=magnification_threshold,

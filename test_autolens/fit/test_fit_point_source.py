@@ -3,6 +3,8 @@ import numpy as np
 import pytest
 from autolens.mock import mock
 
+from functools import partial
+
 
 class TestAbstractFitPositionsSourcePlane:
     def test__furthest_separation_of_source_plane_positions(self):
@@ -158,11 +160,9 @@ class TestFitPositionsImage:
 
     def test__more_model_positions_than_data_positions__pairs_closest_positions(self):
 
-        point_source = al.ps.PointSource(centre=(0.1, 0.1))
-        galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
-        tracer = al.Tracer.from_galaxies(
-            galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
-        )
+        g0 = al.Galaxy(redshift=1.0, point_0=al.ps.PointSource(centre=(0.1, 0.1)))
+
+        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
         noise_map = al.ValuesIrregular([0.5, 1.0])
@@ -188,6 +188,53 @@ class TestFitPositionsImage:
         assert fit.chi_squared == pytest.approx(6.0, 1.0e-4)
         assert fit.noise_normalization == pytest.approx(2.289459, 1.0e-4)
         assert fit.log_likelihood == pytest.approx(-4.144729, 1.0e-4)
+
+    def test__multi_plane_position_solving(self):
+
+        grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
+
+        g0 = al.Galaxy(
+            redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
+        )
+        g1 = al.Galaxy(redshift=1.0, point_0=al.ps.PointSource(centre=(0.1, 0.1)))
+        g2 = al.Galaxy(redshift=2.0, point_1=al.ps.PointSource(centre=(0.1, 0.1)))
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+        positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
+        noise_map = al.ValuesIrregular([0.5, 1.0])
+
+        positions_solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+
+        fit_0 = al.FitPositionsImage(
+            name="point_0",
+            positions=positions,
+            noise_map=noise_map,
+            tracer=tracer,
+            positions_solver=positions_solver,
+        )
+
+        fit_1 = al.FitPositionsImage(
+            name="point_1",
+            positions=positions,
+            noise_map=noise_map,
+            tracer=tracer,
+            positions_solver=positions_solver,
+        )
+
+        scaling_factor = al.util.cosmology.scaling_factor_between_redshifts_from(
+            redshift_0=0.5,
+            redshift_1=1.0,
+            redshift_final=2.0,
+            cosmology=tracer.cosmology,
+        )
+
+        assert fit_0.model_positions[0, 0] == pytest.approx(
+            scaling_factor * fit_1.model_positions[0, 0], 1.0e-1
+        )
+        assert fit_0.model_positions[0, 1] == pytest.approx(
+            scaling_factor * fit_1.model_positions[0, 1], 1.0e-1
+        )
 
 
 class TestFitFluxes:
@@ -240,3 +287,55 @@ class TestFitFluxes:
 
         assert fit.model_fluxes.in_list[1] == pytest.approx(2.5, 1.0e-4)
         assert fit.log_likelihood == pytest.approx(-3.11702, 1.0e-4)
+
+    def test__multi_plane_calculation(self, gal_x1_mp):
+
+        g0 = al.Galaxy(
+            redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
+        )
+        g1 = al.Galaxy(redshift=1.0, point_0=al.ps.PointSourceFlux(flux=1.0))
+        g2 = al.Galaxy(redshift=2.0, point_1=al.ps.PointSourceFlux(flux=2.0))
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+        fluxes = al.ValuesIrregular([1.0])
+        noise_map = al.ValuesIrregular([3.0])
+        positions = al.Grid2DIrregular([(2.0, 0.0)])
+
+        fit_0 = al.FitFluxes(
+            name="point_0",
+            fluxes=fluxes,
+            noise_map=noise_map,
+            positions=positions,
+            tracer=tracer,
+        )
+
+        deflections_func = partial(
+            tracer.deflections_between_planes_from_grid, plane_i=0, plane_j=1
+        )
+
+        magnification_0 = tracer.magnification_via_hessian_from_grid(
+            grid=positions, deflections_func=deflections_func
+        )
+
+        assert fit_0.magnifications[0] == magnification_0
+
+        fit_1 = al.FitFluxes(
+            name="point_1",
+            fluxes=fluxes,
+            noise_map=noise_map,
+            positions=positions,
+            tracer=tracer,
+        )
+
+        deflections_func = partial(
+            tracer.deflections_between_planes_from_grid, plane_i=0, plane_j=2
+        )
+
+        magnification_1 = tracer.magnification_via_hessian_from_grid(
+            grid=positions, deflections_func=deflections_func
+        )
+
+        assert fit_1.magnifications[0] == magnification_1
+
+        assert fit_0.magnifications[0] != pytest.approx(fit_1.magnifications[0], 1.0e-1)
