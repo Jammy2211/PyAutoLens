@@ -1,7 +1,7 @@
 from autoarray.structures.arrays import values
 from autoarray.structures.grids.two_d import grid_2d_irregular
 
-from typing import List
+from typing import List, Dict
 
 
 class PointSourceDataset:
@@ -57,6 +57,12 @@ class PointSourceDict(dict):
         ----------
         point_source_dataset_list : [PointSourceDataset]
             A list of all point-source datasets that are to be added to the point-source dictionary.
+
+        Returns
+        -------
+        Dict[PointSourceDataset]
+            A dictionary where the keys are the `name` entries of each `PointSourceDataset` and the values are
+            the corresponding instance of the `PointSourceDataset` class.
         """
 
         super().__init__()

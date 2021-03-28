@@ -503,22 +503,24 @@ class TestAnalysisInterferometer:
 
 
 class TestAnalysisPointSource:
-    def test__make_result__result_imaging_is_returned(
-        self, positions_x2, positions_x2_noise_map
-    ):
+    def test__make_result__result_imaging_is_returned(self, point_source_dict):
 
         model = af.Collection(
             galaxies=af.Collection(
-                lens=al.Galaxy(redshift=0.5, light=al.ps.PointSource(centre=(0.0, 0.0)))
+                lens=al.Galaxy(
+                    redshift=0.5, point_0=al.ps.PointSource(centre=(0.0, 0.0))
+                )
             )
         )
 
         search = mock.MockSearch(name="test_search")
 
-        solver = mock.MockPositionsSolver(model_positions=positions_x2)
+        solver = mock.MockPositionsSolver(
+            model_positions=point_source_dict["point_0"].positions
+        )
 
         analysis = al.AnalysisPointSource(
-            positions=positions_x2, noise_map=positions_x2_noise_map, solver=solver
+            point_source_dict=point_source_dict, solver=solver
         )
 
         result = search.fit(model=model, analysis=analysis)
@@ -529,16 +531,28 @@ class TestAnalysisPointSource:
         self, positions_x2, positions_x2_noise_map
     ):
 
+        point_source_dataset = al.PointSourceDataset(
+            name="point_0",
+            positions=positions_x2,
+            positions_noise_map=positions_x2_noise_map,
+        )
+
+        point_source_dict = al.PointSourceDict(
+            point_source_dataset_list=[point_source_dataset]
+        )
+
         model = af.Collection(
             galaxies=af.Collection(
-                lens=al.Galaxy(redshift=0.5, light=al.ps.PointSource(centre=(0.0, 0.0)))
+                lens=al.Galaxy(
+                    redshift=0.5, point_0=al.ps.PointSource(centre=(0.0, 0.0))
+                )
             )
         )
 
         solver = mock.MockPositionsSolver(model_positions=positions_x2)
 
         analysis = al.AnalysisPointSource(
-            positions=positions_x2, noise_map=positions_x2_noise_map, solver=solver
+            point_source_dict=point_source_dict, solver=solver
         )
 
         instance = model.instance_from_unit_vector([])
@@ -547,6 +561,7 @@ class TestAnalysisPointSource:
         tracer = analysis.tracer_for_instance(instance=instance)
 
         fit_positions = al.FitPositionsImage(
+            name="point_0",
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
             tracer=tracer,
@@ -560,12 +575,13 @@ class TestAnalysisPointSource:
         solver = mock.MockPositionsSolver(model_positions=model_positions)
 
         analysis = al.AnalysisPointSource(
-            positions=positions_x2, noise_map=positions_x2_noise_map, solver=solver
+            point_source_dict=point_source_dict, solver=solver
         )
 
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
         fit_positions = al.FitPositionsImage(
+            name="point_0",
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
             tracer=tracer,
@@ -580,6 +596,18 @@ class TestAnalysisPointSource:
         self, positions_x2, positions_x2_noise_map, fluxes_x2, fluxes_x2_noise_map
     ):
 
+        point_source_dataset = al.PointSourceDataset(
+            name="point_0",
+            positions=positions_x2,
+            positions_noise_map=positions_x2_noise_map,
+            fluxes=fluxes_x2,
+            fluxes_noise_map=fluxes_x2_noise_map,
+        )
+
+        point_source_dict = al.PointSourceDict(
+            point_source_dataset_list=[point_source_dataset]
+        )
+
         model = af.Collection(
             galaxies=af.Collection(
                 lens=al.Galaxy(
@@ -593,11 +621,7 @@ class TestAnalysisPointSource:
         solver = mock.MockPositionsSolver(model_positions=positions_x2)
 
         analysis = al.AnalysisPointSource(
-            positions=positions_x2,
-            noise_map=positions_x2_noise_map,
-            fluxes=fluxes_x2,
-            fluxes_noise_map=fluxes_x2_noise_map,
-            solver=solver,
+            point_source_dict=point_source_dict, solver=solver
         )
 
         instance = model.instance_from_unit_vector([])
@@ -607,6 +631,7 @@ class TestAnalysisPointSource:
         tracer = analysis.tracer_for_instance(instance=instance)
 
         fit_positions = al.FitPositionsImage(
+            name="point_0",
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
             tracer=tracer,
@@ -614,6 +639,7 @@ class TestAnalysisPointSource:
         )
 
         fit_fluxes = al.FitFluxes(
+            name="point_0",
             fluxes=fluxes_x2,
             noise_map=fluxes_x2_noise_map,
             positions=positions_x2,
@@ -629,17 +655,14 @@ class TestAnalysisPointSource:
         solver = mock.MockPositionsSolver(model_positions=model_positions)
 
         analysis = al.AnalysisPointSource(
-            positions=positions_x2,
-            noise_map=positions_x2_noise_map,
-            fluxes=fluxes_x2,
-            fluxes_noise_map=fluxes_x2_noise_map,
-            solver=solver,
+            point_source_dict=point_source_dict, solver=solver
         )
 
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
         fit_positions = al.FitPositionsImage(
+            name="point_0",
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
             tracer=tracer,
@@ -647,6 +670,7 @@ class TestAnalysisPointSource:
         )
 
         fit_fluxes = al.FitFluxes(
+            name="point_0",
             fluxes=fluxes_x2,
             noise_map=fluxes_x2_noise_map,
             positions=positions_x2,

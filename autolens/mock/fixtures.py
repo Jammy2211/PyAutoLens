@@ -50,6 +50,20 @@ def make_fluxes_noise_map_x2():
     return al.ValuesIrregular(values=[1.0, 1.0])
 
 
+def make_point_source_dataset():
+    return al.PointSourceDataset(
+        name="point_0",
+        positions=make_positions_x2(),
+        positions_noise_map=make_positions_noise_map_x2(),
+        fluxes=make_fluxes_x2(),
+        fluxes_noise_map=make_fluxes_noise_map_x2(),
+    )
+
+
+def make_point_source_dict():
+    return al.PointSourceDict(point_source_dataset_list=[make_point_source_dataset()])
+
+
 def make_tracer_x1_plane_7x7():
     return al.Tracer.from_galaxies(galaxies=[make_gal_x1_lp()])
 

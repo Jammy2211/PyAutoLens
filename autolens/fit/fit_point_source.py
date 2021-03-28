@@ -83,7 +83,7 @@ class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
 
 
 class FitPositionsImage(FitData):
-    def __init__(self, positions, noise_map, tracer, positions_solver):
+    def __init__(self, name, positions, noise_map, tracer, positions_solver):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
 
@@ -95,6 +95,7 @@ class FitPositionsImage(FitData):
             The noise-value assumed when computing the log likelihood.
         """
 
+        self.name = name
         self.positions_solver = positions_solver
 
         source_plane_coordinate = tracer.extract_attribute(
@@ -134,12 +135,15 @@ class FitPositionsImage(FitData):
 
 
 class FitFluxes(FitData):
-    def __init__(self, fluxes, noise_map, positions, tracer):
+    def __init__(self, name, fluxes, noise_map, positions, tracer):
 
+        self.name = name
         self.positions = positions
         self.magnifications = abs(
             tracer.magnification_via_hessian_from_grid(grid=positions)
         )
+
+        print(tracer)
 
         flux = tracer.extract_attribute(cls=ps.PointSourceFlux, name="flux")[0]
 

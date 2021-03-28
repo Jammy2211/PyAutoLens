@@ -18,6 +18,8 @@ from autogalaxy.analysis import model_util
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.analysis import analysis as a
 from autolens.lens import ray_tracing
+from autolens.lens import positions_solver as psolve
+from autolens.dataset import point_source as ps
 from autolens.fit import fit
 from autolens.fit import fit_point_source
 from autolens.lens import settings
@@ -684,28 +686,45 @@ class AttributesInterferometer(a.AttributesInterferometer):
 class AnalysisPointSource(AnalysisLensing):
     def __init__(
         self,
-        solver,
-        positions,
-        noise_map,
-        fluxes=None,
-        fluxes_noise_map=None,
+        point_source_dict: ps.PointSourceDict,
+        solver: psolve.PositionsSolver,
         imaging=None,
         cosmology=cosmo.Planck15,
         settings_lens=settings.SettingsLens(),
     ):
+        """
+        The analysis performed for model-fitting a point-source dataset, for example fitting the point-sources of a
+        multiply imaged lensed quasar or supernovae of many source galaxies of a galaxy cluster.
+
+        The analysis brings together the data, model and non-linear search in the classes `log_likelihood_function`,
+        which is called by every iteration of the non-linear search to compute a likelihood value which samples
+        parameter space.
+
+        Parameters
+        ----------
+        point_source_dict : ps.PointSourceDict
+            A dictionary containing the full point source dictionary that is used for model-fitting.
+        solver : psolve.PositionsSolver
+            The object which is used to determine the image-plane of source-plane positions of a model (via a `Tracer`).
+        imaging : Imaging
+            The imaging of the point-source dataset, which is not used for model-fitting but can be used for
+            visualization.
+        cosmology : astropy.cosmology
+            The cosmology of the ray-tracing calculation.
+        settings_lens : settings.SettingsLens()
+            Settings which control how the model-fit is performed.
+        """
 
         super().__init__(settings_lens=settings_lens, cosmology=cosmology)
 
-        self.positions = positions
-        self.noise_map = noise_map
-        self.fluxes = fluxes
-        self.fluxes_noise_map = fluxes_noise_map
+        self.point_source_dict = point_source_dict
+
         self.solver = solver
         self.imaging = imaging
 
     def log_likelihood_function(self, instance):
         """
-        Determine the fit of a lens galaxy and source galaxy to the masked_imaging in this lens.
+        Determine the fit of the strong lens system of lens galaxies and source galaxies to the point source data.
 
         Parameters
         ----------
@@ -720,36 +739,44 @@ class AnalysisPointSource(AnalysisLensing):
 
         tracer = self.tracer_for_instance(instance=instance)
 
-        try:
-            fit_positions = self.fit_positions_for_tracer(tracer=tracer)
-        except (AttributeError, numba.errors.TypingError) as e:
-            raise FitException from e
+        log_likelihood = 0.0
 
-        log_likelihood_positions = fit_positions.log_likelihood
+        for point_source_dataset in self.point_source_dict.values():
 
-        if self.fluxes is not None:
-            fit_fluxes = self.fit_fluxes_for_tracer(tracer=tracer)
-            log_likelihood_fluxes = fit_fluxes.log_likelihood
-        else:
-            log_likelihood_fluxes = 0.0
+            try:
+                fit_positions = self.fit_positions_for(
+                    point_source_dataset=point_source_dataset, tracer=tracer
+                )
+            except (AttributeError, numba.errors.TypingError) as e:
+                raise FitException from e
 
-        return log_likelihood_positions + log_likelihood_fluxes
+            log_likelihood += fit_positions.log_likelihood
 
-    def fit_positions_for_tracer(self, tracer):
+            if point_source_dataset.fluxes is not None:
+                fit_fluxes = self.fit_fluxes_for(
+                    point_source_dataset=point_source_dataset, tracer=tracer
+                )
+                log_likelihood += fit_fluxes.log_likelihood
+
+        return log_likelihood
+
+    def fit_positions_for(self, point_source_dataset, tracer):
 
         return fit_point_source.FitPositionsImage(
-            positions=self.positions,
-            noise_map=self.noise_map,
+            name=point_source_dataset.name,
+            positions=point_source_dataset.positions,
+            noise_map=point_source_dataset.positions_noise_map,
             positions_solver=self.solver,
             tracer=tracer,
         )
 
-    def fit_fluxes_for_tracer(self, tracer):
+    def fit_fluxes_for(self, point_source_dataset, tracer):
 
         return fit_point_source.FitFluxes(
-            fluxes=self.fluxes,
-            noise_map=self.noise_map,
-            positions=self.positions,
+            name=point_source_dataset.name,
+            fluxes=point_source_dataset.fluxes,
+            noise_map=point_source_dataset.fluxes_noise_map,
+            positions=point_source_dataset.positions,
             tracer=tracer,
         )
 

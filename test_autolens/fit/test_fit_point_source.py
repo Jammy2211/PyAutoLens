@@ -131,6 +131,7 @@ class TestFitPositionsImage:
         positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
 
         fit = al.FitPositionsImage(
+            name="point_0",
             positions=positions,
             noise_map=noise_map,
             tracer=tracer,
@@ -172,6 +173,7 @@ class TestFitPositionsImage:
         positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
 
         fit = al.FitPositionsImage(
+            name="point_0",
             positions=positions,
             noise_map=noise_map,
             tracer=tracer,
@@ -200,7 +202,11 @@ class TestFitFluxes:
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
 
         fit = al.FitFluxes(
-            fluxes=fluxes, noise_map=noise_map, positions=positions, tracer=tracer
+            name="point_0",
+            fluxes=fluxes,
+            noise_map=noise_map,
+            positions=positions,
+            tracer=tracer,
         )
 
         assert fit.fluxes.in_list == [1.0, 2.0]
@@ -224,7 +230,11 @@ class TestFitFluxes:
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
 
         fit = al.FitFluxes(
-            fluxes=fluxes, noise_map=noise_map, positions=positions, tracer=tracer
+            name="point_0",
+            fluxes=fluxes,
+            noise_map=noise_map,
+            positions=positions,
+            tracer=tracer,
         )
 
         assert fit.model_fluxes.in_list[1] == pytest.approx(2.5, 1.0e-4)

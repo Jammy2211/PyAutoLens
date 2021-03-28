@@ -188,6 +188,16 @@ def make_fluxes_x2_noise_map():
     return fixtures.make_fluxes_noise_map_x2()
 
 
+@pytest.fixture(name="point_source_dataset")
+def make_point_source_dataset():
+    return fixtures.make_point_source_dataset()
+
+
+@pytest.fixture(name="point_source_dict")
+def make_point_source_dict():
+    return fixtures.make_point_source_dict()
+
+
 # GALAXIES #
 
 
