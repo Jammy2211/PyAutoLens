@@ -3,6 +3,8 @@ import numpy as np
 from autoarray.structures.grids.two_d import grid_2d_irregular
 from autogalaxy.profiles import mass_profiles as mp
 
+from functools import partial
+
 
 class AbstractPositionsSolver:
     def __init__(
@@ -20,11 +22,13 @@ class AbstractPositionsSolver:
         self.distance_from_source_centre = distance_from_source_centre
         self.distance_from_mass_profile_centre = distance_from_mass_profile_centre
 
-    def grid_with_points_below_magnification_threshold_removed(self, lensing_obj, grid):
+    def grid_with_points_below_magnification_threshold_removed(
+        self, lensing_obj, deflections_func, grid
+    ):
 
         magnifications = np.abs(
             lensing_obj.magnification_via_hessian_from_grid(
-                grid=grid, buffer=grid.pixel_scale
+                grid=grid, buffer=grid.pixel_scale, deflections_func=deflections_func
             )
         )
 
@@ -139,7 +143,7 @@ class AbstractPositionsSolver:
             ),
         )
 
-    def grid_peaks_from(self, lensing_obj, grid, source_plane_coordinate):
+    def grid_peaks_from(self, deflections_func, grid, source_plane_coordinate):
         """Find the 'peaks' of a grid of coordinates, where a peak corresponds to a (y,x) coordinate on the grid which
         traces closer to the input (y,x) source-plane coordinate than any of its 8 adjacent neighbors. This is
         performed by:
@@ -165,7 +169,7 @@ class AbstractPositionsSolver:
             The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
             for.
         """
-        deflections = lensing_obj.deflections_from_grid(grid=grid)
+        deflections = deflections_func(grid=grid)
         source_plane_grid = grid.grid_from_deflection_grid(deflection_grid=deflections)
         source_plane_distances = source_plane_grid.distances_from_coordinate(
             coordinate=source_plane_coordinate
@@ -187,7 +191,7 @@ class AbstractPositionsSolver:
         )
 
     def grid_within_distance_of_source_plane_centre(
-        self, lensing_obj, source_plane_coordinate, grid, distance
+        self, deflection_func, source_plane_coordinate, grid, distance
     ):
         """
         For an input grid of (y,x) coordinates, remove all coordinates that do not trace within a threshold distance
@@ -219,7 +223,7 @@ class AbstractPositionsSolver:
         if distance is None:
             return grid
 
-        deflections = lensing_obj.deflections_from_grid(grid=grid)
+        deflections = deflection_func(grid=grid)
         source_plane_grid = grid.grid_from_deflection_grid(deflection_grid=deflections)
         source_plane_distances = source_plane_grid.distances_from_coordinate(
             coordinate=source_plane_coordinate
@@ -283,7 +287,7 @@ class PositionsSolver(AbstractPositionsSolver):
         self.pixel_scale_precision = pixel_scale_precision
 
     def refined_coordinates_from_coordinate(
-        self, coordinate, pixel_scale, lensing_obj, source_plane_coordinate
+        self, deflections_func, coordinate, pixel_scale, source_plane_coordinate
     ):
         """For an input (y,x) coordinate, determine a set of refined coordinates that are computed by locating peak
         pixels on a higher resolution grid around that pixel.
@@ -314,7 +318,7 @@ class PositionsSolver(AbstractPositionsSolver):
         )
 
         grid = self.grid_peaks_from(
-            lensing_obj=lensing_obj,
+            deflections_func=deflections_func,
             grid=grid,
             source_plane_coordinate=source_plane_coordinate,
         )
@@ -324,12 +328,21 @@ class PositionsSolver(AbstractPositionsSolver):
         else:
             return [tuple(coordinate) for coordinate in grid]
 
-    def solve(self, lensing_obj, source_plane_coordinate):
+    def solve(self, lensing_obj, source_plane_coordinate, upper_plane_index=None):
+
+        if upper_plane_index is None:
+            deflections_func = lensing_obj.deflections_from_grid
+        else:
+            deflections_func = partial(
+                lensing_obj.deflections_between_planes_from_grid,
+                plane_i=0,
+                plane_j=upper_plane_index,
+            )
 
         coordinates_list = self.grid_peaks_from(
-            lensing_obj=lensing_obj,
             grid=self.grid,
             source_plane_coordinate=source_plane_coordinate,
+            deflections_func=deflections_func,
         )
 
         coordinates_list = self.grid_with_coordinates_from_mass_profile_centre_removed(
@@ -337,7 +350,9 @@ class PositionsSolver(AbstractPositionsSolver):
         )
 
         coordinates_list = self.grid_with_points_below_magnification_threshold_removed(
-            lensing_obj=lensing_obj, grid=coordinates_list
+            lensing_obj=lensing_obj,
+            deflections_func=deflections_func,
+            grid=coordinates_list,
         )
 
         if not self.use_upscaling:
@@ -353,9 +368,9 @@ class PositionsSolver(AbstractPositionsSolver):
             for coordinate in coordinates_list:
 
                 refined_coordinates = self.refined_coordinates_from_coordinate(
+                    deflections_func=deflections_func,
                     coordinate=coordinate,
                     pixel_scale=pixel_scale,
-                    lensing_obj=lensing_obj,
                     source_plane_coordinate=source_plane_coordinate,
                 )
 
@@ -371,7 +386,7 @@ class PositionsSolver(AbstractPositionsSolver):
             coordinates_list = refined_coordinates_list
 
         coordinates_list = self.grid_within_distance_of_source_plane_centre(
-            lensing_obj=lensing_obj,
+            deflection_func=deflections_func,
             grid=grid_2d_irregular.Grid2DIrregularUniform(
                 grid=coordinates_list, pixel_scales=(pixel_scale, pixel_scale)
             ),
@@ -380,7 +395,9 @@ class PositionsSolver(AbstractPositionsSolver):
         )
 
         coordinates_list = self.grid_with_points_below_magnification_threshold_removed(
-            lensing_obj=lensing_obj, grid=coordinates_list
+            lensing_obj=lensing_obj,
+            deflections_func=deflections_func,
+            grid=coordinates_list,
         )
 
         return grid_2d_irregular.Grid2DIrregular(grid=coordinates_list)
