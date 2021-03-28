@@ -4,7 +4,6 @@ from autoarray.fit.fit import FitData
 from autogalaxy.profiles import point_sources as ps
 
 
-
 class AbstractFitPositionsSourcePlane:
     def __init__(self, positions, noise_map, tracer):
         """

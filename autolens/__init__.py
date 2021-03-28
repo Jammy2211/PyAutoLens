@@ -45,6 +45,8 @@ from .analysis import aggregator as agg
 from . import plot
 from .dataset.imaging import MaskedImaging, SimulatorImaging
 from .dataset.interferometer import MaskedInterferometer, SimulatorInterferometer
+from .dataset.point_source import PointSourceDataset
+from .dataset.point_source import PointSourceDict
 from .fit.fit import FitImaging, FitInterferometer
 from .fit.fit_point_source import (
     FitPositionsSourceMaxSeparation,
