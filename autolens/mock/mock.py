@@ -168,6 +168,13 @@ class MockTracer:
         self.einstein_mass = einstein_mass
 
     @property
+    def planes(self):
+        return [0, 1]
+
+    def deflections_from_grid(self):
+        pass
+
+    @property
     def has_mass_profile(self):
         return True
 
@@ -180,7 +187,7 @@ class MockTracer:
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
         return [self.positions]
 
-    def magnification_via_hessian_from_grid(self, grid):
+    def magnification_via_hessian_from_grid(self, grid, deflections_func=None):
         return self.magnification
 
     def einstein_radius_from_grid(self, grid):
