@@ -3121,7 +3121,7 @@ class TestExtractAttribute:
 
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-        values = tracer.extract_attribute(cls=al.mp.MassProfile, name="value")
+        values = tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="value")
 
         assert values == None
 
@@ -3130,11 +3130,11 @@ class TestExtractAttribute:
 
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-        values = tracer.extract_attribute(cls=al.mp.MassProfile, name="value")
+        values = tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="value")
 
         assert values.in_list == [0.9, 0.8]
 
-        values = tracer.extract_attribute(cls=al.mp.MassProfile, name="value1")
+        values = tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="value1")
 
         assert values.in_list == [(1.0, 1.0), (2.0, 2.0)]
 
@@ -3143,11 +3143,11 @@ class TestExtractAttribute:
 
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
-        values = tracer.extract_attribute(cls=al.mp.MassProfile, name="value")
+        values = tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="value")
 
         assert values.in_list == [0.9, 0.8, 0.7, 0.6]
 
-        tracer.extract_attribute(cls=al.mp.MassProfile, name="incorrect_value")
+        tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="incorrect_value")
 
     def test__extract_attributes_of_planes(self):
 
@@ -3169,7 +3169,7 @@ class TestExtractAttribute:
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
         values = tracer.extract_attributes_of_planes(
-            cls=al.mp.MassProfile, name="value"
+            cls=al.mp.MassProfile, attr_name="value"
         )
 
         assert values == [None, None]
@@ -3180,14 +3180,14 @@ class TestExtractAttribute:
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
         values = tracer.extract_attributes_of_planes(
-            cls=al.mp.MassProfile, name="value"
+            cls=al.mp.MassProfile, attr_name="value"
         )
 
         assert values[0].in_list == [0.9]
         assert values[1].in_list == [0.8]
 
         values = tracer.extract_attributes_of_planes(
-            cls=al.mp.MassProfile, name="value1"
+            cls=al.mp.MassProfile, attr_name="value1"
         )
 
         assert values[0].in_list == [(1.0, 1.0)]
@@ -3200,7 +3200,7 @@ class TestExtractAttribute:
         tracer = al.Tracer(planes=[plane_0, plane_1, plane_2], cosmology=None)
 
         values = tracer.extract_attributes_of_planes(
-            cls=al.mp.MassProfile, name="value", filter_nones=False
+            cls=al.mp.MassProfile, attr_name="value", filter_nones=False
         )
 
         assert values[0].in_list == [0.9, 0.8]
@@ -3208,13 +3208,13 @@ class TestExtractAttribute:
         assert values[2].in_list == [0.7, 0.6]
 
         values = tracer.extract_attributes_of_planes(
-            cls=al.mp.MassProfile, name="value", filter_nones=True
+            cls=al.mp.MassProfile, attr_name="value", filter_nones=True
         )
 
         assert values[0].in_list == [0.9, 0.8]
         assert values[1].in_list == [0.7, 0.6]
 
-        tracer.extract_attribute(cls=al.mp.MassProfile, name="incorrect_value")
+        tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="incorrect_value")
 
     def test__extract_attributes_of_galaxies(self):
 
@@ -3236,7 +3236,7 @@ class TestExtractAttribute:
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
         values = tracer.extract_attributes_of_galaxies(
-            cls=al.mp.MassProfile, name="value"
+            cls=al.mp.MassProfile, attr_name="value"
         )
 
         assert values == [None, None]
@@ -3247,14 +3247,14 @@ class TestExtractAttribute:
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
         values = tracer.extract_attributes_of_galaxies(
-            cls=al.mp.MassProfile, name="value"
+            cls=al.mp.MassProfile, attr_name="value"
         )
 
         assert values[0].in_list == [0.9]
         assert values[1].in_list == [0.8]
 
         values = tracer.extract_attributes_of_galaxies(
-            cls=al.mp.MassProfile, name="value1"
+            cls=al.mp.MassProfile, attr_name="value1"
         )
 
         assert values[0].in_list == [(1.0, 1.0)]
@@ -3267,7 +3267,7 @@ class TestExtractAttribute:
         tracer = al.Tracer(planes=[plane_0, plane_1, plane_2], cosmology=None)
 
         values = tracer.extract_attributes_of_galaxies(
-            cls=al.mp.MassProfile, name="value", filter_nones=False
+            cls=al.mp.MassProfile, attr_name="value", filter_nones=False
         )
 
         assert values[0].in_list == [0.9]
@@ -3276,14 +3276,38 @@ class TestExtractAttribute:
         assert values[3].in_list == [0.7, 0.6]
 
         values = tracer.extract_attributes_of_galaxies(
-            cls=al.mp.MassProfile, name="value", filter_nones=True
+            cls=al.mp.MassProfile, attr_name="value", filter_nones=True
         )
 
         assert values[0].in_list == [0.9]
         assert values[1].in_list == [0.8]
         assert values[2].in_list == [0.7, 0.6]
 
-        tracer.extract_attribute(cls=al.mp.MassProfile, name="incorrect_value")
+        tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="incorrect_value")
+
+    def test__extract_profile(self):
+
+        g0 = al.Galaxy(
+            redshift=0.5, mp_0=mock.MockMassProfile(value=0.9, value1=(1.0, 1.0))
+        )
+        g1 = al.Galaxy(
+            redshift=0.5, mp_1=mock.MockMassProfile(value=0.8, value1=(2.0, 2.0))
+        )
+        g2 = al.Galaxy(
+            redshift=1.0,
+            mp_2=mock.MockMassProfile(value=0.7),
+            mp_3=mock.MockMassProfile(value=0.6),
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2], cosmology=None)
+
+        profile = tracer.extract_profile(profile_name="mp_0")
+
+        assert profile.value == 0.9
+
+        profile = tracer.extract_profile(profile_name="mp_3")
+
+        assert profile.value == 0.6
 
 
 class TestRegression:

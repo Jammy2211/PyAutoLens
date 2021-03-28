@@ -98,9 +98,11 @@ class FitPositionsImage(FitData):
         self.name = name
         self.positions_solver = positions_solver
 
-        source_plane_coordinate = tracer.extract_attribute(
-            cls=ps.PointSource, name="centre"
-        )[0]
+        self.point_source_profile = tracer.extract_profile(profile_name=name)
+
+        source_plane_coordinate = grid_2d_irregular.Grid2DIrregular(
+            grid=[self.point_source_profile.centre]
+        )
 
         model_positions = positions_solver.solve(
             lensing_obj=tracer, source_plane_coordinate=source_plane_coordinate
@@ -143,12 +145,13 @@ class FitFluxes(FitData):
             tracer.magnification_via_hessian_from_grid(grid=positions)
         )
 
-        print(tracer)
-
-        flux = tracer.extract_attribute(cls=ps.PointSourceFlux, name="flux")[0]
+        self.point_source_profile = tracer.extract_profile(profile_name=name)
 
         model_fluxes = values.ValuesIrregular(
-            values=[magnification * flux for magnification in self.magnifications]
+            values=[
+                magnification * self.point_source_profile.flux
+                for magnification in self.magnifications
+            ]
         )
 
         super().__init__(

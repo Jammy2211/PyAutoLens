@@ -194,7 +194,8 @@ class TestFitFluxes:
     def test__one_set_of_fluxes__residuals_likelihood_correct(self):
 
         tracer = mock.MockTracer(
-            magnification=al.ValuesIrregular([2.0, 2.0]), attribute=2.0
+            magnification=al.ValuesIrregular([2.0, 2.0]),
+            profile=al.ps.PointSourceFlux(flux=2.0),
         )
 
         fluxes = al.ValuesIrregular([1.0, 2.0])

@@ -613,7 +613,7 @@ class TestAnalysisPointSource:
                 lens=al.Galaxy(
                     redshift=0.5,
                     sis=al.mp.SphericalIsothermal(einstein_radius=1.0),
-                    light=al.ps.PointSourceFlux(flux=1.0),
+                    point_0=al.ps.PointSourceFlux(flux=1.0),
                 )
             )
         )

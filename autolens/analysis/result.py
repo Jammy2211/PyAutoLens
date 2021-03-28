@@ -31,7 +31,7 @@ class Result(res.Result):
         multiple-image positions.
         """
         centre = self.max_log_likelihood_tracer.source_plane.extract_attribute(
-            cls=lp.LightProfile, name="centre"
+            cls=lp.LightProfile, attr_name="centre"
         )
         if centre is not None:
             return grid_2d_irregular.Grid2DIrregular(grid=[np.asarray(centre[0])])
