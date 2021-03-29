@@ -650,40 +650,7 @@ class AnalysisInterferometer(AnalysisDataset):
         )
 
 
-class AttributesImaging(a.AttributesImaging):
-    def __init__(
-        self, cosmology, positions, hyper_model_image, hyper_galaxy_image_path_dict
-    ):
-        super().__init__(
-            cosmology=cosmology,
-            hyper_model_image=hyper_model_image,
-            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-        )
-
-        self.positions = positions
-
-
-class AttributesInterferometer(a.AttributesInterferometer):
-    def __init__(
-        self,
-        cosmology,
-        real_space_mask,
-        positions,
-        hyper_model_image,
-        hyper_galaxy_image_path_dict,
-    ):
-
-        super().__init__(
-            cosmology=cosmology,
-            real_space_mask=real_space_mask,
-            hyper_model_image=hyper_model_image,
-            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-        )
-
-        self.positions = positions
-
-
-class AnalysisPointSource(AnalysisLensing):
+class AnalysisPointSource(af.Analysis, AnalysisLensing):
     def __init__(
         self,
         point_source_dict: ps.PointSourceDict,
@@ -716,6 +683,10 @@ class AnalysisPointSource(AnalysisLensing):
         """
 
         super().__init__(settings_lens=settings_lens, cosmology=cosmology)
+
+        AnalysisLensing.__init__(
+            self=self, settings_lens=settings_lens, cosmology=cosmology
+        )
 
         self.point_source_dict = point_source_dict
 
@@ -792,3 +763,42 @@ class AnalysisPointSource(AnalysisLensing):
         return res.ResultPointSource(
             samples=samples, model=model, analysis=self, search=search
         )
+
+    def save_attributes_for_aggregator(self, paths: af.Paths):
+
+        with open(f"{paths.pickle_path}/dataset.pickle", "wb") as f:
+            pickle.dump(self.point_source_dict, f)
+
+
+class AttributesImaging(a.AttributesImaging):
+    def __init__(
+        self, cosmology, positions, hyper_model_image, hyper_galaxy_image_path_dict
+    ):
+        super().__init__(
+            cosmology=cosmology,
+            hyper_model_image=hyper_model_image,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+        )
+
+        self.positions = positions
+
+
+class AttributesInterferometer(a.AttributesInterferometer):
+    def __init__(
+        self,
+        cosmology,
+        real_space_mask,
+        positions,
+        hyper_model_image,
+        hyper_galaxy_image_path_dict,
+    ):
+
+        super().__init__(
+            cosmology=cosmology,
+            real_space_mask=real_space_mask,
+            hyper_model_image=hyper_model_image,
+            hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
+        )
+
+        self.positions = positions
+
