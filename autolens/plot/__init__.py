@@ -14,7 +14,7 @@ from autoarray.plot.mat_wrap.wrap.wrap_base import (
     Legend,
     Output,
 )
-from autoarray.plot.mat_wrap.wrap.wrap_1d import LinePlot
+from autoarray.plot.mat_wrap.wrap.wrap_1d import YXPlot
 from autoarray.plot.mat_wrap.wrap.wrap_2d import (
     ArrayOverlay,
     GridScatter,
@@ -37,12 +37,14 @@ from autoarray.plot.plotters.structure_plotters import Array2DPlotter
 from autoarray.plot.plotters.structure_plotters import Frame2DPlotter
 from autoarray.plot.plotters.structure_plotters import Grid2DPlotter
 from autoarray.plot.plotters.structure_plotters import MapperPlotter
-from autoarray.plot.plotters.structure_plotters import Array1DPlotter
+from autoarray.plot.plotters.structure_plotters import YX1DPlotter
 from autoarray.plot.plotters.inversion_plotters import InversionPlotter
 from autoarray.plot.plotters.imaging_plotters import ImagingPlotter
 from autoarray.plot.plotters.interferometer_plotters import InterferometerPlotter
 
 from autogalaxy.plot.mat_wrap.lensing_wrap import (
+    HalfLightRadiusAXVLine,
+    EinsteinRadiusAXVLine,
     LightProfileCentresScatter,
     MassProfileCentresScatter,
     CriticalCurvesPlot,

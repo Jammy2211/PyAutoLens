@@ -62,7 +62,7 @@ class AbstractPositionsSolver:
 
             pixel_scales = grid.pixel_scales
 
-            centres = lensing_obj.extract_attribute(cls=mp.MassProfile, name="centre")
+            centres = lensing_obj.extract_attribute(cls=mp.MassProfile, attr_name="centre")
 
             for centre in centres.in_list:
 

@@ -172,7 +172,7 @@ class MockTracer:
     def has_mass_profile(self):
         return True
 
-    def extract_attribute(self, cls, name):
+    def extract_attribute(self, cls, attr_name):
         return [self.attribute]
 
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
