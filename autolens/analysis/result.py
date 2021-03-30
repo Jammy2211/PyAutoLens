@@ -17,9 +17,7 @@ class Result(res.Result):
     @property
     def max_log_likelihood_tracer(self) -> ray_tracing.Tracer:
 
-        instance = self.analysis.associate_hyper_images(instance=self.instance)
-
-        return self.analysis.tracer_for_instance(instance=instance)
+        return self.analysis.tracer_for_instance(instance=self.instance)
 
     @property
     def source_plane_light_profile_centre(self) -> grid_2d_irregular.Grid2DIrregular:
@@ -127,6 +125,14 @@ class Result(res.Result):
 
 
 class ResultDataset(Result):
+
+    @property
+    def max_log_likelihood_tracer(self) -> ray_tracing.Tracer:
+
+        instance = self.analysis.associate_hyper_images(instance=self.instance)
+
+        return self.analysis.tracer_for_instance(instance=instance)
+
     @property
     def max_log_likelihood_fit(self):
         raise NotImplementedError
@@ -381,6 +387,4 @@ class ResultPointSource(Result):
     @property
     def max_log_likelihood_fit(self):
 
-        return self.analysis.fit_positions_for_tracer(
-            tracer=self.max_log_likelihood_tracer
-        )
+        return self.analysis.fit_positions_for(tracer=self.max_log_likelihood_tracer)

@@ -152,8 +152,8 @@ class MockTracer:
         self,
         traced_grid=None,
         attribute=None,
+        profile=None,
         magnification=None,
-        flux_hack=None,
         einstein_radius=None,
         einstein_mass=None,
     ):
@@ -162,11 +162,17 @@ class MockTracer:
         self.magnification = magnification
 
         self.attribute = attribute
-
-        self.flux_hack = flux_hack
+        self.profile = profile
 
         self.einstein_radius = einstein_radius
         self.einstein_mass = einstein_mass
+
+    @property
+    def planes(self):
+        return [0, 1]
+
+    def deflections_from_grid(self):
+        pass
 
     @property
     def has_mass_profile(self):
@@ -175,10 +181,13 @@ class MockTracer:
     def extract_attribute(self, cls, attr_name):
         return [self.attribute]
 
+    def extract_profile(self, profile_name):
+        return self.profile
+
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
         return [self.positions]
 
-    def magnification_via_hessian_from_grid(self, grid):
+    def magnification_via_hessian_from_grid(self, grid, deflections_func=None):
         return self.magnification
 
     def einstein_radius_from_grid(self, grid):
@@ -193,5 +202,5 @@ class MockPositionsSolver:
 
         self.model_positions = model_positions
 
-    def solve(self, lensing_obj, source_plane_coordinate):
+    def solve(self, lensing_obj, source_plane_coordinate, upper_plane_index=None):
         return self.model_positions

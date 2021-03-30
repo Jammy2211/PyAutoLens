@@ -3,6 +3,7 @@ from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.fit.fit import FitData
 from autogalaxy.profiles import point_sources as ps
 
+from functools import partial
 
 
 class AbstractFitPositionsSourcePlane:
@@ -84,7 +85,7 @@ class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
 
 
 class FitPositionsImage(FitData):
-    def __init__(self, positions, noise_map, tracer, positions_solver):
+    def __init__(self, name, positions, noise_map, tracer, positions_solver):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
 
@@ -96,14 +97,22 @@ class FitPositionsImage(FitData):
             The noise-value assumed when computing the log likelihood.
         """
 
+        self.name = name
         self.positions_solver = positions_solver
 
-        source_plane_coordinate = tracer.extract_attribute(
-            cls=ps.PointSource, attr_name="centre"
-        )[0]
+        self.point_source_profile = tracer.extract_profile(profile_name=name)
+
+        self.source_plane_coordinate = self.point_source_profile.centre
+
+        if len(tracer.planes) > 2:
+            upper_plane_index = tracer.extract_plane_index_of_profile(profile_name=name)
+        else:
+            upper_plane_index = None
 
         model_positions = positions_solver.solve(
-            lensing_obj=tracer, source_plane_coordinate=source_plane_coordinate
+            lensing_obj=tracer,
+            source_plane_coordinate=self.source_plane_coordinate,
+            upper_plane_index=upper_plane_index,
         )
 
         model_positions = model_positions.grid_of_closest_from_grid_pair(
@@ -135,17 +144,34 @@ class FitPositionsImage(FitData):
 
 
 class FitFluxes(FitData):
-    def __init__(self, fluxes, noise_map, positions, tracer):
+    def __init__(self, name, fluxes, noise_map, positions, tracer):
 
+        self.name = name
         self.positions = positions
+
+        if len(tracer.planes) > 2:
+            upper_plane_index = tracer.extract_plane_index_of_profile(profile_name=name)
+            deflections_func = partial(
+                tracer.deflections_between_planes_from_grid,
+                plane_i=0,
+                plane_j=upper_plane_index,
+            )
+        else:
+            deflections_func = tracer.deflections_from_grid
+
         self.magnifications = abs(
-            tracer.magnification_via_hessian_from_grid(grid=positions)
+            tracer.magnification_via_hessian_from_grid(
+                grid=positions, deflections_func=deflections_func
+            )
         )
 
-        flux = tracer.extract_attribute(cls=ps.PointSourceFlux, attr_name="flux")[0]
+        self.point_source_profile = tracer.extract_profile(profile_name=name)
 
         model_fluxes = values.ValuesIrregular(
-            values=[magnification * flux for magnification in self.magnifications]
+            values=[
+                magnification * self.point_source_profile.flux
+                for magnification in self.magnifications
+            ]
         )
 
         super().__init__(

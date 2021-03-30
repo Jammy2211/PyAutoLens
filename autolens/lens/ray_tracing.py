@@ -125,7 +125,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
     def planes_with_mass_profile(self):
         return list(filter(lambda plane: plane.has_mass_profile, self.planes))
 
-    def extract_attribute(self, cls, name):
+    def extract_attribute(self, cls, attr_name):
         """
         Returns an attribute of a class in the tracer as a `ValueIrregular` or `Grid2DIrregular` object.
 
@@ -140,7 +140,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
         If the image plane has has two galaxies with two mass profiles and the source plane another galaxy with a
         mass profile, the following:
 
-        `tracer.extract_attribute(cls=MassProfile, name="centres")`
+        `tracer.extract_attribute(cls=MassProfile, name="centre")`
 
         would return:
 
@@ -157,7 +157,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
                 return None
 
         attributes = [
-            extract(value, name)
+            extract(value, attr_name)
             for galaxy in self.galaxies
             for value in galaxy.__dict__.values()
             if isinstance(value, cls)
@@ -170,7 +170,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
         elif isinstance(attributes[0], tuple):
             return grid_2d_irregular.Grid2DIrregular(grid=attributes)
 
-    def extract_attributes_of_planes(self, cls, name, filter_nones=False):
+    def extract_attributes_of_planes(self, cls, attr_name, filter_nones=False):
         """
         Returns an attribute of a class in the tracer as a list of `ValueIrregular` or `Grid2DIrregular` objects, where
         the indexes of the list correspond to the tracer's planes.
@@ -204,18 +204,19 @@ class AbstractTracer(lensing.LensingObject, ABC):
         if filter_nones:
 
             return [
-                plane.extract_attribute(cls=cls, name=name)
+                plane.extract_attribute(cls=cls, attr_name=attr_name)
                 for plane in self.planes
-                if plane.extract_attribute(cls=cls, name=name) is not None
+                if plane.extract_attribute(cls=cls, attr_name=attr_name) is not None
             ]
 
         else:
 
             return [
-                plane.extract_attribute(cls=cls, name=name) for plane in self.planes
+                plane.extract_attribute(cls=cls, attr_name=attr_name)
+                for plane in self.planes
             ]
 
-    def extract_attributes_of_galaxies(self, cls, name, filter_nones=False):
+    def extract_attributes_of_galaxies(self, cls, attr_name, filter_nones=False):
         """
         Returns an attribute of a class in the tracer as a list of `ValueIrregular` or `Grid2DIrregular` objects, where
         the indexes of the list correspond to the tracer's galaxies. If a plane has multiple galaxies they are split
@@ -260,16 +261,51 @@ class AbstractTracer(lensing.LensingObject, ABC):
         if filter_nones:
 
             return [
-                galaxy.extract_attribute(cls=cls, name=name)
+                galaxy.extract_attribute(cls=cls, attr_name=attr_name)
                 for galaxy in self.galaxies
-                if galaxy.extract_attribute(cls=cls, name=name) is not None
+                if galaxy.extract_attribute(cls=cls, attr_name=attr_name) is not None
             ]
 
         else:
 
             return [
-                galaxy.extract_attribute(cls=cls, name=name) for galaxy in self.galaxies
+                galaxy.extract_attribute(cls=cls, attr_name=attr_name)
+                for galaxy in self.galaxies
             ]
+
+    def extract_profile(self, profile_name):
+        """
+        Returns a `LightProfile`, `MassProfile` or `PointSource` from the `Tracer` using the name of that component.
+
+        For example, if a tracer has two galaxies, `lens` and `source` with `LightProfile`'s name `light_0` and
+        `light_1`, the following:
+
+        `tracer.extract_profile(profile_name="light_1")`
+
+        Would return the `LightProfile` of the source plane.
+        """
+        for galaxy in self.galaxies:
+            for name, profile in galaxy.__dict__.items():
+                if name == profile_name:
+                    return profile
+
+    def extract_plane_index_of_profile(self, profile_name):
+        """
+        Returns the plane index of a  LightProfile`, `MassProfile` or `PointSource` from the `Tracer` using the name
+        of that component.
+
+        For example, if a tracer has two galaxies, `lens` and `source` with `LightProfile`'s name `light_0` and
+        `light_1`, the following:
+
+        `tracer.extract_profile(profile_name="light_1")`
+
+        Would return `plane_index=1` given the profile is in the source plane.
+        """
+        for plane_index, plane in enumerate(self.planes):
+            for galaxy in plane.galaxies:
+                for name, profile in galaxy.__dict__.items():
+                    if name == profile_name:
+                        return plane_index
 
     @property
     def mass_profiles(self):

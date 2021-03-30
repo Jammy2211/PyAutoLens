@@ -95,7 +95,7 @@ class TestAbstractPositionsSolver:
         solver = pos.AbstractPositionsSolver(magnification_threshold=1000.0)
 
         positions = solver.grid_with_points_below_magnification_threshold_removed(
-            lensing_obj=sis, grid=grid
+            lensing_obj=sis, grid=grid, deflections_func=sis.deflections_from_grid
         )
 
         assert positions.in_list == [(1.0, 0.0)]
@@ -104,52 +104,11 @@ class TestAbstractPositionsSolver:
         solver = pos.AbstractPositionsSolver(magnification_threshold=0.0)
 
         positions = solver.grid_with_points_below_magnification_threshold_removed(
-            lensing_obj=sis, grid=grid
+            lensing_obj=sis, grid=grid, deflections_func=sis.deflections_from_grid
         )
 
         assert positions.in_list == [(1.0, 0.0), (0.1, 0.0)]
         assert positions.pixel_scales == (0.01, 0.01)
-
-
-class TestPositionSolver:
-    def test__positions_found_for_simple_mass_profiles(self):
-
-        grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
-
-        sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
-
-        solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
-
-        positions = solver.solve(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
-
-        assert positions[0] == pytest.approx(np.array([0.003125, -0.890625]), 1.0e-4)
-        assert positions[3] == pytest.approx(np.array([-0.003125, 1.109375]), 1.0e-4)
-
-        grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
-
-        g0 = al.Galaxy(
-            redshift=0.5,
-            mass=al.mp.EllipticalIsothermal(
-                centre=(0.001, 0.001),
-                einstein_radius=1.0,
-                elliptical_comps=(0.0, 0.111111),
-            ),
-        )
-
-        g1 = al.Galaxy(redshift=1.0)
-
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
-
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
-
-        coordinates = solver.solve(
-            lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
-        )
-
-        assert coordinates.in_list[0] == pytest.approx((1.028125, -0.003125), 1.0e-4)
-        assert coordinates.in_list[1] == pytest.approx((0.009375, -0.95312), 1.0e-4)
-        assert coordinates.in_list[2] == pytest.approx((0.009375, 0.95312), 1.0e-4)
-        assert coordinates.in_list[3] == pytest.approx((-1.028125, -0.003125), 1.0e-4)
 
 
 class TestGridRemoveDuplicates:
@@ -744,3 +703,92 @@ class TestWithinDistance:
         )
 
         assert (new_grid == np.array([[1.0, 1.0]])).all()
+
+
+class TestPositionSolver:
+    def test__positions_found_for_simple_mass_profiles(self):
+
+        grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
+
+        sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+
+        solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+
+        positions = solver.solve(lensing_obj=sis, source_plane_coordinate=(0.0, 0.11))
+
+        assert positions[0] == pytest.approx(np.array([0.003125, -0.890625]), 1.0e-4)
+        assert positions[3] == pytest.approx(np.array([-0.003125, 1.109375]), 1.0e-4)
+
+        grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
+
+        g0 = al.Galaxy(
+            redshift=0.5,
+            mass=al.mp.EllipticalIsothermal(
+                centre=(0.001, 0.001),
+                einstein_radius=1.0,
+                elliptical_comps=(0.0, 0.111111),
+            ),
+        )
+
+        g1 = al.Galaxy(redshift=1.0)
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+
+        coordinates = solver.solve(
+            lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
+        )
+
+        assert coordinates.in_list[0] == pytest.approx((1.028125, -0.003125), 1.0e-4)
+        assert coordinates.in_list[1] == pytest.approx((0.009375, -0.95312), 1.0e-4)
+        assert coordinates.in_list[2] == pytest.approx((0.009375, 0.95312), 1.0e-4)
+        assert coordinates.in_list[3] == pytest.approx((-1.028125, -0.003125), 1.0e-4)
+
+    def test__positions_found_for_multi_plane_tracer(self):
+
+        grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
+
+        g0 = al.Galaxy(
+            redshift=0.5,
+            mass=al.mp.EllipticalIsothermal(
+                centre=(0.001, 0.001),
+                einstein_radius=1.0,
+                elliptical_comps=(0.0, 0.111111),
+            ),
+        )
+
+        g1 = al.Galaxy(redshift=1.0)
+
+        g2 = al.Galaxy(redshift=2.0)
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+
+        coordinates_to_plane_2 = solver.solve(
+            lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
+        )
+
+        coordinates_to_plane_1 = solver.solve(
+            lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0), upper_plane_index=1
+        )
+
+        assert coordinates_to_plane_1[0][0] != coordinates_to_plane_2[0][0]
+
+        scaling_factor = al.util.cosmology.scaling_factor_between_redshifts_from(
+            redshift_0=0.5,
+            redshift_1=1.0,
+            redshift_final=2.0,
+            cosmology=tracer.cosmology,
+        )
+
+        assert coordinates_to_plane_1[0][0] == pytest.approx(
+            coordinates_to_plane_2[0][0] * scaling_factor, 1.0e-1
+        )
+
+        coordinates_to_plane_2_with_index = solver.solve(
+            lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0), upper_plane_index=2
+        )
+
+        assert coordinates_to_plane_2[0][0] == coordinates_to_plane_2_with_index[0][0]
