@@ -44,7 +44,12 @@ class PointSourceDataset:
         self.fluxes_noise_map = fluxes_noise_map
 
     @property
-    def dict(self):
+    def dict(self) -> dict:
+        """
+        A dictionary representation of this instance.
+
+        Arrays are represented as lists or lists of lists.
+        """
         return {
             "name": self.name,
             "positions": list(map(list, self.positions)),
@@ -56,8 +61,20 @@ class PointSourceDataset:
     @classmethod
     def from_dict(
             cls,
-            dict_
-    ):
+            dict_: dict
+    ) -> "PointSourceDataset":
+        """
+        Create a point source dataset from a dictionary representation.
+
+        Parameters
+        ----------
+        dict_
+            A dictionary. Arrays are represented as lists or lists of lists.
+
+        Returns
+        -------
+        An instance
+        """
         return cls(
             name=dict_["name"],
             positions=grid_2d_irregular.Grid2DIrregular(
@@ -103,7 +120,11 @@ class PointSourceDict(dict):
             self[point_source_dataset.name] = point_source_dataset
 
     @property
-    def dicts(self):
+    def dicts(self) -> List[dict]:
+        """
+        A list of dictionaries representing this collection of point source
+        datasets.
+        """
         return [
             dataset.dict
             for dataset
@@ -113,8 +134,20 @@ class PointSourceDict(dict):
     @classmethod
     def from_dicts(
             cls,
-            dicts
-    ):
+            dicts: List[dict]
+    ) -> List[PointSourceDataset]:
+        """
+        Create an instance from a list of dictionaries.
+
+        Parameters
+        ----------
+        dicts
+            Dictionaries, each representing one point source dataset.
+
+        Returns
+        -------
+        A collection of point source datasets.
+        """
         return cls(
             list(map(
                 PointSourceDataset.from_dict,
