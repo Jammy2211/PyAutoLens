@@ -286,7 +286,7 @@ class PositionsSolver(AbstractPositionsSolver):
             distance_from_mass_profile_centre=distance_from_mass_profile_centre,
         )
 
-        self.grid = grid.slim_binned
+        self.grid = grid.binned
         self.pixel_scale_precision = pixel_scale_precision
 
     def refined_coordinates_from_coordinate(

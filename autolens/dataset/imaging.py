@@ -118,7 +118,7 @@ class SimulatorImaging(imaging.SimulatorImaging):
             grid=grid, psf_shape_2d=self.psf.shape_native
         )
 
-        imaging = self.from_image(image=image.slim_binned, name=name)
+        imaging = self.from_image(image=image.binned, name=name)
 
         return imaging.trimmed_after_convolution_from(
             kernel_shape=self.psf.shape_native
@@ -152,7 +152,7 @@ class SimulatorImaging(imaging.SimulatorImaging):
             sub_size=1,
         )
 
-        deflected_grid = grid - deflections.slim_binned
+        deflected_grid = grid - deflections.binned
 
         image = sum(map(lambda g: g.image_from_grid(grid=deflected_grid), galaxies))
 

@@ -113,7 +113,7 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
 
         image = tracer.image_from_grid(grid=grid)
 
-        return self.from_image(image=image.slim_binned, name=name)
+        return self.from_image(image=image.binned, name=name)
 
     def from_galaxies_and_grid(self, galaxies, grid, name=None):
         """Simulate imaging data for this data, as follows:
@@ -143,7 +143,7 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
             sub_size=1,
         )
 
-        deflected_grid = grid - deflections.slim_binned
+        deflected_grid = grid - deflections.binned
 
         image = sum(map(lambda g: g.image_from_grid(grid=deflected_grid), galaxies))
 

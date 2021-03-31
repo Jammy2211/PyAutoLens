@@ -303,9 +303,8 @@ class AbstractTracer(lensing.LensingObject, ABC):
         """
         for plane_index, plane in enumerate(self.planes):
             for galaxy in plane.galaxies:
-                for name, profile in galaxy.__dict__.items():
-                    if name == profile_name:
-                        return plane_index
+                if profile_name in galaxy.__dict__:
+                    return plane_index
 
     @property
     def mass_profiles(self):
@@ -550,7 +549,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         blurring_image = self.image_from_grid(grid=blurring_grid)
 
         return psf.convolved_array_from_array_and_mask(
-            array=image.native_binned + blurring_image.native_binned, mask=grid.mask
+            array=image.binned.native + blurring_image.binned.native, mask=grid.mask
         )
 
     def blurred_images_of_planes_from_grid_and_psf(self, grid, psf, blurring_grid):

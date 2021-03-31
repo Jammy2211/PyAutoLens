@@ -83,7 +83,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
         """
 
         border = self.extract_2d(
-            "border", value=self.grid.mask.border_grid_sub_1.slim_binned
+            "border", value=self.grid.mask.border_grid_sub_1.binned
         )
 
         if border is not None:
