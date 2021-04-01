@@ -11,5 +11,5 @@ numpy>=1.18.0
 ipython>=7.0.1
 ipykernel>=5.1.0
 jupyter_client>=5.2.3
-pygments==2.4.1
+pygments==2.7.4
 pyprojroot>=0.2.0
