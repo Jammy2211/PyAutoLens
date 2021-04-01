@@ -5,7 +5,7 @@ PyAutoLens: Open-Source Strong Lensing
     :trim:
 
 .. |binder| image:: https://mybinder.org/badge_logo.svg
-   :target: https://mybinder.org/v2/gh/Jammy2211/autofit_workspace/HEAD
+   :target: https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/HEAD
 
 .. |code-style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
