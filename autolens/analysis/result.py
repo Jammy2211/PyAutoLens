@@ -125,7 +125,6 @@ class Result(res.Result):
 
 
 class ResultDataset(Result):
-
     @property
     def max_log_likelihood_tracer(self) -> ray_tracing.Tracer:
 
@@ -309,14 +308,14 @@ class ResultInterferometer(ResultDataset):
             instance=self.instance
         )
 
-        return self.analysis.masked_interferometer_fit_for_tracer(
+        return self.analysis.interferometer_fit_for_tracer(
             tracer=self.max_log_likelihood_tracer,
             hyper_background_noise=hyper_background_noise,
         )
 
     @property
     def real_space_mask(self):
-        return self.max_log_likelihood_fit.masked_interferometer.real_space_mask
+        return self.max_log_likelihood_fit.interferometer.real_space_mask
 
     @property
     def unmasked_model_visibilities(self):

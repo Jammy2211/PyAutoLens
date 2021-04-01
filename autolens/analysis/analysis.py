@@ -20,7 +20,8 @@ from autogalaxy.analysis import analysis as a
 from autolens.lens import ray_tracing
 from autolens.lens import positions_solver as psolve
 from autolens.dataset import point_source as ps
-from autolens.fit import fit
+from autolens.fit import fit_imaging
+from autolens.fit import fit_interferometer
 from autolens.fit import fit_point_source
 from autolens.lens import settings
 from autolens.analysis import result as res
@@ -264,8 +265,8 @@ class AnalysisImaging(AnalysisDataset):
         self, tracer, hyper_image_sky, hyper_background_noise, use_hyper_scalings=True
     ):
 
-        return fit.FitImaging(
-            masked_imaging=self.dataset,
+        return fit_imaging.FitImaging(
+            imaging=self.dataset,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -303,8 +304,8 @@ class AnalysisImaging(AnalysisDataset):
         for i in range(self.settings_lens.stochastic_samples):
 
             try:
-                log_evidence = fit.FitImaging(
-                    masked_imaging=self.dataset,
+                log_evidence = fit_imaging.FitImaging(
+                    imaging=self.dataset,
                     tracer=tracer,
                     hyper_image_sky=hyper_image_sky,
                     hyper_background_noise=hyper_background_noise,
@@ -342,7 +343,7 @@ class AnalysisImaging(AnalysisDataset):
 
         visualizer = vis.Visualizer(visualize_path=paths.image_path)
 
-        visualizer.visualize_imaging(imaging=self.imaging.imaging)
+        visualizer.visualize_imaging(imaging=self.imaging)
         visualizer.visualize_fit_imaging(fit=fit, during_analysis=during_analysis)
         visualizer.visualize_tracer(
             tracer=fit.tracer, grid=fit.grid, during_analysis=during_analysis
@@ -471,7 +472,7 @@ class AnalysisInterferometer(AnalysisDataset):
         )
 
         try:
-            fit = self.masked_interferometer_fit_for_tracer(
+            fit = self.interferometer_fit_for_tracer(
                 tracer=tracer, hyper_background_noise=hyper_background_noise
             )
             return fit.figure_of_merit
@@ -521,12 +522,12 @@ class AnalysisInterferometer(AnalysisDataset):
 
         return instance
 
-    def masked_interferometer_fit_for_tracer(
+    def interferometer_fit_for_tracer(
         self, tracer, hyper_background_noise, use_hyper_scalings=True
     ):
 
-        return fit.FitInterferometer(
-            masked_interferometer=self.dataset,
+        return fit_interferometer.FitInterferometer(
+            interferometer=self.dataset,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
             use_hyper_scaling=use_hyper_scalings,
@@ -561,8 +562,8 @@ class AnalysisInterferometer(AnalysisDataset):
         for i in range(self.settings_lens.stochastic_samples):
 
             try:
-                log_evidence = fit.FitInterferometer(
-                    masked_interferometer=self.dataset,
+                log_evidence = fit_interferometer.FitInterferometer(
+                    interferometer=self.dataset,
                     tracer=tracer,
                     hyper_background_noise=hyper_background_noise,
                     settings_pixelization=settings_pixelization,
@@ -591,14 +592,12 @@ class AnalysisInterferometer(AnalysisDataset):
             instance=instance
         )
 
-        fit = self.masked_interferometer_fit_for_tracer(
+        fit = self.interferometer_fit_for_tracer(
             tracer=tracer, hyper_background_noise=hyper_background_noise
         )
 
         visualizer = vis.Visualizer(visualize_path=paths.image_path)
-        visualizer.visualize_interferometer(
-            interferometer=self.interferometer.interferometer
-        )
+        visualizer.visualize_interferometer(interferometer=self.interferometer)
         visualizer.visualize_fit_interferometer(
             fit=fit, during_analysis=during_analysis
         )
@@ -618,7 +617,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         if visualizer.plot_fit_no_hyper:
 
-            fit = self.masked_interferometer_fit_for_tracer(
+            fit = self.interferometer_fit_for_tracer(
                 tracer=tracer, hyper_background_noise=None, use_hyper_scalings=False
             )
 
@@ -801,4 +800,3 @@ class AttributesInterferometer(a.AttributesInterferometer):
         )
 
         self.positions = positions
-

@@ -2,13 +2,13 @@ from autoarray.plot.plotters import fit_interferometer_plotters
 from autoarray.plot.plotters import inversion_plotters
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
 from autolens.plot.plotters import ray_tracing_plotters
-from autolens.fit import fit as f
+from autolens.fit import fit_interferometer
 
 
 class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlotter):
     def __init__(
         self,
-        fit: f.FitInterferometer,
+        fit: fit_interferometer.FitInterferometer,
         mat_plot_1d: lensing_mat_plot.MatPlot1D = lensing_mat_plot.MatPlot1D(),
         visuals_1d: lensing_visuals.Visuals1D = lensing_visuals.Visuals1D(),
         include_1d: lensing_include.Include1D = lensing_include.Include1D(),
@@ -77,7 +77,7 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
     def tracer_plotter(self):
         return ray_tracing_plotters.TracerPlotter(
             tracer=self.tracer,
-            grid=self.fit.masked_interferometer.grid,
+            grid=self.fit.interferometer.grid,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
             include_2d=self.include_2d,

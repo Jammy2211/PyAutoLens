@@ -2805,10 +2805,10 @@ class TestAbstractTracerData:
             )
 
         def test__x1_inversion_interferometer_in_tracer__performs_inversion_correctly(
-            self, sub_grid_7x7, masked_interferometer_7
+            self, sub_grid_7x7, interferometer_7
         ):
 
-            masked_interferometer_7.visibilities = al.Visibilities.ones(shape_slim=(7,))
+            interferometer_7.data = al.Visibilities.ones(shape_slim=(7,))
 
             pix = al.pix.Rectangular(shape=(7, 7))
             reg = al.reg.Constant(coefficient=0.0)
@@ -2819,15 +2819,11 @@ class TestAbstractTracerData:
 
             inversion = tracer.inversion_interferometer_from_grid_and_data(
                 grid=sub_grid_7x7,
-                visibilities=masked_interferometer_7.visibilities,
-                noise_map=masked_interferometer_7.noise_map,
-                transformer=masked_interferometer_7.transformer,
+                visibilities=interferometer_7.visibilities,
+                noise_map=interferometer_7.noise_map,
+                transformer=interferometer_7.transformer,
                 settings_pixelization=al.SettingsPixelization(use_border=False),
             )
-
-            # assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
-            #     masked_interferometer_7.visibilities[:, 0], 1.0e-2
-            # )
 
     class TestHyperNoiseMap:
         def test__hyper_noise_maps_of_planes(self, sub_grid_7x7):
@@ -3477,7 +3473,7 @@ class TestDecorators:
 
         image = tracer.image_from_grid(grid=grid)
 
-        mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = al.Grid2D.from_mask(mask=mask_sub_2)
         image_sub_2 = tracer.image_from_grid(grid=grid_sub_2).binned
 
@@ -3496,13 +3492,13 @@ class TestDecorators:
 
         image = tracer.image_from_grid(grid=grid)
 
-        mask_sub_4 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
+        mask_sub_4 = mask.mask_new_sub_size_from(mask=mask, sub_size=4)
         grid_sub_4 = al.Grid2D.from_mask(mask=mask_sub_4)
         image_sub_4 = tracer.image_from_grid(grid=grid_sub_4).binned
 
         assert image[0] == image_sub_4[0]
 
-        mask_sub_8 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=8)
+        mask_sub_8 = mask.mask_new_sub_size_from(mask=mask, sub_size=8)
         grid_sub_8 = al.Grid2D.from_mask(mask=mask_sub_8)
         image_sub_8 = tracer.image_from_grid(grid=grid_sub_8).binned
 
@@ -3532,7 +3528,7 @@ class TestDecorators:
 
         images = tracer.images_of_planes_from_grid(grid=grid)
 
-        mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = al.Grid2D.from_mask(mask=mask_sub_2)
         image_sub_2 = tracer.image_from_grid(grid=grid_sub_2).binned
 
@@ -3551,7 +3547,7 @@ class TestDecorators:
 
         images = tracer.images_of_planes_from_grid(grid=grid)
 
-        mask_sub_8 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=8)
+        mask_sub_8 = mask.mask_new_sub_size_from(mask=mask, sub_size=8)
         grid_sub_8 = al.Grid2D.from_mask(mask=mask_sub_8)
         image_sub_8 = tracer.image_from_grid(grid=grid_sub_8).binned
 
@@ -3583,7 +3579,7 @@ class TestDecorators:
 
         deflections = tracer.deflections_from_grid(grid=grid)
 
-        mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = al.Grid2D.from_mask(mask=mask_sub_2)
         deflections_sub_2 = tracer.deflections_from_grid(grid=grid_sub_2).binned
 
@@ -3602,13 +3598,13 @@ class TestDecorators:
 
         deflections = tracer.deflections_from_grid(grid=grid)
 
-        mask_sub_4 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
+        mask_sub_4 = mask.mask_new_sub_size_from(mask=mask, sub_size=4)
         grid_sub_4 = al.Grid2D.from_mask(mask=mask_sub_4)
         deflections_sub_4 = tracer.deflections_from_grid(grid=grid_sub_4).binned
 
         assert deflections[0, 0] == deflections_sub_4[0, 0]
 
-        mask_sub_8 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=8)
+        mask_sub_8 = mask.mask_new_sub_size_from(mask=mask, sub_size=8)
         grid_sub_8 = al.Grid2D.from_mask(mask=mask_sub_8)
         deflections_sub_8 = galaxy.deflections_from_grid(grid=grid_sub_8).binned
 

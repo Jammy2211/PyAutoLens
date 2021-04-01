@@ -15,11 +15,11 @@ def make_fit_imaging_plotter_setup():
 
 
 def test__fit_quantities_are_output(
-    masked_imaging_fit_x2_plane_7x7, include_2d_all, plot_path, plot_patch
+    imaging_fit_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
 
     fit_imaging_plotter = aplt.FitImagingPlotter(
-        fit=masked_imaging_fit_x2_plane_7x7,
+        fit=imaging_fit_x2_plane_7x7,
         include_2d=include_2d_all,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -62,11 +62,11 @@ def test__fit_quantities_are_output(
 
 
 def test__figures_of_plane(
-    masked_imaging_fit_x2_plane_7x7, include_2d_all, plot_path, plot_patch
+    imaging_fit_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
 
     fit_imaging_plotter = aplt.FitImagingPlotter(
-        fit=masked_imaging_fit_x2_plane_7x7,
+        fit=imaging_fit_x2_plane_7x7,
         include_2d=include_2d_all,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -99,11 +99,11 @@ def test__figures_of_plane(
 
 
 def test_subplot_fit_imaging_is_output(
-    masked_imaging_fit_x2_plane_7x7, include_2d_all, plot_path, plot_patch
+    imaging_fit_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
 
     fit_imaging_plotter = aplt.FitImagingPlotter(
-        fit=masked_imaging_fit_x2_plane_7x7,
+        fit=imaging_fit_x2_plane_7x7,
         include_2d=include_2d_all,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
@@ -113,11 +113,11 @@ def test_subplot_fit_imaging_is_output(
 
 
 def test__subplot_of_planes(
-    masked_imaging_fit_x2_plane_7x7, include_2d_all, plot_path, plot_patch
+    imaging_fit_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
 
     fit_imaging_plotter = aplt.FitImagingPlotter(
-        fit=masked_imaging_fit_x2_plane_7x7,
+        fit=imaging_fit_x2_plane_7x7,
         include_2d=include_2d_all,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )

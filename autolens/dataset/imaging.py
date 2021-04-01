@@ -1,45 +1,7 @@
 from autoarray.dataset import imaging
 from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures import kernel_2d
-from autogalaxy.dataset import imaging as im
 from autolens.lens import ray_tracing
-
-
-class MaskedImaging(imaging.MaskedImaging):
-    def __init__(self, imaging, mask, settings=im.SettingsMaskedImaging()):
-        """
-        The lens dataset is the collection of data (image, noise-map, PSF), a mask, grid, convolver \
-        and other utilities that are used for modeling and fitting an image of a strong lens.
-
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
-        for lens calculations.
-
-        Parameters
-        ----------
-        imaging: im.Imaging
-            The imaging data all in 2D (the image, noise-map, PSF, etc.)
-        mask: msk.Mask2D
-            The 2D mask that is applied to the image.
-        sub_size : int
-            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
-            sub-grid.
-        psf_shape_2d : (int, int)
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        positions : [[]]
-            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
-            used to speed up the non-linear sampling.
-        pixel_scales_interp : float
-            If `True`, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-            interpolated to the grid, sub and blurring grids.
-        inversion_pixel_limit : int or None
-            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
-            up run.
-        """
-
-        super(MaskedImaging, self).__init__(
-            imaging=imaging, mask=mask, settings=settings
-        )
 
 
 class SimulatorImaging(imaging.SimulatorImaging):

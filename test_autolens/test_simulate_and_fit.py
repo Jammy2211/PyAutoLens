@@ -72,15 +72,14 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
         radius=0.8,
     )
 
-    masked_imaging = al.MaskedImaging(
-        imaging=imaging,
+    masked_imaging = imaging.apply_mask(
         mask=mask,
-        settings=al.SettingsMaskedImaging(grid_class=al.Grid2DIterate),
+        settings=al.SettingsImaging(grid_class=al.Grid2DIterate),
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
     assert fit.chi_squared == 0.0
 
@@ -110,11 +109,11 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
     )
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    simulator = al.SimulatorImaging(
+    imaging = al.SimulatorImaging(
         exposure_time=300.0, psf=psf, add_poisson_noise=False
     )
 
-    imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
+    imaging = imaging.from_tracer_and_grid(tracer=tracer, grid=grid)
     imaging.noise_map = al.Array2D.ones(
         shape_native=imaging.image.shape_native, pixel_scales=0.2
     )
@@ -139,7 +138,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
         psf_path=path.join(file_path, "psf.fits"),
     )
 
-    simulator = al.Imaging.from_fits(
+    imaging = al.Imaging.from_fits(
         image_path=path.join(file_path, "image.fits"),
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
@@ -147,16 +146,15 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
     )
 
     mask = al.Mask2D.circular(
-        shape_native=simulator.image.shape_native, pixel_scales=0.2, radius=0.8
+        shape_native=imaging.image.shape_native, pixel_scales=0.2, radius=0.8
     )
 
-    masked_imaging = al.MaskedImaging(
-        imaging=simulator, mask=mask, settings=al.SettingsMaskedImaging(sub_size=1)
+    masked_imaging = imaging.apply_mask(mask=mask, settings=al.SettingsImaging(sub_size=1)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
     assert fit.chi_squared == pytest.approx(0.0, 1e-4)
 
@@ -215,29 +213,22 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         uv_wavelengths_path=path.join(file_path, "uv_wavelengths.fits"),
     )
 
-    interferometer = al.Interferometer.from_fits(
-        visibilities_path=path.join(file_path, "visibilities.fits"),
-        noise_map_path=path.join(file_path, "noise_map.fits"),
-        uv_wavelengths_path=path.join(file_path, "uv_wavelengths.fits"),
-    )
-
-    visibilities_mask = np.full(fill_value=False, shape=(7,))
-
     real_space_mask = al.Mask2D.unmasked(
         shape_native=(51, 51), pixel_scales=0.1, sub_size=2
     )
 
-    masked_interferometer = al.MaskedInterferometer(
-        interferometer=interferometer,
-        visibilities_mask=visibilities_mask,
+    interferometer = al.Interferometer.from_fits(
+        visibilities_path=path.join(file_path, "visibilities.fits"),
+        noise_map_path=path.join(file_path, "noise_map.fits"),
+        uv_wavelengths_path=path.join(file_path, "uv_wavelengths.fits"),
         real_space_mask=real_space_mask,
-        settings=al.SettingsMaskedInterferometer(transformer_class=al.TransformerDFT),
+        settings=al.SettingsInterferometer(transformer_class=al.TransformerDFT),
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitInterferometer(
-        masked_interferometer=masked_interferometer,
+        interferometer=interferometer,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(use_border=False),
     )
@@ -259,7 +250,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitInterferometer(
-        masked_interferometer=masked_interferometer,
+        interferometer=interferometer,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(use_border=False),
     )

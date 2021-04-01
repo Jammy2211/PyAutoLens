@@ -27,7 +27,7 @@ class TestResultAbstract:
             )
         )
 
-        search = mock.MockSearch("test_search_2", samples=samples_with_result)
+        search = mock.MockSearch(name="test_search_2", samples=samples_with_result)
 
         result = search.fit(model=model, analysis=analysis_imaging_7x7)
 
@@ -182,7 +182,7 @@ class TestResultAbstract:
             shape_native=(100, 100), pixel_scales=0.05, sub_size=1
         )
 
-        result.analysis.dataset.mask = mask
+        result.analysis.dataset.data.mask = mask
 
         multiple_images = result.image_plane_multiple_image_positions
 

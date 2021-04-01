@@ -133,11 +133,6 @@ def make_masked_imaging_no_blur_7x7():
     return fixtures.make_masked_imaging_no_blur_7x7()
 
 
-@pytest.fixture(name="visibilities_mask_7")
-def make_visibilities_mask_7():
-    return fixtures.make_visibilities_mask_7()
-
-
 @pytest.fixture(name="visibilities_7")
 def make_visibilities_7():
     return fixtures.make_visibilities_7()
@@ -146,6 +141,11 @@ def make_visibilities_7():
 @pytest.fixture(name="visibilities_noise_map_7")
 def make_noise_map_7():
     return fixtures.make_visibilities_noise_map_7()
+
+
+@pytest.fixture(name="uv_wavelengths_7x2")
+def make_uv_wavelengths_7x2():
+    return fixtures.make_uv_wavelengths_7x2()
 
 
 @pytest.fixture(name="transformer_7x7_7")
@@ -158,14 +158,14 @@ def make_interferometer_7():
     return fixtures.make_interferometer_7()
 
 
-@pytest.fixture(name="masked_interferometer_7")
-def make_masked_interferometer_7():
-    return fixtures.make_masked_interferometer_7()
+@pytest.fixture(name="interferometer_7_lop")
+def make_interferometer_7_lop():
+    return fixtures.make_interferometer_7_lop()
 
 
-@pytest.fixture(name="masked_interferometer_7_grid")
-def make_masked_interferometer_7_grid():
-    return fixtures.make_masked_interferometer_7_grid()
+@pytest.fixture(name="interferometer_7_grid")
+def make_interferometer_7_grid():
+    return fixtures.make_interferometer_7_grid()
 
 
 @pytest.fixture(name="positions_x2")
@@ -252,34 +252,34 @@ def make_tracer_x2_plane_inversion_7x7():
 # Lens Fit #
 
 
-@pytest.fixture(name="masked_imaging_fit_x1_plane_7x7")
-def make_masked_imaging_fit_x1_plane_7x7():
-    return fixtures.make_masked_imaging_fit_x1_plane_7x7()
+@pytest.fixture(name="imaging_fit_x1_plane_7x7")
+def make_imaging_fit_x1_plane_7x7():
+    return fixtures.make_imaging_fit_x1_plane_7x7()
 
 
-@pytest.fixture(name="masked_imaging_fit_x2_plane_7x7")
-def make_masked_imaging_fit_x2_plane_7x7():
-    return fixtures.make_masked_imaging_fit_x2_plane_7x7()
+@pytest.fixture(name="imaging_fit_x2_plane_7x7")
+def make_imaging_fit_x2_plane_7x7():
+    return fixtures.make_imaging_fit_x2_plane_7x7()
 
 
-@pytest.fixture(name="masked_imaging_fit_x2_plane_inversion_7x7")
-def make_masked_imaging_fit_x2_plane_inversion_7x7():
-    return fixtures.make_masked_imaging_fit_x2_plane_inversion_7x7()
+@pytest.fixture(name="imaging_fit_x2_plane_inversion_7x7")
+def make_imaging_fit_x2_plane_inversion_7x7():
+    return fixtures.make_imaging_fit_x2_plane_inversion_7x7()
 
 
-@pytest.fixture(name="masked_interferometer_fit_x1_plane_7x7")
-def make_masked_interferometer_fit_x1_plane_7x7():
-    return fixtures.make_masked_interferometer_fit_x1_plane_7x7()
+@pytest.fixture(name="interferometer_fit_x1_plane_7x7")
+def make_interferometer_fit_x1_plane_7x7():
+    return fixtures.make_interferometer_fit_x1_plane_7x7()
 
 
-@pytest.fixture(name="masked_interferometer_fit_x2_plane_7x7")
-def make_masked_interferometer_fit_x2_plane_7x7():
-    return fixtures.make_masked_interferometer_fit_x2_plane_7x7()
+@pytest.fixture(name="interferometer_fit_x2_plane_7x7")
+def make_interferometer_fit_x2_plane_7x7():
+    return fixtures.make_interferometer_fit_x2_plane_7x7()
 
 
-@pytest.fixture(name="masked_interferometer_fit_x2_plane_inversion_7x7")
-def make_masked_interferometer_fit_x2_plane_inversion_7x7():
-    return fixtures.make_masked_interferometer_fit_x2_plane_inversion_7x7()
+@pytest.fixture(name="interferometer_fit_x2_plane_inversion_7x7")
+def make_interferometer_fit_x2_plane_inversion_7x7():
+    return fixtures.make_interferometer_fit_x2_plane_inversion_7x7()
 
 
 ### Analysis ###

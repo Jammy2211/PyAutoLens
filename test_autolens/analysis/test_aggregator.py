@@ -55,14 +55,11 @@ def test__tracer_generator_from_aggregator(masked_imaging_7x7, samples, model):
         assert tracer.galaxies[1].redshift == 1.0
 
 
-def test__masked_imaging_generator_from_aggregator(
-    imaging_7x7, mask_7x7, samples, model
-):
+def test__imaging_generator_from_aggregator(imaging_7x7, mask_7x7, samples, model):
 
-    masked_imaging_7x7 = al.MaskedImaging(
-        imaging=imaging_7x7,
+    masked_imaging_7x7 = imaging_7x7.apply_mask(
         mask=mask_7x7,
-        settings=al.SettingsMaskedImaging(
+        settings=al.SettingsImaging(
             grid_class=al.Grid2DIterate,
             grid_inversion_class=al.Grid2DInterpolate,
             fractional_accuracy=0.5,
@@ -81,15 +78,15 @@ def test__masked_imaging_generator_from_aggregator(
 
     agg = af.Aggregator(directory=search.paths.output_path)
 
-    masked_imaging_gen = al.agg.MaskedImaging(aggregator=agg)
+    imaging_gen = al.agg.Imaging(aggregator=agg)
 
-    for masked_imaging in masked_imaging_gen:
-        assert (masked_imaging.imaging.image == imaging_7x7.image).all()
-        assert isinstance(masked_imaging.grid, al.Grid2DIterate)
-        assert isinstance(masked_imaging.grid_inversion, al.Grid2DInterpolate)
-        assert masked_imaging.grid.sub_steps == [2]
-        assert masked_imaging.grid.fractional_accuracy == 0.5
-        assert masked_imaging.grid_inversion.pixel_scales_interp == (0.1, 0.1)
+    for imaging in imaging_gen:
+        assert (imaging.image == masked_imaging_7x7.image).all()
+        assert isinstance(imaging.grid, al.Grid2DIterate)
+        assert isinstance(imaging.grid_inversion, al.Grid2DInterpolate)
+        assert imaging.grid.sub_steps == [2]
+        assert imaging.grid.fractional_accuracy == 0.5
+        assert imaging.grid_inversion.pixel_scales_interp == (0.1, 0.1)
 
 
 def test__fit_imaging_generator_from_aggregator(masked_imaging_7x7, samples, model):
@@ -107,20 +104,24 @@ def test__fit_imaging_generator_from_aggregator(masked_imaging_7x7, samples, mod
     fit_imaging_gen = al.agg.FitImaging(aggregator=agg)
 
     for fit_imaging in fit_imaging_gen:
-        assert (
-            fit_imaging.masked_imaging.imaging.image == masked_imaging_7x7.imaging.image
-        ).all()
+        assert (fit_imaging.image == masked_imaging_7x7.image).all()
 
 
-def test__masked_interferometer_generator_from_aggregator(
-    interferometer_7, visibilities_mask_7, mask_7x7, samples, model
+def test__interferometer_generator_from_aggregator(
+    visibilities_7,
+    visibilities_noise_map_7,
+    uv_wavelengths_7x2,
+    mask_7x7,
+    samples,
+    model,
 ):
 
-    masked_interferometer = al.MaskedInterferometer(
-        interferometer=interferometer_7,
-        visibilities_mask=visibilities_mask_7,
+    interferometer_7 = al.Interferometer(
+        visibilities=visibilities_7,
+        noise_map=visibilities_noise_map_7,
+        uv_wavelengths=uv_wavelengths_7x2,
         real_space_mask=mask_7x7,
-        settings=al.SettingsMaskedInterferometer(
+        settings=al.SettingsInterferometer(
             transformer_class=al.TransformerDFT,
             grid_class=al.Grid2DIterate,
             grid_inversion_class=al.Grid2DInterpolate,
@@ -135,37 +136,34 @@ def test__masked_interferometer_generator_from_aggregator(
         samples=samples,
     )
 
-    analysis = al.AnalysisInterferometer(dataset=masked_interferometer)
+    analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
     search.fit(model=model, analysis=analysis)
 
     agg = af.Aggregator(directory=search.paths.output_path)
 
-    masked_interferometer_gen = al.agg.MaskedInterferometer(aggregator=agg)
+    interferometer_gen = al.agg.Interferometer(aggregator=agg)
 
-    for masked_interferometer in masked_interferometer_gen:
-        assert (
-            masked_interferometer.interferometer.visibilities
-            == interferometer_7.visibilities
-        ).all()
-        assert (masked_interferometer.real_space_mask == mask_7x7).all()
-        assert isinstance(masked_interferometer.grid, al.Grid2DIterate)
-        assert isinstance(masked_interferometer.grid_inversion, al.Grid2DInterpolate)
-        assert masked_interferometer.grid.sub_steps == [2]
-        assert masked_interferometer.grid.fractional_accuracy == 0.5
-        assert masked_interferometer.grid_inversion.pixel_scales_interp == (0.1, 0.1)
-        assert isinstance(masked_interferometer.transformer, al.TransformerDFT)
+    for interferometer in interferometer_gen:
+        assert (interferometer.visibilities == interferometer_7.visibilities).all()
+        assert (interferometer.real_space_mask == mask_7x7).all()
+        assert isinstance(interferometer.grid, al.Grid2DIterate)
+        assert isinstance(interferometer.grid_inversion, al.Grid2DInterpolate)
+        assert interferometer.grid.sub_steps == [2]
+        assert interferometer.grid.fractional_accuracy == 0.5
+        assert interferometer.grid_inversion.pixel_scales_interp == (0.1, 0.1)
+        assert isinstance(interferometer.transformer, al.TransformerDFT)
 
 
 def test__fit_interferometer_generator_from_aggregator(
-    masked_interferometer_7, mask_7x7, samples, model
+    interferometer_7, mask_7x7, samples, model
 ):
 
     search = mock.MockSearch(
         paths=af.Paths(path_prefix="aggregator_fit_interferometer_gen"), samples=samples
     )
 
-    analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
+    analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
     search.fit(model=model, analysis=analysis)
 
@@ -174,13 +172,8 @@ def test__fit_interferometer_generator_from_aggregator(
     fit_interferometer_gen = al.agg.FitInterferometer(aggregator=agg)
 
     for fit_interferometer in fit_interferometer_gen:
-        assert (
-            fit_interferometer.masked_interferometer.interferometer.visibilities
-            == masked_interferometer_7.interferometer.visibilities
-        ).all()
-        assert (
-            fit_interferometer.masked_interferometer.real_space_mask == mask_7x7
-        ).all()
+        assert (fit_interferometer.visibilities == interferometer_7.visibilities).all()
+        assert (fit_interferometer.interferometer.real_space_mask == mask_7x7).all()
 
 
 class MockResult:

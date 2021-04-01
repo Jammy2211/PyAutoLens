@@ -74,8 +74,7 @@ class TestVisualizer:
 
     def test__visualizes_fit_imaging__uses_configs(
         self,
-        masked_imaging_7x7,
-        masked_imaging_fit_x2_plane_inversion_7x7,
+        imaging_fit_x2_plane_inversion_7x7,
         include_2d_all,
         plot_path,
         plot_patch,
@@ -87,7 +86,7 @@ class TestVisualizer:
         visualizer = vis.Visualizer(visualize_path=plot_path)
 
         visualizer.visualize_fit_imaging(
-            fit=masked_imaging_fit_x2_plane_inversion_7x7, during_analysis=False
+            fit=imaging_fit_x2_plane_inversion_7x7, during_analysis=False
         )
 
         plot_path = path.join(plot_path, "fit_imaging")
@@ -123,8 +122,7 @@ class TestVisualizer:
 
     def test__visualize_fit_interferometer__uses_configs(
         self,
-        masked_interferometer_7,
-        masked_interferometer_fit_x2_plane_inversion_7x7,
+        interferometer_fit_x2_plane_inversion_7x7,
         include_2d_all,
         plot_path,
         plot_patch,
@@ -132,7 +130,7 @@ class TestVisualizer:
         visualizer = vis.Visualizer(visualize_path=plot_path)
 
         visualizer.visualize_fit_interferometer(
-            fit=masked_interferometer_fit_x2_plane_inversion_7x7, during_analysis=True
+            fit=interferometer_fit_x2_plane_inversion_7x7, during_analysis=True
         )
 
         plot_path = path.join(plot_path, "fit_interferometer")

@@ -4,36 +4,6 @@ from autofit.mock.mock import MockSearch
 from autolens.mock.mock import MockPositionsSolver
 
 
-def make_masked_imaging_7x7():
-    return al.MaskedImaging(
-        imaging=make_imaging_7x7(),
-        mask=make_sub_mask_7x7(),
-        settings=al.SettingsMaskedImaging(sub_size=1),
-    )
-
-
-def make_masked_interferometer_7():
-    return al.MaskedInterferometer(
-        interferometer=make_interferometer_7(),
-        visibilities_mask=make_visibilities_mask_7(),
-        real_space_mask=make_mask_7x7(),
-        settings=al.SettingsMaskedInterferometer(
-            sub_size=1, transformer_class=al.TransformerNUFFT
-        ),
-    )
-
-
-def make_masked_interferometer_7_grid():
-    return al.MaskedInterferometer(
-        interferometer=make_interferometer_7(),
-        visibilities_mask=make_visibilities_mask_7(),
-        real_space_mask=make_mask_7x7(),
-        settings=al.SettingsMaskedInterferometer(
-            grid_class=al.Grid2D, sub_size=1, transformer_class=al.TransformerDFT
-        ),
-    )
-
-
 def make_positions_x2():
     return al.Grid2DIrregular(grid=[(1.0, 1.0), (2.0, 2.0)])
 
@@ -90,42 +60,39 @@ def make_tracer_x2_plane_inversion_7x7():
     )
 
 
-def make_masked_imaging_fit_x1_plane_7x7():
+def make_imaging_fit_x1_plane_7x7():
     return al.FitImaging(
-        masked_imaging=make_masked_imaging_7x7(), tracer=make_tracer_x1_plane_7x7()
+        imaging=make_masked_imaging_7x7(), tracer=make_tracer_x1_plane_7x7()
     )
 
 
-def make_masked_imaging_fit_x2_plane_7x7():
+def make_imaging_fit_x2_plane_7x7():
     return al.FitImaging(
-        masked_imaging=make_masked_imaging_7x7(), tracer=make_tracer_x2_plane_7x7()
+        imaging=make_masked_imaging_7x7(), tracer=make_tracer_x2_plane_7x7()
     )
 
 
-def make_masked_imaging_fit_x2_plane_inversion_7x7():
+def make_imaging_fit_x2_plane_inversion_7x7():
     return al.FitImaging(
-        masked_imaging=make_masked_imaging_7x7(),
-        tracer=make_tracer_x2_plane_inversion_7x7(),
+        imaging=make_masked_imaging_7x7(), tracer=make_tracer_x2_plane_inversion_7x7()
     )
 
 
-def make_masked_interferometer_fit_x1_plane_7x7():
+def make_interferometer_fit_x1_plane_7x7():
     return al.FitInterferometer(
-        masked_interferometer=make_masked_interferometer_7(),
-        tracer=make_tracer_x1_plane_7x7(),
+        interferometer=make_interferometer_7(), tracer=make_tracer_x1_plane_7x7()
     )
 
 
-def make_masked_interferometer_fit_x2_plane_7x7():
+def make_interferometer_fit_x2_plane_7x7():
     return al.FitInterferometer(
-        masked_interferometer=make_masked_interferometer_7(),
-        tracer=make_tracer_x2_plane_7x7(),
+        interferometer=make_interferometer_7(), tracer=make_tracer_x2_plane_7x7()
     )
 
 
-def make_masked_interferometer_fit_x2_plane_inversion_7x7():
+def make_interferometer_fit_x2_plane_inversion_7x7():
     return al.FitInterferometer(
-        masked_interferometer=make_masked_interferometer_7(),
+        interferometer=make_interferometer_7(),
         tracer=make_tracer_x2_plane_inversion_7x7(),
     )
 
@@ -135,12 +102,11 @@ def make_analysis_imaging_7x7():
 
 
 def make_analysis_interferometer_7():
-    return al.AnalysisInterferometer(dataset=make_masked_interferometer_7())
+    return al.AnalysisInterferometer(dataset=make_interferometer_7())
 
 
 def make_analysis_point_source_x2():
     return al.AnalysisPointSource(
-        positions=make_positions_x2(),
-        noise_map=make_positions_noise_map_x2(),
+        point_source_dict=make_point_source_dict(),
         solver=MockPositionsSolver(model_positions=make_positions_x2()),
     )

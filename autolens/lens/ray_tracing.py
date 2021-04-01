@@ -596,9 +596,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         blurring_image = self.image_from_grid(grid=blurring_grid)
 
-        return convolver.convolved_image_from_image_and_blurring_image(
-            image=image, blurring_image=blurring_image
-        )
+        return convolver.convolve_image(image=image, blurring_image=blurring_image)
 
     def blurred_images_of_planes_from_grid_and_convolver(
         self, grid, convolver, blurring_grid

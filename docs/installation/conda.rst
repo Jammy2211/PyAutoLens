@@ -21,11 +21,13 @@ Activate the conda environment (you will have to do this every time you want to 
 
     conda activate autolens
 
-Install autolens (we assume ``numba`` and ``llvmlite`` were successfully installed when creating the ``conda`` enviroment
-above, see `here <https://pyautolens.readthedocs.io/en/latest/installation/troubleshooting.html>`_ for more details):
+Install autolens (we assume ``numba`` and ``llvmlite`` were successfully installed when creating the ``conda``
+environment above, see `here <https://pyautolens.readthedocs.io/en/latest/installation/troubleshooting.html>`_ for more
+details):
 
 .. code-block:: bash
 
+    pip install --upgrade pip
     pip install autolens --ignore-installed numba llvmlite
 
 Next, clone the ``autolens workspace`` (the line ``--depth 1`` clones only the most recent branch on

@@ -2,49 +2,6 @@ import autolens as al
 import numpy as np
 
 
-class TestMaskedImaging:
-    def test__masked_dataset_via_autoarray(self, imaging_7x7, sub_mask_7x7):
-
-        masked_imaging_7x7 = al.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
-
-        assert (masked_imaging_7x7.image.slim == np.ones(9)).all()
-
-        assert (
-            masked_imaging_7x7.image.native == np.ones((7, 7)) * np.invert(sub_mask_7x7)
-        ).all()
-
-        assert (masked_imaging_7x7.noise_map.slim == 2.0 * np.ones(9)).all()
-        assert (
-            masked_imaging_7x7.noise_map.native
-            == 2.0 * np.ones((7, 7)) * np.invert(sub_mask_7x7)
-        ).all()
-
-        assert (masked_imaging_7x7.psf.slim == (1.0 / 9.0) * np.ones(9)).all()
-        assert (masked_imaging_7x7.psf.native == (1.0 / 9.0) * np.ones((3, 3))).all()
-        assert masked_imaging_7x7.psf.shape_native == (3, 3)
-
-        assert type(masked_imaging_7x7.convolver) == al.Convolver
-
-    def test__inheritance_from_autoarray(
-        self, imaging_7x7, sub_mask_7x7, blurring_grid_7x7
-    ):
-
-        masked_imaging_7x7 = al.MaskedImaging(
-            imaging=imaging_7x7,
-            mask=sub_mask_7x7,
-            settings=al.SettingsMaskedImaging(psf_shape_2d=(3, 3)),
-        )
-
-        grid = al.Grid2D.from_mask(mask=sub_mask_7x7)
-
-        assert (masked_imaging_7x7.grid == grid).all()
-
-        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_native=(3, 3))
-
-        assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_7x7).all()
-        assert (masked_imaging_7x7.blurring_grid == blurring_grid).all()
-
-
 class TestSimulatorImaging:
     def test__from_tracer_and_grid__same_as_tracer_image(self):
         psf = al.Kernel2D.from_gaussian(

@@ -128,7 +128,7 @@ class TestAnalysisImaging:
 
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        fit = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
         assert fit.log_likelihood == analysis_log_likelihood
 
@@ -155,7 +155,7 @@ class TestAnalysisImaging:
 
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.FitImaging(
-            masked_imaging=masked_imaging_7x7,
+            imaging=masked_imaging_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -212,7 +212,7 @@ class TestAnalysisImaging:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.FitImaging(masked_imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
         assert (fit.tracer.galaxies[0].hyper_galaxy_image == lens_hyper_image).all()
         assert analysis_log_likelihood == fit.log_likelihood
@@ -309,22 +309,20 @@ class TestAnalysisImaging:
 
 
 class TestAnalysisInterferometer:
-    def test__make_result__result_interferometer_is_returned(
-        self, masked_interferometer_7
-    ):
+    def test__make_result__result_interferometer_is_returned(self, interferometer_7):
 
         model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
         search = mock.MockSearch(name="test_search")
 
-        analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
+        analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
         result = search.fit(model=model, analysis=analysis)
 
         assert isinstance(result, res.ResultInterferometer)
 
     def test__positions_do_not_trace_within_threshold__raises_exception(
-        self, interferometer_7, mask_7x7, visibilities_mask_7
+        self, interferometer_7, mask_7x7
     ):
 
         model = af.Collection(
@@ -346,7 +344,7 @@ class TestAnalysisInterferometer:
             analysis.log_likelihood_function(instance=instance)
 
     def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
-        self, masked_interferometer_7
+        self, interferometer_7
     ):
         lens_galaxy = al.Galaxy(
             redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
@@ -354,21 +352,19 @@ class TestAnalysisInterferometer:
 
         model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
 
-        analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
+        analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        fit = al.FitInterferometer(
-            masked_interferometer=masked_interferometer_7, tracer=tracer
-        )
+        fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
 
         assert fit.log_likelihood == analysis_log_likelihood
 
     def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
-        self, masked_interferometer_7
+        self, interferometer_7
     ):
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
@@ -381,7 +377,7 @@ class TestAnalysisInterferometer:
             hyper_background_noise=hyper_background_noise,
         )
 
-        analysis = al.AnalysisInterferometer(dataset=masked_interferometer_7)
+        analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
@@ -389,14 +385,14 @@ class TestAnalysisInterferometer:
         tracer = analysis.tracer_for_instance(instance=instance)
 
         fit = al.FitInterferometer(
-            masked_interferometer=masked_interferometer_7,
+            interferometer=interferometer_7,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
 
         assert fit.log_likelihood == analysis_log_likelihood
 
-    def test__sets_up_hyper_galaxy_visibiltiies__from_results(self, masked_imaging_7x7):
+    def test__sets_up_hyper_galaxy_visibiltiies__from_results(self, interferometer_7):
 
         hyper_galaxy_image_path_dict = {
             ("galaxies", "lens"): al.Array2D.ones(
@@ -426,7 +422,7 @@ class TestAnalysisInterferometer:
         )
 
         analysis = al.AnalysisInterferometer(
-            dataset=masked_imaging_7x7, hyper_result=result
+            dataset=interferometer_7, hyper_result=result
         )
 
         analysis.set_hyper_dataset(result=result)
@@ -455,7 +451,7 @@ class TestAnalysisInterferometer:
 
         assert (analysis.hyper_model_visibilities == (6.0 + 6.0j) * np.ones((7,))).all()
 
-    def test__stochastic_log_evidences_for_instance(self, masked_interferometer_7):
+    def test__stochastic_log_evidences_for_instance(self, interferometer_7):
 
         galaxies = af.ModelInstance()
         galaxies.lens = al.Galaxy(
@@ -489,7 +485,7 @@ class TestAnalysisInterferometer:
         )
 
         analysis = al.AnalysisInterferometer(
-            dataset=masked_interferometer_7,
+            dataset=interferometer_7,
             settings_lens=al.SettingsLens(stochastic_samples=2),
             hyper_result=result,
         )

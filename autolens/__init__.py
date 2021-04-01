@@ -1,7 +1,7 @@
 from autoarray import preprocess
 from autoarray import Mask2D
-from autoarray.dataset.imaging import Imaging
-from autoarray.dataset.interferometer import Interferometer
+from autoarray.dataset.imaging import Imaging, SettingsImaging
+from autoarray.dataset.interferometer import Interferometer, SettingsInterferometer
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
 from autoarray.inversion import pixelizations as pix, regularization as reg
@@ -26,8 +26,6 @@ from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 from autoarray.structures.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
 from autogalaxy import util
-from autogalaxy.dataset.imaging import SettingsMaskedImaging
-from autogalaxy.dataset.interferometer import SettingsMaskedInterferometer
 from autogalaxy.galaxy.fit_galaxy import FitGalaxy
 from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
 from autogalaxy.galaxy.galaxy_data import GalaxyData
@@ -43,11 +41,12 @@ from autogalaxy import convert
 
 from .analysis import aggregator as agg
 from . import plot
-from .dataset.imaging import MaskedImaging, SimulatorImaging
-from .dataset.interferometer import MaskedInterferometer, SimulatorInterferometer
+from .dataset.imaging import SimulatorImaging
+from .dataset.interferometer import SimulatorInterferometer
 from .dataset.point_source import PointSourceDataset
 from .dataset.point_source import PointSourceDict
-from .fit.fit import FitImaging, FitInterferometer
+from .fit.fit_imaging import FitImaging
+from .fit.fit_interferometer import FitInterferometer
 from .fit.fit_point_source import (
     FitPositionsSourceMaxSeparation,
     FitPositionsImage,
