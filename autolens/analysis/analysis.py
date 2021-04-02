@@ -112,21 +112,6 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
         curvature_matrix = None
         mapper = None
 
-        if (
-            self.results.last is not None
-            and model_util.pixelization_from(model=model) is not None
-            and not model_util.pixelization_is_model_from(model=model)
-        ):
-            if model.pixelization.__class__ is self.results.last.pixelization.__class__:
-                if hasattr(self.results.last, "hyper"):
-                    sparse_grids_of_planes = (
-                        self.results.last.hyper.max_log_likelihood_pixelization_grids_of_planes
-                    )
-                else:
-                    sparse_grids_of_planes = (
-                        self.results.last.max_log_likelihood_pixelization_grids_of_planes
-                    )
-
         # Preload the blurred_mapping_matrix and curvature matrix calculation if only the parametric light profiles
         # are being fitted.
 

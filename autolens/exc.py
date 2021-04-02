@@ -13,13 +13,17 @@ class PlottingException(Exception):
     pass
 
 
-class AnalysisException(Exception):
-    pass
-
-
 class PixelizationException(af.exc.FitException):
     pass
 
 
 class SettingsException(Exception):
+    pass
+
+
+class AnalysisException(Exception):
+    pass
+
+
+class PreloadException(Exception):
     pass

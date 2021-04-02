@@ -64,7 +64,7 @@ lens ``Galaxy`` with an ``EllIsothermal`` ``MassProfile`` lenses a background so
     )
 
     """
-    The lens galaxy has an EllIsothermal MassProfile and is at redshift 0.5.
+    The lens galaxy has an elliptical isothermal mass profile and is at redshift 0.5.
     """
     mass = al.mp.EllIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.1, 0.05), einstein_radius=1.6
@@ -73,7 +73,7 @@ lens ``Galaxy`` with an ``EllIsothermal`` ``MassProfile`` lenses a background so
     lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
 
     """
-    The source galaxy has an EllExponential LightProfile and is at redshift 1.0.
+    The source galaxy has an elliptical exponential light profile and is at redshift 1.0.
     """
     disk = al.lp.EllExponential(
         centre=(0.3, 0.2),
@@ -128,8 +128,8 @@ with an ``EllSersic``.
     masked_imaging = imaging.apply_mask(mask=mask)
 
     """
-    We model the lens galaxy using an EllIsothermal MassProfile and
-    the source galaxy using an EllSersic LightProfile.
+    We model the lens galaxy using an elliptical isothermal mass profile and
+    the source galaxy using an elliptical sersic light profile.
     """
     lens_mass_profile = al.mp.EllIsothermal
     source_light_profile = al.lp.EllSersic

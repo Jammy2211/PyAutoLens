@@ -15,6 +15,7 @@ class MockResult(af.MockResult):
         model_image=None,
         max_log_likelihood_tracer=None,
         max_log_likelihood_fit=None,
+        max_log_likelihood_pixelization_grids_of_planes=None,
         hyper_galaxy_image_path_dict=None,
         hyper_model_image=None,
         hyper_galaxy_visibilities_path_dict=None,
@@ -46,6 +47,9 @@ class MockResult(af.MockResult):
         self.unmasked_model_image = model_image
         self.max_log_likelihood_tracer = max_log_likelihood_tracer
         self.max_log_likelihood_fit = max_log_likelihood_fit
+        self.max_log_likelihood_pixelization_grids_of_planes = (
+            max_log_likelihood_pixelization_grids_of_planes
+        )
         self.pixelization = pixelization
         self.positions = positions
         self.updated_positions = (
