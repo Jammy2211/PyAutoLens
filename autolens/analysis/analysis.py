@@ -56,7 +56,6 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
         settings_inversion=inv.SettingsInversion(),
         settings_lens=settings.SettingsLens(),
         preloads=pload.Preloads(),
-        use_result_as_hyper_dataset=False,
     ):
         """
 
@@ -81,7 +80,6 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
             preloads=preloads,
-            use_result_as_hyper_dataset=use_result_as_hyper_dataset,
         )
 
         AnalysisLensing.__init__(
@@ -91,49 +89,6 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
         self.positions = positions
 
         self.settings_lens = settings_lens
-
-    def modify_before_fit(self, model, paths: af.Paths):
-
-        #    self.preloads = self.setup_preloads(model=model)
-
-        return self
-
-    def setup_preloads(self, model):
-
-        return pload.Preloads()
-
-        if self.results is None:
-            return pload.Preloads()
-
-        # Preload the source-plane grid of coordinates if the source parameters are fixed, skipping the KMeans.
-
-        sparse_grids_of_planes = None
-        blurred_mapping_matrix = None
-        curvature_matrix = None
-        mapper = None
-
-        # Preload the blurred_mapping_matrix and curvature matrix calculation if only the parametric light profiles
-        # are being fitted.
-
-        # if self.preload_inversion:
-        #
-        #     if hasattr(results.last, "hyper"):
-        #         inversion = results.last.hyper.max_log_likelihood_fit.inversion
-        #     else:
-        #         inversion = results.last.max_log_likelihood_fit.inversion
-        #
-        #     if inversion is not None:
-        #
-        #         blurred_mapping_matrix = inversion.blurred_mapping_matrix
-        #         curvature_matrix = inversion.curvature_matrix
-        #         mapper = inversion.mapper
-
-        return pload.Preloads(
-            sparse_grids_of_planes=sparse_grids_of_planes,
-            mapper=mapper,
-            blurred_mapping_matrix=blurred_mapping_matrix,
-            curvature_matrix=curvature_matrix,
-        )
 
     def log_likelihood_cap_from(self, stochastic_log_evidences_json_file):
 
@@ -393,7 +348,6 @@ class AnalysisInterferometer(AnalysisDataset):
         settings_inversion=inv.SettingsInversion(),
         settings_lens=settings.SettingsLens(),
         preloads=pload.Preloads(),
-        use_result_as_hyper_dataset=False,
     ):
 
         super().__init__(
@@ -405,7 +359,6 @@ class AnalysisInterferometer(AnalysisDataset):
             settings_inversion=settings_inversion,
             settings_lens=settings_lens,
             preloads=preloads,
-            use_result_as_hyper_dataset=use_result_as_hyper_dataset,
         )
 
         if self.hyper_result is not None:
