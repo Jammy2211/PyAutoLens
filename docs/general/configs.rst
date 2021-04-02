@@ -258,9 +258,9 @@ Two examples using the 1D data fitting example for the config file **label.ini**
         example, if centre_1=x, the plot axis will be labeled 'x'.
 
 [subscript]
-    EllipticalIsothermal -> str
+    EllIsothermal -> str
         The subscript used on certain plots that show the results of different model-components. For example, if
-        EllipticalIsothermal=m, plots where the EllipticalIsothermal are plotted will have a subscript m.
+        EllIsothermal=m, plots where the EllIsothermal are plotted will have a subscript m.
 
 The **label_format.ini** config file specifies the format certain parameters are output as in output files like the
 *model.results* file.

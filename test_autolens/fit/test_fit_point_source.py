@@ -44,9 +44,7 @@ class TestAbstractFitPositionsSourcePlane:
 
         tracer = al.Tracer.from_galaxies(
             galaxies=[
-                al.Galaxy(
-                    redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
-                ),
+                al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0)),
                 al.Galaxy(redshift=1.0),
             ]
         )
@@ -193,9 +191,7 @@ class TestFitPositionsImage:
 
         grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
 
-        g0 = al.Galaxy(
-            redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
-        )
+        g0 = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0))
         g1 = al.Galaxy(redshift=1.0, point_0=al.ps.PointSource(centre=(0.1, 0.1)))
         g2 = al.Galaxy(redshift=2.0, point_1=al.ps.PointSource(centre=(0.1, 0.1)))
 
@@ -290,9 +286,7 @@ class TestFitFluxes:
 
     def test__multi_plane_calculation(self, gal_x1_mp):
 
-        g0 = al.Galaxy(
-            redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
-        )
+        g0 = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0))
         g1 = al.Galaxy(redshift=1.0, point_0=al.ps.PointSourceFlux(flux=1.0))
         g2 = al.Galaxy(redshift=2.0, point_1=al.ps.PointSourceFlux(flux=2.0))
 

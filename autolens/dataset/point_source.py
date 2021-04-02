@@ -6,12 +6,12 @@ from autoarray.structures.grids.two_d import grid_2d_irregular
 
 class PointSourceDataset:
     def __init__(
-            self,
-            name: str,
-            positions: grid_2d_irregular.Grid2DIrregular,
-            positions_noise_map: values.ValuesIrregular,
-            fluxes: Optional[values.ValuesIrregular] = None,
-            fluxes_noise_map: Optional[values.ValuesIrregular] = None,
+        self,
+        name: str,
+        positions: grid_2d_irregular.Grid2DIrregular,
+        positions_noise_map: values.ValuesIrregular,
+        fluxes: Optional[values.ValuesIrregular] = None,
+        fluxes_noise_map: Optional[values.ValuesIrregular] = None,
     ):
         """
         A collection of the data component that can be used for point-source model-fitting, for example fitting the
@@ -59,10 +59,7 @@ class PointSourceDataset:
         }
 
     @classmethod
-    def from_dict(
-            cls,
-            dict_: dict
-    ) -> "PointSourceDataset":
+    def from_dict(cls, dict_: dict) -> "PointSourceDataset":
         """
         Create a point source dataset from a dictionary representation.
 
@@ -77,18 +74,10 @@ class PointSourceDataset:
         """
         return cls(
             name=dict_["name"],
-            positions=grid_2d_irregular.Grid2DIrregular(
-                dict_["positions"]
-            ),
-            positions_noise_map=values.ValuesIrregular(
-                dict_["positions_noise_map"]
-            ),
-            fluxes=values.ValuesIrregular(
-                dict_["fluxes"]
-            ),
-            fluxes_noise_map=values.ValuesIrregular(
-                dict_["fluxes_noise_map"]
-            )
+            positions=grid_2d_irregular.Grid2DIrregular(dict_["positions"]),
+            positions_noise_map=values.ValuesIrregular(dict_["positions_noise_map"]),
+            fluxes=values.ValuesIrregular(dict_["fluxes"]),
+            fluxes_noise_map=values.ValuesIrregular(dict_["fluxes_noise_map"]),
         )
 
 
@@ -125,17 +114,10 @@ class PointSourceDict(dict):
         A list of dictionaries representing this collection of point source
         datasets.
         """
-        return [
-            dataset.dict
-            for dataset
-            in self.values()
-        ]
+        return [dataset.dict for dataset in self.values()]
 
     @classmethod
-    def from_dicts(
-            cls,
-            dicts: List[dict]
-    ) -> List[PointSourceDataset]:
+    def from_dicts(cls, dicts: List[dict]) -> List[PointSourceDataset]:
         """
         Create an instance from a list of dictionaries.
 
@@ -148,9 +130,4 @@ class PointSourceDict(dict):
         -------
         A collection of point source datasets.
         """
-        return cls(
-            list(map(
-                PointSourceDataset.from_dict,
-                dicts
-            ))
-        )
+        return cls(list(map(PointSourceDataset.from_dict, dicts)))

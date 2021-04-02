@@ -33,7 +33,7 @@ The mass-profile and source light profile in this example have fixed centre (0.0
 lensing geometries.
 """
 
-mass_profile_model = af.Model(al.mp.EllipticalIsothermal)
+mass_profile_model = af.Model(al.mp.EllIsothermal)
 mass_profile_model.centre.centre_0 = 0.0
 mass_profile_model.centre.centre_1 = 0.0
 mass_profile_model.elliptical_comps.elliptical_comps_0 = af.UniformPrior(
@@ -61,7 +61,7 @@ for i in range(iters):
     lensed source.
     """
 
-    exponential_light_profile = al.lp.EllipticalExponential(
+    exponential_light_profile = al.lp.EllExponential(
         centre=(0.0, 0.0),
         elliptical_comps=(0.2, 0.0),
         intensity=0.05,

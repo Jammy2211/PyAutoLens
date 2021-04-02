@@ -140,9 +140,7 @@ class TestLikelihood:
 
         # Setup as a ray trace instance, using a light profile for the lens
 
-        g0 = al.Galaxy(
-            redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=0.001)
-        )
+        g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=0.001))
 
         image = g0.image_from_grid(grid=interferometer.grid)
 
@@ -248,13 +246,11 @@ class TestCompareToManualProfilesOnly:
     def test___all_lens_fit_quantities__no_hyper_methods(self, interferometer_7):
         g0 = al.Galaxy(
             redshift=0.5,
-            light_profile=al.lp.EllipticalSersic(intensity=1.0),
-            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            light_profile=al.lp.EllSersic(intensity=1.0),
+            mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
         )
 
-        g1 = al.Galaxy(
-            redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
-        )
+        g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
@@ -308,12 +304,10 @@ class TestCompareToManualProfilesOnly:
     ):
         g0 = al.Galaxy(
             redshift=0.5,
-            light_profile=al.lp.EllipticalSersic(intensity=1.0),
-            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            light_profile=al.lp.EllSersic(intensity=1.0),
+            mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
         )
-        g1 = al.Galaxy(
-            redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
-        )
+        g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
         g2 = al.Galaxy(redshift=1.0)
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
@@ -336,12 +330,10 @@ class TestCompareToManualProfilesOnly:
     ):
         g0 = al.Galaxy(
             redshift=0.5,
-            light_profile=al.lp.EllipticalSersic(intensity=1.0),
-            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            light_profile=al.lp.EllSersic(intensity=1.0),
+            mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
         )
-        g1 = al.Galaxy(
-            redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
-        )
+        g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
         g2 = al.Galaxy(redshift=1.0)
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
@@ -388,13 +380,11 @@ class TestCompareToManualProfilesOnly:
 
         g0 = al.Galaxy(
             redshift=0.5,
-            light_profile=al.lp.EllipticalSersic(intensity=1.0),
-            mass_profile=al.mp.SphericalIsothermal(einstein_radius=1.0),
+            light_profile=al.lp.EllSersic(intensity=1.0),
+            mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
         )
 
-        g1 = al.Galaxy(
-            redshift=1.0, light_profile=al.lp.EllipticalSersic(intensity=1.0)
-        )
+        g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
@@ -751,7 +741,7 @@ class TestCompareToManualInversionOnly:
 class TestCompareToManualProfilesAndInversion:
     def test___all_lens_fit_quantities__no_hyper_methods(self, interferometer_7):
         galaxy_light = al.Galaxy(
-            redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
+            redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0)
         )
 
         pix = al.pix.Rectangular(shape=(3, 3))
@@ -863,12 +853,8 @@ class TestCompareToManualProfilesAndInversion:
         self, interferometer_7_grid
     ):
 
-        g0 = al.Galaxy(
-            redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
-        )
-        g1 = al.Galaxy(
-            redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=2.0)
-        )
+        g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
+        g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=2.0))
         g2 = al.Galaxy(redshift=0.5)
 
         pix = al.pix.Rectangular(shape=(3, 3))
@@ -929,12 +915,8 @@ class TestCompareToManualProfilesAndInversion:
         self, interferometer_7_grid
     ):
 
-        g0 = al.Galaxy(
-            redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
-        )
-        g1 = al.Galaxy(
-            redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=2.0)
-        )
+        g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
+        g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=2.0))
         g2 = al.Galaxy(redshift=0.5)
 
         pix = al.pix.Rectangular(shape=(3, 3))
@@ -1005,7 +987,7 @@ class TestCompareToManualProfilesAndInversion:
         )
 
         galaxy_light = al.Galaxy(
-            redshift=0.5, light_profile=al.lp.EllipticalSersic(intensity=1.0)
+            redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0)
         )
 
         pix = al.pix.Rectangular(shape=(3, 3))

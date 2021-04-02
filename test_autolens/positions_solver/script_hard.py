@@ -7,11 +7,11 @@ import numpy as np
 
 grid = al.Grid2D.uniform(shape_native=(2500, 2500), pixel_scales=0.0002)
 
-mass_profile = al.mp.EllipticalPowerLaw(
+mass_profile = al.mp.EllPowerLaw(
     centre=(0.001, 0.001), elliptical_comps=(0.5, 0.5), einstein_radius=1.0, slope=1.6
 )
 
-light_profile = al.lp.EllipticalExponential(
+light_profile = al.lp.EllExponential(
     centre=(0.1, 0.0), intensity=0.1, effective_radius=0.1
 )
 

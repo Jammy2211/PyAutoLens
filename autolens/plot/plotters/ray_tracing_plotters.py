@@ -215,7 +215,9 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
         else:
             return [plane_index]
 
-    def figures_2d_of_planes(self, plane_image=False, plane_grid=False, plane_index=None):
+    def figures_2d_of_planes(
+        self, plane_image=False, plane_grid=False, plane_index=None
+    ):
 
         plane_indexes = self.plane_indexes_from_plane_index(plane_index=plane_index)
 

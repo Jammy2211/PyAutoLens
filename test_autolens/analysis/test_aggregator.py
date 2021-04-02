@@ -16,8 +16,8 @@ def make_path():
 @pytest.fixture(name="samples")
 def make_samples():
 
-    galaxy_0 = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(centre=(0.0, 1.0)))
-    galaxy_1 = al.Galaxy(redshift=1.0, light=al.lp.EllipticalSersic())
+    galaxy_0 = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(centre=(0.0, 1.0)))
+    galaxy_1 = al.Galaxy(redshift=1.0, light=al.lp.EllSersic())
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
 
@@ -28,8 +28,8 @@ def make_samples():
 def make_model():
     return af.Collection(
         galaxies=af.Collection(
-            lens=af.Model(al.Galaxy, redshift=0.5, light=al.lp.EllipticalSersic),
-            source=af.Model(al.Galaxy, redshift=1.0, light=al.lp.EllipticalSersic),
+            lens=af.Model(al.Galaxy, redshift=0.5, light=al.lp.EllSersic),
+            source=af.Model(al.Galaxy, redshift=1.0, light=al.lp.EllSersic),
         )
     )
 
@@ -132,8 +132,7 @@ def test__interferometer_generator_from_aggregator(
     )
 
     search = mock.MockSearch(
-        paths=af.Paths(path_prefix="aggregator_interferometer_gen"),
-        samples=samples,
+        paths=af.Paths(path_prefix="aggregator_interferometer_gen"), samples=samples
     )
 
     analysis = al.AnalysisInterferometer(dataset=interferometer_7)

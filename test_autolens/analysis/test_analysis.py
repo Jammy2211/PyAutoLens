@@ -30,7 +30,7 @@ class TestAnalysisDataset:
         model = af.Collection(
             galaxies=af.Collection(
                 lens=al.Galaxy(
-                    redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=100.0)
+                    redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=100.0)
                 ),
                 source=al.Galaxy(
                     redshift=1.0,
@@ -97,7 +97,7 @@ class TestAnalysisImaging:
 
         model = af.Collection(
             galaxies=af.Collection(
-                lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
+                lens=al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal()),
                 source=al.Galaxy(redshift=1.0),
             )
         )
@@ -116,9 +116,7 @@ class TestAnalysisImaging:
     def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, masked_imaging_7x7
     ):
-        lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
-        )
+        lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
 
         model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
 
@@ -139,9 +137,7 @@ class TestAnalysisImaging:
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
-        )
+        lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
 
         model = af.Collection(
             hyper_image_sky=hyper_image_sky,
@@ -167,11 +163,9 @@ class TestAnalysisImaging:
 
         galaxies = af.ModelInstance()
         galaxies.lens = al.Galaxy(
-            redshift=0.5,
-            light=al.lp.EllipticalSersic(intensity=1.0),
-            mass=al.mp.SphericalIsothermal,
+            redshift=0.5, light=al.lp.EllSersic(intensity=1.0), mass=al.mp.SphIsothermal
         )
-        galaxies.source = al.Galaxy(redshift=1.0, light=al.lp.EllipticalSersic())
+        galaxies.source = al.Galaxy(redshift=1.0, light=al.lp.EllSersic())
 
         instance = af.ModelInstance()
         instance.galaxies = galaxies
@@ -271,7 +265,7 @@ class TestAnalysisImaging:
 
         galaxies = af.ModelInstance()
         galaxies.lens = al.Galaxy(
-            redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.0)
+            redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0)
         )
         galaxies.source = al.Galaxy(
             redshift=1.0,
@@ -327,7 +321,7 @@ class TestAnalysisInterferometer:
 
         model = af.Collection(
             galaxies=af.Collection(
-                lens=al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
+                lens=al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal()),
                 source=al.Galaxy(redshift=1.0),
             )
         )
@@ -346,9 +340,7 @@ class TestAnalysisInterferometer:
     def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, interferometer_7
     ):
-        lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
-        )
+        lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
 
         model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
 
@@ -368,9 +360,7 @@ class TestAnalysisInterferometer:
     ):
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        lens_galaxy = al.Galaxy(
-            redshift=0.5, light=al.lp.EllipticalSersic(intensity=0.1)
-        )
+        lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
 
         model = af.Collection(
             galaxies=af.Collection(lens=lens_galaxy),
@@ -455,7 +445,7 @@ class TestAnalysisInterferometer:
 
         galaxies = af.ModelInstance()
         galaxies.lens = al.Galaxy(
-            redshift=0.5, mass=al.mp.SphericalIsothermal(einstein_radius=1.2)
+            redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.2)
         )
         galaxies.source = al.Galaxy(
             redshift=1.0,
@@ -608,7 +598,7 @@ class TestAnalysisPointSource:
             galaxies=af.Collection(
                 lens=al.Galaxy(
                     redshift=0.5,
-                    sis=al.mp.SphericalIsothermal(einstein_radius=1.0),
+                    sis=al.mp.SphIsothermal(einstein_radius=1.0),
                     point_0=al.ps.PointSourceFlux(flux=1.0),
                 )
             )

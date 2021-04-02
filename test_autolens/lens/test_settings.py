@@ -9,7 +9,7 @@ class TestCheckPositionsTrace:
 
         tracer = al.Tracer.from_galaxies(
             galaxies=[
-                al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal()),
+                al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal()),
                 al.Galaxy(redshift=1.0),
             ]
         )
@@ -38,7 +38,7 @@ class TestCheckPositionsTrace:
         # Single plane - doesnt raise exception
 
         tracer = al.Tracer.from_galaxies(
-            galaxies=[al.Galaxy(redshift=0.5, mass=al.mp.SphericalIsothermal())]
+            galaxies=[al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())]
         )
 
         settings.check_positions_trace_within_threshold_via_tracer(

@@ -17,13 +17,12 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=al.mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
     )
 
     source_galaxy = al.Galaxy(
-        redshift=1.0,
-        light=al.lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5),
+        redshift=1.0, light=al.lp.EllExponential(centre=(0.1, 0.1), intensity=0.5)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -73,8 +72,7 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
     )
 
     masked_imaging = imaging.apply_mask(
-        mask=mask,
-        settings=al.SettingsImaging(grid_class=al.Grid2DIterate),
+        mask=mask, settings=al.SettingsImaging(grid_class=al.Grid2DIterate)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -100,18 +98,15 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=al.mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
     )
     source_galaxy = al.Galaxy(
-        redshift=1.0,
-        light=al.lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5),
+        redshift=1.0, light=al.lp.EllExponential(centre=(0.1, 0.1), intensity=0.5)
     )
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    imaging = al.SimulatorImaging(
-        exposure_time=300.0, psf=psf, add_poisson_noise=False
-    )
+    imaging = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
     imaging = imaging.from_tracer_and_grid(tracer=tracer, grid=grid)
     imaging.noise_map = al.Array2D.ones(
@@ -149,7 +144,8 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
         shape_native=imaging.image.shape_native, pixel_scales=0.2, radius=0.8
     )
 
-    masked_imaging = imaging.apply_mask(mask=mask, settings=al.SettingsImaging(sub_size=1)
+    masked_imaging = imaging.apply_mask(
+        mask=mask, settings=al.SettingsImaging(sub_size=1)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -172,13 +168,12 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=al.mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
+        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
     )
 
     source_galaxy = al.Galaxy(
-        redshift=1.0,
-        light=al.lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5),
+        redshift=1.0, light=al.lp.EllExponential(centre=(0.1, 0.1), intensity=0.5)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -241,8 +236,8 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=al.mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
+        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
     )
 
     source_galaxy = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)

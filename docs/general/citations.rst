@@ -18,8 +18,8 @@ You should also specify the non-linear search(es) you use in your analysis (e.g.
 the main body of text, and delete as appropriate any packages your analysis did not use. The citations.bib file includes
 the citation key for all of these projects.
 
-If you use decomposed mass models (e.g. stellar mass models like an ``EllipticalSersic`` or dark matter models like
-an ``EllipticalNFW``) please cite the following paper https://academic.oup.com/mnras/article/488/1/1387/5526256 under
+If you use decomposed mass models (e.g. stellar mass models like an ``EllSersic`` or dark matter models like
+an ``EllNFW``) please cite the following paper https://academic.oup.com/mnras/article/488/1/1387/5526256 under
 citation key ``Anowar2019``. Our deflection angle calculations are based on this method.
 
 The citations.bib file above also includes my work on `using strong lensing to study galaxy structure

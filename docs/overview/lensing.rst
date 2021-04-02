@@ -48,11 +48,11 @@ We will ray-trace this ``Grid2D``'s (y,x) coordinates to calculate how a lens ga
 light.
 
 This requires analytic functions representing the light and mass distributions of galaxies. **PyAutoLens**
-uses ``Profile`` objects for this, such as the ``EllipticalSersic`` ``LightProfile``:
+uses ``Profile`` objects for this, such as the ``EllSersic`` ``LightProfile``:
 
 .. code-block:: bash
 
-    sersic_light_profile = al.lp.EllipticalSersic(
+    sersic_light_profile = al.lp.EllSersic(
         centre=(0.0, 0.0),
         elliptical_comps=(0.1, 0.1),
         intensity=0.05,
@@ -85,12 +85,12 @@ The light profile's image appears as shown below:
 **PyAutoLens** uses ``MassProfile`` objects to represent a galaxy's mass distribution and perform ray-tracing
 calculations.
 
-Below we create an ``EllipticalIsothermal`` ``MassProfile`` and calculate and display its convergence, gravitational
+Below we create an ``EllIsothermal`` ``MassProfile`` and calculate and display its convergence, gravitational
 potential and deflection angles using the Cartesian grid:
 
 .. code-block:: bash
 
-    isothermal_mass_profile = al.mp.EllipticalIsothermal(
+    isothermal_mass_profile = al.mp.EllIsothermal(
         centre=(0.0, 0.0),
         elliptical_comps=(0.1, 0.1),
         einstein_radius=1.6,
@@ -186,7 +186,7 @@ rings! The mass distribution of the first galaxy also has separate components fo
 
     lens_galaxy_0 = al.Galaxy(
         redshift=0.5,
-        bulge=al.lmp.EllipticalSersic(
+        bulge=al.lmp.EllSersic(
             centre=(0.0, 0.0),
             axis_ratio=0.9,
             phi=45.0,
@@ -195,7 +195,7 @@ rings! The mass distribution of the first galaxy also has separate components fo
             sersic_index=2.5,
             mass_to_light_ratio=0.3,
         ),
-        disk=al.lmp.EllipticalExponential(
+        disk=al.lmp.EllExponential(
             centre=(0.0, 0.0),
             axis_ratio=0.6,
             phi=45.0,
@@ -203,22 +203,22 @@ rings! The mass distribution of the first galaxy also has separate components fo
             effective_radius=2.0,
             mass_to_light_ratio=0.2,
         ),
-        dark=al.mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=0.08, scale_radius=30.0),
+        dark=al.mp.SphNFW(centre=(0.0, 0.0), kappa_s=0.08, scale_radius=30.0),
     )
 
     lens_galaxy_1 = al.Galaxy(
         redshift=1.0,
-        light=al.lp.EllipticalExponential(
+        light=al.lp.EllExponential(
             centre=(0.1, 0.1), , elliptical_comps=(0.1, 0.1), intensity=3.0, effective_radius=0.1
         ),
-        mass=al.mp.EllipticalIsothermal(
+        mass=al.mp.EllIsothermal(
             centre=(0.1, 0.1), , elliptical_comps=(0.1, 0.1), einstein_radius=0.4
         ),
     )
 
     source_galaxy = al.Galaxy(
         redshift=2.0,
-        light=al.lp.EllipticalSersic(
+        light=al.lp.EllSersic(
             centre=(0.2, 0.2),
             e1=-0.055555,
             e2=0.096225,

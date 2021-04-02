@@ -33,18 +33,18 @@ and are instead determined by a fitting procedure.
     lens_galaxy_model = af.Model(
         al.Galaxy,
         redshift=0.5,
-        bulge=al.lp.EllipticalDevVaucouleurs,
-        mass=al.mp.EllipticalIsothermal
+        bulge=al.lp.EllDevVaucouleurs,
+        mass=al.mp.EllIsothermal
     )
-    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllipticalExponential)
+    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllExponential)
 
     model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
 
 In the example above, we will fit our strong lens data with two galaxies:
 
-    - A lens galaxy with a ``EllipticalDevVaucouleurs`` ``LightProfile`` representing a bulge and
-      ``EllipticalIsothermal`` ``MassProfile`` representing its mass.
-    - A source galaxy with a ``EllipticalExponential`` ``LightProfile`` representing a disk.
+    - A lens galaxy with a ``EllDevVaucouleurs`` ``LightProfile`` representing a bulge and
+      ``EllIsothermal`` ``MassProfile`` representing its mass.
+    - A source galaxy with a ``EllExponential`` ``LightProfile`` representing a disk.
 
 The redshifts of the lens (z=0.5) and source(z=1.0) are fixed.
 
@@ -115,8 +115,8 @@ using any combination of ``LightProfile``'s and ``MassProfile``'s light profiles
     lens_galaxy_model = al.Model(
         al.Galaxy,
         redshift=0.5,
-        bulge=al.lp.EllipticalDevVaucouleurs,
-        mass=al.mp.EllipticalIsothermal
+        bulge=al.lp.EllDevVaucouleurs,
+        mass=al.mp.EllIsothermal
     )
 
     """

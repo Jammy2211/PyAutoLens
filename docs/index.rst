@@ -58,17 +58,17 @@ below shows this in action:
         pixel_scales=0.05,  # <- Conversion from pixel units to arc-seconds.
     )
 
-    """The lens galaxy has an EllipticalIsothermal MassProfile and is at redshift 0.5."""
+    """The lens galaxy has an EllIsothermal MassProfile and is at redshift 0.5."""
 
-    sie = al.mp.EllipticalIsothermal(
+    sie = al.mp.EllIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.1, 0.05), einstein_radius=1.6
     )
 
     lens_galaxy = al.Galaxy(redshift=0.5, mass=sie)
 
-    """The source galaxy has an EllipticalExponential LightProfile and is at redshift 1.0."""
+    """The source galaxy has an EllExponential LightProfile and is at redshift 1.0."""
 
-    exponential = al.lp.EllipticalExponential(
+    exponential = al.lp.EllExponential(
         centre=(0.3, 0.2),
         elliptical_comps=(0.05, 0.25),
         intensity=0.05,
@@ -126,11 +126,11 @@ code below shows how to setup and fit a lens model to a dataset:
     masked_imaging = imaging.apply_mask(mask=mask)
 
     """
-    We model the lens galaxy using an EllipticalIsothermal MassProfile and
-    the source galaxy using an EllipticalSersic LightProfile.
+    We model the lens galaxy using an EllIsothermal MassProfile and
+    the source galaxy using an EllSersic LightProfile.
     """
-    lens_mass_profile = al.mp.EllipticalIsothermal
-    source_light_profile = al.lp.EllipticalSersic
+    lens_mass_profile = al.mp.EllIsothermal
+    source_light_profile = al.lp.EllSersic
 
     """
     To setup these profiles as model components whose parameters are free & fitted for

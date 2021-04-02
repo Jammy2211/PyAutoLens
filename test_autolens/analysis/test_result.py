@@ -39,10 +39,10 @@ class TestResultAbstract:
         self, analysis_imaging_7x7
     ):
 
-        lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
+        lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
 
         source = al.Galaxy(
-            redshift=1.0, light=al.lp.SphericalSersic(centre=(1.0, 2.0), intensity=2.0)
+            redshift=1.0, light=al.lp.SphSersic(centre=(1.0, 2.0), intensity=2.0)
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
@@ -57,12 +57,12 @@ class TestResultAbstract:
 
         source = al.Galaxy(
             redshift=1.0,
-            light=al.lp.SphericalSersic(centre=(1.0, 2.0), intensity=2.0),
-            light1=al.lp.SphericalSersic(centre=(3.0, 4.0), intensity=2.0),
+            light=al.lp.SphSersic(centre=(1.0, 2.0), intensity=2.0),
+            light1=al.lp.SphSersic(centre=(3.0, 4.0), intensity=2.0),
         )
 
         source_1 = al.Galaxy(
-            redshift=1.0, light=al.lp.SphericalSersic(centre=(5.0, 6.0), intensity=2.0)
+            redshift=1.0, light=al.lp.SphSersic(centre=(5.0, 6.0), intensity=2.0)
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens, source, source_1])
@@ -89,7 +89,7 @@ class TestResultAbstract:
         self, analysis_imaging_7x7
     ):
 
-        lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
+        lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
 
         source = al.Galaxy(
             redshift=1.0,
@@ -112,7 +112,7 @@ class TestResultAbstract:
             ]
         )
 
-        lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
+        lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
         source = al.Galaxy(redshift=1.0)
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
@@ -129,10 +129,10 @@ class TestResultAbstract:
         self, analysis_imaging_7x7
     ):
 
-        lens = al.Galaxy(redshift=0.5, light=al.lp.SphericalSersic(intensity=1.0))
+        lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
         source = al.Galaxy(
             redshift=1.0,
-            light=al.lp.SphericalSersic(centre=(9.0, 8.0), intensity=2.0),
+            light=al.lp.SphSersic(centre=(9.0, 8.0), intensity=2.0),
             pixelization=al.pix.Rectangular((3, 3)),
             regularization=al.reg.Constant(coefficient=1.0),
         )
@@ -155,7 +155,7 @@ class TestResultAbstract:
 
         lens = al.Galaxy(
             redshift=0.5,
-            mass=al.mp.EllipticalIsothermal(
+            mass=al.mp.EllIsothermal(
                 centre=(0.001, 0.001),
                 einstein_radius=1.0,
                 elliptical_comps=(0.0, 0.111111),
@@ -164,8 +164,8 @@ class TestResultAbstract:
 
         source = al.Galaxy(
             redshift=1.0,
-            light=al.lp.SphericalSersic(centre=(0.0, 0.0), intensity=2.0),
-            light1=al.lp.SphericalSersic(centre=(0.0, 0.1), intensity=2.0),
+            light=al.lp.SphSersic(centre=(0.0, 0.0), intensity=2.0),
+            light1=al.lp.SphSersic(centre=(0.0, 0.1), intensity=2.0),
             pixelization=al.pix.Rectangular((3, 3)),
             regularization=al.reg.Constant(coefficient=1.0),
         )
@@ -205,13 +205,13 @@ class TestResultAbstract:
             galaxies=[
                 al.Galaxy(
                     redshift=0.5,
-                    mass=al.mp.EllipticalIsothermal(
+                    mass=al.mp.EllIsothermal(
                         centre=(0.1, 0.0),
                         einstein_radius=1.0,
                         elliptical_comps=(0.0, 0.0),
                     ),
                 ),
-                al.Galaxy(redshift=1.0, bulge=al.lp.SphericalSersic(centre=(0.0, 0.0))),
+                al.Galaxy(redshift=1.0, bulge=al.lp.SphSersic(centre=(0.0, 0.0))),
             ]
         )
 
@@ -280,7 +280,7 @@ class TestResultDataset:
         self, analysis_imaging_7x7
     ):
 
-        lens = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=1.0))
         source = al.Galaxy(
             redshift=1.0,
             pixelization=al.pix.VoronoiMagnification(shape=(2, 3)),
@@ -298,7 +298,7 @@ class TestResultDataset:
         assert isinstance(result.pixelization, al.pix.VoronoiMagnification)
         assert result.pixelization.shape == (2, 3)
 
-        lens = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=1.0))
         source = al.Galaxy(
             redshift=1.0,
             pixelization=al.pix.VoronoiBrightnessImage(pixels=6),
@@ -322,7 +322,7 @@ class TestResultDataset:
         self, analysis_imaging_7x7
     ):
 
-        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=1.0))
 
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy])
 
@@ -334,7 +334,7 @@ class TestResultDataset:
 
         assert result.max_log_likelihood_pixelization_grids_of_planes == [None]
 
-        lens = al.Galaxy(redshift=0.5, light=al.lp.EllipticalSersic(intensity=1.0))
+        lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=1.0))
         source = al.Galaxy(
             redshift=1.0,
             pixelization=al.pix.VoronoiBrightnessImage(pixels=6),

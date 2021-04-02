@@ -45,8 +45,8 @@ API Overview
 
 Lensing calculations are performed in **PyAutoLens** by building a ``Tracer`` object from ``LightProfile``,
 ``MassProfile`` and ``Galaxy`` objects. Below, we create a simple strong lens system where a redshift 0.5
-lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a background source at redshift 1.0 with an
-``EllipticalExponential`` ``LightProfile`` representing a disk.
+lens ``Galaxy`` with an ``EllIsothermal`` ``MassProfile`` lenses a background source at redshift 1.0 with an
+``EllExponential`` ``LightProfile`` representing a disk.
 
 .. code-block:: python
 
@@ -64,18 +64,18 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     )
 
     """
-    The lens galaxy has an EllipticalIsothermal MassProfile and is at redshift 0.5.
+    The lens galaxy has an EllIsothermal MassProfile and is at redshift 0.5.
     """
-    mass = al.mp.EllipticalIsothermal(
+    mass = al.mp.EllIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.1, 0.05), einstein_radius=1.6
     )
 
     lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
 
     """
-    The source galaxy has an EllipticalExponential LightProfile and is at redshift 1.0.
+    The source galaxy has an EllExponential LightProfile and is at redshift 1.0.
     """
-    disk = al.lp.EllipticalExponential(
+    disk = al.lp.EllExponential(
         centre=(0.3, 0.2),
         elliptical_comps=(0.05, 0.25),
         intensity=0.05,
@@ -100,8 +100,8 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     tracer_plotter.figures_2d(image=True)
 
 With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates
-a simple analysis which fits the lens galaxy's mass with an ``EllipticalIsothermal`` and the source galaxy's light
-with an ``EllipticalSersic``.
+a simple analysis which fits the lens galaxy's mass with an ``EllIsothermal`` and the source galaxy's light
+with an ``EllSersic``.
 
 .. code-block:: python
 
@@ -128,11 +128,11 @@ with an ``EllipticalSersic``.
     masked_imaging = imaging.apply_mask(mask=mask)
 
     """
-    We model the lens galaxy using an EllipticalIsothermal MassProfile and
-    the source galaxy using an EllipticalSersic LightProfile.
+    We model the lens galaxy using an EllIsothermal MassProfile and
+    the source galaxy using an EllSersic LightProfile.
     """
-    lens_mass_profile = al.mp.EllipticalIsothermal
-    source_light_profile = al.lp.EllipticalSersic
+    lens_mass_profile = al.mp.EllIsothermal
+    source_light_profile = al.lp.EllSersic
 
     """
     To setup these profiles as model components whose parameters are free & fitted for

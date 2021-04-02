@@ -17,7 +17,7 @@ class TestAbstractPositionsSolver:
             pixel_scales=0.1,
         )
 
-        sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        sis = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
         solver = pos.AbstractPositionsSolver(distance_from_mass_profile_centre=0.01)
 
@@ -79,7 +79,7 @@ class TestAbstractPositionsSolver:
 
     def test__grid_with_points_below_magnification_threshold_removed(self):
 
-        sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        sis = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
         grid = al.Grid2DIrregularUniform(
             grid=[(1.0, 0.0), (0.1, 0.0)], pixel_scales=0.01
@@ -710,7 +710,7 @@ class TestPositionSolver:
 
         grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
-        sis = al.mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        sis = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
         solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
 
@@ -723,7 +723,7 @@ class TestPositionSolver:
 
         g0 = al.Galaxy(
             redshift=0.5,
-            mass=al.mp.EllipticalIsothermal(
+            mass=al.mp.EllIsothermal(
                 centre=(0.001, 0.001),
                 einstein_radius=1.0,
                 elliptical_comps=(0.0, 0.111111),
@@ -751,7 +751,7 @@ class TestPositionSolver:
 
         g0 = al.Galaxy(
             redshift=0.5,
-            mass=al.mp.EllipticalIsothermal(
+            mass=al.mp.EllIsothermal(
                 centre=(0.001, 0.001),
                 einstein_radius=1.0,
                 elliptical_comps=(0.0, 0.111111),
