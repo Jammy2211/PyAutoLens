@@ -87,7 +87,7 @@ for i in range(40, 41):
 
     print(positions)
 
-    aplt.Tracer.figures(
+    aplt.Tracer.figures_2d(
         tracer=tracer,
         grid=grid,
         positions=positions_plot,

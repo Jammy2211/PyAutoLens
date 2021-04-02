@@ -28,7 +28,7 @@ def test__all_individual_plotter(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
-    tracer_plotter.figures(
+    tracer_plotter.figures_2d(
         image=True,
         source_plane=True,
         convergence=True,
@@ -54,7 +54,7 @@ def test__all_individual_plotter(
         shape_native=(7, 7), pixel_scales=0.1
     )
 
-    tracer_plotter.figures(contribution_map=True)
+    tracer_plotter.figures_2d(contribution_map=True)
 
     assert path.join(plot_path, "contribution_map.png") in plot_patch.paths
 
@@ -67,7 +67,7 @@ def test__all_individual_plotter(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
-    tracer_plotter.figures(
+    tracer_plotter.figures_2d(
         image=True, source_plane=True, potential=True, magnification=True
     )
 

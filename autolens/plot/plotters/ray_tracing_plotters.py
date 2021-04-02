@@ -150,7 +150,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             include_2d=self.include_2d,
         )
 
-    def figures(
+    def figures_2d(
         self,
         image=False,
         source_plane=False,
@@ -186,11 +186,11 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             )
 
         if source_plane:
-            self.figures_of_planes(
+            self.figures_2d_of_planes(
                 plane_image=True, plane_index=len(self.tracer.planes) - 1
             )
 
-        super().figures(
+        super().figures_2d(
             convergence=convergence,
             potential=potential,
             deflections_y=deflections_y,
@@ -215,7 +215,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
         else:
             return [plane_index]
 
-    def figures_of_planes(self, plane_image=False, plane_grid=False, plane_index=None):
+    def figures_2d_of_planes(self, plane_image=False, plane_grid=False, plane_index=None):
 
         plane_indexes = self.plane_indexes_from_plane_index(plane_index=plane_index)
 
@@ -225,7 +225,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
 
             if plane_image:
 
-                plane_plotter.figures(
+                plane_plotter.figures_2d(
                     plane_image=True,
                     title_suffix=f" Of Plane {plane_index}",
                     filename_suffix=f"_of_plane_{plane_index}",
@@ -233,7 +233,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
 
             if plane_grid:
 
-                plane_plotter.figures(
+                plane_plotter.figures_2d(
                     plane_grid=True,
                     title_suffix=f" Of Plane {plane_index}",
                     filename_suffix=f"_of_plane_{plane_index}",
