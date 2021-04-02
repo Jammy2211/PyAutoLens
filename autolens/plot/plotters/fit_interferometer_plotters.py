@@ -94,7 +94,7 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
             include_2d=self.include_2d,
         )
 
-    def figures(
+    def figures_2d(
         self,
         visibilities=False,
         noise_map=False,
@@ -109,7 +109,7 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
         image=False,
     ):
 
-        super().figures(
+        super().figures_2d(
             visibilities=visibilities,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
@@ -125,23 +125,23 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
         if image:
 
             if self.fit.inversion is None:
-                self.tracer_plotter.figures(image=True)
+                self.tracer_plotter.figures_2d(image=True)
             else:
-                self.inversion_plotter.figures(reconstructed_image=True)
+                self.inversion_plotter.figures_2d(reconstructed_image=True)
 
-    def figures_of_planes(self, plane_image, plane_index=None):
+    def figures_2d_of_planes(self, plane_image, plane_index=None):
 
         if plane_image:
 
             if not self.tracer.planes[plane_index].has_pixelization:
 
-                self.tracer_plotter.figures_of_planes(
+                self.tracer_plotter.figures_2d_of_planes(
                     plane_image=True, plane_index=plane_index
                 )
 
             elif self.tracer.planes[plane_index].has_pixelization:
 
-                self.inversion_plotter.figures(reconstruction=True)
+                self.inversion_plotter.figures_2d(reconstruction=True)
 
     def subplot_fit_real_space(self):
 

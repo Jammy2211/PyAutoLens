@@ -100,7 +100,7 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
         inversion_plotter.visuals_2d.border = None
         return inversion_plotter
 
-    def figures(
+    def figures_2d(
         self,
         image=False,
         noise_map=False,
@@ -125,7 +125,7 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
             in the python interpreter window.
         """
 
-        super(FitImagingPlotter, self).figures(
+        super(FitImagingPlotter, self).figures_2d(
             image=image,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
@@ -142,7 +142,7 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
         else:
             return [plane_index]
 
-    def figures_of_planes(
+    def figures_2d_of_planes(
         self,
         subtracted_image=False,
         model_image=False,
@@ -215,20 +215,20 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
                 else:
 
                     inversion_plotter = self.inversion_plotter_of_plane(plane_index=0)
-                    inversion_plotter.figures(reconstructed_image=True)
+                    inversion_plotter.figures_2d(reconstructed_image=True)
 
             if plane_image:
 
                 if not self.tracer.planes[plane_index].has_pixelization:
 
-                    self.tracer_plotter.figures_of_planes(
+                    self.tracer_plotter.figures_2d_of_planes(
                         plane_image=True, plane_index=plane_index
                     )
 
                 elif self.tracer.planes[plane_index].has_pixelization:
 
                     inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
-                    inversion_plotter.figures(reconstruction=True)
+                    inversion_plotter.figures_2d(reconstruction=True)
 
     def subplot_of_planes(self, plane_index=None):
         """Plot the model datas_ of an analysis, using the *Fitter* class object.
@@ -254,10 +254,10 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
 
             self.open_subplot_figure(number_subplots=4)
 
-            self.figures(image=True)
-            self.figures_of_planes(subtracted_image=True, plane_index=plane_index)
-            self.figures_of_planes(model_image=True, plane_index=plane_index)
-            self.figures_of_planes(plane_image=True, plane_index=plane_index)
+            self.figures_2d(image=True)
+            self.figures_2d_of_planes(subtracted_image=True, plane_index=plane_index)
+            self.figures_2d_of_planes(model_image=True, plane_index=plane_index)
+            self.figures_2d_of_planes(plane_image=True, plane_index=plane_index)
 
             self.mat_plot_2d.output.subplot_to_figure(
                 auto_filename=f"subplot_of_plane_{plane_index}"

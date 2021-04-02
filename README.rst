@@ -97,7 +97,7 @@ lens ``Galaxy`` with an ``EllipticalIsothermal`` ``MassProfile`` lenses a backgr
     plotting the image of the lensed source.
     """
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figures(image=True)
+    tracer_plotter.figures_2d(image=True)
 
 With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates
 a simple analysis which fits the lens galaxy's mass with an ``EllipticalIsothermal`` and the source galaxy's light

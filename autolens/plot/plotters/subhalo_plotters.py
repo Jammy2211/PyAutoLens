@@ -38,10 +38,10 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         fit_imaging_plotter = self.fit_imaging_plotter_from(
             fit_imaging=fit_imaging_detect
         )
-        fit_imaging_plotter.figures(image=True)
+        fit_imaging_plotter.figures_2d(image=True)
 
         self.set_title("Signal-To-Noise Map")
-        fit_imaging_plotter.figures(signal_to_noise_map=True)
+        fit_imaging_plotter.figures_2d(signal_to_noise_map=True)
 
         self.mat_plot_2d.plot_array(
             array=detection_array,
@@ -86,25 +86,25 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         fit_imaging_plotter_before = self.fit_imaging_plotter_from(
             fit_imaging=fit_imaging_before
         )
-        fit_imaging_plotter_before.figures(normalized_residual_map=True)
+        fit_imaging_plotter_before.figures_2d(normalized_residual_map=True)
 
         self.set_title("Chi-Squared Map (No Subhalo)")
-        fit_imaging_plotter_before.figures(chi_squared_map=True)
+        fit_imaging_plotter_before.figures_2d(chi_squared_map=True)
 
         self.set_title("Source Reconstruction (No Subhalo)")
-        fit_imaging_plotter_before.figures_of_planes(plane_image=True, plane_index=1)
+        fit_imaging_plotter_before.figures_2d_of_planes(plane_image=True, plane_index=1)
         fit_imaging_plotter_detect = self.fit_imaging_plotter_from(
             fit_imaging=fit_imaging_detect
         )
 
         self.set_title("Normailzed Residuals (With Subhalo)")
-        fit_imaging_plotter_detect.figures(normalized_residual_map=True)
+        fit_imaging_plotter_detect.figures_2d(normalized_residual_map=True)
 
         self.set_title("Chi-Squared Map (With Subhalo)")
-        fit_imaging_plotter_detect.figures(chi_squared_map=True)
+        fit_imaging_plotter_detect.figures_2d(chi_squared_map=True)
 
         self.set_title("Source Reconstruction (With Subhalo)")
-        fit_imaging_plotter_detect.figures_of_planes(plane_image=True, plane_index=1)
+        fit_imaging_plotter_detect.figures_2d_of_planes(plane_image=True, plane_index=1)
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_detection_fits"

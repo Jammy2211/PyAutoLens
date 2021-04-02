@@ -24,7 +24,7 @@ def test__fit_quantities_are_output(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_imaging_plotter.figures(
+    fit_imaging_plotter.figures_2d(
         image=True,
         noise_map=True,
         signal_to_noise_map=True,
@@ -44,7 +44,7 @@ def test__fit_quantities_are_output(
 
     plot_patch.paths = []
 
-    fit_imaging_plotter.figures(
+    fit_imaging_plotter.figures_2d(
         image=True,
         noise_map=False,
         signal_to_noise_map=False,
@@ -71,7 +71,7 @@ def test__figures_of_plane(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_imaging_plotter.figures_of_planes(
+    fit_imaging_plotter.figures_2d_of_planes(
         subtracted_image=True, model_image=True, plane_image=True
     )
 
@@ -84,7 +84,7 @@ def test__figures_of_plane(
 
     plot_patch.paths = []
 
-    fit_imaging_plotter.figures_of_planes(
+    fit_imaging_plotter.figures_2d_of_planes(
         subtracted_image=True, model_image=True, plane_image=True, plane_index=0
     )
 

@@ -18,7 +18,7 @@ image' such as correlated noise. To begin, we load an interferometer dataset fro
     )
 
     interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
-interferometer_plotter.figures(visibilities=True, uv_wavelengths=True)
+interferometer_plotter.figures_2d(visibilities=True, uv_wavelengths=True)
 
 Here is what the interferometer visibilities and uv wavelength (which represent the interferometer's baselines) looks
 like (these are representative of an ALMA dataset with ~ 1 million visibilities):

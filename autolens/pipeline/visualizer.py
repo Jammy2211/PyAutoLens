@@ -39,7 +39,7 @@ class Visualizer(visualizer.Visualizer):
 
             tracer_plotter.subplot_tracer()
 
-        tracer_plotter.figures(
+        tracer_plotter.figures_2d(
             image=should_plot("image"),
             source_plane=should_plot("source_plane_image"),
             convergence=should_plot("convergence"),
@@ -53,7 +53,7 @@ class Visualizer(visualizer.Visualizer):
 
             if should_plot("all_at_end_png"):
 
-                tracer_plotter.figures(
+                tracer_plotter.figures_2d(
                     image=True,
                     source_plane=True,
                     convergence=True,
@@ -76,7 +76,7 @@ class Visualizer(visualizer.Visualizer):
                     include_2d=self.include_2d,
                 )
 
-                tracer_plotter.figures(
+                tracer_plotter.figures_2d(
                     image=True,
                     source_plane=True,
                     convergence=True,
@@ -96,7 +96,7 @@ class Visualizer(visualizer.Visualizer):
             fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 
-        fit_imaging_plotter.figures(
+        fit_imaging_plotter.figures_2d(
             image=should_plot("data"),
             noise_map=should_plot("noise_map"),
             signal_to_noise_map=should_plot("signal_to_noise_map"),
@@ -106,7 +106,7 @@ class Visualizer(visualizer.Visualizer):
             normalized_residual_map=should_plot("normalized_residual_map"),
         )
 
-        fit_imaging_plotter.figures_of_planes(
+        fit_imaging_plotter.figures_2d_of_planes(
             subtracted_image=should_plot("subtracted_images_of_planes"),
             model_image=should_plot("model_images_of_planes"),
             plane_image=should_plot("plane_images_of_planes"),
@@ -122,7 +122,7 @@ class Visualizer(visualizer.Visualizer):
 
             if should_plot("all_at_end_png"):
 
-                fit_imaging_plotter.figures(
+                fit_imaging_plotter.figures_2d(
                     image=True,
                     noise_map=True,
                     signal_to_noise_map=True,
@@ -132,7 +132,7 @@ class Visualizer(visualizer.Visualizer):
                     chi_squared_map=True,
                 )
 
-                fit_imaging_plotter.figures_of_planes(
+                fit_imaging_plotter.figures_2d_of_planes(
                     subtracted_image=True, model_image=True, plane_image=True
                 )
 
@@ -146,7 +146,7 @@ class Visualizer(visualizer.Visualizer):
                     fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
                 )
 
-                fit_imaging_plotter.figures(
+                fit_imaging_plotter.figures_2d(
                     image=True,
                     noise_map=True,
                     signal_to_noise_map=True,
@@ -156,7 +156,7 @@ class Visualizer(visualizer.Visualizer):
                     chi_squared_map=True,
                 )
 
-                fit_imaging_plotter.figures_of_planes(
+                fit_imaging_plotter.figures_2d_of_planes(
                     subtracted_image=True, model_image=True
                 )
 
@@ -180,7 +180,7 @@ class Visualizer(visualizer.Visualizer):
             fit_interferometer_plotter.subplot_fit_interferometer()
             fit_interferometer_plotter.subplot_fit_real_space()
 
-        fit_interferometer_plotter.figures(
+        fit_interferometer_plotter.figures_2d(
             visibilities=should_plot("data"),
             noise_map=should_plot("noise_map"),
             signal_to_noise_map=should_plot("signal_to_noise_map"),
@@ -197,7 +197,7 @@ class Visualizer(visualizer.Visualizer):
 
             if should_plot("all_at_end_png"):
 
-                fit_interferometer_plotter.figures(
+                fit_interferometer_plotter.figures_2d(
                     visibilities=True,
                     noise_map=True,
                     signal_to_noise_map=True,
@@ -220,7 +220,7 @@ class Visualizer(visualizer.Visualizer):
                     fit=fit, include_2d=self.include_2d, mat_plot_2d=mat_plot_2d
                 )
 
-                fit_interferometer_plotter.figures(
+                fit_interferometer_plotter.figures_2d(
                     visibilities=True,
                     noise_map=True,
                     signal_to_noise_map=True,

@@ -74,7 +74,7 @@ The PyAutoLens plot module provides methods for plotting objects and their prope
     light_profile_plotter = aplt.LightProfilePlotter(
         light_profile=sersic_light_profile, grid=grid
     )
-    light_profile_plotter.figures(image=True)
+    light_profile_plotter.figures_2d(image=True)
 
 The light profile's image appears as shown below:
 
@@ -103,7 +103,7 @@ potential and deflection angles using the Cartesian grid:
     mass_profile_plotter = aplt.MassProfilePlotter(
         mass_profile=isothermal_mass_profile, grid=grid
     )
-    mass_profile_plotter.figures(
+    mass_profile_plotter.figures_2d(
         convergence=True, potential=True, deflections_y=True, deflections_x=True
     )
 
@@ -165,7 +165,7 @@ the source`s appears as a multiply imaged and strongly lensed Einstein ring.
     image = tracer.image_from_grid(grid=grid)
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figures(image=True)
+    tracer_plotter.figures_2d(image=True)
 
 This makes the image below, where the source's light appears as a multiply imaged and strongly lensed Einstein ring.
 
@@ -231,7 +231,7 @@ rings! The mass distribution of the first galaxy also has separate components fo
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figures(image=True)
+    tracer_plotter.figures_2d(image=True)
 
 This is what the lens looks like:
 

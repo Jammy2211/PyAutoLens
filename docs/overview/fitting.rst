@@ -68,7 +68,7 @@ provides a like-with-like comparison.
     fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
 
     fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
-fit_imaging_plotter.figures(model_image=True)
+fit_imaging_plotter.figures_2d(model_image=True)
 
 Here is how the ``Tracer``'s image and the ``FitImaging``'s model-image look; note how the model-image has been blurred
 with the PSF of our dataset:

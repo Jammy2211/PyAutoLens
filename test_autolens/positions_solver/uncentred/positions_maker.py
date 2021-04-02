@@ -94,7 +94,7 @@ for i in range(iters):
     visuals_2d = aplt.Visuals2D(positions=positions)
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, visuals_2d=visuals_2d)
-    tracer_plotter.figures(image=True)
+    tracer_plotter.figures_2d(image=True)
 
     """Save the `Tracer` and `Positions` so they can be used for testing other `PositionsSolver` settings."""
 
