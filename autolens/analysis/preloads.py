@@ -7,13 +7,14 @@ from autogalaxy.profiles import mass_profiles as mp
 from autogalaxy.analysis import model_util
 from autolens import exc
 
+from typing import Optional
 
 class Preloads(pload.Preloads):
     @classmethod
     def setup(
         cls,
         result: af.Result,
-        model: af.Collection,
+        model: Optional[af.Collection] = None,
         pixelization: bool = False,
         inversion: bool = False,
     ) -> pload.Preloads:
@@ -47,7 +48,7 @@ class Preloads(pload.Preloads):
 
 
 def preload_pixelization_grid_from(
-    result: af.Result, model: af.Collection
+    result: af.Result, model: Optional[af.Collection] = None
 ) -> pload.Preloads:
     """
     If a model contains a `Pixelization` that is an `instance` whose parameters are fixed and the `Result` contains
@@ -73,16 +74,18 @@ def preload_pixelization_grid_from(
 
     """
 
-    if model_util.pixelization_from(model=model) is None:
-        raise exc.PreloadException(
-            "Cannot preload pixelization when the model does not include a pixelization"
-        )
+    if model is not None:
 
-    if model_util.pixelization_is_model_from(model=model):
-        raise exc.PreloadException(
-            "Cannot preload pixelization when the model include a pixelization but it is a model"
-            "component (preloading its grid will nullify changing its parameters)"
-        )
+        if model_util.pixelization_from(model=model) is None:
+            raise exc.PreloadException(
+                "Cannot preload pixelization when the model does not include a pixelization"
+            )
+
+        if model_util.pixelization_is_model_from(model=model):
+            raise exc.PreloadException(
+                "Cannot preload pixelization when the model include a pixelization but it is a model"
+                "component (preloading its grid will nullify changing its parameters)"
+            )
 
     return pload.Preloads(
         sparse_grids_of_planes=result.max_log_likelihood_pixelization_grids_of_planes
@@ -90,7 +93,7 @@ def preload_pixelization_grid_from(
 
 
 def preload_inversion_with_fixed_profiles(
-    result: af.Result, model: af.Collection
+    result: af.Result, model: Optional[af.Collection] = None
 ) -> pload.Preloads:
     """
     If the `MassProfile`'s in a model are all fixed parameters, and the parameters of the source `Pixelization` are
@@ -117,15 +120,17 @@ def preload_inversion_with_fixed_profiles(
         The `Preloads` object containing the `Inversion` linear algebra matrices.
     """
 
-    # if model.has_model(cls=mp.MassProfile):
-    #     raise exc.PreloadException(
-    #         "Cannot preload inversion when the mass profile is a model"
-    #     )
+    if model is not None:
 
-    if model_util.pixelization_is_model_from(model=model):
-        raise exc.PreloadException(
-            "Cannot preload inversion when the model includes a pixelization"
-        )
+        # if model.has_model(cls=mp.MassProfile):
+        #     raise exc.PreloadException(
+        #         "Cannot preload inversion when the mass profile is a model"
+        #     )
+
+        if model_util.pixelization_is_model_from(model=model):
+            raise exc.PreloadException(
+                "Cannot preload inversion when the model includes a pixelization"
+            )
 
     preloads = preload_pixelization_grid_from(result=result, model=model)
     inversion = result.max_log_likelihood_fit.inversion
