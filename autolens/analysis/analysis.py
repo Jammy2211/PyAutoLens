@@ -447,7 +447,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
     def log_likelihood_function(self, instance):
         """
-        Determine the fit of a lens galaxy and source galaxy to the masked_interferometer in this lens.
+        Determine the fit of a lens galaxy and source galaxy to the interferometer in this lens.
 
         Parameters
         ----------
@@ -457,7 +457,7 @@ class AnalysisInterferometer(AnalysisDataset):
         Returns
         -------
         fit : Fit
-            A fractional value indicating how well this model fit and the model masked_interferometer itself
+            A fractional value indicating how well this model fit and the model interferometer itself
         """
 
         self.associate_hyper_images(instance=instance)

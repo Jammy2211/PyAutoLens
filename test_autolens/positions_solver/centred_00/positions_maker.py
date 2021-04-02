@@ -68,13 +68,13 @@ for i in range(iters):
         effective_radius=0.2,
     )
 
-    """Setup the lens, source and _Tracer_."""
+    """Setup the lens, source and `Tracer`."""
 
     lens_galaxy = al.Galaxy(redshift=0.5, mass=mass_profile)
     source_galaxy = al.Galaxy(redshift=1.0, light=exponential_light_profile)
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    """Solve for the positions via the _Tracer_."""
+    """Solve for the positions via the `Tracer`."""
 
     positions = solver.solve(
         lensing_obj=tracer,

@@ -61,8 +61,8 @@ def imaging_generator_from_aggregator(
     aggregator: af.Aggregator, settings_imaging: al.SettingsImaging = None
 ):
     """
-    Returns a generator of `MaskImaging` objects from an input aggregator, which generates a list of the
-    `MaskImaging` objects for every set of results loaded in the aggregator.
+    Returns a generator of `Imaging` objects from an input aggregator, which generates a list of the
+    `Imaging` objects for every set of results loaded in the aggregator.
 
     This is performed by mapping the `imaging_from_agg_obj` with the aggregator, which sets up each
     imaging using only generators ensuring that manipulating the imaging of large sets of results is done in a
@@ -80,12 +80,12 @@ def imaging_from_agg_obj(
     agg_obj: af.SearchOutput, settings_imaging: al.SettingsImaging = None
 ) -> "al.Imaging":
     """
-    Returns a `MaskImaging` object from an aggregator's `SearchOutput` class, which we call an 'agg_obj' to describe
+    Returns a `Imaging` object from an aggregator's `SearchOutput` class, which we call an 'agg_obj' to describe
     that it acts as the aggregator object for one result in the `Aggregator`. This uses the aggregator's generator
-    outputs such that the function can use the `Aggregator`'s map function to to create a `MaskImaging` generator.
+    outputs such that the function can use the `Aggregator`'s map function to to create a `Imaging` generator.
 
-    The `MaskImaging` is created, including using the
-    `meta_dataset` instance output by the Search to load inputs of the `MaskImaging` (e.g. psf_shape_2d).
+    The `Imaging` is created, including using the
+    `meta_dataset` instance output by the Search to load inputs of the `Imaging` (e.g. psf_shape_2d).
 
     Parameters
     ----------
@@ -93,19 +93,12 @@ def imaging_from_agg_obj(
         A PyAutoFit aggregator's SearchOutput object containing the generators of the results of PyAutoLens model-fits.
     """
 
-    if settings_imaging is None:
-        settings_imaging = agg_obj.settings_dataset
-
     imaging = agg_obj.dataset
 
-    return al.Imaging(
-        image=imaging.image,
-        noise_map=imaging.noise_map,
-        psf=imaging.psf,
-        settings=settings_imaging,
-        name=imaging.name,
-        setup_convolver=True,
-    )
+    if settings_imaging is None:
+        return imaging
+
+    return imaging.apply_settings(settings=settings_imaging)
 
 
 def fit_imaging_generator_from_aggregator(
@@ -211,19 +204,12 @@ def interferometer_from_agg_obj(
         A PyAutoFit aggregator's SearchOutput object containing the generators of the results of PyAutoLens model-fits.
     """
 
-    if settings_interferometer is None:
-        settings_interferometer = agg_obj.settings_dataset
-
     interferometer = agg_obj.dataset
 
-    return al.Interferometer(
-        visibilities=interferometer.visibilities,
-        noise_map=interferometer.noise_map,
-        uv_wavelengths=interferometer.uv_wavelengths,
-        real_space_mask=interferometer.real_space_mask,
-        settings=settings_interferometer,
-        name=interferometer.name,
-    )
+    if settings_interferometer is None:
+        return interferometer
+
+    return interferometer.apply_settings(settings=settings_interferometer)
 
 
 def fit_interferometer_generator_from_aggregator(

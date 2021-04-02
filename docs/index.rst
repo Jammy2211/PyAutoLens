@@ -123,6 +123,7 @@ code below shows how to setup and fit a lens model to a dataset:
     mask = al.Mask2D.circular(
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
     )
+    masked_imaging = imaging.apply_mask(mask=mask)
 
     """
     We model the lens galaxy using an EllipticalIsothermal MassProfile and

@@ -5,7 +5,26 @@ Interferometry
 
 Alongside CCD imaging data, **PyAutoLens** supports the modeling of interferometer data from submillimeter and radio
 observatories. The dataset is fitted directly in the uv-plane, circumventing issues that arise when fitting a 'dirty
-image' such as correlated noise. To begin, we load an interferometer dataset from fits files:
+image' such as correlated noise.
+
+To begin, we define a real-space mask. Although interferometer lens modeling is performed in the uv-plane and
+therefore Fourier space, we still need to define the grid of coordinates in real-space from which the lensed source's
+images are computed. It is this image that is mapped to Fourier space to compare to the uv-plane data.
+
+.. code-block:: bash
+
+    real_space_mask = al.Mask2D.circular(
+        shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
+    )
+
+    aplt.Tracer.image(tracer=tracer, grid=real_space_mask.masked_grid)
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/image.png
+  :width: 400
+  :alt: Alternative text
+
+We next load an interferometer dataset from fits files, which follows the same API that we have seen for an `Imaging`
+object.
 
 .. code-block:: bash
 
@@ -18,7 +37,7 @@ image' such as correlated noise. To begin, we load an interferometer dataset fro
     )
 
     interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
-interferometer_plotter.figures(visibilities=True, uv_wavelengths=True)
+    interferometer_plotter.figures(visibilities=True, uv_wavelengths=True)
 
 Here is what the interferometer visibilities and uv wavelength (which represent the interferometer's baselines) looks
 like (these are representative of an ALMA dataset with ~ 1 million visibilities):
@@ -28,22 +47,6 @@ like (these are representative of an ALMA dataset with ~ 1 million visibilities)
   :alt: Alternative text
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/uv_wavelengths.png
-  :width: 400
-  :alt: Alternative text
-
-Although interferometer lens modeling is performed in the uv-plane and therefore Fourier space, we still need to define
-a 'real-space mask'. This mask defines the grid on which the image of the lensed source galaxy is computed via a
-_Tracer_, which when we fit it to data data in the uv-plane is mapped to Fourier space.
-
-.. code-block:: bash
-
-    real_space_mask = al.Mask2D.circular(
-        shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
-    )
-
-    aplt.Tracer.image(tracer=tracer, grid=real_space_mask.masked_grid)
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/image.png
   :width: 400
   :alt: Alternative text
 
@@ -67,27 +70,21 @@ transform of ~10 million in less than a second!
 
     transformer_class = al.TransformerNUFFT
 
-The perform a fit, we follow the same process we did for imaging, creating a *MaskedInterferometer* object which
-behaves analogously to a ``MaskImaging`` object.
+The perform a fit, we follow the same process we did for imaging. We do not need to mask an interferometer dataset,
+but we will want to apply the settings above:
 
 .. code-block:: bash
 
-    visibilities_mask = np.full(fill_value=False, shape=interferometer.visibilities.shape)
-
-    masked_interferometer = al.MaskedInterferometer(
-        interferometer=interferometer,
-        visibilities_mask=visibilities_mask,
-        real_space_mask=real_space_mask,
-        transformer_class=transformer_class,
-        inversion_use_linear_operators=True, # We'll cover what this does below.
+    interferometer = interferometer.apply_settings(
+        settings=al.SettingsInterferometer(transformer_class=transformer_class)
     )
 
-The masked interferometer can now be used with a *FitInterferometer* object to fit it to a data-set:
+The interferometer can now be used with a *FitInterferometer* object to fit it to a data-set:
 
 .. code-block:: bash
 
     fit = al.FitInterferometer(
-        masked_interferometer=masked_interferometer, tracer=tracer
+        interferometer=interferometer, tracer=tracer
     )
 
 Here is what the image of the tracer looks like before it is Fourier transformed to the uv-plane:

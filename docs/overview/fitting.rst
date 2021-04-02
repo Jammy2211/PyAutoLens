@@ -45,7 +45,7 @@ this we can use a ``Mask2D`` object, which for this example we'll create as a 3.
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
     )
 
-    masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+    masked_imaging = imaging.apply_mask(mask=mask)
 
     aplt.Imaging.image(imaging=masked_imaging)
 
@@ -59,13 +59,13 @@ Here is what our image looks like with the mask applied, where **PyAutoLens** ha
 Following the lensing API guide, we can make a ``Tracer`` from a collection of ``LightProfile``, ``MassProfile`` and
 ``Galaxy`` objects. This ``Tracer`` then allows us to create an image of the strong lens system.
 
-By passing a ``Tracer`` and ``MaskImaging`` object to a ``FitImaging`` object, we create a model-image from the ``Tracer``.
+By passing a ``Tracer`` and ``Imaging`` object to a ``FitImaging`` object, we create a model-image from the ``Tracer``.
 The model-image is the image of the ``Tracer`` blurred with the ``Imaging`` dataset's PSF, ensuring our fit to the data
 provides a like-with-like comparison.
 
 .. code-block:: bash
 
-    fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
     fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_imaging_plotter.figures(model_image=True)

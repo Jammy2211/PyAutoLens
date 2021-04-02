@@ -132,7 +132,7 @@ def test__interferometer_generator_from_aggregator(
     )
 
     search = mock.MockSearch(
-        paths=af.Paths(path_prefix="aggregator_masked_interferometer_gen"),
+        paths=af.Paths(path_prefix="aggregator_interferometer_gen"),
         samples=samples,
     )
 

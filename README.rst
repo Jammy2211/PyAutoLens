@@ -120,11 +120,12 @@ with an ``EllipticalSersic``.
     )
 
     """
-    Create a mask for the data, which we setup as a 3.0" circle.
+    Create a mask for the imaging data, which we setup as a 3.0" circle, and apply it.
     """
     mask = al.Mask2D.circular(
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
     )
+    masked_imaging = imaging.apply_mask(mask=mask)
 
     """
     We model the lens galaxy using an EllipticalIsothermal MassProfile and

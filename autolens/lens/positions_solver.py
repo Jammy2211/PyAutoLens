@@ -57,7 +57,7 @@ class AbstractPositionsSolver:
         ----------
         lensing_obj : autogalaxy.LensingObject
             An object which has a deflection_from_grid method for performing lensing calculations, for example a
-            `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
+            `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         grid : autoarray.Grid2DIrregularUniform or ndarray
             A gridd of (y,x) Cartesian coordinates for which their distances to the mass profile centres are computed,
             with points within the threshold removed.
@@ -162,7 +162,7 @@ class AbstractPositionsSolver:
         ----------
         lensing_obj : autogalaxy.LensingObject
             An object which has a deflection_from_grid method for performing lensing calculations, for example a
-            `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
+            `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         grid : autoarray.Grid2DIrregularUniform or ndarray
             A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
             their neighbors are found.
@@ -213,7 +213,7 @@ class AbstractPositionsSolver:
             ----------
             lensing_obj : autogalaxy.LensingObject
                 An object which has a deflection_from_grid method for performing lensing calculations, for example a
-                `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
+                `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
             grid : autoarray.Grid2DIrregularUniform or ndarray
                 A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
                 their neighbors are found.
@@ -254,7 +254,7 @@ class PositionsSolver(AbstractPositionsSolver):
         distance_from_source_centre=None,
         distance_from_mass_profile_centre=None,
     ):
-        """Given a `LensingObject` (e.g. a _MassProfile, `Galaxy`, `Plane` or _Tracer_) this class uses their
+        """Given a `LensingObject` (e.g. a _MassProfile, `Galaxy`, `Plane` or `Tracer`) this class uses their
         deflections_from_grid method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
         source-centre coordinate in the source-plane.
 
@@ -307,7 +307,7 @@ class PositionsSolver(AbstractPositionsSolver):
             upscale > 1, the pixel_scales are reduced to pixel_scale / upscale_factor.
         lensing_obj : autogalaxy.LensingObject
             An object which has a deflection_from_grid method for performing lensing calculations, for example a
-            `MassProfile`, _Galaxy_, `Plane` or _Tracer_.
+            `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         source_plane_coordinate : (float, float)
             The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
             for.

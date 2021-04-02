@@ -13,7 +13,7 @@ appears, with multiple rings and clumps of light:
   :width: 400
   :alt: Alternative text
 
-We are going to fit this image with an ``Inversion``, so we first create ``Mask2D`` and ``MaskImaging`` objects:
+We are going to fit this image with an ``Inversion``, so we first create ``Mask2D`` and ``Imaging`` objects:
 
 .. code-block:: bash
 
@@ -21,7 +21,7 @@ We are going to fit this image with an ``Inversion``, so we first create ``Mask2
       shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.6
     )
 
-   masked_imaging = al.MaskedImaging(imaging=imaging, mask=mask)
+   masked_imaging = imaging.apply_mask(mask=mask)
 
 To reconstruct the source using a pixel-grid, we simply pass it the ``Pixelization`` class we want to reconstruct its
 light using. We also pass a ``Regularization`` scheme which describes our prior on how much we smooth the reconstruction.
@@ -44,7 +44,7 @@ the lensed source's light using the ``Inversion``:
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.FitImaging(masked_imaging=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
 
 Here is what our reconstructed source galaxy looks like:
 

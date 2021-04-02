@@ -11,8 +11,10 @@ Data Structures
 .. autosummary::
    :toctree: generated/
 
+   Array1D
    Array2D
    ValuesIrregular
+   Grid1D
    Grid2D
    Grid2DIterate
    Grid2DInterpolate
@@ -33,9 +35,7 @@ Datasets
    :toctree: generated/
 
    Imaging
-   MaskedImaging
    Interferometer
-   MaskedInterferometer
 
 ----------
 Simulators
