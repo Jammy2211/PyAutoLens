@@ -46,10 +46,7 @@ class SetupHyper(setup.SetupHyper):
             The evidence tolerance of the non-linear searches used in the hyper searchs, whereby higher values will
             lead them to end earlier at the expense of accuracy.
         """
-        if hyper_galaxies_lens or hyper_galaxies_source:
-            hyper_galaxies = True
-        else:
-            hyper_galaxies = False
+        hyper_galaxies = hyper_galaxies_lens or hyper_galaxies_source
 
         super().__init__(
             hyper_galaxies=hyper_galaxies,

@@ -285,9 +285,10 @@ class AbstractTracer(lensing.LensingObject, ABC):
         Would return the `LightProfile` of the source plane.
         """
         for galaxy in self.galaxies:
-            for name, profile in galaxy.__dict__.items():
-                if name == profile_name:
-                    return profile
+            try:
+                return galaxy.__dict__[profile_name]
+            except KeyError:
+                pass
 
     def extract_plane_index_of_profile(self, profile_name):
         """

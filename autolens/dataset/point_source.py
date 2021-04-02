@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from autoarray.structures.arrays import values
 from autoarray.structures.grids.two_d import grid_2d_irregular
@@ -8,10 +8,10 @@ class PointSourceDataset:
     def __init__(
             self,
             name: str,
-            positions: grid_2d_irregular.Grid2DIrregular = None,
-            positions_noise_map: values.ValuesIrregular = None,
-            fluxes: values.ValuesIrregular = None,
-            fluxes_noise_map: values.ValuesIrregular = None,
+            positions: grid_2d_irregular.Grid2DIrregular,
+            positions_noise_map: values.ValuesIrregular,
+            fluxes: Optional[values.ValuesIrregular] = None,
+            fluxes_noise_map: Optional[values.ValuesIrregular] = None,
     ):
         """
         A collection of the data component that can be used for point-source model-fitting, for example fitting the
@@ -25,15 +25,15 @@ class PointSourceDataset:
 
         Parameters
         ----------
-        name : str
+        name
             The name of the point source dataset which is paired to a `PointSource` in the `Model`.
-        positions : grid_2d_irregular.Grid2DIrregular
+        positions
             The image-plane (y,x) positions of the point-source.
-        positions_noise_map : values.ValuesIrregular
+        positions_noise_map
             The noise-value of every (y,x) position, which is typically the pixel-scale of the data.
-        fluxes : values.ValuesIrregular
+        fluxes
             The image-plane flux of each observed point-source of light.
-        fluxes_noise_map : values.ValuesIrregular
+        fluxes_noise_map
             The noise-value of every observed flux.
         """
 
