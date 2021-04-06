@@ -1,18 +1,23 @@
 What is PyAutoLens?
 ===================
 
-**PyAutoLens** is open source software for the analysis and modeling of strong gravitational lenses. Its target audience
-is anyone with an interest in strong gravitational lensing, whether that be study the mass structure properties of
-the foreground lens galaxy or the magnified properties of the backgrounds source.
+**PyAutoLens** is open source software for the analysis and modeling of strong gravitational lenses, with its target
+audience anyone with an interest in astronomy and cosmology.
 
-An overview of its core features can be found in
-the `overview <https://pyautolens.readthedocs.io/en/latest/overview/lensing.html>`_ section of the readthedoc.
+The software comes distributed with the **HowToLens** Jupyter notebook lectures, which are written assuming no
+previous knowledge about what gravitational lensing is and teach a new user the theory and statistics required analyse
+strong lens data. Checkout `the howtolens section of
+the readthedocs <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_.
+
+
+An overview of **PyAutoLens**'s core features can be found in
+the `overview section of the readthedocs <https://pyautolens.readthedocs.io/en/latest/overview/lensing.html>`_.
 
 Strong Gravitational Lensing
 ============================
 
 When two galaxies are aligned down the line-of-sight to Earth, light rays from the background galaxy are deflected by the
-intervening mass of one or more foreground galaxies. Sometimes its light is fully bent around the foreground galaxies,
+intervening mass of one or more foreground galaxies. Sometimes its light is fully deflected around the foreground galaxies,
 traversing multiple paths to the Earth, meaning that the background galaxy is observed multiple times. This alignment
 of galaxies is called a strong gravitational lens, an example of which, SLACS1430+4105, is shown in the image
 below. The massive elliptical lens galaxy can be seen in the centre of the left panel, surrounded by a multiply
@@ -20,17 +25,20 @@ imaged source galaxy whose light has been distorted into an `Einstein ring'. The
 reconstructions of the source's lensed and unlensed light distributions, which are created using a model of the lens
 galaxy's mass to trace backwards how the source's light is gravitationally lensed.
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/master/files/imageaxis.png
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/master/files/imageaxis.png?raw=true
 
 Strong lensing provides astronomers with an invaluable tool to study a diverse range of topics, including the
 `structure of galaxies <https://academic.oup.com/mnras/article-abstract/489/2/2049/5550746>`_,
 `dark matter <https://academic.oup.com/mnras/article/442/3/2017/1048278>`_ and the
 `expansion of the Universe <https://academic.oup.com/mnras/article/468/3/2590/3055701>`_.
 
-The past decade has seen the discovery of many hundreds of new strong lenses, however the modeling of a strong lens is historically a
-time-intensive process that requires significant human intervention to perform, restricting the scope of any scientific
-analysis. In the next decade of order of `one hundred thousand` strong lenses will be discovered by surveys such as
-Euclid, the Vera Rubin Observatory and Square Kilometer Array2D.
+The past decade has seen the discovery of many hundreds of new strong lenses, however the modeling of a strong lens is
+historically a time-intensive process that requires significant human intervention to perform, restricting the scope of
+any scientific analysis. In the next decade of order of `one hundred thousand` strong lenses will be discovered by
+surveys such as Euclid, the Vera Rubin Observatory and Square Kilometer Array.
+
+The goal of **PyAutoLens** is to enable fully automated strong lens analysis, such that these large samples of strong
+lenses can be exploited to their fullest.
 
 How does PyAutoLens Work?
 =========================
@@ -58,7 +66,9 @@ below shows this in action:
         pixel_scales=0.05,  # <- Conversion from pixel units to arc-seconds.
     )
 
-    """The lens galaxy has an elliptical isothermal mass profile and is at redshift 0.5."""
+    """
+    The lens galaxy has an elliptical isothermal mass profile and is at redshift 0.5.
+    """
 
     sie = al.mp.EllIsothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.1, 0.05), einstein_radius=1.6
@@ -123,7 +133,7 @@ code below shows how to setup and fit a lens model to a dataset:
     mask = al.Mask2D.circular(
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
     )
-    masked_imaging = imaging.apply_mask(mask=mask)
+    imaging = imaging.apply_mask(mask=mask)
 
     """
     We model the lens galaxy using an elliptical isothermal mass profile and
@@ -149,7 +159,7 @@ code below shows how to setup and fit a lens model to a dataset:
     We next set up the `Analysis`, which contains the `log likelihood function` that the
     non-linear search calls to fit the lens model to the data.
     """
-    analysis = al.AnalysisImaging(dataset=masked_imaging)
+    analysis = al.AnalysisImaging(dataset=imaging)
 
     """
     To perform the model-fit we pass the model and analysis to the search's fit method. This will
@@ -166,14 +176,14 @@ code below shows how to setup and fit a lens model to a dataset:
 Getting Started
 ===============
 
-To get started, users can check-out the **PyAutoLens**'s rich feature-set by going through the `overview` section
+To get started, users can check-out the **PyAutoLens**'s rich feature-set by going through the ``overview`` section
 of our readthedocs. This illustrates the API for all of **PyAutoLens**'s core features, including how to simulate
 strong lens datasets, reconstructing the lensed source galaxy on adaptive pixel-grids and fitting interferometer
 datasets.
 
 For new **PyAutoLens** users, we recommend they start by
 `installing PyAutoLens <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ (if you haven't
-already!), read through the example scripts on
+already!), read through the `introduction.ipynb` notebook on
 the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ and take the
 `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_ on
 strong gravitational lensing with **PyAutoLens**.
@@ -220,7 +230,7 @@ strong gravitational lensing with **PyAutoLens**.
    howtolens/howtolens
    howtolens/chapter_1_introduction
    howtolens/chapter_2_lens_modeling
-   howtolens/chapter_3_pipelines
+   howtolens/chapter_3_search_chaining
    howtolens/chapter_4_inversions
    howtolens/chapter_5_hyper_mode
 

@@ -9,7 +9,7 @@ Overview
 `Pypi <https://pypi.org/>`_ to ``pip install`` **PyAutoLens** into your Python distribution.
 
 We recommend Anaconda as it manages the installation of many major libraries used by **PyAutoLens** (e.g. numpy, scipy,
-matplotlib, etc.) making installation more straight forward.
+matplotlib, etc.) making installation more straight forward. Windows users must use Anaconda.
 
 The installation guide for both approaches can be found at:
 
@@ -42,11 +42,17 @@ Dependencies
 
 **pyquad** https://github.com/AshKelly/pyquad
 
+**pynufft**: https://github.com/jyhmiinlin/pynufft
+
+**PyLops**: https://github.com/PyLops/pylops
+
 **dynesty** https://github.com/joshspeagle/dynesty
 
 **emcee** https://github.com/dfm/emcee
 
 **PySwarms** https://github.com/ljvmiranda921/pyswarms
+
+**colossus**: https://bdiemer.bitbucket.io/colossus/
 
 **astropy** https://www.astropy.org/
 
@@ -59,6 +65,10 @@ Dependencies
 **numpy** https://numpy.org/
 
 **scipy** https://www.scipy.org/
+
+**scikit-image**: https://github.com/scikit-image/scikit-image
+
+**scikit-learn**: https://github.com/scikit-learn/scikit-learn
 
 And the following optional dependencies:
 

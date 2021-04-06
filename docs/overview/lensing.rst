@@ -36,7 +36,7 @@ units to arc-seconds):
         shape_native=(50, 50), pixel_scales=0.05
     )
     grid_plotter = aplt.Grid2DPlotter(grid=grid)
-    grid_plotter.figure()
+    grid_plotter.figure_2d()
 
 This is what our ``Grid2D`` looks like:
 
@@ -44,11 +44,11 @@ This is what our ``Grid2D`` looks like:
   :width: 400
   :alt: Alternative text
 
-We will ray-trace this ``Grid2D``'s (y,x) coordinates to calculate how a lens galaxy's mass deflects the source galaxy's
-light.
+We will ray-trace this ``Grid2D``'s (y,x) coordinates to calculate how a lens galaxy's mass deflects the source
+galaxy's light.
 
 This requires analytic functions representing the light and mass distributions of galaxies. **PyAutoLens**
-uses ``Profile`` objects for this, such as the ``EllSersic`` ``LightProfile``:
+uses ``Profile`` objects for this, such as the elliptical sersic ``LightProfile``:
 
 .. code-block:: bash
 
@@ -67,7 +67,7 @@ image of the ``LightProfile``:
 
     image = sersic_light_profile.image_from_grid(grid=grid)
 
-The PyAutoLens plot module provides methods for plotting objects and their properties, like the ``LightProfile``'s image.
+The **PyAutoLens** plot module provides methods for plotting objects and their properties, like the ``LightProfile``'s image.
 
 .. code-block:: bash
 
@@ -85,7 +85,7 @@ The light profile's image appears as shown below:
 **PyAutoLens** uses ``MassProfile`` objects to represent a galaxy's mass distribution and perform ray-tracing
 calculations.
 
-Below we create an ``EllIsothermal`` ``MassProfile`` and calculate and display its convergence, gravitational
+Below we create an elliptical isothermal ``MassProfile`` and calculate and display its convergence, gravitational
 potential and deflection angles using the Cartesian grid:
 
 .. code-block:: bash
@@ -107,7 +107,7 @@ potential and deflection angles using the Cartesian grid:
         convergence=True, potential=True, deflections_y=True, deflections_x=True
     )
 
-Heres how the convergence, potential and deflection angles appear:
+Heresis how the convergence, potential and deflection angles appear:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/isothermal_mass_profile_convergence.png
   :width: 400
@@ -127,9 +127,7 @@ Heres how the convergence, potential and deflection angles appear:
 
 For anyone not familiar with gravitational lensing, don't worry about what the convergence and potential are for now.
 The key thing to note is that the deflection angles describe how a given mass distribution deflects light-rays as they
-travel towards us in the Universe.
-
-This allows us create strong lens systems like the one shown above!
+travel towards the Earth through the Universe.
 
 A ``Galaxy`` object is a collection of ``LightProfile`` and ``MassProfile`` objects at a given redshift. The code below
 creates two galaxies representing the lens and source galaxies shown in the strong lensing diagram above.
@@ -158,7 +156,7 @@ We can now create the image of a strong lens system!
 
 When calculating this image, the ``Tracer`` performs all ray-tracing for the strong lens system. This includes using
 the lens galaxy's total mass distribution to deflect the light-rays that are traced to the source galaxy. As a result,
-the source`s appears as a multiply imaged and strongly lensed Einstein ring.
+the source appears as a multiply imaged and strongly lensed Einstein ring.
 
 .. code-block:: bash
 
@@ -173,14 +171,15 @@ This makes the image below, where the source's light appears as a multiply image
   :width: 400
   :alt: Alternative text
 
-The PyAutoLens API has been designed such that all of the objects introduced above are extensible. ``Galaxy`` objects
-can take many ``Profile``'s and ``Tracer``'s many ``Galaxy``'s.
+The **PyAutoLens** API has been designed such that all of the objects introduced above are extensible. ``Galaxy``
+objects can take many ``Profile``'s and ``Tracer`` objects many ``Galaxy``'s.
 
 If the galaxies are at different redshifts a strong lensing system with multiple lens planes will be created,
 performing complex multi-plane ray-tracing calculations.
 
-To finish, lets create a ``Tracer`` with 3 galaxies at 3 different redshifts, forming a system with two distinct Einstein
-rings! The mass distribution of the first galaxy also has separate components for its stellar mass and dark matter.
+To finish, lets create a ``Tracer`` with 3 galaxies at 3 different redshifts, forming a system with two distinct
+Einstein rings! The mass distribution of the first galaxy also has separate components for its stellar mass and
+dark matter, where the stellar mass using a ``LightMassProfile`` representing both its light and mass.
 
 .. code-block:: bash
 
@@ -189,7 +188,7 @@ rings! The mass distribution of the first galaxy also has separate components fo
         bulge=al.lmp.EllSersic(
             centre=(0.0, 0.0),
             axis_ratio=0.9,
-            phi=45.0,
+            angle=45.0,
             intensity=0.5,
             effective_radius=0.3,
             sersic_index=2.5,
@@ -198,7 +197,7 @@ rings! The mass distribution of the first galaxy also has separate components fo
         disk=al.lmp.EllExponential(
             centre=(0.0, 0.0),
             axis_ratio=0.6,
-            phi=45.0,
+            angle=45.0,
             intensity=1.0,
             effective_radius=2.0,
             mass_to_light_ratio=0.2,

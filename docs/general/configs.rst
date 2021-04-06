@@ -1,7 +1,7 @@
 Configs
 =======
 
-The autolens workspace includes a set of configuration files that customize the behaviour of the non-linear searches,
+**PyAutoLens** uses a number of configuration files that customize the default behaviour of the non-linear searches,
 visualization and other aspects of **PyAutoLens**. Here, we describe how to configure **PyAutoLens** to use the configs
 and describe every configuration file complete with input parameters.
 
@@ -11,8 +11,8 @@ Setup
 By default, **PyAutoLens** looks for the config files in a ``config`` folder in the current working directory, which is
 why we run autolens scripts from the ``autolens_workspace`` directory.
 
-The configuration path can also be set manually in a script using **PyAutoConf** and the following command (the path
-to the ``output`` folder where the results of a non-linear search are stored is also set below):
+The configuration path can also be set manually in a script using the project **PyAutoConf** and the following
+command (the path to the ``output`` folder where the results of a non-linear search are stored is also set below):
 
 .. code-block:: bash
 
@@ -25,9 +25,11 @@ to the ``output`` folder where the results of a non-linear search are stored is 
 general.ini
 -----------
 
-This config file is found at 'autolens_workspace/config/general.ini' and contains the following sectioons and variables:
+This config file is found at 'autolens_workspace/config/general.ini' and contains the following sections and variables:
 
 [output]
+    log_to_file -> bool
+        If True the outputs of processes like the non-linear search are logged to a file (and not printed to screen).
     log_file -> str
         The file name the logged output is written to (in the non-linear search output folder).
     log_level -> str
@@ -47,15 +49,35 @@ This config file is found at 'autolens_workspace/config/general.ini' and contain
         This feature was implemented because super-computers often have a limit on the number of files allowed per
         user and the large number of files output by PyAutoLens can exceed this limit. By removing files the
         number of files is restricted only to the .zip files.
-    skip_completed -> bool
-        If True, and if the results of a non-linear search were completed in a previous run, then all processing steps
-        performed at the end of the non-linear search (e.g. output of sample results, visualization, etc.) are skipped.
+    force_pickle_overwrite -> bool
+        A model-fit outputs pickled files of the model, search, results, etc., which the database feature can load.
+        If this setting it ``True`` these pickle files are recreated when a new model-fit is performed, even if
+        the search is complete.
 
-        If False, they are repeated, which can be used for updating visualization or the non-linear search pickles
-        to a new version of PyAutoLens.
-    grid_results_interval -> int
-        For a GridSearch non-linear optimization this interval sets after how many samples on the grid output is
-        performed for. A grid_results_interval of -1 turns off output.
+The following setting flips all images that are loaded by **PyAutoLens** so that they appear the same orinetation as
+the software ds9:
+
+[fits]
+    flip_for_ds9 -> bool
+        If `True`, the ndarray of all .fits files containing an image, noise-map, psf, etc, is flipped upside down
+        so its orientation is the same as ds9.
+
+The following settings are specific for High Performance Super computer use with **PyAutoLens**.
+
+[hpc]
+    hpc_mode -> bool
+        If `True`, HPC mode is activated, which disables GUI visualization, logging to screen and other settings which
+        are not suited to running on a super computer.
+    iterations_per_update -> int
+        The number of iterations between every update (visualization, results output, etc) in HPC mode, which may be
+        better suited to being less frequent on a super computer.
+
+The following settings customize how a model is handled by **PyAutoFit**:
+
+[model]
+    ignore_prior_limits : bool
+        If ``True`` the limits applied to priors will be ignored, where limits set upper / lower limits. This should be
+        disabled if one has difficult manipulating results in the databse due to a ``PriorLimitException``.
 
 The library `numba <https://github.com/numba/numba>`_ is used to speed up functions, by converting them to C callable
 functions before the Python interpreter runs:
@@ -65,47 +87,21 @@ functions before the Python interpreter runs:
         If True, functions which hve a numba decorator must not convert back to Python during a run and thus must stay
         100% C. All PyAutoLens functions were developed with nopython mode turned on.
     cache -> bool
-        If True, the C version of numba-fied functions are cached on the hard-disk so they do not need to be
-        re-numbafied every time PyAutoLens is rerun. If False, the first time every function is run will have a small
-        delay (0.1-1.0 seconds) as it has to be numba-fied again.
+        If True, the C version of numba functions are cached on the hard-disk so they do not need to be
+        recompiled every time **PyAutoLens** is rerun. If False, the first time every function is run will have a small
+        delay (0.1-1.0 seconds) as it has to be numba compiled again.
     parallel -> bool
         If True, all functions decorated with the numba.jit are run with parallel processing on.
-
-The calculation grid is used to compute lensing quantities that do not inherently need a grid to be passed to them
-for them to be calculated. For example, the critical curves and caustics of a mass model should be computed in
-a way that does not need a grid to be input.
-
-The calculation grid is the homogenous grid used to calculate all lensing quantities of this nature. It is computed
-as follows:
-
-1) Draw a rectangular 'bounding box' around the `MassProfile`'s convergence profile, where the four side of the
-   the box are at threshold values of convergence.
-
-2) Use a grid of this box to compute the desired lensing quantity (e.g. the critical curve).
-
-In a future version of PyAutoLens the calculation grid will be adaptive, such that the values input into this config
-file are the desired precision of the quantitiy being calculated (e.g. the area of the critical curve should not
-change as the grid resolution is increased within a threshold value). Unfortunately, we've not yet had time
-to implement this adaptive grid.
-
-[calculation_grid]
-    convergence_threshold -> float
-        The threshold value of convergence at which the 4 sides of the bounding box described above are located.
-    pixels -> int
-        The shape_native of the grid inside the bounding box from which the lensing quantitiy is computed (e.g. it is shape
-        (pixels, pixels)).
 
 [inversion]
     interpolated_grid_shape -> str {image_grid, source_grid}
         In order to output inversion reconstructions (which could be on a Voronoi grid) to a .fits file, the
         reconstruction is interpolated to a square grid of pixels. This option determines this grid:
 
-        image_grid - The interpolated grid is the same shape, resolution and centering as the observed image-data.
+        image_grid: The interpolated grid is the same shape, resolution and centering as the observed image-data.
 
-        source_grid - The interpolated grid is zoomed to over-lay the source-plane reconstructed source and uses
+        source_grid: The interpolated grid is zoomed to over-lay the source-plane reconstructed source and uses
         dimensions derived from the number of pixels used by the reconstruction.
-    inversion_pixel_limit_overall -> int
-        The maximum number of pixels that may be assumed for an inversion during a non-linear search fit.
 
 [hyper]
     hyper_minimum_percent -> float
@@ -118,17 +114,29 @@ to implement this adaptive grid.
 
         The minimum percentage value the hyper image is mulitpled by in order to determine the value fluxes are rounded
         up to.
+    hyper_noise_limit -> float
+        When noise scaling is activated (E.g. via hyper galaxies) this value is the highest value a noise value can
+        numerically be scaled up too. This prevents extremely large noise map values creating numerically unstable
+        log likelihood values.
+    stochastic_outputs -> bool
+        If ``True``, information on the stochastic likelihood behaviour of any KMeans based pixelization is output.
+
+[test]
+    test_mode -> bool
+        If ``True`` this disables sampling of a search to provide a solution in one iteration. It is used for testing
+        **PyAutoLens**.
+
 
 non_linear
 ----------
 
-These config files are found at 'autolens_workspace/config/non_linear' and they contain the default settings used by
-every non-linear search. The [search], [settings] and [initialize] sections of the non-linear configs contains settings
-specific to certain non-linear searches, and the documentation for these variables should be found by inspecting the
-`API Documentation <https://pyautolens.readthedocs.io/en/latest/api/api.html>`_ of the relevent non-linear search object.
+The 'autolens_workspace/config/non_linear' config files contain the default settings used by every non-linear search.
+The [search], [settings] and [initialize] sections of the non-linear configs contains settings specific to a
+non-linear searches, and the documentation for these variables should be found by inspecting the
+`API Documentation <https://pyautolens.readthedocs.io/en/latest/api/api.html>`_ of the relevent non-linear search
+object.
 
-The following config sections and variables are generic across all non-linear search configs (e.g.
-config/non_linear/nest/DynestyStatic.ini, config/non_linear/mcmc/Emcee.ini, etc.):
+The following config sections and variables are generic across all non-linear search configs:
 
 [updates]
    iterations_per_update -> int
@@ -158,9 +166,13 @@ config/non_linear/nest/DynestyStatic.ini, config/non_linear/mcmc/Emcee.ini, etc.
         interpreter.
 
 [prior_passer]
-sigma=3.0
-use_errors=True
-use_widths=True
+    sigma : float
+        For non-linear search chaining and model prior passing, the sigma value of the inferred model parameter used
+        as the sigma of the passed Gaussian prior.
+    use_errors : bool
+        If ``True``, the errors of the previous model's results are used when passing priors.
+    use_widths : bool
+        If ``True`` the width of the model parameters defined in the priors config file are used.
 
 [parallel]
     number_of_cores -> int
@@ -180,7 +192,9 @@ visualize
 ---------
 
 These config files are found at 'autolens_workspace/config/visualize' and they contain the default settings used by
-visualization in **PyAutoLens**. The *general.ini* config contains the following sections and variables:
+visualization in **PyAutoLens**. The majority of config files are described in the ``autolens_workspace/plot`` package.
+
+The *general.ini* config contains the following sections and variables:
 
 [general]
     backend -> str
@@ -202,22 +216,24 @@ visualization in **PyAutoLens**. The *general.ini* config contains the following
 
         Agg (outputs to .fits / .png but doesn't'display figures during a run on your computer screen)
 
+The ``plots.ini`` config file customizes every image that is output to hard-disk during a model-fit.
+
+The ``include.ini`` config file customizes every feature that appears on plotted images by default (e.g. crtiical
+curves, a mask, light profile centres, etc.).
+
 priors
 ------
 
 These config files are found at 'autolens_workspace/config/priors' and they contain the default priors and related
-variables for every model-component in a project, using .json format files (as opposed to .ini. for most config files).
-
-The autolens workspace contains example json_prior files for the 1D data fitting problem. An example entry of the
-json configs for the ``sigma`` parameter of the ``Gaussian`` class is as follows:
+variables for every light profile and mass profile when it is used as a model. They appear as follows:
 
 .. code-block:: bash
 
-    "Gaussian": {
-        "sigma": {
+    "SphIsothermal": {
+        "einstein_radius": {
             "type": "Uniform",
             "lower_limit": 0.0,
-            "upper_limit": 30.0,
+            "upper_limit": 4.0,
             "width_modifier": {
                 "type": "Absolute",
                 "value": 0.2
@@ -233,7 +249,7 @@ The sections of this example config set the following:
 json config
     type -> Prior
         The default prior given to this parameter which is used by the non-linear search. In the example above, a
-        UniformPrior is used with lower_limit of 0.0 and upper_limit of 30.0. A GaussianPrior could be used by
+        UniformPrior is used with lower_limit of 0.0 and upper_limit of 4.0. A GaussianPrior could be used by
         putting "Gaussian" in the "type" box, with "mean" and "sigma" used to set the default values. Any prior can be
         set in an analogous fashion (see the example configs).
     width_modifier
@@ -264,9 +280,6 @@ Two examples using the 1D data fitting example for the config file **label.ini**
 
 The **label_format.ini** config file specifies the format certain parameters are output as in output files like the
 *model.results* file.
-
-Tags are self-explanatory and named after the input value of the class they are paired with. For a description of the
-settings themselves checkout the `API Documentation <https://pyautolens.readthedocs.io/en/latest/api/api.html>`_.
 
 grids
 -----

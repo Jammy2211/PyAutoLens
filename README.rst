@@ -125,7 +125,7 @@ with an ``EllSersic``.
     mask = al.Mask2D.circular(
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
     )
-    masked_imaging = imaging.apply_mask(mask=mask)
+    imaging = imaging.apply_mask(mask=mask)
 
     """
     We model the lens galaxy using an elliptical isothermal mass profile and
@@ -151,7 +151,7 @@ with an ``EllSersic``.
     We next set up the `Analysis`, which contains the `log likelihood function` that the
     non-linear search calls to fit the lens model to the data.
     """
-    analysis = al.AnalysisImaging(dataset=masked_imaging)
+    analysis = al.AnalysisImaging(dataset=imaging)
 
     """
     To perform the model-fit we pass the model and analysis to the search's fit method. This will

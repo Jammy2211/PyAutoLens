@@ -3,6 +3,10 @@ from typing import List, Dict, Optional
 from autoarray.structures.arrays import values
 from autoarray.structures.grids.two_d import grid_2d_irregular
 
+import json
+import os
+from os import path
+
 
 class PointSourceDataset:
     def __init__(
@@ -54,8 +58,10 @@ class PointSourceDataset:
             "name": self.name,
             "positions": list(map(list, self.positions)),
             "positions_noise_map": list(self.positions_noise_map),
-            "fluxes": list(self.fluxes),
-            "fluxes_noise_map": list(self.fluxes_noise_map),
+            "fluxes": list(self.fluxes) if self.fluxes is not None else None,
+            "fluxes_noise_map": list(self.fluxes_noise_map)
+            if self.fluxes_noise_map is not None
+            else None,
         }
 
     @classmethod
@@ -76,8 +82,12 @@ class PointSourceDataset:
             name=dict_["name"],
             positions=grid_2d_irregular.Grid2DIrregular(dict_["positions"]),
             positions_noise_map=values.ValuesIrregular(dict_["positions_noise_map"]),
-            fluxes=values.ValuesIrregular(dict_["fluxes"]),
-            fluxes_noise_map=values.ValuesIrregular(dict_["fluxes_noise_map"]),
+            fluxes=values.ValuesIrregular(dict_["fluxes"])
+            if dict_["fluxes"] is not None
+            else None,
+            fluxes_noise_map=values.ValuesIrregular(dict_["fluxes_noise_map"])
+            if dict_["fluxes_noise_map"] is not None
+            else None,
         )
 
 
@@ -131,3 +141,30 @@ class PointSourceDict(dict):
         A collection of point source datasets.
         """
         return cls(list(map(PointSourceDataset.from_dict, dicts)))
+
+    @classmethod
+    def from_json(cls, file_path):
+
+        with open(file_path) as infile:
+            dicts = json.load(infile)
+
+        return cls.from_dicts(dicts=dicts)
+
+    def output_to_json(self, file_path, overwrite=False):
+
+        file_dir = os.path.split(file_path)[0]
+
+        if not path.exists(file_dir):
+            os.makedirs(file_dir)
+
+        if overwrite and path.exists(file_path):
+            os.remove(file_path)
+        elif not overwrite and path.exists(file_path):
+            raise FileExistsError(
+                "The file ",
+                file_path,
+                " already exists. Set overwrite=True to overwrite this" "file",
+            )
+
+        with open(file_path, "w+") as f:
+            json.dump(self.dicts, f)

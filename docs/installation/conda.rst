@@ -6,7 +6,7 @@ Installation with conda
 Installation via a conda environment circumvents compatibility issues when installing certain libraries. This guide
 assumes you have a working installation of `conda <https://conda.io/miniconda.html>`_.
 
-First, create a conda environment (we name is ``autolens`` to signify it is for the **PyAutoLens** install):
+First, create a conda environment (we name this ``autolens`` to signify it is for the **PyAutoLens** install):
 
 The command below creates this environment with some of the bigger package requirements, the rest will be installed
 with **PyAutoFit** via pip:

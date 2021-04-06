@@ -17,14 +17,12 @@ images are computed. It is this image that is mapped to Fourier space to compare
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
     )
 
-    aplt.Tracer.image(tracer=tracer, grid=real_space_mask.masked_grid)
-
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/image.png
   :width: 400
   :alt: Alternative text
 
-We next load an interferometer dataset from fits files, which follows the same API that we have seen for an `Imaging`
-object.
+We next load an ``Interferometer`` dataset from fits files, which follows the same API that we have seen
+for an ``Imaging`` object.
 
 .. code-block:: bash
 
@@ -34,6 +32,7 @@ object.
         visibilities_path=path.join(dataset_path, "visibilities.fits"),
         noise_map_path=path.join(dataset_path, "noise_map.fits"),
         uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
+        real_space_mask=real_space_mask
     )
 
     interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
@@ -50,9 +49,9 @@ like (these are representative of an ALMA dataset with ~ 1 million visibilities)
   :width: 400
   :alt: Alternative text
 
-To perform uv-plane modeling, **PyAutoLens** next Fourier transforms this image from real-sapce to the uv-plane.
-This operation uses a *Transformer* object, of which there are multiple available in **PyAutoLens**. This includes
-a direct Fourier transform which performs the exact Fourier transformw without approximation.
+To perform uv-plane modeling, **PyAutoLens** Fourier transforms the lensed image (computed via a ``Tracer``) from
+real-space to the uv-plane. This operation uses a ``Transformer`` object, of which there are multiple available
+in **PyAutoLens**. This includes a direct Fourier transform which performs the exact Fourier transform without approximation.
 
 .. code-block:: bash
 
@@ -70,8 +69,8 @@ transform of ~10 million in less than a second!
 
     transformer_class = al.TransformerNUFFT
 
-The perform a fit, we follow the same process we did for imaging. We do not need to mask an interferometer dataset,
-but we will want to apply the settings above:
+To perform a fit, we follow the same process we did for imaging. We do not need to mask an interferometer dataset,
+but we will apply the settings above:
 
 .. code-block:: bash
 
@@ -79,7 +78,7 @@ but we will want to apply the settings above:
         settings=al.SettingsInterferometer(transformer_class=transformer_class)
     )
 
-The interferometer can now be used with a *FitInterferometer* object to fit it to a data-set:
+The interferometer can now be passed to a ``FitInterferometer`` object to fit it to a data-set:
 
 .. code-block:: bash
 
@@ -99,7 +98,8 @@ And here is what the Fourier transformed model visibilities look like:
   :width: 400
   :alt: Alternative text
 
-To show the fit to the real and imaginary visibilities, we plot the residuals and chi-squared values as a function uv-distance:
+To show the fit to the real and imaginary visibilities, we plot the residuals and chi-squared values as a function
+uv-distance:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/residual_map_real.png
   :width: 400
@@ -122,7 +122,7 @@ directly fitting the visibilities in the uv-plane. The source reconstruction is 
 
 Computing this source recontruction would be extremely inefficient if **PyAutoLens** used a traditional approach to
 linear algebra which explicitly stored in memory the values required to solve for the source fluxes. In fact, for an
-interferomter dataset of ~10 million visibilities this would require **hundreds of GB of memory**!
+interferometer dataset of ~10 million visibilities this would require **hundreds of GB of memory**!
 
 **PyAutoLens** uses the library **PyLops** (https://pylops.readthedocs.io/en/latest/) to represent this calculation as
 a sequence of memory-light linear operators.
