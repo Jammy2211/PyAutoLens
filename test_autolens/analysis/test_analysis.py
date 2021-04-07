@@ -282,7 +282,7 @@ class TestAnalysisImaging:
             instance=instance
         )
 
-        assert stochastic_log_evidences == None
+        assert stochastic_log_evidences is None
 
         galaxies.source = al.Galaxy(
             redshift=1.0,
