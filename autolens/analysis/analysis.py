@@ -109,13 +109,13 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
     def stochastic_log_evidences_for_instance(self, instance) -> List[float]:
         raise NotImplementedError()
 
-    def save_settings(self, paths: af.Paths):
+    def save_settings(self, paths: af.DirectoryPaths):
 
         super().save_settings(paths=paths)
 
         paths.save_object("settings_lens", self.settings_lens)
 
-    def save_stochastic_outputs(self, paths: af.Paths, samples: af.OptimizerSamples):
+    def save_stochastic_outputs(self, paths: af.DirectoryPaths, samples: af.OptimizerSamples):
 
         stochastic_log_evidences_json_file = path.join(
             paths.output_path, "stochastic_log_evidences.json"
@@ -264,7 +264,7 @@ class AnalysisImaging(AnalysisDataset):
 
         return log_evidences
 
-    def visualize(self, paths: af.Paths, instance, during_analysis):
+    def visualize(self, paths: af.DirectoryPaths, instance, during_analysis):
 
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
@@ -310,7 +310,7 @@ class AnalysisImaging(AnalysisDataset):
             )
 
     def save_results_for_aggregator(
-            self, paths: af.Paths, samples: af.OptimizerSamples, model: af.Collection
+            self, paths: af.DirectoryPaths, samples: af.OptimizerSamples, model: af.Collection
     ):
 
         pixelization = model_util.pixelization_from(model=model)
@@ -519,7 +519,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         return log_evidences
 
-    def visualize(self, paths: af.Paths, instance, during_analysis):
+    def visualize(self, paths: af.DirectoryPaths, instance, during_analysis):
 
         self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
@@ -562,7 +562,7 @@ class AnalysisInterferometer(AnalysisDataset):
             )
 
     def save_results_for_aggregator(
-            self, paths: af.Paths, samples: af.OptimizerSamples, model: af.Collection
+            self, paths: af.DirectoryPaths, samples: af.OptimizerSamples, model: af.Collection
     ):
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
@@ -699,7 +699,7 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
             samples=samples, model=model, analysis=self, search=search
         )
 
-    def save_attributes_for_aggregator(self, paths: af.Paths):
+    def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
 
         paths.save_object("dataset", self.point_source_dict)
 
