@@ -1,32 +1,32 @@
-import numpy as np
-from os import path
-import pickle
-from typing import List
 import json
-from scipy.stats import norm
-from astropy import cosmology as cosmo
-import numba
+from os import path
+from typing import List
 
-from autoconf import conf
+import numba
+import numpy as np
+from astropy import cosmology as cosmo
+from scipy.stats import norm
+
 import autofit as af
-from autofit.exc import FitException
-from autoarray.structures.grids.two_d import grid_2d_irregular
-from autoarray.inversion import pixelizations as pix, inversions as inv
 from autoarray import preloads as pload
 from autoarray.exc import PixelizationException, InversionException, GridException
+from autoarray.inversion import pixelizations as pix, inversions as inv
+from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoconf import conf
+from autofit.exc import FitException
+from autogalaxy.analysis import analysis as a
 from autogalaxy.analysis import model_util
 from autogalaxy.galaxy import galaxy as g
-from autogalaxy.analysis import analysis as a
-from autolens.lens import ray_tracing
-from autolens.lens import positions_solver as psolve
+from autolens import exc
+from autolens.analysis import result as res
+from autolens.analysis import visualizer as vis
 from autolens.dataset import point_source as ps
 from autolens.fit import fit_imaging
 from autolens.fit import fit_interferometer
 from autolens.fit import fit_point_source
+from autolens.lens import positions_solver as psolve
+from autolens.lens import ray_tracing
 from autolens.lens import settings
-from autolens.analysis import result as res
-from autolens.analysis import visualizer as vis
-from autolens import exc
 
 
 class AnalysisLensing:
@@ -47,15 +47,15 @@ class AnalysisLensing:
 
 class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
     def __init__(
-        self,
-        dataset,
-        positions: grid_2d_irregular.Grid2DIrregular = None,
-        hyper_result=None,
-        cosmology=cosmo.Planck15,
-        settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=inv.SettingsInversion(),
-        settings_lens=settings.SettingsLens(),
-        preloads=pload.Preloads(),
+            self,
+            dataset,
+            positions: grid_2d_irregular.Grid2DIrregular = None,
+            hyper_result=None,
+            cosmology=cosmo.Planck15,
+            settings_pixelization=pix.SettingsPixelization(),
+            settings_inversion=inv.SettingsInversion(),
+            settings_lens=settings.SettingsLens(),
+            preloads=pload.Preloads(),
     ):
         """
 
@@ -113,16 +113,12 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
 
         super().save_settings(paths=paths)
 
-        with open(path.join(paths.pickle_path, "settings_lens.pickle"), "wb+") as f:
-            pickle.dump(self.settings_lens, f)
+        paths.save_object("settings_lens", self.settings_lens)
 
     def save_stochastic_outputs(self, paths: af.Paths, samples: af.OptimizerSamples):
 
         stochastic_log_evidences_json_file = path.join(
             paths.output_path, "stochastic_log_evidences.json"
-        )
-        stochastic_log_evidences_pickle_file = path.join(
-            paths.pickle_path, "stochastic_log_evidences.pickle"
         )
 
         try:
@@ -142,8 +138,10 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
                 [float(evidence) for evidence in stochastic_log_evidences], outfile
             )
 
-        with open(stochastic_log_evidences_pickle_file, "wb") as f:
-            pickle.dump(stochastic_log_evidences, f)
+        paths.save_object(
+            "stochastic_log_evidences",
+            stochastic_log_evidences
+        )
 
         visualizer = vis.Visualizer(visualize_path=paths.image_path)
 
@@ -194,15 +192,15 @@ class AnalysisImaging(AnalysisDataset):
                 hyper_background_noise=hyper_background_noise,
             ).figure_of_merit
         except (
-            PixelizationException,
-            InversionException,
-            GridException,
-            OverflowError,
+                PixelizationException,
+                InversionException,
+                GridException,
+                OverflowError,
         ) as e:
             raise FitException from e
 
     def imaging_fit_for_tracer(
-        self, tracer, hyper_image_sky, hyper_background_noise, use_hyper_scalings=True
+            self, tracer, hyper_image_sky, hyper_background_noise, use_hyper_scalings=True
     ):
 
         return fit_imaging.FitImaging(
@@ -225,7 +223,7 @@ class AnalysisImaging(AnalysisDataset):
             return
 
         if not isinstance(
-            tracer.pixelizations_of_planes[-1], pix.VoronoiBrightnessImage
+                tracer.pixelizations_of_planes[-1], pix.VoronoiBrightnessImage
         ):
             return
 
@@ -254,10 +252,10 @@ class AnalysisImaging(AnalysisDataset):
                     preloads=self.preloads,
                 ).log_evidence
             except (
-                PixelizationException,
-                InversionException,
-                GridException,
-                OverflowError,
+                    PixelizationException,
+                    InversionException,
+                    GridException,
+                    OverflowError,
             ) as e:
                 log_evidence = None
 
@@ -312,7 +310,7 @@ class AnalysisImaging(AnalysisDataset):
             )
 
     def save_results_for_aggregator(
-        self, paths: af.Paths, samples: af.OptimizerSamples, model: af.Collection
+            self, paths: af.Paths, samples: af.OptimizerSamples, model: af.Collection
     ):
 
         pixelization = model_util.pixelization_from(model=model)
@@ -322,7 +320,7 @@ class AnalysisImaging(AnalysisDataset):
                 self.save_stochastic_outputs(paths=paths, samples=samples)
 
     def make_result(
-        self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
+            self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
         return res.ResultImaging(
             samples=samples, model=model, analysis=self, search=search
@@ -339,15 +337,15 @@ class AnalysisImaging(AnalysisDataset):
 
 class AnalysisInterferometer(AnalysisDataset):
     def __init__(
-        self,
-        dataset,
-        positions: grid_2d_irregular.Grid2DIrregular = None,
-        hyper_result=None,
-        cosmology=cosmo.Planck15,
-        settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=inv.SettingsInversion(),
-        settings_lens=settings.SettingsLens(),
-        preloads=pload.Preloads(),
+            self,
+            dataset,
+            positions: grid_2d_irregular.Grid2DIrregular = None,
+            hyper_result=None,
+            cosmology=cosmo.Planck15,
+            settings_pixelization=pix.SettingsPixelization(),
+            settings_inversion=inv.SettingsInversion(),
+            settings_lens=settings.SettingsLens(),
+            preloads=pload.Preloads(),
     ):
 
         super().__init__(
@@ -415,15 +413,15 @@ class AnalysisInterferometer(AnalysisDataset):
             )
             return fit.figure_of_merit
         except (
-            PixelizationException,
-            InversionException,
-            GridException,
-            OverflowError,
+                PixelizationException,
+                InversionException,
+                GridException,
+                OverflowError,
         ) as e:
             raise FitException from e
 
     def associate_hyper_visibilities(
-        self, instance: af.ModelInstance
+            self, instance: af.ModelInstance
     ) -> af.ModelInstance:
         """
         Takes visibilities from the last result, if there is one, and associates them with galaxies in this search
@@ -450,7 +448,7 @@ class AnalysisInterferometer(AnalysisDataset):
         """
         if self.hyper_galaxy_visibilities_path_dict is not None:
             for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                g.Galaxy
+                    g.Galaxy
             ):
                 if galaxy_path in self.hyper_galaxy_visibilities_path_dict:
                     galaxy.hyper_model_visibilities = self.hyper_model_visibilities
@@ -461,7 +459,7 @@ class AnalysisInterferometer(AnalysisDataset):
         return instance
 
     def interferometer_fit_for_tracer(
-        self, tracer, hyper_background_noise, use_hyper_scalings=True
+            self, tracer, hyper_background_noise, use_hyper_scalings=True
     ):
 
         return fit_interferometer.FitInterferometer(
@@ -483,7 +481,7 @@ class AnalysisInterferometer(AnalysisDataset):
             return None
 
         if not isinstance(
-            tracer.pixelizations_of_planes[-1], pix.VoronoiBrightnessImage
+                tracer.pixelizations_of_planes[-1], pix.VoronoiBrightnessImage
         ):
             return None
 
@@ -509,10 +507,10 @@ class AnalysisInterferometer(AnalysisDataset):
                     preloads=self.preloads,
                 ).log_evidence
             except (
-                PixelizationException,
-                InversionException,
-                GridException,
-                OverflowError,
+                    PixelizationException,
+                    InversionException,
+                    GridException,
+                    OverflowError,
             ) as e:
                 log_evidence = None
 
@@ -564,14 +562,14 @@ class AnalysisInterferometer(AnalysisDataset):
             )
 
     def save_results_for_aggregator(
-        self, paths: af.Paths, samples: af.OptimizerSamples, model: af.Collection
+            self, paths: af.Paths, samples: af.OptimizerSamples, model: af.Collection
     ):
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
             self.save_stochastic_outputs(paths=paths, samples=samples)
 
     def make_result(
-        self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
+            self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
         return res.ResultInterferometer(
             samples=samples, model=model, analysis=self, search=search
@@ -589,12 +587,12 @@ class AnalysisInterferometer(AnalysisDataset):
 
 class AnalysisPointSource(af.Analysis, AnalysisLensing):
     def __init__(
-        self,
-        point_source_dict: ps.PointSourceDict,
-        solver: psolve.PositionsSolver,
-        imaging=None,
-        cosmology=cosmo.Planck15,
-        settings_lens=settings.SettingsLens(),
+            self,
+            point_source_dict: ps.PointSourceDict,
+            solver: psolve.PositionsSolver,
+            imaging=None,
+            cosmology=cosmo.Planck15,
+            settings_lens=settings.SettingsLens(),
     ):
         """
         The analysis performed for model-fitting a point-source dataset, for example fitting the point-sources of a
@@ -695,7 +693,7 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
         visualizer = vis.Visualizer(visualize_path=paths.image_path)
 
     def make_result(
-        self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
+            self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
         return res.ResultPointSource(
             samples=samples, model=model, analysis=self, search=search
@@ -703,13 +701,12 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
 
     def save_attributes_for_aggregator(self, paths: af.Paths):
 
-        with open(f"{paths.pickle_path}/dataset.pickle", "wb") as f:
-            pickle.dump(self.point_source_dict, f)
+        paths.save_object("dataset", self.point_source_dict)
 
 
 class AttributesImaging(a.AttributesImaging):
     def __init__(
-        self, cosmology, positions, hyper_model_image, hyper_galaxy_image_path_dict
+            self, cosmology, positions, hyper_model_image, hyper_galaxy_image_path_dict
     ):
         super().__init__(
             cosmology=cosmology,
@@ -722,14 +719,13 @@ class AttributesImaging(a.AttributesImaging):
 
 class AttributesInterferometer(a.AttributesInterferometer):
     def __init__(
-        self,
-        cosmology,
-        real_space_mask,
-        positions,
-        hyper_model_image,
-        hyper_galaxy_image_path_dict,
+            self,
+            cosmology,
+            real_space_mask,
+            positions,
+            hyper_model_image,
+            hyper_galaxy_image_path_dict,
     ):
-
         super().__init__(
             cosmology=cosmology,
             real_space_mask=real_space_mask,
