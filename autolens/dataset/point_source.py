@@ -6,6 +6,7 @@ from autoarray.structures.grids.two_d import grid_2d_irregular
 import json
 import os
 from os import path
+import numpy as np
 
 
 class PointSourceDataset:
@@ -56,9 +57,11 @@ class PointSourceDataset:
         """
         return {
             "name": self.name,
-            "positions": list(map(list, self.positions)),
+            "positions": list(map(list, np.round(self.positions, 4))),
             "positions_noise_map": list(self.positions_noise_map),
-            "fluxes": list(self.fluxes) if self.fluxes is not None else None,
+            "fluxes": list(np.round(self.fluxes, 4))
+            if self.fluxes is not None
+            else None,
             "fluxes_noise_map": list(self.fluxes_noise_map)
             if self.fluxes_noise_map is not None
             else None,
@@ -119,6 +122,13 @@ class PointSourceDict(dict):
             self[point_source_dataset.name] = point_source_dataset
 
     @property
+    def positions_list(self):
+        return [
+            point_source_dataset.positions
+            for keys, point_source_dataset in self.items()
+        ]
+
+    @property
     def dicts(self) -> List[dict]:
         """
         A list of dictionaries representing this collection of point source
@@ -167,4 +177,4 @@ class PointSourceDict(dict):
             )
 
         with open(file_path, "w+") as f:
-            json.dump(self.dicts, f)
+            json.dump(self.dicts, f, indent=4)

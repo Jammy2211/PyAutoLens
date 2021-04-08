@@ -57,15 +57,15 @@ def test__tracer_generator_from_aggregator(masked_imaging_7x7, samples, model):
 
 def test__imaging_generator_from_aggregator(imaging_7x7, mask_7x7, samples, model):
 
-    masked_imaging_7x7 = imaging_7x7.apply_mask(
-        mask=mask_7x7,
+    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_7x7)
+    masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
         settings=al.SettingsImaging(
             grid_class=al.Grid2DIterate,
             grid_inversion_class=al.Grid2DInterpolate,
             fractional_accuracy=0.5,
             sub_steps=[2],
             pixel_scales_interp=0.1,
-        ),
+        )
     )
 
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)

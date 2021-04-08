@@ -83,8 +83,9 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1)
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
+            settings=al.SettingsImaging(sub_size=1)
         )
 
         # Setup as a ray trace instance, using a light profile for the lens
@@ -183,8 +184,10 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1, renormalize_psf=False)
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+
+        masked_imaging_7x7.apply_settings(
+            settings=al.SettingsImaging(sub_size=1, renormalize_psf=False)
         )
 
         # Setup as a ray trace instance, using a light profile for the lens
@@ -287,8 +290,9 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1, renormalize_psf=False)
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+        masked_imaging_7x7.apply_settings(
+            settings=al.SettingsImaging(sub_size=1, renormalize_psf=False)
         )
 
         # Setup as a ray trace instance, using a light profile for the lens
@@ -394,9 +398,10 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1)
-        )  # Setup as a ray trace instance, using a light profile for the lens
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+        masked_imaging_7x7.apply_settings(settings=al.SettingsImaging(sub_size=1))
+
+        # Setup as a ray trace instance, using a light profile for the lens
 
         g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
@@ -495,9 +500,10 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1)
-        )  # Setup as a ray trace instance, using a light profile for the lens
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+        masked_imaging_7x7.apply_settings(settings=al.SettingsImaging(sub_size=1))
+
+        # Setup as a ray trace instance, using a light profile for the lens
 
         g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
@@ -603,8 +609,9 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1, renormalize_psf=False)
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+        masked_imaging_7x7.apply_settings(
+            settings=al.SettingsImaging(sub_size=1, renormalize_psf=False)
         )
 
         # Setup as a ray trace instance, using a light profile for the lens
