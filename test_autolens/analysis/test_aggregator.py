@@ -1,8 +1,9 @@
 from os import path
 
+import pytest
+
 import autofit as af
 import autolens as al
-import pytest
 from autolens.mock import mock
 
 directory = path.dirname(path.realpath(__file__))
@@ -15,7 +16,6 @@ def make_path():
 
 @pytest.fixture(name="samples")
 def make_samples():
-
     galaxy_0 = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(centre=(0.0, 1.0)))
     galaxy_1 = al.Galaxy(redshift=1.0, light=al.lp.EllSersic())
 
@@ -35,10 +35,10 @@ def make_model():
 
 
 def test__tracer_generator_from_aggregator(masked_imaging_7x7, samples, model):
-
     search = mock.MockSearch(
-        paths=af.Paths(path_prefix="aggregator_tracer_gen"), samples=samples
+        samples=samples
     )
+    search.paths = af.Paths(path_prefix="aggregator_tracer_gen")
 
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
@@ -56,7 +56,6 @@ def test__tracer_generator_from_aggregator(masked_imaging_7x7, samples, model):
 
 
 def test__imaging_generator_from_aggregator(imaging_7x7, mask_7x7, samples, model):
-
     masked_imaging_7x7 = imaging_7x7.apply_mask(
         mask=mask_7x7,
         settings=al.SettingsImaging(
@@ -71,8 +70,9 @@ def test__imaging_generator_from_aggregator(imaging_7x7, mask_7x7, samples, mode
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
     search = mock.MockSearch(
-        paths=af.Paths(path_prefix="aggregator_masked_imaging_gen"), samples=samples
+        samples=samples
     )
+    search.paths = af.Paths(path_prefix="aggregator_masked_imaging_gen")
 
     search.fit(model=model, analysis=analysis)
 
@@ -90,12 +90,12 @@ def test__imaging_generator_from_aggregator(imaging_7x7, mask_7x7, samples, mode
 
 
 def test__fit_imaging_generator_from_aggregator(masked_imaging_7x7, samples, model):
-
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
     search = mock.MockSearch(
-        paths=af.Paths(path_prefix="aggregator_fit_imaging_gen"), samples=samples
+        samples=samples
     )
+    search.paths = af.Paths(path_prefix="aggregator_fit_imaging_gen")
 
     search.fit(model=model, analysis=analysis)
 
@@ -108,14 +108,13 @@ def test__fit_imaging_generator_from_aggregator(masked_imaging_7x7, samples, mod
 
 
 def test__interferometer_generator_from_aggregator(
-    visibilities_7,
-    visibilities_noise_map_7,
-    uv_wavelengths_7x2,
-    mask_7x7,
-    samples,
-    model,
+        visibilities_7,
+        visibilities_noise_map_7,
+        uv_wavelengths_7x2,
+        mask_7x7,
+        samples,
+        model,
 ):
-
     interferometer_7 = al.Interferometer(
         visibilities=visibilities_7,
         noise_map=visibilities_noise_map_7,
@@ -132,8 +131,9 @@ def test__interferometer_generator_from_aggregator(
     )
 
     search = mock.MockSearch(
-        paths=af.Paths(path_prefix="aggregator_interferometer_gen"), samples=samples
+        samples=samples
     )
+    search.paths = af.Paths(path_prefix="aggregator_interferometer_gen")
 
     analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
@@ -155,12 +155,12 @@ def test__interferometer_generator_from_aggregator(
 
 
 def test__fit_interferometer_generator_from_aggregator(
-    interferometer_7, mask_7x7, samples, model
+        interferometer_7, mask_7x7, samples, model
 ):
-
     search = mock.MockSearch(
-        paths=af.Paths(path_prefix="aggregator_fit_interferometer_gen"), samples=samples
+        samples=samples
     )
+    search.paths = af.Paths(path_prefix="aggregator_fit_interferometer_gen")
 
     analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
@@ -184,7 +184,6 @@ class MockResult:
 
 class MockAggregator:
     def __init__(self, grid_search_result):
-
         self.grid_search_result = grid_search_result
 
     @property
@@ -193,7 +192,6 @@ class MockAggregator:
 
     def values(self, str):
         return self.grid_search_results
-
 
 # def test__results_array_from_results_file(path):
 #
