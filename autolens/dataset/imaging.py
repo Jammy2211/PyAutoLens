@@ -10,7 +10,7 @@ class SimulatorImaging(imaging.SimulatorImaging):
         exposure_time: float,
         background_sky_level: float = 0.0,
         psf: kernel_2d.Kernel2D = None,
-        renormalize_psf: bool = True,
+        normalize_psf: bool = True,
         read_noise: float = None,
         add_poisson_noise: bool = True,
         noise_if_add_noise_false: float = 0.1,
@@ -27,8 +27,8 @@ class SimulatorImaging(imaging.SimulatorImaging):
             The exposure time of the simulated imaging.
         background_sky_level : float
             The level of the background sky of the simulated imaging.
-        renormalize_psf : bool
-            If `True`, the PSF kernel is renormalized so all values sum to 1.0.
+        normalize_psf : bool
+            If `True`, the PSF kernel is normalized so all values sum to 1.0.
         read_noise : float
             The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with
             sigma equal to the value `read_noise`.
@@ -45,7 +45,7 @@ class SimulatorImaging(imaging.SimulatorImaging):
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
-            renormalize_psf=renormalize_psf,
+            normalize_psf=normalize_psf,
             read_noise=read_noise,
             add_poisson_noise=add_poisson_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,

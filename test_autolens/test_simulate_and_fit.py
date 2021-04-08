@@ -95,7 +95,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
     grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, sub_size=1)
 
     psf = al.Kernel2D.from_gaussian(
-        shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, renormalize=True
+        shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
     )
 
     lens_galaxy = al.Galaxy(

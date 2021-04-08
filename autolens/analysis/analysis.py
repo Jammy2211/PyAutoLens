@@ -113,8 +113,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
 
         super().save_settings(paths=paths)
 
-        with open(path.join(paths.pickle_path, "settings_lens.pickle"), "wb+") as f:
-            pickle.dump(self.settings_lens, f)
+        paths.save_object("settings_lens", self.dataset.settings)
 
     def save_stochastic_outputs(self, paths: af.Paths, samples: af.OptimizerSamples):
 
