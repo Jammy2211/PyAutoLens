@@ -4,6 +4,7 @@ import json
 
 from autoconf import conf
 from autoarray.structures.arrays.two_d import array_2d
+from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.structures import visibilities
 from autogalaxy.profiles import light_profiles as lp
@@ -383,6 +384,11 @@ class ResultInterferometer(ResultDataset):
 
 
 class ResultPointSource(Result):
+
+    @property
+    def grid(self):
+        return grid_2d.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
+
     @property
     def max_log_likelihood_fit(self):
 

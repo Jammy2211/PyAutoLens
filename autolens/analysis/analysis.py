@@ -659,33 +659,40 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
 
             log_likelihood += fit_positions.log_likelihood
 
-            if point_source_dataset.fluxes is not None:
-                fit_fluxes = self.fit_fluxes_for(
-                    point_source_dataset=point_source_dataset, tracer=tracer
-                )
+            fit_fluxes = self.fit_fluxes_for(
+                point_source_dataset=point_source_dataset, tracer=tracer
+            )
+
+            if fit_fluxes is not None:
                 log_likelihood += fit_fluxes.log_likelihood
 
         return log_likelihood
 
     def fit_positions_for(self, point_source_dataset, tracer):
 
-        return fit_point_source.FitPositionsImage(
-            name=point_source_dataset.name,
-            positions=point_source_dataset.positions,
-            noise_map=point_source_dataset.positions_noise_map,
-            positions_solver=self.solver,
-            tracer=tracer,
-        )
+        try:
+            return fit_point_source.FitPositionsImage(
+                name=point_source_dataset.name,
+                positions=point_source_dataset.positions,
+                noise_map=point_source_dataset.positions_noise_map,
+                positions_solver=self.solver,
+                tracer=tracer,
+            )
+        except exc.PointSourceExtractionException:
+            pass
 
     def fit_fluxes_for(self, point_source_dataset, tracer):
 
-        return fit_point_source.FitFluxes(
-            name=point_source_dataset.name,
-            fluxes=point_source_dataset.fluxes,
-            noise_map=point_source_dataset.fluxes_noise_map,
-            positions=point_source_dataset.positions,
-            tracer=tracer,
-        )
+        try:
+            return fit_point_source.FitFluxes(
+                name=point_source_dataset.name,
+                fluxes=point_source_dataset.fluxes,
+                noise_map=point_source_dataset.fluxes_noise_map,
+                positions=point_source_dataset.positions,
+                tracer=tracer,
+            )
+        except exc.PointSourceExtractionException:
+            pass
 
     def visualize(self, paths, instance, during_analysis):
 
@@ -702,8 +709,7 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
 
     def save_attributes_for_aggregator(self, paths: af.Paths):
 
-        with open(f"{paths.pickle_path}/dataset.pickle", "wb") as f:
-            pickle.dump(self.point_source_dict, f)
+        paths.save_object("dataset", self.point_source_dict)
 
 
 class AttributesImaging(a.AttributesImaging):
