@@ -1,10 +1,4 @@
-import autofit as af
 import autolens as al
-
-from autolens.mock import mock
-
-import pytest
-
 
 class TestSetupHyper:
     def test__hyper_galaxies_names_for_lens_and_source(self):

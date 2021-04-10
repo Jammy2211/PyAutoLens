@@ -183,11 +183,6 @@ The following config sections and variables are generic across all non-linear se
 The output path of every non-linear search is also 'tagged' using strings based on the [search] setting of the
 non-linear search:
 
-[tag]
-    name -> str
-        The name of the non-linear search used to start the tag path of output results. For example for the non-linear
-        search DynestyStatic the default name tag is 'dynesty_static'.
-
 visualize
 ---------
 
