@@ -12,7 +12,8 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
     grid = al.Grid2DIterate.uniform(shape_native=(11, 11), pixel_scales=0.2)
 
     psf = al.Kernel2D.manual_native(
-        array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]], pixel_scales=0.2
+        array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]],
+        pixel_scales=grid.pixel_scales,
     )
 
     lens_galaxy = al.Galaxy(
@@ -34,7 +35,7 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
     imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
     imaging.noise_map = al.Array2D.ones(
-        shape_native=imaging.image.shape_native, pixel_scales=0.2
+        shape_native=imaging.image.shape_native, pixel_scales=grid.pixel_scales
     )
 
     file_path = path.join(
@@ -71,8 +72,9 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
         radius=0.8,
     )
 
-    masked_imaging = imaging.apply_mask(
-        mask=mask, settings=al.SettingsImaging(grid_class=al.Grid2DIterate)
+    masked_imaging = imaging.apply_mask(mask=mask)
+    masked_imaging = masked_imaging.apply_settings(
+        settings=al.SettingsImaging(grid_class=al.Grid2DIterate)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -93,7 +95,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
     grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, sub_size=1)
 
     psf = al.Kernel2D.from_gaussian(
-        shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, renormalize=True
+        shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
     )
 
     lens_galaxy = al.Galaxy(
@@ -144,8 +146,9 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
         shape_native=imaging.image.shape_native, pixel_scales=0.2, radius=0.8
     )
 
-    masked_imaging = imaging.apply_mask(
-        mask=mask, settings=al.SettingsImaging(sub_size=1)
+    masked_imaging = imaging.apply_mask(mask=mask)
+    masked_imaging = masked_imaging.apply_settings(
+        settings=al.SettingsImaging(sub_size=1)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -164,7 +167,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
 
 def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normalization_correct():
 
-    grid = al.Grid2D.uniform(shape_native=(51, 51), pixel_scales=0.1, sub_size=2)
+    grid = al.Grid2D.uniform(shape_native=(51, 51), pixel_scales=0.1, sub_size=1)
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
@@ -217,7 +220,9 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         noise_map_path=path.join(file_path, "noise_map.fits"),
         uv_wavelengths_path=path.join(file_path, "uv_wavelengths.fits"),
         real_space_mask=real_space_mask,
-        settings=al.SettingsInterferometer(transformer_class=al.TransformerDFT),
+    )
+    interferometer = interferometer.apply_settings(
+        settings=al.SettingsInterferometer(transformer_class=al.TransformerDFT)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])

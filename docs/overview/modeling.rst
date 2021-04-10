@@ -3,15 +3,15 @@
 Lens Modeling
 -------------
 
-We can use a ``Tracer`` to fit data of a strong lens and use the ``Tracer``'s model-image to quantify its
-goodness-of-fit. Of course, when observe an image of a strong lens, we have no idea what ``LightProfile``'s and
-``MassProfiles``'s we should give our ``Tracer`` to best reproduce the strong lens we observed:
+We can use a ``Tracer`` to fit data of a strong lens with its model-image and quantify its goodness-of-fit via a
+*log_likelihood*. Of course, when observe an image of a strong lens, we have no idea what combination of
+``LightProfile``'s and ``MassProfiles``'s will produce a model-image that looks like the strong lens we observed:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/image.png
   :width: 400
   :alt: Alternative text
 
-The task of finding the right ``LightProfiles``'s and ``MassProfiles``'s is called *lens modeling*.
+The task of finding these ``LightProfiles``'s and ``MassProfiles``'s is called *lens modeling*.
 
 Lens modeling with **PyAutoLens** uses the probabilistic programming language
 `PyAutoFit <https://github.com/rhayes777/PyAutoFit>`_, an open-source Python framework that allows complex model
@@ -24,9 +24,9 @@ We import it separately to **PyAutoLens**
 
     import autofit as af
 
-We compose the lens model that we fit to the data by ``Galaxy``'s to the ``Model`` object. Model galaxies behave
-analogously to a normal ``Galaxy`` object but their  ``LightProfile`` and ``MassProfile`` parameters are not specified
-and are instead determined by a fitting procedure.
+We compose the lens model that we fit to the data using a ``Model`` object, which behaves analogously to the ``Galaxy``,
+``LightProfile`` and ``MassProfile`` used previously, however their parameters are not specified and are instead
+determined by a fitting procedure.
 
 .. code-block:: bash
 
@@ -38,19 +38,24 @@ and are instead determined by a fitting procedure.
     )
     source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllExponential)
 
+We combine the lens and source model galaxies above into a `Collection`, which is the model we will fit. Note how
+we could easily extend this object to compose highly complex models containing many galaxies.
+
+.. code-block:: bash
+
     model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
 
-In the example above, we will fit our strong lens data with two galaxies:
+In this example, we fit our strong lens data with two galaxies:
 
-    - A lens galaxy with a ``EllDevVaucouleurs`` ``LightProfile`` representing a bulge and
-      ``EllIsothermal`` ``MassProfile`` representing its mass.
-    - A source galaxy with a ``EllExponential`` ``LightProfile`` representing a disk.
+    - A lens galaxy with a elliptisl Dev Vaucouleurs ``LightProfile`` representing a bulge and
+      elliptical isothermal ``MassProfile`` representing its mass.
+    - A source galaxy with an elliptical exponential ``LightProfile`` representing a disk.
 
 The redshifts of the lens (z=0.5) and source(z=1.0) are fixed.
 
 We now choose the non-linear search, which is the fitting method used to determine the set of ``LightProfile``
 and ``MassProfile`` parameters that best-fit our data by minimizing the *residuals* and *chi-squared* values and
-maximizing  its *log likelihood*.
+maximizing its *log likelihood*.
 
 In this example we use ``dynesty`` (https://github.com/joshspeagle/dynesty), a nested sampling algorithm we find is
 very effective at lens modeling.
@@ -64,10 +69,10 @@ to fit the lens model to the data.
 
 .. code-block:: bash
 
-    analysis = al.AnalysisImaging(dataset=masked_imaging)
+    analysis = al.AnalysisImaging(dataset=imaging)
 
-To perform the model-fit we pass the model and analysis to the search's fit method. This will
-output results (e.g., dynesty samples, model parameters, visualization) to hard-disk.
+To perform the model-fit we pass the model and analysis to the search's fit method. This will output results (e.g.,
+dynesty samples, model parameters, visualization) to hard-disk.
 
 .. code-block:: bash
 
@@ -75,7 +80,7 @@ output results (e.g., dynesty samples, model parameters, visualization) to hard-
 
 The non-linear search fits the lens model by guessing many lens models over and over iteratively, using the models which
 give a good fit to the data to guide it where to guess subsequent model. An animation of a non-linear search is shown
-below,  where initial lens models give a poor fit to the data but gradually improve (increasing the likelihood) as more
+below, where initial lens models give a poor fit to the data but gradually improve (increasing the likelihood) as more
 iterations are performed.
 
 .. image:: https://github.com/Jammy2211/auto_files/blob/main/lensmodel.gif?raw=true
@@ -101,13 +106,12 @@ low chi-squared values:
   :width: 600
   :alt: Alternative text
 
-In fact, this ``Result`` object contains the full posterior information of our non-linear search, including all
-parameter samples, log likelihood values and tools to compute the errors on the lens model.
-
-The script ``autolens_workspace/examples/mdoel/result.py`` contains a full description of all information contained
+This ``Result`` object contains the full posterior information of our non-linear search, including all
+parameter samples, log likelihood values and tools to compute the errors on the lens model. The
+script ``autolens_workspace/examples/mdoel/result.py`` contains a full description of all information contained
 in a ``Result``.
 
-The galaxy ``Model``'s can be fully customized, making it simple to parameterize and fit many different lens models
+The ``Model`` can be fully customized, making it simple to parameterize and fit many different lens models
 using any combination of ``LightProfile``'s and ``MassProfile``'s light profiles:
 
 .. code-block:: bash

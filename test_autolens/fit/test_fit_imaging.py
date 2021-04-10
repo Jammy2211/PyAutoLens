@@ -83,8 +83,9 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1)
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
+            settings=al.SettingsImaging(sub_size=1)
         )
 
         # Setup as a ray trace instance, using a light profile for the lens
@@ -156,7 +157,7 @@ class TestLikelihood:
             -0.5 * (25.0 + 2.0 * np.log(2 * np.pi * 1.0 ** 2.0)), 1.0e-4
         )
 
-    def test__1x2_image__include_psf_blurring__tracing_fits_data_with_chi_sq_4(self,):
+    def test__1x2_image__include_psf_blurring__tracing_fits_data_with_chi_sq_4(self):
         # This PSF changes the blurred image plane image from [1.0, 1.0] to [1.0, 5.0]
 
         # Thus, the chi squared is 4.0**2.0 + 0.0**2.0 = 16.0
@@ -164,7 +165,7 @@ class TestLikelihood:
         psf = al.Kernel2D.manual_native(
             array=[[0.0, 0.0, 0.0], [0.0, 1.0, 3.0], [0.0, 0.0, 0.0]],
             pixel_scales=1.0,
-            renormalize=False,
+            normalize=False,
         )
 
         imaging = al.Imaging(
@@ -183,8 +184,10 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1, renormalize_psf=False)
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
+            settings=al.SettingsImaging(sub_size=1, use_normalized_psf=False)
         )
 
         # Setup as a ray trace instance, using a light profile for the lens
@@ -287,8 +290,9 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1, renormalize_psf=False)
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
+            settings=al.SettingsImaging(sub_size=1, use_normalized_psf=False)
         )
 
         # Setup as a ray trace instance, using a light profile for the lens
@@ -394,9 +398,12 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1)
-        )  # Setup as a ray trace instance, using a light profile for the lens
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
+            settings=al.SettingsImaging(sub_size=1)
+        )
+
+        # Setup as a ray trace instance, using a light profile for the lens
 
         g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
@@ -495,9 +502,12 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1)
-        )  # Setup as a ray trace instance, using a light profile for the lens
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
+            settings=al.SettingsImaging(sub_size=1)
+        )
+
+        # Setup as a ray trace instance, using a light profile for the lens
 
         g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
@@ -603,8 +613,9 @@ class TestLikelihood:
             pixel_scales=1.0,
         )
 
-        masked_imaging_7x7 = imaging.apply_mask(
-            mask=mask, settings=al.SettingsImaging(sub_size=1, renormalize_psf=False)
+        masked_imaging_7x7 = imaging.apply_mask(mask=mask)
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
+            settings=al.SettingsImaging(sub_size=1, use_normalized_psf=False)
         )
 
         # Setup as a ray trace instance, using a light profile for the lens

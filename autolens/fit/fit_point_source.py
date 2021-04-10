@@ -1,9 +1,10 @@
 from autoarray.structures.arrays import values
 from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.fit.fit import FitData
-from autogalaxy.profiles import point_sources as ps
 
 from functools import partial
+
+from autolens import exc
 
 
 class AbstractFitPositionsSourcePlane:
@@ -86,7 +87,8 @@ class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
 
 class FitPositionsImage(FitData):
     def __init__(self, name, positions, noise_map, tracer, positions_solver):
-        """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
+        """
+        A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
 
         Parameters
@@ -99,8 +101,13 @@ class FitPositionsImage(FitData):
 
         self.name = name
         self.positions_solver = positions_solver
-
         self.point_source_profile = tracer.extract_profile(profile_name=name)
+
+        if self.point_source_profile is None:
+            raise exc.PointSourceExtractionException(
+                f"For the point-source named {name} there was no matching point source profile "
+                f"in the tracer (make sure your tracer's point source name is the same the dataset name."
+            )
 
         self.source_plane_coordinate = self.point_source_profile.centre
 
@@ -149,6 +156,21 @@ class FitFluxes(FitData):
         self.name = name
         self.positions = positions
 
+        self.point_source_profile = tracer.extract_profile(profile_name=name)
+
+        if self.point_source_profile is None:
+            raise exc.PointSourceExtractionException(
+                f"For the point-source named {name} there was no matching point source profile "
+                f"in the tracer (make sure your tracer's point source name is the same the dataset name."
+            )
+
+        elif not hasattr(self.point_source_profile, "flux"):
+            raise exc.PointSourceExtractionException(
+                f"For the point-source named {name} the extracted point source was the "
+                f"class {self.point_source_profile.__class__.__name__} and therefore does "
+                f"not contain a flux component."
+            )
+
         if len(tracer.planes) > 2:
             upper_plane_index = tracer.extract_plane_index_of_profile(profile_name=name)
             deflections_func = partial(
@@ -164,8 +186,6 @@ class FitFluxes(FitData):
                 grid=positions, deflections_func=deflections_func
             )
         )
-
-        self.point_source_profile = tracer.extract_profile(profile_name=name)
 
         model_fluxes = values.ValuesIrregular(
             values=[

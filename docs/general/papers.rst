@@ -20,3 +20,11 @@ The following papers use **PyAutoLens**:
 `Subaru FOCAS IFU observations of two z=0.12 strong-lensing elliptical galaxies from SDSS MaNGA <https://arxiv.org/abs/1911.06338>`_
 
 `MNELLS: The MUSE Nearby Early-Type Galaxy Lens Locator Survey <https://arxiv.org/abs/2002.07191>`_
+
+`Decoding Dark Matter Substructure without Supervision <https://arxiv.org/abs/2008.12731>`_
+
+`Auto-identification of unphysical source reconstructions in strong gravitational lens modelling <https://arxiv.org/abs/2012.04665>`_
+
+`Strong lens modelling: comparing and combining Bayesian neural networks and parametric profile fitting <https://arxiv.org/abs/2103.03257>`_
+
+`A forward-modelling method to infer the dark matter particle mass from strong gravitational lenses  <https://arxiv.org/abs/2010.13221>`_

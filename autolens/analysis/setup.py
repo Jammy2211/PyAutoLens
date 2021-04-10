@@ -16,7 +16,7 @@ class SetupHyper(setup.SetupHyper):
         hyper_background_noise: Optional[type(hd.HyperBackgroundNoise)] = None,
         hyper_fixed_after_source: bool = False,
         search: af.NonLinearSearch = None,
-        evidence_tolerance: float = None,
+        dlogz: float = None,
     ):
         """
         The hyper setup of a pipeline, which controls how hyper-features in PyAutoLens template pipelines run,
@@ -42,7 +42,7 @@ class SetupHyper(setup.SetupHyper):
             performed objected between later searchs in a pipeline.
         search : af.NonLinearSearch or None
             The non-linear search used by every hyper model-fit search.
-        evidence_tolerance : float
+        dlogz : float
             The evidence tolerance of the non-linear searches used in the hyper searchs, whereby higher values will
             lead them to end earlier at the expense of accuracy.
         """
@@ -53,7 +53,7 @@ class SetupHyper(setup.SetupHyper):
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
             search=search,
-            evidence_tolerance=evidence_tolerance,
+            dlogz=dlogz,
         )
 
         self.hyper_galaxies_lens = hyper_galaxies_lens

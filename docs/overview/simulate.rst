@@ -45,7 +45,7 @@ Here is what our dataset looks like:
   :width: 400
   :alt: Alternative text
 
-The `autolens_workspace` includes many example simulators for simulating strong lenses with a range of different
+The ``autolens_workspace`` includes many example simulators for simulating strong lenses with a range of different
 physical properties and for creating imaging datasets for a variety of telescopes (e.g. Hubble, Euclid).
 
 Below, we show what a strong lens looks like for different instruments.

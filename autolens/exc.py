@@ -27,3 +27,7 @@ class AnalysisException(Exception):
 
 class PreloadException(Exception):
     pass
+
+
+class PointSourceExtractionException(Exception):
+    pass

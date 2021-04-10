@@ -29,5 +29,5 @@ The chapter contains the following tutorials:
 `Tutorial 7: Adaptive Pixelization <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_4_inversions/tutorial_7_adaptive_pixelization.ipynb>`_
 - An Voronoi pixelization which adapts to the mass model's magnification.
 
-`Tutorial 8: Pipeline Inversion <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_4_inversions/tutorial_8_pipeline_runner.ipynb>`_
-- An example pipeline which uses an inversion.
+`Tutorial 8: Model Fit <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_4_inversions/tutorial_8_model_fit.ipynb>`_
+- An example lens modeling pipeline which uses an inversion.

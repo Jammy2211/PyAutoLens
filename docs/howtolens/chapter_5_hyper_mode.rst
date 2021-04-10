@@ -23,6 +23,6 @@ The chapter contains the following tutorials:
 `Tutorial 5: Noise Map Scaling 2 <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_5_hyper_mode/tutorial_5_noise_map_scaling_2.ipynb>`_
 - Increasing the noise to improve fitting irregular lens light morphologies.
 
-`Tutorial 6: Hyper Pipeline  <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_5_hyper_mode/tutorial_6_hyper_pipeline_runner.ipynb>`_
-- An example pipeline use hyper-mode.
+`Tutorial 6: Model Fit  <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_5_hyper_mode/tutorial_6_model_fit.ipynb>`_
+- An example lens modeling pipeline using hyper-mode.
 

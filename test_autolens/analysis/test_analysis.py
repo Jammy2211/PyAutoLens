@@ -40,6 +40,10 @@ class TestAnalysisDataset:
             )
         )
 
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
+            settings=al.SettingsImaging(sub_size_inversion=2)
+        )
+
         analysis = al.AnalysisImaging(
             dataset=masked_imaging_7x7,
             settings_pixelization=al.SettingsPixelization(use_border=True),

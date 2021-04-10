@@ -9,9 +9,7 @@ from skimage import measure
 from autoarray.mock import mock as mock_inv
 from autolens.mock import mock
 
-test_path = path.join(
-    "{}".format(path.dirname(path.realpath(__file__))), "files", "tracer"
-)
+test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
 def critical_curve_via_magnification_from_tracer_and_grid(tracer, grid):

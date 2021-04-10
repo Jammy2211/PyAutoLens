@@ -20,17 +20,11 @@ The chapter contains the following tutorials:
 `Tutorial 4: Dealing with Failure <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_4_dealing_with_failure.ipynb>`_
 - What to do when PyAutoLens finds an inaccurate lens model.
 
-`Tutorial 5: Linking Phases <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_5_chaining_phases.ipynb>`_
-- Breaking the lens modeling procedure down into multiple fits.
-
-`Tutorial 6: Alternative Searches  <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_5_alternative_searches.ipynb>`_
-- Using different non-linear searches to sample parameter space.
-
-`Tutorial 7: Masking and Positions <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_6_masking_and_positions.ipynb>`_
+`Tutorial 5: Masking and Positions <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_5_masking_and_positions.ipynb>`_
 - How to mask and mark positions on your data to improve the lens model.
 
-`Tutorial 8: Results <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_7_results.ipynb>`_
+`Tutorial 6: Results <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_6_results.ipynb>`_
 - Overview of the results available after successfully fitting a lens model.
 
-`Tutorial 9: Need for Speed <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_8_need_for_speed.ipynb>`_
+`Tutorial 7: Need for Speed <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_7_need_for_speed.ipynb>`_
 - How to fit complex models whilst balancing efficiency and run-time.
