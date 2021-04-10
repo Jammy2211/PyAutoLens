@@ -384,7 +384,6 @@ class ResultInterferometer(ResultDataset):
 
 
 class ResultPointSource(Result):
-
     @property
     def grid(self):
         return grid_2d.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)

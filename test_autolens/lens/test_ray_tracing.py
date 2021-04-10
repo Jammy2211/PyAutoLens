@@ -10,7 +10,7 @@ from autoarray.mock import mock as mock_inv
 from autolens.mock import mock
 
 test_path = path.join(
-    "{}".format(path.dirname(path.realpath(__file__))), "files", "tracer"
+    "{}".format(path.dirname(path.realpath(__file__))), "files",
 )
 
 

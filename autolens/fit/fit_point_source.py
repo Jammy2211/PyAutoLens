@@ -6,6 +6,7 @@ from functools import partial
 
 from autolens import exc
 
+
 class AbstractFitPositionsSourcePlane:
     def __init__(self, positions, noise_map, tracer):
         """
@@ -105,7 +106,8 @@ class FitPositionsImage(FitData):
         if self.point_source_profile is None:
             raise exc.PointSourceExtractionException(
                 f"For the point-source named {name} there was no matching point source profile "
-                f"in the tracer (make sure your tracer's point source name is the same the dataset name.")
+                f"in the tracer (make sure your tracer's point source name is the same the dataset name."
+            )
 
         self.source_plane_coordinate = self.point_source_profile.centre
 
@@ -159,13 +161,15 @@ class FitFluxes(FitData):
         if self.point_source_profile is None:
             raise exc.PointSourceExtractionException(
                 f"For the point-source named {name} there was no matching point source profile "
-                f"in the tracer (make sure your tracer's point source name is the same the dataset name.")
+                f"in the tracer (make sure your tracer's point source name is the same the dataset name."
+            )
 
         elif not hasattr(self.point_source_profile, "flux"):
             raise exc.PointSourceExtractionException(
                 f"For the point-source named {name} the extracted point source was the "
                 f"class {self.point_source_profile.__class__.__name__} and therefore does "
-                f"not contain a flux component.")
+                f"not contain a flux component."
+            )
 
         if len(tracer.planes) > 2:
             upper_plane_index = tracer.extract_plane_index_of_profile(profile_name=name)
