@@ -135,8 +135,8 @@
             }
         },
         "effective_radius": {
-            "type": "LogUniform",
-            "lower_limit": 1e-4,
+            "type": "Uniform",
+            "lower_limit": 0.0,
             "upper_limit": 30.0,
             "width_modifier": {
                 "type": "Relative",
