@@ -142,7 +142,7 @@ class TestLikelihood:
 
         g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=0.001))
 
-        image = g0.image_from_grid(grid=interferometer.grid)
+        image = g0.image_2d_from_grid(grid=interferometer.grid)
 
         model_visibilities_manual = transformer.visibilities_from_image(image=image)
 
@@ -318,9 +318,9 @@ class TestCompareToManualProfilesOnly:
             grid=interferometer_7_grid.grid
         )
 
-        g0_image = g0.image_from_grid(grid=traced_grids_of_planes[0])
+        g0_image = g0.image_2d_from_grid(grid=traced_grids_of_planes[0])
 
-        g1_image = g1.image_from_grid(grid=traced_grids_of_planes[1])
+        g1_image = g1.image_2d_from_grid(grid=traced_grids_of_planes[1])
 
         assert fit.galaxy_model_image_dict[g0].slim == pytest.approx(g0_image, 1.0e-4)
         assert fit.galaxy_model_image_dict[g1].slim == pytest.approx(g1_image, 1.0e-4)
@@ -895,9 +895,9 @@ class TestCompareToManualProfilesAndInversion:
             regularization=reg,
         )
 
-        g0_image = g0.image_from_grid(grid=traced_grids[0])
+        g0_image = g0.image_2d_from_grid(grid=traced_grids[0])
 
-        g1_image = g1.image_from_grid(grid=traced_grids[1])
+        g1_image = g1.image_2d_from_grid(grid=traced_grids[1])
 
         assert (fit.galaxy_model_image_dict[g2].native == np.zeros((7, 7))).all()
 

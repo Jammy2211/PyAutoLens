@@ -175,7 +175,7 @@ class MockTracer:
     def planes(self):
         return [0, 1]
 
-    def deflections_from_grid(self):
+    def deflections_2d_from_grid(self):
         pass
 
     @property

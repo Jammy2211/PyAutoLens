@@ -179,7 +179,7 @@ class FitFluxes(FitData):
                 plane_j=upper_plane_index,
             )
         else:
-            deflections_func = tracer.deflections_from_grid
+            deflections_func = tracer.deflections_2d_from_grid
 
         self.magnifications = abs(
             tracer.magnification_via_hessian_from_grid(

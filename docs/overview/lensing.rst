@@ -65,7 +65,7 @@ image of the ``LightProfile``:
 
 .. code-block:: bash
 
-    image = sersic_light_profile.image_from_grid(grid=grid)
+    image = sersic_light_profile.image_2d_from_grid(grid=grid)
 
 The **PyAutoLens** plot module provides methods for plotting objects and their properties, like the ``LightProfile``'s image.
 
@@ -96,9 +96,9 @@ potential and deflection angles using the Cartesian grid:
         einstein_radius=1.6,
     )
 
-    convergence = isothermal_mass_profile.convergence_from_grid(grid=grid)
-    potential = isothermal_mass_profile.potential_from_grid(grid=grid)
-    deflections = isothermal_mass_profile.deflections_from_grid(grid=grid)
+    convergence = isothermal_mass_profile.convergence_2d_from_grid(grid=grid)
+    potential = isothermal_mass_profile.potential_2d_from_grid(grid=grid)
+    deflections = isothermal_mass_profile.deflections_2d_from_grid(grid=grid)
 
     mass_profile_plotter = aplt.MassProfilePlotter(
         mass_profile=isothermal_mass_profile, grid=grid
@@ -160,7 +160,7 @@ the source appears as a multiply imaged and strongly lensed Einstein ring.
 
 .. code-block:: bash
 
-    image = tracer.image_from_grid(grid=grid)
+    image = tracer.image_2d_from_grid(grid=grid)
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
     tracer_plotter.figures_2d(image=True)

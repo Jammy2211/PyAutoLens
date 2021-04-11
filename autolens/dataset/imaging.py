@@ -76,7 +76,7 @@ class SimulatorImaging(imaging.SimulatorImaging):
             A seed for random noise_maps generation
         """
 
-        image = tracer.padded_image_from_grid_and_psf_shape(
+        image = tracer.padded_image_2d_from_grid_and_psf_shape(
             grid=grid, psf_shape_2d=self.psf.shape_native
         )
 
@@ -116,6 +116,6 @@ class SimulatorImaging(imaging.SimulatorImaging):
 
         deflected_grid = grid - deflections.binned
 
-        image = sum(map(lambda g: g.image_from_grid(grid=deflected_grid), galaxies))
+        image = sum(map(lambda g: g.image_2d_from_grid(grid=deflected_grid), galaxies))
 
         return self.from_image(image=image, name=name)

@@ -255,7 +255,7 @@ class PositionsSolver(AbstractPositionsSolver):
         distance_from_mass_profile_centre=None,
     ):
         """Given a `LensingObject` (e.g. a _MassProfile, `Galaxy`, `Plane` or `Tracer`) this class uses their
-        deflections_from_grid method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
+        deflections_2d_from_grid method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
         source-centre coordinate in the source-plane.
 
         This is performed as follows:
@@ -334,7 +334,7 @@ class PositionsSolver(AbstractPositionsSolver):
     def solve(self, lensing_obj, source_plane_coordinate, upper_plane_index=None):
 
         if upper_plane_index is None:
-            deflections_func = lensing_obj.deflections_from_grid
+            deflections_func = lensing_obj.deflections_2d_from_grid
         else:
             deflections_func = partial(
                 lensing_obj.deflections_between_planes_from_grid,

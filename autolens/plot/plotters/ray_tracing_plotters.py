@@ -21,8 +21,6 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
         include_2d: lensing_include.Include2D = lensing_include.Include2D(),
     ):
         super().__init__(
-            lensing_obj=tracer,
-            grid=grid,
             mat_plot_1d=mat_plot_1d,
             visuals_1d=visuals_1d,
             include_1d=include_1d,
@@ -30,6 +28,13 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             include_2d=include_2d,
             visuals_2d=visuals_2d,
         )
+
+        self.tracer = tracer
+        self.grid = grid
+
+    @property
+    def lensing_obj(self):
+        return self.tracer
 
     @property
     def visuals_with_include_2d(self) -> lensing_visuals.Visuals2D:
@@ -95,7 +100,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
         if plane_index == 0:
             critical_curves = self.extract_2d(
                 "critical_curves",
-                self.lensing_obj.critical_curves_from_grid(grid=self.grid),
+                self.tracer.critical_curves_from_grid(grid=self.grid),
                 "critical_curves",
             )
         else:
@@ -103,9 +108,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
 
         if plane_index == 1:
             caustics = self.extract_2d(
-                "caustics",
-                self.lensing_obj.caustics_from_grid(grid=self.grid),
-                "caustics",
+                "caustics", self.tracer.caustics_from_grid(grid=self.grid), "caustics"
             )
         else:
             caustics = None
@@ -131,10 +134,6 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             critical_curves=critical_curves,
             caustics=caustics,
         )
-
-    @property
-    def tracer(self):
-        return self.lensing_obj
 
     def plane_plotter_from(self, plane_index):
 
@@ -180,7 +179,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
         if image:
 
             self.mat_plot_2d.plot_array(
-                array=self.tracer.image_from_grid(grid=self.grid),
+                array=self.tracer.image_2d_from_grid(grid=self.grid),
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(title="Image", filename="image"),
             )

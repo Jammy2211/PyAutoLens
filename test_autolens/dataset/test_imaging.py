@@ -30,7 +30,7 @@ class TestSimulatorImaging:
         imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
         imaging_via_image = simulator.from_image(
-            image=tracer.image_from_grid(grid=grid)
+            image=tracer.image_2d_from_grid(grid=grid)
         )
 
         assert imaging.shape_native == (20, 20)
@@ -61,12 +61,12 @@ class TestSimulatorImaging:
         )
 
         imaging = simulator.from_deflections_and_galaxies(
-            deflections=tracer.deflections_from_grid(grid=grid),
+            deflections=tracer.deflections_2d_from_grid(grid=grid),
             galaxies=[source_galaxy],
         )
 
         imaging_via_image = simulator.from_image(
-            image=tracer.image_from_grid(grid=grid)
+            image=tracer.image_2d_from_grid(grid=grid)
         )
 
         assert imaging.shape_native == (20, 20)
@@ -113,7 +113,7 @@ class TestSimulatorImaging:
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         imaging_via_image = simulator.from_image(
-            image=tracer.image_from_grid(grid=grid)
+            image=tracer.image_2d_from_grid(grid=grid)
         )
 
         assert imaging.shape_native == (11, 11)

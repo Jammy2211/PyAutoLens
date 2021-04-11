@@ -396,7 +396,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
                 if plane_index == plane_index_limit:
                     return traced_grids
 
-            traced_deflections.append(plane.deflections_from_grid(grid=scaled_grid))
+            traced_deflections.append(plane.deflections_2d_from_grid(grid=scaled_grid))
 
         return traced_grids
 
@@ -408,7 +408,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
     @grid_decorators.grid_2d_to_structure
-    def image_from_grid(self, grid):
+    def image_2d_from_grid(self, grid):
         return sum(self.images_of_planes_from_grid(grid=grid))
 
     @grid_decorators.grid_2d_to_structure_list
@@ -419,7 +419,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
         )
 
         images_of_planes = [
-            self.planes[plane_index].image_from_grid(
+            self.planes[plane_index].image_2d_from_grid(
                 grid=traced_grids_of_planes[plane_index]
             )
             for plane_index in range(len(traced_grids_of_planes))
@@ -433,29 +433,29 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         return images_of_planes
 
-    def padded_image_from_grid_and_psf_shape(self, grid, psf_shape_2d):
+    def padded_image_2d_from_grid_and_psf_shape(self, grid, psf_shape_2d):
 
         padded_grid = grid.padded_grid_from_kernel_shape(
             kernel_shape_native=psf_shape_2d
         )
 
-        return self.image_from_grid(grid=padded_grid)
+        return self.image_2d_from_grid(grid=padded_grid)
 
     @grid_decorators.grid_2d_to_structure
-    def convergence_from_grid(self, grid):
-        return sum([plane.convergence_from_grid(grid=grid) for plane in self.planes])
+    def convergence_2d_from_grid(self, grid):
+        return sum([plane.convergence_2d_from_grid(grid=grid) for plane in self.planes])
 
     @grid_decorators.grid_2d_to_structure
-    def potential_from_grid(self, grid):
-        return sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
+    def potential_2d_from_grid(self, grid):
+        return sum([plane.potential_2d_from_grid(grid=grid) for plane in self.planes])
 
     @grid_decorators.grid_2d_to_structure
-    def deflections_from_grid(self, grid):
+    def deflections_2d_from_grid(self, grid):
         return self.deflections_between_planes_from_grid(grid=grid)
 
     @grid_decorators.grid_2d_to_structure
     def deflections_of_planes_summed_from_grid(self, grid):
-        return sum([plane.deflections_from_grid(grid=grid) for plane in self.planes])
+        return sum([plane.deflections_2d_from_grid(grid=grid) for plane in self.planes])
 
     def grid_at_redshift_from_grid_and_redshift(self, grid, redshift):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
@@ -530,7 +530,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
 
 class AbstractTracerData(AbstractTracerLensing, ABC):
-    def blurred_image_from_grid_and_psf(self, grid, psf, blurring_grid):
+    def blurred_image_2d_from_grid_and_psf(self, grid, psf, blurring_grid):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a psf (see imaging.convolution).
 
@@ -545,9 +545,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         if not self.has_light_profile:
             return np.zeros(shape=grid.shape_slim)
 
-        image = self.image_from_grid(grid=grid)
+        image = self.image_2d_from_grid(grid=grid)
 
-        blurring_image = self.image_from_grid(grid=blurring_grid)
+        blurring_image = self.image_2d_from_grid(grid=blurring_grid)
 
         return psf.convolved_array_from_array_and_mask(
             array=image.binned.native + blurring_image.binned.native, mask=grid.mask
@@ -570,7 +570,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             grid=blurring_grid
         )
         return [
-            plane.blurred_image_from_grid_and_psf(
+            plane.blurred_image_2d_from_grid_and_psf(
                 grid=traced_grids_of_planes[plane_index],
                 psf=psf,
                 blurring_grid=traced_blurring_grids_of_planes[plane_index],
@@ -578,7 +578,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             for (plane_index, plane) in enumerate(self.planes)
         ]
 
-    def blurred_image_from_grid_and_convolver(self, grid, convolver, blurring_grid):
+    def blurred_image_2d_from_grid_and_convolver(self, grid, convolver, blurring_grid):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a convolver (see imaging.convolution).
 
@@ -593,9 +593,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         if not self.has_light_profile:
             return np.zeros(shape=grid.shape_slim)
 
-        image = self.image_from_grid(grid=grid)
+        image = self.image_2d_from_grid(grid=grid)
 
-        blurring_image = self.image_from_grid(grid=blurring_grid)
+        blurring_image = self.image_2d_from_grid(grid=blurring_grid)
 
         return convolver.convolve_image(image=image, blurring_image=blurring_image)
 
@@ -619,7 +619,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         )
 
         return [
-            plane.blurred_image_from_grid_and_convolver(
+            plane.blurred_image_2d_from_grid_and_convolver(
                 grid=traced_grids_of_planes[plane_index],
                 convolver=convolver,
                 blurring_grid=traced_blurring_grids_of_planes[plane_index],
@@ -627,13 +627,13 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             for (plane_index, plane) in enumerate(self.planes)
         ]
 
-    def unmasked_blurred_image_from_grid_and_psf(self, grid, psf):
+    def unmasked_blurred_image_2d_from_grid_and_psf(self, grid, psf):
 
         padded_grid = grid.padded_grid_from_kernel_shape(
             kernel_shape_native=psf.shape_native
         )
 
-        padded_image = self.image_from_grid(grid=padded_grid)
+        padded_image = self.image_2d_from_grid(grid=padded_grid)
 
         return padded_grid.mask.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
             padded_array=padded_image, psf=psf, image_shape=grid.mask.shape
@@ -650,7 +650,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         unmasked_blurred_images_of_planes = []
 
         for plane, traced_padded_grid in zip(self.planes, traced_padded_grids):
-            padded_image_1d = plane.image_from_grid(grid=traced_padded_grid)
+            padded_image_1d = plane.image_2d_from_grid(grid=traced_padded_grid)
 
             unmasked_blurred_array_2d = padded_grid.mask.unmasked_blurred_array_from_padded_array_psf_and_image_shape(
                 padded_array=padded_image_1d, psf=psf, image_shape=grid.mask.shape
@@ -699,7 +699,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         if not self.has_light_profile:
             return np.zeros(shape=transformer.uv_wavelengths.shape[0])
 
-        image = self.image_from_grid(grid=grid)
+        image = self.image_2d_from_grid(grid=grid)
 
         return transformer.visibilities_from_image(image=image)
 

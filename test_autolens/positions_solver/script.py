@@ -34,7 +34,7 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 visuals_2d = aplt.Visuals2D(positions=positions)
 
-magnification = tracer.magnification_from_grid(grid=grid)
+magnification = tracer.magnification_2d_from_grid(grid=grid)
 magnification = np.nan_to_num(magnification)
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, visuals_2d=visuals_2d)

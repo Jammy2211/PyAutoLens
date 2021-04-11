@@ -59,7 +59,7 @@ class FitImaging(aa_fit.FitImaging):
             image = imaging.image
             noise_map = imaging.noise_map
 
-        self.blurred_image = tracer.blurred_image_from_grid_and_convolver(
+        self.blurred_image = tracer.blurred_image_2d_from_grid_and_convolver(
             grid=imaging.grid,
             convolver=imaging.convolver,
             blurring_grid=imaging.blurring_grid,
@@ -162,7 +162,7 @@ class FitImaging(aa_fit.FitImaging):
 
     @property
     def unmasked_blurred_image(self):
-        return self.tracer.unmasked_blurred_image_from_grid_and_psf(
+        return self.tracer.unmasked_blurred_image_2d_from_grid_and_psf(
             grid=self.grid, psf=self.imaging.psf
         )
 

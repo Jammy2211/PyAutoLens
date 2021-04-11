@@ -67,7 +67,7 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
             A seed for random noise_maps generation
         """
 
-        image = tracer.image_from_grid(grid=grid)
+        image = tracer.image_2d_from_grid(grid=grid)
 
         return self.from_image(image=image.binned, name=name)
 
@@ -101,6 +101,6 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
 
         deflected_grid = grid - deflections.binned
 
-        image = sum(map(lambda g: g.image_from_grid(grid=deflected_grid), galaxies))
+        image = sum(map(lambda g: g.image_2d_from_grid(grid=deflected_grid), galaxies))
 
         return self.from_image(image=image, name=name)
