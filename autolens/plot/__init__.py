@@ -33,17 +33,17 @@ from autoarray.plot.mat_wrap.wrap.wrap_2d import (
     SerialOverscanPlot,
 )
 
-from autoarray.plot.plotters.structure_plotters import Array2DPlotter
-from autoarray.plot.plotters.structure_plotters import Frame2DPlotter
-from autoarray.plot.plotters.structure_plotters import Grid2DPlotter
-from autoarray.plot.plotters.structure_plotters import MapperPlotter
-from autoarray.plot.plotters.structure_plotters import YX1DPlotter
-from autoarray.plot.plotters.inversion_plotters import InversionPlotter
-from autoarray.plot.plotters.imaging_plotters import ImagingPlotter
-from autoarray.plot.plotters.interferometer_plotters import InterferometerPlotter
+from autoarray.plot.structure_plotters import Array2DPlotter
+from autoarray.plot.structure_plotters import Frame2DPlotter
+from autoarray.plot.structure_plotters import Grid2DPlotter
+from autoarray.plot.structure_plotters import MapperPlotter
+from autoarray.plot.structure_plotters import YX1DPlotter
+from autoarray.plot.inversion_plotters import InversionPlotter
+from autoarray.plot.imaging_plotters import ImagingPlotter
+from autoarray.plot.interferometer_plotters import InterferometerPlotter
 
-from autoarray.plot.plotters.multi_plotters import MultiFigurePlotter
-from autoarray.plot.plotters.multi_plotters import MultiYX1DPlotter
+from autoarray.plot.multi_plotters import MultiFigurePlotter
+from autoarray.plot.multi_plotters import MultiYX1DPlotter
 
 from autogalaxy.plot.mat_wrap.lensing_wrap import (
     HalfLightRadiusAXVLine,
@@ -59,14 +59,17 @@ from autogalaxy.plot.mat_wrap.lensing_mat_plot import MatPlot1D, MatPlot2D
 from autogalaxy.plot.mat_wrap.lensing_include import Include1D, Include2D
 from autogalaxy.plot.mat_wrap.lensing_visuals import Visuals1D, Visuals2D
 
-from autogalaxy.plot.plotters.light_profile_plotters import LightProfilePlotter
-from autogalaxy.plot.plotters.mass_profile_plotters import MassProfilePlotter
-from autogalaxy.plot.plotters.galaxy_plotters import GalaxyPlotter
-from autogalaxy.plot.plotters.fit_galaxy_plotters import FitGalaxyPlotter
-from autogalaxy.plot.plotters.plane_plotters import PlanePlotter
-from autogalaxy.plot.plotters.hyper_plotters import HyperPlotter
+from autogalaxy.plot.light_profile_plotters import LightProfilePlotter
+from autogalaxy.plot.mass_profile_plotters import MassProfilePlotter
+from autogalaxy.plot.galaxy_plotters import GalaxyPlotter
+from autogalaxy.plot.fit_galaxy_plotters import FitGalaxyPlotter
+from autogalaxy.plot.fit_imaging_plotters import FitImagingPlotter
+from autogalaxy.plot.fit_interferometer_plotters import FitInterferometerPlotter
+from autogalaxy.plot.plane_plotters import PlanePlotter
+from autogalaxy.plot.hyper_plotters import HyperPlotter
 
-from autolens.plot.plotters.fit_imaging_plotters import FitImagingPlotter
-from autolens.plot.plotters.fit_interferometer_plotters import FitInterferometerPlotter
-from autolens.plot.plotters.ray_tracing_plotters import TracerPlotter
-from autolens.plot.plotters.subhalo_plotters import SubhaloPlotter
+
+from autolens.plot.fit_imaging_plotters import FitImagingPlotter
+from autolens.plot.fit_interferometer_plotters import FitInterferometerPlotter
+from autolens.plot.ray_tracing_plotters import TracerPlotter
+from autolens.plot.subhalo_plotters import SubhaloPlotter

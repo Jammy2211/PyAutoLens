@@ -1,9 +1,9 @@
 from autoarray.plot.mat_wrap import mat_plot as mp
 from autolens.analysis import aggregator as agg
-from autoarray.plot.plotters import abstract_plotters
+from autoarray.plot import abstract_plotters
 import numpy as np
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
-from autolens.plot.plotters import fit_imaging_plotters
+from autolens.plot import fit_imaging_plotters
 import os
 from os import path
 import shutil
