@@ -363,7 +363,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
 
 class AbstractTracerLensing(AbstractTracer, ABC):
-    @grid_decorators.grid_like_to_structure_list
+    @grid_decorators.grid_2d_to_structure_list
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
         traced_grids = []
@@ -400,18 +400,18 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         return traced_grids
 
-    @grid_decorators.grid_like_to_structure
+    @grid_decorators.grid_2d_to_structure
     def deflections_between_planes_from_grid(self, grid, plane_i=0, plane_j=-1):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    @grid_decorators.grid_like_to_structure
+    @grid_decorators.grid_2d_to_structure
     def image_from_grid(self, grid):
         return sum(self.images_of_planes_from_grid(grid=grid))
 
-    @grid_decorators.grid_like_to_structure_list
+    @grid_decorators.grid_2d_to_structure_list
     def images_of_planes_from_grid(self, grid):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
@@ -441,19 +441,19 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         return self.image_from_grid(grid=padded_grid)
 
-    @grid_decorators.grid_like_to_structure
+    @grid_decorators.grid_2d_to_structure
     def convergence_from_grid(self, grid):
         return sum([plane.convergence_from_grid(grid=grid) for plane in self.planes])
 
-    @grid_decorators.grid_like_to_structure
+    @grid_decorators.grid_2d_to_structure
     def potential_from_grid(self, grid):
         return sum([plane.potential_from_grid(grid=grid) for plane in self.planes])
 
-    @grid_decorators.grid_like_to_structure
+    @grid_decorators.grid_2d_to_structure
     def deflections_from_grid(self, grid):
         return self.deflections_between_planes_from_grid(grid=grid)
 
-    @grid_decorators.grid_like_to_structure
+    @grid_decorators.grid_2d_to_structure
     def deflections_of_planes_summed_from_grid(self, grid):
         return sum([plane.deflections_from_grid(grid=grid) for plane in self.planes])
 
