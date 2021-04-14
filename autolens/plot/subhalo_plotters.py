@@ -159,10 +159,6 @@ def detection_array_from(
     agg_before, agg_detect, use_log_evidences=True, use_stochastic_log_evidences=False
 ):
 
-    fit_imaging_before = list(
-        agg.fit_imaging_generator_from_aggregator(aggregator=agg_before)
-    )[0]
-
     if use_log_evidences and not use_stochastic_log_evidences:
         figure_of_merit_before = list(agg_before.values("samples"))[0].log_evidence
     elif use_stochastic_log_evidences:
@@ -170,7 +166,7 @@ def detection_array_from(
             list(agg_before.values("stochastic_log_evidences"))[0]
         )
     else:
-        figure_of_merit_before = fit_imaging_before.figure_of_merit
+        figure_of_merit_before = list(agg_before.values("samples"))[0].log_evidence
 
     return (
         agg.grid_search_result_as_array(

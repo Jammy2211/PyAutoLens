@@ -118,7 +118,7 @@ class TestAbstractTracer:
 
             assert tracer.has_light_profile is True
 
-        def test_plane_with_galaxy(self, sub_grid_7x7):
+        def test_plane_with_galaxy(self, sub_grid_2d_7x7):
 
             g1 = al.Galaxy(redshift=1)
             g2 = al.Galaxy(redshift=2)
@@ -128,7 +128,7 @@ class TestAbstractTracer:
             assert tracer.plane_with_galaxy(g1).galaxies == [g1]
             assert tracer.plane_with_galaxy(g2).galaxies == [g2]
 
-        def test__has_galaxy_with_mass_profile(self, sub_grid_7x7):
+        def test__has_galaxy_with_mass_profile(self, sub_grid_2d_7x7):
             gal = al.Galaxy(redshift=0.5)
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
             gal_mp = al.Galaxy(redshift=0.5, mass_profile=al.mp.SphIsothermal())
@@ -202,7 +202,7 @@ class TestAbstractTracer:
 
             assert tracer.plane_indexes_with_pixelizations == [2, 4]
 
-        def test__has_galaxy_with_pixelization(self, sub_grid_7x7):
+        def test__has_galaxy_with_pixelization(self, sub_grid_2d_7x7):
             gal = al.Galaxy(redshift=0.5)
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
             gal_pix = al.Galaxy(
@@ -231,7 +231,7 @@ class TestAbstractTracer:
 
             assert tracer.has_pixelization is True
 
-        def test__has_galaxy_with_regularization(self, sub_grid_7x7):
+        def test__has_galaxy_with_regularization(self, sub_grid_2d_7x7):
             gal = al.Galaxy(redshift=0.5)
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
             gal_reg = al.Galaxy(
@@ -260,7 +260,7 @@ class TestAbstractTracer:
 
             assert tracer.has_regularization is True
 
-        def test__has_galaxy_with_hyper_galaxy(self, sub_grid_7x7):
+        def test__has_galaxy_with_hyper_galaxy(self, sub_grid_2d_7x7):
 
             gal = al.Galaxy(redshift=0.5)
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
@@ -330,7 +330,7 @@ class TestAbstractTracer:
 
             assert tracer.upper_plane_index_with_light_profile == 2
 
-        def test__hyper_model_image_of_plane_with_pixelization(self, sub_grid_7x7):
+        def test__hyper_model_image_of_plane_with_pixelization(self, sub_grid_2d_7x7):
 
             gal = al.Galaxy(redshift=0.5)
             gal_pix = al.Galaxy(
@@ -432,7 +432,7 @@ class TestAbstractTracer:
 
     class TestPixelizations:
         def test__no_galaxy_has_regularization__returns_list_of_ones(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             galaxy_no_pix = al.Galaxy(redshift=0.5)
 
@@ -441,7 +441,7 @@ class TestAbstractTracer:
             assert tracer.pixelizations_of_planes == [None]
 
         def test__source_galaxy_has_regularization__returns_list_with_none_and_regularization(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
@@ -456,7 +456,7 @@ class TestAbstractTracer:
             assert tracer.pixelizations_of_planes[1].value == 1
 
         def test__both_galaxies_have_pixelization__returns_both_pixelizations(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             galaxy_pix_0 = al.Galaxy(
                 redshift=0.5,
@@ -476,7 +476,9 @@ class TestAbstractTracer:
             assert tracer.pixelizations_of_planes[1].value == 2
 
     class TestRegularizations:
-        def test__no_galaxy_has_regularization__returns_empty_list(self, sub_grid_7x7):
+        def test__no_galaxy_has_regularization__returns_empty_list(
+            self, sub_grid_2d_7x7
+        ):
             galaxy_no_reg = al.Galaxy(redshift=0.5)
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_reg, galaxy_no_reg])
@@ -484,7 +486,7 @@ class TestAbstractTracer:
             assert tracer.regularizations_of_planes == [None]
 
         def test__source_galaxy_has_regularization__returns_regularizations(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             galaxy_reg = al.Galaxy(
                 redshift=1.0,
@@ -499,7 +501,7 @@ class TestAbstractTracer:
             assert tracer.regularizations_of_planes[1].shape == (1, 1)
 
         def test__both_galaxies_have_regularization__returns_both_regularizations(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             galaxy_reg_0 = al.Galaxy(
                 redshift=0.5,
@@ -519,7 +521,7 @@ class TestAbstractTracer:
             assert tracer.regularizations_of_planes[1].shape == (4, 4)
 
     class TestGalaxyLists:
-        def test__galaxy_list__comes_in_plane_redshift_order(self, sub_grid_7x7):
+        def test__galaxy_list__comes_in_plane_redshift_order(self, sub_grid_2d_7x7):
             g0 = al.Galaxy(redshift=0.5)
             g1 = al.Galaxy(redshift=0.5)
 
@@ -601,7 +603,7 @@ class TestAbstractTracer:
 class TestAbstractTracerLensing:
     class TestTracedGridsFromGrid:
         def test__x2_planes__no_galaxy__image_and_source_planes_setup__same_coordinates(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             tracer = al.Tracer.from_galaxies(
@@ -609,7 +611,7 @@ class TestAbstractTracerLensing:
             )
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             assert traced_grids_of_planes[0][0] == pytest.approx(
@@ -639,7 +641,7 @@ class TestAbstractTracerLensing:
             )
 
         def test__x2_planes__sis_lens__traced_grid_includes_deflections__on_planes_setup(
-            self, sub_grid_7x7_simple, gal_x1_mp
+            self, sub_grid_2d_7x7_simple, gal_x1_mp
         ):
 
             tracer = al.Tracer.from_galaxies(
@@ -647,7 +649,7 @@ class TestAbstractTracerLensing:
             )
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7_simple
+                grid=sub_grid_2d_7x7_simple
             )
 
             assert traced_grids_of_planes[0][0] == pytest.approx(
@@ -677,7 +679,7 @@ class TestAbstractTracerLensing:
             )
 
         def test__same_as_above_but_2_sis_lenses__deflections_double(
-            self, sub_grid_7x7_simple, gal_x1_mp
+            self, sub_grid_2d_7x7_simple, gal_x1_mp
         ):
 
             tracer = al.Tracer.from_galaxies(
@@ -685,7 +687,7 @@ class TestAbstractTracerLensing:
             )
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7_simple
+                grid=sub_grid_2d_7x7_simple
             )
 
             assert traced_grids_of_planes[0][0] == pytest.approx(
@@ -716,7 +718,7 @@ class TestAbstractTracerLensing:
             )
 
         def test__4_planes__grids_are_correct__sis_mass_profile(
-            self, sub_grid_7x7_simple
+            self, sub_grid_2d_7x7_simple
         ):
 
             g0 = al.Galaxy(
@@ -743,7 +745,7 @@ class TestAbstractTracerLensing:
             )
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7_simple
+                grid=sub_grid_2d_7x7_simple
             )
 
             # The scaling factors are as follows and were computed independently from the test_autoarray.
@@ -873,7 +875,7 @@ class TestAbstractTracerLensing:
             )
 
         def test__x2_planes__sis_lens__upper_plane_limit_removes_final_plane(
-            self, sub_grid_7x7_simple, gal_x1_mp
+            self, sub_grid_2d_7x7_simple, gal_x1_mp
         ):
 
             tracer = al.Tracer.from_galaxies(
@@ -881,7 +883,7 @@ class TestAbstractTracerLensing:
             )
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7_simple, plane_index_limit=0
+                grid=sub_grid_2d_7x7_simple, plane_index_limit=0
             )
 
             assert traced_grids_of_planes[0][0] == pytest.approx(
@@ -900,7 +902,7 @@ class TestAbstractTracerLensing:
             assert len(traced_grids_of_planes) == 1
 
         def test__4_planes__grids_are_correct__upper_plane_limit_removes_final_planes(
-            self, sub_grid_7x7_simple
+            self, sub_grid_2d_7x7_simple
         ):
 
             g0 = al.Galaxy(
@@ -927,7 +929,7 @@ class TestAbstractTracerLensing:
             )
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7_simple, plane_index_limit=1
+                grid=sub_grid_2d_7x7_simple, plane_index_limit=1
             )
 
             # The scaling factors are as follows and were computed independently from the test_autoarray.
@@ -952,7 +954,7 @@ class TestAbstractTracerLensing:
             assert len(traced_grids_of_planes) == 2
 
     class TestProfileImages:
-        def test__x1_plane__single_plane_tracer(self, sub_grid_7x7):
+        def test__x1_plane__single_plane_tracer(self, sub_grid_2d_7x7):
             g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
             g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=2.0))
             g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
@@ -961,15 +963,15 @@ class TestAbstractTracerLensing:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            image_plane_image = image_plane.image_2d_from_grid(grid=sub_grid_7x7)
+            image_plane_image = image_plane.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_7x7)
+            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert tracer_image.shape_native == (7, 7)
             assert (tracer_image == image_plane_image).all()
 
         def test__x2_planes__galaxy_light__no_mass__image_sum_of_image_and_source_plane(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
             g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=2.0))
@@ -980,16 +982,16 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image = image_plane.image_2d_from_grid(
-                grid=sub_grid_7x7
-            ) + source_plane.image_2d_from_grid(grid=sub_grid_7x7)
+                grid=sub_grid_2d_7x7
+            ) + source_plane.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_7x7)
+            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert tracer_image.shape_native == (7, 7)
             assert image == pytest.approx(tracer_image, 1.0e-4)
 
         def test__x2_planes__galaxy_light_mass_sis__source_plane_image_includes_deflections(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -1000,38 +1002,38 @@ class TestAbstractTracerLensing:
 
             image_plane = al.Plane(galaxies=[g0])
 
-            source_plane_grid = image_plane.traced_grid_from_grid(grid=sub_grid_7x7)
+            source_plane_grid = image_plane.traced_grid_from_grid(grid=sub_grid_2d_7x7)
 
             source_plane = al.Plane(galaxies=[g1])
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image = image_plane.image_2d_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             ) + source_plane.image_2d_from_grid(grid=source_plane_grid)
 
-            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_7x7)
+            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert image == pytest.approx(tracer_image, 1.0e-4)
 
-        def test__x2_planes__image__compare_to_galaxy_images(self, sub_grid_7x7):
+        def test__x2_planes__image__compare_to_galaxy_images(self, sub_grid_2d_7x7):
             g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
             g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=2.0))
             g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
 
-            g0_image = g0.image_2d_from_grid(grid=sub_grid_7x7)
+            g0_image = g0.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            g1_image = g1.image_2d_from_grid(grid=sub_grid_7x7)
+            g1_image = g1.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            g2_image = g2.image_2d_from_grid(grid=sub_grid_7x7)
+            g2_image = g2.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_7x7)
+            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert tracer_image == pytest.approx(g0_image + g1_image + g2_image, 1.0e-4)
 
-        def test__x2_planes__returns_image_of_each_plane(self, sub_grid_7x7):
+        def test__x2_planes__returns_image_of_each_plane(self, sub_grid_2d_7x7):
             g0 = al.Galaxy(
                 redshift=0.5,
                 light_profile=al.lp.EllSersic(intensity=1.0),
@@ -1046,22 +1048,22 @@ class TestAbstractTracerLensing:
 
             image_plane = al.Plane(galaxies=[g0])
 
-            source_plane_grid = image_plane.traced_grid_from_grid(grid=sub_grid_7x7)
+            source_plane_grid = image_plane.traced_grid_from_grid(grid=sub_grid_2d_7x7)
 
             source_plane = al.Plane(galaxies=[g1])
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             plane_image = image_plane.image_2d_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             ) + source_plane.image_2d_from_grid(grid=source_plane_grid)
 
-            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_7x7)
+            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert tracer_image == pytest.approx(plane_image, 1.0e-4)
 
         def test__x3_planes___light_no_mass_in_each_plane__image_of_each_plane_is_galaxy_image(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.EllSersic(intensity=0.1))
             g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.2))
@@ -1076,22 +1078,22 @@ class TestAbstractTracerLensing:
             plane_2 = al.Plane(galaxies=[g2])
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             image = (
-                plane_0.image_2d_from_grid(grid=sub_grid_7x7)
+                plane_0.image_2d_from_grid(grid=sub_grid_2d_7x7)
                 + plane_1.image_2d_from_grid(grid=traced_grids_of_planes[1])
                 + plane_2.image_2d_from_grid(grid=traced_grids_of_planes[2])
             )
 
-            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_7x7)
+            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert image.shape_native == (7, 7)
             assert image == pytest.approx(tracer_image, 1.0e-4)
 
         def test__x3_planes__galaxy_light_mass_sis__source_plane_image_includes_deflections(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.EllSersic(intensity=0.1))
             g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.2))
@@ -1106,21 +1108,21 @@ class TestAbstractTracerLensing:
             plane_2 = tracer.planes[2]
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             image = (
-                plane_0.image_2d_from_grid(grid=sub_grid_7x7)
+                plane_0.image_2d_from_grid(grid=sub_grid_2d_7x7)
                 + plane_1.image_2d_from_grid(grid=traced_grids_of_planes[1])
                 + plane_2.image_2d_from_grid(grid=traced_grids_of_planes[2])
             )
 
-            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_7x7)
+            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert image.shape_native == (7, 7)
             assert image == pytest.approx(tracer_image, 1.0e-4)
 
-        def test__x3_planes__same_as_above_more_galaxies(self, sub_grid_7x7):
+        def test__x3_planes__same_as_above_more_galaxies(self, sub_grid_2d_7x7):
             g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.EllSersic(intensity=0.1))
             g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.2))
             g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.EllSersic(intensity=0.3))
@@ -1136,22 +1138,22 @@ class TestAbstractTracerLensing:
             plane_2 = al.Plane(galaxies=[g2])
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             image = (
-                plane_0.image_2d_from_grid(grid=sub_grid_7x7)
+                plane_0.image_2d_from_grid(grid=sub_grid_2d_7x7)
                 + plane_1.image_2d_from_grid(grid=traced_grids_of_planes[1])
                 + plane_2.image_2d_from_grid(grid=traced_grids_of_planes[2])
             )
 
-            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_7x7)
+            tracer_image = tracer.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert image.shape_native == (7, 7)
             assert image == pytest.approx(tracer_image, 1.0e-4)
 
         def test__images_of_planes__planes_without_light_profiles_are_all_zeros(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.EllSersic(intensity=0.1))
@@ -1165,12 +1167,12 @@ class TestAbstractTracerLensing:
             plane_0 = al.Plane(galaxies=[g0])
             plane_1 = al.Plane(galaxies=[g1])
 
-            plane_0_image = plane_0.image_2d_from_grid(grid=sub_grid_7x7)
+            plane_0_image = plane_0.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            plane_1_image = plane_1.image_2d_from_grid(grid=sub_grid_7x7)
+            plane_1_image = plane_1.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
             tracer_image_of_planes = tracer.images_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             assert len(tracer_image_of_planes) == 3
@@ -1185,9 +1187,9 @@ class TestAbstractTracerLensing:
             assert (tracer_image_of_planes[2].binned.native == np.zeros((7, 7))).all()
 
         def test__x1_plane__padded_image__compare_to_galaxy_images_using_padded_grids(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
-            padded_grid = sub_grid_7x7.padded_grid_from_kernel_shape(
+            padded_grid = sub_grid_2d_7x7.padded_grid_from_kernel_shape(
                 kernel_shape_native=(3, 3)
             )
 
@@ -1204,7 +1206,7 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             padded_tracer_image = tracer.padded_image_2d_from_grid_and_psf_shape(
-                grid=sub_grid_7x7, psf_shape_2d=(3, 3)
+                grid=sub_grid_2d_7x7, psf_shape_2d=(3, 3)
             )
 
             assert padded_tracer_image.shape_native == (9, 9)
@@ -1213,9 +1215,9 @@ class TestAbstractTracerLensing:
             )
 
         def test__x3_planes__padded_2d_image_from_plane__mapped_correctly(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
-            padded_grid = sub_grid_7x7.padded_grid_from_kernel_shape(
+            padded_grid = sub_grid_2d_7x7.padded_grid_from_kernel_shape(
                 kernel_shape_native=(3, 3)
             )
 
@@ -1234,7 +1236,7 @@ class TestAbstractTracerLensing:
             )
 
             padded_tracer_image = tracer.padded_image_2d_from_grid_and_psf_shape(
-                grid=sub_grid_7x7, psf_shape_2d=(3, 3)
+                grid=sub_grid_2d_7x7, psf_shape_2d=(3, 3)
             )
 
             assert padded_tracer_image.shape_native == (9, 9)
@@ -1243,9 +1245,9 @@ class TestAbstractTracerLensing:
             )
 
         def test__x1_plane__padded_image__compare_to_galaxy_images_using_padded_grids_and_grid_iterato(
-            self, grid_iterate_7x7
+            self, grid_2d_iterate_7x7
         ):
-            padded_grid = grid_iterate_7x7.padded_grid_from_kernel_shape(
+            padded_grid = grid_2d_iterate_7x7.padded_grid_from_kernel_shape(
                 kernel_shape_native=(3, 3)
             )
 
@@ -1262,7 +1264,7 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             padded_tracer_image = tracer.padded_image_2d_from_grid_and_psf_shape(
-                grid=grid_iterate_7x7, psf_shape_2d=(3, 3)
+                grid=grid_2d_iterate_7x7, psf_shape_2d=(3, 3)
             )
 
             assert padded_tracer_image.shape_native == (9, 9)
@@ -1270,11 +1272,11 @@ class TestAbstractTracerLensing:
                 padded_g0_image + padded_g1_image + padded_g2_image, 1.0e-4
             )
 
-            image = tracer.image_2d_from_grid(grid=grid_iterate_7x7)
+            image = tracer.image_2d_from_grid(grid=grid_2d_iterate_7x7)
 
             assert padded_tracer_image.native[4, 4] == image.native[3, 3]
 
-        def test__galaxy_image_dict_from_grid(self, sub_grid_7x7):
+        def test__galaxy_image_dict_from_grid(self, sub_grid_2d_7x7):
 
             g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
             g1 = al.Galaxy(
@@ -1287,28 +1289,28 @@ class TestAbstractTracerLensing:
 
             g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
 
-            g0_image = g0.image_2d_from_grid(grid=sub_grid_7x7)
-            g1_image = g1.image_2d_from_grid(grid=sub_grid_7x7)
-            g2_image = g2.image_2d_from_grid(grid=sub_grid_7x7)
+            g0_image = g0.image_2d_from_grid(grid=sub_grid_2d_7x7)
+            g1_image = g1.image_2d_from_grid(grid=sub_grid_2d_7x7)
+            g2_image = g2.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            g1_deflections = g1.deflections_2d_from_grid(grid=sub_grid_7x7)
+            g1_deflections = g1.deflections_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            source_grid_7x7 = sub_grid_7x7 - g1_deflections
+            source_grid_2d_7x7 = sub_grid_2d_7x7 - g1_deflections
 
-            g3_image = g3.image_2d_from_grid(grid=source_grid_7x7)
+            g3_image = g3.image_2d_from_grid(grid=source_grid_2d_7x7)
 
             tracer = al.Tracer.from_galaxies(
                 galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
             )
 
-            image_1d_dict = tracer.galaxy_image_dict_from_grid(grid=sub_grid_7x7)
+            image_1d_dict = tracer.galaxy_image_dict_from_grid(grid=sub_grid_2d_7x7)
 
             assert (image_1d_dict[g0].slim == g0_image).all()
             assert (image_1d_dict[g1].slim == g1_image).all()
             assert (image_1d_dict[g2].slim == g2_image).all()
             assert (image_1d_dict[g3].slim == g3_image).all()
 
-            image_dict = tracer.galaxy_image_dict_from_grid(grid=sub_grid_7x7)
+            image_dict = tracer.galaxy_image_dict_from_grid(grid=sub_grid_2d_7x7)
 
             assert (image_dict[g0].native == g0_image.native).all()
             assert (image_dict[g1].native == g1_image.native).all()
@@ -1316,7 +1318,7 @@ class TestAbstractTracerLensing:
             assert (image_dict[g3].native == g3_image.native).all()
 
     class TestConvergence:
-        def test__galaxy_mass_sis__no_source_plane_convergence(self, sub_grid_7x7):
+        def test__galaxy_mass_sis__no_source_plane_convergence(self, sub_grid_2d_7x7):
 
             g0 = al.Galaxy(
                 redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
@@ -1328,16 +1330,16 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_convergence = image_plane.convergence_2d_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
-            tracer_convergence = tracer.convergence_2d_from_grid(grid=sub_grid_7x7)
+            tracer_convergence = tracer.convergence_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert image_plane_convergence.shape_native == (7, 7)
             assert (image_plane_convergence == tracer_convergence).all()
 
         def test__galaxy_entered_3_times__both_planes__different_convergence_for_each(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             g0 = al.Galaxy(
@@ -1350,23 +1352,23 @@ class TestAbstractTracerLensing:
                 redshift=1.0, mass_profile=al.mp.SphIsothermal(einstein_radius=3.0)
             )
 
-            g0_convergence = g0.convergence_2d_from_grid(grid=sub_grid_7x7)
+            g0_convergence = g0.convergence_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            g1_convergence = g1.convergence_2d_from_grid(grid=sub_grid_7x7)
+            g1_convergence = g1.convergence_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            g2_convergence = g2.convergence_2d_from_grid(grid=sub_grid_7x7)
+            g2_convergence = g2.convergence_2d_from_grid(grid=sub_grid_2d_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             image_plane_convergence = tracer.image_plane.convergence_2d_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             source_plane_convergence = tracer.source_plane.convergence_2d_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
-            tracer_convergence = tracer.convergence_2d_from_grid(grid=sub_grid_7x7)
+            tracer_convergence = tracer.convergence_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert image_plane_convergence == pytest.approx(
                 g0_convergence + g1_convergence, 1.0e-4
@@ -1376,7 +1378,9 @@ class TestAbstractTracerLensing:
                 g0_convergence + g1_convergence + g2_convergence, 1.0e-4
             )
 
-        def test__galaxy_entered_2_times__grid_is_positions(self, grid_irregular_7x7):
+        def test__galaxy_entered_2_times__grid_is_positions(
+            self, grid_2d_irregular_7x7
+        ):
 
             g0 = al.Galaxy(
                 redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
@@ -1385,18 +1389,18 @@ class TestAbstractTracerLensing:
                 redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=2.0)
             )
 
-            g0_convergence = g0.convergence_2d_from_grid(grid=grid_irregular_7x7)
+            g0_convergence = g0.convergence_2d_from_grid(grid=grid_2d_irregular_7x7)
 
-            g1_convergence = g1.convergence_2d_from_grid(grid=grid_irregular_7x7)
+            g1_convergence = g1.convergence_2d_from_grid(grid=grid_2d_irregular_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_convergence = tracer.image_plane.convergence_2d_from_grid(
-                grid=grid_irregular_7x7
+                grid=grid_2d_irregular_7x7
             )
 
             tracer_convergence = tracer.convergence_2d_from_grid(
-                grid=grid_irregular_7x7
+                grid=grid_2d_irregular_7x7
             )
 
             assert image_plane_convergence.in_list[0] == pytest.approx(
@@ -1407,7 +1411,7 @@ class TestAbstractTracerLensing:
             )
 
         def test__no_galaxy_has_mass_profile__convergence_returned_as_zeros(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             tracer = al.Tracer.from_galaxies(
@@ -1415,7 +1419,7 @@ class TestAbstractTracerLensing:
             )
 
             assert (
-                tracer.convergence_2d_from_grid(grid=sub_grid_7x7).binned.native
+                tracer.convergence_2d_from_grid(grid=sub_grid_2d_7x7).binned.native
                 == np.zeros(shape=(7, 7))
             ).all()
 
@@ -1424,12 +1428,12 @@ class TestAbstractTracerLensing:
             )
 
             assert (
-                tracer.convergence_2d_from_grid(grid=sub_grid_7x7).binned.native
+                tracer.convergence_2d_from_grid(grid=sub_grid_2d_7x7).binned.native
                 == np.zeros(shape=(7, 7))
             ).all()
 
     class TestPotential:
-        def test__galaxy_mass_sis__no_source_plane_potential(self, sub_grid_7x7):
+        def test__galaxy_mass_sis__no_source_plane_potential(self, sub_grid_2d_7x7):
 
             g0 = al.Galaxy(
                 redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
@@ -1441,16 +1445,16 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_potential = image_plane.potential_2d_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
-            tracer_potential = tracer.potential_2d_from_grid(grid=sub_grid_7x7)
+            tracer_potential = tracer.potential_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert image_plane_potential.shape_native == (7, 7)
             assert (image_plane_potential == tracer_potential).all()
 
         def test__galaxy_entered_3_times__both_planes__different_potential_for_each(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             g0 = al.Galaxy(
@@ -1463,23 +1467,23 @@ class TestAbstractTracerLensing:
                 redshift=1.0, mass_profile=al.mp.SphIsothermal(einstein_radius=3.0)
             )
 
-            g0_potential = g0.potential_2d_from_grid(grid=sub_grid_7x7)
+            g0_potential = g0.potential_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            g1_potential = g1.potential_2d_from_grid(grid=sub_grid_7x7)
+            g1_potential = g1.potential_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            g2_potential = g2.potential_2d_from_grid(grid=sub_grid_7x7)
+            g2_potential = g2.potential_2d_from_grid(grid=sub_grid_2d_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             image_plane_potential = tracer.image_plane.potential_2d_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             source_plane_potential = tracer.source_plane.potential_2d_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
-            tracer_potential = tracer.potential_2d_from_grid(grid=sub_grid_7x7)
+            tracer_potential = tracer.potential_2d_from_grid(grid=sub_grid_2d_7x7)
 
             assert image_plane_potential == pytest.approx(
                 g0_potential + g1_potential, 1.0e-4
@@ -1489,7 +1493,9 @@ class TestAbstractTracerLensing:
                 g0_potential + g1_potential + g2_potential, 1.0e-4
             )
 
-        def test__galaxy_entered_2_times__grid_is_positions(self, grid_irregular_7x7):
+        def test__galaxy_entered_2_times__grid_is_positions(
+            self, grid_2d_irregular_7x7
+        ):
 
             g0 = al.Galaxy(
                 redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
@@ -1498,21 +1504,21 @@ class TestAbstractTracerLensing:
                 redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=2.0)
             )
 
-            g0_potential = g0.potential_2d_from_grid(grid=grid_irregular_7x7)
+            g0_potential = g0.potential_2d_from_grid(grid=grid_2d_irregular_7x7)
 
-            g1_potential = g1.potential_2d_from_grid(grid=grid_irregular_7x7)
+            g1_potential = g1.potential_2d_from_grid(grid=grid_2d_irregular_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_potential = tracer.image_plane.potential_2d_from_grid(
-                grid=grid_irregular_7x7
+                grid=grid_2d_irregular_7x7
             )
 
             source_plane_potential = tracer.source_plane.potential_2d_from_grid(
-                grid=grid_irregular_7x7
+                grid=grid_2d_irregular_7x7
             )
 
-            tracer_potential = tracer.potential_2d_from_grid(grid=grid_irregular_7x7)
+            tracer_potential = tracer.potential_2d_from_grid(grid=grid_2d_irregular_7x7)
 
             assert image_plane_potential.in_list[0] == pytest.approx(
                 g0_potential.in_list[0] + g1_potential.in_list[0], 1.0e-4
@@ -1522,7 +1528,7 @@ class TestAbstractTracerLensing:
             )
 
         def test__no_galaxy_has_mass_profile__potential_returned_as_zeros(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             tracer = al.Tracer.from_galaxies(
@@ -1530,7 +1536,7 @@ class TestAbstractTracerLensing:
             )
 
             assert (
-                tracer.potential_2d_from_grid(grid=sub_grid_7x7).binned.native
+                tracer.potential_2d_from_grid(grid=sub_grid_2d_7x7).binned.native
                 == np.zeros(shape=(7, 7))
             ).all()
 
@@ -1539,13 +1545,13 @@ class TestAbstractTracerLensing:
             )
 
             assert (
-                tracer.potential_2d_from_grid(grid=sub_grid_7x7).binned.native
+                tracer.potential_2d_from_grid(grid=sub_grid_2d_7x7).binned.native
                 == np.zeros(shape=(7, 7))
             ).all()
 
     class TestDeflectionsOfSummedPlanes:
         def test__galaxy_mass_sis__source_plane_no_mass__deflections_is_ignored(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             g0 = al.Galaxy(
@@ -1558,18 +1564,18 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_deflections = image_plane.deflections_2d_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             tracer_deflections = tracer.deflections_of_planes_summed_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             assert tracer_deflections.shape_native == (7, 7)
             assert (image_plane_deflections == tracer_deflections).all()
 
         def test__galaxy_entered_3_times__different_deflections_for_each(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             g0 = al.Galaxy(
@@ -1582,24 +1588,24 @@ class TestAbstractTracerLensing:
                 redshift=1.0, mass_profile=al.mp.SphIsothermal(einstein_radius=3.0)
             )
 
-            g0_deflections = g0.deflections_2d_from_grid(grid=sub_grid_7x7)
+            g0_deflections = g0.deflections_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            g1_deflections = g1.deflections_2d_from_grid(grid=sub_grid_7x7)
+            g1_deflections = g1.deflections_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            g2_deflections = g2.deflections_2d_from_grid(grid=sub_grid_7x7)
+            g2_deflections = g2.deflections_2d_from_grid(grid=sub_grid_2d_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             image_plane_deflections = tracer.image_plane.deflections_2d_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             source_plane_deflections = tracer.source_plane.deflections_2d_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             tracer_deflections = tracer.deflections_of_planes_summed_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             assert image_plane_deflections == pytest.approx(
@@ -1610,7 +1616,9 @@ class TestAbstractTracerLensing:
                 g0_deflections + g1_deflections + g2_deflections, 1.0e-4
             )
 
-        def test__galaxy_entered_2_times__grid_is_positions(self, grid_irregular_7x7):
+        def test__galaxy_entered_2_times__grid_is_positions(
+            self, grid_2d_irregular_7x7
+        ):
 
             g0 = al.Galaxy(
                 redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
@@ -1619,18 +1627,18 @@ class TestAbstractTracerLensing:
                 redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=2.0)
             )
 
-            g0_deflections = g0.deflections_2d_from_grid(grid=grid_irregular_7x7)
+            g0_deflections = g0.deflections_2d_from_grid(grid=grid_2d_irregular_7x7)
 
-            g1_deflections = g1.deflections_2d_from_grid(grid=grid_irregular_7x7)
+            g1_deflections = g1.deflections_2d_from_grid(grid=grid_2d_irregular_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_deflections = tracer.image_plane.deflections_2d_from_grid(
-                grid=grid_irregular_7x7
+                grid=grid_2d_irregular_7x7
             )
 
             tracer_deflections = tracer.deflections_of_planes_summed_from_grid(
-                grid=grid_irregular_7x7
+                grid=grid_2d_irregular_7x7
             )
 
             assert image_plane_deflections.in_list[0][0] == pytest.approx(
@@ -1647,7 +1655,7 @@ class TestAbstractTracerLensing:
             )
 
         def test__no_galaxy_has_mass_profile__deflections_returned_as_zeros(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             tracer = al.Tracer.from_galaxies(
@@ -1655,7 +1663,7 @@ class TestAbstractTracerLensing:
             )
 
             tracer_deflections = tracer.deflections_of_planes_summed_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             assert (
@@ -1667,7 +1675,7 @@ class TestAbstractTracerLensing:
 
     class TestGridAtRedshift:
         def test__lens_z05_source_z01_redshifts__match_planes_redshifts__gives_same_grids(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -1680,22 +1688,22 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7, redshift=0.5
+                grid=sub_grid_2d_7x7, redshift=0.5
             )
 
-            assert (grid_at_redshift == sub_grid_7x7).all()
+            assert (grid_at_redshift == sub_grid_2d_7x7).all()
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7, redshift=1.0
+                grid=sub_grid_2d_7x7, redshift=1.0
             )
 
             source_plane_grid = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )[1]
 
             assert (grid_at_redshift == source_plane_grid).all()
 
-        def test__same_as_above_but_for_multi_tracing(self, sub_grid_7x7):
+        def test__same_as_above_but_for_multi_tracing(self, sub_grid_2d_7x7):
             g0 = al.Galaxy(
                 redshift=0.5,
                 mass_profile=al.mp.SphIsothermal(
@@ -1725,45 +1733,45 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, g3, g4])
 
             traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7, redshift=0.5
+                grid=sub_grid_2d_7x7, redshift=0.5
             )
 
             assert grid_at_redshift == pytest.approx(traced_grids_of_planes[0], 1.0e-4)
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7, redshift=0.75
+                grid=sub_grid_2d_7x7, redshift=0.75
             )
 
             assert grid_at_redshift == pytest.approx(traced_grids_of_planes[1], 1.0e-4)
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7, redshift=1.0
+                grid=sub_grid_2d_7x7, redshift=1.0
             )
 
             assert grid_at_redshift == pytest.approx(traced_grids_of_planes[2], 1.0e-4)
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7, redshift=1.5
+                grid=sub_grid_2d_7x7, redshift=1.5
             )
 
             assert grid_at_redshift == pytest.approx(traced_grids_of_planes[3], 1.0e-4)
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7, redshift=2.0
+                grid=sub_grid_2d_7x7, redshift=2.0
             )
 
             assert grid_at_redshift == pytest.approx(traced_grids_of_planes[4], 1.0e-4)
 
         def test__input_redshift_between_two_planes__two_planes_between_earth_and_input_redshift(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
-            sub_grid_7x7[0] = np.array([[1.0, -1.0]])
-            sub_grid_7x7[1] = np.array([[1.0, 0.0]])
+            sub_grid_2d_7x7[0] = np.array([[1.0, -1.0]])
+            sub_grid_2d_7x7[1] = np.array([[1.0, 0.0]])
 
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -1782,7 +1790,7 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7, redshift=1.9
+                grid=sub_grid_2d_7x7, redshift=1.9
             )
 
             assert grid_at_redshift[0][0] == pytest.approx(-1.06587, 1.0e-1)
@@ -1791,7 +1799,7 @@ class TestAbstractTracerLensing:
             assert grid_at_redshift[1][1] == pytest.approx(0.0, 1.0e-1)
 
         def test__input_redshift_before_first_plane__returns_image_plane(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -1809,10 +1817,10 @@ class TestAbstractTracerLensing:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             grid_at_redshift = tracer.grid_at_redshift_from_grid_and_redshift(
-                grid=sub_grid_7x7.mask.unmasked_grid_sub_1, redshift=0.3
+                grid=sub_grid_2d_7x7.mask.unmasked_grid_sub_1, redshift=0.3
             )
 
-            assert (grid_at_redshift == sub_grid_7x7.mask.unmasked_grid_sub_1).all()
+            assert (grid_at_redshift == sub_grid_2d_7x7.mask.unmasked_grid_sub_1).all()
 
     class TestContributionMap:
         def test__contribution_maps_are_same_as_hyper_galaxy_calculation(self):
@@ -1917,7 +1925,7 @@ class TestAbstractTracerLensing:
 class TestAbstractTracerData:
     class TestBlurredProfileImages:
         def test__blurred_image_2d_from_grid_and_psf(
-            self, sub_grid_7x7, blurring_grid_7x7, psf_3x3
+            self, sub_grid_2d_7x7, blurring_grid_2d_7x7, psf_3x3
         ):
 
             g0 = al.Galaxy(
@@ -1931,24 +1939,24 @@ class TestAbstractTracerData:
             plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
 
             blurred_image_0 = plane_0.blurred_image_2d_from_grid_and_psf(
-                grid=sub_grid_7x7, psf=psf_3x3, blurring_grid=blurring_grid_7x7
+                grid=sub_grid_2d_7x7, psf=psf_3x3, blurring_grid=blurring_grid_2d_7x7
             )
 
-            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
-            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
-                grid=blurring_grid_7x7
+            source_grid_2d_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_2d_7x7)
+            source_blurring_grid_2d_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_2d_7x7
             )
 
             blurred_image_1 = plane_1.blurred_image_2d_from_grid_and_psf(
-                grid=source_grid_7x7,
+                grid=source_grid_2d_7x7,
                 psf=psf_3x3,
-                blurring_grid=source_blurring_grid_7x7,
+                blurring_grid=source_blurring_grid_2d_7x7,
             )
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_image = tracer.blurred_image_2d_from_grid_and_psf(
-                grid=sub_grid_7x7, psf=psf_3x3, blurring_grid=blurring_grid_7x7
+                grid=sub_grid_2d_7x7, psf=psf_3x3, blurring_grid=blurring_grid_2d_7x7
             )
 
             assert blurred_image.slim == pytest.approx(
@@ -1960,7 +1968,7 @@ class TestAbstractTracerData:
             )
 
         def test__blurred_images_of_planes_from_grid_and_psf(
-            self, sub_grid_7x7, blurring_grid_7x7, psf_3x3
+            self, sub_grid_2d_7x7, blurring_grid_2d_7x7, psf_3x3
         ):
 
             g0 = al.Galaxy(
@@ -1974,24 +1982,24 @@ class TestAbstractTracerData:
             plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
 
             blurred_image_0 = plane_0.blurred_image_2d_from_grid_and_psf(
-                grid=sub_grid_7x7, psf=psf_3x3, blurring_grid=blurring_grid_7x7
+                grid=sub_grid_2d_7x7, psf=psf_3x3, blurring_grid=blurring_grid_2d_7x7
             )
 
-            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
-            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
-                grid=blurring_grid_7x7
+            source_grid_2d_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_2d_7x7)
+            source_blurring_grid_2d_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_2d_7x7
             )
 
             blurred_image_1 = plane_1.blurred_image_2d_from_grid_and_psf(
-                grid=source_grid_7x7,
+                grid=source_grid_2d_7x7,
                 psf=psf_3x3,
-                blurring_grid=source_blurring_grid_7x7,
+                blurring_grid=source_blurring_grid_2d_7x7,
             )
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_images = tracer.blurred_images_of_planes_from_grid_and_psf(
-                grid=sub_grid_7x7, psf=psf_3x3, blurring_grid=blurring_grid_7x7
+                grid=sub_grid_2d_7x7, psf=psf_3x3, blurring_grid=blurring_grid_2d_7x7
             )
 
             assert (blurred_images[0].slim == blurred_image_0.slim).all()
@@ -2001,7 +2009,7 @@ class TestAbstractTracerData:
             assert (blurred_images[1].native == blurred_image_1.native).all()
 
         def test__blurred_image_2d_from_grid_and_convolver(
-            self, sub_grid_7x7, blurring_grid_7x7, convolver_7x7
+            self, sub_grid_2d_7x7, blurring_grid_2d_7x7, convolver_7x7
         ):
 
             g0 = al.Galaxy(
@@ -2015,28 +2023,28 @@ class TestAbstractTracerData:
             plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
 
             blurred_image_0 = plane_0.blurred_image_2d_from_grid_and_convolver(
-                grid=sub_grid_7x7,
+                grid=sub_grid_2d_7x7,
                 convolver=convolver_7x7,
-                blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_2d_7x7,
             )
 
-            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
-            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
-                grid=blurring_grid_7x7
+            source_grid_2d_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_2d_7x7)
+            source_blurring_grid_2d_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_2d_7x7
             )
 
             blurred_image_1 = plane_1.blurred_image_2d_from_grid_and_convolver(
-                grid=source_grid_7x7,
+                grid=source_grid_2d_7x7,
                 convolver=convolver_7x7,
-                blurring_grid=source_blurring_grid_7x7,
+                blurring_grid=source_blurring_grid_2d_7x7,
             )
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_image = tracer.blurred_image_2d_from_grid_and_convolver(
-                grid=sub_grid_7x7,
+                grid=sub_grid_2d_7x7,
                 convolver=convolver_7x7,
-                blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_2d_7x7,
             )
 
             assert blurred_image.slim == pytest.approx(
@@ -2048,7 +2056,7 @@ class TestAbstractTracerData:
             )
 
         def test__blurred_images_of_planes_from_grid_and_convolver(
-            self, sub_grid_7x7, blurring_grid_7x7, convolver_7x7
+            self, sub_grid_2d_7x7, blurring_grid_2d_7x7, convolver_7x7
         ):
 
             g0 = al.Galaxy(
@@ -2062,28 +2070,28 @@ class TestAbstractTracerData:
             plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
 
             blurred_image_0 = plane_0.blurred_image_2d_from_grid_and_convolver(
-                grid=sub_grid_7x7,
+                grid=sub_grid_2d_7x7,
                 convolver=convolver_7x7,
-                blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_2d_7x7,
             )
 
-            source_grid_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_7x7)
-            source_blurring_grid_7x7 = plane_0.traced_grid_from_grid(
-                grid=blurring_grid_7x7
+            source_grid_2d_7x7 = plane_0.traced_grid_from_grid(grid=sub_grid_2d_7x7)
+            source_blurring_grid_2d_7x7 = plane_0.traced_grid_from_grid(
+                grid=blurring_grid_2d_7x7
             )
 
             blurred_image_1 = plane_1.blurred_image_2d_from_grid_and_convolver(
-                grid=source_grid_7x7,
+                grid=source_grid_2d_7x7,
                 convolver=convolver_7x7,
-                blurring_grid=source_blurring_grid_7x7,
+                blurring_grid=source_blurring_grid_2d_7x7,
             )
 
             tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
 
             blurred_images = tracer.blurred_images_of_planes_from_grid_and_convolver(
-                grid=sub_grid_7x7,
+                grid=sub_grid_2d_7x7,
                 convolver=convolver_7x7,
-                blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_2d_7x7,
             )
 
             assert (blurred_images[0].slim == blurred_image_0.slim).all()
@@ -2093,7 +2101,7 @@ class TestAbstractTracerData:
             assert (blurred_images[1].native == blurred_image_1.native).all()
 
         def test__galaxy_blurred_image_dict_from_grid_and_convolver(
-            self, sub_grid_7x7, blurring_grid_7x7, convolver_7x7
+            self, sub_grid_2d_7x7, blurring_grid_2d_7x7, convolver_7x7
         ):
 
             g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
@@ -2108,37 +2116,37 @@ class TestAbstractTracerData:
             g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
 
             g0_blurred_image = g0.blurred_image_2d_from_grid_and_convolver(
-                grid=sub_grid_7x7,
+                grid=sub_grid_2d_7x7,
                 convolver=convolver_7x7,
-                blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_2d_7x7,
             )
 
             g1_blurred_image = g1.blurred_image_2d_from_grid_and_convolver(
-                grid=sub_grid_7x7,
+                grid=sub_grid_2d_7x7,
                 convolver=convolver_7x7,
-                blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_2d_7x7,
             )
 
             g2_blurred_image = g2.blurred_image_2d_from_grid_and_convolver(
-                grid=sub_grid_7x7,
+                grid=sub_grid_2d_7x7,
                 convolver=convolver_7x7,
-                blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_2d_7x7,
             )
 
-            g1_deflections = g1.deflections_2d_from_grid(grid=sub_grid_7x7)
+            g1_deflections = g1.deflections_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            source_grid_7x7 = sub_grid_7x7 - g1_deflections
+            source_grid_2d_7x7 = sub_grid_2d_7x7 - g1_deflections
 
             g1_blurring_deflections = g1.deflections_2d_from_grid(
-                grid=blurring_grid_7x7
+                grid=blurring_grid_2d_7x7
             )
 
-            source_blurring_grid_7x7 = blurring_grid_7x7 - g1_blurring_deflections
+            source_blurring_grid_2d_7x7 = blurring_grid_2d_7x7 - g1_blurring_deflections
 
             g3_blurred_image = g3.blurred_image_2d_from_grid_and_convolver(
-                grid=source_grid_7x7,
+                grid=source_grid_2d_7x7,
                 convolver=convolver_7x7,
-                blurring_grid=source_blurring_grid_7x7,
+                blurring_grid=source_blurring_grid_2d_7x7,
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -2146,9 +2154,9 @@ class TestAbstractTracerData:
             )
 
             blurred_image_dict = tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
-                grid=sub_grid_7x7,
+                grid=sub_grid_2d_7x7,
                 convolver=convolver_7x7,
-                blurring_grid=blurring_grid_7x7,
+                blurring_grid=blurring_grid_2d_7x7,
             )
 
             assert (blurred_image_dict[g0].slim == g0_blurred_image.slim).all()
@@ -2267,7 +2275,7 @@ class TestAbstractTracerData:
 
     class TestVisibilities:
         def test__visibilities_from_grid_and_transformer(
-            self, sub_grid_7x7, transformer_7x7_7
+            self, sub_grid_2d_7x7, transformer_7x7_7
         ):
             g0 = al.Galaxy(
                 redshift=0.5,
@@ -2277,13 +2285,13 @@ class TestAbstractTracerData:
 
             g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=2.0))
 
-            g0_image_1d = g0.image_2d_from_grid(grid=sub_grid_7x7)
+            g0_image_1d = g0.image_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            deflections = g0.deflections_2d_from_grid(grid=sub_grid_7x7)
+            deflections = g0.deflections_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            source_grid_7x7 = sub_grid_7x7 - deflections
+            source_grid_2d_7x7 = sub_grid_2d_7x7 - deflections
 
-            g1_image_1d = g1.image_2d_from_grid(grid=source_grid_7x7)
+            g1_image_1d = g1.image_2d_from_grid(grid=source_grid_2d_7x7)
 
             visibilities = transformer_7x7_7.visibilities_from_image(
                 image=g0_image_1d + g1_image_1d
@@ -2292,13 +2300,13 @@ class TestAbstractTracerData:
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             tracer_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+                grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
             )
 
             assert visibilities == pytest.approx(tracer_visibilities, 1.0e-4)
 
         def test__visibilities_of_planes_from_grid_and_transformer(
-            self, sub_grid_7x7, transformer_7x7_7
+            self, sub_grid_2d_7x7, transformer_7x7_7
         ):
 
             g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
@@ -2309,11 +2317,11 @@ class TestAbstractTracerData:
             plane_2 = al.Plane(redshift=1.0, galaxies=[al.Galaxy(redshift=1.0)])
 
             visibilities_0 = plane_0.profile_visibilities_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+                grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
             )
 
             visibilities_1 = plane_1.profile_visibilities_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+                grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
             )
 
             tracer = al.Tracer(
@@ -2321,14 +2329,14 @@ class TestAbstractTracerData:
             )
 
             visibilities = tracer.profile_visibilities_of_planes_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+                grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
             )
 
             assert (visibilities[0] == visibilities_0).all()
             assert (visibilities[1] == visibilities_1).all()
 
         def test__galaxy_visibilities_dict_from_grid_and_transformer(
-            self, sub_grid_7x7, transformer_7x7_7
+            self, sub_grid_2d_7x7, transformer_7x7_7
         ):
 
             g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
@@ -2343,23 +2351,23 @@ class TestAbstractTracerData:
             g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
 
             g0_visibilities = g0.profile_visibilities_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+                grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
             )
 
             g1_visibilities = g1.profile_visibilities_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+                grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
             )
 
             g2_visibilities = g2.profile_visibilities_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+                grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
             )
 
-            g1_deflections = g1.deflections_2d_from_grid(grid=sub_grid_7x7)
+            g1_deflections = g1.deflections_2d_from_grid(grid=sub_grid_2d_7x7)
 
-            source_grid_7x7 = sub_grid_7x7 - g1_deflections
+            source_grid_2d_7x7 = sub_grid_2d_7x7 - g1_deflections
 
             g3_visibilities = g3.profile_visibilities_from_grid_and_transformer(
-                grid=source_grid_7x7, transformer=transformer_7x7_7
+                grid=source_grid_2d_7x7, transformer=transformer_7x7_7
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -2367,7 +2375,7 @@ class TestAbstractTracerData:
             )
 
             visibilities_dict = tracer.galaxy_profile_visibilities_dict_from_grid_and_transformer(
-                grid=sub_grid_7x7, transformer=transformer_7x7_7
+                grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
             )
 
             assert (visibilities_dict[g0] == g0_visibilities).all()
@@ -2376,7 +2384,7 @@ class TestAbstractTracerData:
             assert (visibilities_dict[g3] == g3_visibilities).all()
 
     class TestSparseGridOfPlanes:
-        def test__x2_planes__traced_grid_setup_correctly(self, sub_grid_7x7):
+        def test__x2_planes__traced_grid_setup_correctly(self, sub_grid_2d_7x7):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
                 pixelization=mock_inv.MockPixelization(
@@ -2389,13 +2397,13 @@ class TestAbstractTracerData:
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
             pixelization_grids = tracer.sparse_image_plane_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             assert pixelization_grids[0] == None
             assert (pixelization_grids[1] == np.array([[1.0, 1.0]])).all()
 
-        def test__multi_plane__traced_grid_setup_correctly(self, sub_grid_7x7):
+        def test__multi_plane__traced_grid_setup_correctly(self, sub_grid_2d_7x7):
 
             galaxy_pix0 = al.Galaxy(
                 redshift=1.0,
@@ -2428,7 +2436,7 @@ class TestAbstractTracerData:
             )
 
             pixelization_grids = tracer.sparse_image_plane_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             assert pixelization_grids[0] == None
@@ -2439,7 +2447,7 @@ class TestAbstractTracerData:
 
     class TestTracedSpareGridOfPlanes:
         def test__x2_planes__no_mass_profiles__traced_grid_setup_correctly(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             galaxy_pix = al.Galaxy(
@@ -2457,14 +2465,14 @@ class TestAbstractTracerData:
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
             traced_pixelization_grids, sparse_image_grid = tracer.traced_sparse_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             assert traced_pixelization_grids[0] == None
             assert (traced_pixelization_grids[1] == np.array([[1.0, 0.0]])).all()
 
         def test__x2_planes__include_mass_profile__traced_grid_setup_correctly(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             galaxy_no_pix = al.Galaxy(
@@ -2488,7 +2496,7 @@ class TestAbstractTracerData:
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
             traced_pixelization_grids, sparse_image_grid = tracer.traced_sparse_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             assert traced_pixelization_grids[0] == None
@@ -2496,7 +2504,7 @@ class TestAbstractTracerData:
                 np.array([[1.0 - 0.5, 0.0]]), 1.0e-4
             )
 
-        def test__multi_plane__traced_grid_setup_correctly(self, sub_grid_7x7):
+        def test__multi_plane__traced_grid_setup_correctly(self, sub_grid_2d_7x7):
 
             galaxy_pix0 = al.Galaxy(
                 redshift=1.0,
@@ -2540,7 +2548,7 @@ class TestAbstractTracerData:
             )
 
             traced_pixelization_grids, sparse_image_grid = tracer.traced_sparse_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             traced_grid_pix0 = tracer.traced_grids_of_planes_from_grid(
@@ -2557,7 +2565,7 @@ class TestAbstractTracerData:
             assert (traced_pixelization_grids[4] == traced_grid_pix1).all()
 
         def test__x2_planes__no_mass_profiles__use_real_pixelization__doesnt_crash_due_to_auto_arrays(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             galaxy_pix = al.Galaxy(
@@ -2570,24 +2578,26 @@ class TestAbstractTracerData:
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
             traced_pixelization_grids, sparse_image_grid = tracer.traced_sparse_grids_of_planes_from_grid(
-                grid=sub_grid_7x7
+                grid=sub_grid_2d_7x7
             )
 
             assert traced_pixelization_grids[0] is None
             assert traced_pixelization_grids[1] is not None
 
     class TestMappersOfPlanes:
-        def test__no_galaxy_has_pixelization__returns_list_of_nones(self, sub_grid_7x7):
+        def test__no_galaxy_has_pixelization__returns_list_of_nones(
+            self, sub_grid_2d_7x7
+        ):
 
             galaxy_no_pix = al.Galaxy(redshift=0.5)
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
-            mappers_of_planes = tracer.mappers_of_planes_from_grid(grid=sub_grid_7x7)
+            mappers_of_planes = tracer.mappers_of_planes_from_grid(grid=sub_grid_2d_7x7)
             assert mappers_of_planes == [None]
 
         def test__source_galaxy_has_pixelization__returns_mapper_in_grouped_list(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
@@ -2598,12 +2608,12 @@ class TestAbstractTracerData:
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
-            mapper_of_planes = tracer.mappers_of_planes_from_grid(grid=sub_grid_7x7)
+            mapper_of_planes = tracer.mappers_of_planes_from_grid(grid=sub_grid_2d_7x7)
 
             assert mapper_of_planes == [None, 1]
 
         def test__multiplane__correct_galaxy_planes_galaxies_have_pixelization__returns_both_mappers(
-            self, sub_grid_7x7
+            self, sub_grid_2d_7x7
         ):
 
             galaxy_no_pix0 = al.Galaxy(
@@ -2636,13 +2646,13 @@ class TestAbstractTracerData:
                 ]
             )
 
-            mappers_of_planes = tracer.mappers_of_planes_from_grid(grid=sub_grid_7x7)
+            mappers_of_planes = tracer.mappers_of_planes_from_grid(grid=sub_grid_2d_7x7)
 
             assert mappers_of_planes == [None, None, 1, None, 2]
 
     class TestInversion:
         def test__x1_inversion_imaging_in_tracer__performs_inversion_correctly(
-            self, sub_grid_7x7, masked_imaging_7x7
+            self, sub_grid_2d_7x7, masked_imaging_7x7
         ):
 
             pix = al.pix.Rectangular(shape=(3, 3))
@@ -2653,7 +2663,7 @@ class TestAbstractTracerData:
             tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
             inversion = tracer.inversion_imaging_from_grid_and_data(
-                grid=sub_grid_7x7,
+                grid=sub_grid_2d_7x7,
                 image=masked_imaging_7x7.image,
                 noise_map=masked_imaging_7x7.noise_map,
                 convolver=masked_imaging_7x7.convolver,
@@ -2665,7 +2675,7 @@ class TestAbstractTracerData:
             )
 
         def test__x1_inversion_interferometer_in_tracer__performs_inversion_correctly(
-            self, sub_grid_7x7, interferometer_7
+            self, sub_grid_2d_7x7, interferometer_7
         ):
 
             interferometer_7.data = al.Visibilities.ones(shape_slim=(7,))
@@ -2678,7 +2688,7 @@ class TestAbstractTracerData:
             tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
             inversion = tracer.inversion_interferometer_from_grid_and_data(
-                grid=sub_grid_7x7,
+                grid=sub_grid_2d_7x7,
                 visibilities=interferometer_7.visibilities,
                 noise_map=interferometer_7.noise_map,
                 transformer=interferometer_7.transformer,
@@ -2686,7 +2696,7 @@ class TestAbstractTracerData:
             )
 
     class TestHyperNoiseMap:
-        def test__hyper_noise_maps_of_planes(self, sub_grid_7x7):
+        def test__hyper_noise_maps_of_planes(self, sub_grid_2d_7x7):
 
             noise_map_1d = al.Array2D.manual_native(
                 array=[[5.0, 3.0, 1.0]], pixel_scales=1.0
@@ -2761,7 +2771,7 @@ class TestAbstractTracerData:
 
 class TestTracer:
     def test__x2_planes__no_galaxy__all_deflections_are_zeros(
-        self, sub_grid_7x7_simple
+        self, sub_grid_2d_7x7_simple
     ):
 
         tracer = al.Tracer.from_galaxies(
@@ -2769,7 +2779,7 @@ class TestTracer:
         )
 
         traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-            grid=sub_grid_7x7_simple, plane_i=0, plane_j=0
+            grid=sub_grid_2d_7x7_simple, plane_i=0, plane_j=0
         )
 
         assert traced_deflections_between_planes[0] == pytest.approx(
@@ -2786,7 +2796,7 @@ class TestTracer:
         )
 
         traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-            grid=sub_grid_7x7_simple, plane_i=0, plane_j=1
+            grid=sub_grid_2d_7x7_simple, plane_i=0, plane_j=1
         )
 
         assert traced_deflections_between_planes[0] == pytest.approx(
@@ -2803,13 +2813,13 @@ class TestTracer:
         )
 
     def test__x2_planes__sis_lens__traced_deflection_are_correct(
-        self, sub_grid_7x7_simple, gal_x1_mp
+        self, sub_grid_2d_7x7_simple, gal_x1_mp
     ):
 
         tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, al.Galaxy(redshift=1.0)])
 
         traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-            grid=sub_grid_7x7_simple, plane_i=0, plane_j=1
+            grid=sub_grid_2d_7x7_simple, plane_i=0, plane_j=1
         )
 
         assert traced_deflections_between_planes[0] == pytest.approx(
@@ -2826,7 +2836,7 @@ class TestTracer:
         )
 
     def test__same_as_above_but_x2_sis_lenses__deflections_double(
-        self, sub_grid_7x7_simple, gal_x1_mp
+        self, sub_grid_2d_7x7_simple, gal_x1_mp
     ):
 
         tracer = al.Tracer.from_galaxies(
@@ -2834,7 +2844,7 @@ class TestTracer:
         )
 
         traced_deflections_between_planes = tracer.deflections_between_planes_from_grid(
-            grid=sub_grid_7x7_simple, plane_i=0, plane_j=1
+            grid=sub_grid_2d_7x7_simple, plane_i=0, plane_j=1
         )
 
         assert traced_deflections_between_planes[0] == pytest.approx(
@@ -2852,7 +2862,7 @@ class TestTracer:
 
 
 class TestTracerFixedSlices:
-    def test__6_galaxies__tracer_planes_are_correct(self, sub_grid_7x7):
+    def test__6_galaxies__tracer_planes_are_correct(self, sub_grid_2d_7x7):
         lens_g0 = al.Galaxy(redshift=0.5)
         source_g0 = al.Galaxy(redshift=2.0)
         los_g0 = al.Galaxy(redshift=0.1)
@@ -2876,7 +2886,7 @@ class TestTracerFixedSlices:
         assert tracer.planes[3].galaxies == [source_g0]
 
     def test__4_planes__data_grid_and_deflections_stacks_are_correct__sis_mass_profile(
-        self, sub_grid_7x7_simple
+        self, sub_grid_2d_7x7_simple
     ):
 
         lens_g0 = al.Galaxy(
@@ -2906,7 +2916,9 @@ class TestTracerFixedSlices:
             cosmology=cosmo.Planck15,
         )
 
-        traced_grids = tracer.traced_grids_of_planes_from_grid(grid=sub_grid_7x7_simple)
+        traced_grids = tracer.traced_grids_of_planes_from_grid(
+            grid=sub_grid_2d_7x7_simple
+        )
 
         # This test_autoarray is essentially the same as the TracerMulti test_autoarray, we just slightly change how many galaxies go
         # in each plane and therefore change the factor in front of val for different planes.

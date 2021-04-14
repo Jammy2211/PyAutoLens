@@ -320,7 +320,7 @@ class TestAnalysisInterferometer:
         assert isinstance(result, res.ResultInterferometer)
 
     def test__positions_do_not_trace_within_threshold__raises_exception(
-        self, interferometer_7, mask_7x7
+        self, interferometer_7, mask_2d_7x7
     ):
 
         model = af.Collection(

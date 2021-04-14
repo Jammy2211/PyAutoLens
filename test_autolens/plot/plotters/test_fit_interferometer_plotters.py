@@ -62,7 +62,7 @@ def test__fit_quantities_are_output(
         path.join(plot_path, "imag_normalized_residual_map_vs_uv_distances.png")
         in plot_patch.paths
     )
-    assert path.join(plot_path, "image.png") in plot_patch.paths
+    assert path.join(plot_path, "image_2d.png") in plot_patch.paths
 
     plot_patch.paths = []
 

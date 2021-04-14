@@ -6,7 +6,11 @@ import os
 from autoconf import conf
 from autogalaxy.plot import hyper_plotters
 from autogalaxy.analysis import visualizer
-from autolens.plot import fit_interferometer_plotters, ray_tracing_plotters, fit_imaging_plotters
+from autolens.plot import (
+    fit_interferometer_plotters,
+    ray_tracing_plotters,
+    fit_imaging_plotters,
+)
 
 
 def setting(section, name):

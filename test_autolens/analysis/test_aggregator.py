@@ -54,9 +54,9 @@ def test__tracer_generator_from_aggregator(masked_imaging_7x7, samples, model):
         assert tracer.galaxies[1].redshift == 1.0
 
 
-def test__imaging_generator_from_aggregator(imaging_7x7, mask_7x7, samples, model):
+def test__imaging_generator_from_aggregator(imaging_7x7, mask_2d_7x7, samples, model):
 
-    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_7x7)
+    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_2d_7x7)
     masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
         settings=al.SettingsImaging(
             grid_class=al.Grid2DIterate,
@@ -107,7 +107,7 @@ def test__interferometer_generator_from_aggregator(
     visibilities_7,
     visibilities_noise_map_7,
     uv_wavelengths_7x2,
-    mask_7x7,
+    mask_2d_7x7,
     samples,
     model,
 ):
@@ -115,7 +115,7 @@ def test__interferometer_generator_from_aggregator(
         visibilities=visibilities_7,
         noise_map=visibilities_noise_map_7,
         uv_wavelengths=uv_wavelengths_7x2,
-        real_space_mask=mask_7x7,
+        real_space_mask=mask_2d_7x7,
         settings=al.SettingsInterferometer(
             transformer_class=al.TransformerDFT,
             grid_class=al.Grid2DIterate,
@@ -139,7 +139,7 @@ def test__interferometer_generator_from_aggregator(
 
     for interferometer in interferometer_gen:
         assert (interferometer.visibilities == interferometer_7.visibilities).all()
-        assert (interferometer.real_space_mask == mask_7x7).all()
+        assert (interferometer.real_space_mask == mask_2d_7x7).all()
         assert isinstance(interferometer.grid, al.Grid2DIterate)
         assert isinstance(interferometer.grid_inversion, al.Grid2DInterpolate)
         assert interferometer.grid.sub_steps == [2]
@@ -149,7 +149,7 @@ def test__interferometer_generator_from_aggregator(
 
 
 def test__fit_interferometer_generator_from_aggregator(
-    interferometer_7, mask_7x7, samples, model
+    interferometer_7, mask_2d_7x7, samples, model
 ):
 
     search = mock.MockSearch(samples=samples)
@@ -165,7 +165,7 @@ def test__fit_interferometer_generator_from_aggregator(
 
     for fit_interferometer in fit_interferometer_gen:
         assert (fit_interferometer.visibilities == interferometer_7.visibilities).all()
-        assert (fit_interferometer.interferometer.real_space_mask == mask_7x7).all()
+        assert (fit_interferometer.interferometer.real_space_mask == mask_2d_7x7).all()
 
 
 class MockResult:

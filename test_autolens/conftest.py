@@ -48,54 +48,54 @@ def set_config_path(request):
     )
 
 
-@pytest.fixture(name="mask_7x7")
-def make_mask_7x7():
-    return fixtures.make_mask_7x7()
+@pytest.fixture(name="mask_2d_7x7")
+def make_mask_2d_7x7():
+    return fixtures.make_mask_2d_7x7()
 
 
-@pytest.fixture(name="sub_mask_7x7")
-def make_sub_mask_7x7():
-    return fixtures.make_sub_mask_7x7()
+@pytest.fixture(name="sub_mask_2d_7x7")
+def make_sub_mask_2d_7x7():
+    return fixtures.make_sub_mask_2d_7x7()
 
 
-@pytest.fixture(name="mask_7x7_1_pix")
-def make_mask_7x7_1_pix():
-    return fixtures.make_mask_7x7_1_pix()
+@pytest.fixture(name="mask_2d_7x7_1_pix")
+def make_mask_2d_7x7_1_pix():
+    return fixtures.make_mask_2d_7x7_1_pix()
 
 
-@pytest.fixture(name="blurring_mask_7x7")
-def make_blurring_mask_7x7():
-    return fixtures.make_blurring_mask_7x7()
+@pytest.fixture(name="blurring_mask_2d_7x7")
+def make_blurring_mask_2d_7x7():
+    return fixtures.make_blurring_mask_2d_7x7()
 
 
-@pytest.fixture(name="grid_7x7")
-def make_grid_7x7():
-    return fixtures.make_grid_7x7()
+@pytest.fixture(name="grid_2d_7x7")
+def make_grid_2d_7x7():
+    return fixtures.make_grid_2d_7x7()
 
 
-@pytest.fixture(name="sub_grid_7x7")
-def make_sub_grid_7x7():
-    return fixtures.make_sub_grid_7x7()
+@pytest.fixture(name="sub_grid_2d_7x7")
+def make_sub_grid_2d_7x7():
+    return fixtures.make_sub_grid_2d_7x7()
 
 
-@pytest.fixture(name="grid_iterate_7x7")
-def make_grid_iterate_7x7():
-    return fixtures.make_grid_iterate_7x7()
+@pytest.fixture(name="grid_2d_iterate_7x7")
+def make_grid_2d_iterate_7x7():
+    return fixtures.make_grid_2d_iterate_7x7()
 
 
-@pytest.fixture(name="grid_irregular_7x7")
-def make_grid_irregular_7x7():
-    return fixtures.make_grid_irregular_7x7()
+@pytest.fixture(name="grid_2d_irregular_7x7")
+def make_grid_2d_irregular_7x7():
+    return fixtures.make_grid_2d_irregular_7x7()
 
 
-@pytest.fixture(name="grid_irregular_7x7_list")
-def make_grid_irregular_7x7_list():
-    return fixtures.make_grid_irregular_7x7_list()
+@pytest.fixture(name="grid_2d_irregular_7x7_list")
+def make_grid_2d_irregular_7x7_list():
+    return fixtures.make_grid_2d_irregular_7x7_list()
 
 
-@pytest.fixture(name="blurring_grid_7x7")
-def make_blurring_grid_7x7(blurring_mask_7x7):
-    return fixtures.make_blurring_grid_7x7()
+@pytest.fixture(name="blurring_grid_2d_7x7")
+def make_blurring_grid_2d_7x7(blurring_mask_2d_7x7):
+    return fixtures.make_blurring_grid_2d_7x7()
 
 
 @pytest.fixture(name="image_7x7")
@@ -229,9 +229,9 @@ def make_gal_x1_lp():
 # Ray Tracing #
 
 
-@pytest.fixture(name="sub_grid_7x7_simple")
-def make_sub_grid_7x7_simple():
-    return fixtures.make_sub_grid_7x7_simple()
+@pytest.fixture(name="sub_grid_2d_7x7_simple")
+def make_sub_grid_2d_7x7_simple():
+    return fixtures.make_sub_grid_2d_7x7_simple()
 
 
 @pytest.fixture(name="tracer_x1_plane_7x7")

@@ -180,7 +180,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             self.mat_plot_2d.plot_array(
                 array=self.tracer.image_2d_from_grid(grid=self.grid),
                 visuals_2d=self.visuals_with_include_2d,
-                auto_labels=mp.AutoLabels(title="Image", filename="image"),
+                auto_labels=mp.AutoLabels(title="Image", filename="image_2d"),
             )
 
         if source_plane:
@@ -202,7 +202,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
                 array=self.tracer.contribution_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
-                    title="Contribution Map", filename="contribution_map"
+                    title="Contribution Map", filename="contribution_map_2d"
                 ),
             )
 

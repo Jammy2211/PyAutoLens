@@ -44,16 +44,16 @@ class TestVisualizer:
         plot_path = path.join(plot_path, "ray_tracing")
 
         assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths
-        assert path.join(plot_path, "image.png") in plot_patch.paths
+        assert path.join(plot_path, "image_2d.png") in plot_patch.paths
         assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
-        assert path.join(plot_path, "convergence.png") in plot_patch.paths
-        assert path.join(plot_path, "potential.png") not in plot_patch.paths
-        assert path.join(plot_path, "deflections_y.png") not in plot_patch.paths
-        assert path.join(plot_path, "deflections_x.png") not in plot_patch.paths
-        assert path.join(plot_path, "magnification.png") in plot_patch.paths
+        assert path.join(plot_path, "convergence_2d.png") in plot_patch.paths
+        assert path.join(plot_path, "potential_2d.png") not in plot_patch.paths
+        assert path.join(plot_path, "deflections_y_2d.png") not in plot_patch.paths
+        assert path.join(plot_path, "deflections_x_2d.png") not in plot_patch.paths
+        assert path.join(plot_path, "magnification_2d.png") in plot_patch.paths
 
         convergence = al.util.array_2d.numpy_array_2d_from_fits(
-            file_path=path.join(plot_path, "fits", "convergence.fits"), hdu=0
+            file_path=path.join(plot_path, "fits", "convergence_2d.fits"), hdu=0
         )
 
         assert convergence.shape == (5, 5)
@@ -88,7 +88,7 @@ class TestVisualizer:
         plot_path = path.join(plot_path, "fit_imaging")
 
         assert path.join(plot_path, "subplot_fit_imaging.png") in plot_patch.paths
-        assert path.join(plot_path, "image.png") in plot_patch.paths
+        assert path.join(plot_path, "image_2d.png") in plot_patch.paths
         assert path.join(plot_path, "noise_map.png") not in plot_patch.paths
         assert path.join(plot_path, "signal_to_noise_map.png") not in plot_patch.paths
         assert path.join(plot_path, "model_image.png") in plot_patch.paths
@@ -111,7 +111,7 @@ class TestVisualizer:
         assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
 
         image = al.util.array_2d.numpy_array_2d_from_fits(
-            file_path=path.join(plot_path, "fits", "image.fits"), hdu=0
+            file_path=path.join(plot_path, "fits", "image_2d.fits"), hdu=0
         )
 
         assert image.shape == (5, 5)
