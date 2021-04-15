@@ -38,7 +38,7 @@ determined by a fitting procedure.
     )
     source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllExponential)
 
-We combine the lens and source model galaxies above into a `Collection`, which is the model we will fit. Note how
+We combine the lens and source model galaxies above into a ``Collection``, which is the model we will fit. Note how
 we could easily extend this object to compose highly complex models containing many galaxies.
 
 .. code-block:: bash
@@ -64,8 +64,8 @@ very effective at lens modeling.
 
     search = af.DynestyStatic(name="search_example")
 
-We next create an ``AnalysisImaging`` object, contains the ``log likelihood function`` that the non-linear search calls
-to fit the lens model to the data.
+We next create an ``AnalysisImaging`` object, which contains the ``log likelihood function`` that the non-linear
+search calls to fit the lens model to the data.
 
 .. code-block:: bash
 
@@ -87,6 +87,10 @@ iterations are performed.
   :width: 600
 
 **Credit: Amy Etherington**
+
+Once a model-fit is running, **PyAutoLens** outputs the results of the search to hard-disk on-the-fly. This includes
+lens model parameter estimates with errors non-linear samples and the visualization of the best-fit lens model inferred
+by the search so far.
 
 The fit above returns a ``Result`` object, which contains the maximum log likelihood ``Tracer`` and ``FitImaging``
 objects and which can easily be plotted.

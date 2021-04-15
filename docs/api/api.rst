@@ -11,6 +11,8 @@ Data Structures
 .. autosummary::
    :toctree: generated/
 
+   Mask1D
+   Mask2D
    Array1D
    Array2D
    ValuesIrregular
@@ -35,18 +37,10 @@ Datasets
    :toctree: generated/
 
    Imaging
-   Interferometer
-
-----------
-Simulators
-----------
-
-.. currentmodule:: autolens
-
-.. autosummary::
-   :toctree: generated/
-
+   SettingsImaging
    SimulatorImaging
+   SettingsInterferometer
+   Interferometer
    SimulatorInterferometer
 
 -------
@@ -58,6 +52,19 @@ Fitting
 
    FitImaging
    FitInterferometer
+
+---------------------
+Point Source Modeling
+---------------------
+
+.. autosummary::
+   :toctree: generated/
+
+   PointSourceDataset
+   PointSourceDict
+   FitPositionsImage
+   FitFluxes
+   PositionsSolver
 
 --------------
 Light Profiles
@@ -78,6 +85,8 @@ Light Profiles
    SphDevVaucouleurs
    EllSersicCore
    SphSersicCore
+   EllChameleon
+   SphChameleon
 
 -------------
 Mass Profiles
@@ -110,12 +119,13 @@ Mass Profiles
     EllNFWGeneralized
     SphNFWGeneralized
     SphNFWTruncated
-    SphNFWTruncatedMCRDuffy
     SphNFWTruncatedMCRLudlow
+    SphNFWTruncatedMCRDuffy
     EllNFW
     SphNFW
     SphNFWMCRDuffy
     SphNFWMCRLudlow
+    EllNFWMCRLudlow
 
 **Stellar Mass Profiles:**
 
@@ -131,6 +141,8 @@ Mass Profiles
     SphDevVaucouleurs
     EllSersicRadialGradient
     SphSersicRadialGradient
+    EllChameleon
+    SphChameleon
 
 **Mass-sheets:**
 
@@ -152,6 +164,7 @@ Lensing
    Galaxy
    Plane
    Tracer
+   SettingsLens
 
 ----------
 Inversions
@@ -188,6 +201,13 @@ Inversions
    Mapper
    Inversion
 
+**Settings:**
+
+.. autosummary::
+   :toctree: generated/
+
+   SettingsPixelization
+   SettingsInversion
 
 -----
 Plots
@@ -195,65 +215,91 @@ Plots
 
 .. currentmodule:: autolens.plot
 
-**Plotters**
+**Plotters:**
 
 .. autosummary::
    :toctree: generated/
 
-   Plotter
-   Plotter
-   Include
+    Array2DPlotter
+    Frame2DPlotter
+    Grid2DPlotter
+    MapperPlotter
+    YX1DPlotter
+    InversionPlotter
+    ImagingPlotter
+    InterferometerPlotter
+    LightProfilePlotter
+    MassProfilePlotter
+    GalaxyPlotter
+    FitImagingPlotter
+    FitInterferometerPlotter
+    PlanePlotter
+    HyperPlotter
+    FitImagingPlotter
+    FitInterferometerPlotter
+    TracerPlotter
+    MultiFigurePlotter
+    MultiYX1DPlotter
 
-**Matplotlib Objects**
-
-.. autosummary::
-   :toctree: generated/
-
-   Figure
-   Cmap
-   Colorbar
-   Ticks
-   Labels
-   Legend
-   Units
-   Output
-   OriginScatter
-   MaskScatter
-   BorderScatter
-   GridScatter
-   PositionsScatter
-   IndexScatter
-   PixelizationGridScatter
-   Line
-   ArrayOverlayer
-   VoronoiDrawer
-   LightProfileCentreScatter
-   MassProfileCentreScatter
-   MultipleImagesScatter
-   CriticalCurvesPlot
-   CausticsPlot
-
-**Plots:**
+**Plot Customization Objects**
 
 .. autosummary::
    :toctree: generated/
 
-   Array2D
-   Grid2D
-   Line
-   MapperObj
-   Imaging
-   Interferometer
-   MassProfile
-   LightProfile
-   Galaxy
-   Plane
-   Tracer
-   FitImaging
-   FitInterferometer
-   FitGalaxy
-   Inversion
-   Mapper
+    MatPlot1D
+    MatPlot2D
+    Include1D
+    Include2D
+    Visuals1D
+    Visuals2D
+
+**Matplotlib Wrapper Base Objects:**
+
+.. autosummary::
+   :toctree: generated/
+
+    Units
+    Figure
+    Axis
+    Cmap
+    Colorbar
+    ColorbarTickParams
+    TickParams
+    YTicks
+    XTicks
+    Title
+    YLabel
+    XLabel
+    Legend
+    Output
+
+**Matplotlib Wrapper 1D Objects:**
+
+.. autosummary::
+   :toctree: generated/
+
+    YXPlot
+
+**Matplotlib Wrapper 2D Objects:**
+
+.. autosummary::
+   :toctree: generated/
+
+    ArrayOverlay
+    GridScatter
+    GridPlot
+    VectorFieldQuiver
+    PatchOverlay
+    VoronoiDrawer
+    OriginScatter
+    MaskScatter
+    BorderScatter
+    PositionsScatter
+    IndexScatter
+    PixelizationGridScatter
+    ParallelOverscanPlot
+    SerialPrescanPlot
+    SerialOverscanPlot
 
 -------------
 Lens Modeling
@@ -266,11 +312,11 @@ Lens Modeling
 .. autosummary::
    :toctree: generated/
 
+    AnalysisImaging
+    AnalysisInterferometer
+    AnalysisPointSource
     SetupHyper
-
----------
-PyAutoFit
----------
+    Preloads
 
 **Searches:**
 
@@ -282,5 +328,6 @@ PyAutoFit
    DynestyStatic
    DynestyDynamic
    Emcee
+   PySwarmsLocal
    PySwarmsGlobal
    MultiNest

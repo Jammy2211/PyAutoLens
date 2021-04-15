@@ -1,5 +1,5 @@
-Chapter 3: Pipelines
-====================
+Chapter 3: Search Chaining
+==========================
 
 In chapter 3, we introduce non-linear search chaining, whereby lens modeling pipelines are composed which each fit a 
 different lens model.
