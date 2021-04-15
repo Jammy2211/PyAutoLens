@@ -8,7 +8,7 @@ and navigating to the folder ``notebooks/howtolens/chapter_2_lens_modeling``. Th
 
 The chapter contains the following tutorials:
 
-`Tutorial 1: <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_1_non_linear_search.ipynb>`_
+`Tutorial 1: Lens Modeling <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_1_non_linear_search.ipynb>`_
 - How a non-linear search is used to fit a lens model.
 
 `Tutorial 2: Parameter Space And Priors <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_2_lens_modeling/tutorial_2_parameter_space_and_priors.ipynb>`_

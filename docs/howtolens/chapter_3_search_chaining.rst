@@ -18,10 +18,10 @@ The chapter contains the following tutorials:
 `Tutorial 3: Lens and Source <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_3_search_chaining/tutorial_3_lens_and_source.ipynb>`_
 - Fitting the lens's light followed by its mass using chained searches.
 
-`Tutorial 4: Pipeline Two Lens Galaxies <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_3_search_chaining/tutorial_4_x2_lens_galaxies.ipynb>`_
+`Tutorial 4: Two Lens Galaxies <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_3_search_chaining/tutorial_4_x2_lens_galaxies.ipynb>`_
 - Modeling a strong lens with two lens galaxies using chained searches.
 
-`Tutorial 5: Pipeline Complex Source <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_3_search_chaining/tutorial_5_complex_source.ipynb>`_
+`Tutorial 5: Complex Source <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_3_search_chaining/tutorial_5_complex_source.ipynb>`_
 - Using multiple light profiles to fit a complex and irregular source using chained searches.
 
 `Tutorial 6: SLaM <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/howtolens/chapter_3_search_chaining/tutorial_6_slam.ipynb>`_
