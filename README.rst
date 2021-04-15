@@ -145,7 +145,7 @@ with an ``EllSersic``.
     """
     We define the non-linear search used to fit the model to the data (in this case, Dynesty).
     """
-    search = af.DynestyStatic(name="search[example]", n_live_points=50)
+    search = af.DynestyStatic(name="search[example]", nlive=50)
 
     """
     We next set up the `Analysis`, which contains the `log likelihood function` that the

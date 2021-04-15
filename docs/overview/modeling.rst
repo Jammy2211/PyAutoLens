@@ -148,7 +148,7 @@ setting can be easily customized:
     """Nested Samplers"""
 
     search = af.MultiNest(name="multinest", n_live_points=50, sampling_efficiency=0.5, evidence_tolerance=0.8)
-    search = af.DynestyStatic(name="dynesty_static", n_live_points=50, sample="rwalk")
+    search = af.DynestyStatic(name="dynesty_static", nlive=50, sample="rwalk")
     search = af.DynestyDynamic(name="dynesty_dynamic", sample="hslice")
 
     """MCMC"""
