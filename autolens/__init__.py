@@ -27,6 +27,7 @@ from autoarray.structures.vector_fields.vector_field_irregular import (
 )
 from autoarray.structures.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
+from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autogalaxy import util
 from autogalaxy.galaxy.fit_galaxy import FitGalaxy
 from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift

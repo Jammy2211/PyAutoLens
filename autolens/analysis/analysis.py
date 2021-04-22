@@ -661,7 +661,8 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
             except (AttributeError, numba.errors.TypingError) as e:
                 raise FitException from e
 
-            log_likelihood += fit_positions.log_likelihood
+            if fit_positions is not None:
+                log_likelihood += fit_positions.log_likelihood
 
             fit_fluxes = self.fit_fluxes_for(
                 point_source_dataset=point_source_dataset, tracer=tracer

@@ -34,7 +34,6 @@ from autoarray.plot.mat_wrap.wrap.wrap_2d import (
 )
 
 from autoarray.plot.structure_plotters import Array2DPlotter
-from autoarray.plot.structure_plotters import Frame2DPlotter
 from autoarray.plot.structure_plotters import Grid2DPlotter
 from autoarray.plot.structure_plotters import MapperPlotter
 from autoarray.plot.structure_plotters import YX1DPlotter

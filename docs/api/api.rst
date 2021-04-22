@@ -221,7 +221,6 @@ Plots
    :toctree: generated/
 
     Array2DPlotter
-    Frame2DPlotter
     Grid2DPlotter
     MapperPlotter
     YX1DPlotter

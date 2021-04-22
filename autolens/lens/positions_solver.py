@@ -292,10 +292,11 @@ class PositionsSolver(AbstractPositionsSolver):
     def refined_coordinates_from_coordinate(
         self, deflections_func, coordinate, pixel_scale, source_plane_coordinate
     ):
-        """For an input (y,x) coordinate, determine a set of refined coordinates that are computed by locating peak
+        """
+        For an input (y,x) coordinate, determine a set of refined coordinates that are computed by locating peak
         pixels on a higher resolution grid around that pixel.
 
-        This may return 1 or multiple refined coordinates. Multiple coordinates occurance when the peak 'splits' into
+        This may return 1 or multiple refined coordinates. Multiple coordinates occur when the peak 'splits' into
         multiple images.
 
         Parameters
@@ -359,6 +360,15 @@ class PositionsSolver(AbstractPositionsSolver):
         )
 
         if not self.use_upscaling:
+
+            coordinates_list = self.grid_within_distance_of_source_plane_centre(
+                deflection_func=deflections_func,
+                grid=grid_2d_irregular.Grid2DIrregularUniform(
+                    grid=coordinates_list, pixel_scales=self.grid.pixel_scales
+                ),
+                source_plane_coordinate=source_plane_coordinate,
+                distance=self.distance_from_source_centre,
+            )
 
             return grid_2d_irregular.Grid2DIrregular(grid=coordinates_list)
 
