@@ -158,9 +158,9 @@ def make_interferometer_7():
     return fixtures.make_interferometer_7()
 
 
-@pytest.fixture(name="interferometer_7_lop")
-def make_interferometer_7_lop():
-    return fixtures.make_interferometer_7_lop()
+@pytest.fixture(name="interferometer_7_nufft")
+def make_interferometer_7_nufft():
+    return fixtures.make_interferometer_7_nufft()
 
 
 @pytest.fixture(name="interferometer_7_grid")

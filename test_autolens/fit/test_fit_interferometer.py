@@ -637,10 +637,10 @@ class TestCompareToManualInversionOnly:
 
         assert fit_0.log_evidence != fit_1.log_evidence
 
-    def test___all_lens_fit_quantities__linear_operator(self, interferometer_7_lop):
+    def test___all_lens_fit_quantities__linear_operator(self, interferometer_7_nufft):
 
         # Ensures the inversion grid is used, as this would cause the test to fail.
-        interferometer_7_lop.grid[0, 0] = -100.0
+        interferometer_7_nufft.grid[0, 0] = -100.0
 
         pix = al.pix.Rectangular(shape=(3, 3))
         reg = al.reg.Constant(coefficient=0.01)
@@ -650,21 +650,21 @@ class TestCompareToManualInversionOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.FitInterferometer(
-            interferometer=interferometer_7_lop,
+            interferometer=interferometer_7_nufft,
             tracer=tracer,
             settings_inversion=al.SettingsInversion(use_linear_operators=True),
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=interferometer_7_lop.grid_inversion, sparse_grid=None
+            grid=interferometer_7_nufft.grid_inversion, sparse_grid=None
         )
 
         inversion = inversions.InversionInterferometerLinearOperator.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
-            visibilities=interferometer_7_lop.visibilities,
-            noise_map=interferometer_7_lop.noise_map,
-            transformer=interferometer_7_lop.transformer,
+            visibilities=interferometer_7_nufft.visibilities,
+            noise_map=interferometer_7_nufft.noise_map,
+            transformer=interferometer_7_nufft.transformer,
             settings=al.SettingsInversion(use_linear_operators=True),
         )
 
@@ -673,14 +673,14 @@ class TestCompareToManualInversionOnly:
         )
 
         residual_map = al.util.fit.residual_map_from(
-            data=interferometer_7_lop.visibilities,
+            data=interferometer_7_nufft.visibilities,
             model_data=inversion.mapped_reconstructed_visibilities,
         )
 
         assert residual_map.slim == pytest.approx(fit.residual_map.slim, 1.0e-4)
 
         normalized_residual_map = al.util.fit.normalized_residual_map_complex_from(
-            residual_map=residual_map, noise_map=interferometer_7_lop.noise_map
+            residual_map=residual_map, noise_map=interferometer_7_nufft.noise_map
         )
 
         assert normalized_residual_map.slim == pytest.approx(
@@ -688,7 +688,7 @@ class TestCompareToManualInversionOnly:
         )
 
         chi_squared_map = al.util.fit.chi_squared_map_complex_from(
-            residual_map=residual_map, noise_map=interferometer_7_lop.noise_map
+            residual_map=residual_map, noise_map=interferometer_7_nufft.noise_map
         )
 
         assert chi_squared_map.slim == pytest.approx(fit.chi_squared_map.slim, 1.0e-4)
@@ -698,7 +698,7 @@ class TestCompareToManualInversionOnly:
         )
 
         noise_normalization = al.util.fit.noise_normalization_complex_from(
-            noise_map=interferometer_7_lop.noise_map
+            noise_map=interferometer_7_nufft.noise_map
         )
 
         log_likelihood = al.util.fit.log_likelihood_from(
