@@ -1,6 +1,5 @@
 import numpy as np
 
-from autoconf import conf
 from autoarray.fit import fit as aa_fit
 from autoarray.inversion import pixelizations as pix, inversions as inv
 from autogalaxy.galaxy import galaxy as g

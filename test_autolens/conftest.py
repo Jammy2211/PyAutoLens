@@ -252,34 +252,44 @@ def make_tracer_x2_plane_inversion_7x7():
 # Lens Fit #
 
 
-@pytest.fixture(name="imaging_fit_x1_plane_7x7")
-def make_imaging_fit_x1_plane_7x7():
-    return fixtures.make_imaging_fit_x1_plane_7x7()
+@pytest.fixture(name="fit_imaging_x1_plane_7x7")
+def make_fit_imaging_x1_plane_7x7():
+    return fixtures.make_fit_imaging_x1_plane_7x7()
 
 
-@pytest.fixture(name="imaging_fit_x2_plane_7x7")
-def make_imaging_fit_x2_plane_7x7():
-    return fixtures.make_imaging_fit_x2_plane_7x7()
+@pytest.fixture(name="fit_imaging_x2_plane_7x7")
+def make_fit_imaging_x2_plane_7x7():
+    return fixtures.make_fit_imaging_x2_plane_7x7()
 
 
-@pytest.fixture(name="imaging_fit_x2_plane_inversion_7x7")
-def make_imaging_fit_x2_plane_inversion_7x7():
-    return fixtures.make_imaging_fit_x2_plane_inversion_7x7()
+@pytest.fixture(name="fit_imaging_x2_plane_inversion_7x7")
+def make_fit_imaging_x2_plane_inversion_7x7():
+    return fixtures.make_fit_imaging_x2_plane_inversion_7x7()
 
 
-@pytest.fixture(name="interferometer_fit_x1_plane_7x7")
-def make_interferometer_fit_x1_plane_7x7():
-    return fixtures.make_interferometer_fit_x1_plane_7x7()
+@pytest.fixture(name="fit_interferometer_x1_plane_7x7")
+def make_fit_interferometer_x1_plane_7x7():
+    return fixtures.make_fit_interferometer_x1_plane_7x7()
 
 
-@pytest.fixture(name="interferometer_fit_x2_plane_7x7")
-def make_interferometer_fit_x2_plane_7x7():
-    return fixtures.make_interferometer_fit_x2_plane_7x7()
+@pytest.fixture(name="fit_interferometer_x2_plane_7x7")
+def make_fit_interferometer_x2_plane_7x7():
+    return fixtures.make_fit_interferometer_x2_plane_7x7()
 
 
-@pytest.fixture(name="interferometer_fit_x2_plane_inversion_7x7")
-def make_interferometer_fit_x2_plane_inversion_7x7():
-    return fixtures.make_interferometer_fit_x2_plane_inversion_7x7()
+@pytest.fixture(name="fit_interferometer_nufft_x2_plane_7x7")
+def make_fit_interferometer_nufft_x2_plane_7x7():
+    return fixtures.make_fit_interferometer_nufft_x2_plane_7x7()
+
+
+@pytest.fixture(name="fit_interferometer_x2_plane_inversion_7x7")
+def make_fit_interferometer_x2_plane_inversion_7x7():
+    return fixtures.make_fit_interferometer_x2_plane_inversion_7x7()
+
+
+@pytest.fixture(name="fit_interferometer_nufft_x2_plane_inversion_7x7")
+def make_fit_interferometer_nufft_x2_plane_inversion_7x7():
+    return fixtures.make_fit_interferometer_nufft_x2_plane_inversion_7x7()
 
 
 ### Analysis ###

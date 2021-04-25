@@ -52,10 +52,10 @@ def test__preload_pixelization():
     assert preloads.sparse_grids_of_planes == 1
 
 
-def test__preload_inversion_with_fixed_profiles(imaging_fit_x2_plane_inversion_7x7):
+def test__preload_inversion_with_fixed_profiles(fit_imaging_x2_plane_inversion_7x7):
 
     result = mock.MockResult(
-        max_log_likelihood_fit=imaging_fit_x2_plane_inversion_7x7,
+        max_log_likelihood_fit=fit_imaging_x2_plane_inversion_7x7,
         max_log_likelihood_pixelization_grids_of_planes=1,
     )
 
@@ -96,31 +96,31 @@ def test__preload_inversion_with_fixed_profiles(imaging_fit_x2_plane_inversion_7
     assert preloads.sparse_grids_of_planes == 1
     assert (
         preloads.blurred_mapping_matrix
-        == imaging_fit_x2_plane_inversion_7x7.inversion.blurred_mapping_matrix
+        == fit_imaging_x2_plane_inversion_7x7.inversion.blurred_mapping_matrix
     ).all()
     assert (
         preloads.curvature_matrix_sparse_preload
-        == imaging_fit_x2_plane_inversion_7x7.inversion.curvature_matrix_sparse_preload
+        == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_sparse_preload
     ).all()
     assert (
         preloads.curvature_matrix_preload_counts
-        == imaging_fit_x2_plane_inversion_7x7.inversion.curvature_matrix_preload_counts
+        == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_preload_counts
     ).all()
-    assert preloads.mapper == imaging_fit_x2_plane_inversion_7x7.inversion.mapper
+    assert preloads.mapper == fit_imaging_x2_plane_inversion_7x7.inversion.mapper
 
     preloads = pload.Preloads.setup(result=result, model=model, inversion=True)
 
     assert preloads.sparse_grids_of_planes == 1
     assert (
         preloads.blurred_mapping_matrix
-        == imaging_fit_x2_plane_inversion_7x7.inversion.blurred_mapping_matrix
+        == fit_imaging_x2_plane_inversion_7x7.inversion.blurred_mapping_matrix
     ).all()
     assert (
         preloads.curvature_matrix_sparse_preload
-        == imaging_fit_x2_plane_inversion_7x7.inversion.curvature_matrix_sparse_preload
+        == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_sparse_preload
     ).all()
     assert (
         preloads.curvature_matrix_preload_counts
-        == imaging_fit_x2_plane_inversion_7x7.inversion.curvature_matrix_preload_counts
+        == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_preload_counts
     ).all()
-    assert preloads.mapper == imaging_fit_x2_plane_inversion_7x7.inversion.mapper
+    assert preloads.mapper == fit_imaging_x2_plane_inversion_7x7.inversion.mapper

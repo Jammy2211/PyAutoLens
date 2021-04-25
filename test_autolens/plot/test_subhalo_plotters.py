@@ -16,8 +16,8 @@ def make_fit_imaging_plotter_setup():
 
 
 def test__subhalo_detection_sub_plot(
-    imaging_fit_x2_plane_7x7,
-    imaging_fit_x2_plane_inversion_7x7,
+    fit_imaging_x2_plane_7x7,
+    fit_imaging_x2_plane_inversion_7x7,
     include_2d_all,
     plot_path,
     plot_patch,
@@ -30,13 +30,13 @@ def test__subhalo_detection_sub_plot(
     )
 
     subhalo_plotter.subplot_detection_imaging(
-        fit_imaging_detect=imaging_fit_x2_plane_7x7, detection_array=arr, mass_array=arr
+        fit_imaging_detect=fit_imaging_x2_plane_7x7, detection_array=arr, mass_array=arr
     )
 
     assert path.join(plot_path, "subplot_detection_imaging.png") in plot_patch.paths
 
     subhalo_plotter.subplot_detection_imaging(
-        fit_imaging_detect=imaging_fit_x2_plane_inversion_7x7,
+        fit_imaging_detect=fit_imaging_x2_plane_inversion_7x7,
         detection_array=arr,
         mass_array=arr,
     )
@@ -45,8 +45,8 @@ def test__subhalo_detection_sub_plot(
 
 
 def test__subhalo_detection_fits(
-    imaging_fit_x2_plane_7x7,
-    imaging_fit_x2_plane_inversion_7x7,
+    fit_imaging_x2_plane_7x7,
+    fit_imaging_x2_plane_inversion_7x7,
     include_2d_all,
     plot_path,
     plot_patch,
@@ -58,15 +58,15 @@ def test__subhalo_detection_fits(
     )
 
     subhalo_plotter.subplot_detection_fits(
-        fit_imaging_before=imaging_fit_x2_plane_7x7,
-        fit_imaging_detect=imaging_fit_x2_plane_7x7,
+        fit_imaging_before=fit_imaging_x2_plane_7x7,
+        fit_imaging_detect=fit_imaging_x2_plane_7x7,
     )
 
     assert path.join(plot_path, "subplot_detection_fits.png") in plot_patch.paths
 
     subhalo_plotter.subplot_detection_fits(
-        fit_imaging_before=imaging_fit_x2_plane_inversion_7x7,
-        fit_imaging_detect=imaging_fit_x2_plane_inversion_7x7,
+        fit_imaging_before=fit_imaging_x2_plane_inversion_7x7,
+        fit_imaging_detect=fit_imaging_x2_plane_inversion_7x7,
     )
 
     assert path.join(plot_path, "subplot_detection_fits.png") in plot_patch.paths

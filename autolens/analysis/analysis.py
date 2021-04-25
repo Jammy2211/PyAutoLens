@@ -185,7 +185,7 @@ class AnalysisImaging(AnalysisDataset):
         )
 
         try:
-            return self.imaging_fit_for_tracer(
+            return self.fit_imaging_for_tracer(
                 tracer=tracer,
                 hyper_image_sky=hyper_image_sky,
                 hyper_background_noise=hyper_background_noise,
@@ -198,7 +198,7 @@ class AnalysisImaging(AnalysisDataset):
         ) as e:
             raise FitException from e
 
-    def imaging_fit_for_tracer(
+    def fit_imaging_for_tracer(
         self, tracer, hyper_image_sky, hyper_background_noise, use_hyper_scalings=True
     ):
 
@@ -272,7 +272,7 @@ class AnalysisImaging(AnalysisDataset):
             instance=instance
         )
 
-        fit = self.imaging_fit_for_tracer(
+        fit = self.fit_imaging_for_tracer(
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -297,7 +297,7 @@ class AnalysisImaging(AnalysisDataset):
         )
 
         if visualizer.plot_fit_no_hyper:
-            fit = self.imaging_fit_for_tracer(
+            fit = self.fit_imaging_for_tracer(
                 tracer=tracer,
                 hyper_image_sky=None,
                 hyper_background_noise=None,
@@ -410,7 +410,7 @@ class AnalysisInterferometer(AnalysisDataset):
         )
 
         try:
-            fit = self.interferometer_fit_for_tracer(
+            fit = self.fit_interferometer_for_tracer(
                 tracer=tracer, hyper_background_noise=hyper_background_noise
             )
             return fit.figure_of_merit
@@ -460,7 +460,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         return instance
 
-    def interferometer_fit_for_tracer(
+    def fit_interferometer_for_tracer(
         self, tracer, hyper_background_noise, use_hyper_scalings=True
     ):
 
@@ -530,7 +530,7 @@ class AnalysisInterferometer(AnalysisDataset):
             instance=instance
         )
 
-        fit = self.interferometer_fit_for_tracer(
+        fit = self.fit_interferometer_for_tracer(
             tracer=tracer, hyper_background_noise=hyper_background_noise
         )
 
@@ -555,7 +555,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         if visualizer.plot_fit_no_hyper:
 
-            fit = self.interferometer_fit_for_tracer(
+            fit = self.fit_interferometer_for_tracer(
                 tracer=tracer, hyper_background_noise=None, use_hyper_scalings=False
             )
 

@@ -53,7 +53,7 @@ class TestAnalysisDataset:
 
         instance = model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = analysis.imaging_fit_for_tracer(
+        fit = analysis.fit_imaging_for_tracer(
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
@@ -73,7 +73,7 @@ class TestAnalysisDataset:
 
         instance = model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = analysis.imaging_fit_for_tracer(
+        fit = analysis.fit_imaging_for_tracer(
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 

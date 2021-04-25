@@ -60,39 +60,52 @@ def make_tracer_x2_plane_inversion_7x7():
     )
 
 
-def make_imaging_fit_x1_plane_7x7():
+def make_fit_imaging_x1_plane_7x7():
     return al.FitImaging(
         imaging=make_masked_imaging_7x7(), tracer=make_tracer_x1_plane_7x7()
     )
 
 
-def make_imaging_fit_x2_plane_7x7():
+def make_fit_imaging_x2_plane_7x7():
     return al.FitImaging(
         imaging=make_masked_imaging_7x7(), tracer=make_tracer_x2_plane_7x7()
     )
 
 
-def make_imaging_fit_x2_plane_inversion_7x7():
+def make_fit_imaging_x2_plane_inversion_7x7():
     return al.FitImaging(
         imaging=make_masked_imaging_7x7(), tracer=make_tracer_x2_plane_inversion_7x7()
     )
 
 
-def make_interferometer_fit_x1_plane_7x7():
+def make_fit_interferometer_x1_plane_7x7():
     return al.FitInterferometer(
         interferometer=make_interferometer_7(), tracer=make_tracer_x1_plane_7x7()
     )
 
 
-def make_interferometer_fit_x2_plane_7x7():
+def make_fit_interferometer_x2_plane_7x7():
     return al.FitInterferometer(
         interferometer=make_interferometer_7(), tracer=make_tracer_x2_plane_7x7()
     )
 
 
-def make_interferometer_fit_x2_plane_inversion_7x7():
+def make_fit_interferometer_nufft_x2_plane_7x7():
+    return al.FitInterferometer(
+        interferometer=make_interferometer_7_nufft(), tracer=make_tracer_x2_plane_7x7()
+    )
+
+
+def make_fit_interferometer_x2_plane_inversion_7x7():
     return al.FitInterferometer(
         interferometer=make_interferometer_7(),
+        tracer=make_tracer_x2_plane_inversion_7x7(),
+    )
+
+
+def make_fit_interferometer_nufft_x2_plane_inversion_7x7():
+    return al.FitInterferometer(
+        interferometer=make_interferometer_7_nufft(),
         tracer=make_tracer_x2_plane_inversion_7x7(),
     )
 

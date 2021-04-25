@@ -178,6 +178,7 @@ class Visualizer(visualizer.Visualizer):
 
         if should_plot("subplot_fit"):
             fit_interferometer_plotter.subplot_fit_interferometer()
+            fit_interferometer_plotter.subplot_fit_dirty_images()
             fit_interferometer_plotter.subplot_fit_real_space()
 
         fit_interferometer_plotter.figures_2d(
@@ -191,6 +192,13 @@ class Visualizer(visualizer.Visualizer):
             residual_map_imag=should_plot("residual_map"),
             chi_squared_map_imag=should_plot("chi_squared_map"),
             normalized_residual_map_imag=should_plot("normalized_residual_map"),
+            dirty_image=should_plot("data"),
+            dirty_noise_map=should_plot("noise_map"),
+            dirty_signal_to_noise_map=should_plot("signal_to_noise_map"),
+            dirty_model_image=should_plot("model_data"),
+            dirty_residual_map=should_plot("residual_map"),
+            dirty_normalized_residual_map=should_plot("normalized_residual_map"),
+            dirty_chi_squared_map=should_plot("chi_squared_map"),
         )
 
         if not during_analysis:
@@ -208,6 +216,13 @@ class Visualizer(visualizer.Visualizer):
                     residual_map_imag=True,
                     chi_squared_map_imag=True,
                     normalized_residual_map_imag=True,
+                    dirty_image=True,
+                    dirty_noise_map=True,
+                    dirty_signal_to_noise_map=True,
+                    dirty_model_image=True,
+                    dirty_residual_map=True,
+                    dirty_normalized_residual_map=True,
+                    dirty_chi_squared_map=True,
                 )
 
             if should_plot("all_at_end_fits"):
@@ -231,6 +246,13 @@ class Visualizer(visualizer.Visualizer):
                     residual_map_imag=True,
                     chi_squared_map_imag=True,
                     normalized_residual_map_imag=True,
+                    dirty_image=True,
+                    dirty_noise_map=True,
+                    dirty_signal_to_noise_map=True,
+                    dirty_model_image=True,
+                    dirty_residual_map=True,
+                    dirty_normalized_residual_map=True,
+                    dirty_chi_squared_map=True,
                 )
 
     def visualize_hyper_images(

@@ -1,4 +1,6 @@
 from autoarray.plot import inversion_plotters, fit_interferometer_plotters
+from autogalaxy.profiles import light_profiles
+from autogalaxy.profiles import mass_profiles
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
 from autolens.plot import ray_tracing_plotters
 from autolens.fit import fit_interferometer
@@ -56,10 +58,16 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
 
         return visuals_2d + visuals_2d.__class__(
             light_profile_centres=self.extract_2d(
-                "light_profile_centres", self.tracer.planes[0].light_profile_centres
+                "light_profile_centres",
+                self.tracer.planes[0].extract_attribute(
+                    cls=light_profiles.LightProfile, attr_name="centre"
+                ),
             ),
             mass_profile_centres=self.extract_2d(
-                "mass_profile_centres", self.tracer.planes[0].mass_profile_centres
+                "mass_profile_centres",
+                self.tracer.planes[0].extract_attribute(
+                    cls=mass_profiles.MassProfile, attr_name="centre"
+                ),
             ),
             critical_curves=self.extract_2d(
                 "critical_curves",
@@ -106,6 +114,13 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
         chi_squared_map_real=False,
         chi_squared_map_imag=False,
         image=False,
+        dirty_image=False,
+        dirty_noise_map=False,
+        dirty_signal_to_noise_map=False,
+        dirty_model_image=False,
+        dirty_residual_map=False,
+        dirty_normalized_residual_map=False,
+        dirty_chi_squared_map=False,
     ):
 
         super().figures_2d(
@@ -119,6 +134,13 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
             normalized_residual_map_imag=normalized_residual_map_imag,
             chi_squared_map_real=chi_squared_map_real,
             chi_squared_map_imag=chi_squared_map_imag,
+            dirty_image=dirty_image,
+            dirty_noise_map=dirty_noise_map,
+            dirty_signal_to_noise_map=dirty_signal_to_noise_map,
+            dirty_model_image=dirty_model_image,
+            dirty_residual_map=dirty_residual_map,
+            dirty_normalized_residual_map=dirty_normalized_residual_map,
+            dirty_chi_squared_map=dirty_chi_squared_map,
         )
 
         if image:
