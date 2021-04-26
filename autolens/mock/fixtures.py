@@ -90,22 +90,9 @@ def make_fit_interferometer_x2_plane_7x7():
     )
 
 
-def make_fit_interferometer_nufft_x2_plane_7x7():
-    return al.FitInterferometer(
-        interferometer=make_interferometer_7_nufft(), tracer=make_tracer_x2_plane_7x7()
-    )
-
-
 def make_fit_interferometer_x2_plane_inversion_7x7():
     return al.FitInterferometer(
         interferometer=make_interferometer_7(),
-        tracer=make_tracer_x2_plane_inversion_7x7(),
-    )
-
-
-def make_fit_interferometer_nufft_x2_plane_inversion_7x7():
-    return al.FitInterferometer(
-        interferometer=make_interferometer_7_nufft(),
         tracer=make_tracer_x2_plane_inversion_7x7(),
     )
 

@@ -118,7 +118,7 @@ class TestVisualizer:
 
     def test__visualize_fit_interferometer__uses_configs(
         self,
-        fit_interferometer_nufft_x2_plane_inversion_7x7,
+        fit_interferometer_x2_plane_inversion_7x7,
         include_2d_all,
         plot_path,
         plot_patch,
@@ -126,7 +126,7 @@ class TestVisualizer:
         visualizer = vis.Visualizer(visualize_path=plot_path)
 
         visualizer.visualize_fit_interferometer(
-            fit=fit_interferometer_nufft_x2_plane_inversion_7x7, during_analysis=True
+            fit=fit_interferometer_x2_plane_inversion_7x7, during_analysis=True
         )
 
         plot_path = path.join(plot_path, "fit_interferometer")

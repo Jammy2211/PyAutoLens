@@ -158,9 +158,9 @@ def make_interferometer_7():
     return fixtures.make_interferometer_7()
 
 
-@pytest.fixture(name="interferometer_7_nufft")
-def make_interferometer_7_nufft():
-    return fixtures.make_interferometer_7_nufft()
+@pytest.fixture(name="interferometer_7_lop")
+def make_interferometer_7_lop():
+    return fixtures.make_interferometer_7_lop()
 
 
 @pytest.fixture(name="interferometer_7_grid")
@@ -277,19 +277,9 @@ def make_fit_interferometer_x2_plane_7x7():
     return fixtures.make_fit_interferometer_x2_plane_7x7()
 
 
-@pytest.fixture(name="fit_interferometer_nufft_x2_plane_7x7")
-def make_fit_interferometer_nufft_x2_plane_7x7():
-    return fixtures.make_fit_interferometer_nufft_x2_plane_7x7()
-
-
 @pytest.fixture(name="fit_interferometer_x2_plane_inversion_7x7")
 def make_fit_interferometer_x2_plane_inversion_7x7():
     return fixtures.make_fit_interferometer_x2_plane_inversion_7x7()
-
-
-@pytest.fixture(name="fit_interferometer_nufft_x2_plane_inversion_7x7")
-def make_fit_interferometer_nufft_x2_plane_inversion_7x7():
-    return fixtures.make_fit_interferometer_nufft_x2_plane_inversion_7x7()
 
 
 ### Analysis ###
