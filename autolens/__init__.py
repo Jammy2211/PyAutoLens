@@ -1,5 +1,4 @@
 from autoarray import preprocess
-from autoarray import Mask2D
 from autoarray.dataset.imaging import Imaging, SettingsImaging
 from autoarray.dataset.interferometer import Interferometer, SettingsInterferometer
 from autoarray.mask.mask_2d import Mask2D
