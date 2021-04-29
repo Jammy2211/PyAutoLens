@@ -1,6 +1,7 @@
 from autoarray import preprocess
 from autoarray.dataset.imaging import Imaging, SettingsImaging
 from autoarray.dataset.interferometer import Interferometer, SettingsInterferometer
+from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
 from autoarray.inversion import pixelizations as pix, regularization as reg
