@@ -46,7 +46,7 @@ section of the readthedocs for a complete description of every configuration fil
 Dataset
 -------
 
-Contains the ``dataset``s used to perform lens modeling. Example datasets using simulators included with the workspace
+Contains the dataset's used to perform lens modeling. Example datasets using simulators included with the workspace
 are included here by default.
 
 Output

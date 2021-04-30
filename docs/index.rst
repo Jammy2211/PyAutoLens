@@ -21,7 +21,7 @@ intervening mass of one or more foreground galaxies. Sometimes its light is full
 traversing multiple paths to the Earth, meaning that the background galaxy is observed multiple times. This alignment
 of galaxies is called a strong gravitational lens, an example of which, SLACS1430+4105, is shown in the image
 below. The massive elliptical lens galaxy can be seen in the centre of the left panel, surrounded by a multiply
-imaged source galaxy whose light has been distorted into an `Einstein ring'. The central and right panels shows
+imaged source galaxy whose light has been distorted into an 'Einstein ring'. The central and right panels shows
 reconstructions of the source's lensed and unlensed light distributions, which are created using a model of the lens
 galaxy's mass to trace backwards how the source's light is gravitationally lensed.
 

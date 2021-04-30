@@ -109,18 +109,18 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
         normalized_residual_map=False,
         chi_squared_map=False,
     ):
-        """Plot the model datas_ of an analysis, using the *Fitter* class object.
+        """Plot the model data of an analysis, using the *Fitter* class object.
 
         The visualization and output type can be fully customized.
 
         Parameters
         -----------
         fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model datas_ and observed lens datas_ (including residual_map, chi_squared_map etc.)
+            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
         output_path : str
-            The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
+            The path where the data is output if the output_type is a file format (e.g. png, fits)
         output_format : str
-            How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
+            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data \
             in the python interpreter window.
         """
 
@@ -148,18 +148,18 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
         plane_image=False,
         plane_index=None,
     ):
-        """Plot the model datas_ of an analysis, using the *Fitter* class object.
+        """Plot the model data of an analysis, using the *Fitter* class object.
 
         The visualization and output type can be fully customized.
 
         Parameters
         -----------
         fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model datas_ and observed lens datas_ (including residual_map, chi_squared_map etc.)
+            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
         output_path : str
-            The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
+            The path where the data is output if the output_type is a file format (e.g. png, fits)
         output_format : str
-            How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
+            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data \
             in the python interpreter window.
         """
 
@@ -236,20 +236,20 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
                     inversion_plotter.figures_2d(reconstruction=True)
 
     def subplot_of_planes(self, plane_index=None):
-        """Plot the model datas_ of an analysis, using the *Fitter* class object.
+        """Plot the model data of an analysis, using the *Fitter* class object.
 
         The visualization and output type can be fully customized.
 
         Parameters
         -----------
         fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model datas_ and observed lens datas_ (including residual_map, chi_squared_map etc.)
+            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
         output_path : str
-            The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
+            The path where the data is output if the output_type is a file format (e.g. png, fits)
         output_filename : str
             The name of the file that is output, if the output_type is a file format (e.g. png, fits)
         output_format : str
-            How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
+            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data \
             in the python interpreter window.
         """
 
