@@ -81,6 +81,16 @@ class TestAnalysisDataset:
             200.0, 1.0e-4
         )
 
+    def test__analysis_no_positions__removes_positions_and_threshold(self, masked_imaging_7x7):
+
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7,
+            positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
+            settings_lens=al.SettingsLens(positions_threshold=0.01),
+        )
+
+        assert analysis.no_positions.positions == None
+        assert analysis.no_positions.settings_lens.positions_threshold == None
 
 class TestAnalysisImaging:
     def test__make_result__result_imaging_is_returned(self, masked_imaging_7x7):

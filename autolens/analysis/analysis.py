@@ -6,6 +6,7 @@ import numba
 import numpy as np
 from astropy import cosmology as cosmo
 from scipy.stats import norm
+import copy
 
 import autofit as af
 from autoarray import preloads as pload
@@ -150,6 +151,15 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
             histogram_bins=self.settings_lens.stochastic_histogram_bins,
         )
 
+    @property
+    def no_positions(self):
+
+        analysis = copy.deepcopy(self)
+
+        analysis.positions = None
+        analysis.settings_lens.positions_threshold = None
+
+        return analysis
 
 class AnalysisImaging(AnalysisDataset):
     @property
