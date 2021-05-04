@@ -11,13 +11,14 @@ with open(join(this_dir, "README.rst"), encoding="utf-8") as file:
 with open(join(this_dir, "requirements.txt")) as f:
     requirements = f.read().split("\n")
 
+version = environ.get("VERSION", "1.0.dev0")
 requirements.extend(
-    ["autoarray==0.21.1", "autoconf==0.9.0", "autofit==0.76.0", "autogalaxy==0.20.1"]
+    [f"autoarray=={version}", f"autoconf=={version}", f"autofit=={version}", f"autogalaxy=={version}"]
 )
 
 setup(
     name="autolens",
-    version=environ.get("VERSION", "1.0.dev0"),
+    version=version,
     description="Open-Source Strong Lensing",
     long_description=long_description,
     long_description_content_type="text/markdown",
