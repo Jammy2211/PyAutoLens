@@ -154,6 +154,24 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
     @property
     def no_positions(self):
 
+        # settings_lens = settings.SettingsLens(
+        # positions_threshold=None,
+        # stochastic_likelihood_resamples=self.settings_lens.stochastic_likelihood_resamples,
+        # stochastic_samples = self.settings_lens.stochastic_samples,
+        # stochastic_histogram_bins = self.settings_lens.stochastic_histogram_bins
+        # )
+        #
+        # return self.__class__(
+        #     dataset=self.dataset,
+        #     positions = None,
+        #     hyper_result=self.hyper_result,
+        #     cosmology=self.cosmology,
+        #     settings_pixelization=self.settings_pixelization,
+        #     settings_inversion=self.settings_inversion,
+        #     settings_lens=settings_lens,
+        #     preloads=self.preloads
+        # )
+
         analysis = copy.deepcopy(self)
 
         analysis.positions = None
