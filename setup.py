@@ -17,7 +17,7 @@ requirements.extend(
 )
 
 setup(
-    name="autolens",
+    name="autolens_tmp",
     version=version,
     description="Open-Source Strong Lensing",
     long_description=long_description,
