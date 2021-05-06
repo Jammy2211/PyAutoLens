@@ -172,6 +172,8 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
         #     preloads=self.preloads
         # )
 
+
+
         analysis = copy.deepcopy(self)
 
         analysis.positions = None
