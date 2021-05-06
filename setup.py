@@ -12,12 +12,12 @@ with open(join(this_dir, "requirements.txt")) as f:
     requirements = f.read().split("\n")
 
 requirements.extend(
-    ["autoarray==0.21.0", "autoconf==0.9.0", "autofit==0.75.0", "autogalaxy==0.20.0"]
+    ["autoarray==0.21.1", "autoconf==0.9.0", "autofit==0.76.0", "autogalaxy==0.20.1"]
 )
 
 setup(
     name="autolens",
-    version=environ.get("VERSION", "1.0.dev0"),
+    version=environ.get("VERSION", "1.15.2"),
     description="Open-Source Strong Lensing",
     long_description=long_description,
     long_description_content_type="text/markdown",
