@@ -151,7 +151,7 @@ searches to subsequent searches, which fit progressively more complex models. By
 procedure, automated pipelines that fit complex lens models without human intervention can be carefully crafted, with 
 example pipelines found on the [autolens workspace](https://github.com/Jammy2211/autolens_workspace). To ensure the 
 analysis and interpretation of fits to large lens datasets is feasible, `PyAutoFit`'s database tools write lens modeling 
-results to a relational database which can be loaded from hard-disk to a Python script or Jupyter notebook. This uses 
+results to a relational database which can be queried from hard-disk to a Python script or Jupyter notebook. This uses 
 memory-light `Python` generators, ensuring it is practical for thousands of lenses.
 
 `PyAutoLens` includes a comprehensive visualization library for the analysis of both direct imaging and submm / radio 
