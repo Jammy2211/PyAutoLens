@@ -240,6 +240,17 @@ Plots
     MultiFigurePlotter
     MultiYX1DPlotter
 
+**Search Plotters:**
+
+.. autosummary::
+   :toctree: generated/
+
+   DynestyPlotter
+   UltraNestPlotter
+   EmceePlotter
+   ZeusPlotter
+   PySwarmsPlotter
+
 **Plot Customization Objects**
 
 .. autosummary::

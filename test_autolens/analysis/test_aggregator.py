@@ -33,6 +33,7 @@ def make_model():
         )
     )
 
+
 #
 # def test__tracer_generator_from_aggregator(masked_imaging_7x7, samples, model):
 #

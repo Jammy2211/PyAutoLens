@@ -1179,7 +1179,7 @@ class TestCompareToManualInversionOnly:
             fit.model_images_of_planes[1].native, 1.0e-4
         )
 
-    def test___stochastic_mode_gives_different_log_likelihoods(
+    def test___stochastic_mode_gives_different_log_likelihood_list(
         self, masked_imaging_7x7
     ):
 

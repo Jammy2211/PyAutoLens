@@ -115,8 +115,8 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
 def agg_max_log_likelihood_from_aggregator(aggregator):
 
     samples = list(filter(None, aggregator.values("samples")))
-    log_likelihoods = [max(samps.log_likelihoods) for samps in samples]
-    index = np.argmax(log_likelihoods)
+    log_likelihood_list = [max(samps.log_likelihood_list) for samps in samples]
+    index = np.argmax(log_likelihood_list)
     search_max = list(filter(None, aggregator.values("search")))[index]
 
     directory = str(search_max.paths.name)

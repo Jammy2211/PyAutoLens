@@ -111,8 +111,22 @@ low chi-squared values:
   :alt: Alternative text
 
 This ``Result`` object contains the full posterior information of our non-linear search, including all
-parameter samples, log likelihood values and tools to compute the errors on the lens model. The
-script ``autolens_workspace/examples/mdoel/result.py`` contains a full description of all information contained
+parameter samples, log likelihood values and tools to compute the errors on the lens model. **PyAutoLens** includes
+many visualization tools for plotting the results of a non-linear search, for example we can make a corner plot of the
+probability density function (PDF):
+
+.. code-block:: bash
+
+    dynesty_plotter = aplt.DynestyPlotter(samples=result.samples)
+    dynesty_plotter.cornerplot()
+
+Here is an example of how a PDF estimated for a lens model appears:
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/modeling/cornerplot.png
+  :width: 600
+  :alt: Alternative text
+
+The script ``autolens_workspace/examples/model/result.py`` contains a full description of all information contained
 in a ``Result``.
 
 The ``Model`` can be fully customized, making it simple to parameterize and fit many different lens models

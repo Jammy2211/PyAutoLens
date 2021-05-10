@@ -596,7 +596,9 @@ class TestCompareToManualInversionOnly:
 
         assert hyper_noise_map.slim == pytest.approx(fit.noise_map.slim)
 
-    def test___stochastic_mode_gives_different_log_likelihoods(self, interferometer_7):
+    def test___stochastic_mode_gives_different_log_likelihood_list(
+        self, interferometer_7
+    ):
 
         pix = al.pix.VoronoiBrightnessImage(pixels=9)
         reg = al.reg.Constant(coefficient=1.0)

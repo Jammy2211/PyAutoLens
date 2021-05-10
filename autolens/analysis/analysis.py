@@ -147,7 +147,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
 
         visualizer.visualize_stochastic_histogram(
             log_evidences=stochastic_log_evidences,
-            max_log_evidence=np.max(samples.log_likelihoods),
+            max_log_evidence=np.max(samples.log_likelihood_list),
             histogram_bins=self.settings_lens.stochastic_histogram_bins,
         )
 
@@ -171,8 +171,6 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
         #     settings_lens=settings_lens,
         #     preloads=self.preloads
         # )
-
-
 
         analysis = copy.deepcopy(self)
 
