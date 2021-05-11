@@ -13,12 +13,11 @@ with open(join(this_dir, "requirements.txt")) as f:
 
 version = environ.get("VERSION", "1.0.dev0")
 requirements.extend(
-    #[f"autoarray=={version}", f"autoconf=={version}", f"autofit=={version}", f"autogalaxy=={version}"]
-    [f"autoarray=={version}", f"autoconf_tmp=={version}", f"autofit=={version}", f"autogalaxy=={version}"]
+    [f"autoarray=={version}", f"autoconf=={version}", f"autofit=={version}", f"autogalaxy=={version}"]
 )
 
 setup(
-    name="autolens_tmp",
+    name="autolens",
     version=version,
     description="Open-Source Strong Lensing",
     long_description=long_description,
