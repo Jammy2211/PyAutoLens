@@ -180,9 +180,7 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
                     vmax = self.mat_plot_2d.cmap.kwargs["vmax"]
                     vmax_store = vmax
                 except KeyError:
-                    vmax = np.max(
-                        self.fit.model_images_of_planes[plane_index]
-                    )
+                    vmax = np.max(self.fit.model_images_of_planes[plane_index])
                     vmax_store = None
 
                 self.mat_plot_2d.cmap.kwargs["vmin"] = vmin
