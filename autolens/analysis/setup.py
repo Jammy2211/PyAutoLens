@@ -15,8 +15,8 @@ class SetupHyper(setup.SetupHyper):
         hyper_image_sky: Optional[type(hd.HyperImageSky)] = None,
         hyper_background_noise: Optional[type(hd.HyperBackgroundNoise)] = None,
         hyper_fixed_after_source: bool = False,
-        search: af.NonLinearSearch = None,
-        dlogz: float = None,
+        search_cls: Optional[af.NonLinearSearch] = None,
+        search_dict: Optional[dict] = None,
     ):
         """
         The hyper setup of a pipeline, which controls how hyper-features in PyAutoLens template pipelines run,
@@ -27,24 +27,23 @@ class SetupHyper(setup.SetupHyper):
 
         Parameters
         ----------
-        hyper_galaxies : bool
+        hyper_galaxies
             If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used to scale the
             noise-map of the dataset throughout the fitting.
-        hyper_image_sky : bool
+        hyper_image_sky 
             If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used include the
             image's background sky component in the model.
-        hyper_background_noise : bool
+        hyper_background_noise
             If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used include the
             noise-map's background component in the model.
-        hyper_fixed_after_source : bool
+        hyper_fixed_after_source
             If `True`, the hyper parameters are fixed and not updated after a desnated pipeline in the analysis. For
             the `SLaM` pipelines this is after the `SourcePipeline`. This allow Bayesian model comparison to be
             performed objected between later searchs in a pipeline.
-        search : af.NonLinearSearch or None
+        search_cls
             The non-linear search used by every hyper model-fit search.
-        dlogz : float
-            The evidence tolerance of the non-linear searches used in the hyper searchs, whereby higher values will
-            lead them to end earlier at the expense of accuracy.
+        search_dict
+            The dictionary of search options for the hyper model-fit searches.
         """
         hyper_galaxies = hyper_galaxies_lens or hyper_galaxies_source
 
@@ -52,8 +51,8 @@ class SetupHyper(setup.SetupHyper):
             hyper_galaxies=hyper_galaxies,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
-            search=search,
-            dlogz=dlogz,
+            search_cls=search_cls,
+            search_dict=search_dict,
         )
 
         self.hyper_galaxies_lens = hyper_galaxies_lens
