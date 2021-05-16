@@ -54,6 +54,7 @@ from .fit.fit_point_source import (
     FitPositionsSourceMaxSeparation,
     FitPositionsImage,
     FitFluxes,
+    FitPointSourceDict,
 )
 from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer

@@ -333,3 +333,126 @@ class TestFitFluxes:
         assert fit_1.magnifications[0] == magnification_1
 
         assert fit_0.magnifications[0] != pytest.approx(fit_1.magnifications[0], 1.0e-1)
+
+
+class TestFitPointSourceDict:
+    def test__fits_dataset__positions_only(self):
+
+        point_source = al.ps.PointSource(centre=(0.1, 0.1))
+        galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
+
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
+        )
+
+        positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
+        noise_map = al.ValuesIrregular([0.5, 1.0])
+        model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
+
+        positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
+
+        point_source_dataset_0 = al.PointSourceDataset(
+            name="point_0", positions=positions, positions_noise_map=noise_map
+        )
+
+        point_source_dict = al.PointSourceDict(
+            point_source_dataset_list=[point_source_dataset_0]
+        )
+
+        fit = al.FitPointSourceDict(
+            point_source_dict=point_source_dict,
+            tracer=tracer,
+            positions_solver=positions_solver,
+        )
+
+        assert fit["point_0"].positions.log_likelihood == pytest.approx(
+            -22.14472, 1.0e-4
+        )
+        assert fit["point_0"].flux == None
+
+        point_source_dataset_1 = al.PointSourceDataset(
+            name="point_1", positions=positions, positions_noise_map=noise_map
+        )
+
+        point_source_dict = al.PointSourceDict(
+            point_source_dataset_list=[point_source_dataset_0, point_source_dataset_1]
+        )
+
+        fit = al.FitPointSourceDict(
+            point_source_dict=point_source_dict,
+            tracer=tracer,
+            positions_solver=positions_solver,
+        )
+
+        assert fit["point_0"].positions.log_likelihood == pytest.approx(
+            -22.14472, 1.0e-4
+        )
+        assert fit["point_0"].flux == None
+        assert fit["point_1"].positions == None
+        assert fit["point_1"].flux == None
+
+    def test__fits_dataset__positions_and_flux(self):
+
+        point_source = al.ps.PointSourceFlux(centre=(0.1, 0.1), flux=2.0)
+        galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
+
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
+        )
+
+        positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
+        noise_map = al.ValuesIrregular([0.5, 1.0])
+        model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
+
+        fluxes = al.ValuesIrregular([1.0, 2.0])
+        flux_noise_map = al.ValuesIrregular([3.0, 1.0])
+
+        positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
+
+        point_source_dataset_0 = al.PointSourceDataset(
+            name="point_0",
+            positions=positions,
+            positions_noise_map=noise_map,
+            fluxes=fluxes,
+            fluxes_noise_map=flux_noise_map,
+        )
+
+        point_source_dict = al.PointSourceDict(
+            point_source_dataset_list=[point_source_dataset_0]
+        )
+
+        fit = al.FitPointSourceDict(
+            point_source_dict=point_source_dict,
+            tracer=tracer,
+            positions_solver=positions_solver,
+        )
+
+        assert fit["point_0"].positions.log_likelihood == pytest.approx(
+            -22.14472, 1.0e-4
+        )
+        assert fit["point_0"].flux.log_likelihood == pytest.approx(-2.9920449, 1.0e-4)
+
+        point_source_dataset_1 = al.PointSourceDataset(
+            name="point_1",
+            positions=positions,
+            positions_noise_map=noise_map,
+            fluxes=fluxes,
+            fluxes_noise_map=flux_noise_map,
+        )
+
+        point_source_dict = al.PointSourceDict(
+            point_source_dataset_list=[point_source_dataset_0, point_source_dataset_1]
+        )
+
+        fit = al.FitPointSourceDict(
+            point_source_dict=point_source_dict,
+            tracer=tracer,
+            positions_solver=positions_solver,
+        )
+
+        assert fit["point_0"].positions.log_likelihood == pytest.approx(
+            -22.14472, 1.0e-4
+        )
+        assert fit["point_0"].flux.log_likelihood == pytest.approx(-2.9920449, 1.0e-4)
+        assert fit["point_1"].positions == None
+        assert fit["point_1"].flux == None
