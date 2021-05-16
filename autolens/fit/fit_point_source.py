@@ -45,6 +45,10 @@ class FitPointSourceDict(dict):
             except FitException as e:
                 raise FitException from e
 
+    @property
+    def log_likelihood(self):
+        return sum([fit.log_likelihood for fit in self.values()])
+
 
 class FitPointSourceDataset:
     def __init__(self, point_source_dataset, tracer, positions_solver):
@@ -75,6 +79,16 @@ class FitPointSourceDataset:
         except exc.PointSourceExtractionException:
 
             self.flux = None
+
+    @property
+    def log_likelihood(self):
+
+        log_likelihood_positions = (
+            self.positions.log_likelihood if self.positions is not None else 0.0
+        )
+        log_likelihood_flux = self.flux.log_likelihood if self.flux is not None else 0.0
+
+        return log_likelihood_positions + log_likelihood_flux
 
 
 class FitPositionsImage(FitData):

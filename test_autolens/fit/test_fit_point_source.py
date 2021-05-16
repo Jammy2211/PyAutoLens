@@ -369,6 +369,7 @@ class TestFitPointSourceDict:
             -22.14472, 1.0e-4
         )
         assert fit["point_0"].flux == None
+        assert fit.log_likelihood == fit["point_0"].positions.log_likelihood
 
         point_source_dataset_1 = al.PointSourceDataset(
             name="point_1", positions=positions, positions_noise_map=noise_map
@@ -390,6 +391,7 @@ class TestFitPointSourceDict:
         assert fit["point_0"].flux == None
         assert fit["point_1"].positions == None
         assert fit["point_1"].flux == None
+        assert fit.log_likelihood == fit["point_0"].positions.log_likelihood
 
     def test__fits_dataset__positions_and_flux(self):
 
@@ -431,6 +433,11 @@ class TestFitPointSourceDict:
             -22.14472, 1.0e-4
         )
         assert fit["point_0"].flux.log_likelihood == pytest.approx(-2.9920449, 1.0e-4)
+        assert (
+            fit.log_likelihood
+            == fit["point_0"].positions.log_likelihood
+            + fit["point_0"].flux.log_likelihood
+        )
 
         point_source_dataset_1 = al.PointSourceDataset(
             name="point_1",
@@ -456,3 +463,8 @@ class TestFitPointSourceDict:
         assert fit["point_0"].flux.log_likelihood == pytest.approx(-2.9920449, 1.0e-4)
         assert fit["point_1"].positions == None
         assert fit["point_1"].flux == None
+        assert (
+            fit.log_likelihood
+            == fit["point_0"].flux.log_likelihood
+            + fit["point_0"].positions.log_likelihood
+        )

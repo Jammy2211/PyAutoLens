@@ -678,54 +678,13 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
 
         tracer = self.tracer_for_instance(instance=instance)
 
-        log_likelihood = 0.0
+        fit = fit_point_source.FitPointSourceDict(
+            point_source_dict=self.point_source_dict,
+            tracer=tracer,
+            positions_solver=self.solver,
+        )
 
-        for point_source_dataset in self.point_source_dict.values():
-
-            try:
-                fit_positions = self.fit_positions_for(
-                    point_source_dataset=point_source_dataset, tracer=tracer
-                )
-            except (AttributeError, numba.errors.TypingError) as e:
-                raise FitException from e
-
-            if fit_positions is not None:
-                log_likelihood += fit_positions.log_likelihood
-
-            fit_fluxes = self.fit_fluxes_for(
-                point_source_dataset=point_source_dataset, tracer=tracer
-            )
-
-            if fit_fluxes is not None:
-                log_likelihood += fit_fluxes.log_likelihood
-
-        return log_likelihood
-
-    def fit_positions_for(self, point_source_dataset, tracer):
-
-        try:
-            return fit_point_source.FitPositionsImage(
-                name=point_source_dataset.name,
-                positions=point_source_dataset.positions,
-                noise_map=point_source_dataset.positions_noise_map,
-                positions_solver=self.solver,
-                tracer=tracer,
-            )
-        except exc.PointSourceExtractionException:
-            pass
-
-    def fit_fluxes_for(self, point_source_dataset, tracer):
-
-        try:
-            return fit_point_source.FitFluxes(
-                name=point_source_dataset.name,
-                fluxes=point_source_dataset.fluxes,
-                noise_map=point_source_dataset.fluxes_noise_map,
-                positions=point_source_dataset.positions,
-                tracer=tracer,
-            )
-        except exc.PointSourceExtractionException:
-            pass
+        return fit.log_likelihood
 
     def visualize(self, paths, instance, during_analysis):
 
