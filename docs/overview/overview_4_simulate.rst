@@ -1,4 +1,4 @@
-.. _simulate:
+.. _overview_4_simulate:
 
 Simulating Lenses
 -----------------

@@ -1,4 +1,4 @@
-.. _interferometry:
+.. _overview_6_interferometry:
 
 Interferometry
 --------------
@@ -131,6 +131,26 @@ The combination of **PyNUFFT** and **PyLops** makes the analysis of ~10 million 
 ALMA and JVLA feasible in **PyAutoLens**. However, the largest datasets may still require a degree of augmentation,
 averaging or tapering. Rest assured, we are actively working on new solution that will make the analysis of
 **hundreds of millions** of visibilities feasible.
+
+It is straight forward to fit a lens model to an interferometer dataset, using the same API that we saw for imaging
+data in the modeling overview example.
+
+Whereas we previously used an `AnalysisImaging` object, we instead use an `AnalysisInterferometer` object which fits
+the lens model in the correct way for an interferometer dataset. This includes mapping the lens model from real-space
+to the uv-plane via the Fourier transform discussed above:
+
+.. code-block:: bash
+
+    lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
+    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllExponential)
+
+    model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+
+    search = af.DynestyStatic(name="overview_interferometer")
+
+    analysis = al.AnalysisInterferometer(dataset=interferometer)
+
+    result = search.fit(model=model, analysis=analysis)
 
 Simulated interferometer datasets can be generated using the ``SimulatorInterferometer`` object, which includes adding
 Gaussian noise to the visibilities:
