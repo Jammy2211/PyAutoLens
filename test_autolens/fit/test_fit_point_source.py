@@ -520,3 +520,45 @@ class TestFitPointDict:
             == fit["point_0"].flux.log_likelihood
             + fit["point_0"].positions.log_likelihood
         )
+
+    def test__model_has_image_and_source_chi_squared__fits_both_correctly(self):
+
+        galaxy_point_image = al.Galaxy(
+            redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1))
+        )
+
+        galaxy_point_source = al.Galaxy(
+            redshift=1.0, point_1=al.ps.PointSourceChi(centre=(0.1, 0.1))
+        )
+
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), galaxy_point_image, galaxy_point_source]
+        )
+
+        positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
+        noise_map = al.ValuesIrregular([0.5, 1.0])
+        model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
+
+        positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
+
+        point_dataset_0 = al.PointDataset(
+            name="point_0", positions=positions, positions_noise_map=noise_map
+        )
+
+        point_dataset_1 = al.PointDataset(
+            name="point_1", positions=positions, positions_noise_map=noise_map
+        )
+
+        point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
+
+        fit = al.FitPointDict(
+            point_dict=point_dict, tracer=tracer, positions_solver=positions_solver
+        )
+
+        assert isinstance(fit["point_0"].positions, al.FitPositionsImage)
+        assert isinstance(fit["point_1"].positions, al.FitPositionsSource)
+
+        assert (
+            fit["point_0"].positions.model_positions.in_list == model_positions.in_list
+        )
+        assert fit["point_1"].positions.model_positions.in_list == positions.in_list

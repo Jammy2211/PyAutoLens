@@ -2,6 +2,7 @@ from autofit.exc import FitException
 from autoarray.structures.arrays import values
 from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.fit.fit import FitData
+from autogalaxy.profiles import point_sources as ps
 from autolens.dataset.point_source import PointDict
 
 from functools import partial
@@ -53,14 +54,31 @@ class FitPointDict(dict):
 class FitPointDataset:
     def __init__(self, point_dataset, tracer, positions_solver):
 
+        point_profile = tracer.extract_profile(profile_name=point_dataset.name)
+
         try:
-            self.positions = FitPositionsImage(
-                name=point_dataset.name,
-                positions=point_dataset.positions,
-                noise_map=point_dataset.positions_noise_map,
-                positions_solver=positions_solver,
-                tracer=tracer,
-            )
+
+            if isinstance(point_profile, ps.PointSourceChi):
+
+                self.positions = FitPositionsSource(
+                    name=point_dataset.name,
+                    positions=point_dataset.positions,
+                    noise_map=point_dataset.positions_noise_map,
+                    tracer=tracer,
+                    point_profile=point_profile,
+                )
+
+            else:
+
+                self.positions = FitPositionsImage(
+                    name=point_dataset.name,
+                    positions=point_dataset.positions,
+                    noise_map=point_dataset.positions_noise_map,
+                    positions_solver=positions_solver,
+                    tracer=tracer,
+                    point_profile=point_profile,
+                )
+
         except exc.PointExtractionException:
             self.positions = None
         except (AttributeError, numba.errors.TypingError) as e:
@@ -92,7 +110,9 @@ class FitPointDataset:
 
 
 class FitPositionsImage(FitData):
-    def __init__(self, name, positions, noise_map, tracer, positions_solver):
+    def __init__(
+        self, name, positions, noise_map, tracer, positions_solver, point_profile=None
+    ):
         """
         A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
@@ -106,8 +126,13 @@ class FitPositionsImage(FitData):
         """
 
         self.name = name
+
+        if point_profile is None:
+            point_profile = tracer.extract_profile(profile_name=name)
+
+        self.point_profile = point_profile
+
         self.positions_solver = positions_solver
-        self.point_profile = tracer.extract_profile(profile_name=name)
 
         if self.point_profile is None:
             raise exc.PointExtractionException(
@@ -157,7 +182,7 @@ class FitPositionsImage(FitData):
 
 
 class FitPositionsSource(FitData):
-    def __init__(self, name, positions, noise_map, tracer):
+    def __init__(self, name, positions, noise_map, tracer, point_profile=None):
         """
         A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
@@ -171,7 +196,11 @@ class FitPositionsSource(FitData):
         """
 
         self.name = name
-        self.point_profile = tracer.extract_profile(profile_name=name)
+
+        if point_profile is None:
+            point_profile = tracer.extract_profile(profile_name=name)
+
+        self.point_profile = point_profile
 
         if self.point_profile is None:
             raise exc.PointExtractionException(
@@ -222,12 +251,15 @@ class FitPositionsSource(FitData):
 
 
 class FitFluxes(FitData):
-    def __init__(self, name, fluxes, noise_map, positions, tracer):
+    def __init__(self, name, fluxes, noise_map, positions, tracer, point_profile=None):
 
         self.name = name
         self.positions = positions
 
-        self.point_profile = tracer.extract_profile(profile_name=name)
+        if point_profile is None:
+            point_profile = tracer.extract_profile(profile_name=name)
+
+        self.point_profile = point_profile
 
         if self.point_profile is None:
             raise exc.PointExtractionException(
