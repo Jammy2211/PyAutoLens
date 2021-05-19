@@ -123,10 +123,7 @@ class PointDict(dict):
 
     @property
     def positions_list(self):
-        return [
-            point_dataset.positions
-            for keys, point_dataset in self.items()
-        ]
+        return [point_dataset.positions for keys, point_dataset in self.items()]
 
     @property
     def dicts(self) -> List[dict]:

@@ -53,6 +53,7 @@ from .fit.fit_interferometer import FitInterferometer
 from .fit.fit_point_source import (
     FitPositionsSourceMaxSeparation,
     FitPositionsImage,
+    FitPositionsSource,
     FitFluxes,
     FitPointDict,
 )
@@ -60,11 +61,7 @@ from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
 from .lens.positions_solver import PositionsSolver
 from .analysis.preloads import Preloads
-from .analysis.analysis import (
-    AnalysisImaging,
-    AnalysisInterferometer,
-    AnalysisPoint,
-)
+from .analysis.analysis import AnalysisImaging, AnalysisInterferometer, AnalysisPoint
 from autolens.analysis.setup import SetupHyper
 
 from autoconf import conf

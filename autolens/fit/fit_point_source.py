@@ -156,6 +156,71 @@ class FitPositionsImage(FitData):
         return residual_positions.distances_from_coordinate(coordinate=(0.0, 0.0))
 
 
+class FitPositionsSource(FitData):
+    def __init__(self, name, positions, noise_map, tracer):
+        """
+        A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
+        their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
+
+        Parameters
+        -----------
+        positions : grid_2d_irregular.Grid2DIrregular
+            The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
+        noise_value : float
+            The noise-value assumed when computing the log likelihood.
+        """
+
+        self.name = name
+        self.point_profile = tracer.extract_profile(profile_name=name)
+
+        if self.point_profile is None:
+            raise exc.PointExtractionException(
+                f"For the point-source named {name} there was no matching point source profile "
+                f"in the tracer (make sure your tracer's point source name is the same the dataset name."
+            )
+
+        self.source_plane_coordinate = self.point_profile.centre
+
+        if len(tracer.planes) <= 2:
+
+            deflections = tracer.deflections_2d_from_grid(grid=positions)
+
+        else:
+
+            upper_plane_index = tracer.extract_plane_index_of_profile(profile_name=name)
+
+            deflections = tracer.deflections_between_planes_from_grid(
+                grid=positions, plane_i=0, plane_j=upper_plane_index
+            )
+
+        model_positions = positions.grid_from_deflection_grid(
+            deflection_grid=deflections
+        )
+
+        super().__init__(
+            data=positions,
+            noise_map=noise_map,
+            model_data=model_positions,
+            mask=None,
+            inversion=None,
+        )
+
+    @property
+    def positions(self):
+        return self.data
+
+    @property
+    def model_positions(self):
+        return self.model_data
+
+    @property
+    def residual_map(self) -> values.ValuesIrregular:
+
+        return self.model_positions.distances_from_coordinate(
+            coordinate=self.source_plane_coordinate
+        )
+
+
 class FitFluxes(FitData):
     def __init__(self, name, fluxes, noise_map, positions, tracer):
 

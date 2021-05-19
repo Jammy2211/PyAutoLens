@@ -386,8 +386,6 @@ class AbstractTracerLensing(AbstractTracer, ABC):
                         scaling_factor * traced_deflections[previous_plane_index]
                     )
 
-                    # TODO : Setup as Grid2DInterpolate
-
                     scaled_grid -= scaled_deflections
 
             traced_grids.append(scaled_grid)

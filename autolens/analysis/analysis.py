@@ -679,9 +679,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         tracer = self.tracer_for_instance(instance=instance)
 
         fit = fit_point_source.FitPointDict(
-            point_dict=self.point_dict,
-            tracer=tracer,
-            positions_solver=self.solver,
+            point_dict=self.point_dict, tracer=tracer, positions_solver=self.solver
         )
 
         return fit.log_likelihood

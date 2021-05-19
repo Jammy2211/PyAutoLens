@@ -510,9 +510,7 @@ class TestAnalysisPoint:
 
         model = af.Collection(
             galaxies=af.Collection(
-                lens=al.Galaxy(
-                    redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0))
-                )
+                lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
             )
         )
 
@@ -522,9 +520,7 @@ class TestAnalysisPoint:
             model_positions=point_dict["point_0"].positions
         )
 
-        analysis = al.AnalysisPoint(
-            point_dict=point_dict, solver=solver
-        )
+        analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
         result = search.fit(model=model, analysis=analysis)
 
@@ -540,23 +536,17 @@ class TestAnalysisPoint:
             positions_noise_map=positions_x2_noise_map,
         )
 
-        point_dict = al.PointDict(
-            point_dataset_list=[point_dataset]
-        )
+        point_dict = al.PointDict(point_dataset_list=[point_dataset])
 
         model = af.Collection(
             galaxies=af.Collection(
-                lens=al.Galaxy(
-                    redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0))
-                )
+                lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
             )
         )
 
         solver = mock.MockPositionsSolver(model_positions=positions_x2)
 
-        analysis = al.AnalysisPoint(
-            point_dict=point_dict, solver=solver
-        )
+        analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
@@ -577,9 +567,7 @@ class TestAnalysisPoint:
         model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
         solver = mock.MockPositionsSolver(model_positions=model_positions)
 
-        analysis = al.AnalysisPoint(
-            point_dict=point_dict, solver=solver
-        )
+        analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
@@ -607,9 +595,7 @@ class TestAnalysisPoint:
             fluxes_noise_map=fluxes_x2_noise_map,
         )
 
-        point_dict = al.PointDict(
-            point_dataset_list=[point_dataset]
-        )
+        point_dict = al.PointDict(point_dataset_list=[point_dataset])
 
         model = af.Collection(
             galaxies=af.Collection(
@@ -623,9 +609,7 @@ class TestAnalysisPoint:
 
         solver = mock.MockPositionsSolver(model_positions=positions_x2)
 
-        analysis = al.AnalysisPoint(
-            point_dict=point_dict, solver=solver
-        )
+        analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
         instance = model.instance_from_unit_vector([])
 
@@ -657,9 +641,7 @@ class TestAnalysisPoint:
         model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
         solver = mock.MockPositionsSolver(model_positions=model_positions)
 
-        analysis = al.AnalysisPoint(
-            point_dict=point_dict, solver=solver
-        )
+        analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
