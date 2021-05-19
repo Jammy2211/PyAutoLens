@@ -2,7 +2,7 @@ from autofit.exc import FitException
 from autoarray.structures.arrays import values
 from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.fit.fit import FitData
-from autolens.dataset.point_source import PointSourceDict
+from autolens.dataset.point_source import PointDict
 
 from functools import partial
 
@@ -11,34 +11,34 @@ from autolens import exc
 import numba
 
 
-class FitPointSourceDict(dict):
-    def __init__(self, point_source_dict: PointSourceDict, tracer, positions_solver):
+class FitPointDict(dict):
+    def __init__(self, point_dict: PointDict, tracer, positions_solver):
         """
         A fit to a point source dataset, which is stored as a dictionary containing the fit of every data point in a
         entire point-source dataset dictionary.
 
-        This dictionary uses the `name` of the `PointSourceDataset` to act as the key of every entry of the dictionary,
+        This dictionary uses the `name` of the `PointDataset` to act as the key of every entry of the dictionary,
         making it straight forward to access the attributes based on the dataset name.
 
         Parameters
         ----------
-        point_source_dict
+        point_dict
             A dictionary of all point-source datasets that are to be fitted.
 
         Returns
         -------
         Dict
-            A dictionary where the keys are the `name` entries of each dataset in the `PointSourceDict` and the values
-            are the corresponding fits to the `PointSourceDataset` it contained.
+            A dictionary where the keys are the `name` entries of each dataset in the `PointDict` and the values
+            are the corresponding fits to the `PointDataset` it contained.
         """
 
         super().__init__()
 
-        for key, point_source_dataset in point_source_dict.items():
+        for key, point_dataset in point_dict.items():
 
             try:
-                self[key] = FitPointSourceDataset(
-                    point_source_dataset=point_source_dataset,
+                self[key] = FitPointDataset(
+                    point_dataset=point_dataset,
                     tracer=tracer,
                     positions_solver=positions_solver,
                 )
@@ -50,18 +50,18 @@ class FitPointSourceDict(dict):
         return sum([fit.log_likelihood for fit in self.values()])
 
 
-class FitPointSourceDataset:
-    def __init__(self, point_source_dataset, tracer, positions_solver):
+class FitPointDataset:
+    def __init__(self, point_dataset, tracer, positions_solver):
 
         try:
             self.positions = FitPositionsImage(
-                name=point_source_dataset.name,
-                positions=point_source_dataset.positions,
-                noise_map=point_source_dataset.positions_noise_map,
+                name=point_dataset.name,
+                positions=point_dataset.positions,
+                noise_map=point_dataset.positions_noise_map,
                 positions_solver=positions_solver,
                 tracer=tracer,
             )
-        except exc.PointSourceExtractionException:
+        except exc.PointExtractionException:
             self.positions = None
         except (AttributeError, numba.errors.TypingError) as e:
             raise FitException from e
@@ -69,14 +69,14 @@ class FitPointSourceDataset:
         try:
 
             self.flux = FitFluxes(
-                name=point_source_dataset.name,
-                fluxes=point_source_dataset.fluxes,
-                noise_map=point_source_dataset.fluxes_noise_map,
-                positions=point_source_dataset.positions,
+                name=point_dataset.name,
+                fluxes=point_dataset.fluxes,
+                noise_map=point_dataset.fluxes_noise_map,
+                positions=point_dataset.positions,
                 tracer=tracer,
             )
 
-        except exc.PointSourceExtractionException:
+        except exc.PointExtractionException:
 
             self.flux = None
 
@@ -107,15 +107,15 @@ class FitPositionsImage(FitData):
 
         self.name = name
         self.positions_solver = positions_solver
-        self.point_source_profile = tracer.extract_profile(profile_name=name)
+        self.point_profile = tracer.extract_profile(profile_name=name)
 
-        if self.point_source_profile is None:
-            raise exc.PointSourceExtractionException(
+        if self.point_profile is None:
+            raise exc.PointExtractionException(
                 f"For the point-source named {name} there was no matching point source profile "
                 f"in the tracer (make sure your tracer's point source name is the same the dataset name."
             )
 
-        self.source_plane_coordinate = self.point_source_profile.centre
+        self.source_plane_coordinate = self.point_profile.centre
 
         if len(tracer.planes) > 2:
             upper_plane_index = tracer.extract_plane_index_of_profile(profile_name=name)
@@ -162,18 +162,18 @@ class FitFluxes(FitData):
         self.name = name
         self.positions = positions
 
-        self.point_source_profile = tracer.extract_profile(profile_name=name)
+        self.point_profile = tracer.extract_profile(profile_name=name)
 
-        if self.point_source_profile is None:
-            raise exc.PointSourceExtractionException(
+        if self.point_profile is None:
+            raise exc.PointExtractionException(
                 f"For the point-source named {name} there was no matching point source profile "
                 f"in the tracer (make sure your tracer's point source name is the same the dataset name."
             )
 
-        elif not hasattr(self.point_source_profile, "flux"):
-            raise exc.PointSourceExtractionException(
+        elif not hasattr(self.point_profile, "flux"):
+            raise exc.PointExtractionException(
                 f"For the point-source named {name} the extracted point source was the "
-                f"class {self.point_source_profile.__class__.__name__} and therefore does "
+                f"class {self.point_profile.__class__.__name__} and therefore does "
                 f"not contain a flux component."
             )
 
@@ -195,7 +195,7 @@ class FitFluxes(FitData):
 
         model_fluxes = values.ValuesIrregular(
             values=[
-                magnification * self.point_source_profile.flux
+                magnification * self.point_profile.flux
                 for magnification in self.magnifications
             ]
         )

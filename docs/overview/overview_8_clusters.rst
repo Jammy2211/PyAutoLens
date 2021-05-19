@@ -36,8 +36,8 @@ model and reduces the computational run-time of the model-fit.
 
 .. code-block:: bash
 
-    point_source_dict = al.PointSourceDict.from_json(
-        file_path=path.join(dataset_path, "point_source_dict.json")
+    point_dict = al.PointDict.from_json(
+        file_path=path.join(dataset_path, "point_dict.json")
     )
 
     positions_solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.025)
@@ -62,8 +62,8 @@ overview.
 
     search_1 = af.DynestyStatic(name="overview_clusters_group")
 
-    analysis = al.AnalysisPointSource(
-        point_source_dict=point_source_dict, solver=positions_solver
+    analysis = al.AnalysisPoint(
+        point_dict=point_dict, solver=positions_solver
     )
 
     result_1 = search_1.fit(model=model, analysis=analysis)
@@ -85,4 +85,4 @@ that you can study the properties of the highly magnified source galaxy. Here is
 
 This type of modeling uses a lot of **PyAutoLens**'s advanced model-fitting features which are described in chapters 3
 and 4 of the **HowToLens** tutorials. An example performing this analysis to the lens above can be found
-at `this link <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/clusters/chaining/point_source_to_imaging.ipynb>`_
+at `this link <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/clusters/chaining/point_to_imaging.ipynb>`_

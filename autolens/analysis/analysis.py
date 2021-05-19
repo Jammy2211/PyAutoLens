@@ -618,10 +618,10 @@ class AnalysisInterferometer(AnalysisDataset):
         paths.save_object("positions", self.positions)
 
 
-class AnalysisPointSource(af.Analysis, AnalysisLensing):
+class AnalysisPoint(af.Analysis, AnalysisLensing):
     def __init__(
         self,
-        point_source_dict: ps.PointSourceDict,
+        point_dict: ps.PointDict,
         solver: psolve.PositionsSolver,
         imaging=None,
         cosmology=cosmo.Planck15,
@@ -637,7 +637,7 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
 
         Parameters
         ----------
-        point_source_dict : ps.PointSourceDict
+        point_dict : ps.PointDict
             A dictionary containing the full point source dictionary that is used for model-fitting.
         solver : psolve.PositionsSolver
             The object which is used to determine the image-plane of source-plane positions of a model (via a `Tracer`).
@@ -656,7 +656,7 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
             self=self, settings_lens=settings_lens, cosmology=cosmology
         )
 
-        self.point_source_dict = point_source_dict
+        self.point_dict = point_dict
 
         self.solver = solver
         self.imaging = imaging
@@ -678,8 +678,8 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
 
         tracer = self.tracer_for_instance(instance=instance)
 
-        fit = fit_point_source.FitPointSourceDict(
-            point_source_dict=self.point_source_dict,
+        fit = fit_point_source.FitPointDict(
+            point_dict=self.point_dict,
             tracer=tracer,
             positions_solver=self.solver,
         )
@@ -695,10 +695,10 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
     def make_result(
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
-        return res.ResultPointSource(
+        return res.ResultPoint(
             samples=samples, model=model, analysis=self, search=search
         )
 
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
 
-        paths.save_object("dataset", self.point_source_dict)
+        paths.save_object("dataset", self.point_dict)

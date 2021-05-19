@@ -20,8 +20,8 @@ def make_fluxes_noise_map_x2():
     return al.ValuesIrregular(values=[1.0, 1.0])
 
 
-def make_point_source_dataset():
-    return al.PointSourceDataset(
+def make_point_dataset():
+    return al.PointDataset(
         name="point_0",
         positions=make_positions_x2(),
         positions_noise_map=make_positions_noise_map_x2(),
@@ -30,8 +30,8 @@ def make_point_source_dataset():
     )
 
 
-def make_point_source_dict():
-    return al.PointSourceDict(point_source_dataset_list=[make_point_source_dataset()])
+def make_point_dict():
+    return al.PointDict(point_dataset_list=[make_point_dataset()])
 
 
 def make_tracer_x1_plane_7x7():
@@ -105,8 +105,8 @@ def make_analysis_interferometer_7():
     return al.AnalysisInterferometer(dataset=make_interferometer_7())
 
 
-def make_analysis_point_source_x2():
-    return al.AnalysisPointSource(
-        point_source_dict=make_point_source_dict(),
+def make_analysis_point_x2():
+    return al.AnalysisPoint(
+        point_dict=make_point_dict(),
         solver=MockPositionsSolver(model_positions=make_positions_x2()),
     )

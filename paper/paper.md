@@ -142,7 +142,7 @@ lens model from `LightProfile`, `MassProfile` and `Galaxy` objects, customize th
 data via a non-linear search (e.g., `dynesty` [@dynesty], `emcee` [@emcee], `PySwarms` [@pyswarms]). By composing a 
 lens model with a `Pixelization` and `Regularization` object, the background source's light is reconstructed using a 
 rectangular grid or Voronoi mesh that accounts for irregular galaxy morphologies. Lensed quasar and supernovae datasets 
-can be fitted using a `PointSource`, which uses their observed positions, flux-ratios and time-delays to fit the lens 
+can be fitted using a `Point`, which uses their observed positions, flux-ratios and time-delays to fit the lens 
 model. Strong lensing clusters consisting of any number of lens galaxies can also be analysed with `PyAutoLens` using these objects.
 
 Automated lens modeling uses `PyAutoFit`'s non-linear search chaining feature, which breaks the model-fit into 

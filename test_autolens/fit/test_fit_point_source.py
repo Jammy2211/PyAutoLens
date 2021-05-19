@@ -118,7 +118,7 @@ class TestAbstractFitPositionsSourcePlane:
 class TestFitPositionsImage:
     def test__two_sets_of_positions__residuals_likelihood_correct(self):
 
-        point_source = al.ps.PointSource(centre=(0.1, 0.1))
+        point_source = al.ps.Point(centre=(0.1, 0.1))
         galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
         tracer = al.Tracer.from_galaxies(
             galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
@@ -158,7 +158,7 @@ class TestFitPositionsImage:
 
     def test__more_model_positions_than_data_positions__pairs_closest_positions(self):
 
-        g0 = al.Galaxy(redshift=1.0, point_0=al.ps.PointSource(centre=(0.1, 0.1)))
+        g0 = al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1)))
 
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
@@ -192,8 +192,8 @@ class TestFitPositionsImage:
         grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
 
         g0 = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0))
-        g1 = al.Galaxy(redshift=1.0, point_0=al.ps.PointSource(centre=(0.1, 0.1)))
-        g2 = al.Galaxy(redshift=2.0, point_1=al.ps.PointSource(centre=(0.1, 0.1)))
+        g1 = al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1)))
+        g2 = al.Galaxy(redshift=2.0, point_1=al.ps.Point(centre=(0.1, 0.1)))
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
@@ -238,7 +238,7 @@ class TestFitFluxes:
 
         tracer = mock.MockTracer(
             magnification=al.ValuesIrregular([2.0, 2.0]),
-            profile=al.ps.PointSourceFlux(flux=2.0),
+            profile=al.ps.PointFlux(flux=2.0),
         )
 
         fluxes = al.ValuesIrregular([1.0, 2.0])
@@ -265,7 +265,7 @@ class TestFitFluxes:
 
     def test__use_real_tracer(self, gal_x1_mp):
 
-        point_source = al.ps.PointSourceFlux(centre=(0.1, 0.1), flux=2.0)
+        point_source = al.ps.PointFlux(centre=(0.1, 0.1), flux=2.0)
         galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
         tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, galaxy_point_source])
 
@@ -287,8 +287,8 @@ class TestFitFluxes:
     def test__multi_plane_calculation(self, gal_x1_mp):
 
         g0 = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0))
-        g1 = al.Galaxy(redshift=1.0, point_0=al.ps.PointSourceFlux(flux=1.0))
-        g2 = al.Galaxy(redshift=2.0, point_1=al.ps.PointSourceFlux(flux=2.0))
+        g1 = al.Galaxy(redshift=1.0, point_0=al.ps.PointFlux(flux=1.0))
+        g2 = al.Galaxy(redshift=2.0, point_1=al.ps.PointFlux(flux=2.0))
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
@@ -335,10 +335,10 @@ class TestFitFluxes:
         assert fit_0.magnifications[0] != pytest.approx(fit_1.magnifications[0], 1.0e-1)
 
 
-class TestFitPointSourceDict:
+class TestFitPointDict:
     def test__fits_dataset__positions_only(self):
 
-        point_source = al.ps.PointSource(centre=(0.1, 0.1))
+        point_source = al.ps.Point(centre=(0.1, 0.1))
         galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
 
         tracer = al.Tracer.from_galaxies(
@@ -351,16 +351,16 @@ class TestFitPointSourceDict:
 
         positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
 
-        point_source_dataset_0 = al.PointSourceDataset(
+        point_dataset_0 = al.PointDataset(
             name="point_0", positions=positions, positions_noise_map=noise_map
         )
 
-        point_source_dict = al.PointSourceDict(
-            point_source_dataset_list=[point_source_dataset_0]
+        point_dict = al.PointDict(
+            point_dataset_list=[point_dataset_0]
         )
 
-        fit = al.FitPointSourceDict(
-            point_source_dict=point_source_dict,
+        fit = al.FitPointDict(
+            point_dict=point_dict,
             tracer=tracer,
             positions_solver=positions_solver,
         )
@@ -371,16 +371,16 @@ class TestFitPointSourceDict:
         assert fit["point_0"].flux == None
         assert fit.log_likelihood == fit["point_0"].positions.log_likelihood
 
-        point_source_dataset_1 = al.PointSourceDataset(
+        point_dataset_1 = al.PointDataset(
             name="point_1", positions=positions, positions_noise_map=noise_map
         )
 
-        point_source_dict = al.PointSourceDict(
-            point_source_dataset_list=[point_source_dataset_0, point_source_dataset_1]
+        point_dict = al.PointDict(
+            point_dataset_list=[point_dataset_0, point_dataset_1]
         )
 
-        fit = al.FitPointSourceDict(
-            point_source_dict=point_source_dict,
+        fit = al.FitPointDict(
+            point_dict=point_dict,
             tracer=tracer,
             positions_solver=positions_solver,
         )
@@ -395,7 +395,7 @@ class TestFitPointSourceDict:
 
     def test__fits_dataset__positions_and_flux(self):
 
-        point_source = al.ps.PointSourceFlux(centre=(0.1, 0.1), flux=2.0)
+        point_source = al.ps.PointFlux(centre=(0.1, 0.1), flux=2.0)
         galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
 
         tracer = al.Tracer.from_galaxies(
@@ -411,7 +411,7 @@ class TestFitPointSourceDict:
 
         positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
 
-        point_source_dataset_0 = al.PointSourceDataset(
+        point_dataset_0 = al.PointDataset(
             name="point_0",
             positions=positions,
             positions_noise_map=noise_map,
@@ -419,12 +419,12 @@ class TestFitPointSourceDict:
             fluxes_noise_map=flux_noise_map,
         )
 
-        point_source_dict = al.PointSourceDict(
-            point_source_dataset_list=[point_source_dataset_0]
+        point_dict = al.PointDict(
+            point_dataset_list=[point_dataset_0]
         )
 
-        fit = al.FitPointSourceDict(
-            point_source_dict=point_source_dict,
+        fit = al.FitPointDict(
+            point_dict=point_dict,
             tracer=tracer,
             positions_solver=positions_solver,
         )
@@ -439,7 +439,7 @@ class TestFitPointSourceDict:
             + fit["point_0"].flux.log_likelihood
         )
 
-        point_source_dataset_1 = al.PointSourceDataset(
+        point_dataset_1 = al.PointDataset(
             name="point_1",
             positions=positions,
             positions_noise_map=noise_map,
@@ -447,12 +447,12 @@ class TestFitPointSourceDict:
             fluxes_noise_map=flux_noise_map,
         )
 
-        point_source_dict = al.PointSourceDict(
-            point_source_dataset_list=[point_source_dataset_0, point_source_dataset_1]
+        point_dict = al.PointDict(
+            point_dataset_list=[point_dataset_0, point_dataset_1]
         )
 
-        fit = al.FitPointSourceDict(
-            point_source_dict=point_source_dict,
+        fit = al.FitPointDict(
+            point_dict=point_dict,
             tracer=tracer,
             positions_solver=positions_solver,
         )

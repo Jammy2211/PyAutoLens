@@ -46,15 +46,15 @@ from .analysis import aggregator as agg
 from . import plot
 from .dataset.imaging import SimulatorImaging
 from .dataset.interferometer import SimulatorInterferometer
-from .dataset.point_source import PointSourceDataset
-from .dataset.point_source import PointSourceDict
+from .dataset.point_source import PointDataset
+from .dataset.point_source import PointDict
 from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer
 from .fit.fit_point_source import (
     FitPositionsSourceMaxSeparation,
     FitPositionsImage,
     FitFluxes,
-    FitPointSourceDict,
+    FitPointDict,
 )
 from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
@@ -63,7 +63,7 @@ from .analysis.preloads import Preloads
 from .analysis.analysis import (
     AnalysisImaging,
     AnalysisInterferometer,
-    AnalysisPointSource,
+    AnalysisPoint,
 )
 from autolens.analysis.setup import SetupHyper
 

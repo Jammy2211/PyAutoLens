@@ -388,26 +388,26 @@ class TestAbstractTracer:
                 2,
             ]
 
-        def test__point_source_dicts(self, ps_0, ps_1):
+        def test__point_dicts(self, ps_0, ps_1):
 
             tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5)])
 
-            assert tracer.point_source_dict == {}
-            assert tracer.point_source_plane_index_dict == {}
+            assert tracer.point_dict == {}
+            assert tracer.point_plane_index_dict == {}
 
             tracer = al.Tracer.from_galaxies(
                 galaxies=[al.Galaxy(redshift=0.5, point_0=ps_0)]
             )
 
-            assert tracer.point_source_dict == {"point_0": ps_0}
-            assert tracer.point_source_plane_index_dict == {"point_0": 0}
+            assert tracer.point_dict == {"point_0": ps_0}
+            assert tracer.point_plane_index_dict == {"point_0": 0}
 
             tracer = al.Tracer.from_galaxies(
                 galaxies=[al.Galaxy(redshift=0.5, point_0=ps_0, point_1=ps_1)]
             )
 
-            assert tracer.point_source_dict == {"point_0": ps_0, "point_1": ps_1}
-            assert tracer.point_source_plane_index_dict == {"point_0": 0, "point_1": 0}
+            assert tracer.point_dict == {"point_0": ps_0, "point_1": ps_1}
+            assert tracer.point_plane_index_dict == {"point_0": 0, "point_1": 0}
 
             tracer = al.Tracer.from_galaxies(
                 galaxies=[
@@ -417,13 +417,13 @@ class TestAbstractTracer:
                 ]
             )
 
-            assert tracer.point_source_dict == {
+            assert tracer.point_dict == {
                 "point_0": ps_0,
                 "point_1": ps_1,
                 "point_2": ps_0,
                 "point_3": ps_0,
             }
-            assert tracer.point_source_plane_index_dict == {
+            assert tracer.point_plane_index_dict == {
                 "point_0": 0,
                 "point_1": 0,
                 "point_2": 1,
