@@ -618,10 +618,10 @@ class AnalysisInterferometer(AnalysisDataset):
         paths.save_object("positions", self.positions)
 
 
-class AnalysisPointSource(af.Analysis, AnalysisLensing):
+class AnalysisPoint(af.Analysis, AnalysisLensing):
     def __init__(
         self,
-        point_source_dict: ps.PointSourceDict,
+        point_dict: ps.PointDict,
         solver: psolve.PositionsSolver,
         imaging=None,
         cosmology=cosmo.Planck15,
@@ -637,7 +637,7 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
 
         Parameters
         ----------
-        point_source_dict : ps.PointSourceDict
+        point_dict : ps.PointDict
             A dictionary containing the full point source dictionary that is used for model-fitting.
         solver : psolve.PositionsSolver
             The object which is used to determine the image-plane of source-plane positions of a model (via a `Tracer`).
@@ -656,7 +656,7 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
             self=self, settings_lens=settings_lens, cosmology=cosmology
         )
 
-        self.point_source_dict = point_source_dict
+        self.point_dict = point_dict
 
         self.solver = solver
         self.imaging = imaging
@@ -680,11 +680,11 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
 
         log_likelihood = 0.0
 
-        for point_source_dataset in self.point_source_dict.values():
+        for point_dataset in self.point_dict.values():
 
             try:
                 fit_positions = self.fit_positions_for(
-                    point_source_dataset=point_source_dataset, tracer=tracer
+                    point_dataset=point_dataset, tracer=tracer
                 )
             except (AttributeError, numba.errors.TypingError) as e:
                 raise FitException from e
@@ -693,7 +693,7 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
                 log_likelihood += fit_positions.log_likelihood
 
             fit_fluxes = self.fit_fluxes_for(
-                point_source_dataset=point_source_dataset, tracer=tracer
+                point_dataset=point_dataset, tracer=tracer
             )
 
             if fit_fluxes is not None:
@@ -701,30 +701,30 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
 
         return log_likelihood
 
-    def fit_positions_for(self, point_source_dataset, tracer):
+    def fit_positions_for(self, point_dataset, tracer):
 
         try:
             return fit_point_source.FitPositionsImage(
-                name=point_source_dataset.name,
-                positions=point_source_dataset.positions,
-                noise_map=point_source_dataset.positions_noise_map,
+                name=point_dataset.name,
+                positions=point_dataset.positions,
+                noise_map=point_dataset.positions_noise_map,
                 positions_solver=self.solver,
                 tracer=tracer,
             )
-        except exc.PointSourceExtractionException:
+        except exc.PointExtractionException:
             pass
 
-    def fit_fluxes_for(self, point_source_dataset, tracer):
+    def fit_fluxes_for(self, point_dataset, tracer):
 
         try:
             return fit_point_source.FitFluxes(
-                name=point_source_dataset.name,
-                fluxes=point_source_dataset.fluxes,
-                noise_map=point_source_dataset.fluxes_noise_map,
-                positions=point_source_dataset.positions,
+                name=point_dataset.name,
+                fluxes=point_dataset.fluxes,
+                noise_map=point_dataset.fluxes_noise_map,
+                positions=point_dataset.positions,
                 tracer=tracer,
             )
-        except exc.PointSourceExtractionException:
+        except exc.PointExtractionException:
             pass
 
     def visualize(self, paths, instance, during_analysis):
@@ -736,10 +736,10 @@ class AnalysisPointSource(af.Analysis, AnalysisLensing):
     def make_result(
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
-        return res.ResultPointSource(
+        return res.ResultPoint(
             samples=samples, model=model, analysis=self, search=search
         )
 
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
 
-        paths.save_object("dataset", self.point_source_dict)
+        paths.save_object("dataset", self.point_dict)

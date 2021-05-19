@@ -27,7 +27,7 @@ For point source modeling, our goal is to find the multiple images of a lens mas
 source plane. This is an iterative problem performed in a very different way to ray-tracing used when evaluating a
 ``LightProfile``.
 
-To treat a source as a point source, we create it as a galaxy using ``PointSource`` object and pass it to a tracer:
+To treat a source as a point source, we create it as a galaxy using ``Point`` object and pass it to a tracer:
 
 .. code-block:: bash
 
@@ -38,7 +38,7 @@ To treat a source as a point source, we create it as a galaxy using ``PointSourc
         )
     )
 
-    point_source = al.ps.PointSource(centre=(0.07, 0.07))
+    point_source = al.ps.Point(centre=(0.07, 0.07))
 
     source_galaxy = al.Galaxy(redshift=1.0, point=point_source)
 
@@ -71,14 +71,14 @@ with the mass-model we used above, so the match is good:L
 **PyAutoLens** has full support for modeling strong lens datasets as a point-source. This might be used for analysing
 strongly lensed quasars or supernovae, which are so compact we do not observe their extended emission.
 
-To perform point-source modeling, we first create a ``PointSourceDataset`` containing the image-plane (y,x) positions
+To perform point-source modeling, we first create a ``PointDataset`` containing the image-plane (y,x) positions
 of each multiple image and their noise values (which would be the resolution of the imaging data they are observed).
 
 The positions below correspond to those of an ``EllIsothermal`` mass model.
 
 .. code-block:: bash
 
-    point_source_dataset = al.PointSourceDataset(
+    point_dataset = al.PointDataset(
         name="point_0",
         positions=al.Grid2DIrregular(
             [[1.1488, -1.1488], [1.109, 1.109], [-1.109, -1.109], [-1.1488, 1.1488]]
@@ -89,13 +89,13 @@ The positions below correspond to those of an ``EllIsothermal`` mass model.
 In this simple example we model a single point source, which might correspond to one lensed quasar or supernovae.
 However, **PyAutoLens** supports model-fits to datasets with many lensed point-sources, for example in galaxy clusters.
 
-Each point source dataset is therefore passed into a ``PointSourceDict`` object before the model-fit is performed. For
+Each point source dataset is therefore passed into a ``PointDict`` object before the model-fit is performed. For
 this simple example only one dataset is passed in, but in the galaxy-cluster examples you'll see this object makes it
 straightforward to model datasets with many lensed sources.
 
 .. code-block:: bash
 
-    point_source_dict = al.PointSourceDict(point_source_dataset_list=[point_source_dataset])
+    point_dict = al.PointDict(point_dataset_list=[point_dataset])
 
 
 We can print the ``positions`` of this dictionary and dataset, as well as their noise-map values.
@@ -103,29 +103,29 @@ We can print the ``positions`` of this dictionary and dataset, as well as their 
 .. code-block:: bash
 
     print("Point Source Dataset Name:")
-    print(point_source_dict["point_0"].name)
+    print(point_dict["point_0"].name)
     print("Point Source Multiple Image (y,x) Arc-second Coordinates:")
-    print(point_source_dict["point_0"].positions.in_list)
+    print(point_dict["point_0"].positions.in_list)
     print("Point Source Multiple Image Noise-map Values:")
-    print(point_source_dict["point_0"].positions_noise_map.in_list)
+    print(point_dict["point_0"].positions_noise_map.in_list)
 
-Every point-source dataset in the ``PointSourceDict`` has a name, which in this example was ``point_0``. This ``name``
-pairs the dataset to the ``PointSource`` in the model below. Because the name of the dataset is ``point_0``, the
-only ``PointSource`` object that is used to fit it must have the name ``point_0``.
+Every point-source dataset in the ``PointDict`` has a name, which in this example was ``point_0``. This ``name``
+pairs the dataset to the ``Point`` in the model below. Because the name of the dataset is ``point_0``, the
+only ``Point`` object that is used to fit it must have the name ``point_0``.
 
 This ensures if a dataset has many point sources (e.g. galaxy clusters) it is clear how the model pairs the data.
 
 It is straight forward to fit a lens model to a point source dataset, using the same API that we saw for imaging and
 interferometer datasets.
 
-This uses an ``AnalysisPointSource`` object which fits the lens model in the correct way for a point source dataset.
-This includes mapping the ``name``'s of each dataset in the ``PointSourceDict`` to the names of the point sources in
+This uses an ``AnalysisPoint`` object which fits the lens model in the correct way for a point source dataset.
+This includes mapping the ``name``'s of each dataset in the ``PointDict`` to the names of the point sources in
 the lens model.
 
 .. code-block:: bash
 
     lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
-    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, point_0=al.ps.PointSource)
+    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, point_0=al.ps.Point)
 
     model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
 

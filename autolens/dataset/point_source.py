@@ -9,7 +9,7 @@ from os import path
 import numpy as np
 
 
-class PointSourceDataset:
+class PointDataset:
     def __init__(
         self,
         name: str,
@@ -25,13 +25,13 @@ class PointSourceDataset:
 
         The name of the dataset is required for point-source model-fitting, as it pairs a point-source dataset with
         its corresponding point-source in the model-fit. For example, if a dataset has the name `source_1`, it will
-        be paired with the `PointSource` model-component which has the name `source_1`. If a dataset component is not
+        be paired with the `Point` model-component which has the name `source_1`. If a dataset component is not
         successfully paired with a model-component, an error is raised.
 
         Parameters
         ----------
         name
-            The name of the point source dataset which is paired to a `PointSource` in the `Model`.
+            The name of the point source dataset which is paired to a `Point` in the `Model`.
         positions
             The image-plane (y,x) positions of the point-source.
         positions_noise_map
@@ -68,7 +68,7 @@ class PointSourceDataset:
         }
 
     @classmethod
-    def from_dict(cls, dict_: dict) -> "PointSourceDataset":
+    def from_dict(cls, dict_: dict) -> "PointDataset":
         """
         Create a point source dataset from a dictionary representation.
 
@@ -94,38 +94,38 @@ class PointSourceDataset:
         )
 
 
-class PointSourceDict(dict):
-    def __init__(self, point_source_dataset_list: List[PointSourceDataset]):
+class PointDict(dict):
+    def __init__(self, point_dataset_list: List[PointDataset]):
         """
         A dictionary containing the entire point-source dataset, which could be many instances of
-        the `PointSourceDataset` object.
+        the `PointDataset` object.
 
-        This dictionary uses the `name` of the `PointSourceDataset` to act as the key of every entry of the dictionary,
+        This dictionary uses the `name` of the `PointDataset` to act as the key of every entry of the dictionary,
         making it straight forward to access the attributes based on the dataset name.
 
         Parameters
         ----------
-        point_source_dataset_list : [PointSourceDataset]
+        point_dataset_list : [PointDataset]
             A list of all point-source datasets that are to be added to the point-source dictionary.
 
         Returns
         -------
-        Dict[PointSourceDataset]
-            A dictionary where the keys are the `name` entries of each `PointSourceDataset` and the values are
-            the corresponding instance of the `PointSourceDataset` class.
+        Dict[PointDataset]
+            A dictionary where the keys are the `name` entries of each `PointDataset` and the values are
+            the corresponding instance of the `PointDataset` class.
         """
 
         super().__init__()
 
-        for point_source_dataset in point_source_dataset_list:
+        for point_dataset in point_dataset_list:
 
-            self[point_source_dataset.name] = point_source_dataset
+            self[point_dataset.name] = point_dataset
 
     @property
     def positions_list(self):
         return [
-            point_source_dataset.positions
-            for keys, point_source_dataset in self.items()
+            point_dataset.positions
+            for keys, point_dataset in self.items()
         ]
 
     @property
@@ -137,7 +137,7 @@ class PointSourceDict(dict):
         return [dataset.dict for dataset in self.values()]
 
     @classmethod
-    def from_dicts(cls, dicts: List[dict]) -> List[PointSourceDataset]:
+    def from_dicts(cls, dicts: List[dict]) -> List[PointDataset]:
         """
         Create an instance from a list of dictionaries.
 
@@ -150,7 +150,7 @@ class PointSourceDict(dict):
         -------
         A collection of point source datasets.
         """
-        return cls(list(map(PointSourceDataset.from_dict, dicts)))
+        return cls(list(map(PointDataset.from_dict, dicts)))
 
     @classmethod
     def from_json(cls, file_path):

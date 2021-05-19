@@ -188,14 +188,14 @@ def make_fluxes_x2_noise_map():
     return fixtures.make_fluxes_noise_map_x2()
 
 
-@pytest.fixture(name="point_source_dataset")
-def make_point_source_dataset():
-    return fixtures.make_point_source_dataset()
+@pytest.fixture(name="point_dataset")
+def make_point_dataset():
+    return fixtures.make_point_dataset()
 
 
-@pytest.fixture(name="point_source_dict")
-def make_point_source_dict():
-    return fixtures.make_point_source_dict()
+@pytest.fixture(name="point_dict")
+def make_point_dict():
+    return fixtures.make_point_dict()
 
 
 # GALAXIES #
@@ -295,9 +295,9 @@ def make_analysis_interferometer_7():
     return fixtures.make_analysis_interferometer_7()
 
 
-@pytest.fixture(name="analysis_point_source_x2")
-def make_analysis_point_source_x2():
-    return fixtures.make_analysis_point_source_x2()
+@pytest.fixture(name="analysis_point_x2")
+def make_analysis_point_x2():
+    return fixtures.make_analysis_point_x2()
 
 
 @pytest.fixture(name="hyper_galaxy_image_0_7x7")
