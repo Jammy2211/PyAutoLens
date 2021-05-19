@@ -1,4 +1,4 @@
-.. _modeling:
+.. _overview_7_point_sources:
 
 Point Sources
 -------------

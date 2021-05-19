@@ -356,7 +356,7 @@
         },
         "slope": {
             "type": "Uniform",
-            "lower_limit": 1.0,
+            "lower_limit": 1.5,
             "upper_limit": 3.0,
             "width_modifier": {
                 "type": "Absolute",
@@ -444,7 +444,7 @@
         },
         "slope": {
             "type": "Uniform",
-            "lower_limit": 1.0,
+            "lower_limit": 1.5,
             "upper_limit": 3.0,
             "width_modifier": {
                 "type": "Absolute",
@@ -502,7 +502,7 @@
         },
         "slope": {
             "type": "Uniform",
-            "lower_limit": 1.0,
+            "lower_limit": 1.5,
             "upper_limit": 3.0,
             "width_modifier": {
                 "type": "Absolute",
@@ -603,7 +603,7 @@
         },
         "slope": {
             "type": "Uniform",
-            "lower_limit": 1.0,
+            "lower_limit": 1.5,
             "upper_limit": 3.0,
             "width_modifier": {
                 "type": "Absolute",

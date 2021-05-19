@@ -1,4 +1,4 @@
-.. _interferometry:
+.. _overview_6_interferometry:
 
 Interferometry
 --------------
