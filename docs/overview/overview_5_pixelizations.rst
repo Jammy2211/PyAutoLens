@@ -1,4 +1,4 @@
-.. _pixelizations:
+.. _overview_5_pixelizations:
 
 Pixelized Sources
 -----------------

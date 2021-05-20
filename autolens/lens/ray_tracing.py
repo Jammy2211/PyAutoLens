@@ -96,26 +96,26 @@ class AbstractTracer(lensing.LensingObject, ABC):
         )
 
     @property
-    def point_source_dict(self):
+    def point_dict(self):
 
-        point_source_dict = {}
+        point_dict = {}
 
         for plane in self.planes:
-            for key, value in plane.point_source_dict.items():
-                point_source_dict[key] = value
+            for key, value in plane.point_dict.items():
+                point_dict[key] = value
 
-        return point_source_dict
+        return point_dict
 
     @property
-    def point_source_plane_index_dict(self):
+    def point_plane_index_dict(self):
 
-        point_source_dict = {}
+        point_dict = {}
 
         for index, plane in enumerate(self.planes):
-            for key, value in plane.point_source_dict.items():
-                point_source_dict[key] = index
+            for key, value in plane.point_dict.items():
+                point_dict[key] = index
 
-        return point_source_dict
+        return point_dict
 
     @property
     def planes_with_light_profile(self):
@@ -275,7 +275,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
     def extract_profile(self, profile_name):
         """
-        Returns a `LightProfile`, `MassProfile` or `PointSource` from the `Tracer` using the name of that component.
+        Returns a `LightProfile`, `MassProfile` or `Point` from the `Tracer` using the name of that component.
 
         For example, if a tracer has two galaxies, `lens` and `source` with `LightProfile`'s name `light_0` and
         `light_1`, the following:
@@ -292,7 +292,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
     def extract_plane_index_of_profile(self, profile_name):
         """
-        Returns the plane index of a  LightProfile`, `MassProfile` or `PointSource` from the `Tracer` using the name
+        Returns the plane index of a  LightProfile`, `MassProfile` or `Point` from the `Tracer` using the name
         of that component.
 
         For example, if a tracer has two galaxies, `lens` and `source` with `LightProfile`'s name `light_0` and
@@ -385,8 +385,6 @@ class AbstractTracerLensing(AbstractTracer, ABC):
                     scaled_deflections = (
                         scaling_factor * traced_deflections[previous_plane_index]
                     )
-
-                    # TODO : Setup as Grid2DInterpolate
 
                     scaled_grid -= scaled_deflections
 

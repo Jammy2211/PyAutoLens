@@ -60,8 +60,8 @@ Point Source Modeling
 .. autosummary::
    :toctree: generated/
 
-   PointSourceDataset
-   PointSourceDict
+   PointDataset
+   PointDict
    FitPositionsImage
    FitFluxes
    PositionsSolver
@@ -324,7 +324,7 @@ Lens Modeling
 
     AnalysisImaging
     AnalysisInterferometer
-    AnalysisPointSource
+    AnalysisPoint
     SetupHyper
     Preloads
 

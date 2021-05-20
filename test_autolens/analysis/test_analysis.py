@@ -505,58 +505,48 @@ class TestAnalysisInterferometer:
         assert log_evidences[0] != log_evidences[1]
 
 
-class TestAnalysisPointSource:
-    def test__make_result__result_imaging_is_returned(self, point_source_dict):
+class TestAnalysisPoint:
+    def test__make_result__result_imaging_is_returned(self, point_dict):
 
         model = af.Collection(
             galaxies=af.Collection(
-                lens=al.Galaxy(
-                    redshift=0.5, point_0=al.ps.PointSource(centre=(0.0, 0.0))
-                )
+                lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
             )
         )
 
         search = mock.MockSearch(name="test_search")
 
         solver = mock.MockPositionsSolver(
-            model_positions=point_source_dict["point_0"].positions
+            model_positions=point_dict["point_0"].positions
         )
 
-        analysis = al.AnalysisPointSource(
-            point_source_dict=point_source_dict, solver=solver
-        )
+        analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
         result = search.fit(model=model, analysis=analysis)
 
-        assert isinstance(result, res.ResultPointSource)
+        assert isinstance(result, res.ResultPoint)
 
     def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, positions_x2, positions_x2_noise_map
     ):
 
-        point_source_dataset = al.PointSourceDataset(
+        point_dataset = al.PointDataset(
             name="point_0",
             positions=positions_x2,
             positions_noise_map=positions_x2_noise_map,
         )
 
-        point_source_dict = al.PointSourceDict(
-            point_source_dataset_list=[point_source_dataset]
-        )
+        point_dict = al.PointDict(point_dataset_list=[point_dataset])
 
         model = af.Collection(
             galaxies=af.Collection(
-                lens=al.Galaxy(
-                    redshift=0.5, point_0=al.ps.PointSource(centre=(0.0, 0.0))
-                )
+                lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
             )
         )
 
         solver = mock.MockPositionsSolver(model_positions=positions_x2)
 
-        analysis = al.AnalysisPointSource(
-            point_source_dict=point_source_dict, solver=solver
-        )
+        analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
@@ -577,9 +567,7 @@ class TestAnalysisPointSource:
         model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
         solver = mock.MockPositionsSolver(model_positions=model_positions)
 
-        analysis = al.AnalysisPointSource(
-            point_source_dict=point_source_dict, solver=solver
-        )
+        analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
@@ -599,7 +587,7 @@ class TestAnalysisPointSource:
         self, positions_x2, positions_x2_noise_map, fluxes_x2, fluxes_x2_noise_map
     ):
 
-        point_source_dataset = al.PointSourceDataset(
+        point_dataset = al.PointDataset(
             name="point_0",
             positions=positions_x2,
             positions_noise_map=positions_x2_noise_map,
@@ -607,25 +595,21 @@ class TestAnalysisPointSource:
             fluxes_noise_map=fluxes_x2_noise_map,
         )
 
-        point_source_dict = al.PointSourceDict(
-            point_source_dataset_list=[point_source_dataset]
-        )
+        point_dict = al.PointDict(point_dataset_list=[point_dataset])
 
         model = af.Collection(
             galaxies=af.Collection(
                 lens=al.Galaxy(
                     redshift=0.5,
                     sis=al.mp.SphIsothermal(einstein_radius=1.0),
-                    point_0=al.ps.PointSourceFlux(flux=1.0),
+                    point_0=al.ps.PointFlux(flux=1.0),
                 )
             )
         )
 
         solver = mock.MockPositionsSolver(model_positions=positions_x2)
 
-        analysis = al.AnalysisPointSource(
-            point_source_dict=point_source_dict, solver=solver
-        )
+        analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
         instance = model.instance_from_unit_vector([])
 
@@ -657,9 +641,7 @@ class TestAnalysisPointSource:
         model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
         solver = mock.MockPositionsSolver(model_positions=model_positions)
 
-        analysis = al.AnalysisPointSource(
-            point_source_dict=point_source_dict, solver=solver
-        )
+        analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
