@@ -1,19 +1,24 @@
 from autofit.exc import FitException
-from autoarray.structures.arrays import values
-from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoarray.structures.arrays.values import ValuesIrregular
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.fit.fit import FitData
 from autogalaxy.profiles import point_sources as ps
-from autolens.dataset.point_source import PointDict
+from autolens.dataset.point_source import PointDict, PointDataset
+from autolens.lens.positions_solver import PositionsSolver
+from autolens.lens.ray_tracing import Tracer
 
 from functools import partial
 
 from autolens import exc
 
 import numba
+from typing import Optional
 
 
 class FitPointDict(dict):
-    def __init__(self, point_dict: PointDict, tracer, positions_solver):
+    def __init__(
+        self, point_dict: PointDict, tracer: Tracer, positions_solver: PositionsSolver
+    ):
         """
         A fit to a point source dataset, which is stored as a dictionary containing the fit of every data point in a
         entire point-source dataset dictionary.
@@ -37,22 +42,24 @@ class FitPointDict(dict):
 
         for key, point_dataset in point_dict.items():
 
-            try:
-                self[key] = FitPointDataset(
-                    point_dataset=point_dataset,
-                    tracer=tracer,
-                    positions_solver=positions_solver,
-                )
-            except FitException as e:
-                raise FitException from e
+            self[key] = FitPointDataset(
+                point_dataset=point_dataset,
+                tracer=tracer,
+                positions_solver=positions_solver,
+            )
 
     @property
-    def log_likelihood(self):
-        return sum([fit.log_likelihood for fit in self.values()])
+    def log_likelihood(self) -> float:
+        return sum(fit.log_likelihood for fit in self.values())
 
 
 class FitPointDataset:
-    def __init__(self, point_dataset, tracer, positions_solver):
+    def __init__(
+        self,
+        point_dataset: PointDataset,
+        tracer: Tracer,
+        positions_solver: PositionsSolver,
+    ):
 
         point_profile = tracer.extract_profile(profile_name=point_dataset.name)
 
@@ -99,7 +106,7 @@ class FitPointDataset:
             self.flux = None
 
     @property
-    def log_likelihood(self):
+    def log_likelihood(self) -> float:
 
         log_likelihood_positions = (
             self.positions.log_likelihood if self.positions is not None else 0.0
@@ -111,7 +118,13 @@ class FitPointDataset:
 
 class FitPositionsImage(FitData):
     def __init__(
-        self, name, positions, noise_map, tracer, positions_solver, point_profile=None
+        self,
+        name: str,
+        positions: Grid2DIrregular,
+        noise_map: ValuesIrregular,
+        tracer: Tracer,
+        positions_solver: PositionsSolver,
+        point_profile: Optional[ps.Point] = None,
     ):
         """
         A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
@@ -119,7 +132,7 @@ class FitPositionsImage(FitData):
 
         Parameters
         -----------
-        positions : grid_2d_irregular.Grid2DIrregular
+        positions : Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value : float
             The noise-value assumed when computing the log likelihood.
@@ -166,15 +179,15 @@ class FitPositionsImage(FitData):
         )
 
     @property
-    def positions(self):
+    def positions(self) -> Grid2DIrregular:
         return self.data
 
     @property
-    def model_positions(self):
+    def model_positions(self) -> Grid2DIrregular:
         return self.model_data
 
     @property
-    def residual_map(self) -> values.ValuesIrregular:
+    def residual_map(self) -> ValuesIrregular:
 
         residual_positions = self.positions - self.model_positions
 
@@ -182,14 +195,21 @@ class FitPositionsImage(FitData):
 
 
 class FitPositionsSource(FitData):
-    def __init__(self, name, positions, noise_map, tracer, point_profile=None):
+    def __init__(
+        self,
+        name: str,
+        positions: Grid2DIrregular,
+        noise_map: ValuesIrregular,
+        tracer: Tracer,
+        point_profile: Optional[ps.Point] = None,
+    ):
         """
         A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
 
         Parameters
         -----------
-        positions : grid_2d_irregular.Grid2DIrregular
+        positions : Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value : float
             The noise-value assumed when computing the log likelihood.
@@ -235,15 +255,15 @@ class FitPositionsSource(FitData):
         )
 
     @property
-    def positions(self):
+    def positions(self) -> Grid2DIrregular:
         return self.data
 
     @property
-    def model_positions(self):
+    def model_positions(self) -> Grid2DIrregular:
         return self.model_data
 
     @property
-    def residual_map(self) -> values.ValuesIrregular:
+    def residual_map(self) -> ValuesIrregular:
 
         return self.model_positions.distances_from_coordinate(
             coordinate=self.source_plane_coordinate
@@ -251,7 +271,15 @@ class FitPositionsSource(FitData):
 
 
 class FitFluxes(FitData):
-    def __init__(self, name, fluxes, noise_map, positions, tracer, point_profile=None):
+    def __init__(
+        self,
+        name: str,
+        fluxes: ValuesIrregular,
+        noise_map: ValuesIrregular,
+        positions: Grid2DIrregular,
+        tracer: Tracer,
+        point_profile: Optional[ps.Point] = None,
+    ):
 
         self.name = name
         self.positions = positions
@@ -290,7 +318,7 @@ class FitFluxes(FitData):
             )
         )
 
-        model_fluxes = values.ValuesIrregular(
+        model_fluxes = ValuesIrregular(
             values=[
                 magnification * self.point_profile.flux
                 for magnification in self.magnifications
@@ -306,16 +334,18 @@ class FitFluxes(FitData):
         )
 
     @property
-    def fluxes(self):
+    def fluxes(self) -> ValuesIrregular:
         return self.data
 
     @property
-    def model_fluxes(self):
+    def model_fluxes(self) -> ValuesIrregular:
         return self.model_data
 
 
 class AbstractFitPositionsSourcePlane:
-    def __init__(self, positions, noise_map, tracer):
+    def __init__(
+        self, positions: Grid2DIrregular, noise_map: ValuesIrregular, tracer: Tracer
+    ):
         """
         Given a positions dataset, which is a list of positions with names that associated them to model source
         galaxies, use a `Tracer` to determine the traced coordinate positions in the source-plane.
@@ -325,7 +355,7 @@ class AbstractFitPositionsSourcePlane:
 
         Parameters
         -----------
-        positions : grid_2d_irregular.Grid2DIrregular
+        positions : Grid2DIrregular
             The (y,x) arc-second coordinates of named positions which the log_likelihood is computed using. Positions
             are paired to galaxies in the `Tracer` using their names.
         tracer : ray_tracing.Tracer
@@ -340,7 +370,7 @@ class AbstractFitPositionsSourcePlane:
         )[-1]
 
     @property
-    def furthest_separations_of_source_plane_positions(self) -> values.ValuesIrregular:
+    def furthest_separations_of_source_plane_positions(self) -> ValuesIrregular:
         """
         Returns the furthest distance of every source-plane (y,x) coordinate to the other source-plane (y,x)
         coordinates.
@@ -355,7 +385,7 @@ class AbstractFitPositionsSourcePlane:
 
         Returns
         -------
-        values.ValuesIrregular
+        ValuesIrregular
             The further distances of every set of grouped source-plane coordinates the other source-plane coordinates
             that it is grouped with.
         """
@@ -370,23 +400,17 @@ class AbstractFitPositionsSourcePlane:
 
 
 class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
-    def __init__(self, positions, noise_map, tracer):
+    def __init__(
+        self, positions: Grid2DIrregular, noise_map: ValuesIrregular, tracer: Tracer
+    ):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
 
         Parameters
         -----------
-        positions : grid_2d_irregular.Grid2DIrregular
+        positions : Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value : float
             The noise-value assumed when computing the log likelihood.
         """
         super().__init__(positions=positions, noise_map=noise_map, tracer=tracer)
-
-    # @property
-    # def chi_squared_map(self):
-    #     return np.square(np.divide(self.max_separation_of_source_plane_positions, self.noise_map))
-    #
-    # @property
-    # def figure_of_merit(self):
-    #     return -0.5 * sum(self.chi_squared_map)

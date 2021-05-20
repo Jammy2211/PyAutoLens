@@ -65,56 +65,6 @@ class TestAbstractFitPositionsSourcePlane:
         assert not fit.max_separation_within_threshold(threshold=0.15)
 
 
-# class TestFitPositionsSourcePlane:
-#     def test__likelihood__is_sum_of_separations_divided_by_noise(self):
-#
-#         positions = al.Grid2DIrregular(
-#             [
-#                 [(0.0, 0.0), (0.0, 1.0), (0.0, 0.5)],
-#                 [(0.0, 0.0), (0.0, 0.0), (3.0, 3.0)],
-#                 [(0.0, 0.0), (1.0, 1.0), (3.0, 3.0)],
-#             ]
-#         )
-#
-#         noise_map = al.ValuesIrregular(
-#             [
-#                 [1.0, 1.0, 1.0],
-#                 [1.0, 1.0, 1.0],
-#                 [1.0, 1.0, 1.0],
-#             ]
-#         )
-#
-#         tracer = MockTracerPositions(positions=positions)
-#
-#         fit = al.FitPositionsSourceMaxSeparation(
-#             positions=positions, noise_map=noise_map, tracer=tracer,
-#         )
-#         assert fit.chi_squared_map[0] == 1.0
-#         assert fit.chi_squared_map[1] == pytest.approx(18.0, 1e-4)
-#         assert fit.chi_squared_map[2] == pytest.approx(18.0, 1e-4)
-#         assert fit.figure_of_merit == pytest.approx(-0.5 * (1.0 + 18 + 18), 1e-4)
-#
-#         fit = al.FitPositionsSourceMaxSeparation(
-#             positions=positions, noise_map=noise_map, tracer=tracer,
-#         )
-#         assert fit.chi_squared_map[0] == (1.0 / 2.0) ** 2.0
-#         assert fit.chi_squared_map[1] == pytest.approx(
-#             (np.sqrt(18.0) / 2.0) ** 2.0, 1e-4
-#         )
-#         assert fit.chi_squared_map[2] == pytest.approx(
-#             (np.sqrt(18.0) / 2.0) ** 2.0, 1e-4
-#         )
-#         assert fit.figure_of_merit == pytest.approx(
-#             -0.5
-#             * (
-#                 (1.0 / 2.0) ** 2.0
-#                 + (np.sqrt(18.0) / 2.0) ** 2.0
-#                 + (np.sqrt(18.0) / 2.0) ** 2.0
-#             ),
-#             1e-4,
-#         )
-
-
 class TestFitPositionsImage:
     def test__two_sets_of_positions__residuals_likelihood_correct(self):
 

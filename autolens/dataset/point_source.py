@@ -105,7 +105,7 @@ class PointDict(dict):
 
         Parameters
         ----------
-        point_dataset_list : [PointDataset]
+        point_dataset_list
             A list of all point-source datasets that are to be added to the point-source dictionary.
 
         Returns
@@ -147,7 +147,7 @@ class PointDict(dict):
         -------
         A collection of point source datasets.
         """
-        return cls(list(map(PointDataset.from_dict, dicts)))
+        return cls(map(PointDataset.from_dict, dicts))
 
     @classmethod
     def from_json(cls, file_path):
