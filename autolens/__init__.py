@@ -69,4 +69,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = "1.15.2"
+__version__ = "1.15.3"
