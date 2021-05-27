@@ -383,7 +383,7 @@ class ResultInterferometer(ResultDataset):
         return hyper_model_visibilities
 
 
-class ResultPointSource(Result):
+class ResultPoint(Result):
     @property
     def grid(self):
         return grid_2d.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)

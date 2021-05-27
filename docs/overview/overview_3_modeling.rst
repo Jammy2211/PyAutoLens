@@ -1,4 +1,4 @@
-.. _modeling:
+.. _overview_3_modeling:
 
 Lens Modeling
 -------------

@@ -15,7 +15,7 @@ def make_dataset_dict():
 
 @pytest.fixture(name="dataset")
 def make_dataset():
-    return al.PointSourceDataset(
+    return al.PointDataset(
         "name",
         positions=al.Grid2DIrregular([(1, 2)]),
         positions_noise_map=al.ValuesIrregular([1]),
@@ -29,7 +29,7 @@ class TestDataset:
         assert dataset.dict == dataset_dict
 
     def test_from_dict(self, dataset_dict, dataset):
-        dataset_ = al.PointSourceDataset.from_dict(dataset_dict)
+        dataset_ = al.PointDataset.from_dict(dataset_dict)
         assert (dataset_.positions == dataset.positions).all()
         assert (dataset_.positions_noise_map == dataset.positions_noise_map).all()
         assert (dataset_.fluxes == dataset.fluxes).all()
@@ -38,10 +38,10 @@ class TestDataset:
 
 class TestDict:
     def test_dicts(self, dataset, dataset_dict):
-        point_source_dict = al.PointSourceDict([dataset])
-        assert point_source_dict.dicts == [dataset_dict]
+        point_dict = al.PointDict([dataset])
+        assert point_dict.dicts == [dataset_dict]
 
     def test_from_dicts(self, dataset, dataset_dict):
-        point_source_dict = al.PointSourceDict.from_dicts([dataset_dict])
-        assert len(point_source_dict) == 1
-        assert dataset.name in point_source_dict
+        point_dict = al.PointDict.from_dicts([dataset_dict])
+        assert len(point_dict) == 1
+        assert dataset.name in point_dict

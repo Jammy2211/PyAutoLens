@@ -1,4 +1,4 @@
-.. _lensing:
+.. _overview_1_lensing:
 
 Lensing
 -------

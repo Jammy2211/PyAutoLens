@@ -2,13 +2,22 @@ import autofit as af
 import autolens as al
 
 from autofit import exc
+
+from autofit.database.model.fit import Fit
+from autogalaxy.analysis.aggregator.aggregator import (
+    imaging_via_database_from,
+    interferometer_via_database_from,
+)
+
 from functools import partial
 import numpy as np
 from os import path
 import json
 
+from typing import Optional
 
-def tracer_generator_from_aggregator(aggregator: af.Aggregator):
+
+def tracer_gen_from(aggregator):
     """
     Returns a generator of `Tracer` objects from an input aggregator, which generates a list of the `Tracer` objects
     for every set of results loaded in the aggregator.
@@ -20,10 +29,10 @@ def tracer_generator_from_aggregator(aggregator: af.Aggregator):
     ----------
     aggregator : af.Aggregator
         A PyAutoFit aggregator object containing the results of PyAutoLens model-fits."""
-    return aggregator.map(func=tracer_from_agg_obj)
+    return aggregator.map(func=tracer_via_database_from)
 
 
-def tracer_from_agg_obj(agg_obj: af.SearchOutput) -> "al.Tracer":
+def tracer_via_database_from(fit: Fit) -> "al.Tracer":
     """
     Returns a `Tracer` object from an aggregator's `SearchOutput` class, which we call an 'agg_obj' to describe that
      it acts as the aggregator object for one result in the `Aggregator`. This uses the aggregator's generator outputs
@@ -34,78 +43,32 @@ def tracer_from_agg_obj(agg_obj: af.SearchOutput) -> "al.Tracer":
 
     Parameters
     ----------
-    agg_obj : af.SearchOutput
+    fit : af.SearchOutput
         A PyAutoFit aggregator's SearchOutput object containing the generators of the results of PyAutoLens model-fits.
     """
-    samples = agg_obj.samples
-    attributes = agg_obj.attributes
-    max_log_likelihood_instance = samples.max_log_likelihood_instance
-    galaxies = max_log_likelihood_instance.galaxies
 
-    if attributes.hyper_galaxy_image_path_dict is not None:
+    galaxies = fit.instance.galaxies
 
-        for (
-            galaxy_path,
-            galaxy,
-        ) in max_log_likelihood_instance.path_instance_tuples_for_class(al.Galaxy):
-            if galaxy_path in attributes.hyper_galaxy_image_path_dict:
-                galaxy.hyper_model_image = attributes.hyper_model_image
-                galaxy.hyper_galaxy_image = attributes.hyper_galaxy_image_path_dict[
-                    galaxy_path
-                ]
+    hyper_model_image = fit.value(name="hyper_model_image")
+    hyper_galaxy_image_path_dict = fit.value(name="hyper_galaxy_image_path_dict")
+
+    if hyper_galaxy_image_path_dict is not None:
+
+        for (galaxy_path, galaxy) in fit.instance.path_instance_tuples_for_class(
+            al.Galaxy
+        ):
+            if galaxy_path in hyper_galaxy_image_path_dict:
+                galaxy.hyper_model_image = hyper_model_image
+                galaxy.hyper_galaxy_image = hyper_galaxy_image_path_dict[galaxy_path]
 
     return al.Tracer.from_galaxies(galaxies=galaxies)
 
 
-def imaging_generator_from_aggregator(
-    aggregator: af.Aggregator, settings_imaging: al.SettingsImaging = None
-):
-    """
-    Returns a generator of `Imaging` objects from an input aggregator, which generates a list of the
-    `Imaging` objects for every set of results loaded in the aggregator.
-
-    This is performed by mapping the `imaging_from_agg_obj` with the aggregator, which sets up each
-    imaging using only generators ensuring that manipulating the imaging of large sets of results is done in a
-    memory efficient way.
-
-    Parameters
-    ----------
-    aggregator : af.Aggregator
-        A PyAutoFit aggregator object containing the results of PyAutoLens model-fits."""
-    func = partial(imaging_from_agg_obj, settings_imaging=settings_imaging)
-    return aggregator.map(func=func)
-
-
-def imaging_from_agg_obj(
-    agg_obj: af.SearchOutput, settings_imaging: al.SettingsImaging = None
-) -> "al.Imaging":
-    """
-    Returns a `Imaging` object from an aggregator's `SearchOutput` class, which we call an 'agg_obj' to describe
-    that it acts as the aggregator object for one result in the `Aggregator`. This uses the aggregator's generator
-    outputs such that the function can use the `Aggregator`'s map function to to create a `Imaging` generator.
-
-    The `Imaging` is created, including using the
-    `meta_dataset` instance output by the Search to load inputs of the `Imaging` (e.g. psf_shape_2d).
-
-    Parameters
-    ----------
-    agg_obj : af.SearchOutput
-        A PyAutoFit aggregator's SearchOutput object containing the generators of the results of PyAutoLens model-fits.
-    """
-
-    imaging = agg_obj.dataset
-
-    if settings_imaging is None:
-        return imaging
-
-    return imaging.apply_settings(settings=settings_imaging)
-
-
-def fit_imaging_generator_from_aggregator(
+def fit_imaging_gen_from(
     aggregator: af.Aggregator,
-    settings_imaging: al.SettingsImaging = None,
-    settings_pixelization: al.SettingsPixelization = None,
-    settings_inversion: al.SettingsInversion = None,
+    settings_imaging: Optional[al.SettingsImaging] = None,
+    settings_pixelization: Optional[al.SettingsPixelization] = None,
+    settings_inversion: Optional[al.SettingsInversion] = None,
 ):
     """
     Returns a generator of `FitImaging` objects from an input aggregator, which generates a list of the
@@ -120,7 +83,7 @@ def fit_imaging_generator_from_aggregator(
         A PyAutoFit aggregator object containing the results of PyAutoLens model-fits."""
 
     func = partial(
-        fit_imaging_from_agg_obj,
+        fit_imaging_via_database_from,
         settings_imaging=settings_imaging,
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,
@@ -129,8 +92,8 @@ def fit_imaging_generator_from_aggregator(
     return aggregator.map(func=func)
 
 
-def fit_imaging_from_agg_obj(
-    agg_obj: af.SearchOutput,
+def fit_imaging_via_database_from(
+    fit: Fit,
     settings_imaging: al.SettingsImaging = None,
     settings_pixelization: al.SettingsPixelization = None,
     settings_inversion: al.SettingsInversion = None,
@@ -144,17 +107,16 @@ def fit_imaging_from_agg_obj(
 
     Parameters
     ----------
-    agg_obj : af.SearchOutput
+    fit : af.SearchOutput
         A PyAutoFit aggregator's SearchOutput object containing the generators of the results of PyAutoLens model-fits.
     """
-    imaging = imaging_from_agg_obj(agg_obj=agg_obj, settings_imaging=settings_imaging)
-    tracer = tracer_from_agg_obj(agg_obj=agg_obj)
+    imaging = imaging_via_database_from(fit=fit, settings_imaging=settings_imaging)
+    tracer = tracer_via_database_from(fit=fit)
 
-    if settings_pixelization is None:
-        settings_pixelization = agg_obj.settings_pixelization
-
-    if settings_inversion is None:
-        settings_inversion = agg_obj.settings_inversion
+    settings_pixelization = settings_pixelization or fit.value(
+        name="settings_pixelization"
+    )
+    settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
     return al.FitImaging(
         imaging=imaging,
@@ -164,55 +126,7 @@ def fit_imaging_from_agg_obj(
     )
 
 
-def interferometer_generator_from_aggregator(
-    aggregator: af.Aggregator, settings_interferometer: al.SettingsInterferometer = None
-):
-    """
-    Returns a generator of `Interferometer` objects from an input aggregator, which generates a list of the
-    `Interferometer` objects for every set of results loaded in the aggregator.
-
-    This is performed by mapping the `interferometer_from_agg_obj` with the aggregator, which sets up each
-    interferometer object using only generators ensuring that manipulating the interferometer objects of large
-    sets of results is done in a memory efficient way.
-
-    Parameters
-    ----------
-    aggregator : af.Aggregator
-        A PyAutoFit aggregator object containing the results of PyAutoLens model-fits."""
-    func = partial(
-        interferometer_from_agg_obj, settings_interferometer=settings_interferometer
-    )
-    return aggregator.map(func=func)
-
-
-def interferometer_from_agg_obj(
-    agg_obj: af.SearchOutput, settings_interferometer: al.SettingsInterferometer = None
-) -> "al.Interferometer":
-    """
-    Returns a `Interferometer` object from an aggregator's `SearchOutput` class, which we call an 'agg_obj' to
-    describe that it acts as the aggregator object for one result in the `Aggregator`. This uses the aggregator's
-    generator outputs such that the function can use the `Aggregator`'s map function to to create a
-    `Interferometer` generator.
-
-    The `Interferometer` is created, including
-    using the `meta_dataset` instance output by the Search to load inputs of the `Interferometer`
-    (e.g. psf_shape_2d).
-
-    Parameters
-    ----------
-    agg_obj : af.SearchOutput
-        A PyAutoFit aggregator's SearchOutput object containing the generators of the results of PyAutoLens model-fits.
-    """
-
-    interferometer = agg_obj.dataset
-
-    if settings_interferometer is None:
-        return interferometer
-
-    return interferometer.apply_settings(settings=settings_interferometer)
-
-
-def fit_interferometer_generator_from_aggregator(
+def fit_interferometer_gen_from(
     aggregator: af.Aggregator,
     settings_interferometer: al.SettingsInterferometer = None,
     settings_pixelization: al.SettingsPixelization = None,
@@ -233,7 +147,7 @@ def fit_interferometer_generator_from_aggregator(
     """
 
     func = partial(
-        fit_interferometer_from_agg_obj,
+        fit_interferometer_via_database_from,
         settings_interferometer=settings_interferometer,
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,
@@ -241,8 +155,9 @@ def fit_interferometer_generator_from_aggregator(
     return aggregator.map(func=func)
 
 
-def fit_interferometer_from_agg_obj(
-    agg_obj: af.SearchOutput,
+def fit_interferometer_via_database_from(
+    fit: Fit,
+    real_space_mask: Optional[al.Mask2D] = None,
     settings_interferometer: al.SettingsInterferometer = None,
     settings_pixelization: al.SettingsPixelization = None,
     settings_inversion: al.SettingsInversion = None,
@@ -260,16 +175,17 @@ def fit_interferometer_from_agg_obj(
     aggregator : af.Aggregator
         A PyAutoFit aggregator object containing the results of PyAutoLens model-fits.
     """
-    interferometer = interferometer_from_agg_obj(
-        agg_obj=agg_obj, settings_interferometer=settings_interferometer
+    interferometer = interferometer_via_database_from(
+        fit=fit,
+        real_space_mask=real_space_mask,
+        settings_interferometer=settings_interferometer,
     )
-    tracer = tracer_from_agg_obj(agg_obj=agg_obj)
+    tracer = tracer_via_database_from(fit=fit)
 
-    if settings_pixelization is None:
-        settings_pixelization = agg_obj.settings_pixelization
-
-    if settings_inversion is None:
-        settings_inversion = agg_obj.settings_inversion
+    settings_pixelization = settings_pixelization or fit.value(
+        name="settings_pixelization"
+    )
+    settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
     return al.FitInterferometer(
         interferometer=interferometer,

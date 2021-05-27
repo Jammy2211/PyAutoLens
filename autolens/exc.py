@@ -29,5 +29,5 @@ class PreloadException(Exception):
     pass
 
 
-class PointSourceExtractionException(Exception):
+class PointExtractionException(Exception):
     pass

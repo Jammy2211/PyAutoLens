@@ -77,7 +77,7 @@ The following settings customize how a model is handled by **PyAutoFit**:
 [model]
     ignore_prior_limits : bool
         If ``True`` the limits applied to priors will be ignored, where limits set upper / lower limits. This should be
-        disabled if one has difficult manipulating results in the databse due to a ``PriorLimitException``.
+        disabled if one has difficult manipulating results in the database due to a ``PriorLimitException``.
 
 The library `numba <https://github.com/numba/numba>`_ is used to speed up functions, by converting them to C callable
 functions before the Python interpreter runs:
