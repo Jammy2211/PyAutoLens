@@ -169,7 +169,10 @@ class SetupHyper(setup.SetupHyper):
         if not noise_factor_is_model:
             hyper_galaxy.noise_factor = galaxy_instance.hyper_galaxy.noise_factor
         else:
-            hyper_galaxy.noise_factor = af.LogUniformPrior(lower_limit=1e-4, upper_limit=2.0*galaxy_instance.hyper_galaxy.noise_factor)
+            hyper_galaxy.noise_factor = af.LogUniformPrior(
+                lower_limit=1e-4,
+                upper_limit=2.0 * galaxy_instance.hyper_galaxy.noise_factor,
+            )
 
         hyper_galaxy.contribution_factor = (
             galaxy_instance.hyper_galaxy.contribution_factor
