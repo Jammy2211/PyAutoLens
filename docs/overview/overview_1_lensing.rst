@@ -256,6 +256,9 @@ This is what the lens looks like:
   :width: 400
   :alt: Alternative text
 
+Wrap Up
+-------
+
 If you are unfamiliar with strong lensing and not clear what the above quantities or plots mean, fear not, in chapter 1
 of the **HowToLens** lecture series we'll take you through strong lensing theory in detail, whilst teaching
 you how to use **PyAutoLens** at the same time! Checkout the

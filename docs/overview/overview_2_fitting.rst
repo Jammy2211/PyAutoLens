@@ -1,10 +1,15 @@
 .. _overview_2_fitting:
 
 Fitting Data
+============
+
+A ``Tracer`` object represents a strong lens system and allows us to create images of the lens galaxy and lensed source
+galaxy.
+
+Loading Data
 ------------
 
-A ``Tracer`` object represents a strong lens system and alows us to create images of the lens galaxy and lensed source
-galaxy. We are now going to use a ``Tracer`` to fit imaging data of a strong lens, which we begin by loading
+We are now going to use a ``Tracer`` to fit imaging data of a strong lens, which we begin by loading
 from .fits files as an ``Imaging`` object:
 
 .. code-block:: bash
@@ -35,6 +40,9 @@ Here's what our ``image``, ``noise_map`` and ``psf`` (point-spread function) loo
   :width: 400
   :alt: Alternative text
 
+Masking
+-------
+
 We now need to mask the data, so that regions where there is no signal (e.g. the edges) are omitted from the fit. To do
 this we can use a ``Mask2D`` object, which for this example we'll create as a 3.0" circle.
 
@@ -55,6 +63,9 @@ Here is what our image looks like with the mask applied, where **PyAutoLens** ha
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/masked_image.png
   :width: 400
   :alt: Alternative text
+
+Fitting
+-------
 
 Following the lensing API guide, we can make a ``Tracer`` from a collection of ``LightProfile``, ``MassProfile`` and
 ``Galaxy`` objects. This ``Tracer`` then allows us to create an image of the strong lens system.
@@ -105,6 +116,16 @@ chi-squared values minimized:
   :width: 400
   :alt: Alternative text
 
+Most importantly, the ``FitImaging`` object also provides us with a *log likelihood*, a single value measure of how good
+our ``Tracer`` fitted the dataset:
+
+.. code-block:: bash
+
+    print(fit.log_likelihood)
+
+Bad Fit
+-------
+
 In contrast, a bad lens model will show features in the residual-map and chi-squareds:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/bad_residual_map.png
@@ -115,15 +136,11 @@ In contrast, a bad lens model will show features in the residual-map and chi-squ
   :width: 400
   :alt: Alternative text
 
-Most importantly, the ``FitImaging`` object also provides us with a *log likelihood*, a single value measure of how good
-our ``Tracer`` fitted the dataset:
-
-.. code-block:: bash
-
-    print(fit.log_likelihood)
-
 If we can find a ``Tracer`` that produces a high log likelihood, we'll have a model
 which is representative of our strong lens data! This task, called lens modeling, is covered in the next API overview.
+
+Wrap Up
+-------
 
 If you are unfamilar with data and model fitting, and unsure what terms like 'residuals', 'chi-sqaured' or '
 likelihood' mean, we'll explain all in chapter 1 of the **HowToLens** lecture series. Checkout the
