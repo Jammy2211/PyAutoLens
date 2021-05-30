@@ -40,7 +40,7 @@ To treat a source as a point source, we create it as a galaxy using ``Point`` ob
 
     point_source = al.ps.Point(centre=(0.07, 0.07))
 
-    source_galaxy = al.Galaxy(redshift=1.0, point=point_source)
+    source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
@@ -115,6 +115,21 @@ only ``Point`` object that is used to fit it must have the name ``point_0``.
 
 This ensures if a dataset has many point sources (e.g. galaxy clusters) it is clear how the model pairs the data.
 
+Just like we used a ``Tracer`` to fit imaging and interferometer data, we can use it to
+fit point-source data via the ``FitPoint`` object.
+
+This uses the names of each point-source in the dataset and model to create individual fits to the ``positions``,
+``fluxes`` and other attributes that could be fitted. This allows us to inspect the residual-map,
+chi-squared, likelihood, etc of every individual fit to part of our point source dataset.
+
+.. code-block:: bash
+
+    fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, positions_solver=solver)
+
+    print(fit["point_0"].positions.residual_map)
+    print(fit["point_0"].positions.chi_squared_map)
+    print(fit["point_0"].positions.log_likelihood)
+
 It is straight forward to fit a lens model to a point source dataset, using the same API that we saw for imaging and
 interferometer datasets.
 
@@ -127,10 +142,21 @@ the lens model.
     lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
     source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, point_0=al.ps.Point)
 
-    model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+    galaxies = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+    model = af.Collection(galaxies=galaxies)
 
-    search = af.DynestyStatic(name="overview_interferometer")
+    search = af.DynestyStatic(name="overview_point_source")
 
-    analysis = al.AnalysisInterferometer(dataset=interferometer)
+    analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
     result = search.fit(model=model, analysis=analysis)
+
+The ``point_source`` package of the ``autolens_workspace`` contains numerous example scripts for performing point source
+modeling to datasets where there are only a couple of lenses and lensed sources, which fall under the category of
+'galaxy scale' objects.
+
+This also includes examples of how to add and fit other information that are observed by a point-source source,
+for example the flux of each image.
+
+If you wish to model systems with many lens galaxy and sources, e.g. galaxy clusters, checkout the `galaxy_clusters.py`
+overview script.

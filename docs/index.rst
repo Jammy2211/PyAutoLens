@@ -183,7 +183,7 @@ datasets.
 
 For new **PyAutoLens** users, we recommend they start by
 `installing PyAutoLens <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ (if you haven't
-already!), read through the `introduction.ipynb` notebook on
+already!), read through the ``introduction.ipynb`` notebook on
 the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ and take the
 `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_ on
 strong gravitational lensing with **PyAutoLens**.
@@ -193,12 +193,15 @@ strong gravitational lensing with **PyAutoLens**.
    :maxdepth: 1
    :hidden:
 
-   overview/lensing
-   overview/fitting
-   overview/modeling
-   overview/simulate
-   overview/pixelizations
-   overview/interferometry
+   overview/overview_1_lensing
+   overview/overview_2_fitting
+   overview/overview_3_modeling
+   overview/overview_4_simulate
+   overview/overview_5_pixelizations
+   overview/overview_6_interferometry
+   overview/overview_7_point_sources
+   overview/overview_8_groups
+   overview/overview_9_clusters
 
 .. toctree::
    :caption: Installation:

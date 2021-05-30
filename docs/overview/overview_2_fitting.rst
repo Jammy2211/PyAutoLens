@@ -116,7 +116,13 @@ In contrast, a bad lens model will show features in the residual-map and chi-squ
   :alt: Alternative text
 
 Most importantly, the ``FitImaging`` object also provides us with a *log likelihood*, a single value measure of how good
-our ``Tracer`` fitted the dataset. If we can find a ``Tracer`` that produces a high log likelihood, we'll have a model
+our ``Tracer`` fitted the dataset:
+
+.. code-block:: bash
+
+    print(fit.log_likelihood)
+
+If we can find a ``Tracer`` that produces a high log likelihood, we'll have a model
 which is representative of our strong lens data! This task, called lens modeling, is covered in the next API overview.
 
 If you are unfamilar with data and model fitting, and unsure what terms like 'residuals', 'chi-sqaured' or '

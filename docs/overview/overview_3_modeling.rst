@@ -41,9 +41,13 @@ determined by a fitting procedure.
 We combine the lens and source model galaxies above into a ``Collection``, which is the model we will fit. Note how
 we could easily extend this object to compose highly complex models containing many galaxies.
 
+The reason we create separate ``Collection``'s for the ``galaxies`` and ``model`` is because the `model`
+can be extended to include other components than just galaxies.
+
 .. code-block:: bash
 
-    model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+    galaxies = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+    model = af.Collection(galaxies=galaxies)
 
 In this example, we fit our strong lens data with two galaxies:
 
@@ -92,8 +96,32 @@ Once a model-fit is running, **PyAutoLens** outputs the results of the search to
 lens model parameter estimates with errors non-linear samples and the visualization of the best-fit lens model inferred
 by the search so far.
 
-The fit above returns a ``Result`` object, which contains the maximum log likelihood ``Tracer`` and ``FitImaging``
-objects and which can easily be plotted.
+The fit above returns a `Result` object, which includes lots of information on the lens model. Below,
+we print the maximum log likelihood model inferred, but the result object contains full posterior information!
+
+.. code-block:: bash
+
+    print(result.max_log_likelihood_instance.galaxies.lens)
+    print(result.max_log_likelihood_instance.galaxies.source)
+
+This result contains the full posterior information of our non-linear search, including all
+parameter samples, log likelihood values and tools to compute the errors on the lens model. **PyAutoLens** includes
+many visualization tools for plotting the results of a non-linear search, for example we can make a corner plot of the
+probability density function (PDF):
+
+.. code-block:: bash
+
+    dynesty_plotter = aplt.DynestyPlotter(samples=result.samples)
+    dynesty_plotter.cornerplot()
+
+Here is an example of how a PDF estimated for a lens model appears:
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/modeling/cornerplot.png
+  :width: 600
+  :alt: Alternative text
+
+The result also contains the maximum log likelihood ``Tracer`` and ``FitImaging`` objects and which can easily be
+plotted.
 
 .. code-block:: bash
 
@@ -107,22 +135,6 @@ Here's what the model-fit of the model which maximizes the log likelihood looks 
 low chi-squared values:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/subplot_fit.png
-  :width: 600
-  :alt: Alternative text
-
-This ``Result`` object contains the full posterior information of our non-linear search, including all
-parameter samples, log likelihood values and tools to compute the errors on the lens model. **PyAutoLens** includes
-many visualization tools for plotting the results of a non-linear search, for example we can make a corner plot of the
-probability density function (PDF):
-
-.. code-block:: bash
-
-    dynesty_plotter = aplt.DynestyPlotter(samples=result.samples)
-    dynesty_plotter.cornerplot()
-
-Here is an example of how a PDF estimated for a lens model appears:
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/modeling/cornerplot.png
   :width: 600
   :alt: Alternative text
 

@@ -135,7 +135,7 @@ averaging or tapering. Rest assured, we are actively working on new solution tha
 It is straight forward to fit a lens model to an interferometer dataset, using the same API that we saw for imaging
 data in the modeling overview example.
 
-Whereas we previously used an `AnalysisImaging` object, we instead use an `AnalysisInterferometer` object which fits
+Whereas we previously used an ``AnalysisImaging`` object, we instead use an ``AnalysisInterferometer`` object which fits
 the lens model in the correct way for an interferometer dataset. This includes mapping the lens model from real-space
 to the uv-plane via the Fourier transform discussed above:
 
@@ -157,7 +157,7 @@ Gaussian noise to the visibilities:
 
 .. code-block:: bash
 
-    grid = al.Grid2D.uniform(shape_native=(151, 151), pixel_scales=0.05, sub_size=4)
+    real_space_grid = al.Grid2D.uniform(shape_native=real_space_mask.shape_native, pixel_scales=real_space_mask.pixel_scales)
 
     simulator = al.SimulatorInterferometer(
         uv_wavelengths=uv_wavelengths,
@@ -166,5 +166,7 @@ Gaussian noise to the visibilities:
         noise_sigma=0.01,
     )
 
-    interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
+    interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=real_space_grid)
 
+The ``interferometer`` package of the ``autolens_workspace`` contains numerous example scripts for performing
+interferometer modeling and simulating strong lens interferometer datasets.
