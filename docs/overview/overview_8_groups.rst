@@ -1,7 +1,7 @@
 .. _overview_8_groups:
 
-groups
---------
+Group-Scale Lenses
+------------------
 
 The strong lenses we've discussed so far have just a single lens galaxy responsible for the lensing, with a single
 source galaxy observed to be lensed. A strong lensing group is a system where there are multiple lens galaxies,

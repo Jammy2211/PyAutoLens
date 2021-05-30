@@ -12,14 +12,10 @@ surface brightness distribution. Instead, we assume that our source is a point s
 ray-tracing calculations no longer trace extended light rays from the source plane to the image-plane, but instead
 now find the locations the point-source's multiple images appear in the image-plane.
 
-Here is an example of a compact source that has been simulated in **PyAutoLens** and the positions of its four multiple
-images:
+Here is an example of a compact source that has been simulated in **PyAutoLens**, with the positions of its four
+multiple images marked using stars:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/chi_squared_map_real.png
-  :width: 400
-  :alt: Alternative text
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/chi_squared_map_real.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/point_sources/image.png
   :width: 400
   :alt: Alternative text
 
@@ -62,11 +58,9 @@ the point-sources on!
     positions = solver.solve(lensing_obj=tracer, source_plane_coordinate=(0.07, 0.07))
 
 Here is what the solved positions look like, compared to the observe data. In this example, the data was simulated
-with the mass-model we used above, so the match is good:L
+with the mass-model we used above, so the match is good:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/chi_squared_map_real.png
-  :width: 400
-  :alt: Alternative text
+[Missing]
 
 **PyAutoLens** has full support for modeling strong lens datasets as a point-source. This might be used for analysing
 strongly lensed quasars or supernovae, which are so compact we do not observe their extended emission.
