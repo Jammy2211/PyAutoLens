@@ -1,10 +1,13 @@
 .. _overview_4_simulate:
 
 Simulating Lenses
------------------
+=================
 
 **PyAutoLens** provides tool for simulating strong lens data-sets, which can be used to test lens modeling pipelines
 and train neural networks to recognise and analyse images of strong lenses.
+
+Simulator
+---------
 
 Simulating strong lens images uses a *SimulatorImaging* object, which models the process that an instrument like the
 Hubble Space Telescope goes through observe a strong lens. This includes accounting for the exposure time to
@@ -45,6 +48,9 @@ Here is what our dataset looks like:
   :width: 400
   :alt: Alternative text
 
+Examples
+--------
+
 The ``autolens_workspace`` includes many example simulators for simulating strong lenses with a range of different
 physical properties and for creating imaging datasets for a variety of telescopes (e.g. Hubble, Euclid).
 
@@ -65,3 +71,10 @@ Below, we show what a strong lens looks like for different instruments.
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/simulating/ao_image.png
   :width: 400
   :alt: Alternative text
+
+Wrap U
+------
+
+The ``autolens_workspace`` includes many example simulators for simulating strong lenses with a range of different
+physical properties, to make imaging datasets for a variety of telescopes (e.g. Hubble, Euclid) as well as
+interferometer datasets.

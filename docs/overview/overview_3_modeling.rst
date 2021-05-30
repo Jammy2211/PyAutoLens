@@ -1,7 +1,7 @@
 .. _overview_3_modeling:
 
 Lens Modeling
--------------
+=============
 
 We can use a ``Tracer`` to fit data of a strong lens with its model-image and quantify its goodness-of-fit via a
 *log_likelihood*. Of course, when observe an image of a strong lens, we have no idea what combination of
@@ -13,6 +13,9 @@ We can use a ``Tracer`` to fit data of a strong lens with its model-image and qu
 
 The task of finding these ``LightProfiles``'s and ``MassProfiles``'s is called *lens modeling*.
 
+PyAutoFit
+---------
+
 Lens modeling with **PyAutoLens** uses the probabilistic programming language
 `PyAutoFit <https://github.com/rhayes777/PyAutoFit>`_, an open-source Python framework that allows complex model
 fitting techniques to be straightforwardly integrated into scientific modeling software. Check it out if you
@@ -23,6 +26,9 @@ We import it separately to **PyAutoLens**
 .. code-block:: bash
 
     import autofit as af
+
+Model Composition
+-----------------
 
 We compose the lens model that we fit to the data using a ``Model`` object, which behaves analogously to the ``Galaxy``,
 ``LightProfile`` and ``MassProfile`` used previously, however their parameters are not specified and are instead
@@ -57,6 +63,9 @@ In this example, we fit our strong lens data with two galaxies:
 
 The redshifts of the lens (z=0.5) and source(z=1.0) are fixed.
 
+Non-linear Search
+-----------------
+
 We now choose the non-linear search, which is the fitting method used to determine the set of ``LightProfile``
 and ``MassProfile`` parameters that best-fit our data by minimizing the *residuals* and *chi-squared* values and
 maximizing its *log likelihood*.
@@ -68,12 +77,18 @@ very effective at lens modeling.
 
     search = af.DynestyStatic(name="search_example")
 
+Analysis
+--------
+
 We next create an ``AnalysisImaging`` object, which contains the ``log likelihood function`` that the non-linear
 search calls to fit the lens model to the data.
 
 .. code-block:: bash
 
     analysis = al.AnalysisImaging(dataset=imaging)
+
+Model-Fit
+---------
 
 To perform the model-fit we pass the model and analysis to the search's fit method. This will output results (e.g.,
 dynesty samples, model parameters, visualization) to hard-disk.
@@ -92,11 +107,14 @@ iterations are performed.
 
 **Credit: Amy Etherington**
 
+Results
+-------
+
 Once a model-fit is running, **PyAutoLens** outputs the results of the search to hard-disk on-the-fly. This includes
 lens model parameter estimates with errors non-linear samples and the visualization of the best-fit lens model inferred
 by the search so far.
 
-The fit above returns a `Result` object, which includes lots of information on the lens model. Below,
+The fit above returns a ``Result`` object, which includes lots of information on the lens model. Below,
 we print the maximum log likelihood model inferred, but the result object contains full posterior information!
 
 .. code-block:: bash
@@ -141,12 +159,15 @@ low chi-squared values:
 The script ``autolens_workspace/examples/model/result.py`` contains a full description of all information contained
 in a ``Result``.
 
+Model Customization
+-------------------
+
 The ``Model`` can be fully customized, making it simple to parameterize and fit many different lens models
 using any combination of ``LightProfile``'s and ``MassProfile``'s light profiles:
 
 .. code-block:: bash
 
-    lens_galaxy_model = al.Model(
+    lens_galaxy_model = af.Model(
         al.Galaxy,
         redshift=0.5,
         bulge=al.lp.EllDevVaucouleurs,
@@ -189,6 +210,9 @@ setting can be easily customized:
 
     search = af.PySwarmsLocal(name="pso_local", n_particles=50)
     search = af.PySwarmsGlobal(name="pso_global", n_particles=50).
+
+Wrap-Up
+-------
 
 Chapters 2 and 3 **HowToLens** lecture series give a comprehensive description of lens modeling, including a
 description of what a non-linear search is and strategies to fit complex lens model to data in efficient and

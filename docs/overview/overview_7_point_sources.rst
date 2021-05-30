@@ -1,7 +1,7 @@
 .. _overview_7_point_sources:
 
 Point Sources
--------------
+=============
 
 So far, we have shown strongly lensed galaxies whose extended surface brightness is lensed into the awe-inspiring
 giant arcs and Einstein rings we see in high quality telescope imaging. There are many lenses where the background
@@ -18,6 +18,9 @@ multiple images marked using stars:
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/point_sources/image.png
   :width: 400
   :alt: Alternative text
+
+Point Sources
+-------------
 
 For point source modeling, our goal is to find the multiple images of a lens mass model given a (y,x) coordinate in the
 source plane. This is an iterative problem performed in a very different way to ray-tracing used when evaluating a
@@ -39,6 +42,9 @@ To treat a source as a point source, we create it as a galaxy using ``Point`` ob
     source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+
+Position Solving
+----------------
 
 This tracer allows us to compute deflection angles and therefore map image-pixels to the source-plane. We can therefore
 pass it to the ``PositionSolver`` object to solve for the image-pixel coordinates which correspond to the source's
@@ -62,10 +68,13 @@ with the mass-model we used above, so the match is good:
 
 [Missing]
 
-**PyAutoLens** has full support for modeling strong lens datasets as a point-source. This might be used for analysing
+Point Source Dataset
+--------------------
+
+**PyAutoLens** has full support for analysing strong lens datasetsas a point-source. This might be used for analysing
 strongly lensed quasars or supernovae, which are so compact we do not observe their extended emission.
 
-To perform point-source modeling, we first create a ``PointDataset`` containing the image-plane (y,x) positions
+To perform point-source analysing, we first create a ``PointDataset`` containing the image-plane (y,x) positions
 of each multiple image and their noise values (which would be the resolution of the imaging data they are observed).
 
 The positions below correspond to those of an ``EllIsothermal`` mass model.
@@ -81,7 +90,8 @@ The positions below correspond to those of an ``EllIsothermal`` mass model.
     )
 
 In this simple example we model a single point source, which might correspond to one lensed quasar or supernovae.
-However, **PyAutoLens** supports model-fits to datasets with many lensed point-sources, for example in galaxy clusters.
+However, **PyAutoLens** supports model-fits to datasets with many lensed point-sources, which is used for analysing
+group-scale and cluster-scale strong lenses.
 
 Each point source dataset is therefore passed into a ``PointDict`` object before the model-fit is performed. For
 this simple example only one dataset is passed in, but in the galaxy-cluster examples you'll see this object makes it
@@ -90,7 +100,6 @@ straightforward to model datasets with many lensed sources.
 .. code-block:: bash
 
     point_dict = al.PointDict(point_dataset_list=[point_dataset])
-
 
 We can print the ``positions`` of this dictionary and dataset, as well as their noise-map values.
 
@@ -103,11 +112,17 @@ We can print the ``positions`` of this dictionary and dataset, as well as their 
     print("Point Source Multiple Image Noise-map Values:")
     print(point_dict["point_0"].positions_noise_map.in_list)
 
+Name Pairing
+------------
+
 Every point-source dataset in the ``PointDict`` has a name, which in this example was ``point_0``. This ``name``
 pairs the dataset to the ``Point`` in the model below. Because the name of the dataset is ``point_0``, the
 only ``Point`` object that is used to fit it must have the name ``point_0``.
 
 This ensures if a dataset has many point sources (e.g. galaxy clusters) it is clear how the model pairs the data.
+
+Fitting
+-------
 
 Just like we used a ``Tracer`` to fit imaging and interferometer data, we can use it to
 fit point-source data via the ``FitPoint`` object.
@@ -123,6 +138,9 @@ chi-squared, likelihood, etc of every individual fit to part of our point source
     print(fit["point_0"].positions.residual_map)
     print(fit["point_0"].positions.chi_squared_map)
     print(fit["point_0"].positions.log_likelihood)
+
+Lens Modeling
+-------------
 
 It is straight forward to fit a lens model to a point source dataset, using the same API that we saw for imaging and
 interferometer datasets.
@@ -145,12 +163,12 @@ the lens model.
 
     result = search.fit(model=model, analysis=analysis)
 
+Wrap-Up
+-------
+
 The ``point_source`` package of the ``autolens_workspace`` contains numerous example scripts for performing point source
 modeling to datasets where there are only a couple of lenses and lensed sources, which fall under the category of
 'galaxy scale' objects.
 
 This also includes examples of how to add and fit other information that are observed by a point-source source,
 for example the flux of each image.
-
-If you wish to model systems with many lens galaxy and sources, e.g. galaxy clusters, checkout the `galaxy_clusters.py`
-overview script.

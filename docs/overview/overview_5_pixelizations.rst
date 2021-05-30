@@ -1,7 +1,7 @@
 .. _overview_5_pixelizations:
 
 Pixelized Sources
------------------
+=================
 
 **PyAutoLens** can reconstruct the light of a strongly lensed source-galaxy using a pixel-grid, using a process
 called an ``Inversion``.
@@ -12,6 +12,9 @@ appears, with multiple rings and clumps of light:
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/pixelizations/image.png
   :width: 400
   :alt: Alternative text
+
+Rectangular Example
+-------------------
 
 To fit this image with an ``Inversion``, we first mask the ``Imaging`` object:
 
@@ -61,6 +64,9 @@ The source reconstruction can be mapped back to the image-plane, to produce a re
   :width: 400
   :alt: Alternative text
 
+Voronoi Example
+---------------
+
 **PyAutoLens** supports many different pixel-grids. Below, we use a ``VoronoiMagnification`` pixelization, which
 defines the source-pixel centres in the image-plane and ray traces them to the source-plane.
 
@@ -77,6 +83,9 @@ how the source reconstruction accurately fits the image of the strong lens:
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/pixelizations/voronoi_fit.png
   :width: 600
   :alt: Alternative text
+
+Wrap-Up
+-------
 
 This was a brief overview of *Inversions* with **PyAutoLens**. There is a lot more to using *Inversions* then presented
 here, which is covered in chapters 4 and 5 of the **HowToLens**, specifically:

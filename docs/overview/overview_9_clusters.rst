@@ -15,6 +15,9 @@ Here is an image of SDSS1152P3312, the example cluster we will adopt for illustr
   :width: 400
   :alt: Alternative text
 
+Point Source
+------------
+
 Just like for group-scale lenses, we will fit the cluster using a point-source dataset.
 
 .. code-block:: bash
@@ -23,6 +26,9 @@ Just like for group-scale lenses, we will fit the cluster using a point-source d
         file_path=path.join(dataset_path, "point_dict.json")
     )
 
+Source-Plane Chi Squared
+------------------------
+
 To model a cluster, we assume that every source galaxy is a ``PointSrcChi`` model, which means the goodness-of-fit is
 evaluated in the source-plane. This removes the need to iteratively solve the lens equation. However, we still define
 a ``PositionsSolver``, incase we wish to perform image-plane fits.
@@ -30,6 +36,9 @@ a ``PositionsSolver``, incase we wish to perform image-plane fits.
 .. code-block:: bash
 
     positions_solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.025)
+
+Lens Model
+----------
 
 A cluster scale strong lens model is typically composed of the following:
 
@@ -63,6 +72,9 @@ Therefore, we again load the model from a ``.json`` file:
 
     model = af.Collection(galaxies=galaxies)
 
+SExtractor Catalogues
+---------------------
+
 Composing the lens model for cluster scale objects requires care, given there are could be hundreds of lenses and
 sources galaxies. Manually writing the model in a Python script, in the way we do for galaxy-scale lenses, is therefore
 not feasible.
@@ -77,6 +89,8 @@ from catalogue files is given at the following links:
 These files can be easily altered to compose a cluster model suited to your lens
 dataset!
 
+Lens Modeling
+-------------
 
 We are now able to model this dataset as a point source:
 
@@ -88,11 +102,19 @@ We are now able to model this dataset as a point source:
 
     result = search.fit(model=model, analysis=analysis)
 
+Result
+------
+
 The result contains information on the BCG, cluster scale dark matter halo and mass-light scaling relation:
 
-print(result.max_log_likelihood_instance.galaxies.bcg.mass)
-print(result.max_log_likelihood_instance.galaxies.dark.mass)
-print(result.max_log_likelihood_instance.galaxies.scaling_relation)
+.. code-block:: bash
+
+    print(result.max_log_likelihood_instance.galaxies.bcg.mass)
+    print(result.max_log_likelihood_instance.galaxies.dark.mass)
+    print(result.max_log_likelihood_instance.galaxies.scaling_relation)
+
+Extended Source Fitting
+-----------------------
 
 For clsuter-scale lenses fitting the extended surface-brightness is extremely difficult. The models become high
 dimensional and difficult to fit, and it becomes very computationally. Furthermore, the complexity of cluster mass
@@ -106,6 +128,9 @@ process out in a way that 'breaks-up' the model-fitting procedure.
 These tools are in-development, but we are keen to have users with real sciences cases trial them as we develop
 them. If you are interested please contact me! (https://github.com/Jammy2211).
 
-The ``cluster`` package of the ``autolens_workspace`` contains numerous example scripts for performing cluster-sale modeling
-and simulating cluster-scale strong lens datasets.
+Wrap-Up
+-------
+
+The ``cluster`` package of the ``autolens_workspace`` contains numerous example scripts for performing cluster-sale
+modeling and simulating cluster-scale strong lens datasets.
 

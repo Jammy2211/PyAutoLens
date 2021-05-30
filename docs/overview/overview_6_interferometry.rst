@@ -1,11 +1,14 @@
 .. _overview_6_interferometry:
 
 Interferometry
---------------
+==============
 
 Alongside CCD imaging data, **PyAutoLens** supports the modeling of interferometer data from submillimeter and radio
 observatories. The dataset is fitted directly in the uv-plane, circumventing issues that arise when fitting a 'dirty
 image' such as correlated noise.
+
+Real Space Mask
+---------------
 
 To begin, we define a real-space mask. Although interferometer lens modeling is performed in the uv-plane and
 therefore Fourier space, we still need to define the grid of coordinates in real-space from which the lensed source's
@@ -20,6 +23,9 @@ images are computed. It is this image that is mapped to Fourier space to compare
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/image.png
   :width: 400
   :alt: Alternative text
+
+Interferometer Data
+-------------------
 
 We next load an ``Interferometer`` dataset from fits files, which follows the same API that we have seen
 for an ``Imaging`` object.
@@ -49,6 +55,9 @@ like (these are representative of an ALMA dataset with ~ 1 million visibilities)
   :width: 400
   :alt: Alternative text
 
+UV-Plane FFT
+------------
+
 To perform uv-plane modeling, **PyAutoLens** Fourier transforms the lensed image (computed via a ``Tracer``) from
 real-space to the uv-plane. This operation uses a ``Transformer`` object, of which there are multiple available
 in **PyAutoLens**. This includes a direct Fourier transform which performs the exact Fourier transform without approximation.
@@ -77,6 +86,9 @@ but we will apply the settings above:
     interferometer = interferometer.apply_settings(
         settings=al.SettingsInterferometer(transformer_class=transformer_class)
     )
+
+Fitting
+-------
 
 The interferometer can now be passed to a ``FitInterferometer`` object to fit it to a data-set:
 
@@ -117,6 +129,9 @@ uv-distance:
   :width: 400
   :alt: Alternative text
 
+Pixelized Sources
+-----------------
+
 Interferometer data can also be modeled using pixelized source's, which again perform the source reconstruction by
 directly fitting the visibilities in the uv-plane. The source reconstruction is visualized in real space:
 
@@ -131,6 +146,9 @@ The combination of **PyNUFFT** and **PyLops** makes the analysis of ~10 million 
 ALMA and JVLA feasible in **PyAutoLens**. However, the largest datasets may still require a degree of augmentation,
 averaging or tapering. Rest assured, we are actively working on new solution that will make the analysis of
 **hundreds of millions** of visibilities feasible.
+
+Lens Modeling
+--------------
 
 It is straight forward to fit a lens model to an interferometer dataset, using the same API that we saw for imaging
 data in the modeling overview example.
@@ -152,6 +170,9 @@ to the uv-plane via the Fourier transform discussed above:
 
     result = search.fit(model=model, analysis=analysis)
 
+Simulations
+-----------
+
 Simulated interferometer datasets can be generated using the ``SimulatorInterferometer`` object, which includes adding
 Gaussian noise to the visibilities:
 
@@ -167,6 +188,9 @@ Gaussian noise to the visibilities:
     )
 
     interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=real_space_grid)
+
+Wrap-Up
+-------
 
 The ``interferometer`` package of the ``autolens_workspace`` contains numerous example scripts for performing
 interferometer modeling and simulating strong lens interferometer datasets.
