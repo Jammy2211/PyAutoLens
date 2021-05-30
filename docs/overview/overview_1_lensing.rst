@@ -1,7 +1,7 @@
 .. _overview_1_lensing:
 
 Lensing
--------
+=======
 
 When two galaxies are aligned perfectly down the line-of-sight to Earth, the background galaxy's light is bent by the
 intervening mass of the foreground galaxy. Its light can be fully bent around the foreground galaxy, traversing multiple
@@ -24,7 +24,8 @@ To use **PyAutoLens** we first import autolens and the plot module.
    import autolens as al
    import autolens.plot as aplt
 
-**Grids**
+Grids
+-----
 
 To describe the deflection of light due to the lens galaxy's mass, **PyAutoLens** uses ``Grid2D`` data structures, which
 are two-dimensional Cartesian grids of (y,x) coordinates.
@@ -46,7 +47,8 @@ This is what our ``Grid2D`` looks like:
   :width: 400
   :alt: Alternative text
 
-**Light Profiles:**
+Light Profiles
+--------------
 
 We will ray-trace this ``Grid2D``'s (y,x) coordinates to calculate how a lens galaxy's mass deflects the source
 galaxy's light.
@@ -86,7 +88,8 @@ The light profile's image appears as shown below:
   :width: 400
   :alt: Alternative text
 
-**Mass Profiles:**
+Mass Profiles
+-------------
 
 **PyAutoLens** uses ``MassProfile`` objects to represent a galaxy's mass distribution and perform ray-tracing
 calculations.
@@ -135,7 +138,8 @@ For anyone not familiar with gravitational lensing, don't worry about what the c
 The key thing to note is that the deflection angles describe how a given mass distribution deflects light-rays as they
 travel towards the Earth through the Universe.
 
-**Galaxies:**
+Galaxies
+--------
 
 A ``Galaxy`` object is a collection of ``LightProfile`` and ``MassProfile`` objects at a given redshift. The code below
 creates two galaxies representing the lens and source galaxies shown in the strong lensing diagram above.
@@ -160,7 +164,8 @@ model to create the appropriate strong lens system.
         galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
     )
 
-**Ray Tracing:**
+Ray Tracing
+-----------
 
 We can now create the image of a strong lens system!
 
@@ -181,7 +186,8 @@ This makes the image below, where the source's light appears as a multiply image
   :width: 400
   :alt: Alternative text
 
-**Extending Objects:**
+Extending Objects
+-----------------
 
 The **PyAutoLens** API has been designed such that all of the objects introduced above are extensible. ``Galaxy``
 objects can take many ``Profile``'s and ``Tracer`` objects many ``Galaxy``'s.
