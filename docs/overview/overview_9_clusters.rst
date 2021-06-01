@@ -1,7 +1,7 @@
 .. _overview_9_clusters:
 
 Cluster-Scale Lenses
---------------------
+====================
 
 Galaxy clusters are the beasts of strong lensing. They contain tens or hundreds of lens galaxies and lensed sources,
 with lensed sources at many different redshifts requiring full multi-plane ray-tracing calculations. They contain one
