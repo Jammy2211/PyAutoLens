@@ -55,8 +55,8 @@ This .json file contains all the information on this particular lens's model, in
 centre to the centre of light of each lens galaxy. The script used to make the model can be viewed at
 the `following link <https://github.com/Jammy2211/autolens_workspace/blob/master/scripts/group/model_maker/lens_x3__source_x1.py>`_.
 
-Lens Modeing
-------------
+Lens Modeling
+-------------
 
 We are now able to model this dataset as a point source, using the exact same tools we used in the point source
 overview.
