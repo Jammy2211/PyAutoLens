@@ -6,7 +6,7 @@ API Reference
 Data Structures
 ---------------
 
-.. currentmodule:: autoarray
+.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -31,7 +31,7 @@ Data Structures
 Datasets
 --------
 
-.. currentmodule:: autoarray
+.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -47,8 +47,6 @@ Datasets
 Fitting
 -------
 
-.. currentmodule:: autolens
-
 .. autosummary::
    :toctree: generated/
 
@@ -58,8 +56,6 @@ Fitting
 ---------------------
 Point Source Modeling
 ---------------------
-
-.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -160,7 +156,7 @@ Mass Profiles
 Lensing
 -------
 
-.. currentmodule:: autogalaxy.galaxy.galaxy
+.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
