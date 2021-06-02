@@ -31,7 +31,7 @@ Data Structures
 Datasets
 --------
 
-.. currentmodule:: autolens
+.. currentmodule:: autoarray
 
 .. autosummary::
    :toctree: generated/
@@ -47,6 +47,8 @@ Datasets
 Fitting
 -------
 
+.. currentmodule:: autolens
+
 .. autosummary::
    :toctree: generated/
 
@@ -56,6 +58,8 @@ Fitting
 ---------------------
 Point Source Modeling
 ---------------------
+
+.. currentmodule:: autolens
 
 .. autosummary::
    :toctree: generated/
@@ -156,7 +160,7 @@ Mass Profiles
 Lensing
 -------
 
-.. currentmodule:: autolens
+.. currentmodule:: autogalaxy.galaxy.galaxy
 
 .. autosummary::
    :toctree: generated/
