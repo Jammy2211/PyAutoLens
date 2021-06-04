@@ -1,3 +1,4 @@
+import os
 from os import path
 
 import pytest
@@ -32,6 +33,18 @@ def make_plot_patch(monkeypatch):
     return plot_patch
 
 
+@pytest.fixture(
+    autouse=True,
+    scope="session"
+)
+def remove_logs():
+    yield
+    for d, _, files in os.walk(directory):
+        for file in files:
+            if file.endswith(".log"):
+                os.remove(path.join(d, file))
+
+
 ############
 # AutoLens #
 ############
@@ -41,7 +54,6 @@ def make_plot_patch(monkeypatch):
 
 @pytest.fixture(autouse=True)
 def set_config_path(request):
-
     conf.instance.push(
         new_path=path.join(directory, "config"),
         output_path=path.join(directory, "output"),
