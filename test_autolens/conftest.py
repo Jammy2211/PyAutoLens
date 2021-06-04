@@ -33,10 +33,7 @@ def make_plot_patch(monkeypatch):
     return plot_patch
 
 
-@pytest.fixture(
-    autouse=True,
-    scope="session"
-)
+@pytest.fixture(autouse=True, scope="session")
 def remove_logs():
     yield
     for d, _, files in os.walk(directory):

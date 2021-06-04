@@ -124,7 +124,7 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
             in the python interpreter window.
         """
 
-        super(FitImagingPlotter, self).figures_2d(
+        super().figures_2d(
             image=image,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
