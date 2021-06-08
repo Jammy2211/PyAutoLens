@@ -62,7 +62,7 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
                 x_errors=self.point_dataset.positions_noise_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
-                    title="Point Dataset (Positions)",
+                    title=f"{self.point_dataset.name} (Positions)",
                     filename="point_dataset_positions",
                 ),
                 buffer=0.1,
@@ -70,14 +70,33 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
 
         if fluxes:
 
-            self.mat_plot_2d.plot_grid(
-                grid=self.point_dataset.positions,
-                y_errors=self.point_dataset.positions_noise_map,
-                x_errors=self.point_dataset.positions_noise_map,
-                color_array=self.point_dataset.fluxes,
-                visuals_2d=self.visuals_with_include_2d,
-                auto_labels=mp.AutoLabels(
-                    title="Point Dataset (Fluxes)", filename="point_dataset_fluxes"
-                ),
-                buffer=0.1,
-            )
+            if self.point_dataset.fluxes is not None:
+
+                self.mat_plot_2d.plot_grid(
+                    grid=self.point_dataset.positions,
+                    y_errors=self.point_dataset.positions_noise_map,
+                    x_errors=self.point_dataset.positions_noise_map,
+                    color_array=self.point_dataset.fluxes,
+                    visuals_2d=self.visuals_with_include_2d,
+                    auto_labels=mp.AutoLabels(
+                        title=f" {self.point_dataset.name} (Fluxes)",
+                        filename="point_dataset_fluxes",
+                    ),
+                    buffer=0.1,
+                )
+
+    def subplot(
+        self,
+        positions: bool = False,
+        fluxes: bool = False,
+        auto_filename="subplot_point_dataset",
+    ):
+
+        self._subplot_custom_plot(
+            positions=positions,
+            fluxes=fluxes,
+            auto_labels=mp.AutoLabels(filename=auto_filename),
+        )
+
+    def subplot_point_dataset(self):
+        self.subplot(positions=True, fluxes=True)
