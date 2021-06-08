@@ -21,10 +21,10 @@ from autogalaxy.galaxy import galaxy as g
 from autolens import exc
 from autolens.analysis import result as res
 from autolens.analysis import visualizer as vis
-from autolens.dataset import point_source as ps
+from autolens.dataset import point_dataset as pd
 from autolens.fit import fit_imaging
 from autolens.fit import fit_interferometer
-from autolens.fit import fit_point_source
+from autolens.fit import fit_point
 from autolens.lens import positions_solver as psolve
 from autolens.lens import ray_tracing
 from autolens.lens import settings
@@ -621,7 +621,7 @@ class AnalysisInterferometer(AnalysisDataset):
 class AnalysisPoint(af.Analysis, AnalysisLensing):
     def __init__(
         self,
-        point_dict: ps.PointDict,
+        point_dict: pd.PointDict,
         solver: psolve.PositionsSolver,
         imaging=None,
         cosmology=cosmo.Planck15,
@@ -637,16 +637,16 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
 
         Parameters
         ----------
-        point_dict : ps.PointDict
+        point_dict
             A dictionary containing the full point source dictionary that is used for model-fitting.
-        solver : psolve.PositionsSolver
+        solver
             The object which is used to determine the image-plane of source-plane positions of a model (via a `Tracer`).
-        imaging : Imaging
+        imaging
             The imaging of the point-source dataset, which is not used for model-fitting but can be used for
             visualization.
-        cosmology : astropy.cosmology
+        cosmology
             The cosmology of the ray-tracing calculation.
-        settings_lens : settings.SettingsLens()
+        settings_lens
             Settings which control how the model-fit is performed.
         """
 
@@ -678,7 +678,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
 
         tracer = self.tracer_for_instance(instance=instance)
 
-        fit = fit_point_source.FitPointDict(
+        fit = fit_point.FitPointDict(
             point_dict=self.point_dict, tracer=tracer, positions_solver=self.solver
         )
 

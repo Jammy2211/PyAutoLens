@@ -10,7 +10,7 @@ from autoarray.structures import visibilities
 from autogalaxy.profiles import light_profiles as lp
 from autogalaxy.galaxy import galaxy as g
 from autogalaxy.analysis import result as res
-from autolens.fit import fit_point_source
+from autolens.fit import fit_point
 from autolens.lens import ray_tracing, positions_solver as pos
 
 
@@ -103,7 +103,7 @@ class Result(res.Result):
 
         positions = self.image_plane_multiple_image_positions
 
-        positions_fits = fit_point_source.FitPositionsSourceMaxSeparation(
+        positions_fits = fit_point.FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=None, tracer=self.max_log_likelihood_tracer
         )
 

@@ -1,13 +1,13 @@
 from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.plot import abstract_plotters
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
-from autolens.dataset import point_source
+from autolens.dataset import point_dataset
 
 
 class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
-        point_dataset: point_source.PointDataset,
+        point_dataset: point_dataset.PointDataset,
         mat_plot_1d: lensing_mat_plot.MatPlot1D = lensing_mat_plot.MatPlot1D(),
         visuals_1d: lensing_visuals.Visuals1D = lensing_visuals.Visuals1D(),
         include_1d: lensing_include.Include1D = lensing_include.Include1D(),

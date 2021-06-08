@@ -3,7 +3,7 @@ from autoarray.structures.arrays.values import ValuesIrregular
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.fit.fit import FitData
 from autogalaxy.profiles import point_sources as ps
-from autolens.dataset.point_source import PointDict, PointDataset
+from autolens.dataset.point_dataset import PointDict, PointDataset
 from autolens.lens.positions_solver import PositionsSolver
 from autolens.lens.ray_tracing import Tracer
 

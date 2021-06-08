@@ -47,11 +47,11 @@ from .analysis import aggregator as agg
 from . import plot
 from .dataset.imaging import SimulatorImaging
 from .dataset.interferometer import SimulatorInterferometer
-from .dataset.point_source import PointDataset
-from .dataset.point_source import PointDict
+from .dataset.point_dataset import PointDataset
+from .dataset.point_dataset import PointDict
 from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer
-from .fit.fit_point_source import (
+from .fit.fit_point import (
     FitPositionsSourceMaxSeparation,
     FitPositionsImage,
     FitPositionsSource,
