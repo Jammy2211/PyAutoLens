@@ -258,16 +258,22 @@ class ResultDataset(Result):
             self.search.paths.output_path, "stochastic_log_evidences.json"
         )
 
+
+        self.search.paths.restore()
+
         try:
             with open(stochastic_log_evidences_json_file, "r") as f:
-                return np.asarray(json.load(f))
+                stochastic_log_evidences = np.asarray(json.load(f))
         except FileNotFoundError:
             self.analysis.save_stochastic_outputs(
                 paths=self.search.paths, samples=self.samples
             )
             with open(stochastic_log_evidences_json_file, "r") as f:
-                return np.asarray(json.load(f))
+                stochastic_log_evidences = np.asarray(json.load(f))
 
+        self.search.paths.zip_remove()
+
+        return stochastic_log_evidences
 
 class ResultImaging(ResultDataset):
     @property
