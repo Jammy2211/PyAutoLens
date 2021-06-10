@@ -51,7 +51,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
         self,
         dataset,
         positions: grid_2d_irregular.Grid2DIrregular = None,
-        hyper_result=None,
+        hyper_dataset_result=None,
         cosmology=cosmo.Planck15,
         settings_pixelization=pix.SettingsPixelization(),
         settings_inversion=inv.SettingsInversion(),
@@ -76,7 +76,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
 
         super().__init__(
             dataset=dataset,
-            hyper_result=hyper_result,
+            hyper_dataset_result=hyper_dataset_result,
             cosmology=cosmology,
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
@@ -164,7 +164,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
         # return self.__class__(
         #     dataset=self.dataset,
         #     positions = None,
-        #     hyper_result=self.hyper_result,
+        #     hyper_dataset_result=self.hyper_result,
         #     cosmology=self.cosmology,
         #     settings_pixelization=self.settings_pixelization,
         #     settings_inversion=self.settings_inversion,
@@ -371,7 +371,7 @@ class AnalysisInterferometer(AnalysisDataset):
         self,
         dataset,
         positions: grid_2d_irregular.Grid2DIrregular = None,
-        hyper_result=None,
+        hyper_dataset_result=None,
         cosmology=cosmo.Planck15,
         settings_pixelization=pix.SettingsPixelization(),
         settings_inversion=inv.SettingsInversion(),
@@ -382,7 +382,7 @@ class AnalysisInterferometer(AnalysisDataset):
         super().__init__(
             dataset=dataset,
             positions=positions,
-            hyper_result=hyper_result,
+            hyper_dataset_result=hyper_dataset_result,
             cosmology=cosmology,
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
@@ -390,9 +390,9 @@ class AnalysisInterferometer(AnalysisDataset):
             preloads=preloads,
         )
 
-        if self.hyper_result is not None:
+        if self.hyper_dataset_result is not None:
 
-            self.set_hyper_dataset(result=self.hyper_result)
+            self.set_hyper_dataset(result=self.hyper_dataset_result)
 
         else:
 
