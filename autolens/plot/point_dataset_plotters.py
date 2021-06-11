@@ -27,6 +27,32 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
         self.point_dataset = point_dataset
 
     @property
+    def visuals_with_include_1d(self) -> lensing_visuals.Visuals1D:
+        """
+        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
+
+        Only attributes with `True` entries in the `Include` object are extracted for plotting.
+
+        From an `AbstractStructure` the following attributes can be extracted for plotting:
+
+        - origin: the (y,x) origin of the structure's coordinate system.
+        - mask: the mask of the structure.
+        - border: the border of the structure's mask.
+
+        Parameters
+        ----------
+        structure : abstract_structure.AbstractStructure
+            The structure whose attributes are extracted for plotting.
+
+        Returns
+        -------
+        vis.Visuals2D
+            The collection of attributes that can be plotted by a `Plotter2D` object.
+        """
+
+        return self.visuals_1d
+
+    @property
     def visuals_with_include_2d(self) -> lensing_visuals.Visuals2D:
         """
         Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
@@ -72,17 +98,16 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
 
             if self.point_dataset.fluxes is not None:
 
-                self.mat_plot_2d.plot_grid(
-                    grid=self.point_dataset.positions,
-                    y_errors=self.point_dataset.positions_noise_map,
-                    x_errors=self.point_dataset.positions_noise_map,
-                    color_array=self.point_dataset.fluxes,
-                    visuals_2d=self.visuals_with_include_2d,
+                self.mat_plot_1d.plot_yx(
+                    y=self.point_dataset.fluxes,
+                    y_errors=self.point_dataset.fluxes_noise_map,
+                    visuals_1d=self.visuals_with_include_1d,
                     auto_labels=mp.AutoLabels(
                         title=f" {self.point_dataset.name} (Fluxes)",
                         filename="point_dataset_fluxes",
+                        xlabel="Point Number"
                     ),
-                    buffer=0.1,
+                    plot_axis_type_override="errorbar"
                 )
 
     def subplot(
@@ -91,6 +116,8 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
         fluxes: bool = False,
         auto_filename="subplot_point_dataset",
     ):
+
+        self.mat_plot_1d.subplot_index = self.mat_plot_2d.subplot_index
 
         self._subplot_custom_plot(
             positions=positions,
