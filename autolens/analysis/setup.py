@@ -111,7 +111,7 @@ class SetupHyper(setup.SetupHyper):
         return self.hyper_galaxy_from_galaxy_model_and_instance(
             galaxy_model=result.model.galaxies.lens,
             galaxy_instance=result.instance.galaxies.lens,
-            noise_factor_is_model=noise_factor_is_model
+            noise_factor_is_model=noise_factor_is_model,
         )
 
     def hyper_galaxy_source_from_result(

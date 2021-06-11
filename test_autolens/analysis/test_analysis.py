@@ -200,7 +200,9 @@ class TestAnalysisImaging:
             hyper_model_image=hyper_model_image,
         )
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, hyper_dataset_result=result)
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7, hyper_dataset_result=result
+        )
 
         hyper_galaxy = al.HyperGalaxy(
             contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
@@ -246,7 +248,9 @@ class TestAnalysisImaging:
             ),
         )
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, hyper_dataset_result=result)
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7, hyper_dataset_result=result
+        )
 
         assert (
             analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].native
@@ -293,7 +297,9 @@ class TestAnalysisImaging:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, hyper_dataset_result=result)
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7, hyper_dataset_result=result
+        )
 
         stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
             instance=instance
@@ -310,7 +316,9 @@ class TestAnalysisImaging:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, hyper_dataset_result=result)
+        analysis = al.AnalysisImaging(
+            dataset=masked_imaging_7x7, hyper_dataset_result=result
+        )
 
         stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
             instance=instance

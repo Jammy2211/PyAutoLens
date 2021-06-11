@@ -24,6 +24,7 @@ def test__point_dataset_quantities_are_output(
     point_dataset_plotter = aplt.PointDatasetPlotter(
         point_dataset=point_dataset,
         include_2d=include_2d_all,
+        mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
@@ -60,6 +61,7 @@ def test__subplot_point_dataset(point_dataset, include_2d_all, plot_path, plot_p
     point_dataset_plotter = aplt.PointDatasetPlotter(
         point_dataset=point_dataset,
         include_2d=include_2d_all,
+        mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 

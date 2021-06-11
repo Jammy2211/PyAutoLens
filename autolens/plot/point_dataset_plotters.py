@@ -96,6 +96,8 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
 
         if fluxes:
 
+            self.mat_plot_1d.subplot_index = self.mat_plot_2d.subplot_index
+
             if self.point_dataset.fluxes is not None:
 
                 self.mat_plot_1d.plot_yx(
@@ -105,9 +107,9 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
                     auto_labels=mp.AutoLabels(
                         title=f" {self.point_dataset.name} (Fluxes)",
                         filename="point_dataset_fluxes",
-                        xlabel="Point Number"
+                        xlabel="Point Number",
                     ),
-                    plot_axis_type_override="errorbar"
+                    plot_axis_type_override="errorbar",
                 )
 
     def subplot(
@@ -116,8 +118,6 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
         fluxes: bool = False,
         auto_filename="subplot_point_dataset",
     ):
-
-        self.mat_plot_1d.subplot_index = self.mat_plot_2d.subplot_index
 
         self._subplot_custom_plot(
             positions=positions,
