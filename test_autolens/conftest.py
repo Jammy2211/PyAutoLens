@@ -291,6 +291,16 @@ def make_fit_interferometer_x2_plane_inversion_7x7():
     return fixtures.make_fit_interferometer_x2_plane_inversion_7x7()
 
 
+@pytest.fixture(name="fit_point_dataset_x2_plane")
+def make_fit_point_dataset_x2_plane():
+    return fixtures.make_fit_point_dataset_x2_plane()
+
+
+@pytest.fixture(name="fit_point_dict_x2_plane")
+def make_fit_point_dict_x2_plane():
+    return fixtures.make_fit_point_dict_x2_plane()
+
+
 ### Analysis ###
 
 

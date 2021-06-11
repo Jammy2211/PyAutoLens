@@ -90,6 +90,20 @@ class PointDictPlotter(abstract_plotters.AbstractPlotter):
             visuals_2d=self.visuals_2d,
         )
 
+    def subplot(self):
+
+        self.open_subplot_figure(number_subplots=len(self.point_dict))
+
+        for name in self.point_dict.keys():
+
+            point_dataset_plotter = self.point_dataset_plotter_from(name=name)
+
+            point_dataset_plotter.figures_2d(positions=True, fluxes=True)
+
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_point_dict")
+
+        self.close_subplot_figure()
+
     def subplot_positions(self):
 
         self.open_subplot_figure(number_subplots=len(self.point_dict))
@@ -102,6 +116,22 @@ class PointDictPlotter(abstract_plotters.AbstractPlotter):
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_point_dict_positions"
+        )
+
+        self.close_subplot_figure()
+
+    def subplot_fluxes(self):
+
+        self.open_subplot_figure(number_subplots=len(self.point_dict))
+
+        for name in self.point_dict.keys():
+
+            point_dataset_plotter = self.point_dataset_plotter_from(name=name)
+
+            point_dataset_plotter.figures_2d(fluxes=True)
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="subplot_point_dict_fluxes"
         )
 
         self.close_subplot_figure()
@@ -191,15 +221,20 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
                 x_errors=self.point_dataset.positions_noise_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
-                    title=f"{self.point_dataset.name} (Positions)",
+                    title=f"{self.point_dataset.name} Positions",
                     filename="point_dataset_positions",
                 ),
                 buffer=0.1,
             )
 
-        if fluxes:
+        # nasty hack to ensure subplot index between 2d and 1d plots are syncs. Need a refactor that mvoes subplot
+        # functionality out of mat_plot and into plotter.
 
-            self.mat_plot_1d.subplot_index = self.mat_plot_2d.subplot_index
+        self.mat_plot_1d.subplot_index = max(
+            self.mat_plot_1d.subplot_index, self.mat_plot_2d.subplot_index
+        )
+
+        if fluxes:
 
             if self.point_dataset.fluxes is not None:
 
@@ -208,7 +243,7 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
                     y_errors=self.point_dataset.fluxes_noise_map,
                     visuals_1d=self.visuals_with_include_1d,
                     auto_labels=mp.AutoLabels(
-                        title=f" {self.point_dataset.name} (Fluxes)",
+                        title=f" {self.point_dataset.name} Fluxes",
                         filename="point_dataset_fluxes",
                         xlabel="Point Number",
                     ),
