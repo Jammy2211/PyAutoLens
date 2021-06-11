@@ -4,6 +4,109 @@ from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_
 from autolens.dataset import point_dataset
 
 
+class PointDictPlotter(abstract_plotters.AbstractPlotter):
+    def __init__(
+        self,
+        point_dict: point_dataset.PointDict,
+        mat_plot_1d: lensing_mat_plot.MatPlot1D = lensing_mat_plot.MatPlot1D(),
+        visuals_1d: lensing_visuals.Visuals1D = lensing_visuals.Visuals1D(),
+        include_1d: lensing_include.Include1D = lensing_include.Include1D(),
+        mat_plot_2d: lensing_mat_plot.MatPlot2D = lensing_mat_plot.MatPlot2D(),
+        visuals_2d: lensing_visuals.Visuals2D = lensing_visuals.Visuals2D(),
+        include_2d: lensing_include.Include2D = lensing_include.Include2D(),
+    ):
+        super().__init__(
+            mat_plot_1d=mat_plot_1d,
+            visuals_1d=visuals_1d,
+            include_1d=include_1d,
+            mat_plot_2d=mat_plot_2d,
+            include_2d=include_2d,
+            visuals_2d=visuals_2d,
+        )
+
+        self.point_dict = point_dict
+
+    @property
+    def visuals_with_include_1d(self) -> lensing_visuals.Visuals1D:
+        """
+        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
+
+        Only attributes with `True` entries in the `Include` object are extracted for plotting.
+
+        From an `AbstractStructure` the following attributes can be extracted for plotting:
+
+        - origin: the (y,x) origin of the structure's coordinate system.
+        - mask: the mask of the structure.
+        - border: the border of the structure's mask.
+
+        Parameters
+        ----------
+        structure : abstract_structure.AbstractStructure
+            The structure whose attributes are extracted for plotting.
+
+        Returns
+        -------
+        vis.Visuals2D
+            The collection of attributes that can be plotted by a `Plotter2D` object.
+        """
+
+        return self.visuals_1d
+
+    @property
+    def visuals_with_include_2d(self) -> lensing_visuals.Visuals2D:
+        """
+        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
+
+        Only attributes with `True` entries in the `Include` object are extracted for plotting.
+
+        From an `AbstractStructure` the following attributes can be extracted for plotting:
+
+        - origin: the (y,x) origin of the structure's coordinate system.
+        - mask: the mask of the structure.
+        - border: the border of the structure's mask.
+
+        Parameters
+        ----------
+        structure : abstract_structure.AbstractStructure
+            The structure whose attributes are extracted for plotting.
+
+        Returns
+        -------
+        vis.Visuals2D
+            The collection of attributes that can be plotted by a `Plotter2D` object.
+        """
+
+        return self.visuals_2d
+
+    def point_dataset_plotter_from(self, name):
+
+        return PointDatasetPlotter(
+            point_dataset=self.point_dict[name],
+            mat_plot_1d=self.mat_plot_1d,
+            include_1d=self.include_1d,
+            visuals_1d=self.visuals_1d,
+            mat_plot_2d=self.mat_plot_2d,
+            include_2d=self.include_2d,
+            visuals_2d=self.visuals_2d,
+        )
+
+    def subplot_positions(self):
+
+        self.open_subplot_figure(number_subplots=len(self.point_dict))
+
+        for name in self.point_dict.keys():
+
+            point_dataset_plotter = self.point_dataset_plotter_from(name=name)
+
+            point_dataset_plotter.figures_2d(positions=True)
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="subplot_point_dict_positions"
+        )
+
+        self.close_subplot_figure()
+
+
 class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
