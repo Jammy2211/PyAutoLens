@@ -83,11 +83,15 @@ class FitPointDatasetPlotter(abstract_plotters.AbstractPlotter):
 
         if positions:
 
+            visuals_2d = self.visuals_with_include_2d
+
+            visuals_2d += visuals_2d.__class__(positions=self.fit.positions.model_positions)
+
             self.mat_plot_2d.plot_grid(
                 grid=self.fit.point_dataset.positions,
                 y_errors=self.fit.point_dataset.positions_noise_map,
                 x_errors=self.fit.point_dataset.positions_noise_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=visuals_2d,
                 auto_labels=mp.AutoLabels(
                     title=f"{self.fit.point_dataset.name} Fit Positions",
                     filename="fit_point_dataset_positions",
