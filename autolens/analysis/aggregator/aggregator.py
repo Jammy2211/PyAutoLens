@@ -52,6 +52,8 @@ def tracer_via_database_from(fit: Fit) -> "al.Tracer":
     hyper_model_image = fit.value(name="hyper_model_image")
     hyper_galaxy_image_path_dict = fit.value(name="hyper_galaxy_image_path_dict")
 
+    galaxies_with_hyper = []
+
     if hyper_galaxy_image_path_dict is not None:
 
         for (galaxy_path, galaxy) in fit.instance.path_instance_tuples_for_class(
@@ -60,6 +62,10 @@ def tracer_via_database_from(fit: Fit) -> "al.Tracer":
             if galaxy_path in hyper_galaxy_image_path_dict:
                 galaxy.hyper_model_image = hyper_model_image
                 galaxy.hyper_galaxy_image = hyper_galaxy_image_path_dict[galaxy_path]
+
+            galaxies_with_hyper.append(galaxy)
+
+        return al.Tracer.from_galaxies(galaxies=galaxies_with_hyper)
 
     return al.Tracer.from_galaxies(galaxies=galaxies)
 
