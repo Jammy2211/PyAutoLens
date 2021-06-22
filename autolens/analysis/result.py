@@ -258,7 +258,6 @@ class ResultDataset(Result):
             self.search.paths.output_path, "stochastic_log_evidences.json"
         )
 
-
         self.search.paths.restore()
 
         try:
