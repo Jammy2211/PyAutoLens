@@ -69,7 +69,7 @@ jobs:
         export BRANCH="${{ steps.extract_branch.outputs.branch }}"
         for PACKAGE in ${PACKAGES[@]}; do
           pushd $PACKAGE
-          local existed_in_remote=$(git ls-remote --heads origin ${BRANCH})
+          export existed_in_remote=$(git ls-remote --heads origin ${BRANCH})
 
           if [[ -z ${existed_in_remote} ]]; then
             echo "Branch $BRANCH did not exist in $PACKAGE"
