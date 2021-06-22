@@ -77,6 +77,7 @@ jobs:
             echo "Branch $BRANCH did exist in $PACKAGE"
             git checkout $BRANCH
           fi
+          popd
         done
 #    - name: Run tests
 #      run: |
