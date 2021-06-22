@@ -56,13 +56,35 @@ jobs:
         pip3 install -r PyAutoArray/requirements.txt
         pip3 install -r PyAutoGalaxy/requirements.txt
         pip3 install -r PyAutoLens/requirements.txt
-    - name: Run tests
+    - name: Extract branch name
+      shell: bash
       run: |
-        export ROOT_DIR=`pwd`
-        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoConf
-        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoFit
-        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoArray
-        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoGalaxy
-        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoLens
-        pushd PyAutoLens
-        pytest
+        cd PyAutoLens
+        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+    - name: Change to same branch if exists in others
+      shell: bash
+      run: |
+        export PACKAGES=("PyAutoConf" "PyAutoArray" "PyAutoFit" "PyAutoGalaxy" "PyAutoLens")
+        export BRANCH="${{ steps.extract_branch.outputs.branch }}"
+        for PACKAGE in ${PACKAGES[@]}; do
+          pushd $PACKAGE
+          local existed_in_remote=$(git ls-remote --heads origin ${BRANCH})
+
+          if [[ -z ${existed_in_remote} ]]; then
+            echo "Branch $BRANCH did not exist in $PACKAGE"
+          else
+            echo "Branch $BRANCH did exist in $PACKAGE"
+            git checkout $BRANCH
+          fi
+        done
+#    - name: Run tests
+#      run: |
+#        export ROOT_DIR=`pwd`
+#        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoConf
+#        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoFit
+#        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoArray
+#        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoGalaxy
+#        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoLens
+#        pushd PyAutoLens
+#        pytest
