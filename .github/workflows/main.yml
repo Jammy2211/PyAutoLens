@@ -46,7 +46,7 @@ jobs:
     - name: Change to same branch if exists in deps
       shell: bash
       run: |
-        export PACKAGES=("PyAutoConf" "PyAutoArray" "PyAutoFit" "PyAutoGalaxy" "PyAutoLens")
+        export PACKAGES=("PyAutoConf" "PyAutoArray" "PyAutoFit" "PyAutoGalaxy")
         export BRANCH="${{ steps.extract_branch.outputs.branch }}"
         for PACKAGE in ${PACKAGES[@]}; do
           pushd $PACKAGE
