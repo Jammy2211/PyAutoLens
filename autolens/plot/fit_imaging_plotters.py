@@ -169,22 +169,17 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
 
             if subtracted_image:
 
-                try:
-                    vmin = self.mat_plot_2d.cmap.kwargs["vmin"]
-                    vmin_store = vmin
-                except KeyError:
-                    vmin = 0.0
-                    vmin_store = None
+                if "vmin" in self.mat_plot_2d.cmap.kwargs:
+                    vmin_stored = True
+                else:
+                    self.mat_plot_2d.cmap.kwargs["vmin"] = 0.0
+                    vmin_stored = False
 
-                try:
-                    vmax = self.mat_plot_2d.cmap.kwargs["vmax"]
-                    vmax_store = vmax
-                except KeyError:
-                    vmax = np.max(self.fit.model_images_of_planes[plane_index])
-                    vmax_store = None
-
-                self.mat_plot_2d.cmap.kwargs["vmin"] = vmin
-                self.mat_plot_2d.cmap.kwargs["vmax"] = vmax
+                if "vmax" in self.mat_plot_2d.cmap.kwargs:
+                    vmax_stored = True
+                else:
+                    self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes[plane_index])
+                    vmax_stored = False
 
                 self.mat_plot_2d.plot_array(
                     array=self.fit.subtracted_images_of_planes[plane_index],
@@ -195,8 +190,11 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
                     ),
                 )
 
-                self.mat_plot_2d.cmap.kwargs["vmin"] = vmin_store
-                self.mat_plot_2d.cmap.kwargs["vmax"] = vmax_store
+                if not vmin_stored:
+                    self.mat_plot_2d.cmap.kwargs.pop("vmin")
+
+                if not vmax_stored:
+                    self.mat_plot_2d.cmap.kwargs.pop("vmax")
 
             if model_image:
 

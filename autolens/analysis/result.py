@@ -274,6 +274,7 @@ class ResultDataset(Result):
 
         return stochastic_log_evidences
 
+
 class ResultImaging(ResultDataset):
     @property
     def max_log_likelihood_fit(self):

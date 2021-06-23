@@ -105,9 +105,9 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
                     auto_labels=mp.AutoLabels(
                         title=f" {self.point_dataset.name} (Fluxes)",
                         filename="point_dataset_fluxes",
-                        xlabel="Point Number"
+                        xlabel="Point Number",
                     ),
-                    plot_axis_type_override="errorbar"
+                    plot_axis_type_override="errorbar",
                 )
 
     def subplot(
