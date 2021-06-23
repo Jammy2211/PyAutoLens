@@ -178,7 +178,9 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
                 if "vmax" in self.mat_plot_2d.cmap.kwargs:
                     vmax_stored = True
                 else:
-                    self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes[plane_index])
+                    self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
+                        self.fit.model_images_of_planes[plane_index]
+                    )
                     vmax_stored = False
 
                 self.mat_plot_2d.plot_array(

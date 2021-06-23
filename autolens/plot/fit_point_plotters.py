@@ -85,7 +85,9 @@ class FitPointDatasetPlotter(abstract_plotters.AbstractPlotter):
 
             visuals_2d = self.visuals_with_include_2d
 
-            visuals_2d += visuals_2d.__class__(positions=self.fit.positions.model_positions)
+            visuals_2d += visuals_2d.__class__(
+                positions=self.fit.positions.model_positions
+            )
 
             self.mat_plot_2d.plot_grid(
                 grid=self.fit.point_dataset.positions,

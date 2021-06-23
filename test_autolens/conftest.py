@@ -258,6 +258,11 @@ def make_tracer_x2_plane_inversion_7x7():
     return fixtures.make_tracer_x2_plane_7x7()
 
 
+@pytest.fixture(name="tracer_x2_plane_point")
+def make_tracer_x2_plane_point():
+    return fixtures.make_tracer_x2_plane_point()
+
+
 # Lens Fit #
 
 

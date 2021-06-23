@@ -230,9 +230,14 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
         # nasty hack to ensure subplot index between 2d and 1d plots are syncs. Need a refactor that mvoes subplot
         # functionality out of mat_plot and into plotter.
 
-        self.mat_plot_1d.subplot_index = max(
-            self.mat_plot_1d.subplot_index, self.mat_plot_2d.subplot_index
-        )
+        if (
+            self.mat_plot_1d.subplot_index is not None
+            and self.mat_plot_2d.subplot_index is not None
+        ):
+
+            self.mat_plot_1d.subplot_index = max(
+                self.mat_plot_1d.subplot_index, self.mat_plot_2d.subplot_index
+            )
 
         if fluxes:
 
