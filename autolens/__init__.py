@@ -57,6 +57,7 @@ from .fit.fit_point import (
     FitPositionsSource,
     FitFluxes,
     FitPointDict,
+    FitPointDataset,
 )
 from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer

@@ -75,7 +75,9 @@ from autogalaxy.plot.plane_plotters import PlanePlotter
 from autogalaxy.plot.hyper_plotters import HyperPlotter
 
 from autolens.plot.point_dataset_plotters import PointDatasetPlotter
+from autolens.plot.point_dataset_plotters import PointDictPlotter
 from autolens.plot.fit_imaging_plotters import FitImagingPlotter
 from autolens.plot.fit_interferometer_plotters import FitInterferometerPlotter
+from autolens.plot.fit_point_plotters import FitPointDatasetPlotter
 from autolens.plot.ray_tracing_plotters import TracerPlotter
 from autolens.plot.subhalo_plotters import SubhaloPlotter

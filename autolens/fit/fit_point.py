@@ -61,6 +61,8 @@ class FitPointDataset:
         positions_solver: PositionsSolver,
     ):
 
+        self.point_dataset = point_dataset
+
         point_profile = tracer.extract_profile(profile_name=point_dataset.name)
 
         try:
