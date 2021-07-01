@@ -117,10 +117,16 @@ class FitPointDatasetPlotter(abstract_plotters.AbstractPlotter):
 
             if self.fit.point_dataset.fluxes is not None:
 
+                visuals_1d = self.visuals_with_include_1d
+
+                visuals_1d += visuals_1d.__class__(
+                    model_fluxes=self.fit.flux.model_fluxes
+                )
+
                 self.mat_plot_1d.plot_yx(
                     y=self.fit.point_dataset.fluxes,
                     y_errors=self.fit.point_dataset.fluxes_noise_map,
-                    visuals_1d=self.visuals_with_include_1d,
+                    visuals_1d=visuals_1d,
                     auto_labels=mp.AutoLabels(
                         title=f" {self.fit.point_dataset.name} Fit Fluxes",
                         filename="fit_point_dataset_fluxes",
@@ -133,7 +139,7 @@ class FitPointDatasetPlotter(abstract_plotters.AbstractPlotter):
         self,
         positions: bool = False,
         fluxes: bool = False,
-        auto_filename="subplot_point_dataset",
+        auto_filename="subplot_fit_point",
     ):
 
         self._subplot_custom_plot(
@@ -142,5 +148,5 @@ class FitPointDatasetPlotter(abstract_plotters.AbstractPlotter):
             auto_labels=mp.AutoLabels(filename=auto_filename),
         )
 
-    def subplot_point_dataset(self):
+    def subplot_fit_point(self):
         self.subplot(positions=True, fluxes=True)

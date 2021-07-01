@@ -56,33 +56,17 @@ def test__fit_point_quantities_are_output(
     assert path.join(plot_path, "fit_point_dataset_fluxes.png") not in plot_patch.paths
 
 
-# def test__subplot_fit_point(fit_point_dataset_x2_plane, include_2d_all, plot_path, plot_patch):
-#
-#     fit_point_plotter = aplt.FitPointDatasetPlotter(
-#         fit=fit_point_dataset_x2_plane,
-#         include_2d=include_2d_all,
-#         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
-#         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
-#     )
-#
-#     fit_point_plotter.subplot_fit_point()
-#
-#     assert path.join(plot_path, "subplot_fit_point.png") in plot_patch.paths
+def test__subplot_fit_point(
+    fit_point_dataset_x2_plane, include_2d_all, plot_path, plot_patch
+):
 
-
-def test__subplot_point_dict(point_dict, include_2d_all, plot_path, plot_patch):
-
-    point_dict_plotter = aplt.PointDictPlotter(
-        point_dict=point_dict,
+    fit_point_plotter = aplt.FitPointDatasetPlotter(
+        fit=fit_point_dataset_x2_plane,
         include_2d=include_2d_all,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    point_dict_plotter.subplot_positions()
+    fit_point_plotter.subplot_fit_point()
 
-    assert path.join(plot_path, "subplot_point_dict_positions.png") in plot_patch.paths
-
-    point_dict_plotter.subplot_fluxes()
-
-    assert path.join(plot_path, "subplot_point_dict_fluxes.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_fit_point.png") in plot_patch.paths

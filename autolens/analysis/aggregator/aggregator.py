@@ -75,6 +75,7 @@ def fit_imaging_gen_from(
     settings_imaging: Optional[al.SettingsImaging] = None,
     settings_pixelization: Optional[al.SettingsPixelization] = None,
     settings_inversion: Optional[al.SettingsInversion] = None,
+    use_preloaded_grid: bool = True,
 ):
     """
     Returns a generator of `FitImaging` objects from an input aggregator, which generates a list of the
@@ -93,6 +94,7 @@ def fit_imaging_gen_from(
         settings_imaging=settings_imaging,
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,
+        use_preloaded_grid=use_preloaded_grid,
     )
 
     return aggregator.map(func=func)
@@ -103,13 +105,14 @@ def fit_imaging_via_database_from(
     settings_imaging: al.SettingsImaging = None,
     settings_pixelization: al.SettingsPixelization = None,
     settings_inversion: al.SettingsInversion = None,
+    use_preloaded_grid: bool = True,
 ) -> "al.FitImaging":
     """
     Returns a `FitImaging` object from an aggregator's `SearchOutput` class, which we call an 'agg_obj' to describe
-     that it acts as the aggregator object for one result in the `Aggregator`. This uses the aggregator's generator
-     outputs such that the function can use the `Aggregator`'s map function to to create a `FitImaging` generator.
+    that it acts as the aggregator object for one result in the `Aggregator`. This uses the aggregator's generator
+    outputs such that the function can use the `Aggregator`'s map function to to create a `FitImaging` generator.
 
-     The `FitImaging` is created.
+    The `FitImaging` is created.
 
     Parameters
     ----------
@@ -122,13 +125,25 @@ def fit_imaging_via_database_from(
     settings_pixelization = settings_pixelization or fit.value(
         name="settings_pixelization"
     )
+    print(fit.value(name="settings_pixelization"))
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
+
+    preloads = None
+
+    if use_preloaded_grid:
+
+        sparse_grids_of_planes = fit.value(name="preload_sparse_grids_of_planes")
+
+        if sparse_grids_of_planes is not None:
+
+            preloads = al.Preloads(sparse_grids_of_planes=sparse_grids_of_planes)
 
     return al.FitImaging(
         imaging=imaging,
         tracer=tracer,
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,
+        preloads=preloads,
     )
 
 
@@ -137,6 +152,7 @@ def fit_interferometer_gen_from(
     settings_interferometer: al.SettingsInterferometer = None,
     settings_pixelization: al.SettingsPixelization = None,
     settings_inversion: al.SettingsInversion = None,
+    use_preloaded_grid: bool = True,
 ):
     """
     Returns a `FitInterferometer` object from an aggregator's `SearchOutput` class, which we call an 'agg_obj' to
@@ -157,6 +173,7 @@ def fit_interferometer_gen_from(
         settings_interferometer=settings_interferometer,
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,
+        use_preloaded_grid=use_preloaded_grid,
     )
     return aggregator.map(func=func)
 
@@ -167,6 +184,7 @@ def fit_interferometer_via_database_from(
     settings_interferometer: al.SettingsInterferometer = None,
     settings_pixelization: al.SettingsPixelization = None,
     settings_inversion: al.SettingsInversion = None,
+    use_preloaded_grid: bool = True,
 ) -> "al.FitInterferometer":
     """
     Returns a generator of `FitInterferometer` objects from an input aggregator, which generates a list of the
@@ -193,11 +211,22 @@ def fit_interferometer_via_database_from(
     )
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
+    preloads = None
+
+    if use_preloaded_grid:
+
+        sparse_grids_of_planes = fit.value(name="preload_sparse_grids_of_planes")
+
+        if sparse_grids_of_planes is not None:
+
+            preloads = al.Preloads(sparse_grids_of_planes=sparse_grids_of_planes)
+
     return al.FitInterferometer(
         interferometer=interferometer,
         tracer=tracer,
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,
+        preloads=preloads,
     )
 
 

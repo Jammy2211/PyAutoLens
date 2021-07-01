@@ -1,7 +1,7 @@
-autoconf==2021.6.04.1
-autofit==2021.6.04.1
-autoarray==2021.6.04.1
-autogalaxy==2021.6.04.1
+autoconf==2021.6.23.1
+autofit==2021.6.23.1
+autoarray==2021.6.23.1
+autogalaxy==2021.6.23.1
 astropy>=3.0.0
 numpydoc>=1.0.0
 matplotlib>=3.0.3
