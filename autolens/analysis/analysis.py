@@ -368,7 +368,6 @@ class AnalysisImaging(AnalysisDataset):
             paths.save_object(
                 "preload_sparse_grids_of_planes", self.preloads.sparse_grids_of_planes
             )
-            print(self.preloads.sparse_grids_of_planes)
 
 
 class AnalysisInterferometer(AnalysisDataset):

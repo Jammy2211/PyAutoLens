@@ -143,10 +143,10 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
 
     def figures_2d_of_planes(
         self,
+        plane_index=None,
         subtracted_image=False,
         model_image=False,
         plane_image=False,
-        plane_index=None,
     ):
         """Plot the model data of an analysis, using the *Fitter* class object.
 

@@ -125,10 +125,9 @@ def fit_imaging_via_database_from(
     settings_pixelization = settings_pixelization or fit.value(
         name="settings_pixelization"
     )
-    print(fit.value(name="settings_pixelization"))
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
-    preloads = None
+    preloads = al.Preloads()
 
     if use_preloaded_grid:
 
