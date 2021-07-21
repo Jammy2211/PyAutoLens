@@ -88,7 +88,7 @@ strong lenses. The API allows users to perform ray-tracing by using analytic lig
 lens systems. Accompanying `PyAutoLens` is the [autolens workspace](https://github.com/Jammy2211/autolens_workspace), which 
 includes example scripts, lens datasets and the `HowToLens`
 lectures in Jupyter notebook format which introduce non-experts to strong lensing using `PyAutoLens`. Readers can 
-try `PyAutoLens` right now by going to [the introduction Jupyter notebook on Binder](https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/master) 
+try `PyAutoLens` right now by going to [the introduction Jupyter notebook on Binder](https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release) 
 or checkout the [readthedocs](https://pyautolens.readthedocs.io/en/latest/) for a complete overview of `PyAutoLens`'s features.
 
 # Background

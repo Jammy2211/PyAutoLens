@@ -20,7 +20,7 @@ PyAutoLens: Open-Source Strong Lensing
 
 `Installation Guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ |
 `readthedocs <https://pyautolens.readthedocs.io/en/latest/index.html>`_ |
-`Introduction on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/master?filepath=introduction.ipynb>`_ |
+`Introduction on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_ |
 `HowToLens <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
 
 When two or more galaxies are aligned perfectly down our line-of-sight, the background galaxy appears multiple times.
@@ -34,7 +34,7 @@ Getting Started
 
 The following links are useful for new starters:
 
-- `The introduction Jupyter Notebook on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/master?filepath=introduction.ipynb>`_, where you can try **PyAutoLens** in a web browser (without installation).
+- `The introduction Jupyter Notebook on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_, where you can try **PyAutoLens** in a web browser (without installation).
 
 - `The PyAutoLens readthedocs <https://pyautolens.readthedocs.io/en/latest>`_, which includes `an installation guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ and an overview of **PyAutoLens**'s core features.
 
