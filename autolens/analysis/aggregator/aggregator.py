@@ -164,7 +164,7 @@ class TracerAgg:
 
         self.aggregator = aggregator
 
-    def max_log_likelihood(self):
+    def max_log_likelihood_gen(self):
         """
         Returns a generator of `Tracer` objects from an input aggregator, which generates a list of the maximum log
         likelihood `Tracer` objects for the results loaded in the aggregator.
@@ -180,7 +180,60 @@ class TracerAgg:
         """
         return self.aggregator.map(func=self._max_log_likelihood_from)
 
-    def randomly_drawn_from_pdf(self, total_samples : int):
+    def all_above_weight_gen(self, minimum_weight : float):
+        """
+        Returns a generator of multiple `Tracer` objects from an input aggregator, which for every result generates a list
+        of `Tracer` objects whose parameter values are drawn randomly from the PDF. This enables straight forward error
+        estimation.
+
+        This is performed by mapping the `tracer_randomly_drawn_from_pdf_via_database_from` with the aggregator, which
+        sets up each tracer using only generators ensuring that manipulating the tracers of large sets of results is done in
+        a memory efficient way.
+
+        Parameters
+        ----------
+        aggregator
+            A PyAutoFit aggregator object containing the results of PyAutoLens model-fits.
+        total_samples
+            For each entry in the aggregator, the total number of tracers that are randomly drawn from the PDF.
+        """
+        func = partial(
+            self._all_above_weight_list_from,
+            minimum_weight=minimum_weight
+        )
+
+        return self.aggregator.map(func=func)
+
+    def _all_above_weight_list_from(self, fit: Fit, minimum_weight : float) -> List["al.Tracer"]:
+        """
+        Returns a `Tracer` object from the `Samples` object of the non-linear search. where the model is chosen randomly
+        from the PDF.
+
+        The plane's galaxies have their hyper-images added (if they were used in the fit).
+
+        Parameters
+        ----------
+        fit
+            A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+        total_samples
+            For each entry in the aggregator, the total number of tracers that are randomly drawn from the PDF.
+        """
+
+        samples = fit.value(name="samples")
+
+        all_above_weight_list = []
+
+        for sample in samples.sample_list:
+
+            if sample.weight > minimum_weight:
+
+                instance = sample.instance_for_model(model=samples.model)
+
+                all_above_weight_list.append(_tracer_from(fit=fit, galaxies=instance.galaxies))
+
+        return all_above_weight_list
+
+    def randomly_drawn_from_pdf_gen(self, total_samples : int):
         """
         Returns a generator of multiple `Tracer` objects from an input aggregator, which for every result generates a list
         of `Tracer` objects whose parameter values are drawn randomly from the PDF. This enables straight forward error
@@ -204,19 +257,6 @@ class TracerAgg:
 
         return self.aggregator.map(func=func)
 
-    def _max_log_likelihood_from(self, fit: Fit) -> "al.Tracer":
-        """
-        Returns a `Tracer` object from the database's `Fit` object, corresponding to the maximum log likelihood model.
-
-        The plane's galaxies have their hyper-images added (if they were used in the fit).
-
-        Parameters
-        ----------
-        fit
-            A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
-        """
-        return _tracer_from(fit=fit, galaxies=fit.instance.galaxies)
-
     def _randomly_drawn_from_pdf_list_from(self, fit: Fit, total_samples : int) -> List["al.Tracer"]:
         """
         Returns a `Tracer` object from the `Samples` object of the non-linear search. where the model is chosen randomly
@@ -238,6 +278,21 @@ class TracerAgg:
             _tracer_from(fit=fit, galaxies=samples.instance_drawn_randomly_from_pdf().galaxies)
             for i in range(total_samples)
         ]
+
+    def _max_log_likelihood_from(self, fit: Fit) -> "al.Tracer":
+        """
+        Returns a `Tracer` object from the database's `Fit` object, corresponding to the maximum log likelihood model.
+
+        The plane's galaxies have their hyper-images added (if they were used in the fit).
+
+        Parameters
+        ----------
+        fit
+            A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+        """
+        return _tracer_from(fit=fit, galaxies=fit.instance.galaxies)
+
+
 
 
 class FitImagingAgg:
@@ -266,7 +321,7 @@ class FitImagingAgg:
             A PyAutoFit aggregator object containing the results of PyAutoLens model-fits."""
 
         func = partial(
-            self._fit_imaging_from,
+            _fit_imaging_from,
             settings_imaging=settings_imaging,
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
@@ -304,7 +359,7 @@ class FitInterferometerAgg:
         """
 
         func = partial(
-            self._fit_interferometer_from,
+            _fit_interferometer_from,
             settings_interferometer=settings_interferometer,
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,

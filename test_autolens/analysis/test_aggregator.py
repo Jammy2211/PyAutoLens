@@ -90,7 +90,44 @@ def clean(database_file, result_path):
 #
 #     clean(database_file=database_file, result_path=result_path)
 
-def test__tracer_pdf_gen_from(masked_imaging_7x7, samples, model):
+# def test__tracer_randomly_drawn_from_pdf_gen(masked_imaging_7x7, samples, model):
+#
+#     path_prefix = "aggregator_tracer_gen"
+#
+#     database_file = path.join(conf.instance.output_path, "tracer.sqlite")
+#     result_path = path.join(conf.instance.output_path, path_prefix)
+#
+#     clean(database_file=database_file, result_path=result_path)
+#
+#     search = mock.MockSearch(samples=samples, result=mock.MockResult(samples=samples))
+#     search.paths = af.DirectoryPaths(path_prefix=path_prefix)
+#     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+#     search.fit(model=model, analysis=analysis)
+#
+#     agg = af.Aggregator.from_database(filename=database_file)
+#     agg.add_directory(directory=result_path)
+#
+#     tracer_agg = al.agg.TracerAgg(aggregator=agg)
+#     tracer_pdf_gen = tracer_agg.randomly_drawn_from_pdf_gen(total_samples=2)
+#
+#     i = 0
+#
+#     for tracer_gen in tracer_pdf_gen:
+#
+#         for tracer in tracer_gen:
+#
+#             i += 1
+#
+#             assert tracer.galaxies[0].redshift == 0.5
+#             assert tracer.galaxies[0].light.centre == (10.0, 10.0)
+#             assert tracer.galaxies[1].redshift == 1.0
+#
+#     assert i == 2
+#
+#     clean(database_file=database_file, result_path=result_path)
+
+
+def test__tracer_all_above_weight_gen(masked_imaging_7x7, samples, model):
 
     path_prefix = "aggregator_tracer_gen"
 
@@ -108,7 +145,7 @@ def test__tracer_pdf_gen_from(masked_imaging_7x7, samples, model):
     agg.add_directory(directory=result_path)
 
     tracer_agg = al.agg.TracerAgg(aggregator=agg)
-    tracer_pdf_gen = tracer_agg.randomly_drawn_from_pdf(total_samples=2)
+    tracer_pdf_gen = tracer_agg.all_above_weight_gen(minimum_weight=-1.0)
 
     i = 0
 
@@ -118,9 +155,17 @@ def test__tracer_pdf_gen_from(masked_imaging_7x7, samples, model):
 
             i += 1
 
-            assert tracer.galaxies[0].redshift == 0.5
-            assert tracer.galaxies[0].light.centre == (10.0, 10.0)
-            assert tracer.galaxies[1].redshift == 1.0
+            if i == 1:
+
+                assert tracer.galaxies[0].redshift == 0.5
+                assert tracer.galaxies[0].light.centre == (0.0, 0.0)
+                assert tracer.galaxies[1].redshift == 1.0
+
+            if i == 2:
+
+                assert tracer.galaxies[0].redshift == 0.5
+                assert tracer.galaxies[0].light.centre == (10.0, 10.0)
+                assert tracer.galaxies[1].redshift == 1.0
 
     assert i == 2
 
