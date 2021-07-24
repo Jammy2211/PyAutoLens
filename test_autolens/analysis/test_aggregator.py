@@ -107,7 +107,8 @@ def test__tracer_pdf_gen_from(masked_imaging_7x7, samples, model):
     agg = af.Aggregator.from_database(filename=database_file)
     agg.add_directory(directory=result_path)
 
-    tracer_pdf_gen = al.agg.TracerPDF(aggregator=agg, total_samples=2)
+    tracer_agg = al.agg.TracerAgg(aggregator=agg)
+    tracer_pdf_gen = tracer_agg.randomly_drawn_from_pdf(total_samples=2)
 
     i = 0
 
@@ -143,7 +144,8 @@ def test__tracer_pdf_gen_from(masked_imaging_7x7, samples, model):
 #     agg = af.Aggregator.from_database(filename=database_file)
 #     agg.add_directory(directory=result_path)
 #
-#     fit_imaging_gen = al.agg.FitImaging(aggregator=agg)
+#     fit_imaging_agg = al.agg.FitImagingAgg(aggregator=agg)
+#     fit_imaging_gen = fit_imaging_agg.max_log_likelihood()
 #
 #     for fit_imaging in fit_imaging_gen:
 #         assert (fit_imaging.image == masked_imaging_7x7.image).all()
@@ -170,7 +172,8 @@ def test__tracer_pdf_gen_from(masked_imaging_7x7, samples, model):
 #     agg = af.Aggregator.from_database(filename=database_file)
 #     agg.add_directory(directory=result_path)
 #
-#     fit_interferometer_gen = al.agg.FitInterferometer(aggregator=agg)
+#     fit_interferometer_agg = al.agg.FitImagingAgg(aggregator=agg)
+#     fit_interferometer_gen = fit_interferometer_agg.max_log_likelihood()
 #
 #     for fit_interferometer in fit_interferometer_gen:
 #         assert (fit_interferometer.visibilities == interferometer_7.visibilities).all()

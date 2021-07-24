@@ -1,21 +1,8 @@
-from autogalaxy.analysis.aggregator.aggregator import plane_max_log_likelihood_via_database_from
-from autogalaxy.analysis.aggregator.aggregator import plane_gen_from as Plane
-
-from autogalaxy.analysis.aggregator.aggregator import imaging_via_database_from
-from autogalaxy.analysis.aggregator.aggregator import imaging_gen_from as Imaging
-
-from autolens.analysis.aggregator.aggregator import tracer_max_log_likelihood_via_database_from
-from autolens.analysis.aggregator.aggregator import tracer_gen_from as Tracer
-from autolens.analysis.aggregator.aggregator import tracer_pdf_gen_from as TracerPDF
-
-from autolens.analysis.aggregator.aggregator import fit_imaging_via_database_from
-from autolens.analysis.aggregator.aggregator import fit_imaging_gen_from as FitImaging
-
-from autolens.analysis.aggregator.aggregator import fit_interferometer_via_database_from
-from autolens.analysis.aggregator.aggregator import (
-    fit_interferometer_gen_from as FitInterferometer,
-)
-
+from autogalaxy.analysis.aggregator.aggregator import ImagingAgg
+from autogalaxy.analysis.aggregator.aggregator import InterferometerAgg
+from autolens.analysis.aggregator.aggregator import TracerAgg
+from autolens.analysis.aggregator.aggregator import FitImagingAgg
+from autolens.analysis.aggregator.aggregator import FitInterferometerAgg
 
 from autolens.analysis.aggregator.aggregator import grid_search_result_as_array
 from autolens.analysis.aggregator.aggregator import (
