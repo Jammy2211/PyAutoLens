@@ -1,11 +1,12 @@
-from autogalaxy.analysis.aggregator.aggregator import plane_via_database_from
+from autogalaxy.analysis.aggregator.aggregator import plane_max_log_likelihood_via_database_from
 from autogalaxy.analysis.aggregator.aggregator import plane_gen_from as Plane
 
 from autogalaxy.analysis.aggregator.aggregator import imaging_via_database_from
 from autogalaxy.analysis.aggregator.aggregator import imaging_gen_from as Imaging
 
-from autolens.analysis.aggregator.aggregator import tracer_via_database_from
+from autolens.analysis.aggregator.aggregator import tracer_max_log_likelihood_via_database_from
 from autolens.analysis.aggregator.aggregator import tracer_gen_from as Tracer
+from autolens.analysis.aggregator.aggregator import tracer_pdf_gen_from as TracerPDF
 
 from autolens.analysis.aggregator.aggregator import fit_imaging_via_database_from
 from autolens.analysis.aggregator.aggregator import fit_imaging_gen_from as FitImaging

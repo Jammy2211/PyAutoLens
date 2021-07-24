@@ -14,41 +14,110 @@ import numpy as np
 from os import path
 import json
 
-from typing import Optional
+from typing import Optional, List
+from itertools import chain
 
-
-def tracer_gen_from(aggregator):
+def tracer_gen_from(aggregator : af.Aggregator):
     """
-    Returns a generator of `Tracer` objects from an input aggregator, which generates a list of the `Tracer` objects
-    for every set of results loaded in the aggregator.
+    Returns a generator of `Tracer` objects from an input aggregator, which generates a list of the maximum log
+    likelihood `Tracer` objects for the results loaded in the aggregator.
 
-    This is performed by mapping the `tracer_from_agg_obj` with the aggregator, which sets up each tracer using only
-    generators ensuring that manipulating the planes of large sets of results is done in a memory efficient way.
+    This is performed by mapping the `tracer_max_log_likelihood_via_database_from` with the aggregator, which sets up
+    each tracer using only generators ensuring that manipulating the planes of large sets of results is done in a
+    memory efficient way.
+
+    Parameters
+    ----------
+    aggregator
+        A PyAutoFit aggregator object containing the results of PyAutoLens model-fits.
+    """
+    return aggregator.map(func=tracer_max_log_likelihood_via_database_from)
+
+
+def tracer_pdf_gen_from(aggregator : af.Aggregator, total_samples : int):
+    """
+    Returns a generator of multiple `Tracer` objects from an input aggregator, which for every result generates a list
+    of `Tracer` objects whose parameter values are drawn randomly from the PDF. This enables straight forward error
+    estimation.
+
+    This is performed by mapping the `tracer_randomly_drawn_from_pdf_via_database_from` with the aggregator, which
+    sets up each tracer using only generators ensuring that manipulating the tracers of large sets of results is done in
+    a memory efficient way.
 
     Parameters
     ----------
     aggregator : af.Aggregator
-        A PyAutoFit aggregator object containing the results of PyAutoLens model-fits."""
-    return aggregator.map(func=tracer_via_database_from)
-
-
-def tracer_via_database_from(fit: Fit) -> "al.Tracer":
+        A PyAutoFit aggregator object containing the results of PyAutoLens model-fits.
     """
-    Returns a `Tracer` object from an aggregator's `SearchOutput` class, which we call an 'agg_obj' to describe that
-     it acts as the aggregator object for one result in the `Aggregator`. This uses the aggregator's generator outputs
-     such that the function can use the `Aggregator`'s map function to to create a `Tracer` generator.
+    for i in range(total_samples):
 
-     The `Tracer` is created using an instance of the maximum log likelihood model's galaxies. These galaxies have 
-     their hyper-images added (if they were used in the fit) and passed into a Tracer object.
+        plane_gen = aggregator.map(func=tracer_randomly_drawn_from_pdf_via_database_from)
+
+        if i > 0:
+            generator = chain(generator, plane_gen)
+        else:
+            generator = plane_gen
+
+    return generator
+
+
+def tracer_max_log_likelihood_via_database_from(fit: Fit) -> "al.Tracer":
+    """
+    Returns a `Tracer` object from the database's `Fit` object, corresponding to the maximum log likelihood model.
+
+    The plane's galaxies have their hyper-images added (if they were used in the fit).
 
     Parameters
     ----------
-    fit : af.SearchOutput
-        A PyAutoFit aggregator's SearchOutput object containing the generators of the results of PyAutoLens model-fits.
+    fit
+        A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
     """
 
     galaxies = fit.instance.galaxies
 
+    return tracer_from(fit=fit, galaxies=galaxies)
+
+
+def tracer_randomly_drawn_from_pdf_via_database_from(fit: Fit) -> "al.Tracer":
+    """
+    Returns a `Tracer` object from the `Samples` object of the non-linear search. where the model is chosen randomly
+    from the PDF.
+
+    The plane's galaxies have their hyper-images added (if they were used in the fit).
+
+    Parameters
+    ----------
+    fit
+        A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+    """
+
+    samples = fit.value(name="samples")
+
+    instance = samples.instance_drawn_randomly_from_pdf()
+
+    return tracer_from(fit=fit, galaxies=instance.galaxies)
+
+
+def tracer_from(fit: Fit, galaxies : List[al.Galaxy]) -> "al.Tracer":
+    """
+    Returns a `Tracer` object from an input PyAutoFit `Fit` object and an instance of galaxies from the model-fit.
+
+    This function adds the `hyper_model_image` and `hyper_galaxy_image_path_dict` to the galaxies before constructing
+    the `Tracer`, if they were used for the model fit.
+
+    Parameters
+    ----------
+    fit
+        A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+    galaxies
+        A list of galaxies corresponding to a sample in a non-linear search and model-fit.
+
+    Returns
+    -------
+    tracer
+        The tracer computed via an instance of galaxies.
+    """
+    
     hyper_model_image = fit.value(name="hyper_model_image")
     hyper_galaxy_image_path_dict = fit.value(name="hyper_galaxy_image_path_dict")
 
@@ -120,7 +189,7 @@ def fit_imaging_via_database_from(
         A PyAutoFit aggregator's SearchOutput object containing the generators of the results of PyAutoLens model-fits.
     """
     imaging = imaging_via_database_from(fit=fit, settings_imaging=settings_imaging)
-    tracer = tracer_via_database_from(fit=fit)
+    tracer = tracer_max_log_likelihood_via_database_from(fit=fit)
 
     settings_pixelization = settings_pixelization or fit.value(
         name="settings_pixelization"
@@ -203,7 +272,7 @@ def fit_interferometer_via_database_from(
         real_space_mask=real_space_mask,
         settings_interferometer=settings_interferometer,
     )
-    tracer = tracer_via_database_from(fit=fit)
+    tracer = tracer_max_log_likelihood_via_database_from(fit=fit)
 
     settings_pixelization = settings_pixelization or fit.value(
         name="settings_pixelization"

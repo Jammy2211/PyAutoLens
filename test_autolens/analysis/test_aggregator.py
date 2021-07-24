@@ -1,12 +1,12 @@
 from os import path
 import os
-import shutil
-
 import pytest
+import shutil
 
 from autoconf import conf
 import autofit as af
 import autolens as al
+from autofit.non_linear.samples import Sample
 from autolens.mock import mock
 
 directory = path.dirname(path.realpath(__file__))
@@ -15,16 +15,6 @@ directory = path.dirname(path.realpath(__file__))
 @pytest.fixture(name="path")
 def make_path():
     return path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
-
-
-@pytest.fixture(name="samples")
-def make_samples():
-    galaxy_0 = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(centre=(0.0, 1.0)))
-    galaxy_1 = al.Galaxy(redshift=1.0, light=al.lp.EllSersic())
-
-    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
-
-    return mock.MockSamples(max_log_likelihood_instance=tracer)
 
 
 @pytest.fixture(name="model")
@@ -37,6 +27,33 @@ def make_model():
     )
 
 
+@pytest.fixture(name="samples")
+def make_samples(model):
+    galaxy_0 = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(centre=(0.0, 1.0)))
+    galaxy_1 = al.Galaxy(redshift=1.0, light=al.lp.EllSersic())
+
+    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
+
+    parameters = [
+        model.prior_count * [0.0],
+        model.prior_count * [10.0],
+    ]
+
+    sample_list = Sample.from_lists(
+        model=model,
+        parameter_lists=parameters,
+        log_likelihood_list=[1.0, 2.0],
+        log_prior_list=[0.0, 0.0],
+        weight_list=[0.0, 1.0],
+    )
+
+    return mock.MockSamples(
+        model=model,
+        sample_list=sample_list,
+        max_log_likelihood_instance=tracer
+    )
+
+
 def clean(database_file, result_path):
 
     if path.exists(database_file):
@@ -46,7 +63,7 @@ def clean(database_file, result_path):
         shutil.rmtree(result_path)
 
 
-# def test__tracer_generator_from_aggregator(masked_imaging_7x7, samples, model):
+# def test__tracer_gen_from(masked_imaging_7x7, samples, model):
 #
 #     path_prefix = "aggregator_tracer_gen"
 #
@@ -72,8 +89,41 @@ def clean(database_file, result_path):
 #         assert tracer.galaxies[1].redshift == 1.0
 #
 #     clean(database_file=database_file, result_path=result_path)
-#
-#
+
+def test__tracer_pdf_gen_from(masked_imaging_7x7, samples, model):
+
+    path_prefix = "aggregator_tracer_gen"
+
+    database_file = path.join(conf.instance.output_path, "tracer.sqlite")
+    result_path = path.join(conf.instance.output_path, path_prefix)
+
+    clean(database_file=database_file, result_path=result_path)
+
+    search = mock.MockSearch(samples=samples, result=mock.MockResult(samples=samples))
+    search.paths = af.DirectoryPaths(path_prefix=path_prefix)
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+    search.fit(model=model, analysis=analysis)
+
+    agg = af.Aggregator.from_database(filename=database_file)
+    agg.add_directory(directory=result_path)
+
+    tracer_gen = al.agg.TracerPDF(aggregator=agg, total_samples=2)
+
+    i = 0
+
+    for tracer in tracer_gen:
+
+        i += 1
+
+        assert tracer.galaxies[0].redshift == 0.5
+        assert tracer.galaxies[0].light.centre == (10.0, 10.0)
+        assert tracer.galaxies[1].redshift == 1.0
+
+    assert i == 2
+
+    clean(database_file=database_file, result_path=result_path)
+
+
 # def test__fit_imaging_generator_from_aggregator(masked_imaging_7x7, samples, model):
 #
 #     path_prefix = "aggregator_fit_imaging_gen"
