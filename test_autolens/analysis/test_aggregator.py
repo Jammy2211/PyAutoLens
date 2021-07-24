@@ -107,17 +107,19 @@ def test__tracer_pdf_gen_from(masked_imaging_7x7, samples, model):
     agg = af.Aggregator.from_database(filename=database_file)
     agg.add_directory(directory=result_path)
 
-    tracer_gen = al.agg.TracerPDF(aggregator=agg, total_samples=2)
+    tracer_pdf_gen = al.agg.TracerPDF(aggregator=agg, total_samples=2)
 
     i = 0
 
-    for tracer in tracer_gen:
+    for tracer_gen in tracer_pdf_gen:
 
-        i += 1
+        for tracer in tracer_gen:
 
-        assert tracer.galaxies[0].redshift == 0.5
-        assert tracer.galaxies[0].light.centre == (10.0, 10.0)
-        assert tracer.galaxies[1].redshift == 1.0
+            i += 1
+
+            assert tracer.galaxies[0].redshift == 0.5
+            assert tracer.galaxies[0].light.centre == (10.0, 10.0)
+            assert tracer.galaxies[1].redshift == 1.0
 
     assert i == 2
 

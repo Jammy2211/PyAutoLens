@@ -49,16 +49,20 @@ def tracer_pdf_gen_from(aggregator : af.Aggregator, total_samples : int):
     aggregator : af.Aggregator
         A PyAutoFit aggregator object containing the results of PyAutoLens model-fits.
     """
-    for i in range(total_samples):
+    func = partial(
+        tracer_list_randomly_drawn_from_pdf_via_database_from,
+        total_samples=total_samples
+    )
 
-        plane_gen = aggregator.map(func=tracer_randomly_drawn_from_pdf_via_database_from)
+    return aggregator.map(func=func)
 
-        if i > 0:
-            generator = chain(generator, plane_gen)
-        else:
-            generator = plane_gen
-
-    return generator
+    # tracer_pdf_gen_list = []
+    #
+    # for i in range(total_samples):
+    #
+    #     tracer_pdf_gen_list.append(aggregator.map(func=tracer_randomly_drawn_from_pdf_via_database_from))
+    #
+    # return tracer_pdf_gen_list
 
 
 def tracer_max_log_likelihood_via_database_from(fit: Fit) -> "al.Tracer":
@@ -78,7 +82,7 @@ def tracer_max_log_likelihood_via_database_from(fit: Fit) -> "al.Tracer":
     return tracer_from(fit=fit, galaxies=galaxies)
 
 
-def tracer_randomly_drawn_from_pdf_via_database_from(fit: Fit) -> "al.Tracer":
+def tracer_list_randomly_drawn_from_pdf_via_database_from(fit: Fit, total_samples : int) -> List["al.Tracer"]:
     """
     Returns a `Tracer` object from the `Samples` object of the non-linear search. where the model is chosen randomly
     from the PDF.
@@ -93,9 +97,10 @@ def tracer_randomly_drawn_from_pdf_via_database_from(fit: Fit) -> "al.Tracer":
 
     samples = fit.value(name="samples")
 
-    instance = samples.instance_drawn_randomly_from_pdf()
-
-    return tracer_from(fit=fit, galaxies=instance.galaxies)
+    return [
+        tracer_from(fit=fit, galaxies=samples.instance_drawn_randomly_from_pdf().galaxies)
+        for i in range(total_samples)
+    ]
 
 
 def tracer_from(fit: Fit, galaxies : List[al.Galaxy]) -> "al.Tracer":
