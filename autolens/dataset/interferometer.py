@@ -9,7 +9,6 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
         self,
         uv_wavelengths,
         exposure_time: float,
-        background_sky_level: float = 0.0,
         transformer_class=transformer.TransformerDFT,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
@@ -29,14 +28,11 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
             An arrays describing the PSF kernel of the image.
         exposure_time_map : float
             The exposure time of an observation using this data.
-        background_sky_map : float
-            The level of the background sky of an observationg using this data.
         """
 
-        super(SimulatorInterferometer, self).__init__(
+        super().__init__(
             uv_wavelengths=uv_wavelengths,
             exposure_time=exposure_time,
-            background_sky_level=background_sky_level,
             transformer_class=transformer_class,
             noise_sigma=noise_sigma,
             noise_if_add_noise_false=noise_if_add_noise_false,
@@ -58,8 +54,6 @@ class SimulatorInterferometer(interferometer.SimulatorInterferometer):
             An arrays representing the effective exposure time of each pixel.
         psf: PSF
             An arrays describing the PSF the simulated image is blurred with.
-        background_sky_map : np.ndarray
-            The value of background sky in every image pixel (electrons per second).
         add_poisson_noise: Bool
             If `True` poisson noise_maps is simulated and added to the image, based on the total counts in each image
             pixel
