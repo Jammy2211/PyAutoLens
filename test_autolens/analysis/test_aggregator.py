@@ -34,10 +34,7 @@ def make_samples(model):
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
 
-    parameters = [
-        model.prior_count * [0.0],
-        model.prior_count * [10.0],
-    ]
+    parameters = [model.prior_count * [1.0], model.prior_count * [10.0]]
 
     sample_list = Sample.from_lists(
         model=model,
@@ -48,9 +45,7 @@ def make_samples(model):
     )
 
     return mock.MockSamples(
-        model=model,
-        sample_list=sample_list,
-        max_log_likelihood_instance=tracer
+        model=model, sample_list=sample_list, max_log_likelihood_instance=tracer
     )
 
 
@@ -63,141 +58,231 @@ def clean(database_file, result_path):
         shutil.rmtree(result_path)
 
 
-# def test__tracer_gen_from(masked_imaging_7x7, samples, model):
-#
-#     path_prefix = "aggregator_tracer_gen"
-#
-#     database_file = path.join(conf.instance.output_path, "tracer.sqlite")
-#     result_path = path.join(conf.instance.output_path, path_prefix)
-#
-#     clean(database_file=database_file, result_path=result_path)
-#
-#     search = mock.MockSearch(samples=samples)
-#     search.paths = af.DirectoryPaths(path_prefix=path_prefix)
-#     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-#     search.fit(model=model, analysis=analysis)
-#
-#     agg = af.Aggregator.from_database(filename=database_file)
-#     agg.add_directory(directory=result_path)
-#
-#     tracer_gen = al.agg.Tracer(aggregator=agg)
-#
-#     for tracer in tracer_gen:
-#
-#         assert tracer.galaxies[0].redshift == 0.5
-#         assert tracer.galaxies[0].light.centre == (0.0, 1.0)
-#         assert tracer.galaxies[1].redshift == 1.0
-#
-#     clean(database_file=database_file, result_path=result_path)
-
-# def test__tracer_randomly_drawn_from_pdf_gen(masked_imaging_7x7, samples, model):
-#
-#     path_prefix = "aggregator_tracer_gen"
-#
-#     database_file = path.join(conf.instance.output_path, "tracer.sqlite")
-#     result_path = path.join(conf.instance.output_path, path_prefix)
-#
-#     clean(database_file=database_file, result_path=result_path)
-#
-#     search = mock.MockSearch(samples=samples, result=mock.MockResult(samples=samples))
-#     search.paths = af.DirectoryPaths(path_prefix=path_prefix)
-#     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-#     search.fit(model=model, analysis=analysis)
-#
-#     agg = af.Aggregator.from_database(filename=database_file)
-#     agg.add_directory(directory=result_path)
-#
-#     tracer_agg = al.agg.TracerAgg(aggregator=agg)
-#     tracer_pdf_gen = tracer_agg.randomly_drawn_from_pdf_gen(total_samples=2)
-#
-#     i = 0
-#
-#     for tracer_gen in tracer_pdf_gen:
-#
-#         for tracer in tracer_gen:
-#
-#             i += 1
-#
-#             assert tracer.galaxies[0].redshift == 0.5
-#             assert tracer.galaxies[0].light.centre == (10.0, 10.0)
-#             assert tracer.galaxies[1].redshift == 1.0
-#
-#     assert i == 2
-#
-#     clean(database_file=database_file, result_path=result_path)
+class TestTracerAgg:
 
 
-def test__tracer_all_above_weight_gen(masked_imaging_7x7, samples, model):
-
-    path_prefix = "aggregator_tracer_gen"
-
-    database_file = path.join(conf.instance.output_path, "tracer.sqlite")
-    result_path = path.join(conf.instance.output_path, path_prefix)
-
-    clean(database_file=database_file, result_path=result_path)
-
-    search = mock.MockSearch(samples=samples, result=mock.MockResult(samples=samples))
-    search.paths = af.DirectoryPaths(path_prefix=path_prefix)
-    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-    search.fit(model=model, analysis=analysis)
-
-    agg = af.Aggregator.from_database(filename=database_file)
-    agg.add_directory(directory=result_path)
-
-    tracer_agg = al.agg.TracerAgg(aggregator=agg)
-    tracer_pdf_gen = tracer_agg.all_above_weight_gen(minimum_weight=-1.0)
-
-    i = 0
-
-    for tracer_gen in tracer_pdf_gen:
-
-        for tracer in tracer_gen:
-
-            i += 1
-
-            if i == 1:
-
-                assert tracer.galaxies[0].redshift == 0.5
-                assert tracer.galaxies[0].light.centre == (0.0, 0.0)
-                assert tracer.galaxies[1].redshift == 1.0
-
-            if i == 2:
-
+    # def test__tracer_gen_from(self, masked_imaging_7x7, samples, model):
+    #
+    #     path_prefix = "aggregator_tracer_gen"
+    #
+    #     database_file = path.join(conf.instance.output_path, "tracer.sqlite")
+    #     result_path = path.join(conf.instance.output_path, path_prefix)
+    #
+    #     clean(database_file=database_file, result_path=result_path)
+    #
+    #     search = mock.MockSearch(samples=samples)
+    #     search.paths = af.DirectoryPaths(path_prefix=path_prefix)
+    #     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+    #     search.fit(model=model, analysis=analysis)
+    #
+    #     agg = af.Aggregator.from_database(filename=database_file)
+    #     agg.add_directory(directory=result_path)
+    #
+    #     tracer_gen = al.agg.Tracer(aggregator=agg)
+    #
+    #     for tracer in tracer_gen:
+    #
+    #         assert tracer.galaxies[0].redshift == 0.5
+    #         assert tracer.galaxies[0].light.centre == (0.0, 1.0)
+    #         assert tracer.galaxies[1].redshift == 1.0
+    #
+    #     clean(database_file=database_file, result_path=result_path)
+    
+    def test__tracer_randomly_drawn_from_pdf_gen(self, masked_imaging_7x7, samples, model):
+    
+        path_prefix = "aggregator_tracer_gen"
+    
+        database_file = path.join(conf.instance.output_path, "tracer.sqlite")
+        result_path = path.join(conf.instance.output_path, path_prefix)
+    
+        clean(database_file=database_file, result_path=result_path)
+    
+        search = mock.MockSearch(samples=samples, result=mock.MockResult(samples=samples))
+        search.paths = af.DirectoryPaths(path_prefix=path_prefix)
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+        search.fit(model=model, analysis=analysis)
+    
+        agg = af.Aggregator.from_database(filename=database_file)
+        agg.add_directory(directory=result_path)
+    
+        tracer_agg = al.agg.TracerAgg(aggregator=agg)
+        tracer_pdf_gen = tracer_agg.randomly_drawn_from_pdf_gen(total_samples=2)
+    
+        i = 0
+    
+        for tracer_gen in tracer_pdf_gen:
+    
+            for tracer in tracer_gen:
+    
+                i += 1
+    
                 assert tracer.galaxies[0].redshift == 0.5
                 assert tracer.galaxies[0].light.centre == (10.0, 10.0)
                 assert tracer.galaxies[1].redshift == 1.0
+    
+        assert i == 2
+    
+        clean(database_file=database_file, result_path=result_path)
+    
+    
+    def test__tracer_all_above_weight_gen(self, masked_imaging_7x7, samples, model):
+    
+        path_prefix = "aggregator_tracer_gen"
+    
+        database_file = path.join(conf.instance.output_path, "tracer.sqlite")
+        result_path = path.join(conf.instance.output_path, path_prefix)
+    
+        clean(database_file=database_file, result_path=result_path)
+    
+        search = mock.MockSearch(samples=samples, result=mock.MockResult(samples=samples))
+        search.paths = af.DirectoryPaths(path_prefix=path_prefix)
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+        search.fit(model=model, analysis=analysis)
+    
+        agg = af.Aggregator.from_database(filename=database_file)
+        agg.add_directory(directory=result_path)
+    
+        tracer_agg = al.agg.TracerAgg(aggregator=agg)
+        tracer_pdf_gen = tracer_agg.all_above_weight_gen(minimum_weight=-1.0)
+    
+        i = 0
+    
+        for tracer_gen in tracer_pdf_gen:
+    
+            for tracer in tracer_gen:
+    
+                i += 1
+    
+                if i == 1:
+    
+                    assert tracer.galaxies[0].redshift == 0.5
+                    assert tracer.galaxies[0].light.centre == (1.0, 1.0)
+                    assert tracer.galaxies[1].redshift == 1.0
+    
+                if i == 2:
+    
+                    assert tracer.galaxies[0].redshift == 0.5
+                    assert tracer.galaxies[0].light.centre == (10.0, 10.0)
+                    assert tracer.galaxies[1].redshift == 1.0
+    
+        assert i == 2
+    
+        clean(database_file=database_file, result_path=result_path)
 
-    assert i == 2
 
-    clean(database_file=database_file, result_path=result_path)
+class TestFitImagingAgg:
 
 
-# def test__fit_imaging_generator_from_aggregator(masked_imaging_7x7, samples, model):
-#
-#     path_prefix = "aggregator_fit_imaging_gen"
-#
-#     database_file = path.join(conf.instance.output_path, "fit_imaging.sqlite")
-#     result_path = path.join(conf.instance.output_path, path_prefix)
-#
-#     clean(database_file=database_file, result_path=result_path)
-#
-#     search = mock.MockSearch(samples=samples)
-#     search.paths = af.DirectoryPaths(path_prefix=path_prefix)
-#     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-#     search.fit(model=model, analysis=analysis)
-#
-#     agg = af.Aggregator.from_database(filename=database_file)
-#     agg.add_directory(directory=result_path)
-#
-#     fit_imaging_agg = al.agg.FitImagingAgg(aggregator=agg)
-#     fit_imaging_gen = fit_imaging_agg.max_log_likelihood()
-#
-#     for fit_imaging in fit_imaging_gen:
-#         assert (fit_imaging.image == masked_imaging_7x7.image).all()
-#
-#     clean(database_file=database_file, result_path=result_path)
-#
-#
+    # def test__fit_imaging_generator_from_aggregator(masked_imaging_7x7, samples, model):
+    #
+    #     path_prefix = "aggregator_fit_imaging_gen"
+    #
+    #     database_file = path.join(conf.instance.output_path, "fit_imaging.sqlite")
+    #     result_path = path.join(conf.instance.output_path, path_prefix)
+    #
+    #     clean(database_file=database_file, result_path=result_path)
+    #
+    #     search = mock.MockSearch(samples=samples)
+    #     search.paths = af.DirectoryPaths(path_prefix=path_prefix)
+    #     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+    #     search.fit(model=model, analysis=analysis)
+    #
+    #     agg = af.Aggregator.from_database(filename=database_file)
+    #     agg.add_directory(directory=result_path)
+    #
+    #     fit_imaging_agg = al.agg.FitImagingAgg(aggregator=agg)
+    #     fit_imaging_gen = fit_imaging_agg.max_log_likelihood()
+    #
+    #     for fit_imaging in fit_imaging_gen:
+    #         assert (fit_imaging.image == masked_imaging_7x7.image).all()
+    #
+    #     clean(database_file=database_file, result_path=result_path)
+    #
+    
+    
+    def test__fit_imaging_randomly_drawn_from_pdf_gen(self, masked_imaging_7x7, samples, model):
+    
+        path_prefix = "aggregator_fit_imaging_gen"
+    
+        database_file = path.join(conf.instance.output_path, "fit_imaging.sqlite")
+        result_path = path.join(conf.instance.output_path, path_prefix)
+    
+        clean(database_file=database_file, result_path=result_path)
+    
+        search = mock.MockSearch(samples=samples, result=mock.MockResult(samples=samples))
+        search.paths = af.DirectoryPaths(path_prefix=path_prefix)
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+        search.fit(model=model, analysis=analysis)
+    
+        agg = af.Aggregator.from_database(filename=database_file)
+        agg.add_directory(directory=result_path)
+    
+        fit_imaging_agg = al.agg.FitImagingAgg(aggregator=agg)
+        fit_imaging_pdf_gen = fit_imaging_agg.randomly_drawn_from_pdf_gen(total_samples=2)
+    
+        i = 0
+    
+        for fit_imaging_gen in fit_imaging_pdf_gen:
+    
+            for fit_imaging in fit_imaging_gen:
+    
+                i += 1
+    
+                assert fit_imaging.tracer.galaxies[0].redshift == 0.5
+                assert fit_imaging.tracer.galaxies[0].light.centre == (10.0, 10.0)
+                assert fit_imaging.tracer.galaxies[1].redshift == 1.0
+    
+        assert i == 2
+    
+        clean(database_file=database_file, result_path=result_path)
+    
+    
+    def test__fit_imaging_all_above_weight_gen(self, masked_imaging_7x7, samples, model):
+    
+        path_prefix = "aggregator_fit_imaging_gen"
+    
+        database_file = path.join(conf.instance.output_path, "fit_imaging.sqlite")
+        result_path = path.join(conf.instance.output_path, path_prefix)
+    
+        clean(database_file=database_file, result_path=result_path)
+    
+        search = mock.MockSearch(samples=samples, result=mock.MockResult(samples=samples))
+        search.paths = af.DirectoryPaths(path_prefix=path_prefix)
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+        search.fit(model=model, analysis=analysis)
+    
+        agg = af.Aggregator.from_database(filename=database_file)
+        agg.add_directory(directory=result_path)
+    
+        fit_imaging_agg = al.agg.FitImagingAgg(aggregator=agg)
+        fit_imaging_pdf_gen = fit_imaging_agg.all_above_weight_gen(minimum_weight=-1.0)
+    
+        i = 0
+    
+        for fit_imaging_gen in fit_imaging_pdf_gen:
+    
+            for fit_imaging in fit_imaging_gen:
+    
+                i += 1
+    
+                if i == 1:
+    
+                    assert fit_imaging.tracer.galaxies[0].redshift == 0.5
+                    assert fit_imaging.tracer.galaxies[0].light.centre == (1.0, 1.0)
+                    assert fit_imaging.tracer.galaxies[1].redshift == 1.0
+    
+                if i == 2:
+    
+                    assert fit_imaging.tracer.galaxies[0].redshift == 0.5
+                    assert fit_imaging.tracer.galaxies[0].light.centre == (10.0, 10.0)
+                    assert fit_imaging.tracer.galaxies[1].redshift == 1.0
+    
+        assert i == 2
+    
+        clean(database_file=database_file, result_path=result_path)
+
+
+
 # def test__fit_interferometer_generator_from_aggregator(
 #     interferometer_7, mask_2d_7x7, samples, model
 # ):
