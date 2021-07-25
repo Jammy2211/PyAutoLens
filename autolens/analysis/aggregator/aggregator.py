@@ -14,26 +14,27 @@ import numpy as np
 from os import path
 import json
 
-from typing import Optional, List
+from typing import Optional, List, Generator
 
 
 def _tracer_from(fit: Fit, galaxies: List[al.Galaxy]) -> "al.Tracer":
     """
-    Returns a `Tracer` object from an input PyAutoFit `Fit` object and an instance of galaxies from the model-fit.
+    Returns a `Tracer` object from a PyAutoFit database `Fit` object and an instance of galaxies from a non-linear
+    search model-fit.
 
     This function adds the `hyper_model_image` and `hyper_galaxy_image_path_dict` to the galaxies before constructing
-    the `Tracer`, if they were used for the model fit.
+    the `Tracer`, if they were used.
 
     Parameters
     ----------
     fit
         A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
     galaxies
-        A list of galaxies corresponding to a sample in a non-linear search and model-fit.
+        A list of galaxies corresponding to a sample of a non-linear search and model-fit.
 
     Returns
     -------
-    tracer
+    Tracer
         The tracer computed via an instance of galaxies.
     """
 
@@ -67,16 +68,23 @@ def _fit_imaging_from(
     use_preloaded_grid: bool = True,
 ) -> "al.FitImaging":
     """
-    Returns a `FitImaging` object from an aggregator's `SearchOutput` class, which we call an 'agg_obj' to describe
-    that it acts as the aggregator object for one result in the `Aggregator`. This uses the aggregator's generator
-    outputs such that the function can use the `Aggregator`'s map function to to create a `FitImaging` generator.
+    Returns a `FitImaging` object from a PyAutoFit database `Fit` object and an instance of galaxies from a non-linear
+    search model-fit.
 
-    The `FitImaging` is created.
+    This function adds the `hyper_model_image` and `hyper_galaxy_image_path_dict` to the galaxies before performing the
+    fit, if they were used.
 
     Parameters
     ----------
-    fit : af.SearchOutput
-        A PyAutoFit aggregator's SearchOutput object containing the generators of the results of PyAutoLens model-fits.
+    fit
+        A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+    galaxies
+        A list of galaxies corresponding to a sample of a non-linear search and model-fit.
+        
+    Returns
+    -------
+    FitImaging
+        The fit to the imaging dataset computed via an instance of galaxies.        
     """
 
     imaging = _imaging_from(fit=fit, settings_imaging=settings_imaging)
@@ -117,17 +125,23 @@ def _fit_interferometer_from(
     use_preloaded_grid: bool = True,
 ) -> "al.FitInterferometer":
     """
-    Returns a generator of `FitInterferometer` objects from an input aggregator, which generates a list of the
-    `FitInterferometer` objects for every set of results loaded in the aggregator.
+    Returns a `FitInterferometer` object from a PyAutoFit database `Fit` object and an instance of galaxies from a non-linear
+    search model-fit.
 
-    This is performed by mapping the `fit_interferometer_from_agg_obj` with the aggregator, which sets up each fit
-    using only generators ensuring that manipulating the fits of large sets of results is done in a memory efficient
-    way.
+    This function adds the `hyper_model_image` and `hyper_galaxy_image_path_dict` to the galaxies before performing the
+    fit, if they were used.
 
     Parameters
     ----------
-    aggregator : af.Aggregator
-        A PyAutoFit aggregator object containing the results of PyAutoLens model-fits.
+    fit
+        A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+    galaxies
+        A list of galaxies corresponding to a sample of a non-linear search and model-fit.
+
+    Returns
+    -------
+    FitInterferometer
+        The fit to the interferometer dataset computed via an instance of galaxies.        
     """
     interferometer = _interferometer_from(
         fit=fit,
@@ -162,75 +176,80 @@ def _fit_interferometer_from(
 
 class AbstractAgg:
     def __init__(self, aggregator: af.Aggregator):
-
-        self.aggregator = aggregator
-
-    def make_gen(self, fit, galaxies):
-
-        raise NotImplementedError
-
-    def max_log_likelihood_gen(self):
         """
-        Returns a generator of `Tracer` objects from an input aggregator, which generates a list of the maximum log
-        likelihood `Tracer` objects for the results loaded in the aggregator.
+        An abstract aggregator wrapper, which makes it straight forward to compute generators of objects from specific
+        samples of a non-linear search.
 
-        This is performed by mapping the `tracer_max_log_likelihood_via_database_from` with the aggregator, which sets up
-        each tracer using only generators ensuring that manipulating the planes of large sets of results is done in a
-        memory efficient way.
-
+        For example, in **PyAutoLens**, this makes it straight forward to create generators of `Tracer`'s drawn from
+        the PDF estimated by a non-linear for efficient error calculation of derived quantities.
         Parameters
         ----------
         aggregator
-            A PyAutoFit aggregator object containing the results of PyAutoLens model-fits.
+            An PyAutoFit aggregator containing the results of non-linear searches performed by PyAutoFit.
+        """
+        self.aggregator = aggregator
+
+    def make_object_for_gen(self, fit: Fit, galaxies: List[al.Galaxy]) -> object:
+        """
+        Abstract method that is overwritten with functions that create the generator of an object from the results
+        of a non-linear search.
+
+        For example, in the `TracerAgg` object, this function is overwritten such that it creates a `Tracer` from a
+        `ModelInstance` that contains the galaxies of a sample from a non-linear search.
+
+        Parameters
+        ----------
+        fit
+            A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+        galaxies
+            A list of galaxies corresponding to a sample of a non-linear search and model-fit.
+
+        Returns
+        -------
+        Generator
+            A generator that creates an object used in the model-fitting process of a non-linear search.
+        """
+        raise NotImplementedError
+
+    def max_log_likelihood_gen(self) -> Generator:
+        """
+        Returns a generator using the maximum likelihood instance of a non-linear search.
+
+        This generator creates a list containing the maximum log instance of every result loaded in the aggregator.
+
+        For example, in **PyAutoLens**, by overwriting the `make_gen_from_object` method this returns a generator
+        of `Tracer` objects from a PyAutoFit aggregator. This generator then generates a list of the maximum log
+        likelihood `Tracer` objects for all aggregator results.
         """
 
-        def func_gen(fit: Fit) -> "al.Tracer":
-            """
-            Returns a `Tracer` object from the database's `Fit` object, corresponding to the maximum log likelihood model.
-
-            The plane's galaxies have their hyper-images added (if they were used in the fit).
-
-            Parameters
-            ----------
-            fit
-                A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
-            """
-            return self.make_gen(fit=fit, galaxies=fit.instance.galaxies)
+        def func_gen(fit: Fit) -> Generator[object]:
+            return self.make_object_for_gen(fit=fit, galaxies=fit.instance.galaxies)
 
         return self.aggregator.map(func=func_gen)
 
-    def all_above_weight_gen(self, minimum_weight: float):
+    def all_above_weight_gen(self, minimum_weight: float) -> Generator:
         """
-        Returns a generator of multiple `Tracer` objects from an input aggregator, which for every result generates a list
-        of `Tracer` objects whose parameter values are drawn randomly from the PDF. This enables straight forward error
-        estimation.
+        Returns a generator which for every result generates a list of objects whose parameter values are all those
+        in the non-linear search with a weight about an input `minimum_weight` value. This enables straight forward
+        error estimation.
 
-        This is performed by mapping the `tracer_randomly_drawn_from_pdf_via_database_from` with the aggregator, which
-        sets up each tracer using only generators ensuring that manipulating the tracers of large sets of results is done in
-        a memory efficient way.
+        This generator creates lists containing instances whose non-linear sample weight are above the value of
+        `minimum_weight`. For example, if the aggregator contains 10 results and each result has 100 samples above the
+        `minimum_weight`, a list of 10 entries will be returned, where each entry in this list contains 100 object's
+        paired with each non-linear sample.
+
+        For example, in **PyAutoLens**, by overwriting the `make_gen_from_object` method this returns a generator
+        of `Tracer` objects from a PyAutoFit aggregator. This generator then generates lists of `Tracer` objects
+        corresponding to all non-linear search samples above the `minimum_weight`.
 
         Parameters
         ----------
-        aggregator
-            A PyAutoFit aggregator object containing the results of PyAutoLens model-fits.
-        total_samples
-            For each entry in the aggregator, the total number of tracers that are randomly drawn from the PDF.
+        minimum_weight
+            The minimum weight of a non-linear sample, such that samples with a weight below this value are discarded
+            and not included in the generator.
         """
 
         def func_gen(fit: Fit, minimum_weight: float) -> List[object]:
-            """
-            Returns a `Tracer` object from the `Samples` object of the non-linear search. where the model is chosen randomly
-            from the PDF.
-
-            The plane's galaxies have their hyper-images added (if they were used in the fit).
-
-            Parameters
-            ----------
-            fit
-                A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
-            total_samples
-                For each entry in the aggregator, the total number of tracers that are randomly drawn from the PDF.
-            """
 
             samples = fit.value(name="samples")
 
@@ -242,7 +261,7 @@ class AbstractAgg:
                     instance = sample.instance_for_model(model=samples.model)
 
                     all_above_weight_list.append(
-                        self.make_gen(fit=fit, galaxies=instance.galaxies)
+                        self.make_object_for_gen(fit=fit, galaxies=instance.galaxies)
                     )
 
             return all_above_weight_list
@@ -253,41 +272,30 @@ class AbstractAgg:
 
     def randomly_drawn_from_pdf_gen(self, total_samples: int):
         """
-        Returns a generator of multiple `Tracer` objects from an input aggregator, which for every result generates a list
-        of `Tracer` objects whose parameter values are drawn randomly from the PDF. This enables straight forward error
-        estimation.
+        Returns a generator which for every result generates a list of objects whose parameter values are drawn
+        randomly from the PDF. This enables straight forward error estimation.
 
-        This is performed by mapping the `tracer_randomly_drawn_from_pdf_via_database_from` with the aggregator, which
-        sets up each tracer using only generators ensuring that manipulating the tracers of large sets of results is done in
-        a memory efficient way.
+        This generator creates lists containing instances that are drawn randomly from the PDF for every result loaded
+        in the aggregator. For example, the aggregator contains 10 results and if `total_samples=100`, a list of 10
+        entries will be returned, where each entry in this list contains 100 object's paired with non-linear samples
+        randomly drawn from the PDF.
+
+        For example, in **PyAutoLens**, by overwriting the `make_gen_from_object` method this returns a generator
+        of `Tracer` objects from a PyAutoFit aggregator. This generator then generates lists of `Tracer` objects
+        corresponding to non-linear search samples randomly drawn from the PDF.
 
         Parameters
         ----------
-        aggregator
-            A PyAutoFit aggregator object containing the results of PyAutoLens model-fits.
         total_samples
-            For each entry in the aggregator, the total number of tracers that are randomly drawn from the PDF.
+            The total number of non-linear search samples that should be randomly drawn from the PDF.
         """
 
         def func_gen(fit: Fit, total_samples: int) -> List[object]:
-            """
-            Returns a `Tracer` object from the `Samples` object of the non-linear search. where the model is chosen randomly
-            from the PDF.
-
-            The plane's galaxies have their hyper-images added (if they were used in the fit).
-
-            Parameters
-            ----------
-            fit
-                A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
-            total_samples
-                For each entry in the aggregator, the total number of tracers that are randomly drawn from the PDF.
-            """
 
             samples = fit.value(name="samples")
 
             return [
-                self.make_gen(
+                self.make_object_for_gen(
                     fit=fit,
                     galaxies=samples.instance_drawn_randomly_from_pdf().galaxies,
                 )
@@ -300,8 +308,28 @@ class AbstractAgg:
 
 
 class TracerAgg(AbstractAgg):
-    def make_gen(self, fit, galaxies):
+    """
+    Wraps a PyAutoFit aggregator in order to create generators of tracers corresponding to the results of a non-linear
+    search model-fit.
+    """
 
+    def make_object_for_gen(self, fit, galaxies) -> "al.Tracer":
+        """
+        Creates a `Tracer` object from a `ModelInstance` that contains the galaxies of a sample from a non-linear
+        search.
+
+        Parameters
+        ----------
+        fit
+            A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+        galaxies
+            A list of galaxies corresponding to a sample of a non-linear search and model-fit.
+
+        Returns
+        -------
+        Tracer
+            A tracer whose galaxies are a sample of a PyAutoFit non-linear search.
+        """
         return _tracer_from(fit=fit, galaxies=galaxies)
 
 
@@ -314,7 +342,10 @@ class FitImagingAgg(AbstractAgg):
         settings_inversion: Optional[al.SettingsInversion] = None,
         use_preloaded_grid: bool = True,
     ):
-
+        """
+        Wraps a PyAutoFit aggregator in order to create generators of fits to imaging data, corresponding to the
+        results of a non-linear search model-fit.
+        """
         super().__init__(aggregator=aggregator)
 
         self.settings_imaging = settings_imaging
@@ -322,8 +353,23 @@ class FitImagingAgg(AbstractAgg):
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
 
-    def make_gen(self, fit, galaxies):
+    def make_object_for_gen(self, fit, galaxies) -> "al.FitImaging":
+        """
+        Creates a `FitImaging` object from a `ModelInstance` that contains the galaxies of a sample from a non-linear
+        search.
 
+        Parameters
+        ----------
+        fit
+            A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+        galaxies
+            A list of galaxies corresponding to a sample of a non-linear search and model-fit.
+
+        Returns
+        -------
+        FitImaging
+            A fit to imaging data whose galaxies are a sample of a PyAutoFit non-linear search.
+        """
         return _fit_imaging_from(
             fit=fit,
             galaxies=galaxies,
@@ -344,7 +390,10 @@ class FitInterferometerAgg(AbstractAgg):
         use_preloaded_grid: bool = True,
         real_space_mask: Optional[al.Mask2D] = None,
     ):
-
+        """
+        Wraps a PyAutoFit aggregator in order to create generators of fits to interferometer data, corresponding to the
+        results of a non-linear search model-fit.
+        """
         super().__init__(aggregator=aggregator)
 
         self.settings_interferometer = settings_interferometer
@@ -353,8 +402,23 @@ class FitInterferometerAgg(AbstractAgg):
         self.use_preloaded_grid = use_preloaded_grid
         self.real_space_mask = real_space_mask
 
-    def make_gen(self, fit, galaxies):
+    def make_object_for_gen(self, fit, galaxies) -> "al.FitInterferometer":
+        """
+        Creates a `FitInterferometer` object from a `ModelInstance` that contains the galaxies of a sample from a non-linear
+        search.
 
+        Parameters
+        ----------
+        fit
+            A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+        galaxies
+            A list of galaxies corresponding to a sample of a non-linear search and model-fit.
+
+        Returns
+        -------
+        FitInterferometer
+            A fit to interferometer data whose galaxies are a sample of a PyAutoFit non-linear search.
+        """
         return _fit_interferometer_from(
             fit=fit,
             galaxies=galaxies,
