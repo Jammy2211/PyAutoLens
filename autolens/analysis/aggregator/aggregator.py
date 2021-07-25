@@ -222,7 +222,7 @@ class AbstractAgg:
         likelihood `Tracer` objects for all aggregator results.
         """
 
-        def func_gen(fit: Fit) -> Generator[object]:
+        def func_gen(fit: Fit) -> Generator:
             return self.make_object_for_gen(fit=fit, galaxies=fit.instance.galaxies)
 
         return self.aggregator.map(func=func_gen)
