@@ -109,6 +109,7 @@ def _fit_imaging_from(
 
 def _fit_interferometer_from(
     fit: Fit,
+    galaxies: List[al.Galaxy],
     real_space_mask: Optional[al.Mask2D] = None,
     settings_interferometer: al.SettingsInterferometer = None,
     settings_pixelization: al.SettingsPixelization = None,
@@ -133,7 +134,7 @@ def _fit_interferometer_from(
         real_space_mask=real_space_mask,
         settings_interferometer=settings_interferometer,
     )
-    tracer = _tracer_from(fit=fit, galaxies=fit.instance.galaxies)
+    tracer = _tracer_from(fit=fit, galaxies=galaxies)
 
     settings_pixelization = settings_pixelization or fit.value(
         name="settings_pixelization"
@@ -160,7 +161,6 @@ def _fit_interferometer_from(
 
 
 class AbstractAgg:
-
     def __init__(self, aggregator: af.Aggregator):
 
         self.aggregator = aggregator
@@ -300,7 +300,6 @@ class AbstractAgg:
 
 
 class TracerAgg(AbstractAgg):
-
     def make_gen(self, fit, galaxies):
 
         return _tracer_from(fit=fit, galaxies=galaxies)
@@ -325,60 +324,45 @@ class FitImagingAgg(AbstractAgg):
 
     def make_gen(self, fit, galaxies):
 
-        return _fit_imaging_from(fit=fit, galaxies=galaxies,
-                                 settings_imaging=self.settings_imaging,
-                                 settings_pixelization=self.settings_pixelization,
-                                 settings_inversion=self.settings_inversion,
-                                 use_preloaded_grid=self.use_preloaded_grid,
-                                 )
+        return _fit_imaging_from(
+            fit=fit,
+            galaxies=galaxies,
+            settings_imaging=self.settings_imaging,
+            settings_pixelization=self.settings_pixelization,
+            settings_inversion=self.settings_inversion,
+            use_preloaded_grid=self.use_preloaded_grid,
+        )
+
 
 class FitInterferometerAgg(AbstractAgg):
-
     def __init__(
         self,
         aggregator: af.Aggregator,
-        settings_imaging: Optional[al.SettingsImaging] = None,
+        settings_interferometer: Optional[al.SettingsInterferometer] = None,
         settings_pixelization: Optional[al.SettingsPixelization] = None,
         settings_inversion: Optional[al.SettingsInversion] = None,
         use_preloaded_grid: bool = True,
+        real_space_mask: Optional[al.Mask2D] = None,
     ):
 
         super().__init__(aggregator=aggregator)
 
-        self.settings_imaging = settings_imaging
+        self.settings_interferometer = settings_interferometer
         self.settings_pixelization = settings_pixelization
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
+        self.real_space_mask = real_space_mask
 
-    def max_log_likelihood_gen(
-        self,
-        settings_interferometer: al.SettingsInterferometer = None,
-        settings_pixelization: al.SettingsPixelization = None,
-        settings_inversion: al.SettingsInversion = None,
-        use_preloaded_grid: bool = True,
-    ):
-        """
-        Returns a `FitInterferometer` object from an aggregator's `SearchOutput` class, which we call an 'agg_obj' to
-        describe that it acts as the aggregator object for one result in the `Aggregator`. This uses the aggregator's
-        generator outputs such that the function can use the `Aggregator`'s map function to to create a `FitInterferometer`
-        generator.
+    def make_gen(self, fit, galaxies):
 
-        The `FitInterferometer` is created.
-
-        Parameters
-        ----------
-        agg_obj : af.SearchOutput
-            A PyAutoFit aggregator's SearchOutput object containing the generators of the results of PyAutoLens model-fits.
-        """
-
-        func = partial(
-            _fit_interferometer_from,
-            settings_interferometer=settings_interferometer,
-            settings_pixelization=settings_pixelization,
-            settings_inversion=settings_inversion,
-            use_preloaded_grid=use_preloaded_grid,
+        return _fit_interferometer_from(
+            fit=fit,
+            galaxies=galaxies,
+            settings_interferometer=self.settings_interferometer,
+            settings_pixelization=self.settings_pixelization,
+            settings_inversion=self.settings_inversion,
+            use_preloaded_grid=self.use_preloaded_grid,
         )
-        return self.aggregator.map(func=func)
 
 
 def grid_search_result_as_array(
