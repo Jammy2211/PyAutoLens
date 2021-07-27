@@ -26,6 +26,7 @@ class MockResult(af.MockResult):
         updated_positions_threshold=None,
         stochastic_log_evidences=None,
     ):
+
         super().__init__(
             samples=samples,
             instance=instance,

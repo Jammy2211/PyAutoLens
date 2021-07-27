@@ -99,7 +99,7 @@ class TestTracerAgg:
         clean(database_file=database_file, result_path=result_path)
 
         search = mock.MockSearch(
-            samples=samples, result=mock.MockResult(samples=samples)
+            samples=samples, result=mock.MockResult(model=model, samples=samples)
         )
         search.paths = af.DirectoryPaths(path_prefix=path_prefix)
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
@@ -137,7 +137,7 @@ class TestTracerAgg:
         clean(database_file=database_file, result_path=result_path)
 
         search = mock.MockSearch(
-            samples=samples, result=mock.MockResult(samples=samples)
+            samples=samples, result=mock.MockResult(model=model, samples=samples)
         )
         search.paths = af.DirectoryPaths(path_prefix=path_prefix)
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
@@ -214,7 +214,7 @@ class TestFitImagingAgg:
         clean(database_file=database_file, result_path=result_path)
 
         search = mock.MockSearch(
-            samples=samples, result=mock.MockResult(samples=samples)
+            samples=samples, result=mock.MockResult(model=model, samples=samples)
         )
         search.paths = af.DirectoryPaths(path_prefix=path_prefix)
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
@@ -256,7 +256,7 @@ class TestFitImagingAgg:
         clean(database_file=database_file, result_path=result_path)
 
         search = mock.MockSearch(
-            samples=samples, result=mock.MockResult(samples=samples)
+            samples=samples, result=mock.MockResult(model=model, samples=samples)
         )
         search.paths = af.DirectoryPaths(path_prefix=path_prefix)
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
@@ -337,7 +337,7 @@ class TestFitInterferometerAgg:
         clean(database_file=database_file, result_path=result_path)
 
         search = mock.MockSearch(
-            samples=samples, result=mock.MockResult(samples=samples)
+            samples=samples, result=mock.MockResult(model=model, samples=samples)
         )
         search.paths = af.DirectoryPaths(path_prefix=path_prefix)
         analysis = al.AnalysisInterferometer(dataset=interferometer_7)
@@ -383,7 +383,7 @@ class TestFitInterferometerAgg:
         clean(database_file=database_file, result_path=result_path)
 
         search = mock.MockSearch(
-            samples=samples, result=mock.MockResult(samples=samples)
+            samples=samples, result=mock.MockResult(model=model, samples=samples)
         )
         search.paths = af.DirectoryPaths(path_prefix=path_prefix)
         analysis = al.AnalysisInterferometer(dataset=interferometer_7)
