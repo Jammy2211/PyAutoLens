@@ -14,7 +14,7 @@ import numpy as np
 from os import path
 import json
 
-from typing import Optional, List, Generator
+from typing import Optional, List, Generator, Tuple
 
 
 def _tracer_from(fit: Fit, galaxies: List[al.Galaxy]) -> "al.Tracer":
@@ -429,89 +429,87 @@ class FitInterferometerAgg(AbstractAgg):
         )
 
 
-def grid_search_result_as_array(
-    aggregator: af.Aggregator,
-    use_log_evidences: bool = True,
-    use_stochastic_log_evidences: bool = False,
-) -> np.ndarray:
+class SubhaloAgg:
 
-    grid_search_result_gen = aggregator.values("grid_search_result")
+    def __init__(
+        self,
+      #  aggregator_no_subhalo: af.Aggregator,
+        aggregator_grid_search : af.GridSearchAggregator,
+        settings_imaging: Optional[al.SettingsImaging] = None,
+        settings_pixelization: Optional[al.SettingsPixelization] = None,
+        settings_inversion: Optional[al.SettingsInversion] = None,
+        use_preloaded_grid: bool = True,
+    ):
+        """
+        Wraps a PyAutoFit aggregator in order to create generators of fits to imaging data, corresponding to the
+        results of a non-linear search model-fit.
+        """
+#        self.aggregator_no_subhalo = aggregator_no_subhalo
+        self.aggregator_grid_search = aggregator_grid_search
+        self.settings_imaging = settings_imaging
+        self.settings_pixelization = settings_pixelization
+        self.settings_inversion = settings_inversion
+        self.use_preloaded_grid = use_preloaded_grid
 
-    grid_search_results = list(filter(None, list(grid_search_result_gen)))
+        if len(aggregator_grid_search) == 0:
+            raise exc.AggregatorException(
+                "There is no grid search of results in the aggregator."
+            )
+        elif len(aggregator_grid_search) > 1:
+            raise exc.AggregatorException(
+                "There is more than one grid search of results in the aggregator - please filter the"
+                "aggregator."
+            )
 
-    if len(grid_search_results) == 0:
-        raise exc.AggregatorException(
-            "There is no grid search resultin the aggregator."
-        )
-    elif len(grid_search_results) > 1:
-        raise exc.AggregatorException(
-            "There is more than one grid search result in the aggregator - please filter the"
-            "aggregator."
-        )
+    @property
+    def grid_search_result(self) -> af.GridSearchResult:
+        return self.aggregator_grid_search[0]['result']
 
-    return grid_search_log_evidences_as_array_from_grid_search_result(
-        grid_search_result=grid_search_results[0],
-        use_log_evidences=use_log_evidences,
-        use_stochastic_log_evidences=use_stochastic_log_evidences,
-    )
+    def _subhalo_array_from(self, values) -> al.Array2D:
 
-
-def grid_search_subhalo_masses_as_array(aggregator: af.Aggregator) -> al.Array2D:
-
-    grid_search_result_gen = aggregator.values("grid_search_result")
-
-    grid_search_results = list(filter(None, list(grid_search_result_gen)))
-
-    if len(grid_search_results) != 1:
-        raise exc.AggregatorException(
-            "There is more than one grid search result in the aggregator - please filter the"
-            "aggregator."
-        )
-
-    return grid_search_subhalo_masses_as_array_from_grid_search_result(
-        grid_search_result=grid_search_results[0]
-    )
-
-
-def grid_search_subhalo_centres_as_array(aggregator: af.Aggregator) -> al.Array2D:
-
-    grid_search_result_gen = aggregator.values("grid_search_result")
-
-    grid_search_results = list(filter(None, list(grid_search_result_gen)))
-
-    if len(grid_search_results) != 1:
-        raise exc.AggregatorException(
-            "There is more than one grid search result in the aggregator - please filter the"
-            "aggregator."
+        return al.Array2D.manual_yx_and_values(
+            y=[centre[0] for centre in self.grid_search_result.physical_centres_lists],
+            x=[centre[1] for centre in self.grid_search_result.physical_centres_lists],
+            values=values,
+            pixel_scales=self.grid_search_result.physical_step_sizes,
+            shape_native=self.grid_search_result.shape,
         )
 
-    return grid_search_subhalo_masses_as_array_from_grid_search_result(
-        grid_search_result=grid_search_results[0]
-    )
+    def subhalo_detection_array_from(
+            self,
+            use_log_evidences: bool = True,
+            use_stochastic_log_evidences: bool = False,
+    ) -> al.Array2D:
+        if (not use_log_evidences) and (not use_stochastic_log_evidences):
+            return self._subhalo_array_from(values=self.log_likelihoods)
+        elif use_log_evidences and not use_stochastic_log_evidences:
+            return self._subhalo_array_from(values=self.log_evidences)
+        return self._subhalo_array_from(values=self.stochastic_log_likelihoods)
 
+    @property
+    def log_likelihoods(self) -> List[float]:
 
-def grid_search_log_evidences_as_array_from_grid_search_result(
-    grid_search_result,
-    use_log_evidences=True,
-    use_stochastic_log_evidences: bool = False,
-) -> al.Array2D:
-
-    if grid_search_result.no_dimensions != 2:
-        raise exc.AggregatorException(
-            "The GridSearchResult is not dimensions 2, meaning a 2D array cannot be made."
-        )
-
-    if use_log_evidences and not use_stochastic_log_evidences:
-        values = [
+        return [
             value
-            for values in grid_search_result.log_evidence_values
+            for values in self.grid_search_result.max_log_likelihood_values
             for value in values
         ]
-    elif use_stochastic_log_evidences:
+
+    @property
+    def log_evidences(self) -> List[float]:
+
+        return [
+            value
+            for values in self.grid_search_result.log_evidence_values
+            for value in values
+        ]
+
+    @property
+    def stochastic_log_likelihoods(self) -> List[float]:
 
         stochastic_log_evidences = []
 
-        for result in grid_search_result.results:
+        for result in self.grid_search_result.results:
 
             stochastic_log_evidences_json_file = path.join(
                 result.search.paths.output_path, "stochastic_log_evidences.json"
@@ -527,59 +525,23 @@ def grid_search_log_evidences_as_array_from_grid_search_result(
 
             stochastic_log_evidences.append(np.median(stochastic_log_evidences_array))
 
-        values = stochastic_log_evidences
+        return stochastic_log_evidences
 
-    else:
-        values = [
-            value
-            for values in grid_search_result.max_log_likelihood_values
-            for value in values
+    @property
+    def masses(self) -> List[float]:
+        return [
+        res.samples.median_pdf_instance.galaxies.subhalo.mass.mass_at_200
+        for results in self.grid_search_result.results_reshaped
+        for res in results
+    ]
+
+    @property
+    def centres(self) -> List[Tuple[float]]:
+
+        return [
+            res.samples.median_pdf_instance.galaxies.subhalo.mass.centre
+            for results in self.grid_search_result.results_reshaped
+            for res in results
         ]
 
-    return al.Array2D.manual_yx_and_values(
-        y=[centre[0] for centre in grid_search_result.physical_centres_lists],
-        x=[centre[1] for centre in grid_search_result.physical_centres_lists],
-        values=values,
-        pixel_scales=grid_search_result.physical_step_sizes,
-        shape_native=grid_search_result.shape,
-    )
 
-
-def grid_search_subhalo_masses_as_array_from_grid_search_result(
-    grid_search_result,
-) -> [float]:
-
-    if grid_search_result.no_dimensions != 2:
-        raise exc.AggregatorException(
-            "The GridSearchResult is not dimensions 2, meaning a 2D array cannot be made."
-        )
-
-    masses = [
-        res.samples.median_pdf_instance.galaxies.subhalo.mass.mass_at_200
-        for results in grid_search_result.results_reshaped
-        for res in results
-    ]
-
-    return al.Array2D.manual_yx_and_values(
-        y=[centre[0] for centre in grid_search_result.physical_centres_lists],
-        x=[centre[1] for centre in grid_search_result.physical_centres_lists],
-        values=masses,
-        pixel_scales=grid_search_result.physical_step_sizes,
-        shape_native=grid_search_result.shape,
-    )
-
-
-def grid_search_subhalo_centres_as_array_from_grid_search_result(
-    grid_search_result,
-) -> [(float, float)]:
-
-    if grid_search_result.no_dimensions != 2:
-        raise exc.AggregatorException(
-            "The GridSearchResult is not dimensions 2, meaning a 2D array cannot be made."
-        )
-
-    return [
-        res.samples.median_pdf_instance.galaxies.subhalo.mass.centre
-        for results in grid_search_result.results_reshaped
-        for res in results
-    ]
