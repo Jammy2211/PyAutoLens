@@ -1,17 +1,17 @@
 from autoarray.plot.mat_wrap import mat_plot as mp
-from autolens.analysis import aggregator as agg
+from autolens.analysis.subhalo import SubhaloResult
 from autoarray.plot import abstract_plotters
-import numpy as np
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
+from autolens.fit.fit_imaging import FitImaging
 from autolens.plot import fit_imaging_plotters
-import os
-from os import path
-import shutil
-
 
 class SubhaloPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
+        subhalo_result : SubhaloResult,
+        fit_imaging_detect,
+        use_log_evidences: bool = True,
+        use_stochastic_log_evidences: bool = False,
         mat_plot_2d: lensing_mat_plot.MatPlot2D = lensing_mat_plot.MatPlot2D(),
         visuals_2d: lensing_visuals.Visuals2D = lensing_visuals.Visuals2D(),
         include_2d: lensing_include.Include2D = lensing_include.Include2D(),
@@ -20,34 +20,69 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
 
-    def fit_imaging_plotter_from(self, fit_imaging):
+        self.subhalo_result = subhalo_result
+        self.fit_imaging_detect = fit_imaging_detect
+        self.use_log_evidences = use_log_evidences
+        self.use_stochastic_log_evidences = use_stochastic_log_evidences
+
+    @property
+    def fit_imaging_before(self):
+        return self.subhalo_result.result_no_subhalo.max_log_likelihood_fit
+
+    @property
+    def fit_imaging_before_plotter(self):
         return fit_imaging_plotters.FitImagingPlotter(
-            fit=fit_imaging,
+            fit=self.fit_imaging_before,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
             include_2d=self.include_2d,
         )
 
+    @property
+    def fit_imaging_detect_plotter(self):
+        return fit_imaging_plotters.FitImagingPlotter(
+            fit=self.fit_imaging_detect,
+            mat_plot_2d=self.mat_plot_2d,
+            visuals_2d=self.visuals_2d,
+            include_2d=self.include_2d,
+        )
+
+    @property
+    def detection_array(self):
+
+        return self.subhalo_result.subhalo_detection_array_from(
+            use_log_evidences=self.use_log_evidences,
+            use_stochastic_log_evidences=self.use_stochastic_log_evidences
+        )
+
+    def figure_with_detection_overlay(self, image=False):
+
+        if image:
+
+            self.visuals_2d.array_overlay = self.detection_array
+
+            self.fit_imaging_detect_plotter.figures_2d(image=True)
+
     def subplot_detection_imaging(
-        self, fit_imaging_detect, detection_array, mass_array
+        self,
     ):
 
         self.open_subplot_figure(number_subplots=4)
 
         self.set_title("Image")
-        fit_imaging_plotter = self.fit_imaging_plotter_from(
-            fit_imaging=fit_imaging_detect
-        )
-        fit_imaging_plotter.figures_2d(image=True)
+        self.fit_imaging_detect_plotter.figures_2d(image=True)
 
         self.set_title("Signal-To-Noise Map")
-        fit_imaging_plotter.figures_2d(signal_to_noise_map=True)
+        self.fit_imaging_detect_plotter.figures_2d(signal_to_noise_map=True)
+        self.set_title(None)
 
         self.mat_plot_2d.plot_array(
-            array=detection_array,
+            array=self.detection_array,
             visuals_2d=self.visuals_2d,
             auto_labels=mp.AutoLabels(title="Increase in Log Evidence"),
         )
+
+        mass_array = self.subhalo_result.subhalo_mass_array_from()
 
         self.mat_plot_2d.plot_array(
             array=mass_array,
@@ -83,19 +118,14 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         self.open_subplot_figure(number_subplots=6)
 
         self.set_title("Normalized Residuals (No Subhalo)")
-        fit_imaging_plotter_before = self.fit_imaging_plotter_from(
-            fit_imaging=fit_imaging_before
-        )
-        fit_imaging_plotter_before.figures_2d(normalized_residual_map=True)
+        self.fit_imaging_before_plotter.figures_2d(normalized_residual_map=True)
 
         self.set_title("Chi-Squared Map (No Subhalo)")
-        fit_imaging_plotter_before.figures_2d(chi_squared_map=True)
+        self.fit_imaging_before_plotter.figures_2d(chi_squared_map=True)
 
         self.set_title("Source Reconstruction (No Subhalo)")
-        fit_imaging_plotter_before.figures_2d_of_planes(plane_image=True, plane_index=1)
-        fit_imaging_plotter_detect = self.fit_imaging_plotter_from(
-            fit_imaging=fit_imaging_detect
-        )
+        self.fit_imaging_before_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
+        fit_imaging_plotter_detect = self.fit_imaging_detect_plotter
 
         self.set_title("Normailzed Residuals (With Subhalo)")
         fit_imaging_plotter_detect.figures_2d(normalized_residual_map=True)
@@ -112,113 +142,3 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         self.close_subplot_figure()
 
 
-def agg_max_log_likelihood_from_aggregator(aggregator):
-
-    samples = list(filter(None, aggregator.values("samples")))
-    log_likelihood_list = [max(samps.log_likelihood_list) for samps in samples]
-    index = np.argmax(log_likelihood_list)
-    search_max = list(filter(None, aggregator.values("search")))[index]
-
-    directory = str(search_max.paths.name)
-    directory = directory.replace(r"/", path.sep)
-
-    return aggregator.filter(aggregator.directory.contains(directory))
-
-
-def copy_pickle_files_to_agg_max(agg_max_log_likelihood):
-
-    search_max_log_likelihood = list(agg_max_log_likelihood.values("search"))
-    pickle_path_max_log_likelihood = search_max_log_likelihood[0].paths.pickle_path
-
-    pickle_path_max_log_likelihood = str(pickle_path_max_log_likelihood).replace(
-        r"/", path.sep
-    )
-
-    pickle_path_grid_search = pickle_path_max_log_likelihood
-
-    pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
-    pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
-    pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
-
-    # TODO : needed for linux?
-
-    #   pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
-    #   pickle_path_grid_search = path.split(pickle_path_grid_search)[0]
-
-    pickle_path_grid_search = path.join(pickle_path_grid_search, "pickles")
-
-    src_files = os.listdir(pickle_path_grid_search)
-
-    for file_name in src_files:
-        full_file_name = path.join(pickle_path_grid_search, file_name)
-        if path.isfile(full_file_name):
-            shutil.copy(full_file_name, pickle_path_max_log_likelihood)
-
-
-def detection_array_from(
-    agg_before, agg_detect, use_log_evidences=True, use_stochastic_log_evidences=False
-):
-
-    if use_log_evidences and not use_stochastic_log_evidences:
-        figure_of_merit_before = list(agg_before.values("samples"))[0].log_evidence
-    elif use_stochastic_log_evidences:
-        figure_of_merit_before = np.median(
-            list(agg_before.values("stochastic_log_evidences"))[0]
-        )
-    else:
-        figure_of_merit_before = list(agg_before.values("samples"))[0].log_evidence
-
-    return (
-        agg.grid_search_result_as_array(
-            aggregator=agg_detect,
-            use_log_evidences=use_log_evidences,
-            use_stochastic_log_evidences=use_stochastic_log_evidences,
-        )
-        - figure_of_merit_before,
-    )[0]
-
-
-def mass_array_from(agg_detect):
-    return agg.grid_search_subhalo_masses_as_array(aggregator=agg_detect)
-
-
-def subplot_detection_agg(
-    agg_before,
-    agg_detect,
-    use_log_evidences=True,
-    use_stochastic_log_evidences=False,
-    subhalo_plotter=SubhaloPlotter(),
-):
-
-    fit_imaging_before = list(
-        agg.fit_imaging_generator_from_aggregator(aggregator=agg_before)
-    )[0]
-
-    agg_max_log_likelihood = agg_max_log_likelihood_from_aggregator(
-        aggregator=agg_detect
-    )
-
-    copy_pickle_files_to_agg_max(agg_max_log_likelihood=agg_max_log_likelihood)
-
-    fit_imaging_detect = list(
-        agg.fit_imaging_generator_from_aggregator(aggregator=agg_max_log_likelihood)
-    )[0]
-
-    detection_array = detection_array_from(
-        agg_before=agg_before,
-        agg_detect=agg_detect,
-        use_log_evidences=use_log_evidences,
-        use_stochastic_log_evidences=use_stochastic_log_evidences,
-    )
-
-    mass_array = mass_array_from(agg_detect=agg_detect)
-
-    subhalo_plotter.subplot_detection_fits(
-        fit_imaging_before=fit_imaging_before, fit_imaging_detect=fit_imaging_detect
-    )
-
-    subhalo_plotter.subplot_detection_imaging(
-        fit_imaging_detect=fit_imaging_detect,
-        detection_array=detection_array,
-        mass_array=mass_array,
-    )
