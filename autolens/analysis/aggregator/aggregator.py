@@ -42,9 +42,12 @@ def _tracer_from(fit: Fit, galaxies: List[al.Galaxy]) -> "al.Tracer":
 
     if hyper_galaxy_image_path_dict is not None:
 
-        for (galaxy_path, galaxy) in zip(
-            fit.instance.path_instance_tuples_for_class(al.Galaxy)[0][0], galaxies
-        ):
+        galaxy_path_list = [
+            gal[0] for gal in fit.instance.path_instance_tuples_for_class(al.Galaxy)
+        ]
+
+        for (galaxy_path, galaxy) in zip(galaxy_path_list, galaxies):
+
             if galaxy_path in hyper_galaxy_image_path_dict:
                 galaxy.hyper_model_image = hyper_model_image
                 galaxy.hyper_galaxy_image = hyper_galaxy_image_path_dict[galaxy_path]

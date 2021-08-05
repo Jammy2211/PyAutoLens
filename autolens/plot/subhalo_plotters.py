@@ -5,6 +5,8 @@ from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_
 from autolens.fit.fit_imaging import FitImaging
 from autolens.plot import fit_imaging_plotters
 
+import numpy as np
+
 
 class SubhaloPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
@@ -41,12 +43,7 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
 
     @property
     def fit_imaging_detect_plotter(self):
-        return fit_imaging_plotters.FitImagingPlotter(
-            fit=self.fit_imaging_detect,
-            mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.visuals_2d,
-            include_2d=self.include_2d,
-        )
+        return self.fit_imaging_detect_plotter_from(visuals_2d=self.visuals_2d)
 
     def fit_imaging_detect_plotter_from(self, visuals_2d):
         return fit_imaging_plotters.FitImagingPlotter(
@@ -56,25 +53,39 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
             include_2d=self.include_2d,
         )
 
-    @property
-    def detection_array(self):
+    def detection_array_from(self, remove_zeros: bool = False):
 
-        return self.subhalo_result.subhalo_detection_array_from(
+        detection_array = self.subhalo_result.subhalo_detection_array_from(
             use_log_evidences=self.use_log_evidences,
             use_stochastic_log_evidences=self.use_stochastic_log_evidences,
         )
 
-    def figure_with_detection_overlay(self, image=False):
+        if remove_zeros:
+
+            detection_array[detection_array < 0.0] = 0.0
+
+        return detection_array
+
+    def figure_with_detection_overlay(
+        self, image: bool = False, remove_zeros: bool = False, show_median: bool = True
+    ):
+
+        median_detection = np.round(np.median(self.detection_array_from()), 2)
 
         visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
-            array_overlay=self.detection_array
+            array_overlay=self.detection_array_from(remove_zeros=remove_zeros),
+            mass_profile_centres=self.subhalo_result.centres_native,
         )
 
-        figure_plotter = self.fit_imaging_detect_plotter_from(visuals_2d=visuals_2d)
+        fit_imaging_plotter = self.fit_imaging_detect_plotter_from(
+            visuals_2d=visuals_2d
+        )
 
-        figure_plotter.figures_2d(image=image)
+        if show_median:
+            fit_imaging_plotter.set_title(label=f"Image {median_detection}")
+            fit_imaging_plotter.figures_2d(image=image)
 
-    def subplot_detection_imaging(self,):
+    def subplot_detection_imaging(self, remove_zeros: bool = False):
 
         self.open_subplot_figure(number_subplots=4)
 
@@ -86,7 +97,7 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         self.set_title(None)
 
         self.mat_plot_2d.plot_array(
-            array=self.detection_array,
+            array=self.detection_array_from(remove_zeros=remove_zeros),
             visuals_2d=self.visuals_2d,
             auto_labels=mp.AutoLabels(title="Increase in Log Evidence"),
         )
@@ -104,7 +115,7 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         )
         self.close_subplot_figure()
 
-    def subplot_detection_fits(self, fit_imaging_before, fit_imaging_detect):
+    def subplot_detection_fits(self):
         """
         A subplot comparing the normalized residuals, chi-squared map and source reconstructions of the model-fits
         before the subhalo added to the model (top row) and the subhalo fit which gives the largest increase in
@@ -136,16 +147,17 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         self.fit_imaging_before_plotter.figures_2d_of_planes(
             plane_image=True, plane_index=1
         )
-        fit_imaging_plotter_detect = self.fit_imaging_detect_plotter
 
         self.set_title("Normailzed Residuals (With Subhalo)")
-        fit_imaging_plotter_detect.figures_2d(normalized_residual_map=True)
+        self.fit_imaging_detect_plotter.figures_2d(normalized_residual_map=True)
 
         self.set_title("Chi-Squared Map (With Subhalo)")
-        fit_imaging_plotter_detect.figures_2d(chi_squared_map=True)
+        self.fit_imaging_detect_plotter.figures_2d(chi_squared_map=True)
 
         self.set_title("Source Reconstruction (With Subhalo)")
-        fit_imaging_plotter_detect.figures_2d_of_planes(plane_image=True, plane_index=1)
+        self.fit_imaging_detect_plotter.figures_2d_of_planes(
+            plane_image=True, plane_index=1
+        )
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_detection_fits"
