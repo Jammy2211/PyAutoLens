@@ -42,8 +42,8 @@ def _tracer_from(fit: Fit, galaxies: List[al.Galaxy]) -> "al.Tracer":
 
     if hyper_galaxy_image_path_dict is not None:
 
-        for (galaxy_path, galaxy) in fit.instance.path_instance_tuples_for_class(
-            al.Galaxy
+        for (galaxy_path, galaxy) in zip(
+            fit.instance.path_instance_tuples_for_class(al.Galaxy)[0][0], galaxies
         ):
             if galaxy_path in hyper_galaxy_image_path_dict:
                 galaxy.hyper_model_image = hyper_model_image
@@ -427,11 +427,10 @@ class FitInterferometerAgg(AbstractAgg):
 
 
 class SubhaloAgg:
-
     def __init__(
         self,
-      #  aggregator_no_subhalo: af.Aggregator,
-        aggregator_grid_search : af.GridSearchAggregator,
+        #  aggregator_no_subhalo: af.Aggregator,
+        aggregator_grid_search: af.GridSearchAggregator,
         settings_imaging: Optional[al.SettingsImaging] = None,
         settings_pixelization: Optional[al.SettingsPixelization] = None,
         settings_inversion: Optional[al.SettingsInversion] = None,
@@ -441,7 +440,7 @@ class SubhaloAgg:
         Wraps a PyAutoFit aggregator in order to create generators of fits to imaging data, corresponding to the
         results of a non-linear search model-fit.
         """
-#        self.aggregator_no_subhalo = aggregator_no_subhalo
+        #        self.aggregator_no_subhalo = aggregator_no_subhalo
         self.aggregator_grid_search = aggregator_grid_search
         self.settings_imaging = settings_imaging
         self.settings_pixelization = settings_pixelization
@@ -460,8 +459,4 @@ class SubhaloAgg:
 
     @property
     def grid_search_result(self) -> af.GridSearchResult:
-        return self.aggregator_grid_search[0]['result']
-
-
-
-
+        return self.aggregator_grid_search[0]["result"]

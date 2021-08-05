@@ -1,14 +1,15 @@
 from autoarray.plot.mat_wrap import mat_plot as mp
-from autolens.analysis.subhalo import SubhaloResult
+from autolens.analysis.subhalo import SubhaloSearchResult
 from autoarray.plot import abstract_plotters
 from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
 from autolens.fit.fit_imaging import FitImaging
 from autolens.plot import fit_imaging_plotters
 
+
 class SubhaloPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
-        subhalo_result : SubhaloResult,
+        subhalo_result: SubhaloSearchResult,
         fit_imaging_detect,
         use_log_evidences: bool = True,
         use_stochastic_log_evidences: bool = False,
@@ -47,25 +48,33 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
             include_2d=self.include_2d,
         )
 
+    def fit_imaging_detect_plotter_from(self, visuals_2d):
+        return fit_imaging_plotters.FitImagingPlotter(
+            fit=self.fit_imaging_detect,
+            mat_plot_2d=self.mat_plot_2d,
+            visuals_2d=visuals_2d,
+            include_2d=self.include_2d,
+        )
+
     @property
     def detection_array(self):
 
         return self.subhalo_result.subhalo_detection_array_from(
             use_log_evidences=self.use_log_evidences,
-            use_stochastic_log_evidences=self.use_stochastic_log_evidences
+            use_stochastic_log_evidences=self.use_stochastic_log_evidences,
         )
 
     def figure_with_detection_overlay(self, image=False):
 
-        if image:
+        visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
+            array_overlay=self.detection_array
+        )
 
-            self.visuals_2d.array_overlay = self.detection_array
+        figure_plotter = self.fit_imaging_detect_plotter_from(visuals_2d=visuals_2d)
 
-            self.fit_imaging_detect_plotter.figures_2d(image=True)
+        figure_plotter.figures_2d(image=image)
 
-    def subplot_detection_imaging(
-        self,
-    ):
+    def subplot_detection_imaging(self,):
 
         self.open_subplot_figure(number_subplots=4)
 
@@ -124,7 +133,9 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         self.fit_imaging_before_plotter.figures_2d(chi_squared_map=True)
 
         self.set_title("Source Reconstruction (No Subhalo)")
-        self.fit_imaging_before_plotter.figures_2d_of_planes(plane_image=True, plane_index=1)
+        self.fit_imaging_before_plotter.figures_2d_of_planes(
+            plane_image=True, plane_index=1
+        )
         fit_imaging_plotter_detect = self.fit_imaging_detect_plotter
 
         self.set_title("Normailzed Residuals (With Subhalo)")
@@ -140,5 +151,3 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
             auto_filename="subplot_detection_fits"
         )
         self.close_subplot_figure()
-
-
