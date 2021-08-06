@@ -1,76 +1,33 @@
-from autofit.non_linear.grid.grid_search import GridSearch, GridSearchResult
+from autofit.database.model.fit import Fit
+from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from typing import Dict, List, Tuple, Optional
+from autoarray.plot import abstract_plotters
+from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
+from autolens.fit.fit_imaging import FitImaging
+from autolens.plot import fit_imaging_plotters
+from autolens.analysis.aggregator.aggregator import FitImagingAgg
+from autolens.analysis.aggregator.aggregator import _fit_imaging_from
+
+from typing import Generator, List, Tuple
 import numpy as np
 
 
-class SubhaloSearch:
-    def __init__(self, grid_search: GridSearch, result_no_subhalo):
-        """
-        Performs a non linear optimiser search for each square in a grid. The dimensionality of the search depends on
-        the number of distinct priors passed to the fit function. (1 / step_size) ^ no_dimension steps are performed
-        per an optimisation.
 
-        Parameters
-        ----------
-        number_of_steps
-            The number of steps to go in each direction
-        search
-            The class of the search that is run at each step
-        result_output_interval
-            The interval between saving a GridSearchResult object via paths
-        """
-        self.grid_search = grid_search
-        self.result_no_subhalo = result_no_subhalo
+class SubhaloResult:
 
-    def fit(
-        self, model, analysis, grid_priors, info: Optional[Dict] = None
-    ) -> "SubhaloSearchResult":
-        """
-        Fit an analysis with a set of grid priors. The grid priors are priors associated with the model mapper
-        of this instance that are replaced by uniform priors for each step of the grid search.
-
-        Parameters
-        ----------
-        model
-        analysis: autofit.non_linear.non_linear.Analysis
-            An analysis used to determine the fitness of a given model instance
-        grid_priors: [p.Prior]
-            A list of priors to be substituted for uniform priors across the grid.
-
-        Returns
-        -------
-        result: GridSearchResult
-            An object that comprises the results from each individual fit
-        """
-        grid_search_result = self.grid_search.fit(
-            model=model, analysis=analysis, grid_priors=grid_priors, info=info
-        )
-
-        subhalo_search_result = SubhaloSearchResult(
-            grid_search_result=grid_search_result,
-            result_no_subhalo=self.result_no_subhalo,
-        )
-
-        self.grid_search.paths.save_object("result", subhalo_search_result)
-
-        return subhalo_search_result
-
-
-class SubhaloSearchResult:
-    def __init__(self, grid_search_result, result_no_subhalo):
+    def __init__(self, grid_search_result, result_no_subhalo, stochastic_log_evidences=None):
 
         self.grid_search_result = grid_search_result
         self.result_no_subhalo = result_no_subhalo
+        self.stochastic_log_evidences = stochastic_log_evidences
 
     @property
-    def model(self):
-        return self.grid_search_result.model
-
-    @property
-    def instance(self):
-        return self.grid_search_result.instance
+    def fit_imaging_before(self):
+        return _fit_imaging_from(
+            fit=self.result_no_subhalo,
+            galaxies=self.result_no_subhalo.instance.galaxies,
+        )
 
     def _subhalo_array_from(self, values_native) -> Array2D:
 
@@ -96,21 +53,23 @@ class SubhaloSearchResult:
             values_native = self.grid_search_result.log_likelihoods_native
 
             if relative_to_no_subhalo:
-                values_native -= self.result_no_subhalo.log_likelihood
+                values_native -= self.result_no_subhalo[
+                    "samples"
+                ].max_log_likelihood_sample.log_likelihood
 
         elif use_log_evidences and not use_stochastic_log_evidences:
 
             values_native = self.grid_search_result.log_evidences_native
 
             if relative_to_no_subhalo:
-                values_native -= self.result_no_subhalo.samples.log_evidence
+                values_native -= self.result_no_subhalo["samples"].log_evidence
 
         else:
 
             values_native = self.stochastic_log_likelihoods_native
 
             if relative_to_no_subhalo:
-                values_native -= self.no_subhalo_stochastic_log_likelihoods
+                values_native -= np.median(self.result_no_subhalo["stochastic_log_evidences"])
 
         return self._subhalo_array_from(values_native=values_native)
 
@@ -119,6 +78,7 @@ class SubhaloSearchResult:
 
     @property
     def stochastic_log_likelihoods_native(self) -> List[float]:
+
         return self.grid_search_result._list_to_native(
             lst=self.stochastic_log_evidences
         )
@@ -157,3 +117,160 @@ class SubhaloSearchResult:
             grid=centres_native,
             pixel_scales=self.grid_search_result.physical_step_sizes,
         )
+
+
+class SubhaloPlotter(abstract_plotters.AbstractPlotter):
+    def __init__(
+        self,
+        subhalo_result: SubhaloResult,
+        fit_imaging_detect,
+        use_log_evidences: bool = True,
+        use_stochastic_log_evidences: bool = False,
+        mat_plot_2d: lensing_mat_plot.MatPlot2D = lensing_mat_plot.MatPlot2D(),
+        visuals_2d: lensing_visuals.Visuals2D = lensing_visuals.Visuals2D(),
+        include_2d: lensing_include.Include2D = lensing_include.Include2D(),
+    ):
+        super().__init__(
+            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
+        )
+
+        self.subhalo_result = subhalo_result
+        self.fit_imaging_detect = fit_imaging_detect
+        self.use_log_evidences = use_log_evidences
+        self.use_stochastic_log_evidences = use_stochastic_log_evidences
+
+    @property
+    def fit_imaging_before(self):
+        return self.subhalo_result.fit_imaging_before
+
+    @property
+    def fit_imaging_before_plotter(self):
+        return fit_imaging_plotters.FitImagingPlotter(
+            fit=self.fit_imaging_before,
+            mat_plot_2d=self.mat_plot_2d,
+            visuals_2d=self.visuals_2d,
+            include_2d=self.include_2d,
+        )
+
+    @property
+    def fit_imaging_detect_plotter(self):
+        return self.fit_imaging_detect_plotter_from(visuals_2d=self.visuals_2d)
+
+    def fit_imaging_detect_plotter_from(self, visuals_2d):
+        return fit_imaging_plotters.FitImagingPlotter(
+            fit=self.fit_imaging_detect,
+            mat_plot_2d=self.mat_plot_2d,
+            visuals_2d=visuals_2d,
+            include_2d=self.include_2d,
+        )
+
+    def detection_array_from(self, remove_zeros: bool = False):
+
+        detection_array = self.subhalo_result.subhalo_detection_array_from(
+            use_log_evidences=self.use_log_evidences,
+            use_stochastic_log_evidences=self.use_stochastic_log_evidences,
+        )
+
+        if remove_zeros:
+
+            detection_array[detection_array < 0.0] = 0.0
+
+        return detection_array
+
+    def figure_with_detection_overlay(
+        self, image: bool = False, remove_zeros: bool = False, show_median: bool = True
+    ):
+
+        median_detection = np.round(np.median(self.detection_array_from()), 2)
+
+        visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
+            array_overlay=self.detection_array_from(remove_zeros=remove_zeros),
+            mass_profile_centres=self.subhalo_result.centres_native,
+        )
+
+        fit_imaging_plotter = self.fit_imaging_detect_plotter_from(
+            visuals_2d=visuals_2d
+        )
+
+        if show_median:
+            fit_imaging_plotter.set_title(label=f"Image {median_detection}")
+            fit_imaging_plotter.figures_2d(image=image)
+
+    def subplot_detection_imaging(self, remove_zeros: bool = False):
+
+        self.open_subplot_figure(number_subplots=4)
+
+        self.set_title("Image")
+        self.fit_imaging_detect_plotter.figures_2d(image=True)
+
+        self.set_title("Signal-To-Noise Map")
+        self.fit_imaging_detect_plotter.figures_2d(signal_to_noise_map=True)
+        self.set_title(None)
+
+        self.mat_plot_2d.plot_array(
+            array=self.detection_array_from(remove_zeros=remove_zeros),
+            visuals_2d=self.visuals_2d,
+            auto_labels=mp.AutoLabels(title="Increase in Log Evidence"),
+        )
+
+        mass_array = self.subhalo_result.subhalo_mass_array_from()
+
+        self.mat_plot_2d.plot_array(
+            array=mass_array,
+            visuals_2d=self.visuals_2d,
+            auto_labels=mp.AutoLabels(title="Subhalo Mass"),
+        )
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="subplot_detection_imaging"
+        )
+        self.close_subplot_figure()
+
+    def subplot_detection_fits(self):
+        """
+        A subplot comparing the normalized residuals, chi-squared map and source reconstructions of the model-fits
+        before the subhalo added to the model (top row) and the subhalo fit which gives the largest increase in
+        Bayesian evidence on the subhalo detection grid search.
+
+        Parameters
+        ----------
+        fit_imaging_before : FitImaging
+            The fit of a `Tracer` not including a subhalo in the model to a `MaskedImaging` dataset (e.g. the
+            model-image, residual_map, chi_squared_map).
+        fit_imaging_detect : FitImaging
+            The fit of a `Tracer` with the subhalo detection grid's highest evidence model including a subhalo to a
+            `MaskedImaging` dataset (e.g. the  model-image, residual_map, chi_squared_map).
+        include : Include
+            Customizes what appears on the plots (e.g. critical curves, profile centres, origin, etc.).
+        mat_plot_2d : Plotter
+            Object for plotting PyAutoLens data-stuctures as subplots via Matplotlib.
+        """
+
+        self.open_subplot_figure(number_subplots=6)
+
+        self.set_title("Normalized Residuals (No Subhalo)")
+        self.fit_imaging_before_plotter.figures_2d(normalized_residual_map=True)
+
+        self.set_title("Chi-Squared Map (No Subhalo)")
+        self.fit_imaging_before_plotter.figures_2d(chi_squared_map=True)
+
+        self.set_title("Source Reconstruction (No Subhalo)")
+        self.fit_imaging_before_plotter.figures_2d_of_planes(
+            plane_image=True, plane_index=1
+        )
+
+        self.set_title("Normailzed Residuals (With Subhalo)")
+        self.fit_imaging_detect_plotter.figures_2d(normalized_residual_map=True)
+
+        self.set_title("Chi-Squared Map (With Subhalo)")
+        self.fit_imaging_detect_plotter.figures_2d(chi_squared_map=True)
+
+        self.set_title("Source Reconstruction (With Subhalo)")
+        self.fit_imaging_detect_plotter.figures_2d_of_planes(
+            plane_image=True, plane_index=1
+        )
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="subplot_detection_fits"
+        )
+        self.close_subplot_figure()

@@ -44,7 +44,7 @@ from autogalaxy.profiles import (
 from autogalaxy import convert
 
 from .analysis import aggregator as agg
-from .analysis.subhalo import SubhaloSearch
+from .analysis import subhalo
 from . import plot
 from .dataset.imaging import SimulatorImaging
 from .dataset.interferometer import SimulatorInterferometer
