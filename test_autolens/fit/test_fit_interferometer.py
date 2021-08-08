@@ -1,7 +1,10 @@
 import autolens as al
 import numpy as np
 import pytest
-from autoarray.inversion import inversions
+from autoarray.inversion.inversion.interferometer import InversionInterferometerMatrix
+from autoarray.inversion.inversion.interferometer import (
+    InversionInterferometerLinearOperator,
+)
 from autogalaxy.mock.mock import MockLightProfile
 
 
@@ -426,7 +429,7 @@ class TestCompareToManualInversionOnly:
             grid=interferometer_7.grid_inversion, sparse_grid=None
         )
 
-        inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
+        inversion = InversionInterferometerMatrix.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
             visibilities=interferometer_7.visibilities,
@@ -494,7 +497,7 @@ class TestCompareToManualInversionOnly:
         assert log_evidence == fit.log_evidence
         assert log_evidence == fit.figure_of_merit
 
-        mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_from(
+        mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_via_mapping_matrix_from(
             mapping_matrix=fit.inversion.mapper.mapping_matrix,
             reconstruction=fit.inversion.reconstruction,
         )
@@ -520,7 +523,7 @@ class TestCompareToManualInversionOnly:
             grid=interferometer_7.grid, sparse_grid=None
         )
 
-        inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
+        inversion = InversionInterferometerMatrix.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
             visibilities=interferometer_7.visibilities,
@@ -551,7 +554,7 @@ class TestCompareToManualInversionOnly:
             grid=interferometer_7.grid, sparse_grid=None
         )
 
-        inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
+        inversion = InversionInterferometerMatrix.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
             visibilities=interferometer_7.visibilities,
@@ -661,7 +664,7 @@ class TestCompareToManualInversionOnly:
             grid=interferometer_7_lop.grid_inversion, sparse_grid=None
         )
 
-        inversion = inversions.InversionInterferometerLinearOperator.from_data_mapper_and_regularization(
+        inversion = InversionInterferometerLinearOperator.from_data_mapper_and_regularization(
             mapper=mapper,
             regularization=reg,
             visibilities=interferometer_7_lop.visibilities,
@@ -730,7 +733,7 @@ class TestCompareToManualInversionOnly:
         assert log_evidence == fit.log_evidence
         assert log_evidence == fit.figure_of_merit
 
-        mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_from(
+        mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_via_mapping_matrix_from(
             mapping_matrix=fit.inversion.mapper.mapping_matrix,
             reconstruction=fit.inversion.reconstruction,
         )
@@ -773,7 +776,7 @@ class TestCompareToManualProfilesAndInversion:
             settings=al.SettingsPixelization(use_border=False),
         )
 
-        inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
+        inversion = InversionInterferometerMatrix.from_data_mapper_and_regularization(
             visibilities=profile_subtracted_visibilities,
             noise_map=interferometer_7.noise_map,
             transformer=interferometer_7.transformer,
@@ -842,7 +845,7 @@ class TestCompareToManualProfilesAndInversion:
         assert log_evidence == fit.log_evidence
         assert log_evidence == fit.figure_of_merit
 
-        mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_from(
+        mapped_reconstructed_image = al.util.inversion.mapped_reconstructed_data_via_mapping_matrix_from(
             mapping_matrix=fit.inversion.mapper.mapping_matrix,
             reconstruction=fit.inversion.reconstruction,
         )
@@ -889,7 +892,7 @@ class TestCompareToManualProfilesAndInversion:
             settings=al.SettingsPixelization(use_border=False),
         )
 
-        inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
+        inversion = InversionInterferometerMatrix.from_data_mapper_and_regularization(
             visibilities=profile_subtracted_visibilities,
             noise_map=interferometer_7_grid.noise_map,
             transformer=interferometer_7_grid.transformer,
@@ -951,7 +954,7 @@ class TestCompareToManualProfilesAndInversion:
             settings=al.SettingsPixelization(use_border=False),
         )
 
-        inversion = inversions.InversionInterferometerMatrix.from_data_mapper_and_regularization(
+        inversion = InversionInterferometerMatrix.from_data_mapper_and_regularization(
             visibilities=profile_subtracted_visibilities,
             noise_map=interferometer_7_grid.noise_map,
             transformer=interferometer_7_grid.transformer,

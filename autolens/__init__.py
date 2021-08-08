@@ -6,7 +6,13 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
 from autoarray.inversion import pixelizations as pix, regularization as reg
 from autoarray.inversion.pixelizations import SettingsPixelization
-from autoarray.inversion.inversions import inversion as Inversion, SettingsInversion
+from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.inversion.imaging import (
+    inversion_imaging_from as InversionImaging,
+)
+from autoarray.inversion.inversion.interferometer import (
+    inversion_interferometer_from as InversionInterferometer,
+)
 from autoarray.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT

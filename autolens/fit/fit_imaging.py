@@ -2,7 +2,8 @@ import numpy as np
 
 from autoconf import conf
 from autoarray.fit import fit as aa_fit
-from autoarray.inversion import pixelizations as pix, inversions as inv
+from autoarray.inversion import pixelizations as pix
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autogalaxy.galaxy import galaxy as g
 from autoarray import preloads as pload
 
@@ -16,7 +17,7 @@ class FitImaging(aa_fit.FitImaging):
         hyper_background_noise=None,
         use_hyper_scaling=True,
         settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=inv.SettingsInversion(),
+        settings_inversion=SettingsInversion(),
         preloads=pload.Preloads(),
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
@@ -79,6 +80,7 @@ class FitImaging(aa_fit.FitImaging):
                 image=self.profile_subtracted_image,
                 noise_map=noise_map,
                 convolver=imaging.convolver,
+                w_tilde=imaging.w_tilde,
                 settings_pixelization=settings_pixelization,
                 settings_inversion=settings_inversion,
                 preloads=preloads,

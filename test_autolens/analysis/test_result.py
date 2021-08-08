@@ -146,7 +146,7 @@ class TestResultAbstract:
         )
 
         assert result.source_plane_centre.in_list[0] == pytest.approx(
-            (-0.916666, -0.916666), 1.0e-4
+            (-0.66666, -0.66666), 1.0e-4
         )
 
     def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_centres_and_separations(

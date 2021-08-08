@@ -11,7 +11,8 @@ import copy
 import autofit as af
 from autoarray import preloads as pload
 from autoarray.exc import PixelizationException, InversionException, GridException
-from autoarray.inversion import pixelizations as pix, inversions as inv
+from autoarray.inversion import pixelizations as pix
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoconf import conf
 from autofit.exc import FitException
@@ -54,7 +55,7 @@ class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
         hyper_dataset_result=None,
         cosmology=cosmo.Planck15,
         settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=inv.SettingsInversion(),
+        settings_inversion=SettingsInversion(),
         settings_lens=settings.SettingsLens(),
         preloads=pload.Preloads(),
     ):
@@ -378,7 +379,7 @@ class AnalysisInterferometer(AnalysisDataset):
         hyper_dataset_result=None,
         cosmology=cosmo.Planck15,
         settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=inv.SettingsInversion(),
+        settings_inversion=SettingsInversion(),
         settings_lens=settings.SettingsLens(),
         preloads=pload.Preloads(),
     ):

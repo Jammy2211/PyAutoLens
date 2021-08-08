@@ -4,7 +4,11 @@ import numpy as np
 from os import path
 from astropy import cosmology as cosmo
 from autoarray.inversion import pixelizations as pix
-from autoarray.inversion import inversions as inv
+from autoarray.inversion.inversion.imaging import inversion_imaging_unpacked_from
+from autoarray.inversion.inversion.interferometer import (
+    inversion_interferometer_unpacked_from,
+)
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays import values
 from autoarray.structures.grids import grid_decorators
 from autoarray.structures.grids.two_d import grid_2d_irregular
@@ -798,8 +802,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         image,
         noise_map,
         convolver,
+        w_tilde,
         settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=inv.SettingsInversion(),
+        settings_inversion=SettingsInversion(),
         preloads=pload.Preloads(),
     ):
 
@@ -815,10 +820,11 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
             mappers_of_planes = [preloads.mapper]
 
-        return inv.InversionImagingMatrix.from_data_mapper_and_regularization(
+        return inversion_imaging_unpacked_from(
             image=image,
             noise_map=noise_map,
             convolver=convolver,
+            w_tilde=w_tilde,
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],
             settings=settings_inversion,
@@ -832,14 +838,14 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         noise_map,
         transformer,
         settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=inv.SettingsInversion(),
+        settings_inversion=SettingsInversion(),
         preloads=pload.Preloads(),
     ):
         mappers_of_planes = self.mappers_of_planes_from_grid(
             grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
         )
 
-        return inv.AbstractInversionInterferometer.from_data_mapper_and_regularization(
+        return inversion_interferometer_unpacked_from(
             visibilities=visibilities,
             noise_map=noise_map,
             transformer=transformer,

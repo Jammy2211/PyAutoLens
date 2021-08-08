@@ -13,10 +13,10 @@ from typing import Generator, List, Tuple
 import numpy as np
 
 
-
 class SubhaloResult:
-
-    def __init__(self, grid_search_result, result_no_subhalo, stochastic_log_evidences=None):
+    def __init__(
+        self, grid_search_result, result_no_subhalo, stochastic_log_evidences=None
+    ):
 
         self.grid_search_result = grid_search_result
         self.result_no_subhalo = result_no_subhalo
@@ -69,7 +69,9 @@ class SubhaloResult:
             values_native = self.stochastic_log_likelihoods_native
 
             if relative_to_no_subhalo:
-                values_native -= np.median(self.result_no_subhalo["stochastic_log_evidences"])
+                values_native -= np.median(
+                    self.result_no_subhalo["stochastic_log_evidences"]
+                )
 
         return self._subhalo_array_from(values_native=values_native)
 

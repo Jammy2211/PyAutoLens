@@ -128,7 +128,10 @@ def make_fit_point_dict_x2_plane():
 
 
 def make_analysis_imaging_7x7():
-    return al.AnalysisImaging(dataset=make_masked_imaging_7x7())
+    return al.AnalysisImaging(
+        dataset=make_masked_imaging_7x7(),
+        settings_inversion=SettingsInversion(use_w_tilde=False),
+    )
 
 
 def make_analysis_interferometer_7():
