@@ -19,6 +19,7 @@ from autoarray.plot.mat_wrap.wrap.wrap_base import (
     YLabel,
     XLabel,
     Legend,
+    Text,
     Output,
 )
 from autoarray.plot.mat_wrap.wrap.wrap_1d import YXPlot, FillBetween
