@@ -171,7 +171,7 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         detection_array = self.subhalo_result.subhalo_detection_array_from(
             use_log_evidences=self.use_log_evidences,
             use_stochastic_log_evidences=self.use_stochastic_log_evidences,
-            relative_to_no_subhalo=False,
+            relative_to_no_subhalo=True,
         )
 
         if remove_zeros:

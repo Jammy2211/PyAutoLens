@@ -18,7 +18,7 @@ the installation has clean dependencies):
 
 .. code-block:: bash
 
-    pip install autolens==2021.6.4.1
+    pip install autolens==2021.8.12.1
 
 If this raises no errors **PyAutoLens** is installed! If there is an error check out
 the `troubleshooting section <https://pyautolens.readthedocs.io/en/latest/installation/troubleshooting.html>`_.

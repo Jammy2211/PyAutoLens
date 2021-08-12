@@ -34,7 +34,7 @@ see `here <https://pyautolens.readthedocs.io/en/latest/installation/troubleshoot
 
 .. code-block:: bash
 
-    pip install autolens==2021.6.4.1 --ignore-installed numba llvmlite
+    pip install autolens==2021.8.12.1 --ignore-installed numba llvmlite
 
 Next, clone the ``autolens workspace`` (the line ``--depth 1`` clones only the most recent branch on
 the ``autolens_workspace``, reducing the download size):
