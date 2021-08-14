@@ -8,7 +8,7 @@ from autolens.point.point_dataset import PointDict
 from autolens.point.fit_point import FitPointDict
 from autolens.point.model.result import ResultPoint
 
-from autolens.point.positions_solver import PositionsSolver
+from autolens.point.point_solver import PointSolver
 from autolens.lens.settings import SettingsLens
 
 
@@ -16,7 +16,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
     def __init__(
         self,
         point_dict: PointDict,
-        solver: PositionsSolver,
+        solver: PointSolver,
         imaging=None,
         cosmology=cosmo.Planck15,
         settings_lens=SettingsLens(),
@@ -73,7 +73,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         tracer = self.tracer_for_instance(instance=instance)
 
         fit = FitPointDict(
-            point_dict=self.point_dict, tracer=tracer, positions_solver=self.solver
+            point_dict=self.point_dict, tracer=tracer, point_solver=self.solver
         )
 
         return fit.log_likelihood

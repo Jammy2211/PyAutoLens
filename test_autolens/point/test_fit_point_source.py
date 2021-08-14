@@ -78,7 +78,7 @@ class TestFitPositionsImage:
         noise_map = al.ValuesIrregular([0.5, 1.0])
         model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-        positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
+        positions_solver = mock.MockPointSolver(model_positions=model_positions)
 
         fit = al.FitPositionsImage(
             name="point_0",
@@ -118,7 +118,7 @@ class TestFitPositionsImage:
             [(3.0, 1.0), (2.0, 3.0), (1.0, 0.0), (0.0, 1.0)]
         )
 
-        positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
+        positions_solver = mock.MockPointSolver(model_positions=model_positions)
 
         fit = al.FitPositionsImage(
             name="point_0",
@@ -150,7 +150,7 @@ class TestFitPositionsImage:
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
         noise_map = al.ValuesIrregular([0.5, 1.0])
 
-        positions_solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+        positions_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.01)
 
         fit_0 = al.FitPositionsImage(
             name="point_0",
@@ -367,7 +367,7 @@ class TestFitPointDict:
         noise_map = al.ValuesIrregular([0.5, 1.0])
         model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-        positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
+        positions_solver = mock.MockPointSolver(model_positions=model_positions)
 
         point_dataset_0 = al.PointDataset(
             name="point_0", positions=positions, positions_noise_map=noise_map
@@ -419,7 +419,7 @@ class TestFitPointDict:
         fluxes = al.ValuesIrregular([1.0, 2.0])
         flux_noise_map = al.ValuesIrregular([3.0, 1.0])
 
-        positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
+        positions_solver = mock.MockPointSolver(model_positions=model_positions)
 
         point_dataset_0 = al.PointDataset(
             name="point_0",
@@ -489,7 +489,7 @@ class TestFitPointDict:
         noise_map = al.ValuesIrregular([0.5, 1.0])
         model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-        positions_solver = mock.MockPositionsSolver(model_positions=model_positions)
+        positions_solver = mock.MockPointSolver(model_positions=model_positions)
 
         point_dataset_0 = al.PointDataset(
             name="point_0", positions=positions, positions_noise_map=noise_map

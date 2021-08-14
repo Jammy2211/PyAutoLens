@@ -203,7 +203,7 @@ class MockTracer:
         return self.einstein_mass
 
 
-class MockPositionsSolver:
+class MockPointSolver:
     def __init__(self, model_positions):
 
         self.model_positions = model_positions

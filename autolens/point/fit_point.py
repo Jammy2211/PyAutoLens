@@ -7,7 +7,7 @@ import autogalaxy as ag
 
 from autolens.point.point_dataset import PointDict
 from autolens.point.point_dataset import PointDataset
-from autolens.point.positions_solver import PositionsSolver
+from autolens.point.point_solver import PointSolver
 from autolens.lens.ray_tracing import Tracer
 
 from autolens import exc
@@ -15,7 +15,7 @@ from autolens import exc
 
 class FitPointDict(dict):
     def __init__(
-        self, point_dict: PointDict, tracer: Tracer, positions_solver: PositionsSolver
+        self, point_dict: PointDict, tracer: Tracer, point_solver: PointSolver
     ):
         """
         A fit to a point source dataset, which is stored as a dictionary containing the fit of every data point in a
@@ -43,7 +43,7 @@ class FitPointDict(dict):
             self[key] = FitPointDataset(
                 point_dataset=point_dataset,
                 tracer=tracer,
-                positions_solver=positions_solver,
+                point_solver=point_solver,
             )
 
     @property
@@ -56,7 +56,7 @@ class FitPointDataset:
         self,
         point_dataset: PointDataset,
         tracer: Tracer,
-        positions_solver: PositionsSolver,
+        point_solver: PointSolver,
     ):
 
         self.point_dataset = point_dataset
@@ -81,7 +81,7 @@ class FitPointDataset:
                     name=point_dataset.name,
                     positions=point_dataset.positions,
                     noise_map=point_dataset.positions_noise_map,
-                    positions_solver=positions_solver,
+                    point_solver=point_solver,
                     tracer=tracer,
                     point_profile=point_profile,
                 )
@@ -123,7 +123,7 @@ class FitPositionsImage(aa.FitData):
         positions: aa.Grid2DIrregular,
         noise_map: aa.ValuesIrregular,
         tracer: Tracer,
-        positions_solver: PositionsSolver,
+        point_solver: PointSolver,
         point_profile: Optional[ag.ps.Point] = None,
     ):
         """
@@ -145,7 +145,7 @@ class FitPositionsImage(aa.FitData):
 
         self.point_profile = point_profile
 
-        self.positions_solver = positions_solver
+        self.point_solver = point_solver
 
         if self.point_profile is None:
             raise exc.PointExtractionException(
@@ -160,7 +160,7 @@ class FitPositionsImage(aa.FitData):
         else:
             upper_plane_index = None
 
-        model_positions = positions_solver.solve(
+        model_positions = point_solver.solve(
             lensing_obj=tracer,
             source_plane_coordinate=self.source_plane_coordinate,
             upper_plane_index=upper_plane_index,

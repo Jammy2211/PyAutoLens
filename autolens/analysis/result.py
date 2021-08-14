@@ -10,7 +10,7 @@ from autogalaxy.analysis.result import Result as AgResult
 
 from autolens.point.fit_point import FitPositionsSourceMaxSeparation
 from autolens.lens.ray_tracing import Tracer
-from autolens.point.positions_solver import PositionsSolver
+from autolens.point.point_solver import PointSolver
 
 
 class Result(AgResult):
@@ -60,7 +60,7 @@ class Result(AgResult):
 
         grid = self.analysis.dataset.mask.unmasked_grid_sub_1
 
-        solver = PositionsSolver(grid=grid, pixel_scale_precision=0.001)
+        solver = PointSolver(grid=grid, pixel_scale_precision=0.001)
 
         multiple_images = solver.solve(
             lensing_obj=self.max_log_likelihood_tracer,

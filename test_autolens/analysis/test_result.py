@@ -183,7 +183,7 @@ class TestResultAbstract:
 
         grid = al.Grid2D.from_mask(mask=mask)
 
-        solver = al.PositionsSolver(grid=grid, pixel_scale_precision=0.001)
+        solver = al.PointSolver(grid=grid, pixel_scale_precision=0.001)
 
         multiple_images_manual = solver.solve(
             lensing_obj=tracer,

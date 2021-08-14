@@ -5,7 +5,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 
-class AbstractPositionsSolver:
+class AbstractPointSolver:
     def __init__(
         self,
         use_upscaling=True,
@@ -238,7 +238,7 @@ class AbstractPositionsSolver:
         )
 
 
-class PositionsSolver(AbstractPositionsSolver):
+class PointSolver(AbstractPointSolver):
     def __init__(
         self,
         grid,

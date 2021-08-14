@@ -56,7 +56,7 @@ the point-sources on!
 
 .. code-block:: bash
 
-    solver = al.PositionsSolver(
+    solver = al.PointSolver(
         grid=grid,
         pixel_scale_precision=0.001,
     )

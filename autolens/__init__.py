@@ -69,7 +69,7 @@ from .point.fit_point import (
     FitPointDataset,
 )
 from .point.model.analysis import AnalysisPoint
-from .point.positions_solver import PositionsSolver
+from .point.point_solver import PointSolver
 from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
 from .analysis.preloads import Preloads

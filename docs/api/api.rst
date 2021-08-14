@@ -64,7 +64,7 @@ Point Source Modeling
    PointDict
    FitPositionsImage
    FitFluxes
-   PositionsSolver
+   PointSolver
 
 --------------
 Light Profiles

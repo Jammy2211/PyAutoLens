@@ -20,7 +20,7 @@ class TestAnalysisPoint:
 
         search = mock.MockSearch(name="test_search")
 
-        solver = mock.MockPositionsSolver(
+        solver = mock.MockPointSolver(
             model_positions=point_dict["point_0"].positions
         )
 
@@ -48,7 +48,7 @@ class TestAnalysisPoint:
             )
         )
 
-        solver = mock.MockPositionsSolver(model_positions=positions_x2)
+        solver = mock.MockPointSolver(model_positions=positions_x2)
 
         analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
@@ -69,7 +69,7 @@ class TestAnalysisPoint:
         assert fit_positions.log_likelihood == analysis_log_likelihood
 
         model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
-        solver = mock.MockPositionsSolver(model_positions=model_positions)
+        solver = mock.MockPointSolver(model_positions=model_positions)
 
         analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
@@ -111,7 +111,7 @@ class TestAnalysisPoint:
             )
         )
 
-        solver = mock.MockPositionsSolver(model_positions=positions_x2)
+        solver = mock.MockPointSolver(model_positions=positions_x2)
 
         analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
@@ -143,7 +143,7 @@ class TestAnalysisPoint:
         )
 
         model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
-        solver = mock.MockPositionsSolver(model_positions=model_positions)
+        solver = mock.MockPointSolver(model_positions=model_positions)
 
         analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
