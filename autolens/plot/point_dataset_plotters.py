@@ -2,13 +2,14 @@ from autoarray.plot.abstract_plotters import AbstractPlotter
 
 import autogalaxy.plot as aplt
 
-from autolens.dataset import point_dataset
+from autolens.dataset.point_dataset import PointDataset
+from autolens.dataset.point_dataset import PointDict
 
 
 class PointDictPlotter(AbstractPlotter):
     def __init__(
         self,
-        point_dict: point_dataset.PointDict,
+        point_dict: PointDict,
         mat_plot_1d: aplt.MatPlot1D = aplt.MatPlot1D(),
         visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),
         include_1d: aplt.Include1D = aplt.Include1D(),
@@ -141,7 +142,7 @@ class PointDictPlotter(AbstractPlotter):
 class PointDatasetPlotter(AbstractPlotter):
     def __init__(
         self,
-        point_dataset: point_dataset.PointDataset,
+        point_dataset: PointDataset,
         mat_plot_1d: aplt.MatPlot1D = aplt.MatPlot1D(),
         visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),
         include_1d: aplt.Include1D = aplt.Include1D(),

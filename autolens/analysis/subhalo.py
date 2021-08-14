@@ -7,7 +7,8 @@ import autogalaxy.plot as aplt
 from autoarray.plot.abstract_plotters import AbstractPlotter
 
 from autolens.fit.fit_imaging import FitImaging
-from autolens.plot import fit_imaging_plotters
+from autolens.plot.fit_imaging_plotters import FitImagingPlotter
+
 from autolens.analysis.aggregator.aggregator import _fit_imaging_from
 
 
@@ -145,7 +146,7 @@ class SubhaloPlotter(AbstractPlotter):
 
     @property
     def fit_imaging_before_plotter(self):
-        return fit_imaging_plotters.FitImagingPlotter(
+        return FitImagingPlotter(
             fit=self.fit_imaging_before,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
@@ -157,7 +158,7 @@ class SubhaloPlotter(AbstractPlotter):
         return self.fit_imaging_detect_plotter_from(visuals_2d=self.visuals_2d)
 
     def fit_imaging_detect_plotter_from(self, visuals_2d):
-        return fit_imaging_plotters.FitImagingPlotter(
+        return FitImagingPlotter(
             fit=self.fit_imaging_detect,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=visuals_2d,

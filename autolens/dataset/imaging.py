@@ -1,6 +1,6 @@
 import autoarray as aa
 
-from autolens.lens import ray_tracing
+from autolens.lens.ray_tracing import Tracer
 
 
 class SimulatorImaging(aa.SimulatorImaging):
@@ -40,7 +40,7 @@ class SimulatorImaging(aa.SimulatorImaging):
             The random seed used to add random noise, where -1 corresponds to a random seed every run.
         """
 
-        super(SimulatorImaging, self).__init__(
+        super().__init__(
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
@@ -101,7 +101,7 @@ class SimulatorImaging(aa.SimulatorImaging):
         5) Output the dataset to .fits format if a dataset_path and data_name are specified. Otherwise, return the simulated \
            imaging data instance."""
 
-        tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
+        tracer = Tracer.from_galaxies(galaxies=galaxies)
 
         return self.from_tracer_and_grid(tracer=tracer, grid=grid, name=name)
 

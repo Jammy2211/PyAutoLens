@@ -1,14 +1,14 @@
 import autogalaxy as ag
 import autogalaxy.plot as aplt
 
+from autolens.fit.fit_interferometer import FitInterferometer
 from autolens.plot import ray_tracing_plotters
-from autolens.fit import fit_interferometer
 
 
 class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
     def __init__(
         self,
-        fit: fit_interferometer.FitInterferometer,
+        fit: FitInterferometer,
         mat_plot_1d: aplt.MatPlot1D = aplt.MatPlot1D(),
         visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),
         include_1d: aplt.Include1D = aplt.Include1D(),

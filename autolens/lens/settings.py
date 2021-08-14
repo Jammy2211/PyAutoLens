@@ -1,7 +1,8 @@
-from autolens import exc
-from autolens.fit import fit_point
-
 import copy
+
+from autolens.fit.fit_point import FitPositionsSourceMaxSeparation
+
+from autolens import exc
 
 
 class SettingsLens:
@@ -28,7 +29,7 @@ class SettingsLens:
 
         if positions is not None and self.positions_threshold is not None:
 
-            positions_fit = fit_point.FitPositionsSourceMaxSeparation(
+            positions_fit = FitPositionsSourceMaxSeparation(
                 positions=positions, noise_map=None, tracer=tracer
             )
 

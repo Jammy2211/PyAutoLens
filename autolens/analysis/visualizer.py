@@ -5,12 +5,12 @@ import os
 
 from autoconf import conf
 import autogalaxy.plot as aplt
+
 from autogalaxy.analysis.visualizer import Visualizer as AgVisualizer
-from autolens.plot import (
-    fit_interferometer_plotters,
-    ray_tracing_plotters,
-    fit_imaging_plotters,
-)
+
+from autolens.plot.ray_tracing_plotters import TracerPlotter
+from autolens.plot.fit_imaging_plotters import FitImagingPlotter
+from autolens.plot.fit_interferometer_plotters import FitInterferometerPlotter
 
 
 def setting(section, name):
@@ -28,7 +28,7 @@ class Visualizer(AgVisualizer):
 
         mat_plot_2d = self.mat_plot_2d_from(subfolders="ray_tracing")
 
-        tracer_plotter = ray_tracing_plotters.TracerPlotter(
+        tracer_plotter = TracerPlotter(
             tracer=tracer,
             grid=grid,
             mat_plot_2d=mat_plot_2d,
@@ -69,7 +69,7 @@ class Visualizer(AgVisualizer):
                     subfolders=path.join("ray_tracing", "fits"), format="fits"
                 )
 
-                tracer_plotter = ray_tracing_plotters.TracerPlotter(
+                tracer_plotter = TracerPlotter(
                     tracer=tracer,
                     grid=grid,
                     mat_plot_2d=fits_mat_plot_2d,
@@ -92,7 +92,7 @@ class Visualizer(AgVisualizer):
 
         mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
 
-        fit_imaging_plotter = fit_imaging_plotters.FitImagingPlotter(
+        fit_imaging_plotter = FitImagingPlotter(
             fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 
@@ -142,7 +142,7 @@ class Visualizer(AgVisualizer):
                     subfolders="fit_imaging/fits", format="fits"
                 )
 
-                fit_imaging_plotter = fit_imaging_plotters.FitImagingPlotter(
+                fit_imaging_plotter = FitImagingPlotter(
                     fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
                 )
 
@@ -169,7 +169,7 @@ class Visualizer(AgVisualizer):
         mat_plot_1d = self.mat_plot_1d_from(subfolders=subfolders)
         mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
 
-        fit_interferometer_plotter = fit_interferometer_plotters.FitInterferometerPlotter(
+        fit_interferometer_plotter = FitInterferometerPlotter(
             fit=fit,
             include_2d=self.include_2d,
             mat_plot_1d=mat_plot_1d,
@@ -231,7 +231,7 @@ class Visualizer(AgVisualizer):
                     subfolders="fit_interferometer/fits", format="fits"
                 )
 
-                fit_interferometer_plotter = fit_interferometer_plotters.FitInterferometerPlotter(
+                fit_interferometer_plotter = FitInterferometerPlotter(
                     fit=fit, include_2d=self.include_2d, mat_plot_2d=mat_plot_2d
                 )
 

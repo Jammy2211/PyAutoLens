@@ -5,15 +5,17 @@ import json
 from autoconf import conf
 import autoarray as aa
 import autogalaxy as ag
+
 from autogalaxy.analysis.result import Result as AgResult
 
-from autolens.fit import fit_point
-from autolens.lens import ray_tracing, positions_solver as pos
+from autolens.fit.fit_point import FitPositionsSourceMaxSeparation
+from autolens.lens.ray_tracing import Tracer
+from autolens.lens.positions_solver import PositionsSolver
 
 
 class Result(AgResult):
     @property
-    def max_log_likelihood_tracer(self) -> ray_tracing.Tracer:
+    def max_log_likelihood_tracer(self) -> Tracer:
 
         return self.analysis.tracer_for_instance(instance=self.instance)
 
@@ -58,7 +60,7 @@ class Result(AgResult):
 
         grid = self.analysis.dataset.mask.unmasked_grid_sub_1
 
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.001)
+        solver = PositionsSolver(grid=grid, pixel_scale_precision=0.001)
 
         multiple_images = solver.solve(
             lensing_obj=self.max_log_likelihood_tracer,
@@ -98,7 +100,7 @@ class Result(AgResult):
 
         positions = self.image_plane_multiple_image_positions
 
-        positions_fits = fit_point.FitPositionsSourceMaxSeparation(
+        positions_fits = FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=None, tracer=self.max_log_likelihood_tracer
         )
 
@@ -122,7 +124,7 @@ class Result(AgResult):
 
 class ResultDataset(Result):
     @property
-    def max_log_likelihood_tracer(self) -> ray_tracing.Tracer:
+    def max_log_likelihood_tracer(self) -> Tracer:
 
         instance = self.analysis.associate_hyper_images(instance=self.instance)
 

@@ -1,4 +1,5 @@
 import autolens as al
+
 from autogalaxy.mock.fixtures import *
 from autofit.mock.mock import MockSearch
 from autolens.mock.mock import MockPositionsSolver

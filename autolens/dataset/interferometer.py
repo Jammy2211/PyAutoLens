@@ -1,6 +1,6 @@
 import autoarray as aa
 
-from autolens.lens import ray_tracing
+from autolens.lens.ray_tracing import Tracer
 
 
 class SimulatorInterferometer(aa.SimulatorInterferometer):
@@ -80,7 +80,7 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
         5) Output the dataset to .fits format if a dataset_path and data_name are specified. Otherwise, return the simulated \
            imaging data instance."""
 
-        tracer = ray_tracing.Tracer.from_galaxies(galaxies=galaxies)
+        tracer = Tracer.from_galaxies(galaxies=galaxies)
 
         return self.from_tracer_and_grid(tracer=tracer, grid=grid, name=name)
 

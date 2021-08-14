@@ -4,8 +4,8 @@ from typing import Optional, List, Generator
 
 import autofit as af
 import autoarray as aa
-
 import autogalaxy as ag
+
 from autogalaxy.analysis.aggregator.aggregator import (
     _imaging_from,
     _interferometer_from,
@@ -14,6 +14,7 @@ from autogalaxy.analysis.aggregator.aggregator import (
 from autolens.fit.fit_imaging import FitImaging
 from autolens.fit.fit_interferometer import FitInterferometer
 from autolens.lens.ray_tracing import Tracer
+
 from autolens import exc
 
 

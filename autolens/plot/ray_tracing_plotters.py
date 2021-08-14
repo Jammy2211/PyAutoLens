@@ -4,13 +4,13 @@ import autogalaxy.plot as aplt
 
 from autogalaxy.plot.lensing_obj_plotter import LensingObjPlotter
 
-from autolens.lens import ray_tracing
+from autolens.lens.ray_tracing import Tracer
 
 
 class TracerPlotter(LensingObjPlotter):
     def __init__(
         self,
-        tracer: ray_tracing.Tracer,
+        tracer: Tracer,
         grid: aa.Grid2D,
         mat_plot_1d: aplt.MatPlot1D = aplt.MatPlot1D(),
         visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),

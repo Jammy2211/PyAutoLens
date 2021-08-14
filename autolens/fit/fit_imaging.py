@@ -22,7 +22,7 @@ class FitImaging(aa.FitImaging):
 
         Parameters
         -----------
-        tracer : ray_tracing.Tracer
+        tracer : Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         scaled_array_2d_from_array_1d : func
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.

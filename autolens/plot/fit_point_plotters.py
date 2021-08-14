@@ -2,13 +2,13 @@ from autoarray.plot.abstract_plotters import AbstractPlotter
 
 import autogalaxy.plot as aplt
 
-from autolens.fit import fit_point
+from autolens.fit.fit_point import FitPointDataset
 
 
 class FitPointDatasetPlotter(AbstractPlotter):
     def __init__(
         self,
-        fit: fit_point.FitPointDataset,
+        fit: FitPointDataset,
         mat_plot_1d: aplt.MatPlot1D = aplt.MatPlot1D(),
         visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),
         include_1d: aplt.Include1D = aplt.Include1D(),

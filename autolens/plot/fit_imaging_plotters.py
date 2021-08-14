@@ -5,14 +5,14 @@ import autogalaxy.plot as aplt
 
 from autoarray.plot.fit_imaging_plotters import AbstractFitImagingPlotter
 
+from autolens.fit.fit_imaging import FitImaging
 from autolens.plot.ray_tracing_plotters import TracerPlotter
-from autolens.fit import fit_imaging
 
 
 class FitImagingPlotter(AbstractFitImagingPlotter):
     def __init__(
         self,
-        fit: fit_imaging.FitImaging,
+        fit: FitImaging,
         mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),

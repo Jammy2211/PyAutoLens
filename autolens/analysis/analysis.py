@@ -10,22 +10,25 @@ from autoconf import conf
 import autofit as af
 import autoarray as aa
 import autogalaxy as ag
+
 from autogalaxy.analysis.analysis import AnalysisDataset as AgAnalysisDataset
 
 from autolens import exc
-from autolens.analysis import result as res
-from autolens.analysis import visualizer as vis
-from autolens.dataset import point_dataset as pd
-from autolens.fit import fit_imaging
-from autolens.fit import fit_interferometer
-from autolens.fit import fit_point
-from autolens.lens import positions_solver as psolve
-from autolens.lens import ray_tracing
-from autolens.lens import settings
+from autolens.analysis.result import ResultImaging
+from autolens.analysis.result import ResultInterferometer
+from autolens.analysis.result import ResultPoint
+from autolens.analysis.visualizer import Visualizer
+from autolens.dataset.point_dataset import PointDict
+from autolens.fit.fit_imaging import FitImaging
+from autolens.fit.fit_interferometer import FitInterferometer
+from autolens.fit.fit_point import FitPointDict
+from autolens.lens.positions_solver import PositionsSolver
+from autolens.lens.ray_tracing import Tracer
+from autolens.lens.settings import SettingsLens
 
 
 class AnalysisLensing:
-    def __init__(self, settings_lens=settings.SettingsLens(), cosmology=cosmo.Planck15):
+    def __init__(self, settings_lens=SettingsLens(), cosmology=cosmo.Planck15):
 
         self.cosmology = cosmology
         self.settings_lens = settings_lens
@@ -35,7 +38,7 @@ class AnalysisLensing:
         if hasattr(instance, "perturbation"):
             instance.galaxies.subhalo = instance.perturbation
 
-        return ray_tracing.Tracer.from_galaxies(
+        return Tracer.from_galaxies(
             galaxies=instance.galaxies, cosmology=self.cosmology
         )
 
@@ -49,7 +52,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         cosmology=cosmo.Planck15,
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
-        settings_lens=settings.SettingsLens(),
+        settings_lens=SettingsLens(),
         preloads=aa.Preloads(),
     ):
         """
@@ -137,7 +140,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         paths.save_object("stochastic_log_evidences", stochastic_log_evidences)
 
-        visualizer = vis.Visualizer(visualize_path=paths.image_path)
+        visualizer = Visualizer(visualize_path=paths.image_path)
 
         visualizer.visualize_stochastic_histogram(
             log_evidences=stochastic_log_evidences,
@@ -148,7 +151,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
     @property
     def no_positions(self):
 
-        # settings_lens = settings.SettingsLens(
+        # settings_lens = SettingsLens(
         # positions_threshold=None,
         # stochastic_likelihood_resamples=self.settings_lens.stochastic_likelihood_resamples,
         # stochastic_samples = self.settings_lens.stochastic_samples,
@@ -225,7 +228,7 @@ class AnalysisImaging(AnalysisDataset):
         self, tracer, hyper_image_sky, hyper_background_noise, use_hyper_scalings=True
     ):
 
-        return fit_imaging.FitImaging(
+        return FitImaging(
             imaging=self.dataset,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
@@ -264,7 +267,7 @@ class AnalysisImaging(AnalysisDataset):
         for i in range(self.settings_lens.stochastic_samples):
 
             try:
-                log_evidence = fit_imaging.FitImaging(
+                log_evidence = FitImaging(
                     imaging=self.dataset,
                     tracer=tracer,
                     hyper_image_sky=hyper_image_sky,
@@ -301,7 +304,7 @@ class AnalysisImaging(AnalysisDataset):
             hyper_background_noise=hyper_background_noise,
         )
 
-        visualizer = vis.Visualizer(visualize_path=paths.image_path)
+        visualizer = Visualizer(visualize_path=paths.image_path)
 
         visualizer.visualize_imaging(imaging=self.imaging)
         visualizer.visualize_fit_imaging(fit=fit, during_analysis=during_analysis)
@@ -349,9 +352,7 @@ class AnalysisImaging(AnalysisDataset):
     def make_result(
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
-        return res.ResultImaging(
-            samples=samples, model=model, analysis=self, search=search
-        )
+        return ResultImaging(samples=samples, model=model, analysis=self, search=search)
 
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
 
@@ -375,7 +376,7 @@ class AnalysisInterferometer(AnalysisDataset):
         cosmology=cosmo.Planck15,
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
-        settings_lens=settings.SettingsLens(),
+        settings_lens=SettingsLens(),
         preloads=aa.Preloads(),
     ):
 
@@ -493,7 +494,7 @@ class AnalysisInterferometer(AnalysisDataset):
         self, tracer, hyper_background_noise, use_hyper_scalings=True
     ):
 
-        return fit_interferometer.FitInterferometer(
+        return FitInterferometer(
             interferometer=self.dataset,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
@@ -529,7 +530,7 @@ class AnalysisInterferometer(AnalysisDataset):
         for i in range(self.settings_lens.stochastic_samples):
 
             try:
-                log_evidence = fit_interferometer.FitInterferometer(
+                log_evidence = FitInterferometer(
                     interferometer=self.dataset,
                     tracer=tracer,
                     hyper_background_noise=hyper_background_noise,
@@ -563,7 +564,7 @@ class AnalysisInterferometer(AnalysisDataset):
             tracer=tracer, hyper_background_noise=hyper_background_noise
         )
 
-        visualizer = vis.Visualizer(visualize_path=paths.image_path)
+        visualizer = Visualizer(visualize_path=paths.image_path)
         visualizer.visualize_interferometer(interferometer=self.interferometer)
         visualizer.visualize_fit_interferometer(
             fit=fit, during_analysis=during_analysis
@@ -605,7 +606,7 @@ class AnalysisInterferometer(AnalysisDataset):
     def make_result(
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
-        return res.ResultInterferometer(
+        return ResultInterferometer(
             samples=samples, model=model, analysis=self, search=search
         )
 
@@ -621,11 +622,11 @@ class AnalysisInterferometer(AnalysisDataset):
 class AnalysisPoint(af.Analysis, AnalysisLensing):
     def __init__(
         self,
-        point_dict: pd.PointDict,
-        solver: psolve.PositionsSolver,
+        point_dict: PointDict,
+        solver: PositionsSolver,
         imaging=None,
         cosmology=cosmo.Planck15,
-        settings_lens=settings.SettingsLens(),
+        settings_lens=SettingsLens(),
     ):
         """
         The analysis performed for model-fitting a point-source dataset, for example fitting the point-sources of a
@@ -678,7 +679,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
 
         tracer = self.tracer_for_instance(instance=instance)
 
-        fit = fit_point.FitPointDict(
+        fit = FitPointDict(
             point_dict=self.point_dict, tracer=tracer, positions_solver=self.solver
         )
 
@@ -688,14 +689,12 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
 
         tracer = self.tracer_for_instance(instance=instance)
 
-        visualizer = vis.Visualizer(visualize_path=paths.image_path)
+        visualizer = Visualizer(visualize_path=paths.image_path)
 
     def make_result(
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
-        return res.ResultPoint(
-            samples=samples, model=model, analysis=self, search=search
-        )
+        return ResultPoint(samples=samples, model=model, analysis=self, search=search)
 
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
 

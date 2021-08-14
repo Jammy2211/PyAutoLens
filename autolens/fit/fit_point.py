@@ -5,10 +5,12 @@ from typing import Optional
 import autoarray as aa
 import autogalaxy as ag
 
-from autolens import exc
-from autolens.dataset.point_dataset import PointDict, PointDataset
+from autolens.dataset.point_dataset import PointDict
+from autolens.dataset.point_dataset import PointDataset
 from autolens.lens.positions_solver import PositionsSolver
 from autolens.lens.ray_tracing import Tracer
+
+from autolens import exc
 
 
 class FitPointDict(dict):
@@ -359,7 +361,7 @@ class AbstractFitPositionsSourcePlane:
         positions : Grid2DIrregular
             The (y,x) arc-second coordinates of named positions which the log_likelihood is computed using. Positions
             are paired to galaxies in the `Tracer` using their names.
-        tracer : ray_tracing.Tracer
+        tracer : Tracer
             The object that defines the ray-tracing of the strong lens system of galaxies.
         noise_value : float
             The noise-value assumed when computing the log likelihood.

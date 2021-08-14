@@ -1,4 +1,5 @@
 import autofit as af
+
 from autofit.mock.mock import MockSearch, MockSamples
 from autogalaxy.mock.mock import MockLightProfile, MockMassProfile
 
