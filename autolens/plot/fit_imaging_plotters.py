@@ -5,7 +5,7 @@ import autogalaxy.plot as aplt
 
 from autoarray.plot.fit_imaging_plotters import AbstractFitImagingPlotter
 
-from autolens.fit.fit_imaging import FitImaging
+from autolens.imaging.fit_imaging import FitImaging
 from autolens.plot.ray_tracing_plotters import TracerPlotter
 
 

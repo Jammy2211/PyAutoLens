@@ -5,13 +5,8 @@ import pytest
 import autofit as af
 import autolens as al
 from autolens.analysis import result as res
+from autolens.imaging.model.result import ResultImaging
 from autolens.mock import mock
-
-pytestmark = pytest.mark.filterwarnings(
-    "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
-    "`arr[seq]`. In the future this will be interpreted as an arrays index, `arr[np.arrays(seq)]`, which will result "
-    "either in an error or a different result."
-)
 
 directory = os.path.dirname(os.path.realpath(__file__))
 
@@ -101,7 +96,7 @@ class TestResultAbstract:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        result = res.ResultImaging(
+        result = ResultImaging(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
@@ -119,7 +114,7 @@ class TestResultAbstract:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        result = res.ResultImaging(
+        result = ResultImaging(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
@@ -141,7 +136,7 @@ class TestResultAbstract:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        result = res.ResultImaging(
+        result = ResultImaging(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
@@ -174,7 +169,7 @@ class TestResultAbstract:
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
-        result = res.ResultImaging(
+        result = ResultImaging(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
@@ -365,7 +360,7 @@ class TestResultDataset:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        result = res.ResultImaging(
+        result = ResultImaging(
             samples=mock.MockSamples(max_log_likelihood_instance=instance),
             model=af.ModelMapper(),
             analysis=analysis_imaging_7x7,
@@ -381,11 +376,6 @@ class TestResultDataset:
         image_dict = result.image_galaxy_dict
         assert (image_dict[("galaxies", "lens")].native == np.zeros((7, 7))).all()
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
-
-
-class TestResultImaging:
-
-    pass
 
 
 class TestResultInterferometer:

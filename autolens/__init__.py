@@ -52,11 +52,12 @@ from autogalaxy import convert
 from .analysis import aggregator as agg
 from .analysis import subhalo
 from . import plot
-from .dataset.imaging import SimulatorImaging
+from .imaging.imaging import SimulatorImaging
+from .imaging.fit_imaging import FitImaging
+from .imaging.model.analysis import AnalysisImaging
 from .dataset.interferometer import SimulatorInterferometer
 from .dataset.point_dataset import PointDataset
 from .dataset.point_dataset import PointDict
-from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer
 from .fit.fit_point import (
     FitPositionsSourceMaxSeparation,
@@ -70,7 +71,7 @@ from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
 from .lens.positions_solver import PositionsSolver
 from .analysis.preloads import Preloads
-from .analysis.analysis import AnalysisImaging, AnalysisInterferometer, AnalysisPoint
+from .analysis.analysis import AnalysisInterferometer, AnalysisPoint
 from autolens.analysis.setup import SetupHyper
 
 from autoconf import conf

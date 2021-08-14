@@ -1,4 +1,4 @@
-from typing import Generator, List, Tuple
+from typing import List, Tuple
 import numpy as np
 
 import autoarray as aa
@@ -6,10 +6,10 @@ import autogalaxy.plot as aplt
 
 from autoarray.plot.abstract_plotters import AbstractPlotter
 
-from autolens.fit.fit_imaging import FitImaging
+from autolens.imaging.fit_imaging import FitImaging
 from autolens.plot.fit_imaging_plotters import FitImagingPlotter
 
-from autolens.analysis.aggregator.aggregator import _fit_imaging_from
+from autolens.imaging.model.aggregator import _fit_imaging_from
 
 
 class SubhaloResult:
