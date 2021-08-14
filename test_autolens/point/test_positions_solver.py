@@ -1,9 +1,13 @@
-import autolens as al
-from autolens.lens import positions_solver as pos
-
 import numpy as np
-
 import pytest
+
+
+import autolens as al
+
+from autolens.point.positions_solver import AbstractPositionsSolver
+from autolens.point.positions_solver import PositionsSolver
+
+from autolens.point import positions_solver as pos
 
 
 class TestAbstractPositionsSolver:
@@ -19,7 +23,7 @@ class TestAbstractPositionsSolver:
 
         sis = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
-        solver = pos.AbstractPositionsSolver(distance_from_mass_profile_centre=0.01)
+        solver = AbstractPositionsSolver(distance_from_mass_profile_centre=0.01)
 
         grid = solver.grid_with_coordinates_from_mass_profile_centre_removed(
             grid=grid, lensing_obj=sis
@@ -29,7 +33,7 @@ class TestAbstractPositionsSolver:
 
     def test__solver_create_buffed_and_updated_grid_from_input_coordinate(self):
 
-        solver = pos.AbstractPositionsSolver(use_upscaling=True, upscale_factor=1)
+        solver = AbstractPositionsSolver(use_upscaling=True, upscale_factor=1)
 
         grid = solver.grid_buffed_and_upscaled_around_coordinate_from(
             coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=1, upscale_factor=1
@@ -41,7 +45,7 @@ class TestAbstractPositionsSolver:
 
         assert (grid == grid_util).all()
 
-        solver = pos.AbstractPositionsSolver(use_upscaling=False, upscale_factor=3)
+        solver = AbstractPositionsSolver(use_upscaling=False, upscale_factor=3)
 
         grid = solver.grid_buffed_and_upscaled_around_coordinate_from(
             coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=1, upscale_factor=1
@@ -53,7 +57,7 @@ class TestAbstractPositionsSolver:
 
         assert (grid == grid_util).all()
 
-        solver = pos.AbstractPositionsSolver(use_upscaling=True, upscale_factor=1)
+        solver = AbstractPositionsSolver(use_upscaling=True, upscale_factor=1)
 
         grid = solver.grid_buffed_and_upscaled_around_coordinate_from(
             coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=3, upscale_factor=1
@@ -65,7 +69,7 @@ class TestAbstractPositionsSolver:
 
         assert (grid == grid_util).all()
 
-        solver = pos.AbstractPositionsSolver(use_upscaling=True, upscale_factor=2)
+        solver = AbstractPositionsSolver(use_upscaling=True, upscale_factor=2)
 
         grid = solver.grid_buffed_and_upscaled_around_coordinate_from(
             coordinate=(0.0, 1.0), pixel_scales=(1.0, 1.0), buffer=2, upscale_factor=2
@@ -92,7 +96,7 @@ class TestAbstractPositionsSolver:
         assert magnification[0] > 1000.0
         assert magnification[1] < 1000.0
 
-        solver = pos.AbstractPositionsSolver(magnification_threshold=1000.0)
+        solver = AbstractPositionsSolver(magnification_threshold=1000.0)
 
         positions = solver.grid_with_points_below_magnification_threshold_removed(
             lensing_obj=sis, grid=grid, deflections_func=sis.deflections_2d_from_grid
@@ -101,7 +105,7 @@ class TestAbstractPositionsSolver:
         assert positions.in_list == [(1.0, 0.0)]
         assert positions.pixel_scales == (0.01, 0.01)
 
-        solver = pos.AbstractPositionsSolver(magnification_threshold=0.0)
+        solver = AbstractPositionsSolver(magnification_threshold=0.0)
 
         positions = solver.grid_with_points_below_magnification_threshold_removed(
             lensing_obj=sis, grid=grid, deflections_func=sis.deflections_2d_from_grid
@@ -734,7 +738,7 @@ class TestPositionSolver:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+        solver = PositionsSolver(grid=grid, pixel_scale_precision=0.01)
 
         coordinates = solver.solve(
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)
@@ -764,7 +768,7 @@ class TestPositionSolver:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        solver = pos.PositionsSolver(grid=grid, pixel_scale_precision=0.01)
+        solver = PositionsSolver(grid=grid, pixel_scale_precision=0.01)
 
         coordinates_to_plane_2 = solver.solve(
             lensing_obj=tracer, source_plane_coordinate=(0.0, 0.0)

@@ -2,8 +2,8 @@ from autoarray.plot.abstract_plotters import AbstractPlotter
 
 import autogalaxy.plot as aplt
 
-from autolens.dataset.point_dataset import PointDataset
-from autolens.dataset.point_dataset import PointDict
+from autolens.point.point_dataset import PointDataset
+from autolens.point.point_dataset import PointDict
 
 
 class PointDictPlotter(AbstractPlotter):

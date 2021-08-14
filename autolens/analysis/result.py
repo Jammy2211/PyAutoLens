@@ -8,9 +8,9 @@ import autogalaxy as ag
 
 from autogalaxy.analysis.result import Result as AgResult
 
-from autolens.fit.fit_point import FitPositionsSourceMaxSeparation
+from autolens.point.fit_point import FitPositionsSourceMaxSeparation
 from autolens.lens.ray_tracing import Tracer
-from autolens.lens.positions_solver import PositionsSolver
+from autolens.point.positions_solver import PositionsSolver
 
 
 class Result(AgResult):
@@ -270,14 +270,3 @@ class ResultDataset(Result):
         self.search.paths.zip_remove()
 
         return stochastic_log_evidences
-
-
-class ResultPoint(Result):
-    @property
-    def grid(self):
-        return aa.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
-
-    @property
-    def max_log_likelihood_fit(self):
-
-        return self.analysis.fit_positions_for(tracer=self.max_log_likelihood_tracer)

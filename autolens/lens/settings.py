@@ -1,6 +1,6 @@
 import copy
 
-from autolens.fit.fit_point import FitPositionsSourceMaxSeparation
+from autolens.point.fit_point import FitPositionsSourceMaxSeparation
 
 from autolens import exc
 

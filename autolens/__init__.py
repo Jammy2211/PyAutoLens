@@ -58,10 +58,9 @@ from .imaging.model.analysis import AnalysisImaging
 from .interferometer.interferometer import SimulatorInterferometer
 from .interferometer.fit_interferometer import FitInterferometer
 from .interferometer.model.analysis import AnalysisInterferometer
-from .dataset.point_dataset import PointDataset
-from .dataset.point_dataset import PointDict
-
-from .fit.fit_point import (
+from .point.point_dataset import PointDataset
+from .point.point_dataset import PointDict
+from .point.fit_point import (
     FitPositionsSourceMaxSeparation,
     FitPositionsImage,
     FitPositionsSource,
@@ -69,12 +68,12 @@ from .fit.fit_point import (
     FitPointDict,
     FitPointDataset,
 )
+from .point.model.analysis import AnalysisPoint
+from .point.positions_solver import PositionsSolver
 from .lens.settings import SettingsLens
 from .lens.ray_tracing import Tracer
-from .lens.positions_solver import PositionsSolver
 from .analysis.preloads import Preloads
-from .analysis.analysis import AnalysisPoint
-from autolens.analysis.setup import SetupHyper
+from .analysis.setup import SetupHyper
 
 from autoconf import conf
 

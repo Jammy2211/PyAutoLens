@@ -376,8 +376,3 @@ class TestResultDataset:
         image_dict = result.image_galaxy_dict
         assert (image_dict[("galaxies", "lens")].native == np.zeros((7, 7))).all()
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
-
-
-class TestResultPointsource:
-
-    pass

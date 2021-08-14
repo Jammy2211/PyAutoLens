@@ -1,0 +1,36 @@
+[
+    {
+        "name": "source_1",
+        "positions": [
+            [
+                1.0,
+                1.0
+            ]
+        ],
+        "positions_noise_map": [
+            1.0
+        ],
+        "fluxes": null,
+        "fluxes_noise_map": null
+    },
+    {
+        "name": "source_2",
+        "positions": [
+            [
+                1.0,
+                1.0
+            ]
+        ],
+        "positions_noise_map": [
+            1.0
+        ],
+        "fluxes": [
+            2.0,
+            3.0
+        ],
+        "fluxes_noise_map": [
+            4.0,
+            5.0
+        ]
+    }
+]

@@ -5,9 +5,9 @@ from typing import Optional
 import autoarray as aa
 import autogalaxy as ag
 
-from autolens.dataset.point_dataset import PointDict
-from autolens.dataset.point_dataset import PointDataset
-from autolens.lens.positions_solver import PositionsSolver
+from autolens.point.point_dataset import PointDict
+from autolens.point.point_dataset import PointDataset
+from autolens.point.positions_solver import PositionsSolver
 from autolens.lens.ray_tracing import Tracer
 
 from autolens import exc
