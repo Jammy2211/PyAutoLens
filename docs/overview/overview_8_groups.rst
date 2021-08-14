@@ -27,7 +27,7 @@ model and reduces the computational run-time of the model-fit.
         file_path=path.join(dataset_path, "point_dict.json")
     )
 
-    positions_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
+    point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
 
 Model via JSON
 --------------
@@ -66,7 +66,7 @@ overview.
     search = af.DynestyStatic(name="overview_groups")
 
     analysis = al.AnalysisPoint(
-        point_dict=point_dict, solver=positions_solver
+        point_dict=point_dict, solver=point_solver
     )
 
     result = search.fit(model=model, analysis=analysis)

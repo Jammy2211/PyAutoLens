@@ -4,10 +4,10 @@ import pytest
 
 import autolens as al
 
-from autolens.point.positions_solver import AbstractPointSolver
-from autolens.point.positions_solver import PointSolver
+from autolens.point.point_solver import AbstractPointSolver
+from autolens.point.point_solver import PointSolver
 
-from autolens.point import positions_solver as pos
+from autolens.point import point_solver as pos
 
 
 class TestAbstractPointSolver:

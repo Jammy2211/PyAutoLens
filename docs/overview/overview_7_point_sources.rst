@@ -133,7 +133,7 @@ chi-squared, likelihood, etc of every individual fit to part of our point source
 
 .. code-block:: bash
 
-    fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, positions_solver=solver)
+    fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, point_solver=solver)
 
     print(fit["point_0"].positions.residual_map)
     print(fit["point_0"].positions.chi_squared_map)

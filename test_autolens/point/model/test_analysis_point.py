@@ -62,7 +62,7 @@ class TestAnalysisPoint:
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
             tracer=tracer,
-            positions_solver=solver,
+            point_solver=solver,
         )
 
         assert fit_positions.chi_squared == 0.0
@@ -80,7 +80,7 @@ class TestAnalysisPoint:
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
             tracer=tracer,
-            positions_solver=solver,
+            point_solver=solver,
         )
 
         assert fit_positions.residual_map.in_list == [1.0, 1.0]
@@ -126,7 +126,7 @@ class TestAnalysisPoint:
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
             tracer=tracer,
-            positions_solver=solver,
+            point_solver=solver,
         )
 
         fit_fluxes = al.FitFluxes(
@@ -155,7 +155,7 @@ class TestAnalysisPoint:
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
             tracer=tracer,
-            positions_solver=solver,
+            point_solver=solver,
         )
 
         fit_fluxes = al.FitFluxes(

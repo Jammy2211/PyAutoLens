@@ -35,7 +35,7 @@ a ``PointSolver``, incase we wish to perform image-plane fits.
 
 .. code-block:: bash
 
-    positions_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
+    point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
 
 Lens Model
 ----------
@@ -98,7 +98,7 @@ We are now able to model this dataset as a point source:
 
     search = af.DynestyStatic(name="overview_clusters")
 
-    analysis = al.AnalysisPoint(point_dict=point_dict, solver=positions_solver)
+    analysis = al.AnalysisPoint(point_dict=point_dict, solver=point_solver)
 
     result = search.fit(model=model, analysis=analysis)
 

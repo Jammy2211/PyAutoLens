@@ -78,14 +78,14 @@ class TestFitPositionsImage:
         noise_map = al.ValuesIrregular([0.5, 1.0])
         model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-        positions_solver = mock.MockPointSolver(model_positions=model_positions)
+        point_solver = mock.MockPointSolver(model_positions=model_positions)
 
         fit = al.FitPositionsImage(
             name="point_0",
             positions=positions,
             noise_map=noise_map,
             tracer=tracer,
-            positions_solver=positions_solver,
+            point_solver=point_solver,
         )
 
         assert fit.model_positions.in_list == [(3.0, 1.0), (2.0, 3.0)]
@@ -118,14 +118,14 @@ class TestFitPositionsImage:
             [(3.0, 1.0), (2.0, 3.0), (1.0, 0.0), (0.0, 1.0)]
         )
 
-        positions_solver = mock.MockPointSolver(model_positions=model_positions)
+        point_solver = mock.MockPointSolver(model_positions=model_positions)
 
         fit = al.FitPositionsImage(
             name="point_0",
             positions=positions,
             noise_map=noise_map,
             tracer=tracer,
-            positions_solver=positions_solver,
+            point_solver=point_solver,
         )
 
         assert fit.model_positions.in_list == [(1.0, 0.0), (2.0, 3.0)]
@@ -150,14 +150,14 @@ class TestFitPositionsImage:
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
         noise_map = al.ValuesIrregular([0.5, 1.0])
 
-        positions_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.01)
+        point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.01)
 
         fit_0 = al.FitPositionsImage(
             name="point_0",
             positions=positions,
             noise_map=noise_map,
             tracer=tracer,
-            positions_solver=positions_solver,
+            point_solver=point_solver,
         )
 
         fit_1 = al.FitPositionsImage(
@@ -165,7 +165,7 @@ class TestFitPositionsImage:
             positions=positions,
             noise_map=noise_map,
             tracer=tracer,
-            positions_solver=positions_solver,
+            point_solver=point_solver,
         )
 
         scaling_factor = al.util.cosmology.scaling_factor_between_redshifts_from(
@@ -367,7 +367,7 @@ class TestFitPointDict:
         noise_map = al.ValuesIrregular([0.5, 1.0])
         model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-        positions_solver = mock.MockPointSolver(model_positions=model_positions)
+        point_solver = mock.MockPointSolver(model_positions=model_positions)
 
         point_dataset_0 = al.PointDataset(
             name="point_0", positions=positions, positions_noise_map=noise_map
@@ -376,7 +376,7 @@ class TestFitPointDict:
         point_dict = al.PointDict(point_dataset_list=[point_dataset_0])
 
         fit = al.FitPointDict(
-            point_dict=point_dict, tracer=tracer, positions_solver=positions_solver
+            point_dict=point_dict, tracer=tracer, point_solver=point_solver
         )
 
         assert fit["point_0"].positions.log_likelihood == pytest.approx(
@@ -392,7 +392,7 @@ class TestFitPointDict:
         point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
 
         fit = al.FitPointDict(
-            point_dict=point_dict, tracer=tracer, positions_solver=positions_solver
+            point_dict=point_dict, tracer=tracer, point_solver=point_solver
         )
 
         assert fit["point_0"].positions.log_likelihood == pytest.approx(
@@ -419,7 +419,7 @@ class TestFitPointDict:
         fluxes = al.ValuesIrregular([1.0, 2.0])
         flux_noise_map = al.ValuesIrregular([3.0, 1.0])
 
-        positions_solver = mock.MockPointSolver(model_positions=model_positions)
+        point_solver = mock.MockPointSolver(model_positions=model_positions)
 
         point_dataset_0 = al.PointDataset(
             name="point_0",
@@ -432,7 +432,7 @@ class TestFitPointDict:
         point_dict = al.PointDict(point_dataset_list=[point_dataset_0])
 
         fit = al.FitPointDict(
-            point_dict=point_dict, tracer=tracer, positions_solver=positions_solver
+            point_dict=point_dict, tracer=tracer, point_solver=point_solver
         )
 
         assert fit["point_0"].positions.log_likelihood == pytest.approx(
@@ -456,7 +456,7 @@ class TestFitPointDict:
         point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
 
         fit = al.FitPointDict(
-            point_dict=point_dict, tracer=tracer, positions_solver=positions_solver
+            point_dict=point_dict, tracer=tracer, point_solver=point_solver
         )
 
         assert fit["point_0"].positions.log_likelihood == pytest.approx(
@@ -489,7 +489,7 @@ class TestFitPointDict:
         noise_map = al.ValuesIrregular([0.5, 1.0])
         model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-        positions_solver = mock.MockPointSolver(model_positions=model_positions)
+        point_solver = mock.MockPointSolver(model_positions=model_positions)
 
         point_dataset_0 = al.PointDataset(
             name="point_0", positions=positions, positions_noise_map=noise_map
@@ -502,7 +502,7 @@ class TestFitPointDict:
         point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
 
         fit = al.FitPointDict(
-            point_dict=point_dict, tracer=tracer, positions_solver=positions_solver
+            point_dict=point_dict, tracer=tracer, point_solver=point_solver
         )
 
         assert isinstance(fit["point_0"].positions, al.FitPositionsImage)
