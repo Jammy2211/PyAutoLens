@@ -1,26 +1,20 @@
 from abc import ABC
-import pickle
+from astropy import cosmology as cosmo
 import numpy as np
 from os import path
-from astropy import cosmology as cosmo
-from autoarray.inversion import pixelizations as pix
+import pickle
+
+import autoarray as aa
+import autogalaxy as ag
+
 from autoarray.inversion.inversion.imaging import inversion_imaging_unpacked_from
 from autoarray.inversion.inversion.interferometer import (
     inversion_interferometer_unpacked_from,
 )
-from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.structures.arrays import values
-from autoarray.structures.grids import grid_decorators
-from autoarray.structures.grids.two_d import grid_2d_irregular
-from autogalaxy import lensing
-from autogalaxy.galaxy import galaxy as g
-from autogalaxy.plane import plane as pl
-from autogalaxy.util import cosmology_util
-from autogalaxy.util import plane_util
-from autoarray import preloads as pload
+from autogalaxy.lensing import LensingObject
 
 
-class AbstractTracer(lensing.LensingObject, ABC):
+class AbstractTracer(LensingObject, ABC):
     def __init__(self, planes, cosmology):
         """
         Ray-tracer for a lens system with any number of planes.
@@ -170,9 +164,9 @@ class AbstractTracer(lensing.LensingObject, ABC):
         if attributes == []:
             return None
         elif isinstance(attributes[0], float):
-            return values.ValuesIrregular(values=attributes)
+            return aa.ValuesIrregular(values=attributes)
         elif isinstance(attributes[0], tuple):
-            return grid_2d_irregular.Grid2DIrregular(grid=attributes)
+            return aa.Grid2DIrregular(grid=attributes)
 
     def extract_attributes_of_planes(self, cls, attr_name, filter_nones=False):
         """
@@ -367,7 +361,7 @@ class AbstractTracer(lensing.LensingObject, ABC):
 
 
 class AbstractTracerLensing(AbstractTracer, ABC):
-    @grid_decorators.grid_2d_to_structure_list
+    @aa.grid_dec.grid_2d_to_structure_list
     def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
 
         traced_grids = []
@@ -379,7 +373,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from(
+                    scaling_factor = ag.util.cosmology.scaling_factor_between_redshifts_from(
                         redshift_0=self.plane_redshifts[previous_plane_index],
                         redshift_1=plane.redshift,
                         redshift_final=self.plane_redshifts[-1],
@@ -402,18 +396,18 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         return traced_grids
 
-    @grid_decorators.grid_2d_to_structure
+    @aa.grid_dec.grid_2d_to_structure
     def deflections_between_planes_from_grid(self, grid, plane_i=0, plane_j=-1):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
-    @grid_decorators.grid_2d_to_structure
+    @aa.grid_dec.grid_2d_to_structure
     def image_2d_from_grid(self, grid):
         return sum(self.images_of_planes_from_grid(grid=grid))
 
-    @grid_decorators.grid_2d_to_structure_list
+    @aa.grid_dec.grid_2d_to_structure_list
     def images_of_planes_from_grid(self, grid):
 
         traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
@@ -443,19 +437,19 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         return self.image_2d_from_grid(grid=padded_grid)
 
-    @grid_decorators.grid_2d_to_structure
+    @aa.grid_dec.grid_2d_to_structure
     def convergence_2d_from_grid(self, grid):
         return sum([plane.convergence_2d_from_grid(grid=grid) for plane in self.planes])
 
-    @grid_decorators.grid_2d_to_structure
+    @aa.grid_dec.grid_2d_to_structure
     def potential_2d_from_grid(self, grid):
         return sum([plane.potential_2d_from_grid(grid=grid) for plane in self.planes])
 
-    @grid_decorators.grid_2d_to_structure
+    @aa.grid_dec.grid_2d_to_structure
     def deflections_2d_from_grid(self, grid):
         return self.deflections_between_planes_from_grid(grid=grid)
 
-    @grid_decorators.grid_2d_to_structure
+    @aa.grid_dec.grid_2d_to_structure
     def deflections_of_planes_summed_from_grid(self, grid):
         return sum([plane.deflections_2d_from_grid(grid=grid) for plane in self.planes])
 
@@ -495,7 +489,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
                 plane_index_insert = plane_index
 
         planes = self.planes
-        planes.insert(plane_index_insert, pl.Plane(redshift=redshift, galaxies=[]))
+        planes.insert(plane_index_insert, ag.Plane(redshift=redshift, galaxies=[]))
 
         tracer = Tracer(planes=planes, cosmology=self.cosmology)
 
@@ -716,7 +710,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         ]
 
     def sparse_image_plane_grids_of_planes_from_grid(
-        self, grid, pixelization_setting=pix.SettingsPixelization()
+        self, grid, pixelization_setting=aa.SettingsPixelization()
     ):
 
         sparse_image_plane_grids_of_planes = []
@@ -732,8 +726,8 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
     def traced_sparse_grids_of_planes_from_grid(
         self,
         grid,
-        settings_pixelization=pix.SettingsPixelization(),
-        preloads=pload.Preloads(),
+        settings_pixelization=aa.SettingsPixelization(),
+        preloads=aa.Preloads(),
     ):
 
         if (
@@ -769,8 +763,8 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
     def mappers_of_planes_from_grid(
         self,
         grid,
-        settings_pixelization=pix.SettingsPixelization(),
-        preloads=pload.Preloads(),
+        settings_pixelization=aa.SettingsPixelization(),
+        preloads=aa.Preloads(),
     ):
 
         mappers_of_planes = []
@@ -803,9 +797,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         noise_map,
         convolver,
         w_tilde,
-        settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=SettingsInversion(),
-        preloads=pload.Preloads(),
+        settings_pixelization=aa.SettingsPixelization(),
+        settings_inversion=aa.SettingsInversion(),
+        preloads=aa.Preloads(),
     ):
 
         if preloads.mapper is None:
@@ -837,9 +831,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         visibilities,
         noise_map,
         transformer,
-        settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=SettingsInversion(),
-        preloads=pload.Preloads(),
+        settings_pixelization=aa.SettingsPixelization(),
+        settings_inversion=aa.SettingsInversion(),
+        preloads=aa.Preloads(),
     ):
         mappers_of_planes = self.mappers_of_planes_from_grid(
             grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
@@ -863,7 +857,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             for plane in self.planes
         ]
 
-    def galaxy_image_dict_from_grid(self, grid) -> {g.Galaxy: np.ndarray}:
+    def galaxy_image_dict_from_grid(self, grid) -> {ag.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
@@ -883,7 +877,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
     def galaxy_blurred_image_dict_from_grid_and_convolver(
         self, grid, convolver, blurring_grid
-    ) -> {g.Galaxy: np.ndarray}:
+    ) -> {ag.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
@@ -911,7 +905,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
     def galaxy_profile_visibilities_dict_from_grid_and_transformer(
         self, grid, transformer
-    ) -> {g.Galaxy: np.ndarray}:
+    ) -> {ag.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
@@ -941,16 +935,16 @@ class Tracer(AbstractTracerData):
     @classmethod
     def from_galaxies(cls, galaxies, cosmology=cosmo.Planck15):
 
-        plane_redshifts = plane_util.ordered_plane_redshifts_from(galaxies=galaxies)
+        plane_redshifts = ag.util.plane.ordered_plane_redshifts_from(galaxies=galaxies)
 
-        galaxies_in_planes = plane_util.galaxies_in_redshift_ordered_planes_from(
+        galaxies_in_planes = ag.util.plane.galaxies_in_redshift_ordered_planes_from(
             galaxies=galaxies, plane_redshifts=plane_redshifts
         )
 
         planes = []
 
         for plane_index in range(0, len(plane_redshifts)):
-            planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index]))
+            planes.append(ag.Plane(galaxies=galaxies_in_planes[plane_index]))
 
         return Tracer(planes=planes, cosmology=cosmology)
 
@@ -991,15 +985,17 @@ class Tracer(AbstractTracerData):
             The cosmology of the ray-tracing calculation.
         """
 
-        lens_redshifts = plane_util.ordered_plane_redshifts_from(galaxies=lens_galaxies)
+        lens_redshifts = ag.util.plane.ordered_plane_redshifts_from(
+            galaxies=lens_galaxies
+        )
 
-        plane_redshifts = plane_util.ordered_plane_redshifts_with_slicing_from(
+        plane_redshifts = ag.util.plane.ordered_plane_redshifts_with_slicing_from(
             lens_redshifts=lens_redshifts,
             planes_between_lenses=planes_between_lenses,
             source_plane_redshift=source_galaxies[0].redshift,
         )
 
-        galaxies_in_planes = plane_util.galaxies_in_redshift_ordered_planes_from(
+        galaxies_in_planes = ag.util.plane.galaxies_in_redshift_ordered_planes_from(
             galaxies=lens_galaxies + line_of_sight_galaxies,
             plane_redshifts=plane_redshifts,
         )
@@ -1011,7 +1007,7 @@ class Tracer(AbstractTracerData):
 
         for plane_index in range(0, len(plane_redshifts)):
             planes.append(
-                pl.Plane(
+                ag.Plane(
                     redshift=plane_redshifts[plane_index],
                     galaxies=galaxies_in_planes[plane_index],
                 )

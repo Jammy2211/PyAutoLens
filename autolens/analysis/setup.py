@@ -1,19 +1,18 @@
+from typing import Optional
+
 import autofit as af
-from autogalaxy.analysis import setup
-from autogalaxy.profiles import mass_profiles as mp, light_and_mass_profiles as lmp
-from autogalaxy.hyper import hyper_data as hd
-from autogalaxy.galaxy import galaxy as g
-
-from typing import Tuple, Union, Optional
+import autogalaxy as ag
 
 
-class SetupHyper(setup.SetupHyper):
+class SetupHyper(ag.SetupHyper):
     def __init__(
         self,
         hyper_galaxies_lens: bool = False,
         hyper_galaxies_source: bool = False,
-        hyper_image_sky: Optional[type(hd.HyperImageSky)] = None,
-        hyper_background_noise: Optional[type(hd.HyperBackgroundNoise)] = None,
+        hyper_image_sky: Optional[type(ag.hyper_data.HyperImageSky)] = None,
+        hyper_background_noise: Optional[
+            type(ag.hyper_data.HyperBackgroundNoise)
+        ] = None,
         hyper_fixed_after_source: bool = False,
         search_cls: Optional[af.NonLinearSearch] = None,
         search_dict: Optional[dict] = None,
@@ -163,7 +162,7 @@ class SetupHyper(setup.SetupHyper):
         self, galaxy_model, galaxy_instance, noise_factor_is_model=False
     ):
 
-        hyper_galaxy = af.Model(g.HyperGalaxy)
+        hyper_galaxy = af.Model(ag.HyperGalaxy)
 
         if galaxy_model.hyper_galaxy is None:
             return None

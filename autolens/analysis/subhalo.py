@@ -1,16 +1,14 @@
-from autofit.database.model.fit import Fit
-from autoarray.plot.mat_wrap import mat_plot as mp
-from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.plot import abstract_plotters
-from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
-from autolens.fit.fit_imaging import FitImaging
-from autolens.plot import fit_imaging_plotters
-from autolens.analysis.aggregator.aggregator import FitImagingAgg
-from autolens.analysis.aggregator.aggregator import _fit_imaging_from
-
 from typing import Generator, List, Tuple
 import numpy as np
+
+import autoarray as aa
+import autogalaxy.plot as aplt
+
+from autoarray.plot.abstract_plotters import AbstractPlotter
+
+from autolens.fit.fit_imaging import FitImaging
+from autolens.plot import fit_imaging_plotters
+from autolens.analysis.aggregator.aggregator import _fit_imaging_from
 
 
 class SubhaloResult:
@@ -29,11 +27,11 @@ class SubhaloResult:
             galaxies=self.result_no_subhalo.instance.galaxies,
         )
 
-    def _subhalo_array_from(self, values_native) -> Array2D:
+    def _subhalo_array_from(self, values_native) -> aa.Array2D:
 
         values_reshaped = [value for values in values_native for value in values]
 
-        return Array2D.manual_yx_and_values(
+        return aa.Array2D.manual_yx_and_values(
             y=[centre[0] for centre in self.grid_search_result.physical_centres_lists],
             x=[centre[1] for centre in self.grid_search_result.physical_centres_lists],
             values=values_reshaped,
@@ -46,7 +44,7 @@ class SubhaloResult:
         use_log_evidences: bool = True,
         use_stochastic_log_evidences: bool = False,
         relative_to_no_subhalo: bool = True,
-    ) -> Array2D:
+    ) -> aa.Array2D:
 
         if (not use_log_evidences) and (not use_stochastic_log_evidences):
 
@@ -115,22 +113,22 @@ class SubhaloResult:
             ]
         )
 
-        return Grid2D.manual_native(
+        return aa.Grid2D.manual_native(
             grid=centres_native,
             pixel_scales=self.grid_search_result.physical_step_sizes,
         )
 
 
-class SubhaloPlotter(abstract_plotters.AbstractPlotter):
+class SubhaloPlotter(AbstractPlotter):
     def __init__(
         self,
         subhalo_result: SubhaloResult,
         fit_imaging_detect,
         use_log_evidences: bool = True,
         use_stochastic_log_evidences: bool = False,
-        mat_plot_2d: lensing_mat_plot.MatPlot2D = lensing_mat_plot.MatPlot2D(),
-        visuals_2d: lensing_visuals.Visuals2D = lensing_visuals.Visuals2D(),
-        include_2d: lensing_include.Include2D = lensing_include.Include2D(),
+        mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
+        visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
+        include_2d: aplt.Include2D = aplt.Include2D(),
     ):
         super().__init__(
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
@@ -213,7 +211,7 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         self.mat_plot_2d.plot_array(
             array=self.detection_array_from(remove_zeros=remove_zeros),
             visuals_2d=self.visuals_2d,
-            auto_labels=mp.AutoLabels(title="Increase in Log Evidence"),
+            auto_labels=aplt.AutoLabels(title="Increase in Log Evidence"),
         )
 
         mass_array = self.subhalo_result.subhalo_mass_array_from()
@@ -221,7 +219,7 @@ class SubhaloPlotter(abstract_plotters.AbstractPlotter):
         self.mat_plot_2d.plot_array(
             array=mass_array,
             visuals_2d=self.visuals_2d,
-            auto_labels=mp.AutoLabels(title="Subhalo Mass"),
+            auto_labels=aplt.AutoLabels(title="Subhalo Mass"),
         )
 
         self.mat_plot_2d.output.subplot_to_figure(

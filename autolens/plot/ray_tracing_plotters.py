@@ -1,23 +1,23 @@
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_irregular
-from autoarray.plot.mat_wrap import mat_plot as mp
-from autogalaxy.plot import lensing_obj_plotter, plane_plotters
-from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
-from autogalaxy.profiles import light_profiles, mass_profiles
+import autoarray as aa
+import autogalaxy as ag
+import autogalaxy.plot as aplt
+
+from autogalaxy.plot.lensing_obj_plotter import LensingObjPlotter
+
 from autolens.lens import ray_tracing
 
 
-class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
+class TracerPlotter(LensingObjPlotter):
     def __init__(
         self,
         tracer: ray_tracing.Tracer,
-        grid: grid_2d.Grid2D,
-        mat_plot_1d: lensing_mat_plot.MatPlot1D = lensing_mat_plot.MatPlot1D(),
-        visuals_1d: lensing_visuals.Visuals1D = lensing_visuals.Visuals1D(),
-        include_1d: lensing_include.Include1D = lensing_include.Include1D(),
-        mat_plot_2d: lensing_mat_plot.MatPlot2D = lensing_mat_plot.MatPlot2D(),
-        visuals_2d: lensing_visuals.Visuals2D = lensing_visuals.Visuals2D(),
-        include_2d: lensing_include.Include2D = lensing_include.Include2D(),
+        grid: aa.Grid2D,
+        mat_plot_1d: aplt.MatPlot1D = aplt.MatPlot1D(),
+        visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),
+        include_1d: aplt.Include1D = aplt.Include1D(),
+        mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
+        visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
+        include_2d: aplt.Include2D = aplt.Include2D(),
     ):
         super().__init__(
             mat_plot_1d=mat_plot_1d,
@@ -36,7 +36,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
         return self.tracer
 
     @property
-    def visuals_with_include_2d(self) -> lensing_visuals.Visuals2D:
+    def visuals_with_include_2d(self) -> aplt.Visuals2D:
         """
         Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
 
@@ -61,9 +61,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
 
         return self.visuals_with_include_2d_of_plane(plane_index=0)
 
-    def visuals_with_include_2d_of_plane(
-        self, plane_index
-    ) -> lensing_visuals.Visuals2D:
+    def visuals_with_include_2d_of_plane(self, plane_index) -> aplt.Visuals2D:
         """
         Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
 
@@ -114,20 +112,19 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
-                "origin",
-                value=grid_2d_irregular.Grid2DIrregular(grid=[self.grid.origin]),
+                "origin", value=aa.Grid2DIrregular(grid=[self.grid.origin])
             ),
             border=border,
             light_profile_centres=self.extract_2d(
                 "light_profile_centres",
                 self.tracer.planes[plane_index].extract_attribute(
-                    cls=light_profiles.LightProfile, attr_name="centre"
+                    cls=ag.lp.LightProfile, attr_name="centre"
                 ),
             ),
             mass_profile_centres=self.extract_2d(
                 "mass_profile_centres",
                 self.tracer.planes[plane_index].extract_attribute(
-                    cls=mass_profiles.MassProfile, attr_name="centre"
+                    cls=ag.mp.MassProfile, attr_name="centre"
                 ),
             ),
             critical_curves=critical_curves,
@@ -140,7 +137,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             plane_index
         ]
 
-        return plane_plotters.PlanePlotter(
+        return aplt.PlanePlotter(
             plane=self.tracer.planes[plane_index],
             grid=plane_grid,
             mat_plot_2d=self.mat_plot_2d,
@@ -180,7 +177,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             self.mat_plot_2d.plot_array(
                 array=self.tracer.image_2d_from_grid(grid=self.grid),
                 visuals_2d=self.visuals_with_include_2d,
-                auto_labels=mp.AutoLabels(title="Image", filename="image_2d"),
+                auto_labels=aplt.AutoLabels(title="Image", filename="image_2d"),
             )
 
         if source_plane:
@@ -201,7 +198,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             self.mat_plot_2d.plot_array(
                 array=self.tracer.contribution_map,
                 visuals_2d=self.visuals_with_include_2d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=aplt.AutoLabels(
                     title="Contribution Map", filename="contribution_map_2d"
                 ),
             )
@@ -276,7 +273,7 @@ class TracerPlotter(lensing_obj_plotter.LensingObjPlotter):
             deflections_x=deflections_x,
             magnification=magnification,
             contribution_map=contribution_map,
-            auto_labels=mp.AutoLabels(filename=auto_filename),
+            auto_labels=aplt.AutoLabels(filename=auto_filename),
         )
 
     def subplot_tracer(self):

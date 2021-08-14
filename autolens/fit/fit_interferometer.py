@@ -1,22 +1,19 @@
 import numpy as np
 
-from autoarray.fit import fit as aa_fit
-from autoarray.inversion import pixelizations as pix
-from autoarray.inversion.inversion.settings import SettingsInversion
-from autogalaxy.galaxy import galaxy as g
-from autoarray import preloads as pload
+import autoarray as aa
+import autogalaxy as ag
 
 
-class FitInterferometer(aa_fit.FitInterferometer):
+class FitInterferometer(aa.FitInterferometer):
     def __init__(
         self,
         interferometer,
         tracer,
         hyper_background_noise=None,
         use_hyper_scaling=True,
-        settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=SettingsInversion(),
-        preloads=pload.Preloads(),
+        settings_pixelization=aa.SettingsPixelization(),
+        settings_inversion=aa.SettingsInversion(),
+        preloads=aa.Preloads(),
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
@@ -89,7 +86,7 @@ class FitInterferometer(aa_fit.FitInterferometer):
         return self.interferometer.grid
 
     @property
-    def galaxy_model_image_dict(self) -> {g.Galaxy: np.ndarray}:
+    def galaxy_model_image_dict(self) -> {ag.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """
@@ -115,7 +112,7 @@ class FitInterferometer(aa_fit.FitInterferometer):
         return galaxy_model_image_dict
 
     @property
-    def galaxy_model_visibilities_dict(self) -> {g.Galaxy: np.ndarray}:
+    def galaxy_model_visibilities_dict(self) -> {ag.Galaxy: np.ndarray}:
         """
         A dictionary associating galaxies with their corresponding model images
         """

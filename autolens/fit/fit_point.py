@@ -1,18 +1,14 @@
-from autofit.exc import FitException
-from autoarray.structures.arrays.values import ValuesIrregular
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
-from autoarray.fit.fit import FitData
-from autogalaxy.profiles import point_sources as ps
+from functools import partial
+import numba
+from typing import Optional
+
+import autoarray as aa
+import autogalaxy as ag
+
+from autolens import exc
 from autolens.dataset.point_dataset import PointDict, PointDataset
 from autolens.lens.positions_solver import PositionsSolver
 from autolens.lens.ray_tracing import Tracer
-
-from functools import partial
-
-from autolens import exc
-
-import numba
-from typing import Optional
 
 
 class FitPointDict(dict):
@@ -67,7 +63,7 @@ class FitPointDataset:
 
         try:
 
-            if isinstance(point_profile, ps.PointSourceChi):
+            if isinstance(point_profile, ag.ps.PointSourceChi):
 
                 self.positions = FitPositionsSource(
                     name=point_dataset.name,
@@ -91,7 +87,7 @@ class FitPointDataset:
         except exc.PointExtractionException:
             self.positions = None
         except (AttributeError, numba.errors.TypingError) as e:
-            raise FitException from e
+            raise exc.FitException from e
 
         try:
 
@@ -118,15 +114,15 @@ class FitPointDataset:
         return log_likelihood_positions + log_likelihood_flux
 
 
-class FitPositionsImage(FitData):
+class FitPositionsImage(aa.FitData):
     def __init__(
         self,
         name: str,
-        positions: Grid2DIrregular,
-        noise_map: ValuesIrregular,
+        positions: aa.Grid2DIrregular,
+        noise_map: aa.ValuesIrregular,
         tracer: Tracer,
         positions_solver: PositionsSolver,
-        point_profile: Optional[ps.Point] = None,
+        point_profile: Optional[ag.ps.Point] = None,
     ):
         """
         A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
@@ -181,29 +177,29 @@ class FitPositionsImage(FitData):
         )
 
     @property
-    def positions(self) -> Grid2DIrregular:
+    def positions(self) -> aa.Grid2DIrregular:
         return self.data
 
     @property
-    def model_positions(self) -> Grid2DIrregular:
+    def model_positions(self) -> aa.Grid2DIrregular:
         return self.model_data
 
     @property
-    def residual_map(self) -> ValuesIrregular:
+    def residual_map(self) -> aa.ValuesIrregular:
 
         residual_positions = self.positions - self.model_positions
 
         return residual_positions.distances_from_coordinate(coordinate=(0.0, 0.0))
 
 
-class FitPositionsSource(FitData):
+class FitPositionsSource(aa.FitData):
     def __init__(
         self,
         name: str,
-        positions: Grid2DIrregular,
-        noise_map: ValuesIrregular,
+        positions: aa.Grid2DIrregular,
+        noise_map: aa.ValuesIrregular,
         tracer: Tracer,
-        point_profile: Optional[ps.Point] = None,
+        point_profile: Optional[ag.ps.Point] = None,
     ):
         """
         A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
@@ -257,30 +253,30 @@ class FitPositionsSource(FitData):
         )
 
     @property
-    def positions(self) -> Grid2DIrregular:
+    def positions(self) -> aa.Grid2DIrregular:
         return self.data
 
     @property
-    def model_positions(self) -> Grid2DIrregular:
+    def model_positions(self) -> aa.Grid2DIrregular:
         return self.model_data
 
     @property
-    def residual_map(self) -> ValuesIrregular:
+    def residual_map(self) -> aa.ValuesIrregular:
 
         return self.model_positions.distances_from_coordinate(
             coordinate=self.source_plane_coordinate
         )
 
 
-class FitFluxes(FitData):
+class FitFluxes(aa.FitData):
     def __init__(
         self,
         name: str,
-        fluxes: ValuesIrregular,
-        noise_map: ValuesIrregular,
-        positions: Grid2DIrregular,
+        fluxes: aa.ValuesIrregular,
+        noise_map: aa.ValuesIrregular,
+        positions: aa.Grid2DIrregular,
         tracer: Tracer,
-        point_profile: Optional[ps.Point] = None,
+        point_profile: Optional[ag.ps.Point] = None,
     ):
 
         self.name = name
@@ -320,7 +316,7 @@ class FitFluxes(FitData):
             )
         )
 
-        model_fluxes = ValuesIrregular(
+        model_fluxes = aa.ValuesIrregular(
             values=[
                 magnification * self.point_profile.flux
                 for magnification in self.magnifications
@@ -336,17 +332,20 @@ class FitFluxes(FitData):
         )
 
     @property
-    def fluxes(self) -> ValuesIrregular:
+    def fluxes(self) -> aa.ValuesIrregular:
         return self.data
 
     @property
-    def model_fluxes(self) -> ValuesIrregular:
+    def model_fluxes(self) -> aa.ValuesIrregular:
         return self.model_data
 
 
 class AbstractFitPositionsSourcePlane:
     def __init__(
-        self, positions: Grid2DIrregular, noise_map: ValuesIrregular, tracer: Tracer
+        self,
+        positions: aa.Grid2DIrregular,
+        noise_map: aa.ValuesIrregular,
+        tracer: Tracer,
     ):
         """
         Given a positions dataset, which is a list of positions with names that associated them to model source
@@ -372,7 +371,7 @@ class AbstractFitPositionsSourcePlane:
         )[-1]
 
     @property
-    def furthest_separations_of_source_plane_positions(self) -> ValuesIrregular:
+    def furthest_separations_of_source_plane_positions(self) -> aa.ValuesIrregular:
         """
         Returns the furthest distance of every source-plane (y,x) coordinate to the other source-plane (y,x)
         coordinates.
@@ -387,7 +386,7 @@ class AbstractFitPositionsSourcePlane:
 
         Returns
         -------
-        ValuesIrregular
+        aa.ValuesIrregular
             The further distances of every set of grouped source-plane coordinates the other source-plane coordinates
             that it is grouped with.
         """
@@ -403,7 +402,10 @@ class AbstractFitPositionsSourcePlane:
 
 class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
     def __init__(
-        self, positions: Grid2DIrregular, noise_map: ValuesIrregular, tracer: Tracer
+        self,
+        positions: aa.Grid2DIrregular,
+        noise_map: aa.ValuesIrregular,
+        tracer: Tracer,
     ):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.

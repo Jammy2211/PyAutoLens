@@ -1,4 +1,4 @@
-from autoarray import decorator_util
+from autoarray import numba_util
 import numpy as np
 
 
@@ -24,7 +24,7 @@ def minimum_separations_from(positions_true, positions):
     return minimum_separations
 
 
-@decorator_util.jit()
+@aa.util.numba.jit()
 def min_separation_of_positions_to_grid(positions, grid):
 
     rdist_max = np.zeros((grid.shape[0]))

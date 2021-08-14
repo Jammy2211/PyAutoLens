@@ -1,20 +1,21 @@
-from autoarray.plot.mat_wrap import mat_plot as mp
-from autoarray.plot import inversion_plotters, fit_imaging_plotters
-from autolens.plot import ray_tracing_plotters
-from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
-from autogalaxy.profiles import light_profiles, mass_profiles
-from autolens.fit import fit_imaging
-
 import numpy as np
 
+import autogalaxy as ag
+import autogalaxy.plot as aplt
 
-class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
+from autoarray.plot.fit_imaging_plotters import AbstractFitImagingPlotter
+
+from autolens.plot.ray_tracing_plotters import TracerPlotter
+from autolens.fit import fit_imaging
+
+
+class FitImagingPlotter(AbstractFitImagingPlotter):
     def __init__(
         self,
         fit: fit_imaging.FitImaging,
-        mat_plot_2d: lensing_mat_plot.MatPlot2D = lensing_mat_plot.MatPlot2D(),
-        visuals_2d: lensing_visuals.Visuals2D = lensing_visuals.Visuals2D(),
-        include_2d: lensing_include.Include2D = lensing_include.Include2D(),
+        mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
+        visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
+        include_2d: aplt.Include2D = aplt.Include2D(),
     ):
 
         super().__init__(
@@ -25,7 +26,7 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
         )
 
     @property
-    def visuals_with_include_2d(self) -> lensing_visuals.Visuals2D:
+    def visuals_with_include_2d(self) -> aplt.Visuals2D:
         """
         Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
 
@@ -56,13 +57,13 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
             light_profile_centres=self.extract_2d(
                 "light_profile_centres",
                 self.tracer.planes[0].extract_attribute(
-                    cls=light_profiles.LightProfile, attr_name="centre"
+                    cls=ag.lp.LightProfile, attr_name="centre"
                 ),
             ),
             mass_profile_centres=self.extract_2d(
                 "mass_profile_centres",
                 self.tracer.planes[0].extract_attribute(
-                    cls=mass_profiles.MassProfile, attr_name="centre"
+                    cls=ag.mp.MassProfile, attr_name="centre"
                 ),
             ),
             critical_curves=self.extract_2d(
@@ -78,7 +79,7 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
 
     @property
     def tracer_plotter(self):
-        return ray_tracing_plotters.TracerPlotter(
+        return TracerPlotter(
             tracer=self.tracer,
             grid=self.fit.grid,
             mat_plot_2d=self.mat_plot_2d,
@@ -88,7 +89,7 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
 
     def inversion_plotter_of_plane(self, plane_index):
 
-        inversion_plotter = inversion_plotters.InversionPlotter(
+        inversion_plotter = aplt.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.tracer_plotter.visuals_with_include_2d_of_plane(
@@ -186,7 +187,7 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
                 self.mat_plot_2d.plot_array(
                     array=self.fit.subtracted_images_of_planes[plane_index],
                     visuals_2d=self.visuals_with_include_2d,
-                    auto_labels=mp.AutoLabels(
+                    auto_labels=aplt.AutoLabels(
                         title=f"Subtracted Image of Plane {plane_index}",
                         filename=f"subtracted_image_of_plane_{plane_index}",
                     ),
@@ -205,7 +206,7 @@ class FitImagingPlotter(fit_imaging_plotters.AbstractFitImagingPlotter):
                     self.mat_plot_2d.plot_array(
                         array=self.fit.model_images_of_planes[plane_index],
                         visuals_2d=self.visuals_with_include_2d,
-                        auto_labels=mp.AutoLabels(
+                        auto_labels=aplt.AutoLabels(
                             title=f"Model Image of Plane {plane_index}",
                             filename=f"model_image_of_plane_{plane_index}",
                         ),

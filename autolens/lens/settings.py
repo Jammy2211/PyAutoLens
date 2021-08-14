@@ -1,4 +1,3 @@
-from autoconf import conf
 from autolens import exc
 from autolens.fit import fit_point
 

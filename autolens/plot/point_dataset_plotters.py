@@ -1,19 +1,20 @@
-from autoarray.plot.mat_wrap import mat_plot as mp
-from autoarray.plot import abstract_plotters
-from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
+from autoarray.plot.abstract_plotters import AbstractPlotter
+
+import autogalaxy.plot as aplt
+
 from autolens.dataset import point_dataset
 
 
-class PointDictPlotter(abstract_plotters.AbstractPlotter):
+class PointDictPlotter(AbstractPlotter):
     def __init__(
         self,
         point_dict: point_dataset.PointDict,
-        mat_plot_1d: lensing_mat_plot.MatPlot1D = lensing_mat_plot.MatPlot1D(),
-        visuals_1d: lensing_visuals.Visuals1D = lensing_visuals.Visuals1D(),
-        include_1d: lensing_include.Include1D = lensing_include.Include1D(),
-        mat_plot_2d: lensing_mat_plot.MatPlot2D = lensing_mat_plot.MatPlot2D(),
-        visuals_2d: lensing_visuals.Visuals2D = lensing_visuals.Visuals2D(),
-        include_2d: lensing_include.Include2D = lensing_include.Include2D(),
+        mat_plot_1d: aplt.MatPlot1D = aplt.MatPlot1D(),
+        visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),
+        include_1d: aplt.Include1D = aplt.Include1D(),
+        mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
+        visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
+        include_2d: aplt.Include2D = aplt.Include2D(),
     ):
         super().__init__(
             mat_plot_1d=mat_plot_1d,
@@ -27,7 +28,7 @@ class PointDictPlotter(abstract_plotters.AbstractPlotter):
         self.point_dict = point_dict
 
     @property
-    def visuals_with_include_1d(self) -> lensing_visuals.Visuals1D:
+    def visuals_with_include_1d(self) -> aplt.Visuals1D:
         """
         Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
 
@@ -53,7 +54,7 @@ class PointDictPlotter(abstract_plotters.AbstractPlotter):
         return self.visuals_1d
 
     @property
-    def visuals_with_include_2d(self) -> lensing_visuals.Visuals2D:
+    def visuals_with_include_2d(self) -> aplt.Visuals2D:
         """
         Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
 
@@ -137,16 +138,16 @@ class PointDictPlotter(abstract_plotters.AbstractPlotter):
         self.close_subplot_figure()
 
 
-class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
+class PointDatasetPlotter(AbstractPlotter):
     def __init__(
         self,
         point_dataset: point_dataset.PointDataset,
-        mat_plot_1d: lensing_mat_plot.MatPlot1D = lensing_mat_plot.MatPlot1D(),
-        visuals_1d: lensing_visuals.Visuals1D = lensing_visuals.Visuals1D(),
-        include_1d: lensing_include.Include1D = lensing_include.Include1D(),
-        mat_plot_2d: lensing_mat_plot.MatPlot2D = lensing_mat_plot.MatPlot2D(),
-        visuals_2d: lensing_visuals.Visuals2D = lensing_visuals.Visuals2D(),
-        include_2d: lensing_include.Include2D = lensing_include.Include2D(),
+        mat_plot_1d: aplt.MatPlot1D = aplt.MatPlot1D(),
+        visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),
+        include_1d: aplt.Include1D = aplt.Include1D(),
+        mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
+        visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
+        include_2d: aplt.Include2D = aplt.Include2D(),
     ):
         super().__init__(
             mat_plot_1d=mat_plot_1d,
@@ -160,7 +161,7 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
         self.point_dataset = point_dataset
 
     @property
-    def visuals_with_include_1d(self) -> lensing_visuals.Visuals1D:
+    def visuals_with_include_1d(self) -> aplt.Visuals1D:
         """
         Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
 
@@ -186,7 +187,7 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
         return self.visuals_1d
 
     @property
-    def visuals_with_include_2d(self) -> lensing_visuals.Visuals2D:
+    def visuals_with_include_2d(self) -> aplt.Visuals2D:
         """
         Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
 
@@ -220,7 +221,7 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
                 y_errors=self.point_dataset.positions_noise_map,
                 x_errors=self.point_dataset.positions_noise_map,
                 visuals_2d=self.visuals_with_include_2d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=aplt.AutoLabels(
                     title=f"{self.point_dataset.name} Positions",
                     filename="point_dataset_positions",
                 ),
@@ -247,7 +248,7 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
                     y=self.point_dataset.fluxes,
                     y_errors=self.point_dataset.fluxes_noise_map,
                     visuals_1d=self.visuals_with_include_1d,
-                    auto_labels=mp.AutoLabels(
+                    auto_labels=aplt.AutoLabels(
                         title=f" {self.point_dataset.name} Fluxes",
                         filename="point_dataset_fluxes",
                         xlabel="Point Number",
@@ -265,7 +266,7 @@ class PointDatasetPlotter(abstract_plotters.AbstractPlotter):
         self._subplot_custom_plot(
             positions=positions,
             fluxes=fluxes,
-            auto_labels=mp.AutoLabels(filename=auto_filename),
+            auto_labels=aplt.AutoLabels(filename=auto_filename),
         )
 
     def subplot_point_dataset(self):

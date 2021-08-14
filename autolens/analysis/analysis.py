@@ -1,24 +1,17 @@
+from astropy import cosmology as cosmo
+import copy
 import json
+import numpy as np
 from os import path
+from scipy.stats import norm
 from typing import List
 
-import numba
-import numpy as np
-from astropy import cosmology as cosmo
-from scipy.stats import norm
-import copy
-
-import autofit as af
-from autoarray import preloads as pload
-from autoarray.exc import PixelizationException, InversionException, GridException
-from autoarray.inversion import pixelizations as pix
-from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoconf import conf
-from autofit.exc import FitException
-from autogalaxy.analysis import analysis as a
-from autogalaxy.analysis import model_util
-from autogalaxy.galaxy import galaxy as g
+import autofit as af
+import autoarray as aa
+import autogalaxy as ag
+from autogalaxy.analysis.analysis import AnalysisDataset as AgAnalysisDataset
+
 from autolens import exc
 from autolens.analysis import result as res
 from autolens.analysis import visualizer as vis
@@ -47,24 +40,24 @@ class AnalysisLensing:
         )
 
 
-class AnalysisDataset(a.AnalysisDataset, AnalysisLensing):
+class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
     def __init__(
         self,
         dataset,
-        positions: grid_2d_irregular.Grid2DIrregular = None,
+        positions: aa.Grid2DIrregular = None,
         hyper_dataset_result=None,
         cosmology=cosmo.Planck15,
-        settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=SettingsInversion(),
+        settings_pixelization=aa.SettingsPixelization(),
+        settings_inversion=aa.SettingsInversion(),
         settings_lens=settings.SettingsLens(),
-        preloads=pload.Preloads(),
+        preloads=aa.Preloads(),
     ):
         """
 
         Parameters
         ----------
         dataset
-        positions : grid_2d_irregular.Grid2DIrregular
+        positions : aa.Grid2DIrregular
             Image-pixel coordinates in arc-seconds of bright regions of the lensed source that will map close to one
             another in the source-plane(s) for an accurate mass model, which can be used to discard unphysical mass
             models during model-fitting.
@@ -221,12 +214,12 @@ class AnalysisImaging(AnalysisDataset):
                 hyper_background_noise=hyper_background_noise,
             ).figure_of_merit
         except (
-            PixelizationException,
-            InversionException,
-            GridException,
+            exc.PixelizationException,
+            exc.InversionException,
+            exc.GridException,
             OverflowError,
         ) as e:
-            raise FitException from e
+            raise exc.FitException from e
 
     def fit_imaging_for_tracer(
         self, tracer, hyper_image_sky, hyper_background_noise, use_hyper_scalings=True
@@ -252,7 +245,7 @@ class AnalysisImaging(AnalysisDataset):
             return
 
         if not isinstance(
-            tracer.pixelizations_of_planes[-1], pix.VoronoiBrightnessImage
+            tracer.pixelizations_of_planes[-1], aa.pix.VoronoiBrightnessImage
         ):
             return
 
@@ -281,9 +274,9 @@ class AnalysisImaging(AnalysisDataset):
                     preloads=self.preloads,
                 ).log_evidence
             except (
-                PixelizationException,
-                InversionException,
-                GridException,
+                exc.PixelizationException,
+                exc.InversionException,
+                exc.GridException,
                 OverflowError,
             ) as e:
                 log_evidence = None
@@ -345,10 +338,12 @@ class AnalysisImaging(AnalysisDataset):
         model: af.Collection,
     ):
 
-        pixelization = model_util.pixelization_from(model=model)
+        pixelization = ag.util.model.pixelization_from(model=model)
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
-            if model_util.isinstance_or_prior(pixelization, pix.VoronoiBrightnessImage):
+            if ag.util.model.isinstance_or_prior(
+                pixelization, aa.pix.VoronoiBrightnessImage
+            ):
                 self.save_stochastic_outputs(paths=paths, samples=samples)
 
     def make_result(
@@ -375,13 +370,13 @@ class AnalysisInterferometer(AnalysisDataset):
     def __init__(
         self,
         dataset,
-        positions: grid_2d_irregular.Grid2DIrregular = None,
+        positions: aa.Grid2DIrregular = None,
         hyper_dataset_result=None,
         cosmology=cosmo.Planck15,
-        settings_pixelization=pix.SettingsPixelization(),
-        settings_inversion=SettingsInversion(),
+        settings_pixelization=aa.SettingsPixelization(),
+        settings_inversion=aa.SettingsInversion(),
         settings_lens=settings.SettingsLens(),
-        preloads=pload.Preloads(),
+        preloads=aa.Preloads(),
     ):
 
         super().__init__(
@@ -449,12 +444,12 @@ class AnalysisInterferometer(AnalysisDataset):
             )
             return fit.figure_of_merit
         except (
-            PixelizationException,
-            InversionException,
-            GridException,
+            exc.PixelizationException,
+            exc.InversionException,
+            exc.GridException,
             OverflowError,
         ) as e:
-            raise FitException from e
+            raise exc.FitException from e
 
     def associate_hyper_visibilities(
         self, instance: af.ModelInstance
@@ -484,7 +479,7 @@ class AnalysisInterferometer(AnalysisDataset):
         """
         if self.hyper_galaxy_visibilities_path_dict is not None:
             for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                g.Galaxy
+                ag.Galaxy
             ):
                 if galaxy_path in self.hyper_galaxy_visibilities_path_dict:
                     galaxy.hyper_model_visibilities = self.hyper_model_visibilities
@@ -517,7 +512,7 @@ class AnalysisInterferometer(AnalysisDataset):
             return None
 
         if not isinstance(
-            tracer.pixelizations_of_planes[-1], pix.VoronoiBrightnessImage
+            tracer.pixelizations_of_planes[-1], aa.pix.VoronoiBrightnessImage
         ):
             return None
 
@@ -543,9 +538,9 @@ class AnalysisInterferometer(AnalysisDataset):
                     preloads=self.preloads,
                 ).log_evidence
             except (
-                PixelizationException,
-                InversionException,
-                GridException,
+                exc.PixelizationException,
+                exc.InversionException,
+                exc.GridException,
                 OverflowError,
             ) as e:
                 log_evidence = None

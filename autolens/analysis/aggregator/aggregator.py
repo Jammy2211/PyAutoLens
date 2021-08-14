@@ -1,20 +1,23 @@
+from abc import ABC, abstractmethod
+from functools import partial
+from typing import Optional, List, Generator
+
 import autofit as af
-import autolens as al
+import autoarray as aa
 
-from autofit import exc
-
-from autofit.database.model.fit import Fit
+import autogalaxy as ag
 from autogalaxy.analysis.aggregator.aggregator import (
     _imaging_from,
     _interferometer_from,
 )
 
-from functools import partial
+from autolens.fit.fit_imaging import FitImaging
+from autolens.fit.fit_interferometer import FitInterferometer
+from autolens.lens.ray_tracing import Tracer
+from autolens import exc
 
-from typing import Optional, List, Generator, Tuple
 
-
-def _tracer_from(fit: Fit, galaxies: List[al.Galaxy]) -> "al.Tracer":
+def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> Tracer:
     """
     Returns a `Tracer` object from a PyAutoFit database `Fit` object and an instance of galaxies from a non-linear
     search model-fit.
@@ -43,7 +46,7 @@ def _tracer_from(fit: Fit, galaxies: List[al.Galaxy]) -> "al.Tracer":
     if hyper_galaxy_image_path_dict is not None:
 
         galaxy_path_list = [
-            gal[0] for gal in fit.instance.path_instance_tuples_for_class(al.Galaxy)
+            gal[0] for gal in fit.instance.path_instance_tuples_for_class(ag.Galaxy)
         ]
 
         for (galaxy_path, galaxy) in zip(galaxy_path_list, galaxies):
@@ -54,19 +57,19 @@ def _tracer_from(fit: Fit, galaxies: List[al.Galaxy]) -> "al.Tracer":
 
             galaxies_with_hyper.append(galaxy)
 
-        return al.Tracer.from_galaxies(galaxies=galaxies_with_hyper)
+        return Tracer.from_galaxies(galaxies=galaxies_with_hyper)
 
-    return al.Tracer.from_galaxies(galaxies=galaxies)
+    return Tracer.from_galaxies(galaxies=galaxies)
 
 
 def _fit_imaging_from(
-    fit: Fit,
-    galaxies: List[al.Galaxy],
-    settings_imaging: al.SettingsImaging = None,
-    settings_pixelization: al.SettingsPixelization = None,
-    settings_inversion: al.SettingsInversion = None,
+    fit: af.Fit,
+    galaxies: List[ag.Galaxy],
+    settings_imaging: aa.SettingsImaging = None,
+    settings_pixelization: aa.SettingsPixelization = None,
+    settings_inversion: aa.SettingsInversion = None,
     use_preloaded_grid: bool = True,
-) -> "al.FitImaging":
+) -> FitImaging:
     """
     Returns a `FitImaging` object from a PyAutoFit database `Fit` object and an instance of galaxies from a non-linear
     search model-fit.
@@ -96,7 +99,7 @@ def _fit_imaging_from(
     )
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
-    preloads = al.Preloads()
+    preloads = aa.Preloads()
 
     if use_preloaded_grid:
 
@@ -104,9 +107,9 @@ def _fit_imaging_from(
 
         if sparse_grids_of_planes is not None:
 
-            preloads = al.Preloads(sparse_grids_of_planes=sparse_grids_of_planes)
+            preloads = aa.Preloads(sparse_grids_of_planes=sparse_grids_of_planes)
 
-    return al.FitImaging(
+    return FitImaging(
         imaging=imaging,
         tracer=tracer,
         settings_pixelization=settings_pixelization,
@@ -116,14 +119,14 @@ def _fit_imaging_from(
 
 
 def _fit_interferometer_from(
-    fit: Fit,
-    galaxies: List[al.Galaxy],
-    real_space_mask: Optional[al.Mask2D] = None,
-    settings_interferometer: al.SettingsInterferometer = None,
-    settings_pixelization: al.SettingsPixelization = None,
-    settings_inversion: al.SettingsInversion = None,
+    fit: af.Fit,
+    galaxies: List[ag.Galaxy],
+    real_space_mask: Optional[aa.Mask2D] = None,
+    settings_interferometer: aa.SettingsInterferometer = None,
+    settings_pixelization: aa.SettingsPixelization = None,
+    settings_inversion: aa.SettingsInversion = None,
     use_preloaded_grid: bool = True,
-) -> "al.FitInterferometer":
+) -> FitInterferometer:
     """
     Returns a `FitInterferometer` object from a PyAutoFit database `Fit` object and an instance of galaxies from a non-linear
     search model-fit.
@@ -163,9 +166,9 @@ def _fit_interferometer_from(
 
         if sparse_grids_of_planes is not None:
 
-            preloads = al.Preloads(sparse_grids_of_planes=sparse_grids_of_planes)
+            preloads = aa.Preloads(sparse_grids_of_planes=sparse_grids_of_planes)
 
-    return al.FitInterferometer(
+    return FitInterferometer(
         interferometer=interferometer,
         tracer=tracer,
         settings_pixelization=settings_pixelization,
@@ -174,7 +177,7 @@ def _fit_interferometer_from(
     )
 
 
-class AbstractAgg:
+class AbstractAgg(ABC):
     def __init__(self, aggregator: af.Aggregator):
         """
         An abstract aggregator wrapper, which makes it straight forward to compute generators of objects from specific
@@ -189,10 +192,10 @@ class AbstractAgg:
         """
         self.aggregator = aggregator
 
-    def make_object_for_gen(self, fit: Fit, galaxies: List[al.Galaxy]) -> object:
+    @abstractmethod
+    def make_object_for_gen(self, fit: af.Fit, galaxies: List[ag.Galaxy]) -> object:
         """
-        Abstract method that is overwritten with functions that create the generator of an object from the results
-        of a non-linear search.
+
 
         For example, in the `TracerAgg` object, this function is overwritten such that it creates a `Tracer` from a
         `ModelInstance` that contains the galaxies of a sample from a non-linear search.
@@ -209,7 +212,6 @@ class AbstractAgg:
         Generator
             A generator that creates an object used in the model-fitting process of a non-linear search.
         """
-        raise NotImplementedError
 
     def max_log_likelihood_gen(self) -> Generator:
         """
@@ -222,7 +224,7 @@ class AbstractAgg:
         likelihood `Tracer` objects for all aggregator results.
         """
 
-        def func_gen(fit: Fit) -> Generator:
+        def func_gen(fit: af.Fit) -> Generator:
             return self.make_object_for_gen(fit=fit, galaxies=fit.instance.galaxies)
 
         return self.aggregator.map(func=func_gen)
@@ -249,7 +251,7 @@ class AbstractAgg:
             and not included in the generator.
         """
 
-        def func_gen(fit: Fit, minimum_weight: float) -> List[object]:
+        def func_gen(fit: af.Fit, minimum_weight: float) -> List[object]:
 
             samples = fit.value(name="samples")
 
@@ -290,7 +292,7 @@ class AbstractAgg:
             The total number of non-linear search samples that should be randomly drawn from the PDF.
         """
 
-        def func_gen(fit: Fit, total_samples: int) -> List[object]:
+        def func_gen(fit: af.Fit, total_samples: int) -> List[object]:
 
             samples = fit.value(name="samples")
 
@@ -313,7 +315,7 @@ class TracerAgg(AbstractAgg):
     search model-fit.
     """
 
-    def make_object_for_gen(self, fit, galaxies) -> "al.Tracer":
+    def make_object_for_gen(self, fit, galaxies) -> Tracer:
         """
         Creates a `Tracer` object from a `ModelInstance` that contains the galaxies of a sample from a non-linear
         search.
@@ -337,9 +339,9 @@ class FitImagingAgg(AbstractAgg):
     def __init__(
         self,
         aggregator: af.Aggregator,
-        settings_imaging: Optional[al.SettingsImaging] = None,
-        settings_pixelization: Optional[al.SettingsPixelization] = None,
-        settings_inversion: Optional[al.SettingsInversion] = None,
+        settings_imaging: Optional[aa.SettingsImaging] = None,
+        settings_pixelization: Optional[aa.SettingsPixelization] = None,
+        settings_inversion: Optional[aa.SettingsInversion] = None,
         use_preloaded_grid: bool = True,
     ):
         """
@@ -353,7 +355,7 @@ class FitImagingAgg(AbstractAgg):
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
 
-    def make_object_for_gen(self, fit, galaxies) -> "al.FitImaging":
+    def make_object_for_gen(self, fit, galaxies) -> FitImaging:
         """
         Creates a `FitImaging` object from a `ModelInstance` that contains the galaxies of a sample from a non-linear
         search.
@@ -384,11 +386,11 @@ class FitInterferometerAgg(AbstractAgg):
     def __init__(
         self,
         aggregator: af.Aggregator,
-        settings_interferometer: Optional[al.SettingsInterferometer] = None,
-        settings_pixelization: Optional[al.SettingsPixelization] = None,
-        settings_inversion: Optional[al.SettingsInversion] = None,
+        settings_interferometer: Optional[aa.SettingsInterferometer] = None,
+        settings_pixelization: Optional[aa.SettingsPixelization] = None,
+        settings_inversion: Optional[aa.SettingsInversion] = None,
         use_preloaded_grid: bool = True,
-        real_space_mask: Optional[al.Mask2D] = None,
+        real_space_mask: Optional[aa.Mask2D] = None,
     ):
         """
         Wraps a PyAutoFit aggregator in order to create generators of fits to interferometer data, corresponding to the
@@ -402,7 +404,7 @@ class FitInterferometerAgg(AbstractAgg):
         self.use_preloaded_grid = use_preloaded_grid
         self.real_space_mask = real_space_mask
 
-    def make_object_for_gen(self, fit, galaxies) -> "al.FitInterferometer":
+    def make_object_for_gen(self, fit, galaxies) -> FitInterferometer:
         """
         Creates a `FitInterferometer` object from a `ModelInstance` that contains the galaxies of a sample from a non-linear
         search.
@@ -434,9 +436,9 @@ class SubhaloAgg:
         self,
         #  aggregator_no_subhalo: af.Aggregator,
         aggregator_grid_search: af.GridSearchAggregator,
-        settings_imaging: Optional[al.SettingsImaging] = None,
-        settings_pixelization: Optional[al.SettingsPixelization] = None,
-        settings_inversion: Optional[al.SettingsInversion] = None,
+        settings_imaging: Optional[aa.SettingsImaging] = None,
+        settings_pixelization: Optional[aa.SettingsPixelization] = None,
+        settings_inversion: Optional[aa.SettingsInversion] = None,
         use_preloaded_grid: bool = True,
     ):
         """

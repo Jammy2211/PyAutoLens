@@ -1,16 +1,13 @@
-import autofit as af
-
-from autoarray import preloads as pload
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.inversion import pixelizations as pix, regularization as reg
-from autogalaxy.profiles import mass_profiles as mp
-from autogalaxy.analysis import model_util
-from autolens import exc
-
 from typing import Optional
 
+import autofit as af
+import autoarray as aa
+import autogalaxy as ag
 
-class Preloads(pload.Preloads):
+from autolens import exc
+
+
+class Preloads(aa.Preloads):
     @classmethod
     def setup(
         cls,
@@ -18,7 +15,7 @@ class Preloads(pload.Preloads):
         model: Optional[af.Collection] = None,
         pixelization: bool = False,
         inversion: bool = False,
-    ) -> pload.Preloads:
+    ) -> aa.Preloads:
         """
         Class method which offers a concise API for settings up a preloads object, used throughout
         the `autolens_workspace` example scripts to make it explicit where a preload is being set up.
@@ -50,7 +47,7 @@ class Preloads(pload.Preloads):
 
 def preload_pixelization_grid_from(
     result: af.Result, model: Optional[af.Collection] = None
-) -> pload.Preloads:
+) -> aa.Preloads:
     """
     If a model contains a `Pixelization` that is an `instance` whose parameters are fixed and the `Result` contains
     the grid of this pixelization corresponding to these parameters, the grid can be preloaded to avoid repeating
@@ -77,25 +74,25 @@ def preload_pixelization_grid_from(
 
     if model is not None:
 
-        if model_util.pixelization_from(model=model) is None:
+        if ag.util.model.pixelization_from(model=model) is None:
             raise exc.PreloadException(
                 "Cannot preload pixelization when the model does not include a pixelization"
             )
 
-        if model_util.pixelization_is_model_from(model=model):
+        if ag.util.model.pixelization_is_model_from(model=model):
             raise exc.PreloadException(
                 "Cannot preload pixelization when the model include a pixelization but it is a model"
                 "component (preloading its grid will nullify changing its parameters)"
             )
 
-    return pload.Preloads(
+    return aa.Preloads(
         sparse_grids_of_planes=result.max_log_likelihood_pixelization_grids_of_planes
     )
 
 
 def preload_inversion_with_fixed_profiles(
     result: af.Result, model: Optional[af.Collection] = None
-) -> pload.Preloads:
+) -> aa.Preloads:
     """
     If the `MassProfile`'s in a model are all fixed parameters, and the parameters of the source `Pixelization` are
     also fixed, the mapping of image-pixels to the source-pixels does not change for every likelihood evaluations.
@@ -128,7 +125,7 @@ def preload_inversion_with_fixed_profiles(
         #         "Cannot preload inversion when the mass profile is a model"
         #     )
 
-        if model_util.pixelization_is_model_from(model=model):
+        if ag.util.model.pixelization_is_model_from(model=model):
             raise exc.PreloadException(
                 "Cannot preload inversion when the model includes a pixelization"
             )
@@ -136,7 +133,7 @@ def preload_inversion_with_fixed_profiles(
     preloads = preload_pixelization_grid_from(result=result, model=model)
     inversion = result.max_log_likelihood_fit.inversion
 
-    return pload.Preloads(
+    return aa.Preloads(
         sparse_grids_of_planes=preloads.sparse_grids_of_planes,
         blurred_mapping_matrix=inversion.blurred_mapping_matrix,
         curvature_matrix_sparse_preload=inversion.curvature_matrix_sparse_preload,

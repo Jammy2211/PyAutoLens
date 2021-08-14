@@ -3,25 +3,22 @@ import numpy as np
 import json
 
 from autoconf import conf
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_irregular
-from autoarray.structures import visibilities
-from autogalaxy.profiles import light_profiles as lp
-from autogalaxy.galaxy import galaxy as g
-from autogalaxy.analysis import result as res
+import autoarray as aa
+import autogalaxy as ag
+from autogalaxy.analysis.result import Result as AgResult
+
 from autolens.fit import fit_point
 from autolens.lens import ray_tracing, positions_solver as pos
 
 
-class Result(res.Result):
+class Result(AgResult):
     @property
     def max_log_likelihood_tracer(self) -> ray_tracing.Tracer:
 
         return self.analysis.tracer_for_instance(instance=self.instance)
 
     @property
-    def source_plane_light_profile_centre(self) -> grid_2d_irregular.Grid2DIrregular:
+    def source_plane_light_profile_centre(self) -> aa.Grid2DIrregular:
         """
         Return a light profile centres of a galaxy in the most-likely tracer's source-plane. If there are multiple
         light profiles, the first light profile's centre is returned.
@@ -30,13 +27,13 @@ class Result(res.Result):
         multiple-image positions.
         """
         centre = self.max_log_likelihood_tracer.source_plane.extract_attribute(
-            cls=lp.LightProfile, attr_name="centre"
+            cls=ag.lp.LightProfile, attr_name="centre"
         )
         if centre is not None:
-            return grid_2d_irregular.Grid2DIrregular(grid=[np.asarray(centre[0])])
+            return aa.Grid2DIrregular(grid=[np.asarray(centre[0])])
 
     @property
-    def source_plane_centre(self) -> grid_2d_irregular.Grid2DIrregular:
+    def source_plane_centre(self) -> aa.Grid2DIrregular:
         """
         Return the centre of a source-plane galaxy via the following criteria:
 
@@ -49,9 +46,7 @@ class Result(res.Result):
         return self.source_plane_light_profile_centre
 
     @property
-    def image_plane_multiple_image_positions(
-        self,
-    ) -> grid_2d_irregular.Grid2DIrregular:
+    def image_plane_multiple_image_positions(self,) -> aa.Grid2DIrregular:
         """
         Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
         the multiple image position of the source(s) in the image-plane.
@@ -70,7 +65,7 @@ class Result(res.Result):
             source_plane_coordinate=self.source_plane_centre.in_list[0],
         )
 
-        return grid_2d_irregular.Grid2DIrregular(grid=multiple_images)
+        return aa.Grid2DIrregular(grid=multiple_images)
 
     def positions_threshold_from(self, factor=1.0, minimum_threshold=None) -> float:
         """
@@ -118,11 +113,11 @@ class Result(res.Result):
         return positions_threshold
 
     @property
-    def path_galaxy_tuples(self) -> [(str, g.Galaxy)]:
+    def path_galaxy_tuples(self) -> [(str, ag.Galaxy)]:
         """
         Tuples associating the names of galaxies with instances from the best fit
         """
-        return self.instance.path_instance_tuples_for_class(cls=g.Galaxy)
+        return self.instance.path_instance_tuples_for_class(cls=ag.Galaxy)
 
 
 class ResultDataset(Result):
@@ -156,7 +151,7 @@ class ResultDataset(Result):
                 return galaxy.pixelization
 
     @property
-    def source_plane_centre(self) -> grid_2d_irregular.Grid2DIrregular:
+    def source_plane_centre(self) -> aa.Grid2DIrregular:
         """
         Return the centre of a source-plane galaxy via the following criteria:
 
@@ -172,7 +167,7 @@ class ResultDataset(Result):
             return self.source_plane_light_profile_centre
 
     @property
-    def source_plane_inversion_centre(self) -> grid_2d_irregular.Grid2DIrregular:
+    def source_plane_inversion_centre(self) -> aa.Grid2DIrregular:
         """
         Returns the centre of the brightest source pixel(s) of an `Inversion`.
 
@@ -190,7 +185,7 @@ class ResultDataset(Result):
             grid=self.analysis.dataset.grid
         )
 
-    def image_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
+    def image_for_galaxy(self, galaxy: ag.Galaxy) -> np.ndarray:
         """
         Parameters
         ----------
@@ -205,7 +200,7 @@ class ResultDataset(Result):
         return self.max_log_likelihood_fit.galaxy_model_image_dict[galaxy]
 
     @property
-    def image_galaxy_dict(self) -> {str: g.Galaxy}:
+    def image_galaxy_dict(self) -> {str: ag.Galaxy}:
         """
         A dictionary associating galaxy names with model images of those galaxies
         """
@@ -241,7 +236,7 @@ class ResultDataset(Result):
     @property
     def hyper_model_image(self):
 
-        hyper_model_image = array_2d.Array2D.manual_mask(
+        hyper_model_image = aa.Array2D.manual_mask(
             array=np.zeros(self.mask.mask_sub_1.pixels_in_mask),
             mask=self.mask.mask_sub_1,
         )
@@ -337,7 +332,7 @@ class ResultInterferometer(ResultDataset):
         fit = self.max_log_likelihood_fit
         return fit.unmasked_blurred_image_of_planes_and_galaxies
 
-    def visibilities_for_galaxy(self, galaxy: g.Galaxy) -> np.ndarray:
+    def visibilities_for_galaxy(self, galaxy: ag.Galaxy) -> np.ndarray:
         """
         Parameters
         ----------
@@ -352,7 +347,7 @@ class ResultInterferometer(ResultDataset):
         return self.max_log_likelihood_fit.galaxy_model_visibilities_dict[galaxy]
 
     @property
-    def visibilities_galaxy_dict(self) -> {str: g.Galaxy}:
+    def visibilities_galaxy_dict(self) -> {str: ag.Galaxy}:
         """
         A dictionary associating galaxy names with model visibilities of those galaxies
         """
@@ -379,7 +374,7 @@ class ResultInterferometer(ResultDataset):
     @property
     def hyper_model_visibilities(self):
 
-        hyper_model_visibilities = visibilities.Visibilities.zeros(
+        hyper_model_visibilities = aa.Visibilities.zeros(
             shape_slim=(self.max_log_likelihood_fit.visibilities.shape_slim,)
         )
 
@@ -392,7 +387,7 @@ class ResultInterferometer(ResultDataset):
 class ResultPoint(Result):
     @property
     def grid(self):
-        return grid_2d.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
+        return aa.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
 
     @property
     def max_log_likelihood_fit(self):

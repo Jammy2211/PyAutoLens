@@ -4,8 +4,8 @@ from os import path
 import os
 
 from autoconf import conf
-from autogalaxy.plot import hyper_plotters
-from autogalaxy.analysis import visualizer
+import autogalaxy.plot as aplt
+from autogalaxy.analysis.visualizer import Visualizer as AgVisualizer
 from autolens.plot import (
     fit_interferometer_plotters,
     ray_tracing_plotters,
@@ -21,7 +21,7 @@ def plot_setting(section, name):
     return setting(section, name)
 
 
-class Visualizer(visualizer.Visualizer):
+class Visualizer(AgVisualizer):
     def visualize_tracer(self, tracer, grid, during_analysis):
         def should_plot(name):
             return plot_setting(section="ray_tracing", name=name)
@@ -263,7 +263,7 @@ class Visualizer(visualizer.Visualizer):
 
         mat_plot_2d = self.mat_plot_2d_from(subfolders="hyper")
 
-        hyper_plotter = hyper_plotters.HyperPlotter(
+        hyper_plotter = aplt.HyperPlotter(
             mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 

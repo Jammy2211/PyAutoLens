@@ -1,9 +1,8 @@
-from autoarray import decorator_util
-import numpy as np
-from autoarray.structures.grids.two_d import grid_2d_irregular
-from autogalaxy.profiles import mass_profiles as mp
-
 from functools import partial
+import numpy as np
+
+import autoarray as aa
+import autogalaxy as ag
 
 
 class AbstractPositionsSolver:
@@ -38,9 +37,7 @@ class AbstractPositionsSolver:
             if magnification > self.magnification_threshold:
                 grid_mag.append(grid[index, :])
 
-        return grid_2d_irregular.Grid2DIrregularUniform(
-            grid=grid_mag, pixel_scales=grid.pixel_scales
-        )
+        return aa.Grid2DIrregularUniform(grid=grid_mag, pixel_scales=grid.pixel_scales)
 
     def grid_with_coordinates_from_mass_profile_centre_removed(self, lensing_obj, grid):
         """Remove all coordinates from a grid which are within the distance_from_mass_profile_centre attribute of any
@@ -67,7 +64,7 @@ class AbstractPositionsSolver:
             pixel_scales = grid.pixel_scales
 
             centres = lensing_obj.extract_attribute(
-                cls=mp.MassProfile, attr_name="centre"
+                cls=ag.mp.MassProfile, attr_name="centre"
             )
 
             for centre in centres.in_list:
@@ -83,9 +80,7 @@ class AbstractPositionsSolver:
                     outside_distance=self.distance_from_mass_profile_centre,
                 )
 
-            return grid_2d_irregular.Grid2DIrregularUniform(
-                grid=grid, pixel_scales=pixel_scales
-            )
+            return aa.Grid2DIrregularUniform(grid=grid, pixel_scales=pixel_scales)
 
         return grid
 
@@ -135,7 +130,7 @@ class AbstractPositionsSolver:
             upscale_factor=upscale_factor,
         )
 
-        return grid_2d_irregular.Grid2DIrregularUniform(
+        return aa.Grid2DIrregularUniform(
             grid=grid_buffed,
             pixel_scales=(
                 pixel_scales[0] / upscale_factor,
@@ -189,7 +184,7 @@ class AbstractPositionsSolver:
             has_neighbors=has_neighbors,
         )
 
-        return grid_2d_irregular.Grid2DIrregularUniform(
+        return aa.Grid2DIrregularUniform(
             grid=grid_peaks, pixel_scales=grid.pixel_scales
         )
 
@@ -238,7 +233,7 @@ class AbstractPositionsSolver:
             within_distance=distance,
         )
 
-        return grid_2d_irregular.Grid2DIrregularUniform(
+        return aa.Grid2DIrregularUniform(
             grid=grid_within_distance_of_centre, pixel_scales=grid.pixel_scales
         )
 
@@ -363,14 +358,14 @@ class PositionsSolver(AbstractPositionsSolver):
 
             coordinates_list = self.grid_within_distance_of_source_plane_centre(
                 deflection_func=deflections_func,
-                grid=grid_2d_irregular.Grid2DIrregularUniform(
+                grid=aa.Grid2DIrregularUniform(
                     grid=coordinates_list, pixel_scales=self.grid.pixel_scales
                 ),
                 source_plane_coordinate=source_plane_coordinate,
                 distance=self.distance_from_source_centre,
             )
 
-            return grid_2d_irregular.Grid2DIrregular(grid=coordinates_list)
+            return aa.Grid2DIrregular(grid=coordinates_list)
 
         pixel_scale = self.grid.pixel_scale
 
@@ -400,7 +395,7 @@ class PositionsSolver(AbstractPositionsSolver):
 
         coordinates_list = self.grid_within_distance_of_source_plane_centre(
             deflection_func=deflections_func,
-            grid=grid_2d_irregular.Grid2DIrregularUniform(
+            grid=aa.Grid2DIrregularUniform(
                 grid=coordinates_list, pixel_scales=(pixel_scale, pixel_scale)
             ),
             source_plane_coordinate=source_plane_coordinate,
@@ -413,10 +408,10 @@ class PositionsSolver(AbstractPositionsSolver):
             grid=coordinates_list,
         )
 
-        return grid_2d_irregular.Grid2DIrregular(grid=coordinates_list)
+        return aa.Grid2DIrregular(grid=coordinates_list)
 
 
-@decorator_util.jit()
+@aa.util.numba.jit()
 def grid_remove_duplicates(grid):
 
     tolerance = 1e-8
@@ -450,7 +445,7 @@ def grid_remove_duplicates(grid):
     return grid_no_duplicates
 
 
-@decorator_util.jit()
+@aa.util.numba.jit()
 def grid_buffed_around_coordinate_from(
     coordinate, pixel_scales, buffer, upscale_factor=1
 ):
@@ -516,7 +511,7 @@ def grid_buffed_around_coordinate_from(
     return grid_slim
 
 
-@decorator_util.jit()
+@aa.util.numba.jit()
 def pair_coordinate_to_closest_pixel_on_grid(coordinate, grid_slim):
 
     squared_distances = np.square(grid_slim[:, 0] - coordinate[0]) + np.square(
@@ -526,7 +521,7 @@ def pair_coordinate_to_closest_pixel_on_grid(coordinate, grid_slim):
     return np.argmin(squared_distances)
 
 
-@decorator_util.jit()
+@aa.util.numba.jit()
 def grid_square_neighbors_1d_from(shape_slim):
     """
     From a (y,x) grid of coordinates, determine the 8 neighors of every coordinate on the grid which has 8
@@ -592,7 +587,7 @@ def grid_square_neighbors_1d_from(shape_slim):
     return neighbors_1d, has_neighbors
 
 
-@decorator_util.jit()
+@aa.util.numba.jit()
 def grid_peaks_from(distance_1d, grid_slim, neighbors, has_neighbors):
     """Given an input grid of (y,x) coordinates and a 1d array of their distances to the centre of the source,
     determine the coordinates which are closer to the source than their 8 neighboring pixels.
@@ -636,7 +631,7 @@ def grid_peaks_from(distance_1d, grid_slim, neighbors, has_neighbors):
     return peaks_list
 
 
-@decorator_util.jit()
+@aa.util.numba.jit()
 def grid_within_distance(distances_1d, grid_slim, within_distance):
 
     grid_within_size = 0
@@ -658,7 +653,7 @@ def grid_within_distance(distances_1d, grid_slim, within_distance):
     return grid_within
 
 
-@decorator_util.jit()
+@aa.util.numba.jit()
 def grid_outside_distance_mask_from(distances_1d, grid_slim, outside_distance):
     grid_outside_size = 0
 

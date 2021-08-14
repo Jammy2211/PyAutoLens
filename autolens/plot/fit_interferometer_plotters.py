@@ -1,21 +1,20 @@
-from autoarray.plot import inversion_plotters, fit_interferometer_plotters
-from autogalaxy.profiles import light_profiles
-from autogalaxy.profiles import mass_profiles
-from autogalaxy.plot.mat_wrap import lensing_mat_plot, lensing_include, lensing_visuals
+import autogalaxy as ag
+import autogalaxy.plot as aplt
+
 from autolens.plot import ray_tracing_plotters
 from autolens.fit import fit_interferometer
 
 
-class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlotter):
+class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
     def __init__(
         self,
         fit: fit_interferometer.FitInterferometer,
-        mat_plot_1d: lensing_mat_plot.MatPlot1D = lensing_mat_plot.MatPlot1D(),
-        visuals_1d: lensing_visuals.Visuals1D = lensing_visuals.Visuals1D(),
-        include_1d: lensing_include.Include1D = lensing_include.Include1D(),
-        mat_plot_2d: lensing_mat_plot.MatPlot2D = lensing_mat_plot.MatPlot2D(),
-        visuals_2d: lensing_visuals.Visuals2D = lensing_visuals.Visuals2D(),
-        include_2d: lensing_include.Include2D = lensing_include.Include2D(),
+        mat_plot_1d: aplt.MatPlot1D = aplt.MatPlot1D(),
+        visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),
+        include_1d: aplt.Include1D = aplt.Include1D(),
+        mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
+        visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
+        include_2d: aplt.Include2D = aplt.Include2D(),
     ):
 
         super().__init__(
@@ -29,7 +28,7 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
         )
 
     @property
-    def visuals_with_include_2d(self) -> lensing_visuals.Visuals2D:
+    def visuals_with_include_2d(self) -> aplt.Visuals2D:
         """
         Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
 
@@ -60,13 +59,13 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
             light_profile_centres=self.extract_2d(
                 "light_profile_centres",
                 self.tracer.planes[0].extract_attribute(
-                    cls=light_profiles.LightProfile, attr_name="centre"
+                    cls=ag.lp.LightProfile, attr_name="centre"
                 ),
             ),
             mass_profile_centres=self.extract_2d(
                 "mass_profile_centres",
                 self.tracer.planes[0].extract_attribute(
-                    cls=mass_profiles.MassProfile, attr_name="centre"
+                    cls=ag.mp.MassProfile, attr_name="centre"
                 ),
             ),
             critical_curves=self.extract_2d(
@@ -92,7 +91,7 @@ class FitInterferometerPlotter(fit_interferometer_plotters.FitInterferometerPlot
 
     @property
     def inversion_plotter(self):
-        return inversion_plotters.InversionPlotter(
+        return aplt.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.tracer_plotter.visuals_with_include_2d_of_plane(

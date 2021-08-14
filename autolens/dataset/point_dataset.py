@@ -1,22 +1,20 @@
-from typing import List, Tuple, Dict, Optional, Union
-
-from autoarray.structures.arrays import values
-from autoarray.structures.grids.two_d import grid_2d_irregular
-
 import json
+import numpy as np
 import os
 from os import path
-import numpy as np
+from typing import List, Tuple, Dict, Optional, Union
+
+import autoarray as aa
 
 
 class PointDataset:
     def __init__(
         self,
         name: str,
-        positions: Union[grid_2d_irregular.Grid2DIrregular, List[List], List[Tuple]],
-        positions_noise_map: Union[values.ValuesIrregular, List[float]],
-        fluxes: Optional[Union[values.ValuesIrregular, List[float]]] = None,
-        fluxes_noise_map: Optional[Union[values.ValuesIrregular, List[float]]] = None,
+        positions: Union[aa.Grid2DIrregular, List[List], List[Tuple]],
+        positions_noise_map: Union[aa.ValuesIrregular, List[float]],
+        fluxes: Optional[Union[aa.ValuesIrregular, List[float]]] = None,
+        fluxes_noise_map: Optional[Union[aa.ValuesIrregular, List[float]]] = None,
     ):
         """
         A collection of the data component that can be used for point-source model-fitting, for example fitting the
@@ -44,25 +42,25 @@ class PointDataset:
 
         self.name = name
 
-        if not isinstance(positions, grid_2d_irregular.Grid2DIrregular):
-            positions = grid_2d_irregular.Grid2DIrregular(grid=positions)
+        if not isinstance(positions, aa.Grid2DIrregular):
+            positions = aa.Grid2DIrregular(grid=positions)
 
         self.positions = positions
 
-        if not isinstance(positions_noise_map, values.ValuesIrregular):
-            positions_noise_map = values.ValuesIrregular(values=positions_noise_map)
+        if not isinstance(positions_noise_map, aa.ValuesIrregular):
+            positions_noise_map = aa.ValuesIrregular(values=positions_noise_map)
 
         self.positions_noise_map = positions_noise_map
 
         if fluxes is not None:
-            if not isinstance(fluxes, values.ValuesIrregular):
-                fluxes = values.ValuesIrregular(values=fluxes)
+            if not isinstance(fluxes, aa.ValuesIrregular):
+                fluxes = aa.ValuesIrregular(values=fluxes)
 
         self.fluxes = fluxes
 
         if fluxes_noise_map is not None:
-            if not isinstance(fluxes_noise_map, values.ValuesIrregular):
-                fluxes_noise_map = values.ValuesIrregular(values=fluxes_noise_map)
+            if not isinstance(fluxes_noise_map, aa.ValuesIrregular):
+                fluxes_noise_map = aa.ValuesIrregular(values=fluxes_noise_map)
 
         self.fluxes_noise_map = fluxes_noise_map
 
@@ -101,12 +99,12 @@ class PointDataset:
         """
         return cls(
             name=dict_["name"],
-            positions=grid_2d_irregular.Grid2DIrregular(dict_["positions"]),
-            positions_noise_map=values.ValuesIrregular(dict_["positions_noise_map"]),
-            fluxes=values.ValuesIrregular(dict_["fluxes"])
+            positions=aa.Grid2DIrregular(dict_["positions"]),
+            positions_noise_map=aa.ValuesIrregular(dict_["positions_noise_map"]),
+            fluxes=aa.ValuesIrregular(dict_["fluxes"])
             if dict_["fluxes"] is not None
             else None,
-            fluxes_noise_map=values.ValuesIrregular(dict_["fluxes_noise_map"])
+            fluxes_noise_map=aa.ValuesIrregular(dict_["fluxes_noise_map"])
             if dict_["fluxes_noise_map"] is not None
             else None,
         )
