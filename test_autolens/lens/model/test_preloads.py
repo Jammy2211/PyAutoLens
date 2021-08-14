@@ -2,7 +2,7 @@ import autofit as af
 import autolens as al
 from autolens import exc
 from autolens.mock import mock
-from autolens.analysis import preloads as pload
+from autolens.lens.model import preloads as pload
 
 import pytest
 

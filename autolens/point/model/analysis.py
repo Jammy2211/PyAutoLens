@@ -2,14 +2,14 @@ from astropy import cosmology as cosmo
 
 import autofit as af
 
-from autolens.analysis.analysis import AnalysisLensing
-from autolens.analysis.visualizer import Visualizer
+from autolens.lens.model.analysis import AnalysisLensing
+from autolens.lens.model.visualizer import Visualizer
 from autolens.point.point_dataset import PointDict
 from autolens.point.fit_point import FitPointDict
 from autolens.point.model.result import ResultPoint
 
 from autolens.point.point_solver import PointSolver
-from autolens.lens.settings import SettingsLens
+from autolens.lens.model.settings import SettingsLens
 
 
 class AnalysisPoint(af.Analysis, AnalysisLensing):

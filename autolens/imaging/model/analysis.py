@@ -3,7 +3,7 @@ import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
-from autolens.analysis.analysis import AnalysisDataset
+from autolens.lens.model.analysis import AnalysisDataset
 from autolens.imaging.model.result import ResultImaging
 from autolens.imaging.model.visualizer import VisualizerImaging
 from autolens.imaging.fit_imaging import FitImaging

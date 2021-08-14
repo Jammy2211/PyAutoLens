@@ -1,7 +1,7 @@
-from autolens.analysis.visualizer import Visualizer
+from autolens.lens.model.visualizer import Visualizer
 from autolens.plot.fit_imaging_plotters import FitImagingPlotter
 
-from autolens.analysis.visualizer import plot_setting
+from autolens.lens.model.visualizer import plot_setting
 
 
 class VisualizerImaging(Visualizer):

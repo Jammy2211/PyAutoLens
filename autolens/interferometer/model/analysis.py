@@ -5,11 +5,11 @@ import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
-from autolens.analysis.analysis import AnalysisDataset
+from autolens.lens.model.analysis import AnalysisDataset
 from autolens.interferometer.model.result import ResultInterferometer
-from autolens.analysis.visualizer import Visualizer
+from autolens.lens.model.visualizer import Visualizer
 from autolens.interferometer.fit_interferometer import FitInterferometer
-from autolens.lens.settings import SettingsLens
+from autolens.lens.model.settings import SettingsLens
 
 from autolens import exc
 

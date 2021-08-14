@@ -41,9 +41,7 @@ class FitPointDict(dict):
         for key, point_dataset in point_dict.items():
 
             self[key] = FitPointDataset(
-                point_dataset=point_dataset,
-                tracer=tracer,
-                point_solver=point_solver,
+                point_dataset=point_dataset, tracer=tracer, point_solver=point_solver
             )
 
     @property
@@ -53,10 +51,7 @@ class FitPointDict(dict):
 
 class FitPointDataset:
     def __init__(
-        self,
-        point_dataset: PointDataset,
-        tracer: Tracer,
-        point_solver: PointSolver,
+        self, point_dataset: PointDataset, tracer: Tracer, point_solver: PointSolver
     ):
 
         self.point_dataset = point_dataset

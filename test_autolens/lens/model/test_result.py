@@ -4,7 +4,7 @@ import pytest
 
 import autofit as af
 import autolens as al
-from autolens.analysis import result as res
+from autolens.lens.model import result as res
 from autolens.imaging.model.result import ResultImaging
 from autolens.mock import mock
 

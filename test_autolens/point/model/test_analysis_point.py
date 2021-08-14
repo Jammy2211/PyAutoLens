@@ -20,9 +20,7 @@ class TestAnalysisPoint:
 
         search = mock.MockSearch(name="test_search")
 
-        solver = mock.MockPointSolver(
-            model_positions=point_dict["point_0"].positions
-        )
+        solver = mock.MockPointSolver(model_positions=point_dict["point_0"].positions)
 
         analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 

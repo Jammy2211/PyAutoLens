@@ -3,7 +3,7 @@ import numpy as np
 import autoarray as aa
 import autogalaxy as ag
 
-from autolens.analysis.result import ResultDataset
+from autolens.lens.model.result import ResultDataset
 
 
 class ResultInterferometer(ResultDataset):

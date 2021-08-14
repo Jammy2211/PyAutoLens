@@ -49,9 +49,13 @@ from autogalaxy.profiles import (
 )
 from autogalaxy import convert
 
-from .analysis import aggregator as agg
-from .analysis import subhalo
 from . import plot
+from .lens.model import aggregator as agg
+from .lens import subhalo
+from .lens.model.settings import SettingsLens
+from .lens.ray_tracing import Tracer
+from .lens.model.preloads import Preloads
+from .lens.model.setup import SetupHyper
 from .imaging.imaging import SimulatorImaging
 from .imaging.fit_imaging import FitImaging
 from .imaging.model.analysis import AnalysisImaging
@@ -70,10 +74,7 @@ from .point.fit_point import (
 )
 from .point.model.analysis import AnalysisPoint
 from .point.point_solver import PointSolver
-from .lens.settings import SettingsLens
-from .lens.ray_tracing import Tracer
-from .analysis.preloads import Preloads
-from .analysis.setup import SetupHyper
+
 
 from autoconf import conf
 

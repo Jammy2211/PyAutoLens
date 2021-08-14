@@ -2,7 +2,7 @@ import numpy as np
 
 import autofit as af
 import autolens as al
-from autolens.analysis.subhalo import SubhaloResult
+from autolens.lens.subhalo import SubhaloResult
 
 
 class TestSubhaloResult:

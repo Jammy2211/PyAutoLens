@@ -12,9 +12,9 @@ import autoarray as aa
 from autogalaxy.analysis.analysis import AnalysisDataset as AgAnalysisDataset
 
 from autolens import exc
-from autolens.analysis.visualizer import Visualizer
+from autolens.lens.model.visualizer import Visualizer
 from autolens.lens.ray_tracing import Tracer
-from autolens.lens.settings import SettingsLens
+from autolens.lens.model.settings import SettingsLens
 
 
 class AnalysisLensing:

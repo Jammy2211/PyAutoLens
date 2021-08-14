@@ -1,6 +1,6 @@
 import autoarray as aa
 
-from autolens.analysis.result import Result
+from autolens.lens.model.result import Result
 
 
 class ResultPoint(Result):

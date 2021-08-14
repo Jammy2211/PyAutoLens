@@ -1,4 +1,4 @@
-from autolens.analysis.result import ResultDataset
+from autolens.lens.model.result import ResultDataset
 
 
 class ResultImaging(ResultDataset):
