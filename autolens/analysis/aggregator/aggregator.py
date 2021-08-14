@@ -8,7 +8,7 @@ import autogalaxy as ag
 
 from autogalaxy.analysis.aggregator.aggregator import _interferometer_from
 
-from autolens.fit.fit_interferometer import FitInterferometer
+from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.lens.ray_tracing import Tracer
 
 from autolens import exc

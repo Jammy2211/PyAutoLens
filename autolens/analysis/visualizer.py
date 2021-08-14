@@ -9,7 +9,6 @@ import autogalaxy.plot as aplt
 from autogalaxy.analysis.visualizer import Visualizer as AgVisualizer
 
 from autolens.plot.ray_tracing_plotters import TracerPlotter
-from autolens.plot.fit_imaging_plotters import FitImagingPlotter
 from autolens.plot.fit_interferometer_plotters import FitInterferometerPlotter
 
 

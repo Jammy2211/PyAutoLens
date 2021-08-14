@@ -378,11 +378,6 @@ class TestResultDataset:
         assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
 
 
-class TestResultInterferometer:
-
-    pass
-
-
 class TestResultPointsource:
 
     pass
