@@ -8,7 +8,7 @@ import autogalaxy.plot as aplt
 
 from autogalaxy.analysis.visualizer import Visualizer as AgVisualizer
 
-from autolens.plot.ray_tracing_plotters import TracerPlotter
+from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
 
 
 def setting(section, name):

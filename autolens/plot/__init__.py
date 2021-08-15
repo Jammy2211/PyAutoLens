@@ -5,7 +5,7 @@ from autofit.plot.emcee_plotter import EmceePlotter
 from autofit.plot.zeus_plotter import ZeusPlotter
 from autofit.plot.pyswarms_plotter import PySwarmsPlotter
 
-from autoarray.plot.mat_wrap.wrap.wrap_base import (
+from autoarray.plot.wrap.wrap_base import (
     Units,
     Figure,
     Axis,
@@ -22,8 +22,8 @@ from autoarray.plot.mat_wrap.wrap.wrap_base import (
     Text,
     Output,
 )
-from autoarray.plot.mat_wrap.wrap.wrap_1d import YXPlot, FillBetween
-from autoarray.plot.mat_wrap.wrap.wrap_2d import (
+from autoarray.plot.wrap.wrap_1d import YXPlot, FillBetween
+from autoarray.plot.wrap.wrap_2d import (
     ArrayOverlay,
     GridScatter,
     GridPlot,
@@ -41,13 +41,13 @@ from autoarray.plot.mat_wrap.wrap.wrap_2d import (
     SerialOverscanPlot,
 )
 
-from autoarray.plot.structure_plotters import Array2DPlotter
-from autoarray.plot.structure_plotters import Grid2DPlotter
-from autoarray.plot.structure_plotters import MapperPlotter
-from autoarray.plot.structure_plotters import YX1DPlotter
-from autoarray.plot.inversion_plotters import InversionPlotter
-from autoarray.plot.imaging_plotters import ImagingPlotter
-from autoarray.plot.interferometer_plotters import InterferometerPlotter
+from autoarray.structures.plot.structure_plotters import Array2DPlotter
+from autoarray.structures.plot.structure_plotters import Grid2DPlotter
+from autoarray.inversion.plot.mapper_plotters import MapperPlotter
+from autoarray.structures.plot.structure_plotters import YX1DPlotter
+from autoarray.inversion.plot.inversion_plotters import InversionPlotter
+from autoarray.dataset.plot.imaging_plotters import ImagingPlotter
+from autoarray.dataset.plot.interferometer_plotters import InterferometerPlotter
 
 from autoarray.plot.multi_plotters import MultiFigurePlotter
 from autoarray.plot.multi_plotters import MultiYX1DPlotter
@@ -66,21 +66,25 @@ from autogalaxy.plot.mat_wrap.lensing_mat_plot import MatPlot1D, MatPlot2D
 from autogalaxy.plot.mat_wrap.lensing_include import Include1D, Include2D
 from autogalaxy.plot.mat_wrap.lensing_visuals import Visuals1D, Visuals2D
 
-from autogalaxy.plot.light_profile_plotters import LightProfilePlotter
-from autogalaxy.plot.light_profile_plotters import LightProfilePDFPlotter
-from autogalaxy.plot.mass_profile_plotters import MassProfilePlotter
-from autogalaxy.plot.mass_profile_plotters import MassProfilePDFPlotter
-from autogalaxy.plot.galaxy_plotters import GalaxyPlotter
-from autogalaxy.plot.galaxy_plotters import GalaxyPDFPlotter
-from autogalaxy.plot.fit_galaxy_plotters import FitGalaxyPlotter
-from autogalaxy.plot.fit_imaging_plotters import FitImagingPlotter
-from autogalaxy.plot.fit_interferometer_plotters import FitInterferometerPlotter
-from autogalaxy.plot.plane_plotters import PlanePlotter
-from autogalaxy.plot.hyper_plotters import HyperPlotter
+from autogalaxy.profiles.plot.light_profile_plotters import LightProfilePlotter
+from autogalaxy.profiles.plot.light_profile_plotters import LightProfilePDFPlotter
+from autogalaxy.profiles.plot.mass_profile_plotters import MassProfilePlotter
+from autogalaxy.profiles.plot.mass_profile_plotters import MassProfilePDFPlotter
+from autogalaxy.galaxy.plot.galaxy_plotters import GalaxyPlotter
+from autogalaxy.galaxy.plot.galaxy_plotters import GalaxyPDFPlotter
+from autogalaxy.galaxy.plot.fit_galaxy_plotters import FitGalaxyPlotter
+from autogalaxy.imaging.plot.fit_imaging_plotters import FitImagingPlotter
+from autogalaxy.interferometer.plot.fit_interferometer_plotters import (
+    FitInterferometerPlotter,
+)
+from autogalaxy.plane.plot.plane_plotters import PlanePlotter
+from autogalaxy.galaxy.plot.hyper_galaxy_plotters import HyperPlotter
 
-from autolens.plot.point_dataset_plotters import PointDatasetPlotter
-from autolens.plot.point_dataset_plotters import PointDictPlotter
-from autolens.plot.fit_imaging_plotters import FitImagingPlotter
-from autolens.plot.fit_interferometer_plotters import FitInterferometerPlotter
-from autolens.plot.fit_point_plotters import FitPointDatasetPlotter
-from autolens.plot.ray_tracing_plotters import TracerPlotter
+from autolens.point.plot.point_dataset_plotters import PointDatasetPlotter
+from autolens.point.plot.point_dataset_plotters import PointDictPlotter
+from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
+from autolens.interferometer.plot.fit_interferometer_plotters import (
+    FitInterferometerPlotter,
+)
+from autolens.point.plot.fit_point_plotters import FitPointDatasetPlotter
+from autolens.lens.plot.ray_tracing_plotters import TracerPlotter

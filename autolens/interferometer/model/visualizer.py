@@ -1,4 +1,6 @@
-from autolens.plot.fit_interferometer_plotters import FitInterferometerPlotter
+from autolens.interferometer.plot.fit_interferometer_plotters import (
+    FitInterferometerPlotter,
+)
 from autolens.lens.model.visualizer import Visualizer
 
 from autolens.lens.model.visualizer import plot_setting

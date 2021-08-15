@@ -2,7 +2,7 @@ import autogalaxy as ag
 import autogalaxy.plot as aplt
 
 from autolens.interferometer.fit_interferometer import FitInterferometer
-from autolens.plot import ray_tracing_plotters
+from autolens.lens.plot import ray_tracing_plotters
 
 
 class FitInterferometerPlotter(aplt.FitInterferometerPlotter):

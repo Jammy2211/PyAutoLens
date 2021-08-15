@@ -4,7 +4,7 @@ import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
-from autogalaxy.analysis.aggregator.aggregator import _imaging_from
+from autogalaxy.imaging.model.aggregator import _imaging_from
 
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.lens.model.aggregator.aggregator import AbstractAgg

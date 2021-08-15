@@ -7,7 +7,7 @@ import autogalaxy.plot as aplt
 from autoarray.plot.abstract_plotters import AbstractPlotter
 
 from autolens.imaging.fit_imaging import FitImaging
-from autolens.plot.fit_imaging_plotters import FitImagingPlotter
+from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
 
 from autolens.imaging.model.aggregator import _fit_imaging_from
 
