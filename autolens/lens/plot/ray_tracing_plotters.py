@@ -1,3 +1,5 @@
+from typing import Optional, List
+
 import autoarray as aa
 import autogalaxy as ag
 import autogalaxy.plot as aplt
@@ -32,7 +34,7 @@ class TracerPlotter(LensingObjPlotter):
         self.grid = grid
 
     @property
-    def lensing_obj(self):
+    def lensing_obj(self) -> Tracer:
         return self.tracer
 
     @property
@@ -131,7 +133,7 @@ class TracerPlotter(LensingObjPlotter):
             caustics=caustics,
         )
 
-    def plane_plotter_from(self, plane_index):
+    def plane_plotter_from(self, plane_index: int) -> aplt.PlanePlotter:
 
         plane_grid = self.tracer.traced_grids_of_planes_from_grid(grid=self.grid)[
             plane_index
@@ -147,14 +149,14 @@ class TracerPlotter(LensingObjPlotter):
 
     def figures_2d(
         self,
-        image=False,
-        source_plane=False,
-        convergence=False,
-        potential=False,
-        deflections_y=False,
-        deflections_x=False,
-        magnification=False,
-        contribution_map=False,
+        image: bool = False,
+        source_plane: bool = False,
+        convergence: bool = False,
+        potential: bool = False,
+        deflections_y: bool = False,
+        deflections_x: bool = False,
+        magnification: bool = False,
+        contribution_map: bool = False,
     ):
         """Plot the observed _tracer of an analysis, using the `Imaging` class object.
     
@@ -203,15 +205,18 @@ class TracerPlotter(LensingObjPlotter):
                 ),
             )
 
-    def plane_indexes_from_plane_index(self, plane_index):
+    def plane_indexes_from_plane_index(self, plane_index: int) -> List[int]:
 
         if plane_index is None:
-            return range(len(self.tracer.planes))
+            return list(range(len(self.tracer.planes)))
         else:
             return [plane_index]
 
     def figures_2d_of_planes(
-        self, plane_image=False, plane_grid=False, plane_index=None
+        self,
+        plane_image: bool = False,
+        plane_grid: bool = False,
+        plane_index: Optional[int] = None,
     ):
 
         plane_indexes = self.plane_indexes_from_plane_index(plane_index=plane_index)
@@ -238,15 +243,15 @@ class TracerPlotter(LensingObjPlotter):
 
     def subplot(
         self,
-        image=False,
-        source_plane=False,
-        convergence=False,
-        potential=False,
-        deflections_y=False,
-        deflections_x=False,
-        magnification=False,
-        contribution_map=False,
-        auto_filename="subplot_tracer",
+        image: bool = False,
+        source_plane: bool = False,
+        convergence: bool = False,
+        potential: bool = False,
+        deflections_y: bool = False,
+        deflections_x: bool = False,
+        magnification: bool = False,
+        contribution_map: bool = False,
+        auto_filename: str = "subplot_tracer",
     ):
         """Plot the observed _tracer of an analysis, using the `Imaging` class object.
 

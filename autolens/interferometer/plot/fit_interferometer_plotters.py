@@ -1,8 +1,12 @@
+from typing import Optional
+
+import autoarray as aa
 import autogalaxy as ag
 import autogalaxy.plot as aplt
 
 from autolens.interferometer.fit_interferometer import FitInterferometer
-from autolens.lens.plot import ray_tracing_plotters
+from autolens.lens.ray_tracing import Tracer
+from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
 
 
 class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
@@ -76,12 +80,12 @@ class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
         )
 
     @property
-    def tracer(self):
+    def tracer(self) -> Tracer:
         return self.fit.tracer
 
     @property
-    def tracer_plotter(self):
-        return ray_tracing_plotters.TracerPlotter(
+    def tracer_plotter(self) -> TracerPlotter:
+        return TracerPlotter(
             tracer=self.tracer,
             grid=self.fit.interferometer.grid,
             mat_plot_2d=self.mat_plot_2d,
@@ -90,7 +94,7 @@ class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
         )
 
     @property
-    def inversion_plotter(self):
+    def inversion_plotter(self) -> aplt.InversionPlotter:
         return aplt.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
@@ -102,24 +106,24 @@ class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
 
     def figures_2d(
         self,
-        visibilities=False,
-        noise_map=False,
-        signal_to_noise_map=False,
-        model_visibilities=False,
-        residual_map_real=False,
-        residual_map_imag=False,
-        normalized_residual_map_real=False,
-        normalized_residual_map_imag=False,
-        chi_squared_map_real=False,
-        chi_squared_map_imag=False,
-        image=False,
-        dirty_image=False,
-        dirty_noise_map=False,
-        dirty_signal_to_noise_map=False,
-        dirty_model_image=False,
-        dirty_residual_map=False,
-        dirty_normalized_residual_map=False,
-        dirty_chi_squared_map=False,
+        visibilities: bool = False,
+        noise_map: bool = False,
+        signal_to_noise_map: bool = False,
+        model_visibilities: bool = False,
+        residual_map_real: bool = False,
+        residual_map_imag: bool = False,
+        normalized_residual_map_real: bool = False,
+        normalized_residual_map_imag: bool = False,
+        chi_squared_map_real: bool = False,
+        chi_squared_map_imag: bool = False,
+        image: bool = False,
+        dirty_image: bool = False,
+        dirty_noise_map: bool = False,
+        dirty_signal_to_noise_map: bool = False,
+        dirty_model_image: bool = False,
+        dirty_residual_map: bool = False,
+        dirty_normalized_residual_map: bool = False,
+        dirty_chi_squared_map: bool = False,
     ):
 
         super().figures_2d(
@@ -149,7 +153,9 @@ class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
             else:
                 self.inversion_plotter.figures_2d(reconstructed_image=True)
 
-    def figures_2d_of_planes(self, plane_image, plane_index=None):
+    def figures_2d_of_planes(
+        self, plane_image: aa.Array2D, plane_index: Optional[int] = None
+    ):
 
         if plane_image:
 

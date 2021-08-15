@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Optional
 
 import autogalaxy as ag
 import autogalaxy.plot as aplt
@@ -78,7 +79,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
         return self.fit.tracer
 
     @property
-    def tracer_plotter(self):
+    def tracer_plotter(self) -> TracerPlotter:
         return TracerPlotter(
             tracer=self.tracer,
             grid=self.fit.grid,
@@ -87,7 +88,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
             include_2d=self.include_2d,
         )
 
-    def inversion_plotter_of_plane(self, plane_index):
+    def inversion_plotter_of_plane(self, plane_index: int) -> aplt.InversionPlotter:
 
         inversion_plotter = aplt.InversionPlotter(
             inversion=self.fit.inversion,
@@ -102,13 +103,13 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
 
     def figures_2d(
         self,
-        image=False,
-        noise_map=False,
-        signal_to_noise_map=False,
-        model_image=False,
-        residual_map=False,
-        normalized_residual_map=False,
-        chi_squared_map=False,
+        image: bool = False,
+        noise_map: bool = False,
+        signal_to_noise_map: bool = False,
+        model_image: bool = False,
+        residual_map: bool = False,
+        normalized_residual_map: bool = False,
+        chi_squared_map: bool = False,
     ):
         """Plot the model data of an analysis, using the *Fitter* class object.
 
@@ -135,7 +136,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
             chi_squared_map=chi_squared_map,
         )
 
-    def plane_indexes_from_plane_index(self, plane_index):
+    def plane_indexes_from_plane_index(self, plane_index: int):
 
         if plane_index is None:
             return range(len(self.fit.tracer.planes))
@@ -144,10 +145,10 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
 
     def figures_2d_of_planes(
         self,
-        plane_index=None,
-        subtracted_image=False,
-        model_image=False,
-        plane_image=False,
+        plane_index: Optional[int] = None,
+        subtracted_image: bool = False,
+        model_image: bool = False,
+        plane_image: bool = False,
     ):
         """Plot the model data of an analysis, using the *Fitter* class object.
 
@@ -230,7 +231,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
                     inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
                     inversion_plotter.figures_2d(reconstruction=True)
 
-    def subplot_of_planes(self, plane_index=None):
+    def subplot_of_planes(self, plane_index: Optional[int] = None):
         """Plot the model data of an analysis, using the *Fitter* class object.
 
         The visualization and output type can be fully customized.

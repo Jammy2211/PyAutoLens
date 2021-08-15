@@ -139,7 +139,7 @@ class FitPointDatasetPlotter(AbstractPlotter):
         self,
         positions: bool = False,
         fluxes: bool = False,
-        auto_filename="subplot_fit_point",
+        auto_filename: str = "subplot_fit_point",
     ):
 
         self._subplot_custom_plot(
