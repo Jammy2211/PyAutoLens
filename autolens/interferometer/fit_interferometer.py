@@ -75,13 +75,10 @@ class FitInterferometer(aa.FitInterferometer):
             noise_map=noise_map,
             model_data=model_visibilities,
             inversion=inversion,
-            use_mask_in_fit=False
+            use_mask_in_fit=False,
         )
 
-        super().__init__(
-            interferometer=interferometer,
-            fit=fit
-        )
+        super().__init__(interferometer=interferometer, fit=fit)
 
     @property
     def grid(self):

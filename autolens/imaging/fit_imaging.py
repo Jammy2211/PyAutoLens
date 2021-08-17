@@ -81,13 +81,10 @@ class FitImaging(aa.FitImaging):
             model_data=model_image,
             mask=imaging.mask,
             inversion=inversion,
-            use_mask_in_fit=False
+            use_mask_in_fit=False,
         )
 
-        super().__init__(
-            imaging=imaging,
-            fit=fit
-        )
+        super().__init__(imaging=imaging, fit=fit)
 
     @property
     def grid(self):
