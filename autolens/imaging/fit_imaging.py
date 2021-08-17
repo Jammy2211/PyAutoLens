@@ -42,16 +42,6 @@ class FitImaging(aa.FitImaging):
                 hyper_background_noise=hyper_background_noise,
             )
 
-            if (
-                tracer.has_hyper_galaxy
-                or hyper_image_sky is not None
-                or hyper_background_noise is not None
-            ):
-
-                imaging = imaging.modify_image_and_noise_map(
-                    image=image, noise_map=noise_map
-                )
-
         else:
 
             image = imaging.image
@@ -85,11 +75,18 @@ class FitImaging(aa.FitImaging):
 
             model_image = self.blurred_image + inversion.mapped_reconstructed_image
 
+        fit = aa.FitData(
+            data=image,
+            noise_map=noise_map,
+            model_data=model_image,
+            mask=imaging.mask,
+            inversion=inversion,
+            use_mask_in_fit=False
+        )
+
         super().__init__(
             imaging=imaging,
-            model_image=model_image,
-            inversion=inversion,
-            use_mask_in_fit=False,
+            fit=fit
         )
 
     @property

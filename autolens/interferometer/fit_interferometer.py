@@ -35,10 +35,6 @@ class FitInterferometer(aa.FitInterferometer):
             else:
                 noise_map = interferometer.noise_map
 
-            if hyper_background_noise is not None:
-
-                interferometer = interferometer.modify_noise_map(noise_map=noise_map)
-
         else:
 
             noise_map = interferometer.noise_map
@@ -74,11 +70,17 @@ class FitInterferometer(aa.FitInterferometer):
                 self.profile_visibilities + inversion.mapped_reconstructed_visibilities
             )
 
+        fit = aa.FitDataComplex(
+            data=interferometer.visibilities,
+            noise_map=noise_map,
+            model_data=model_visibilities,
+            inversion=inversion,
+            use_mask_in_fit=False
+        )
+
         super().__init__(
             interferometer=interferometer,
-            model_visibilities=model_visibilities,
-            inversion=inversion,
-            use_mask_in_fit=False,
+            fit=fit
         )
 
     @property

@@ -101,6 +101,7 @@ class TestLikelihood:
         assert (fit.noise_map.slim == np.array([1.0 + 1.0j])).all()
         assert (fit.model_visibilities.slim == np.array([2.0 + 0.0j])).all()
         assert (fit.residual_map.slim == np.array([3.0 + 4.0j])).all()
+        print(fit.normalized_residual_map.slim)
         assert (fit.normalized_residual_map.slim == np.array([3.0 + 4.0j])).all()
         assert (fit.chi_squared_map.slim == np.array([9.0 + 16.0j])).all()
 
