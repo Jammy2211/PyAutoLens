@@ -4,6 +4,8 @@ from autoconf import conf
 import autoarray as aa
 import autogalaxy as ag
 
+from autolens.lens.model.preloads import Preloads
+
 
 class FitImaging(aa.FitImaging):
     def __init__(
@@ -15,7 +17,7 @@ class FitImaging(aa.FitImaging):
         use_hyper_scaling=True,
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
-        preloads=aa.Preloads(),
+        preloads=Preloads(),
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
@@ -47,11 +49,17 @@ class FitImaging(aa.FitImaging):
             image = imaging.image
             noise_map = imaging.noise_map
 
-        self.blurred_image = tracer.blurred_image_2d_from_grid_and_convolver(
-            grid=imaging.grid,
-            convolver=imaging.convolver,
-            blurring_grid=imaging.blurring_grid,
-        )
+        if preloads.blurred_image is None:
+
+            self.blurred_image = tracer.blurred_image_2d_from_grid_and_convolver(
+                grid=imaging.grid,
+                convolver=imaging.convolver,
+                blurring_grid=imaging.blurring_grid,
+            )
+
+        else:
+
+            self.blurred_image = preloads.blurred_image
 
         self.profile_subtracted_image = image - self.blurred_image
 

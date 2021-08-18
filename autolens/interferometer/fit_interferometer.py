@@ -3,6 +3,7 @@ import numpy as np
 import autoarray as aa
 import autogalaxy as ag
 
+from autolens.lens.model.preloads import Preloads
 
 class FitInterferometer(aa.FitInterferometer):
     def __init__(
@@ -13,7 +14,7 @@ class FitInterferometer(aa.FitInterferometer):
         use_hyper_scaling=True,
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
-        preloads=aa.Preloads(),
+        preloads=Preloads(),
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.

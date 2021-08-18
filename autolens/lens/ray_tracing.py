@@ -13,6 +13,7 @@ from autoarray.inversion.inversion.interferometer import (
 )
 from autogalaxy.lensing import LensingObject
 
+from autolens.lens.model.preloads import Preloads
 
 class AbstractTracer(LensingObject, ABC):
     def __init__(self, planes, cosmology):
@@ -727,7 +728,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         self,
         grid,
         settings_pixelization=aa.SettingsPixelization(),
-        preloads=aa.Preloads(),
+        preloads=Preloads(),
     ):
 
         if (
@@ -764,7 +765,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         self,
         grid,
         settings_pixelization=aa.SettingsPixelization(),
-        preloads=aa.Preloads(),
+        preloads=Preloads(),
     ):
 
         mappers_of_planes = []
@@ -799,7 +800,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         w_tilde,
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
-        preloads=aa.Preloads(),
+        preloads=Preloads(),
     ):
 
         if preloads.mapper is None:
@@ -833,7 +834,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         transformer,
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
-        preloads=aa.Preloads(),
+        preloads=Preloads(),
     ):
         mappers_of_planes = self.mappers_of_planes_from_grid(
             grid=grid, settings_pixelization=settings_pixelization, preloads=preloads

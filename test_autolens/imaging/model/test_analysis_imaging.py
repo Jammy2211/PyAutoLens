@@ -1,11 +1,15 @@
-from os import path
 import numpy as np
-
-import autofit as af
-import autolens as al
-from autolens import exc
+from os import path
 import pytest
+
+from autoconf import conf
+import autofit as af
+
+import autolens as al
+
 from autolens.imaging.model.result import ResultImaging
+
+from autolens import exc
 from autolens.mock import mock
 
 
@@ -242,3 +246,31 @@ class TestAnalysisImaging:
         )
 
         assert stochastic_log_evidences[0] != stochastic_log_evidences[1]
+
+    def test__check_preloads(self, masked_imaging_7x7):
+
+        conf.instance["general"]["test"]["check_preloads"] = True
+
+        lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+
+        model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
+
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+        analysis.check_preloads(model=model)
+
+        instance = model.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+
+        analysis.preloads.blurred_image = fit.blurred_image
+
+        analysis.check_preloads(model=model)
+
+        analysis.preloads.blurred_image = fit.blurred_image + 1.0
+
+        with pytest.raises(exc.AnalysisException):
+            analysis.check_preloads(model=model)
+
+        conf.instance["general"]["test"]["check_preloads"] = False
+
+        analysis.check_preloads(model=model)

@@ -6,6 +6,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autolens.lens.model.analysis import AnalysisDataset
+from autolens.lens.model.preloads import Preloads
 from autolens.interferometer.model.result import ResultInterferometer
 from autolens.lens.model.visualizer import Visualizer
 from autolens.interferometer.fit_interferometer import FitInterferometer
@@ -24,7 +25,7 @@ class AnalysisInterferometer(AnalysisDataset):
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
         settings_lens=SettingsLens(),
-        preloads=aa.Preloads(),
+        preloads=Preloads(),
     ):
 
         super().__init__(

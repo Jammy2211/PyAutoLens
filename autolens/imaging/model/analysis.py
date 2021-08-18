@@ -4,6 +4,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autolens.lens.model.analysis import AnalysisDataset
+from autolens.lens.model.preloads import Preloads
 from autolens.imaging.model.result import ResultImaging
 from autolens.imaging.model.visualizer import VisualizerImaging
 from autolens.imaging.fit_imaging import FitImaging
@@ -15,6 +16,37 @@ class AnalysisImaging(AnalysisDataset):
     @property
     def imaging(self):
         return self.dataset
+
+    def modify_before_fit(self, model: af.AbstractPriorModel):
+
+        self.check_preloads(model=model)
+
+    def check_preloads(self, model: af.AbstractPriorModel):
+
+        if not conf.instance["general"]["test"]["check_preloads"]:
+            return
+        instance = model.instance_from_prior_medians()
+
+        fom_with_preloads = self.fit_imaging_for_instance(
+            instance=instance
+        ).figure_of_merit
+
+        fom_without_preloads = self.fit_imaging_for_instance(
+            instance=instance, preload_overwrite=Preloads(use_w_tilde=False)
+        ).figure_of_merit
+
+        if abs(fom_with_preloads - fom_without_preloads) > 1e-8:
+
+            raise exc.AnalysisException(
+                f"The log likelihood of fits using and not using preloads are not"
+                f"consistent, indicating preloading has gone wrong."
+                f"The likelihood values are {fom_with_preloads} (with preloads) and "
+                f"{fom_without_preloads} (without preloads)"
+            )
+
+    def set_preloads(self, model: af.AbstractPriorModel, result: af.Result):
+
+        self.preloads.set_w_tilde(model=model, result=result)
 
     def log_likelihood_function(self, instance):
         """
@@ -31,6 +63,20 @@ class AnalysisImaging(AnalysisDataset):
             A fractional value indicating how well this model fit and the model imaging itself
         """
 
+        try:
+            return self.fit_imaging_for_instance(instance=instance).figure_of_merit
+        except (
+            exc.PixelizationException,
+            exc.InversionException,
+            exc.GridException,
+            OverflowError,
+        ) as e:
+            raise exc.FitException from e
+
+    def fit_imaging_for_instance(
+        self, instance, use_hyper_scalings=True, preload_overwrite=None
+    ):
+
         self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
@@ -44,23 +90,24 @@ class AnalysisImaging(AnalysisDataset):
             instance=instance
         )
 
-        try:
-            return self.fit_imaging_for_tracer(
-                tracer=tracer,
-                hyper_image_sky=hyper_image_sky,
-                hyper_background_noise=hyper_background_noise,
-            ).figure_of_merit
-        except (
-            exc.PixelizationException,
-            exc.InversionException,
-            exc.GridException,
-            OverflowError,
-        ) as e:
-            raise exc.FitException from e
+        return self.fit_imaging_for_tracer(
+            tracer=tracer,
+            hyper_image_sky=hyper_image_sky,
+            hyper_background_noise=hyper_background_noise,
+            use_hyper_scalings=use_hyper_scalings,
+            preload_overwrite=preload_overwrite,
+        )
 
     def fit_imaging_for_tracer(
-        self, tracer, hyper_image_sky, hyper_background_noise, use_hyper_scalings=True
+        self,
+        tracer,
+        hyper_image_sky,
+        hyper_background_noise,
+        use_hyper_scalings=True,
+        preload_overwrite=None,
     ):
+
+        preloads = self.preloads if preload_overwrite is None else preload_overwrite
 
         return FitImaging(
             imaging=self.dataset,
@@ -70,7 +117,7 @@ class AnalysisImaging(AnalysisDataset):
             use_hyper_scaling=use_hyper_scalings,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
-            preloads=self.preloads,
+            preloads=preloads,
         )
 
     def stochastic_log_evidences_for_instance(self, instance):
@@ -126,17 +173,8 @@ class AnalysisImaging(AnalysisDataset):
     def visualize(self, paths: af.DirectoryPaths, instance, during_analysis):
 
         instance = self.associate_hyper_images(instance=instance)
-        tracer = self.tracer_for_instance(instance=instance)
-        hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
-        hyper_background_noise = self.hyper_background_noise_for_instance(
-            instance=instance
-        )
 
-        fit = self.fit_imaging_for_tracer(
-            tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-        )
+        fit = self.fit_imaging_for_instance(instance=instance)
 
         visualizer = VisualizerImaging(visualize_path=paths.image_path)
 
@@ -153,12 +191,12 @@ class AnalysisImaging(AnalysisDataset):
         visualizer.visualize_hyper_images(
             hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
             hyper_model_image=self.hyper_model_image,
-            tracer=tracer,
+            tracer=fit.tracer,
         )
 
         if visualizer.plot_fit_no_hyper:
             fit = self.fit_imaging_for_tracer(
-                tracer=tracer,
+                tracer=fit.tracer,
                 hyper_image_sky=None,
                 hyper_background_noise=None,
                 use_hyper_scalings=False,

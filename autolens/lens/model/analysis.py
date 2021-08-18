@@ -15,6 +15,7 @@ from autolens import exc
 from autolens.lens.model.visualizer import Visualizer
 from autolens.lens.ray_tracing import Tracer
 from autolens.lens.model.settings import SettingsLens
+from autolens.lens.model.preloads import Preloads
 
 
 class AnalysisLensing:
@@ -43,7 +44,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
         settings_lens=SettingsLens(),
-        preloads=aa.Preloads(),
+        preloads=Preloads(),
     ):
         """
 

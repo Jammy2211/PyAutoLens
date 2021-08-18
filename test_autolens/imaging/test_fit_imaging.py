@@ -1601,3 +1601,24 @@ class TestAttributes:
 
         assert fit.subtracted_images_of_planes[0].slim[0] == -4.0
         assert fit.subtracted_images_of_planes[1].slim[0] == -0.0
+
+
+class TestPreload:
+    def test__blurred_image_uses_preload_when_passed(self, masked_imaging_no_blur_7x7):
+
+        g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0))
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0])
+
+        fit = al.FitImaging(imaging=masked_imaging_no_blur_7x7, tracer=tracer)
+
+        assert (fit.blurred_image == np.array([1.0])).all()
+
+        blurred_image = np.array([2.0])
+        preloads = al.Preloads(blurred_image=blurred_image)
+
+        fit = al.FitImaging(
+            imaging=masked_imaging_no_blur_7x7, tracer=tracer, preloads=preloads
+        )
+
+        assert (fit.blurred_image == np.array([2.0])).all()

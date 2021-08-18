@@ -8,6 +8,30 @@ from autolens import exc
 
 
 class Preloads(aa.Preloads):
+    def __init__(
+        self,
+        blurred_image=None,
+        sparse_grids_of_planes=None,
+        mapper=None,
+        blurred_mapping_matrix=None,
+        curvature_matrix_sparse_preload=None,
+        curvature_matrix_preload_counts=None,
+        w_tilde=None,
+        use_w_tilde=None,
+    ):
+
+        super().__init__(
+            sparse_grids_of_planes=sparse_grids_of_planes,
+            mapper=mapper,
+            blurred_mapping_matrix=blurred_mapping_matrix,
+            curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
+            curvature_matrix_preload_counts=curvature_matrix_preload_counts,
+            w_tilde=w_tilde,
+            use_w_tilde=use_w_tilde,
+        )
+
+        self.blurred_image = blurred_image
+
     @classmethod
     def setup(
         cls,
@@ -15,7 +39,6 @@ class Preloads(aa.Preloads):
         model: Optional[af.Collection] = None,
         pixelization: bool = False,
         inversion: bool = False,
-        w_tilde: bool = False,
     ) -> aa.Preloads:
         """
         Class method which offers a concise API for settings up a preloads object, used throughout
@@ -45,8 +68,64 @@ class Preloads(aa.Preloads):
         if pixelization:
             return preload_pixelization_grid_from(result=result, model=model)
 
-        if w_tilde:
-            return preload_w_tilde_from(result=result, model=model)
+        return cls()
+
+    def set_w_tilde(self, result: af.Result, model: af.Collection):
+
+        has_hyper_galaxy = ag.util.model.has_hyper_galaxy_from_model(model=model)
+
+        # No hyper galaxy, so use of w_tilde with default image is fine.
+
+        if not has_hyper_galaxy:
+
+            self.w_tilde = None
+            self.use_w_tilde = None
+
+            return
+
+        has_hyper_galaxy_model = ag.util.model.has_hyper_galaxy_model_from_model(
+            model=model
+        )
+
+        # If there is a hyper galaxy in the model with free parameters, we cannot preload w_tilde. We use the preload
+        # To bypass the w_tilde calculation.
+
+        if has_hyper_galaxy_model:
+
+            self.w_tilde = None
+            self.use_w_tilde = False
+
+            return
+
+        # If there are hyper galaxies in the model but they all have fixed parameters (e.g. they are instances) we can
+        # use w_tilde but we must modify it to use the modified noise map.
+
+        has_hyper_galaxy_instance = ag.util.model.has_hyper_galaxy_instance_from_model(
+            model=model
+        )
+
+        if has_hyper_galaxy_instance:
+
+            noise_map = result.max_log_likelihood_fit.noise_map
+            dataset = result.max_log_likelihood_fit.dataset
+
+            preload, indexes, lengths = aa.util.inversion.w_tilde_curvature_preload_imaging_from(
+                noise_map_native=noise_map.native,
+                kernel_native=dataset.psf.native,
+                native_index_for_slim_index=dataset.mask._native_index_for_slim_index,
+            )
+
+            w_tilde = aa.WTildeImaging(
+                curvature_preload=preload,
+                indexes=indexes.astype("int"),
+                lengths=lengths.astype("int"),
+                noise_map_value=noise_map[0],
+            )
+
+            self.w_tilde = w_tilde
+            self.use_w_tilde = True
+
+            return aa.Preloads(w_tilde=w_tilde, use_w_tilde=True)
 
 
 def preload_pixelization_grid_from(
@@ -145,53 +224,3 @@ def preload_inversion_with_fixed_profiles(
         mapper=inversion.mapper,
         use_w_tilde=False,
     )
-
-
-def preload_w_tilde_from(
-    result: af.Result, model: Optional[af.Collection] = None
-) -> aa.Preloads:
-
-    has_hyper_galaxy = ag.util.model.has_hyper_galaxy_from_model(model=model)
-
-    # No hyper galaxy, so use of w_tilde with default image is fine.
-
-    if not has_hyper_galaxy:
-
-        return aa.Preloads()
-
-    has_hyper_galaxy_model = ag.util.model.has_hyper_galaxy_model_from_model(
-        model=model
-    )
-
-    # If there is a hyper galaxy in the model with free parameters, we cannot preload w_tilde. We use the preload
-    # To bypass the w_tilde calculation.
-
-    if has_hyper_galaxy_model:
-
-        return aa.Preloads(use_w_tilde=False)
-
-    # If there are hyper galaxies in the model but they all have fixed parameters (e.g. they are instances) we can
-    # use w_tilde but we must modify it to use the modified noise map.
-
-    has_hyper_galaxy_instance = ag.util.model.has_hyper_galaxy_instance_from_model(
-        model=model
-    )
-
-    if has_hyper_galaxy_instance:
-
-        dataset = result.max_log_likelihood_fit.dataset
-
-        preload, indexes, lengths = aa.util.inversion.w_tilde_curvature_preload_imaging_from(
-            noise_map_native=result.max_log_likelihood_fit.noise_map.native,
-            kernel_native=dataset.psf.native,
-            native_index_for_slim_index=dataset.mask._native_index_for_slim_index,
-        )
-
-        w_tilde = aa.WTildeImaging(
-            curvature_preload=preload,
-            indexes=indexes.astype("int"),
-            lengths=lengths.astype("int"),
-            noise_map_value=dataset.noise_map[0],
-        )
-
-        return aa.Preloads(w_tilde=w_tilde, use_w_tilde=True)

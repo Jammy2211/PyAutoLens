@@ -7,6 +7,7 @@ import autogalaxy as ag
 from autogalaxy.imaging.model.aggregator import _imaging_from
 
 from autolens.imaging.fit_imaging import FitImaging
+from autolens.lens.model.preloads import Preloads
 from autolens.lens.model.aggregator.aggregator import AbstractAgg
 
 from autolens.lens.model.aggregator.aggregator import _tracer_from
@@ -49,14 +50,14 @@ def _fit_imaging_from(
     )
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
-    preloads = aa.Preloads()
+    preloads = Preloads()
 
     if use_preloaded_grid:
 
         sparse_grids_of_planes = fit.value(name="preload_sparse_grids_of_planes")
 
         if sparse_grids_of_planes is not None:
-            preloads = aa.Preloads(sparse_grids_of_planes=sparse_grids_of_planes)
+            preloads = Preloads(sparse_grids_of_planes=sparse_grids_of_planes)
 
     return FitImaging(
         imaging=imaging,

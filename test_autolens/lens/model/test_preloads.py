@@ -139,7 +139,8 @@ def test__preload_w_tilde(fit_imaging_x2_plane_inversion_7x7):
         galaxies=af.Collection(galaxy=af.Model(al.Galaxy, redshift=0.5))
     )
 
-    preloads = pload.Preloads.setup(result=result, model=model, w_tilde=True)
+    preloads = pload.Preloads()
+    preloads.set_w_tilde(result=result, model=model)
 
     assert preloads.w_tilde == None
     assert preloads.use_w_tilde == None
@@ -152,7 +153,8 @@ def test__preload_w_tilde(fit_imaging_x2_plane_inversion_7x7):
         )
     )
 
-    preloads = pload.Preloads.setup(result=result, model=model, w_tilde=True)
+    preloads = pload.Preloads()
+    preloads.set_w_tilde(result=result, model=model)
 
     assert preloads.w_tilde == None
     assert preloads.use_w_tilde == False
@@ -171,7 +173,8 @@ def test__preload_w_tilde(fit_imaging_x2_plane_inversion_7x7):
         )
     )
 
-    preloads = pload.Preloads.setup(result=result, model=model, w_tilde=True)
+    preloads = pload.Preloads()
+    preloads.set_w_tilde(result=result, model=model)
 
     curvature_preload, indexes, lengths = al.util.inversion.w_tilde_curvature_preload_imaging_from(
         noise_map_native=result.max_log_likelihood_fit.noise_map.native,
