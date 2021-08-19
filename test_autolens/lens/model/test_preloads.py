@@ -10,17 +10,29 @@ from autolens.mock import mock
 from autolens.lens.model import preloads as pload
 
 
+class MockMask:
+    def __init__(self, _native_index_for_slim_index=None):
+
+        self._native_index_for_slim_index = _native_index_for_slim_index
+
+
 class MockDataset:
-    def __init__(self, grid_inversion=None):
+    def __init__(self, grid_inversion=None, psf=None, mask=None):
 
         self.grid_inversion = grid_inversion
+        self.psf = psf
+        self.mask = mask
 
 
 class MockFit:
-    def __init__(self, tracer, dataset=MockDataset()):
+    def __init__(
+        self, tracer=None, dataset=MockDataset(), inversion=None, noise_map=None
+    ):
 
         self.dataset = dataset
         self.tracer = tracer
+        self.inversion = inversion
+        self.noise_map = noise_map
 
 
 class MockTracer:
@@ -150,104 +162,58 @@ def test__preload_inversion_with_fixed_profiles(fit_imaging_x2_plane_inversion_7
     assert preloads.mapper == fit_imaging_x2_plane_inversion_7x7.inversion.mapper
 
 
-def test__preload_w_tilde(fit_imaging_x2_plane_inversion_7x7):
+def test__set_w_tilde():
 
-    result = mock.MockResult(
-        max_log_likelihood_fit=fit_imaging_x2_plane_inversion_7x7,
-        max_log_likelihood_pixelization_grids_of_planes=1,
-    )
+    # fit inversion is None, so no need to bother with w_tilde.
 
-    # No hyper galaxy is model, so don't need to bother with preloading.
+    fit_0 = MockFit(inversion=None)
+    fit_1 = MockFit(inversion=None)
 
-    model = af.Collection(
-        galaxies=af.Collection(galaxy=af.Model(al.Galaxy, redshift=0.5))
-    )
-
-    preloads = pload.Preloads()
-    preloads.set_w_tilde(result=result, model=model)
+    preloads = pload.Preloads(w_tilde=1, use_w_tilde=1)
+    preloads.set_w_tilde(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.w_tilde is None
-    assert preloads.use_w_tilde is None
+    assert preloads.use_w_tilde is False
 
-    # Hyper galaxy is in model, so no preload of w_tilde is used and use_w_tilde=False.
+    # Noise maps of fit are different but there is an inversion, so we should not preload w_tilde and use w_tilde.
 
-    model = af.Collection(
-        galaxies=af.Collection(
-            galaxy=af.Model(al.Galaxy, redshift=0.5, hyper_galaxy=al.HyperGalaxy)
-        )
+    fit_0 = MockFit(
+        inversion=1, noise_map=al.Array2D.zeros(shape_native=(3, 1), pixel_scales=0.1)
+    )
+    fit_1 = MockFit(
+        inversion=1, noise_map=al.Array2D.ones(shape_native=(3, 1), pixel_scales=0.1)
     )
 
-    preloads = pload.Preloads()
-    preloads.set_w_tilde(result=result, model=model)
+    preloads = pload.Preloads(w_tilde=1, use_w_tilde=1)
+    preloads.set_w_tilde(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.w_tilde is None
-    assert preloads.use_w_tilde == False
+    assert preloads.use_w_tilde is False
 
-    # Hyper background noise is in model, so no preload of w_tilde is used and use_w_tilde=False.
+    # Noise maps of fits are the same so preload w_tilde and use it.
 
-    model = af.Collection(
-        galaxies=af.Collection(
-            galaxy=af.Model(al.Galaxy, redshift=0.5),
-            hyper_background_noise=al.hyper_data.HyperBackgroundNoise,
-        )
+    noise_map = al.Array2D.ones(shape_native=(5, 5), pixel_scales=0.1, sub_size=1)
+
+    mask = MockMask(
+        _native_index_for_slim_index=noise_map.mask._native_index_for_slim_index
     )
 
-    preloads = pload.Preloads()
-    preloads.set_w_tilde(result=result, model=model)
+    dataset = MockDataset(psf=al.Kernel2D.no_blur(pixel_scales=1.0), mask=mask)
 
-    assert preloads.w_tilde is None
-    assert preloads.use_w_tilde == False
+    fit_0 = MockFit(inversion=1, dataset=dataset, noise_map=noise_map)
+    fit_1 = MockFit(inversion=1, dataset=dataset, noise_map=noise_map)
 
-    # Hyper galaxy in model but every parameter is fixed (e.g. its an instance) so w_tilde is updated with
-    # scaled noise map using this instance.
-
-    hyper_galaxy = af.Model(al.HyperGalaxy)
-    hyper_galaxy.contribution_factor = 0.0
-    hyper_galaxy.noise_factor = 1.0
-    hyper_galaxy.noise_power = 1.0
-
-    model = af.Collection(
-        galaxies=af.Collection(
-            galaxy=af.Model(al.Galaxy, redshift=0.5, hyper_galaxy=hyper_galaxy)
-        )
-    )
-
-    preloads = pload.Preloads()
-    preloads.set_w_tilde(result=result, model=model)
+    preloads = pload.Preloads(w_tilde=1, use_w_tilde=1)
+    preloads.set_w_tilde(fit_0=fit_0, fit_1=fit_1)
 
     curvature_preload, indexes, lengths = al.util.inversion.w_tilde_curvature_preload_imaging_from(
-        noise_map_native=result.max_log_likelihood_fit.noise_map.native,
-        kernel_native=result.max_log_likelihood_fit.dataset.psf.native,
-        native_index_for_slim_index=result.max_log_likelihood_fit.mask._native_index_for_slim_index,
+        noise_map_native=fit_0.noise_map.native,
+        kernel_native=fit_0.dataset.psf.native,
+        native_index_for_slim_index=fit_0.dataset.mask._native_index_for_slim_index,
     )
 
     assert (preloads.w_tilde.curvature_preload == curvature_preload).all()
     assert (preloads.w_tilde.indexes == indexes).all()
     assert (preloads.w_tilde.lengths == lengths).all()
-    assert preloads.w_tilde.noise_map_value == 2.0
-    assert preloads.use_w_tilde == True
-
-    # Hyper background is in model but every parameter is fixed (e.g. its an instance) so w_tilde is updated with
-    # scaled noise map using this instance.
-
-    model = af.Collection(
-        galaxies=af.Collection(
-            galaxy=af.Model(al.Galaxy, redshift=0.5),
-            hyper_background_noise=al.hyper_data.HyperBackgroundNoise(noise_scale=1.0),
-        )
-    )
-
-    preloads = pload.Preloads()
-    preloads.set_w_tilde(result=result, model=model)
-
-    curvature_preload, indexes, lengths = al.util.inversion.w_tilde_curvature_preload_imaging_from(
-        noise_map_native=result.max_log_likelihood_fit.noise_map.native,
-        kernel_native=result.max_log_likelihood_fit.dataset.psf.native,
-        native_index_for_slim_index=result.max_log_likelihood_fit.mask._native_index_for_slim_index,
-    )
-
-    assert (preloads.w_tilde.curvature_preload == curvature_preload).all()
-    assert (preloads.w_tilde.indexes == indexes).all()
-    assert (preloads.w_tilde.lengths == lengths).all()
-    assert preloads.w_tilde.noise_map_value == 2.0
+    assert preloads.w_tilde.noise_map_value == 1.0
     assert preloads.use_w_tilde == True
