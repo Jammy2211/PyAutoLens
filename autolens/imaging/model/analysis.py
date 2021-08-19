@@ -19,6 +19,7 @@ class AnalysisImaging(AnalysisDataset):
 
     def modify_before_fit(self, model: af.AbstractPriorModel):
 
+        self.set_preloads(model=model)
         self.check_preloads(model=model)
 
     def check_preloads(self, model: af.AbstractPriorModel):
@@ -44,9 +45,35 @@ class AnalysisImaging(AnalysisDataset):
                 f"{fom_without_preloads} (without preloads)"
             )
 
-    def set_preloads(self, model: af.AbstractPriorModel, result: af.Result):
+    def set_preloads(self, model: af.AbstractPriorModel):
 
-        self.preloads.set_w_tilde(model=model, result=result)
+        preload_attempts = 100
+
+        fit_list = []
+
+        for i in range(preload_attempts):
+
+            instance = model.random_instance()
+
+            try:
+                fit_list.append(
+                    self.fit_imaging_for_instance(
+                        instance=instance, preload_overwrite=Preloads(use_w_tilde=False)
+                    )
+                )
+            except Exception:
+                pass
+
+            if len(fit_list) == 2:
+                break
+
+            if i == preload_attempts:
+                raise exc.AnalysisException("Unable to set preloads.")
+
+        self.preloads = Preloads()
+
+        self.preloads.set_sparse_grid_of_planes(fit_0=fit_list[0], fit_1=fit_list[1])
+        self.preloads.set_w_tilde(fit_0=fit_list[0], fit_1=fit_list[1])
 
     def log_likelihood_function(self, instance):
         """

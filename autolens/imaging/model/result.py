@@ -1,4 +1,5 @@
 from autolens.lens.model.result import ResultDataset
+from autolens.lens.model.preloads import Preloads
 
 
 class ResultImaging(ResultDataset):
@@ -17,6 +18,7 @@ class ResultImaging(ResultDataset):
             tracer=self.max_log_likelihood_tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
+            preload_overwrite=Preloads(use_w_tilde=False),
         )
 
     @property

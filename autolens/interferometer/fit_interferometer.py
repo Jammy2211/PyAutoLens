@@ -5,6 +5,7 @@ import autogalaxy as ag
 
 from autolens.lens.model.preloads import Preloads
 
+
 class FitInterferometer(aa.FitInterferometer):
     def __init__(
         self,

@@ -15,6 +15,7 @@ from autogalaxy.lensing import LensingObject
 
 from autolens.lens.model.preloads import Preloads
 
+
 class AbstractTracer(LensingObject, ABC):
     def __init__(self, planes, cosmology):
         """
@@ -725,10 +726,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         return sparse_image_plane_grids_of_planes
 
     def traced_sparse_grids_of_planes_from_grid(
-        self,
-        grid,
-        settings_pixelization=aa.SettingsPixelization(),
-        preloads=Preloads(),
+        self, grid, settings_pixelization=aa.SettingsPixelization(), preloads=Preloads()
     ):
 
         if (
@@ -762,10 +760,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             return traced_sparse_grids_of_planes, sparse_image_plane_grids_of_planes[0]
 
     def mappers_of_planes_from_grid(
-        self,
-        grid,
-        settings_pixelization=aa.SettingsPixelization(),
-        preloads=Preloads(),
+        self, grid, settings_pixelization=aa.SettingsPixelization(), preloads=Preloads()
     ):
 
         mappers_of_planes = []
