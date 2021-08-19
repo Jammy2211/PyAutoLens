@@ -73,6 +73,8 @@ class Preloads(aa.Preloads):
 
         """
 
+        self.sparse_grids_of_planes = None
+
         sparse_image_plane_grid_of_planes_0 = fit_0.tracer.sparse_image_plane_grids_of_planes_from_grid(
             grid=fit_0.dataset.grid_inversion
         )
@@ -89,9 +91,6 @@ class Preloads(aa.Preloads):
             ):
 
                 self.sparse_grids_of_planes = sparse_image_plane_grid_of_planes_0
-                return
-
-        self.sparse_grids_of_planes = None
 
     def set_mapper(self, fit_0, fit_1):
         """
@@ -119,10 +118,9 @@ class Preloads(aa.Preloads):
             The `Preloads` object containing the `Inversion` linear algebra matrices.
         """
 
+        self.mapper = None
+
         if fit_0.inversion is None:
-
-            self.mapper = None
-
             return
 
         mapper_0 = fit_0.inversion.mapper
@@ -131,10 +129,6 @@ class Preloads(aa.Preloads):
         if np.allclose(mapper_0.mapping_matrix, mapper_1.mapping_matrix):
 
             self.mapper = mapper_0
-
-            return
-
-        self.mapper = None
 
     def set_inversion(self, fit_0, fit_1):
         """
@@ -161,18 +155,33 @@ class Preloads(aa.Preloads):
         Grid2D
             The `Preloads` object containing the `Inversion` linear algebra matrices.
         """
+
+        self.blurred_mapping_matrix = None
+        self.curvature_matrix_sparse_preload = None
+        self.curvature_matrix_preload_counts = None
+
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
 
-        return aa.Preloads(
-            blurred_mapping_matrix=inversion.blurred_mapping_matrix,
-            curvature_matrix_sparse_preload=inversion.curvature_matrix_sparse_preload,
-            curvature_matrix_preload_counts=inversion.curvature_matrix_preload_counts,
-            mapper=inversion.mapper,
-            use_w_tilde=False,
-        )
+        if inversion_0 is None:
+            return
+
+        if np.allclose(
+            inversion_0.blurred_mapping_matrix, inversion_1.blurred_mapping_matrix
+        ):
+
+            self.blurred_mapping_matrix = inversion_0.blurred_mapping_matrix
+            self.curvature_matrix_sparse_preload = (
+                inversion_0.curvature_matrix_sparse_preload
+            )
+            self.curvature_matrix_preload_counts = (
+                inversion_0.curvature_matrix_preload_counts
+            )
 
     def set_w_tilde(self, fit_0, fit_1):
+
+        self.w_tilde = None
+        self.use_w_tilde = False
 
         if fit_0.inversion is not None and np.allclose(
             fit_0.noise_map, fit_1.noise_map
@@ -193,8 +202,3 @@ class Preloads(aa.Preloads):
 
             self.w_tilde = w_tilde
             self.use_w_tilde = True
-
-            return
-
-        self.w_tilde = None
-        self.use_w_tilde = False

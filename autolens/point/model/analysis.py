@@ -70,13 +70,17 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
             A fractional value indicating how well this model fit and the model masked_imaging itself
         """
 
-        tracer = self.tracer_for_instance(instance=instance)
-
-        fit = FitPointDict(
-            point_dict=self.point_dict, tracer=tracer, point_solver=self.solver
-        )
+        fit = self.fit_positions_for(instance=instance)
 
         return fit.log_likelihood
+
+    def fit_positions_for(self, instance):
+
+        tracer = self.tracer_for_instance(instance=instance)
+
+        return FitPointDict(
+            point_dict=self.point_dict, tracer=tracer, point_solver=self.solver
+        )
 
     def visualize(self, paths, instance, during_analysis):
 
