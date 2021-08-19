@@ -25,7 +25,6 @@ class AnalysisInterferometer(AnalysisDataset):
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
         settings_lens=SettingsLens(),
-        preloads=Preloads(),
     ):
 
         super().__init__(
@@ -36,7 +35,6 @@ class AnalysisInterferometer(AnalysisDataset):
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
             settings_lens=settings_lens,
-            preloads=preloads,
         )
 
         if self.hyper_dataset_result is not None:

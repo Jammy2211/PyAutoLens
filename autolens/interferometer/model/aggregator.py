@@ -8,6 +8,7 @@ from autogalaxy.interferometer.model.aggregator import _interferometer_from
 
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.lens.model.aggregator.aggregator import AbstractAgg
+from autolens.lens.model.preloads import Preloads
 
 from autolens.lens.model.aggregator.aggregator import _tracer_from
 

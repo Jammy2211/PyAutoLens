@@ -1,9 +1,11 @@
-import autolens as al
+from functools import partial
 import numpy as np
 import pytest
-from autolens.mock import mock
 
-from functools import partial
+import autolens as al
+
+from autolens.mock.mock import MockTracerPoint
+from autolens.mock.mock import MockPointSolver
 
 
 class TestAbstractFitPositionsSourcePlane:
@@ -12,7 +14,7 @@ class TestAbstractFitPositionsSourcePlane:
         positions = al.Grid2DIrregular(grid=[(0.0, 0.0), (0.0, 1.0)])
         noise_map = al.ValuesIrregular([[1.0, 1.0]])
 
-        tracer = mock.MockTracer(traced_grid=positions)
+        tracer = MockTracerPoint(traced_grid=positions)
         fit = al.FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=noise_map, tracer=tracer
         )
@@ -25,7 +27,7 @@ class TestAbstractFitPositionsSourcePlane:
         positions = al.Grid2DIrregular(grid=[(0.0, 0.0), (0.0, 1.0), (0.0, 3.0)])
         noise_map = al.ValuesIrregular([1.0, 1.0, 1.0])
 
-        tracer = mock.MockTracer(traced_grid=positions)
+        tracer = MockTracerPoint(traced_grid=positions)
         fit = al.FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=noise_map, tracer=tracer
         )
@@ -78,7 +80,7 @@ class TestFitPositionsImage:
         noise_map = al.ValuesIrregular([0.5, 1.0])
         model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-        point_solver = mock.MockPointSolver(model_positions=model_positions)
+        point_solver = MockPointSolver(model_positions=model_positions)
 
         fit = al.FitPositionsImage(
             name="point_0",
@@ -118,7 +120,7 @@ class TestFitPositionsImage:
             [(3.0, 1.0), (2.0, 3.0), (1.0, 0.0), (0.0, 1.0)]
         )
 
-        point_solver = mock.MockPointSolver(model_positions=model_positions)
+        point_solver = MockPointSolver(model_positions=model_positions)
 
         fit = al.FitPositionsImage(
             name="point_0",
@@ -254,7 +256,7 @@ class TestFitPositionsSource:
 class TestFitFluxes:
     def test__one_set_of_fluxes__residuals_likelihood_correct(self):
 
-        tracer = mock.MockTracer(
+        tracer = MockTracerPoint(
             magnification=al.ValuesIrregular([2.0, 2.0]),
             profile=al.ps.PointFlux(flux=2.0),
         )
@@ -367,7 +369,7 @@ class TestFitPointDict:
         noise_map = al.ValuesIrregular([0.5, 1.0])
         model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-        point_solver = mock.MockPointSolver(model_positions=model_positions)
+        point_solver = MockPointSolver(model_positions=model_positions)
 
         point_dataset_0 = al.PointDataset(
             name="point_0", positions=positions, positions_noise_map=noise_map
@@ -419,7 +421,7 @@ class TestFitPointDict:
         fluxes = al.ValuesIrregular([1.0, 2.0])
         flux_noise_map = al.ValuesIrregular([3.0, 1.0])
 
-        point_solver = mock.MockPointSolver(model_positions=model_positions)
+        point_solver = MockPointSolver(model_positions=model_positions)
 
         point_dataset_0 = al.PointDataset(
             name="point_0",
@@ -489,7 +491,7 @@ class TestFitPointDict:
         noise_map = al.ValuesIrregular([0.5, 1.0])
         model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-        point_solver = mock.MockPointSolver(model_positions=model_positions)
+        point_solver = MockPointSolver(model_positions=model_positions)
 
         point_dataset_0 = al.PointDataset(
             name="point_0", positions=positions, positions_noise_map=noise_map

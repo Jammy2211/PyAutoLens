@@ -11,6 +11,8 @@ import autoarray as aa
 
 from autogalaxy.analysis.analysis import AnalysisDataset as AgAnalysisDataset
 
+from autolens.lens.model.preloads import Preloads
+
 from autolens import exc
 from autolens.lens.model.visualizer import Visualizer
 from autolens.lens.ray_tracing import Tracer
@@ -75,6 +77,8 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         self.positions = positions
 
         self.settings_lens = settings_lens
+
+        self.preloads = Preloads()
 
     def log_likelihood_cap_from(self, stochastic_log_evidences_json_file):
 

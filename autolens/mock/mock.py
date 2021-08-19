@@ -147,15 +147,51 @@ class MockResults(af.ResultsCollection):
         return len(self.__result_list)
 
 
-class MockFit:
-    def __init__(self, grid):
+class MockMask:
+    def __init__(self, _native_index_for_slim_index=None):
 
+        self._native_index_for_slim_index = _native_index_for_slim_index
+
+
+class MockDataset:
+    def __init__(self, grid_inversion=None, psf=None, mask=None):
+
+        self.grid_inversion = grid_inversion
+        self.psf = psf
+        self.mask = mask
+
+
+class MockFit:
+    def __init__(
+        self,
+        tracer=None,
+        dataset=MockDataset(),
+        inversion=None,
+        noise_map=None,
+        grid=None,
+    ):
+
+        self.dataset = dataset
+        self.tracer = tracer
+        self.inversion = inversion
+        self.noise_map = noise_map
         self.grid = grid
 
 
 class MockTracer:
+    def __init__(self, sparse_image_plane_grids_of_planes=None):
+
+        self.sparse_image_plane_grids_of_planes = sparse_image_plane_grids_of_planes
+
+    def sparse_image_plane_grids_of_planes_from_grid(self, grid):
+
+        return self.sparse_image_plane_grids_of_planes
+
+
+class MockTracerPoint(MockTracer):
     def __init__(
         self,
+        sparse_image_plane_grids_of_planes=None,
         traced_grid=None,
         attribute=None,
         profile=None,
@@ -163,6 +199,10 @@ class MockTracer:
         einstein_radius=None,
         einstein_mass=None,
     ):
+
+        super().__init__(
+            sparse_image_plane_grids_of_planes=sparse_image_plane_grids_of_planes
+        )
 
         self.positions = traced_grid
         self.magnification = magnification
