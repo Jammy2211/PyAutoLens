@@ -3,16 +3,18 @@ import pytest
 
 import autofit as af
 
+from autoarray.mock.mock import MockMapper
+from autoarray.mock.mock import MockInversion
+
 import autolens as al
 
 from autolens.mock.mock import MockMask
 from autolens.mock.mock import MockDataset
 from autolens.mock.mock import MockTracer
 from autolens.mock.mock import MockFit
+from autolens.lens.model.preloads import Preloads
 
 from autolens import exc
-
-from autolens.lens.model.preloads import Preloads
 
 
 def test__set_sparse_grid_of_planes():
@@ -58,78 +60,117 @@ def test__set_sparse_grid_of_planes():
     assert (preloads.sparse_grids_of_planes[1] == np.array([1.0])).all()
 
 
-# def test__preload_inversion_with_fixed_profiles(fit_imaging_x2_plane_inversion_7x7):
-#
-#     result = mock.MockResult(
-#         max_log_likelihood_fit=fit_imaging_x2_plane_inversion_7x7,
-#         max_log_likelihood_pixelization_grids_of_planes=1,
-#     )
-#
-#     # model = af.Collection(
-#     #     galaxies=af.Collection(lens=af.Model(al.Galaxy, mass=al.mp.SphIsothermal), source=af.Model(al.Galaxy))
-#     # )
-#     #
-#     # with pytest.raises(exc.PreloadException):
-#     #     preload_inversion_with_fixed_profiles(result=result, model=model)
-#
-#     model = af.Collection(
-#         galaxies=af.Collection(
-#             lens=af.Model(al.Galaxy),
-#             source=af.Model(
-#                 al.Galaxy,
-#                 pixelization=al.pix.VoronoiBrightnessImage,
-#                 regularization=al.reg.AdaptiveBrightness,
-#             ),
-#         )
-#     )
-#
-#     with pytest.raises(exc.PreloadException):
-#         preload_inversion_with_fixed_profiles(result=result, model=model)
-#
-#     model = af.Collection(
-#         galaxies=af.Collection(
-#             lens=af.Model(al.Galaxy),
-#             source=af.Model(
-#                 al.Galaxy,
-#                 pixelization=al.pix.VoronoiBrightnessImage(),
-#                 regularization=al.reg.AdaptiveBrightness(),
-#             ),
-#         )
-#     )
-#
-#     preloads = preload_inversion_with_fixed_profiles(result=result, model=model)
-#
-#     assert preloads.sparse_grids_of_planes == 1
-#     assert (
-#         preloads.blurred_mapping_matrix
-#         == fit_imaging_x2_plane_inversion_7x7.inversion.blurred_mapping_matrix
-#     ).all()
-#     assert (
-#         preloads.curvature_matrix_sparse_preload
-#         == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_sparse_preload
-#     ).all()
-#     assert (
-#         preloads.curvature_matrix_preload_counts
-#         == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_preload_counts
-#     ).all()
-#     assert preloads.mapper == fit_imaging_x2_plane_inversion_7x7.inversion.mapper
-#
-#     preloads = Preloads.setup(result=result, model=model, inversion=True)
-#
-#     assert preloads.sparse_grids_of_planes == 1
-#     assert (
-#         preloads.blurred_mapping_matrix
-#         == fit_imaging_x2_plane_inversion_7x7.inversion.blurred_mapping_matrix
-#     ).all()
-#     assert (
-#         preloads.curvature_matrix_sparse_preload
-#         == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_sparse_preload
-#     ).all()
-#     assert (
-#         preloads.curvature_matrix_preload_counts
-#         == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_preload_counts
-#     ).all()
-#     assert preloads.mapper == fit_imaging_x2_plane_inversion_7x7.inversion.mapper
+def test__set_mapper():
+
+    # Inversion is None so there is no mapper, thus preload mapper to None.
+
+    fit_0 = MockFit(inversion=None)
+    fit_1 = MockFit(inversion=None)
+
+    preloads = Preloads(mapper=1)
+    preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.mapper is None
+
+    # Mapper's mapping matrices are different, thus preload mapper to None.
+
+    inversion_0 = MockInversion(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
+    inversion_1 = MockInversion(mapper=MockMapper(mapping_matrix=2.0 * np.ones((3, 2))))
+
+    fit_0 = MockFit(inversion=inversion_0)
+    fit_1 = MockFit(inversion=inversion_1)
+
+    preloads = Preloads(mapper=1)
+    preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.mapper is None
+
+    # Mapper's mapping matrices are the same, thus preload mapper.
+
+    inversion_0 = MockInversion(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
+    inversion_1 = MockInversion(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
+
+    fit_0 = MockFit(inversion=inversion_0)
+    fit_1 = MockFit(inversion=inversion_1)
+
+    preloads = Preloads(mapper=1)
+    preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
+
+    assert (preloads.mapper.mapping_matrix == np.ones((3, 2))).all()
+
+
+def test__preload_inversion_with_fixed_profiles(fit_imaging_x2_plane_inversion_7x7):
+
+    result = mock.MockResult(
+        max_log_likelihood_fit=fit_imaging_x2_plane_inversion_7x7,
+        max_log_likelihood_pixelization_grids_of_planes=1,
+    )
+
+    # model = af.Collection(
+    #     galaxies=af.Collection(lens=af.Model(al.Galaxy, mass=al.mp.SphIsothermal), source=af.Model(al.Galaxy))
+    # )
+    #
+    # with pytest.raises(exc.PreloadException):
+    #     preload_inversion_with_fixed_profiles(result=result, model=model)
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=af.Model(al.Galaxy),
+            source=af.Model(
+                al.Galaxy,
+                pixelization=al.pix.VoronoiBrightnessImage,
+                regularization=al.reg.AdaptiveBrightness,
+            ),
+        )
+    )
+
+    with pytest.raises(exc.PreloadException):
+        preload_inversion_with_fixed_profiles(result=result, model=model)
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=af.Model(al.Galaxy),
+            source=af.Model(
+                al.Galaxy,
+                pixelization=al.pix.VoronoiBrightnessImage(),
+                regularization=al.reg.AdaptiveBrightness(),
+            ),
+        )
+    )
+
+    preloads = preload_inversion_with_fixed_profiles(result=result, model=model)
+
+    assert preloads.sparse_grids_of_planes == 1
+    assert (
+        preloads.blurred_mapping_matrix
+        == fit_imaging_x2_plane_inversion_7x7.inversion.blurred_mapping_matrix
+    ).all()
+    assert (
+        preloads.curvature_matrix_sparse_preload
+        == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_sparse_preload
+    ).all()
+    assert (
+        preloads.curvature_matrix_preload_counts
+        == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_preload_counts
+    ).all()
+    assert preloads.mapper == fit_imaging_x2_plane_inversion_7x7.inversion.mapper
+
+    preloads = Preloads.setup(result=result, model=model, inversion=True)
+
+    assert preloads.sparse_grids_of_planes == 1
+    assert (
+        preloads.blurred_mapping_matrix
+        == fit_imaging_x2_plane_inversion_7x7.inversion.blurred_mapping_matrix
+    ).all()
+    assert (
+        preloads.curvature_matrix_sparse_preload
+        == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_sparse_preload
+    ).all()
+    assert (
+        preloads.curvature_matrix_preload_counts
+        == fit_imaging_x2_plane_inversion_7x7.inversion.curvature_matrix_preload_counts
+    ).all()
+    assert preloads.mapper == fit_imaging_x2_plane_inversion_7x7.inversion.mapper
 
 
 def test__set_w_tilde():

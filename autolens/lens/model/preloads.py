@@ -93,6 +93,49 @@ class Preloads(aa.Preloads):
 
         self.sparse_grids_of_planes = None
 
+    def set_mapper(self, fit_0, fit_1):
+        """
+        If the `MassProfile`'s in a model are all fixed parameters, and the parameters of the source `Pixelization` are
+        also fixed, the mapping of image-pixels to the source-pixels does not change for every likelihood evaluations.
+        Matrices used by the linear algebra calculation in an `Inversion` can therefore be preloaded.
+
+        This function inspects the `Result` and `Model` and returns a `Preload` object with the correct quantities for p
+        reloading. It raises an error if the `Model` is not suited to the preloading.
+
+        The preload is typically used when the lens light is being fitted, and a fixed mass model and source pixelization
+        and regularization are being used. This occurs in the LIGHT PIPELINE of the SLaM pipelines.
+
+        Parameters
+        ----------
+        result
+            The result containing the linear algebra matrices which are to be preloaded (corresponding to the maximum
+            likelihood model of the model-fit).
+        model
+            The model, which is inspected to make sure the model-fit can have its `Inversion` quantities preloaded.
+
+        Returns
+        -------
+        Grid2D
+            The `Preloads` object containing the `Inversion` linear algebra matrices.
+        """
+
+        if fit_0.inversion is None:
+
+            self.mapper = None
+
+            return
+
+        mapper_0 = fit_0.inversion.mapper
+        mapper_1 = fit_1.inversion.mapper
+
+        if np.allclose(mapper_0.mapping_matrix, mapper_1.mapping_matrix):
+
+            self.mapper = mapper_0
+
+            return
+
+        self.mapper = None
+
     def set_inversion(self, fit_0, fit_1):
         """
         If the `MassProfile`'s in a model are all fixed parameters, and the parameters of the source `Pixelization` are
@@ -122,7 +165,6 @@ class Preloads(aa.Preloads):
         inversion_1 = fit_1.inversion
 
         return aa.Preloads(
-            sparse_grids_of_planes=preloads.sparse_grids_of_planes,
             blurred_mapping_matrix=inversion.blurred_mapping_matrix,
             curvature_matrix_sparse_preload=inversion.curvature_matrix_sparse_preload,
             curvature_matrix_preload_counts=inversion.curvature_matrix_preload_counts,
