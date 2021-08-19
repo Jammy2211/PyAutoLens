@@ -176,7 +176,7 @@ def test__set_w_tilde():
     fit_1 = MockFit(inversion=None)
 
     preloads = Preloads(w_tilde=1, use_w_tilde=1)
-    preloads.set_w_tilde(fit_0=fit_0, fit_1=fit_1)
+    preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.w_tilde is None
     assert preloads.use_w_tilde is False
@@ -191,7 +191,7 @@ def test__set_w_tilde():
     )
 
     preloads = Preloads(w_tilde=1, use_w_tilde=1)
-    preloads.set_w_tilde(fit_0=fit_0, fit_1=fit_1)
+    preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.w_tilde is None
     assert preloads.use_w_tilde is False
@@ -210,7 +210,7 @@ def test__set_w_tilde():
     fit_1 = MockFit(inversion=1, dataset=dataset, noise_map=noise_map)
 
     preloads = Preloads(w_tilde=1, use_w_tilde=1)
-    preloads.set_w_tilde(fit_0=fit_0, fit_1=fit_1)
+    preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
 
     curvature_preload, indexes, lengths = al.util.inversion.w_tilde_curvature_preload_imaging_from(
         noise_map_native=fit_0.noise_map.native,

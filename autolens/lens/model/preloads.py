@@ -1,20 +1,23 @@
+import logging
 import numpy as np
 from typing import Optional
 
 import autoarray as aa
 
+logger = logging.getLogger(__name__)
+
 
 class Preloads(aa.Preloads):
     def __init__(
         self,
-        blurred_image=None,
-        sparse_grids_of_planes=None,
-        mapper=None,
-        blurred_mapping_matrix=None,
-        curvature_matrix_sparse_preload=None,
-        curvature_matrix_preload_counts=None,
-        w_tilde=None,
-        use_w_tilde=None,
+        blurred_image: Optional = None,
+        sparse_grids_of_planes: Optional = None,
+        mapper: Optional = None,
+        blurred_mapping_matrix: Optional = None,
+        curvature_matrix_sparse_preload: Optional = None,
+        curvature_matrix_preload_counts: Optional = None,
+        w_tilde: Optional = None,
+        use_w_tilde: Optional = None,
     ):
         """
         Class which offers a concise API for settings up the preloads, which before a model-fit are set up via
@@ -92,6 +95,10 @@ class Preloads(aa.Preloads):
 
                 self.sparse_grids_of_planes = sparse_image_plane_grid_of_planes_0
 
+                logger.info(
+                    "Preloads: Sparse grid of planes is preloaded for this model-fit."
+                )
+
     def set_mapper(self, fit_0, fit_1):
         """
         If the `MassProfile`'s in a model are all fixed parameters, and the parameters of the source `Pixelization` are
@@ -129,6 +136,8 @@ class Preloads(aa.Preloads):
         if np.allclose(mapper_0.mapping_matrix, mapper_1.mapping_matrix):
 
             self.mapper = mapper_0
+
+            logger.info("Preloads: Mappers of planes preloaded for this model-fit.")
 
     def set_inversion(self, fit_0, fit_1):
         """
@@ -178,7 +187,11 @@ class Preloads(aa.Preloads):
                 inversion_0.curvature_matrix_preload_counts
             )
 
-    def set_w_tilde(self, fit_0, fit_1):
+            logger.info(
+                "Preloads: Inversion linear algebra quantities preloaded for this model-fit."
+            )
+
+    def set_w_tilde_imaging(self, fit_0, fit_1):
 
         self.w_tilde = None
         self.use_w_tilde = False
@@ -202,3 +215,5 @@ class Preloads(aa.Preloads):
 
             self.w_tilde = w_tilde
             self.use_w_tilde = True
+
+            logger.info("Preloads: W-Tilde preloaded for this model-fit.")

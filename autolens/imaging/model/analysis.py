@@ -45,7 +45,25 @@ class AnalysisImaging(AnalysisDataset):
                 f"{fom_without_preloads} (without preloads)"
             )
 
-    def set_preloads(self, model: af.AbstractPriorModel):
+    def preload_fit_list_from_unit_values(self, model: af.AbstractPriorModel):
+
+        instance_0 = model.instance_from_unit_vector(
+            unit_vector=[0.45] * model.prior_count
+        )
+        instance_1 = model.instance_from_unit_vector(
+            unit_vector=[0.55] * model.prior_count
+        )
+
+        fit_0 = self.fit_imaging_for_instance(
+            instance=instance_0, preload_overwrite=Preloads(use_w_tilde=False)
+        )
+        fit_1 = self.fit_imaging_for_instance(
+            instance=instance_1, preload_overwrite=Preloads(use_w_tilde=False)
+        )
+
+        return [fit_0, fit_1]
+
+    def preload_fit_list_from_random_instances(self, model: af.AbstractPriorModel):
 
         preload_attempts = 100
 
@@ -70,10 +88,16 @@ class AnalysisImaging(AnalysisDataset):
             if i == preload_attempts:
                 raise exc.AnalysisException("Unable to set preloads.")
 
+        return fit_list
+
+    def set_preloads(self, model: af.AbstractPriorModel):
+
+        fit_list = self.preload_fit_list_from_unit_values(model=model)
+
         self.preloads = Preloads()
 
         self.preloads.set_sparse_grid_of_planes(fit_0=fit_list[0], fit_1=fit_list[1])
-        self.preloads.set_w_tilde(fit_0=fit_list[0], fit_1=fit_list[1])
+        self.preloads.set_w_tilde_imaging(fit_0=fit_list[0], fit_1=fit_list[1])
 
     def log_likelihood_function(self, instance):
         """
