@@ -6,6 +6,8 @@ import autoarray as aa
 
 logger = logging.getLogger(__name__)
 
+logger.setLevel(level="INFO")
+
 
 class Preloads(aa.Preloads):
     def __init__(
@@ -50,6 +52,18 @@ class Preloads(aa.Preloads):
         )
 
         self.blurred_image = blurred_image
+
+    def set_blurred_image(self, fit_0, fit_1):
+
+        self.blurred_image = None
+
+        if np.allclose(fit_0.blurred_image, fit_1.blurred_image):
+
+            self.blurred_image = fit_0.blurred_image
+
+            logger.info(
+                "PRELOADS - Blurred image (e.g. the image of all light profiles) is preloaded for this model-fit."
+            )
 
     def set_sparse_grid_of_planes(self, fit_0, fit_1):
         """
@@ -96,7 +110,7 @@ class Preloads(aa.Preloads):
                 self.sparse_grids_of_planes = sparse_image_plane_grid_of_planes_0
 
                 logger.info(
-                    "Preloads: Sparse grid of planes is preloaded for this model-fit."
+                    "PRELOADS - Sparse grid of planes is preloaded for this model-fit."
                 )
 
     def set_mapper(self, fit_0, fit_1):
@@ -137,7 +151,7 @@ class Preloads(aa.Preloads):
 
             self.mapper = mapper_0
 
-            logger.info("Preloads: Mappers of planes preloaded for this model-fit.")
+            logger.info("PRELOADS - Mappers of planes preloaded for this model-fit.")
 
     def set_inversion(self, fit_0, fit_1):
         """
@@ -188,7 +202,7 @@ class Preloads(aa.Preloads):
             )
 
             logger.info(
-                "Preloads: Inversion linear algebra quantities preloaded for this model-fit."
+                "PRELOADS - Inversion linear algebra quantities preloaded for this model-fit."
             )
 
     def set_w_tilde_imaging(self, fit_0, fit_1):
@@ -216,4 +230,4 @@ class Preloads(aa.Preloads):
             self.w_tilde = w_tilde
             self.use_w_tilde = True
 
-            logger.info("Preloads: W-Tilde preloaded for this model-fit.")
+            logger.info("PRELOADS - W-Tilde preloaded for this model-fit.")

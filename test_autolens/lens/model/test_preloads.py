@@ -17,6 +17,39 @@ from autolens.lens.model.preloads import Preloads
 from autolens import exc
 
 
+def test__set_blurred_image():
+
+    # Blurred image is all zeros so preloads as zeros
+
+    fit_0 = MockFit(blurred_image=np.zeros(2))
+    fit_1 = MockFit(blurred_image=np.zeros(2))
+
+    preloads = Preloads(blurred_image=1)
+    preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
+
+    assert (preloads.blurred_image == np.zeros(2)).all()
+
+    # Blurred image are different, indicating the model parameters change the grid, so no preloading.
+
+    fit_0 = MockFit(blurred_image=np.array([1.0]))
+    fit_1 = MockFit(blurred_image=np.array([2.0]))
+
+    preloads = Preloads(blurred_image=1)
+    preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.blurred_image is None
+
+    # Blurred images are the same meaning they are fixed in the model, so do preload.
+
+    fit_0 = MockFit(blurred_image=np.array([1.0]))
+    fit_1 = MockFit(blurred_image=np.array([1.0]))
+
+    preloads = Preloads(blurred_image=1)
+    preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
+
+    assert (preloads.blurred_image == np.array([1.0])).all()
+
+
 def test__set_sparse_grid_of_planes():
 
     # sparse image plane of grids is None so no Preloading.

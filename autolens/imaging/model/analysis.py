@@ -97,6 +97,8 @@ class AnalysisImaging(AnalysisDataset):
         self.preloads = Preloads()
 
         self.preloads.set_sparse_grid_of_planes(fit_0=fit_list[0], fit_1=fit_list[1])
+        self.preloads.set_mapper(fit_0=fit_list[0], fit_1=fit_list[1])
+        self.preloads.set_inversion(fit_0=fit_list[0], fit_1=fit_list[1])
         self.preloads.set_w_tilde_imaging(fit_0=fit_list[0], fit_1=fit_list[1])
 
     def log_likelihood_function(self, instance):

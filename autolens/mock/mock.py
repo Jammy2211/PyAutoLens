@@ -169,6 +169,7 @@ class MockFit:
         inversion=None,
         noise_map=None,
         grid=None,
+        blurred_image=None,
     ):
 
         self.dataset = dataset
@@ -176,6 +177,7 @@ class MockFit:
         self.inversion = inversion
         self.noise_map = noise_map
         self.grid = grid
+        self.blurred_image = blurred_image
 
 
 class MockTracer:
