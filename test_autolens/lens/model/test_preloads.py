@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
+from os import path
 
-import autofit as af
+from autofit.text import formatter as frm
 
 from autoarray.mock.mock import MockMapper
 from autoarray.mock.mock import MockInversion
@@ -256,3 +257,60 @@ def test__set_w_tilde():
     assert (preloads.w_tilde.lengths == lengths).all()
     assert preloads.w_tilde.noise_map_value == 1.0
     assert preloads.use_w_tilde == True
+
+
+def test__info():
+
+    file_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
+
+    file_preloads = path.join(file_path, "preloads.summary")
+
+    preloads = Preloads(
+        blurred_image=np.zeros(3),
+        sparse_grids_of_planes=None,
+        mapper=None,
+        blurred_mapping_matrix=None,
+        curvature_matrix_sparse_preload=None,
+        w_tilde=None,
+        use_w_tilde=False,
+    )
+
+    frm.output_list_of_strings_to_file(
+        file=file_preloads, list_of_strings=preloads.info
+    )
+
+    results = open(file_preloads)
+    lines = results.readlines()
+
+    assert lines[0] == f"Blurred Image = False\n"
+    assert lines[1] == f"Sparse Grids of Planes = False\n"
+    assert lines[2] == f"Mapper = False\n"
+    assert lines[3] == f"Blurred Mapping Matrix = False\n"
+    assert lines[4] == f"Curvature Matrix Sparse Preload = False\n"
+    assert lines[5] == f"W Tilde = False\n"
+    assert lines[6] == f"Use W Tilde = False\n"
+
+    preloads = Preloads(
+        blurred_image=1,
+        sparse_grids_of_planes=1,
+        mapper=1,
+        blurred_mapping_matrix=1,
+        curvature_matrix_sparse_preload=1,
+        w_tilde=1,
+        use_w_tilde=True,
+    )
+
+    frm.output_list_of_strings_to_file(
+        file=file_preloads, list_of_strings=preloads.info
+    )
+
+    results = open(file_preloads)
+    lines = results.readlines()
+
+    assert lines[0] == f"Blurred Image = True\n"
+    assert lines[1] == f"Sparse Grids of Planes = True\n"
+    assert lines[2] == f"Mapper = True\n"
+    assert lines[3] == f"Blurred Mapping Matrix = True\n"
+    assert lines[4] == f"Curvature Matrix Sparse Preload = True\n"
+    assert lines[5] == f"W Tilde = True\n"
+    assert lines[6] == f"Use W Tilde = True\n"

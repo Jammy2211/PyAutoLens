@@ -231,3 +231,21 @@ class Preloads(aa.Preloads):
             self.use_w_tilde = True
 
             logger.info("PRELOADS - W-Tilde preloaded for this model-fit.")
+
+    @property
+    def info(self):
+
+        line = [f"Blurred Image = {np.count_nonzero(self.blurred_image) != 0}\n"]
+        line += [
+            f"Sparse Grids of Planes = {self.sparse_grids_of_planes is not None}\n"
+        ]
+        line += [f"Mapper = {self.mapper is not None}\n"]
+        line += [
+            f"Blurred Mapping Matrix = {self.blurred_mapping_matrix is not None}\n"
+        ]
+        line += [
+            f"Curvature Matrix Sparse Preload = {self.curvature_matrix_sparse_preload is not None}\n"
+        ]
+        line += [f"W Tilde = {self.w_tilde is not None}\n"]
+        line += [f"Use W Tilde = {self.use_w_tilde}\n"]
+        return line

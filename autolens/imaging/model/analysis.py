@@ -61,7 +61,7 @@ class AnalysisImaging(AnalysisDataset):
             instance=instance_1, preload_overwrite=Preloads(use_w_tilde=False)
         )
 
-        return [fit_0, fit_1]
+        return fit_0, fit_1
 
     def preload_fit_list_from_random_instances(self, model: af.AbstractPriorModel):
 
@@ -92,14 +92,15 @@ class AnalysisImaging(AnalysisDataset):
 
     def set_preloads(self, model: af.AbstractPriorModel):
 
-        fit_list = self.preload_fit_list_from_unit_values(model=model)
+        fit_0, fit_1 = self.preload_fit_list_from_unit_values(model=model)
 
         self.preloads = Preloads()
 
-        self.preloads.set_sparse_grid_of_planes(fit_0=fit_list[0], fit_1=fit_list[1])
-        self.preloads.set_mapper(fit_0=fit_list[0], fit_1=fit_list[1])
-        self.preloads.set_inversion(fit_0=fit_list[0], fit_1=fit_list[1])
-        self.preloads.set_w_tilde_imaging(fit_0=fit_list[0], fit_1=fit_list[1])
+        self.preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
+        self.preloads.set_sparse_grid_of_planes(fit_0=fit_0, fit_1=fit_1)
+        self.preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
+        self.preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
+        self.preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
 
     def log_likelihood_function(self, instance):
         """
