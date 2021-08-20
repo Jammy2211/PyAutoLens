@@ -51,18 +51,24 @@ class AnalysisImaging(AnalysisDataset):
 
     def preload_fit_list_from_unit_values(self, model: af.AbstractPriorModel):
 
+        ignore_prior_limits = conf.instance["general"]["model"]["ignore_prior_limits"]
+
+        conf.instance["general"]["model"]["ignore_prior_limits"] = True
+
         instance_0 = model.instance_from_unit_vector(
-            unit_vector=[0.45] * model.prior_count
+            unit_vector=[0.45] * model.prior_count,
         )
         instance_1 = model.instance_from_unit_vector(
-            unit_vector=[0.55] * model.prior_count
+            unit_vector=[0.55] * model.prior_count,
         )
 
+        conf.instance["general"]["model"]["ignore_prior_limits"] = ignore_prior_limits
+
         fit_0 = self.fit_imaging_for_instance(
-            instance=instance_0, preload_overwrite=Preloads(use_w_tilde=False)
+            instance=instance_0, preload_overwrite=Preloads(use_w_tilde=False), check_positions=False
         )
         fit_1 = self.fit_imaging_for_instance(
-            instance=instance_1, preload_overwrite=Preloads(use_w_tilde=False)
+            instance=instance_1, preload_overwrite=Preloads(use_w_tilde=False), check_positions=False
         )
 
         return fit_0, fit_1
@@ -80,7 +86,7 @@ class AnalysisImaging(AnalysisDataset):
             try:
                 fit_list.append(
                     self.fit_imaging_for_instance(
-                        instance=instance, preload_overwrite=Preloads(use_w_tilde=False)
+                        instance=instance, preload_overwrite=Preloads(use_w_tilde=False), check_positions=False
                     )
                 )
             except Exception:
@@ -138,15 +144,16 @@ class AnalysisImaging(AnalysisDataset):
             raise exc.FitException from e
 
     def fit_imaging_for_instance(
-        self, instance, use_hyper_scalings=True, preload_overwrite=None
+        self, instance, use_hyper_scalings=True, preload_overwrite=None, check_positions=True
     ):
 
         self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
 
-        self.settings_lens.check_positions_trace_within_threshold_via_tracer(
-            tracer=tracer, positions=self.positions
-        )
+        if check_positions:
+            self.settings_lens.check_positions_trace_within_threshold_via_tracer(
+                tracer=tracer, positions=self.positions
+            )
 
         hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
 

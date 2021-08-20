@@ -58,7 +58,7 @@
         },
         "sersic_index": {
             "type": "Uniform",
-            "lower_limit": 0.5,
+            "lower_limit": 0.8,
             "upper_limit": 5.0,
             "width_modifier": {
                 "type": "Absolute",
@@ -172,7 +172,7 @@
         },
         "sersic_index": {
             "type": "Uniform",
-            "lower_limit": 0.5,
+            "lower_limit": 0.8,
             "upper_limit": 5.0,
             "width_modifier": {
                 "type": "Absolute",
@@ -600,7 +600,7 @@
         },
         "sersic_index": {
             "type": "Uniform",
-            "lower_limit": 0.5,
+            "lower_limit": 0.8,
             "upper_limit": 5.0,
             "width_modifier": {
                 "type": "Absolute",
@@ -727,7 +727,7 @@
         },
         "sersic_index": {
             "type": "Uniform",
-            "lower_limit": 0.5,
+            "lower_limit": 0.8,
             "upper_limit": 5.0,
             "width_modifier": {
                 "type": "Absolute",
