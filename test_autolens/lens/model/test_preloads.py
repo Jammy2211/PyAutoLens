@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from os import path
 
-from autofit.text import formatter as frm
+import autofit as af
 
 from autoarray.mock.mock import MockMapper
 from autoarray.mock.mock import MockInversion
@@ -275,7 +275,7 @@ def test__info():
         use_w_tilde=False,
     )
 
-    frm.output_list_of_strings_to_file(
+    af.formatter.output_list_of_strings_to_file(
         file=file_preloads, list_of_strings=preloads.info
     )
 
@@ -300,7 +300,7 @@ def test__info():
         use_w_tilde=True,
     )
 
-    frm.output_list_of_strings_to_file(
+    af.formatter.output_list_of_strings_to_file(
         file=file_preloads, list_of_strings=preloads.info
     )
 

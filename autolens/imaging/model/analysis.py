@@ -1,3 +1,5 @@
+from os import path
+
 from autoconf import conf
 import autofit as af
 import autoarray as aa
@@ -17,10 +19,12 @@ class AnalysisImaging(AnalysisDataset):
     def imaging(self):
         return self.dataset
 
-    def modify_before_fit(self, model: af.AbstractPriorModel):
+    def modify_before_fit(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
 
-        self.set_preloads(model=model)
+        self.set_preloads(paths=paths, model=model)
         self.check_preloads(model=model)
+
+        return self
 
     def check_preloads(self, model: af.AbstractPriorModel):
 
@@ -90,7 +94,7 @@ class AnalysisImaging(AnalysisDataset):
 
         return fit_list
 
-    def set_preloads(self, model: af.AbstractPriorModel):
+    def set_preloads(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
 
         fit_0, fit_1 = self.preload_fit_list_from_unit_values(model=model)
 
@@ -101,6 +105,12 @@ class AnalysisImaging(AnalysisDataset):
         self.preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
         self.preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
         self.preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
+
+        file_preloads = path.join(paths.output_path, "preloads.summary")
+
+        af.formatter.output_list_of_strings_to_file(
+            file=file_preloads, list_of_strings=self.preloads.info
+        )
 
     def log_likelihood_function(self, instance):
         """
