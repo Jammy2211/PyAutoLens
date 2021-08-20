@@ -1,3 +1,4 @@
+import logging
 from os import path
 
 from autoconf import conf
@@ -13,6 +14,10 @@ from autolens.imaging.fit_imaging import FitImaging
 
 from autolens import exc
 
+logger = logging.getLogger(__name__)
+
+logger.setLevel(level="INFO")
+
 
 class AnalysisImaging(AnalysisDataset):
     @property
@@ -21,8 +26,26 @@ class AnalysisImaging(AnalysisDataset):
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
 
-        self.set_preloads(paths=paths, model=model)
-        self.check_preloads(model=model)
+        if not paths.is_complete:
+
+            logger.info(
+                "PRELOADS - Setting up preloads, may take a few minutes for fits using an inversion."
+            )
+
+            self.set_preloads(paths=paths, model=model)
+            self.check_preloads(model=model)
+
+        return self
+
+    def modify_after_fit(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
+
+        self.preloads.blurred_image = None
+        self.preloads.sparse_grids_of_planes = None
+        self.preloads.mapper = None
+        self.preloads.blurred_mapping_matrix = None
+        self.preloads.curvature_matrix_sparse_preload = None
+        self.preloads.curvature_matrix_preload_counts = None
+        self.preloads.w_tilde = None
 
         return self
 
@@ -30,6 +53,7 @@ class AnalysisImaging(AnalysisDataset):
 
         if not conf.instance["general"]["test"]["check_preloads"]:
             return
+
         instance = model.instance_from_prior_medians()
 
         fom_with_preloads = self.fit_imaging_for_instance(
@@ -51,58 +75,76 @@ class AnalysisImaging(AnalysisDataset):
 
     def preload_fit_list_from_unit_values(self, model: af.AbstractPriorModel):
 
-        ignore_prior_limits = conf.instance["general"]["model"]["ignore_prior_limits"]
-
-        conf.instance["general"]["model"]["ignore_prior_limits"] = True
-
         instance_0 = model.instance_from_unit_vector(
-            unit_vector=[0.45] * model.prior_count,
+            unit_vector=[0.45] * model.prior_count
         )
         instance_1 = model.instance_from_unit_vector(
-            unit_vector=[0.55] * model.prior_count,
+            unit_vector=[0.55] * model.prior_count
         )
-
-        conf.instance["general"]["model"]["ignore_prior_limits"] = ignore_prior_limits
 
         fit_0 = self.fit_imaging_for_instance(
-            instance=instance_0, preload_overwrite=Preloads(use_w_tilde=False), check_positions=False
+            instance=instance_0,
+            preload_overwrite=Preloads(use_w_tilde=False),
+            check_positions=False,
         )
         fit_1 = self.fit_imaging_for_instance(
-            instance=instance_1, preload_overwrite=Preloads(use_w_tilde=False), check_positions=False
+            instance=instance_1,
+            preload_overwrite=Preloads(use_w_tilde=False),
+            check_positions=False,
         )
 
         return fit_0, fit_1
 
     def preload_fit_list_from_random_instances(self, model: af.AbstractPriorModel):
 
-        preload_attempts = 100
-
-        fit_list = []
+        preload_attempts = conf.instance["general"]["analysis"]["preload_attempts"]
 
         for i in range(preload_attempts):
 
             instance = model.random_instance()
 
             try:
-                fit_list.append(
-                    self.fit_imaging_for_instance(
-                        instance=instance, preload_overwrite=Preloads(use_w_tilde=False), check_positions=False
-                    )
+                fit = self.fit_imaging_for_instance(
+                    instance=instance,
+                    preload_overwrite=Preloads(use_w_tilde=False),
+                    check_positions=False,
                 )
+                break
             except Exception:
                 pass
 
-            if len(fit_list) == 2:
-                break
-
             if i == preload_attempts:
-                raise exc.AnalysisException("Unable to set preloads.")
+                raise exc.AnalysisException
 
-        return fit_list
+        return fit
 
     def set_preloads(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
 
-        fit_0, fit_1 = self.preload_fit_list_from_unit_values(model=model)
+        ignore_prior_limits = conf.instance["general"]["model"]["ignore_prior_limits"]
+
+        conf.instance["general"]["model"]["ignore_prior_limits"] = True
+
+        try:
+            fit_0, fit_1 = self.preload_fit_list_from_unit_values(model=model)
+        except Exception:
+            try:
+                fit_0 = self.preload_fit_list_from_random_instances(model=model)
+                fit_1 = self.preload_fit_list_from_random_instances(model=model)
+            except exc.AnalysisException:
+                logger.info(
+                    "PRELOADS - Preloading failed as models gave too many exceptions, preloading therefore "
+                    "not used."
+                )
+
+                file_preloads = path.join(paths.output_path, "preloads.summary")
+
+                af.formatter.output_list_of_strings_to_file(
+                    file=file_preloads, list_of_strings=["FAILED"]
+                )
+
+                return
+
+        conf.instance["general"]["model"]["ignore_prior_limits"] = ignore_prior_limits
 
         self.preloads = Preloads()
 
@@ -144,7 +186,11 @@ class AnalysisImaging(AnalysisDataset):
             raise exc.FitException from e
 
     def fit_imaging_for_instance(
-        self, instance, use_hyper_scalings=True, preload_overwrite=None, check_positions=True
+        self,
+        instance,
+        use_hyper_scalings=True,
+        preload_overwrite=None,
+        check_positions=True,
     ):
 
         self.associate_hyper_images(instance=instance)

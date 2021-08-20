@@ -68,8 +68,8 @@ def test__set_sparse_grid_of_planes():
 
     # sparse image plane of grids are different, indiciating the model parameters change the grid, so no preloading.
 
-    tracer_0 = MockTracer(sparse_image_plane_grids_of_planes=[None, np.array([1.0])])
-    tracer_1 = MockTracer(sparse_image_plane_grids_of_planes=[None, np.array([2.0])])
+    tracer_0 = MockTracer(sparse_image_plane_grids_of_planes=[None, np.array([[1.0]])])
+    tracer_1 = MockTracer(sparse_image_plane_grids_of_planes=[None, np.array([[2.0]])])
 
     fit_0 = MockFit(tracer=tracer_0)
     fit_1 = MockFit(tracer=tracer_1)
@@ -81,8 +81,8 @@ def test__set_sparse_grid_of_planes():
 
     # sparse image plane of grids are the same meaning they are fixed in the model, so do preload.
 
-    tracer_0 = MockTracer(sparse_image_plane_grids_of_planes=[None, np.array([1.0])])
-    tracer_1 = MockTracer(sparse_image_plane_grids_of_planes=[None, np.array([1.0])])
+    tracer_0 = MockTracer(sparse_image_plane_grids_of_planes=[None, np.array([[1.0]])])
+    tracer_1 = MockTracer(sparse_image_plane_grids_of_planes=[None, np.array([[1.0]])])
 
     fit_0 = MockFit(tracer=tracer_0)
     fit_1 = MockFit(tracer=tracer_1)
@@ -91,7 +91,7 @@ def test__set_sparse_grid_of_planes():
     preloads.set_sparse_grid_of_planes(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.sparse_grids_of_planes[0] is None
-    assert (preloads.sparse_grids_of_planes[1] == np.array([1.0])).all()
+    assert (preloads.sparse_grids_of_planes[1] == np.array([[1.0]])).all()
 
 
 def test__set_mapper():
