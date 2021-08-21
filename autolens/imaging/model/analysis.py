@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 from os import path
 
 from autoconf import conf
@@ -28,21 +29,21 @@ class AnalysisImaging(AnalysisDataset):
 
         try:
             hyper_model_image = paths.load_object("hyper_model_image")
-            print("Hyper Model Image Comp:")
-            print(hyper_model_image[0:5])
-            print(self.hyper_model_image[0:5])
+
+            if not np.allclose(hyper_model_image, self.hyper_model_image):
+
+                logger.info("ANALYSIS - Hyper image loaded from pickle different to that set in Analysis class."
+                            "Overwriting hyper images with values loaded from pickles.")
+
+            self.hyper_model_image = hyper_model_image
+
+            hyper_galaxy_image_path_dict = paths.load_object("hyper_galaxy_image_path_dict")
+            self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
+
         except FileNotFoundError:
             pass
 
-        try:
-            hyper_galaxy_image_path_dict = paths.load_object("hyper_galxy_image_path_dict")
-            print("Hyper Galaxy Image Comp:")
-            print(hyper_galaxy_image_path_dict)
-            print(self.hyper_model_image)
-        except FileNotFoundError:
-            pass
-
-        return
+        return self
 
         if not paths.is_complete:
 
