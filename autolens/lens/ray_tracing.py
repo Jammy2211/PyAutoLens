@@ -767,10 +767,10 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         mappers_of_planes = []
 
-        if preloads.traced_grids_of_planes is None:
+        if preloads.traced_grids_of_planes_for_inversion is None:
             traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
         else:
-            traced_grids_of_planes = preloads.traced_grids_of_planes
+            traced_grids_of_planes = preloads.traced_grids_of_planes_for_inversion
 
         traced_sparse_grids_of_planes, sparse_image_plane_grid = self.traced_sparse_grids_of_planes_from_grid(
             grid=grid, settings_pixelization=settings_pixelization, preloads=preloads

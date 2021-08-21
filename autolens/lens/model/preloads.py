@@ -12,16 +12,17 @@ logger.setLevel(level="INFO")
 class Preloads(aa.Preloads):
     def __init__(
         self,
-        traced_grids_of_planes: Optional[aa.Grid2D] = None,
         blurred_image: Optional[aa.Array2D] = None,
+        w_tilde: Optional[aa.WTildeImaging] = None,
+        use_w_tilde: Optional[bool] = None,
+        traced_grids_of_planes_for_inversion: Optional[aa.Grid2D] = None,
         sparse_image_plane_grids_of_planes: Optional[aa.Grid2D] = None,
         relocated_grid: Optional[aa.Grid2D] = None,
         mapper: Optional[aa.Mapper] = None,
         blurred_mapping_matrix: Optional[np.ndarray] = None,
         curvature_matrix_sparse_preload: Optional[np.ndarray] = None,
         curvature_matrix_preload_counts: Optional[np.ndarray] = None,
-        w_tilde: Optional[aa.WTildeImaging] = None,
-        use_w_tilde: Optional[bool] = None,
+        log_det_regularization_matrix_term: Optional[float] = None,
     ):
         """
         Class which offers a concise API for settings up the preloads, which before a model-fit are set up via
@@ -36,12 +37,18 @@ class Preloads(aa.Preloads):
 
         Parameters
         ----------
-        traced_grids_of_planes
-            The two dimensional grids corresponding to the traced grids in a lens fit. This can be preloaded when no
-             mass profiles in the model vary.
         blurred_image
             The preloaded array of values containing the blurred image of a lens model fit (e.g. that light profile of
             every galaxy in the model). This can be preloaded when no light profiles in the model vary.
+        w_tilde
+            A class containing values that enable an inversion's linear algebra to use the w-tilde formalism. This can
+            be preloaded when no component of the model changes the noise map (e.g. hyper galaxies are fixed).
+        use_w_tilde
+            Whether to use the w tilde formalism, which superseeds the value in `SettingsInversions` such that w tilde
+            will be disabled for model-fits it is not applicable (e.g. because the noise-map changes).
+        traced_grids_of_planes_for_inversion
+            The two dimensional grids corresponding to the traced grids in a lens fit. This can be preloaded when no
+             mass profiles in the model vary.
         sparse_image_plane_grids_of_planes
             The two dimensional grids corresponding to the sparse image plane grids in a lens fit, that is ray-traced to
             the source plane to form the source pixelization. This can be preloaded when no pixelizations in the model
@@ -62,12 +69,6 @@ class Preloads(aa.Preloads):
             A matrix containing the length of values in the curvature matrix preloaded, which are used to construct
             the curvature matrix from the blurred mapping matrix. This can be preloaded when no mass profiles and
             pixelizations in the model vary.
-        w_tilde
-            A class containing values that enable an inversion's linear algebra to use the w-tilde formalism. This can
-            be preloaded when no component of the model changes the noise map (e.g. hyper galaxies are fixed).
-        use_w_tilde
-            Whether to use the w tilde formalism, which superseeds the value in `SettingsInversions` such that w tilde
-            will be disabled for model-fits it is not applicable (e.g. because the noise-map changes).
 
         Returns
         -------
@@ -75,64 +76,19 @@ class Preloads(aa.Preloads):
             The preloads object used to skip certain calculations in the log likelihood function.
         """
         super().__init__(
+            w_tilde=w_tilde,
+            use_w_tilde=use_w_tilde,
             relocated_grid=relocated_grid,
-            sparse_grids_of_planes=sparse_image_plane_grids_of_planes,
+            sparse_image_plane_grids_of_planes=sparse_image_plane_grids_of_planes,
             mapper=mapper,
             blurred_mapping_matrix=blurred_mapping_matrix,
             curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
             curvature_matrix_preload_counts=curvature_matrix_preload_counts,
-            w_tilde=w_tilde,
-            use_w_tilde=use_w_tilde,
+            log_det_regularization_matrix_term=log_det_regularization_matrix_term,
         )
 
-        self.traced_grids_of_planes = traced_grids_of_planes
         self.blurred_image = blurred_image
-
-    def set_traced_grids_of_planes(self, fit_0, fit_1):
-        """
-        If the `MassProfiles`'s in a model are fixed their deflection angles and therefore corresponding traced grids
-        do not change during the model=fit and can therefore be preloaded.
-
-        This function compares the traced grids of two fit's corresponding to two model instances, and preloads the
-        traced grids if the grids of both fits are the same.
-
-        The preload is typically used in hyper searches, where the mass model is fixed and the hyper-parameters are
-        varied.
-
-        Parameters
-        ----------
-        fit_0
-            The first fit corresponding to a model with a specific set of unit-values.
-        fit_1
-            The second fit corresponding to a model with a different set of unit-values.
-        """
-
-        self.traced_grids_of_planes = None
-
-        traced_grids_of_planes_0 = fit_0.tracer.traced_grids_of_planes_from_grid(
-            grid=fit_0.dataset.grid_inversion
-        )
-
-        traced_grids_of_planes_1 = fit_1.tracer.traced_grids_of_planes_from_grid(
-            grid=fit_1.dataset.grid_inversion
-        )
-
-        if traced_grids_of_planes_0[-1] is not None:
-
-            if (
-                traced_grids_of_planes_0[-1].shape[0]
-                == traced_grids_of_planes_0[-1].shape[1]
-            ):
-
-                if np.allclose(
-                    traced_grids_of_planes_0[-1], traced_grids_of_planes_1[-1]
-                ):
-
-                    self.traced_grids_of_planes = traced_grids_of_planes_0
-
-                    logger.info(
-                        "PRELOADS - Traced grid of planes preloaded for this model-fit."
-                    )
+        self.traced_grids_of_planes_for_inversion = traced_grids_of_planes_for_inversion
 
     def set_blurred_image(self, fit_0, fit_1):
         """
@@ -161,6 +117,99 @@ class Preloads(aa.Preloads):
             logger.info(
                 "PRELOADS - Blurred image (e.g. the image of all light profiles) is preloaded for this model-fit."
             )
+
+    def set_w_tilde_imaging(self, fit_0, fit_1):
+        """
+        The w-tilde linear algebra formalism speeds up inversions by computing beforehand quantities that enable
+        efficiently construction of the curvature matrix. These quantites can only be used if the noise-map is
+        fixed, therefore this function preloads these w-tilde quantities if the noise-map does not change.
+
+        This function compares the noise map of two fit's corresponding to two model instances, and preloads wtilde
+        if the noise maps of both fits are the same.
+
+        The preload is typically used through search chaining pipelines, as it is uncommon for the noise map to be
+        scaled during the model-fit (although it is common for a fixed but scaled noise map to be used).
+
+        Parameters
+        ----------
+        fit_0
+            The first fit corresponding to a model with a specific set of unit-values.
+        fit_1
+            The second fit corresponding to a model with a different set of unit-values.
+        """
+        self.w_tilde = None
+        self.use_w_tilde = False
+
+        if fit_0.inversion is not None and np.allclose(
+            fit_0.noise_map, fit_1.noise_map
+        ):
+
+            logger.info("PRELOADS - Computing W-Tilde... May take a moment.")
+
+            preload, indexes, lengths = aa.util.inversion.w_tilde_curvature_preload_imaging_from(
+                noise_map_native=fit_0.noise_map.native,
+                kernel_native=fit_0.dataset.psf.native,
+                native_index_for_slim_index=fit_0.dataset.mask._native_index_for_slim_index,
+            )
+
+            w_tilde = aa.WTildeImaging(
+                curvature_preload=preload,
+                indexes=indexes.astype("int"),
+                lengths=lengths.astype("int"),
+                noise_map_value=fit_0.noise_map[0],
+            )
+
+            self.w_tilde = w_tilde
+            self.use_w_tilde = True
+
+            logger.info("PRELOADS - W-Tilde preloaded for this model-fit.")
+
+    def set_traced_grids_of_planes_for_inversion(self, fit_0, fit_1):
+        """
+        If the `MassProfiles`'s in a model are fixed their deflection angles and therefore corresponding traced grids
+        do not change during the model-fit and can therefore be preloaded.
+
+        This function compares the traced grids of two fit's corresponding to two model instances, and preloads the
+        traced grids if the grids of both fits are the same. This preloaded grid is only used when constructing an
+        inversion, because the `blurred_image` preload accounts for light profiles.
+
+        The preload is typically used in hyper searches, where the mass model is fixed and the hyper-parameters are
+        varied.
+
+        Parameters
+        ----------
+        fit_0
+            The first fit corresponding to a model with a specific set of unit-values.
+        fit_1
+            The second fit corresponding to a model with a different set of unit-values.
+        """
+
+        self.traced_grids_of_planes_for_inversion = None
+
+        traced_grids_of_planes_0 = fit_0.tracer.traced_grids_of_planes_from_grid(
+            grid=fit_0.dataset.grid_inversion
+        )
+
+        traced_grids_of_planes_1 = fit_1.tracer.traced_grids_of_planes_from_grid(
+            grid=fit_1.dataset.grid_inversion
+        )
+
+        if traced_grids_of_planes_0[-1] is not None:
+
+            if (
+                traced_grids_of_planes_0[-1].shape[0]
+                == traced_grids_of_planes_0[-1].shape[1]
+            ):
+
+                if np.allclose(
+                    traced_grids_of_planes_0[-1], traced_grids_of_planes_1[-1]
+                ):
+
+                    self.traced_grids_of_planes_for_inversion = traced_grids_of_planes_0
+
+                    logger.info(
+                        "PRELOADS - Traced grid of planes (for inversion) preloaded for this model-fit."
+                    )
 
     def set_sparse_image_plane_grids_of_planes(self, fit_0, fit_1):
         """
@@ -338,17 +387,18 @@ class Preloads(aa.Preloads):
                     "PRELOADS - Inversion linear algebra quantities preloaded for this model-fit."
                 )
 
-    def set_w_tilde_imaging(self, fit_0, fit_1):
+    def set_log_det_regularization_matrix_term(self, fit_0, fit_1):
         """
-        The w-tilde linear algebra formalism speeds up inversions by computing beforehand quantities that enable
-        efficiently construction of the curvature matrix. These quantites can only be used if the noise-map is
-        fixed, therefore this function preloads these w-tilde quantities if the noise-map does not change.
+        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
+        source-pixels does not change during the model-fit and therefore its associated regularization matrices are
+        also fixed, meaning the log determinant of the regularization matrix term of the Bayesian evidence can be
+        preloaded.
 
-        This function compares the noise map of two fit's corresponding to two model instances, and preloads wtilde
-        if the noise maps of both fits are the same.
+        This function compares the value of the log determinant of the regularization matrix of two fit's corresponding
+        to two model instances, and preloads this value if it is the same for both fits.
 
-        The preload is typically used through search chaining pipelines, as it is uncommon for the noise map to be
-        scaled during the model-fit (although it is common for a fixed but scaled noise map to be used).
+        The preload is typically used in searches where only light profiles vary (e.g. when only the lens's light is
+        being fitted for).
 
         Parameters
         ----------
@@ -357,32 +407,26 @@ class Preloads(aa.Preloads):
         fit_1
             The second fit corresponding to a model with a different set of unit-values.
         """
-        self.w_tilde = None
-        self.use_w_tilde = False
+        self.log_det_regularization_matrix_term = None
 
-        if fit_0.inversion is not None and np.allclose(
-            fit_0.noise_map, fit_1.noise_map
+        inversion_0 = fit_0.inversion
+        inversion_1 = fit_1.inversion
+
+        if inversion_0 is None:
+            return
+
+        if np.allclose(
+            inversion_0.log_det_regularization_matrix_term,
+            inversion_1.log_det_regularization_matrix_term,
         ):
 
-            logger.info("PRELOADS - Computing W-Tilde... May take a moment.")
-
-            preload, indexes, lengths = aa.util.inversion.w_tilde_curvature_preload_imaging_from(
-                noise_map_native=fit_0.noise_map.native,
-                kernel_native=fit_0.dataset.psf.native,
-                native_index_for_slim_index=fit_0.dataset.mask._native_index_for_slim_index,
+            self.log_det_regularization_matrix_term = (
+                inversion_0.log_det_regularization_matrix_term
             )
 
-            w_tilde = aa.WTildeImaging(
-                curvature_preload=preload,
-                indexes=indexes.astype("int"),
-                lengths=lengths.astype("int"),
-                noise_map_value=fit_0.noise_map[0],
+            logger.info(
+                "PRELOADS - Inversion Log[Det[Regularization Term]] preloaded for this model-fit."
             )
-
-            self.w_tilde = w_tilde
-            self.use_w_tilde = True
-
-            logger.info("PRELOADS - W-Tilde preloaded for this model-fit.")
 
     @property
     def info(self) -> List[str]:
@@ -393,8 +437,12 @@ class Preloads(aa.Preloads):
         -------
             A list of strings containing True and False values as to whether a quantity has been preloaded.
         """
-        line = [f"Traced Grids of Planes = {self.traced_grids_of_planes is not None}\n"]
-        line += [f"Blurred Image = {np.count_nonzero(self.blurred_image) != 0}\n"]
+        line = [f"Blurred Image = {np.count_nonzero(self.blurred_image) != 0}\n"]
+        line += [f"W Tilde = {self.w_tilde is not None}\n"]
+        line += [f"Use W Tilde = {self.use_w_tilde}\n"]
+        line += [
+            f"Traced Grids of Planes (For Inversion) = {self.traced_grids_of_planes_for_inversion is not None}\n"
+        ]
         line += [
             f"Sparse Image-Plane Grids of Planes = {self.sparse_image_plane_grids_of_planes is not None}\n"
         ]
@@ -404,8 +452,10 @@ class Preloads(aa.Preloads):
             f"Blurred Mapping Matrix = {self.blurred_mapping_matrix is not None}\n"
         ]
         line += [
-            f"Curvature Matrix Sparse Preload = {self.curvature_matrix_sparse_preload is not None}\n"
+            f"Curvature Matrix Sparse = {self.curvature_matrix_sparse_preload is not None}\n"
         ]
-        line += [f"W Tilde = {self.w_tilde is not None}\n"]
-        line += [f"Use W Tilde = {self.use_w_tilde}\n"]
+        line += [
+            f"Log Dot Regularization Matrix Term = {self.log_det_regularization_matrix_term is not None}\n"
+        ]
+
         return line

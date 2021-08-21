@@ -51,6 +51,63 @@ def test__set_blurred_image():
     assert (preloads.blurred_image == np.array([1.0])).all()
 
 
+def test__set_w_tilde():
+
+    # fit inversion is None, so no need to bother with w_tilde.
+
+    fit_0 = MockFit(inversion=None)
+    fit_1 = MockFit(inversion=None)
+
+    preloads = Preloads(w_tilde=1, use_w_tilde=1)
+    preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.w_tilde is None
+    assert preloads.use_w_tilde is False
+
+    # Noise maps of fit are different but there is an inversion, so we should not preload w_tilde and use w_tilde.
+
+    fit_0 = MockFit(
+        inversion=1, noise_map=al.Array2D.zeros(shape_native=(3, 1), pixel_scales=0.1)
+    )
+    fit_1 = MockFit(
+        inversion=1, noise_map=al.Array2D.ones(shape_native=(3, 1), pixel_scales=0.1)
+    )
+
+    preloads = Preloads(w_tilde=1, use_w_tilde=1)
+    preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.w_tilde is None
+    assert preloads.use_w_tilde is False
+
+    # Noise maps of fits are the same so preload w_tilde and use it.
+
+    noise_map = al.Array2D.ones(shape_native=(5, 5), pixel_scales=0.1, sub_size=1)
+
+    mask = MockMask(
+        _native_index_for_slim_index=noise_map.mask._native_index_for_slim_index
+    )
+
+    dataset = MockDataset(psf=al.Kernel2D.no_blur(pixel_scales=1.0), mask=mask)
+
+    fit_0 = MockFit(inversion=1, dataset=dataset, noise_map=noise_map)
+    fit_1 = MockFit(inversion=1, dataset=dataset, noise_map=noise_map)
+
+    preloads = Preloads(w_tilde=1, use_w_tilde=1)
+    preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
+
+    curvature_preload, indexes, lengths = al.util.inversion.w_tilde_curvature_preload_imaging_from(
+        noise_map_native=fit_0.noise_map.native,
+        kernel_native=fit_0.dataset.psf.native,
+        native_index_for_slim_index=fit_0.dataset.mask._native_index_for_slim_index,
+    )
+
+    assert (preloads.w_tilde.curvature_preload == curvature_preload).all()
+    assert (preloads.w_tilde.indexes == indexes).all()
+    assert (preloads.w_tilde.lengths == lengths).all()
+    assert preloads.w_tilde.noise_map_value == 1.0
+    assert preloads.use_w_tilde == True
+
+
 def test__set_traced_grids_of_planes():
 
     # traced grids is None so no Preloading.
@@ -61,10 +118,10 @@ def test__set_traced_grids_of_planes():
     fit_0 = MockFit(tracer=tracer_0)
     fit_1 = MockFit(tracer=tracer_1)
 
-    preloads = Preloads(traced_grids_of_planes=1)
-    preloads.set_traced_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
+    preloads = Preloads(traced_grids_of_planes_for_inversion=1)
+    preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.traced_grids_of_planes is None
+    assert preloads.traced_grids_of_planes_for_inversion is None
 
     # traced grids are different, indiciating the model parameters change the grid, so no preloading.
 
@@ -74,10 +131,10 @@ def test__set_traced_grids_of_planes():
     fit_0 = MockFit(tracer=tracer_0)
     fit_1 = MockFit(tracer=tracer_1)
 
-    preloads = Preloads(traced_grids_of_planes=1)
-    preloads.set_traced_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
+    preloads = Preloads(traced_grids_of_planes_for_inversion=1)
+    preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.traced_grids_of_planes is None
+    assert preloads.traced_grids_of_planes_for_inversion is None
 
     # traced grids are the same meaning they are fixed in the model, so do preload.
 
@@ -87,11 +144,11 @@ def test__set_traced_grids_of_planes():
     fit_0 = MockFit(tracer=tracer_0)
     fit_1 = MockFit(tracer=tracer_1)
 
-    preloads = Preloads(traced_grids_of_planes=1)
-    preloads.set_traced_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
+    preloads = Preloads(traced_grids_of_planes_for_inversion=1)
+    preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.traced_grids_of_planes[0] is None
-    assert (preloads.traced_grids_of_planes[1] == np.array([[1.0]])).all()
+    assert preloads.traced_grids_of_planes_for_inversion[0] is None
+    assert (preloads.traced_grids_of_planes_for_inversion[1] == np.array([[1.0]])).all()
 
 
 def test__set_relocated_grid():
@@ -286,61 +343,43 @@ def test__set_inversion():
     assert preloads.curvature_matrix_preload_counts == 3
 
 
-def test__set_w_tilde():
+def test__set_log_det_regularization_matrix_term():
 
-    # fit inversion is None, so no need to bother with w_tilde.
+    # Inversion is None thus preload log_det_regularization_matrix_term to None.
 
     fit_0 = MockFit(inversion=None)
     fit_1 = MockFit(inversion=None)
 
-    preloads = Preloads(w_tilde=1, use_w_tilde=1)
-    preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
+    preloads = Preloads(log_det_regularization_matrix_term=1)
+    preloads.set_log_det_regularization_matrix_term(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.w_tilde is None
-    assert preloads.use_w_tilde is False
+    assert preloads.log_det_regularization_matrix_term is None
 
-    # Noise maps of fit are different but there is an inversion, so we should not preload w_tilde and use w_tilde.
+    # Inversion's log_det_regularization_matrix_term are different thus no preloading.
 
-    fit_0 = MockFit(
-        inversion=1, noise_map=al.Array2D.zeros(shape_native=(3, 1), pixel_scales=0.1)
-    )
-    fit_1 = MockFit(
-        inversion=1, noise_map=al.Array2D.ones(shape_native=(3, 1), pixel_scales=0.1)
-    )
+    inversion_0 = MockInversion(log_det_regularization_matrix_term=0)
+    inversion_1 = MockInversion(log_det_regularization_matrix_term=1)
 
-    preloads = Preloads(w_tilde=1, use_w_tilde=1)
-    preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
+    fit_0 = MockFit(inversion=inversion_0)
+    fit_1 = MockFit(inversion=inversion_1)
 
-    assert preloads.w_tilde is None
-    assert preloads.use_w_tilde is False
+    preloads = Preloads(log_det_regularization_matrix_term=1)
+    preloads.set_log_det_regularization_matrix_term(fit_0=fit_0, fit_1=fit_1)
 
-    # Noise maps of fits are the same so preload w_tilde and use it.
+    assert preloads.log_det_regularization_matrix_term is None
 
-    noise_map = al.Array2D.ones(shape_native=(5, 5), pixel_scales=0.1, sub_size=1)
+    # Inversion's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
-    mask = MockMask(
-        _native_index_for_slim_index=noise_map.mask._native_index_for_slim_index
-    )
+    inversion_0 = MockInversion(log_det_regularization_matrix_term=1)
+    inversion_1 = MockInversion(log_det_regularization_matrix_term=1)
 
-    dataset = MockDataset(psf=al.Kernel2D.no_blur(pixel_scales=1.0), mask=mask)
+    fit_0 = MockFit(inversion=inversion_0)
+    fit_1 = MockFit(inversion=inversion_1)
 
-    fit_0 = MockFit(inversion=1, dataset=dataset, noise_map=noise_map)
-    fit_1 = MockFit(inversion=1, dataset=dataset, noise_map=noise_map)
+    preloads = Preloads(log_det_regularization_matrix_term=2)
+    preloads.set_log_det_regularization_matrix_term(fit_0=fit_0, fit_1=fit_1)
 
-    preloads = Preloads(w_tilde=1, use_w_tilde=1)
-    preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
-
-    curvature_preload, indexes, lengths = al.util.inversion.w_tilde_curvature_preload_imaging_from(
-        noise_map_native=fit_0.noise_map.native,
-        kernel_native=fit_0.dataset.psf.native,
-        native_index_for_slim_index=fit_0.dataset.mask._native_index_for_slim_index,
-    )
-
-    assert (preloads.w_tilde.curvature_preload == curvature_preload).all()
-    assert (preloads.w_tilde.indexes == indexes).all()
-    assert (preloads.w_tilde.lengths == lengths).all()
-    assert preloads.w_tilde.noise_map_value == 1.0
-    assert preloads.use_w_tilde == True
+    assert preloads.log_det_regularization_matrix_term == 1
 
 
 def test__info():
@@ -351,14 +390,14 @@ def test__info():
 
     preloads = Preloads(
         blurred_image=np.zeros(3),
-        traced_grids_of_planes=None,
+        w_tilde=None,
+        use_w_tilde=False,
+        traced_grids_of_planes_for_inversion=None,
         sparse_image_plane_grids_of_planes=None,
         relocated_grid=None,
         mapper=None,
         blurred_mapping_matrix=None,
         curvature_matrix_sparse_preload=None,
-        w_tilde=None,
-        use_w_tilde=False,
     )
 
     af.formatter.output_list_of_strings_to_file(
@@ -368,26 +407,28 @@ def test__info():
     results = open(file_preloads)
     lines = results.readlines()
 
-    assert lines[0] == f"Traced Grids of Planes = False\n"
-    assert lines[1] == f"Blurred Image = False\n"
-    assert lines[2] == f"Sparse Image-Plane Grids of Planes = False\n"
-    assert lines[3] == f"Relocated Grid = False\n"
-    assert lines[4] == f"Mapper = False\n"
-    assert lines[5] == f"Blurred Mapping Matrix = False\n"
-    assert lines[6] == f"Curvature Matrix Sparse Preload = False\n"
-    assert lines[7] == f"W Tilde = False\n"
-    assert lines[8] == f"Use W Tilde = False\n"
+    assert lines[0] == f"Blurred Image = False\n"
+    assert lines[1] == f"W Tilde = False\n"
+    assert lines[2] == f"Use W Tilde = False\n"
+    assert lines[3] == f"Traced Grids of Planes (For Inversion) = False\n"
+    assert lines[4] == f"Sparse Image-Plane Grids of Planes = False\n"
+    assert lines[5] == f"Relocated Grid = False\n"
+    assert lines[6] == f"Mapper = False\n"
+    assert lines[7] == f"Blurred Mapping Matrix = False\n"
+    assert lines[8] == f"Curvature Matrix Sparse = False\n"
+    assert lines[9] == f"Log Dot Regularization Matrix Term = False\n"
 
     preloads = Preloads(
         blurred_image=1,
-        traced_grids_of_planes=1,
+        w_tilde=1,
+        use_w_tilde=True,
+        traced_grids_of_planes_for_inversion=1,
         relocated_grid=1,
         sparse_image_plane_grids_of_planes=1,
         mapper=1,
         blurred_mapping_matrix=1,
         curvature_matrix_sparse_preload=1,
-        w_tilde=1,
-        use_w_tilde=True,
+        log_det_regularization_matrix_term=1,
     )
 
     af.formatter.output_list_of_strings_to_file(
@@ -397,12 +438,13 @@ def test__info():
     results = open(file_preloads)
     lines = results.readlines()
 
-    assert lines[0] == f"Traced Grids of Planes = True\n"
-    assert lines[1] == f"Blurred Image = True\n"
-    assert lines[2] == f"Sparse Image-Plane Grids of Planes = True\n"
-    assert lines[3] == f"Relocated Grid = True\n"
-    assert lines[4] == f"Mapper = True\n"
-    assert lines[5] == f"Blurred Mapping Matrix = True\n"
-    assert lines[6] == f"Curvature Matrix Sparse Preload = True\n"
-    assert lines[7] == f"W Tilde = True\n"
-    assert lines[8] == f"Use W Tilde = True\n"
+    assert lines[0] == f"Blurred Image = True\n"
+    assert lines[1] == f"W Tilde = True\n"
+    assert lines[2] == f"Use W Tilde = True\n"
+    assert lines[3] == f"Traced Grids of Planes (For Inversion) = True\n"
+    assert lines[4] == f"Sparse Image-Plane Grids of Planes = True\n"
+    assert lines[5] == f"Relocated Grid = True\n"
+    assert lines[6] == f"Mapper = True\n"
+    assert lines[7] == f"Blurred Mapping Matrix = True\n"
+    assert lines[8] == f"Curvature Matrix Sparse = True\n"
+    assert lines[9] == f"Log Dot Regularization Matrix Term = True\n"
