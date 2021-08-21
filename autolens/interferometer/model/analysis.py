@@ -59,45 +59,6 @@ class AnalysisInterferometer(AnalysisDataset):
             result.hyper_galaxy_visibilities_path_dict
         )
 
-    def log_likelihood_function(self, instance):
-        """
-        Determine the fit of a lens galaxy and source galaxy to the interferometer in this lens.
-
-        Parameters
-        ----------
-        instance
-            A model instance with attributes
-
-        Returns
-        -------
-        fit : Fit
-            A fractional value indicating how well this model fit and the model interferometer itself
-        """
-
-        self.associate_hyper_images(instance=instance)
-        tracer = self.tracer_for_instance(instance=instance)
-
-        self.settings_lens.check_positions_trace_within_threshold_via_tracer(
-            tracer=tracer, positions=self.positions
-        )
-
-        hyper_background_noise = self.hyper_background_noise_for_instance(
-            instance=instance
-        )
-
-        try:
-            fit = self.fit_interferometer_for_tracer(
-                tracer=tracer, hyper_background_noise=hyper_background_noise
-            )
-            return fit.figure_of_merit
-        except (
-            exc.PixelizationException,
-            exc.InversionException,
-            exc.GridException,
-            OverflowError,
-        ) as e:
-            raise exc.FitException from e
-
     def associate_hyper_visibilities(
         self, instance: af.ModelInstance
     ) -> af.ModelInstance:
@@ -136,9 +97,57 @@ class AnalysisInterferometer(AnalysisDataset):
 
         return instance
 
+    def log_likelihood_function(self, instance):
+        """
+        Determine the fit of a lens galaxy and source galaxy to the interferometer in this lens.
+
+        Parameters
+        ----------
+        instance
+            A model instance with attributes
+
+        Returns
+        -------
+        fit : Fit
+            A fractional value indicating how well this model fit and the model interferometer itself
+        """
+
+        try:
+            return self.fit_interferometer_for_instance(
+                instance=instance
+            ).figure_of_merit
+        except (
+            exc.PixelizationException,
+            exc.InversionException,
+            exc.GridException,
+            OverflowError,
+        ) as e:
+            raise exc.FitException from e
+
+    def fit_interferometer_for_instance(self, instance, use_hyper_scalings=True, preload_overwrite=None,
+        check_positions=True):
+
+        self.associate_hyper_images(instance=instance)
+        tracer = self.tracer_for_instance(instance=instance)
+
+        if check_positions:
+            self.settings_lens.check_positions_trace_within_threshold_via_tracer(
+                tracer=tracer, positions=self.positions
+            )
+
+        hyper_background_noise = self.hyper_background_noise_for_instance(
+            instance=instance
+        )
+
+        return self.fit_interferometer_for_tracer(
+            tracer=tracer, hyper_background_noise=hyper_background_noise, use_hyper_scalings=use_hyper_scalings
+        )
+
     def fit_interferometer_for_tracer(
-        self, tracer, hyper_background_noise, use_hyper_scalings=True
+        self, tracer, hyper_background_noise, use_hyper_scalings=True, preload_overwrite=None
     ):
+
+        preloads = self.preloads if preload_overwrite is None else preload_overwrite
 
         return FitInterferometer(
             interferometer=self.dataset,
@@ -147,7 +156,7 @@ class AnalysisInterferometer(AnalysisDataset):
             use_hyper_scaling=use_hyper_scalings,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
-            preloads=self.preloads,
+            preloads=preloads,
         )
 
     def stochastic_log_evidences_for_instance(self, instance):

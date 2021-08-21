@@ -33,7 +33,11 @@ class AnalysisImaging(AnalysisDataset):
             )
 
             self.set_preloads(paths=paths, model=model)
-            self.check_preloads(model=model)
+
+            try:
+                self.check_preloads(model=model)
+            except Exception:
+                return self
 
         return self
 

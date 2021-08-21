@@ -9,14 +9,8 @@ from autolens.lens.model.result import ResultDataset
 class ResultInterferometer(ResultDataset):
     @property
     def max_log_likelihood_fit(self):
-
-        hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
+        return self.analysis.fit_interferometer_for_instance(
             instance=self.instance
-        )
-
-        return self.analysis.fit_interferometer_for_tracer(
-            tracer=self.max_log_likelihood_tracer,
-            hyper_background_noise=hyper_background_noise,
         )
 
     @property

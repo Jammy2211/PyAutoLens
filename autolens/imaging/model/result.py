@@ -6,18 +6,8 @@ class ResultImaging(ResultDataset):
     @property
     def max_log_likelihood_fit(self):
 
-        hyper_image_sky = self.analysis.hyper_image_sky_for_instance(
-            instance=self.instance
-        )
-
-        hyper_background_noise = self.analysis.hyper_background_noise_for_instance(
-            instance=self.instance
-        )
-
-        return self.analysis.fit_imaging_for_tracer(
-            tracer=self.max_log_likelihood_tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
+        return self.analysis.fit_imaging_for_instance(
+            instance=self.instance,
             preload_overwrite=Preloads(use_w_tilde=False),
         )
 
