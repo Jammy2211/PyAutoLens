@@ -42,6 +42,8 @@ class AnalysisImaging(AnalysisDataset):
         except FileNotFoundError:
             pass
 
+        return
+
         if not paths.is_complete:
 
             logger.info(
