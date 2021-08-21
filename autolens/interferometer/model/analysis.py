@@ -124,8 +124,13 @@ class AnalysisInterferometer(AnalysisDataset):
         ) as e:
             raise exc.FitException from e
 
-    def fit_interferometer_for_instance(self, instance, use_hyper_scalings=True, preload_overwrite=None,
-        check_positions=True):
+    def fit_interferometer_for_instance(
+        self,
+        instance,
+        use_hyper_scalings=True,
+        preload_overwrite=None,
+        check_positions=True,
+    ):
 
         self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
@@ -140,11 +145,17 @@ class AnalysisInterferometer(AnalysisDataset):
         )
 
         return self.fit_interferometer_for_tracer(
-            tracer=tracer, hyper_background_noise=hyper_background_noise, use_hyper_scalings=use_hyper_scalings
+            tracer=tracer,
+            hyper_background_noise=hyper_background_noise,
+            use_hyper_scalings=use_hyper_scalings,
         )
 
     def fit_interferometer_for_tracer(
-        self, tracer, hyper_background_noise, use_hyper_scalings=True, preload_overwrite=None
+        self,
+        tracer,
+        hyper_background_noise,
+        use_hyper_scalings=True,
+        preload_overwrite=None,
     ):
 
         preloads = self.preloads if preload_overwrite is None else preload_overwrite

@@ -1,6 +1,7 @@
 import autofit as af
 from autofit.exc import *
 from autoarray.exc import *
+from autogalaxy.exc import *
 
 
 class RayTracingException(af.exc.FitException):
@@ -20,10 +21,6 @@ class PixelizationException(af.exc.FitException):
 
 
 class SettingsException(Exception):
-    pass
-
-
-class AnalysisException(Exception):
     pass
 
 

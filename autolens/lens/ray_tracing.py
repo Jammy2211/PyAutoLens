@@ -730,7 +730,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
     ):
 
         if (
-            preloads.sparse_grids_of_planes is None
+            preloads.sparse_image_plane_grids_of_planes is None
             or settings_pixelization.is_stochastic
         ):
 
@@ -740,7 +740,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         else:
 
-            sparse_image_plane_grids_of_planes = preloads.sparse_grids_of_planes
+            sparse_image_plane_grids_of_planes = (
+                preloads.sparse_image_plane_grids_of_planes
+            )
 
         traced_sparse_grids_of_planes = []
 
@@ -765,7 +767,10 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         mappers_of_planes = []
 
-        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
+        if preloads.traced_grids_of_planes is None:
+            traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
+        else:
+            traced_grids_of_planes = preloads.traced_grids_of_planes
 
         traced_sparse_grids_of_planes, sparse_image_plane_grid = self.traced_sparse_grids_of_planes_from_grid(
             grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
@@ -781,6 +786,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
                     sparse_grid=traced_sparse_grids_of_planes[plane_index],
                     sparse_image_plane_grid=sparse_image_plane_grid,
                     settings_pixelization=settings_pixelization,
+                    preloads=preloads,
                 )
                 mappers_of_planes.append(mapper)
 

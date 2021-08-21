@@ -12,8 +12,10 @@ logger.setLevel(level="INFO")
 class Preloads(aa.Preloads):
     def __init__(
         self,
+        traced_grids_of_planes: Optional[aa.Grid2D] = None,
         blurred_image: Optional[aa.Array2D] = None,
-        sparse_grids_of_planes: Optional[aa.Grid2D] = None,
+        sparse_image_plane_grids_of_planes: Optional[aa.Grid2D] = None,
+        relocated_grid: Optional[aa.Grid2D] = None,
         mapper: Optional[aa.Mapper] = None,
         blurred_mapping_matrix: Optional[np.ndarray] = None,
         curvature_matrix_sparse_preload: Optional[np.ndarray] = None,
@@ -34,13 +36,19 @@ class Preloads(aa.Preloads):
 
         Parameters
         ----------
+        traced_grids_of_planes
+            The two dimensional grids corresponding to the traced grids in a lens fit. This can be preloaded when no
+             mass profiles in the model vary.
         blurred_image
             The preloaded array of values containing the blurred image of a lens model fit (e.g. that light profile of
             every galaxy in the model). This can be preloaded when no light profiles in the model vary.
-        sparse_grids_of_planes
-            The two dimension grid correspond to the sparse image plane grid in a lens fit, that is ray-traced to
+        sparse_image_plane_grids_of_planes
+            The two dimensional grids corresponding to the sparse image plane grids in a lens fit, that is ray-traced to
             the source plane to form the source pixelization. This can be preloaded when no pixelizations in the model
             vary.
+        relocated_grid
+            The two dimensional grids corresponding to the grid that has had its border pixels relocated for a
+            pixelization in a lens fit. This can be preloaded when no mass profiles in the model vary.
         mapper
             The mapper of a fit, which preloading avoids recalculation of the mapping matrix and image to source
             pixel mappings. This can be preloaded when no pixelizations in the model vary.
@@ -67,7 +75,8 @@ class Preloads(aa.Preloads):
             The preloads object used to skip certain calculations in the log likelihood function.
         """
         super().__init__(
-            sparse_grids_of_planes=sparse_grids_of_planes,
+            relocated_grid=relocated_grid,
+            sparse_grids_of_planes=sparse_image_plane_grids_of_planes,
             mapper=mapper,
             blurred_mapping_matrix=blurred_mapping_matrix,
             curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
@@ -76,7 +85,54 @@ class Preloads(aa.Preloads):
             use_w_tilde=use_w_tilde,
         )
 
+        self.traced_grids_of_planes = traced_grids_of_planes
         self.blurred_image = blurred_image
+
+    def set_traced_grids_of_planes(self, fit_0, fit_1):
+        """
+        If the `MassProfiles`'s in a model are fixed their deflection angles and therefore corresponding traced grids
+        do not change during the model=fit and can therefore be preloaded.
+
+        This function compares the traced grids of two fit's corresponding to two model instances, and preloads the
+        traced grids if the grids of both fits are the same.
+
+        The preload is typically used in hyper searches, where the mass model is fixed and the hyper-parameters are
+        varied.
+
+        Parameters
+        ----------
+        fit_0
+            The first fit corresponding to a model with a specific set of unit-values.
+        fit_1
+            The second fit corresponding to a model with a different set of unit-values.
+        """
+
+        self.traced_grids_of_planes = None
+
+        traced_grids_of_planes_0 = fit_0.tracer.traced_grids_of_planes_from_grid(
+            grid=fit_0.dataset.grid_inversion
+        )
+
+        traced_grids_of_planes_1 = fit_1.tracer.traced_grids_of_planes_from_grid(
+            grid=fit_1.dataset.grid_inversion
+        )
+
+        if traced_grids_of_planes_0[-1] is not None:
+
+            if (
+                traced_grids_of_planes_0[-1].shape[0]
+                == traced_grids_of_planes_0[-1].shape[1]
+            ):
+
+                if np.allclose(
+                    traced_grids_of_planes_0[-1], traced_grids_of_planes_1[-1]
+                ):
+
+                    self.traced_grids_of_planes = traced_grids_of_planes_0
+
+                    logger.info(
+                        "PRELOADS - Traced grid of planes preloaded for this model-fit."
+                    )
 
     def set_blurred_image(self, fit_0, fit_1):
         """
@@ -106,7 +162,7 @@ class Preloads(aa.Preloads):
                 "PRELOADS - Blurred image (e.g. the image of all light profiles) is preloaded for this model-fit."
             )
 
-    def set_sparse_grid_of_planes(self, fit_0, fit_1):
+    def set_sparse_image_plane_grids_of_planes(self, fit_0, fit_1):
         """
         If the `Pixelization`'s in a model are fixed their image-plane sparse grid (which defines the set of pixels
         that are ray-traced to construct the source-plane pixelization) do not change during the model=fit and
@@ -126,33 +182,72 @@ class Preloads(aa.Preloads):
             The second fit corresponding to a model with a different set of unit-values.
         """
 
-        self.sparse_grids_of_planes = None
+        self.sparse_image_plane_grids_of_planes = None
 
-        sparse_image_plane_grid_of_planes_0 = fit_0.tracer.sparse_image_plane_grids_of_planes_from_grid(
+        sparse_image_plane_grids_of_planes_0 = fit_0.tracer.sparse_image_plane_grids_of_planes_from_grid(
             grid=fit_0.dataset.grid_inversion
         )
 
-        sparse_image_plane_grid_of_planes_1 = fit_1.tracer.sparse_image_plane_grids_of_planes_from_grid(
+        sparse_image_plane_grids_of_planes_1 = fit_1.tracer.sparse_image_plane_grids_of_planes_from_grid(
             grid=fit_1.dataset.grid_inversion
         )
 
-        if sparse_image_plane_grid_of_planes_0[-1] is not None:
+        if sparse_image_plane_grids_of_planes_0[-1] is not None:
 
             if (
-                sparse_image_plane_grid_of_planes_0[-1].shape[0]
-                == sparse_image_plane_grid_of_planes_0[-1].shape[1]
+                sparse_image_plane_grids_of_planes_0[-1].shape[0]
+                == sparse_image_plane_grids_of_planes_0[-1].shape[1]
             ):
 
                 if np.allclose(
-                    sparse_image_plane_grid_of_planes_0[-1],
-                    sparse_image_plane_grid_of_planes_1[-1],
+                    sparse_image_plane_grids_of_planes_0[-1],
+                    sparse_image_plane_grids_of_planes_1[-1],
                 ):
 
-                    self.sparse_grids_of_planes = sparse_image_plane_grid_of_planes_0
+                    self.sparse_image_plane_grids_of_planes = (
+                        sparse_image_plane_grids_of_planes_0
+                    )
 
                     logger.info(
-                        "PRELOADS - Sparse grid of planes is preloaded for this model-fit."
+                        "PRELOADS - Sparse image-plane grids of planes is preloaded for this model-fit."
                     )
+
+    def set_relocated_grid(self, fit_0, fit_1):
+        """
+        If the `MassProfile`'s in a model are fixed their traced grid (which may have had coordinates relocated at
+        the border) does not change during the model=fit and can therefore be preloaded.
+
+        This function compares the relocated grids of the mappers of two fit corresponding to two model instances, and
+        preloads the grid if the grids of both fits are the same.
+
+        The preload is typically used in hyper searches, where the mass model is fixed and the hyper-parameters are
+        varied.
+
+        Parameters
+        ----------
+        fit_0
+            The first fit corresponding to a model with a specific set of unit-values.
+        fit_1
+            The second fit corresponding to a model with a different set of unit-values.
+        """
+
+        self.relocated_grid = None
+
+        if fit_0.inversion is None:
+            return
+
+        mapper_0 = fit_0.inversion.mapper
+        mapper_1 = fit_1.inversion.mapper
+
+        if mapper_0.source_grid_slim.shape[0] == mapper_1.source_grid_slim.shape[0]:
+
+            if np.allclose(mapper_0.source_grid_slim, mapper_1.source_grid_slim):
+
+                self.relocated_grid = mapper_0.source_grid_slim
+
+                logger.info(
+                    "PRELOADS - Relocated grid of pxielization preloaded for this model-fit."
+                )
 
     def set_mapper(self, fit_0, fit_1):
         """
@@ -298,10 +393,12 @@ class Preloads(aa.Preloads):
         -------
             A list of strings containing True and False values as to whether a quantity has been preloaded.
         """
-        line = [f"Blurred Image = {np.count_nonzero(self.blurred_image) != 0}\n"]
+        line = [f"Traced Grids of Planes = {self.traced_grids_of_planes is not None}\n"]
+        line += [f"Blurred Image = {np.count_nonzero(self.blurred_image) != 0}\n"]
         line += [
-            f"Sparse Grids of Planes = {self.sparse_grids_of_planes is not None}\n"
+            f"Sparse Image-Plane Grids of Planes = {self.sparse_image_plane_grids_of_planes is not None}\n"
         ]
+        line += [f"Relocated Grid = {self.relocated_grid is not None}\n"]
         line += [f"Mapper = {self.mapper is not None}\n"]
         line += [
             f"Blurred Mapping Matrix = {self.blurred_mapping_matrix is not None}\n"

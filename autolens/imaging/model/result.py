@@ -7,8 +7,7 @@ class ResultImaging(ResultDataset):
     def max_log_likelihood_fit(self):
 
         return self.analysis.fit_imaging_for_instance(
-            instance=self.instance,
-            preload_overwrite=Preloads(use_w_tilde=False),
+            instance=self.instance, preload_overwrite=Preloads(use_w_tilde=False)
         )
 
     @property

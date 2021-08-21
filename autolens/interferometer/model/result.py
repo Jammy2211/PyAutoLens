@@ -9,9 +9,7 @@ from autolens.lens.model.result import ResultDataset
 class ResultInterferometer(ResultDataset):
     @property
     def max_log_likelihood_fit(self):
-        return self.analysis.fit_interferometer_for_instance(
-            instance=self.instance
-        )
+        return self.analysis.fit_interferometer_for_instance(instance=self.instance)
 
     @property
     def real_space_mask(self):

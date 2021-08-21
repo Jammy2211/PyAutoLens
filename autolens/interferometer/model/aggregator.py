@@ -61,7 +61,9 @@ def _fit_interferometer_from(
 
         if sparse_grids_of_planes is not None:
 
-            preloads = Preloads(sparse_grids_of_planes=sparse_grids_of_planes)
+            preloads = Preloads(
+                sparse_image_plane_grids_of_planes=sparse_grids_of_planes
+            )
 
     return FitInterferometer(
         interferometer=interferometer,

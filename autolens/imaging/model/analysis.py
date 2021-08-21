@@ -1,3 +1,4 @@
+import json
 import logging
 import numpy as np
 from os import path
@@ -27,23 +28,7 @@ class AnalysisImaging(AnalysisDataset):
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
 
-        try:
-            hyper_model_image = paths.load_object("hyper_model_image")
-
-            if not np.allclose(hyper_model_image, self.hyper_model_image):
-
-                logger.info("ANALYSIS - Hyper image loaded from pickle different to that set in Analysis class."
-                            "Overwriting hyper images with values loaded from pickles.")
-
-            self.hyper_model_image = hyper_model_image
-
-            hyper_galaxy_image_path_dict = paths.load_object("hyper_galaxy_image_path_dict")
-            self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
-
-        except FileNotFoundError:
-            pass
-
-        return self
+        self.check_and_replace_hyper_images(paths=paths)
 
         if not paths.is_complete:
 
@@ -60,10 +45,36 @@ class AnalysisImaging(AnalysisDataset):
 
         return self
 
-    def modify_after_fit(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
+    def check_and_replace_hyper_images(self, paths: af.DirectoryPaths):
+
+        try:
+            hyper_model_image = paths.load_object("hyper_model_image")
+
+            if not np.allclose(hyper_model_image, self.hyper_model_image):
+
+                logger.info(
+                    "ANALYSIS - Hyper image loaded from pickle different to that set in Analysis class."
+                    "Overwriting hyper images with values loaded from pickles."
+                )
+
+                self.hyper_model_image = hyper_model_image
+
+                hyper_galaxy_image_path_dict = paths.load_object(
+                    "hyper_galaxy_image_path_dict"
+                )
+                self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
+
+        except FileNotFoundError:
+            pass
+
+    def modify_after_fit(
+        self, paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
+    ):
+
+        self.output_or_check_figure_of_merit_sanity(paths=paths, result=result)
 
         self.preloads.blurred_image = None
-        self.preloads.sparse_grids_of_planes = None
+        self.preloads.sparse_image_plane_grids_of_planes = None
         self.preloads.mapper = None
         self.preloads.blurred_mapping_matrix = None
         self.preloads.curvature_matrix_sparse_preload = None
@@ -172,7 +183,7 @@ class AnalysisImaging(AnalysisDataset):
         self.preloads = Preloads()
 
         self.preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
-        self.preloads.set_sparse_grid_of_planes(fit_0=fit_0, fit_1=fit_1)
+        self.preloads.set_sparse_image_plane_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
         self.preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
         self.preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
         self.preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
@@ -364,6 +375,7 @@ class AnalysisImaging(AnalysisDataset):
     def make_result(
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ):
+
         return ResultImaging(samples=samples, model=model, analysis=self, search=search)
 
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
@@ -373,7 +385,8 @@ class AnalysisImaging(AnalysisDataset):
         paths.save_object("psf", self.dataset.psf_unormalized)
         paths.save_object("mask", self.dataset.mask)
         paths.save_object("positions", self.positions)
-        if self.preloads.sparse_grids_of_planes is not None:
+        if self.preloads.sparse_image_plane_grids_of_planes is not None:
             paths.save_object(
-                "preload_sparse_grids_of_planes", self.preloads.sparse_grids_of_planes
+                "preload_sparse_grids_of_planes",
+                self.preloads.sparse_image_plane_grids_of_planes,
             )

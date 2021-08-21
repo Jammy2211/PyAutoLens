@@ -51,6 +51,90 @@ def test__set_blurred_image():
     assert (preloads.blurred_image == np.array([1.0])).all()
 
 
+def test__set_traced_grids_of_planes():
+
+    # traced grids is None so no Preloading.
+
+    tracer_0 = MockTracer(traced_grids_of_planes=[None, None])
+    tracer_1 = MockTracer(traced_grids_of_planes=[None, None])
+
+    fit_0 = MockFit(tracer=tracer_0)
+    fit_1 = MockFit(tracer=tracer_1)
+
+    preloads = Preloads(traced_grids_of_planes=1)
+    preloads.set_traced_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.traced_grids_of_planes is None
+
+    # traced grids are different, indiciating the model parameters change the grid, so no preloading.
+
+    tracer_0 = MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
+    tracer_1 = MockTracer(traced_grids_of_planes=[None, np.array([[2.0]])])
+
+    fit_0 = MockFit(tracer=tracer_0)
+    fit_1 = MockFit(tracer=tracer_1)
+
+    preloads = Preloads(traced_grids_of_planes=1)
+    preloads.set_traced_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.traced_grids_of_planes is None
+
+    # traced grids are the same meaning they are fixed in the model, so do preload.
+
+    tracer_0 = MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
+    tracer_1 = MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
+
+    fit_0 = MockFit(tracer=tracer_0)
+    fit_1 = MockFit(tracer=tracer_1)
+
+    preloads = Preloads(traced_grids_of_planes=1)
+    preloads.set_traced_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.traced_grids_of_planes[0] is None
+    assert (preloads.traced_grids_of_planes[1] == np.array([[1.0]])).all()
+
+
+def test__set_relocated_grid():
+
+    # Inversion is None so there is no mapper, thus preload mapper to None.
+
+    fit_0 = MockFit(inversion=None)
+    fit_1 = MockFit(inversion=None)
+
+    preloads = Preloads(relocated_grid=1)
+    preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.relocated_grid is None
+
+    # Mapper's mapping matrices are different, thus preload mapper to None.
+
+    inversion_0 = MockInversion(mapper=MockMapper(source_grid_slim=np.ones((3, 2))))
+    inversion_1 = MockInversion(
+        mapper=MockMapper(source_grid_slim=2.0 * np.ones((3, 2)))
+    )
+
+    fit_0 = MockFit(inversion=inversion_0)
+    fit_1 = MockFit(inversion=inversion_1)
+
+    preloads = Preloads(relocated_grid=1)
+    preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.relocated_grid is None
+
+    # Mapper's mapping matrices are the same, thus preload mapper.
+
+    inversion_0 = MockInversion(mapper=MockMapper(source_grid_slim=np.ones((3, 2))))
+    inversion_1 = MockInversion(mapper=MockMapper(source_grid_slim=np.ones((3, 2))))
+
+    fit_0 = MockFit(inversion=inversion_0)
+    fit_1 = MockFit(inversion=inversion_1)
+
+    preloads = Preloads(relocated_grid=1)
+    preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
+
+    assert (preloads.relocated_grid == np.ones((3, 2))).all()
+
+
 def test__set_sparse_grid_of_planes():
 
     # sparse image plane of grids is None so no Preloading.
@@ -61,10 +145,10 @@ def test__set_sparse_grid_of_planes():
     fit_0 = MockFit(tracer=tracer_0)
     fit_1 = MockFit(tracer=tracer_1)
 
-    preloads = Preloads(sparse_grids_of_planes=1)
-    preloads.set_sparse_grid_of_planes(fit_0=fit_0, fit_1=fit_1)
+    preloads = Preloads(sparse_image_plane_grids_of_planes=1)
+    preloads.set_sparse_image_plane_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.sparse_grids_of_planes is None
+    assert preloads.sparse_image_plane_grids_of_planes is None
 
     # sparse image plane of grids are different, indiciating the model parameters change the grid, so no preloading.
 
@@ -74,10 +158,10 @@ def test__set_sparse_grid_of_planes():
     fit_0 = MockFit(tracer=tracer_0)
     fit_1 = MockFit(tracer=tracer_1)
 
-    preloads = Preloads(sparse_grids_of_planes=1)
-    preloads.set_sparse_grid_of_planes(fit_0=fit_0, fit_1=fit_1)
+    preloads = Preloads(sparse_image_plane_grids_of_planes=1)
+    preloads.set_sparse_image_plane_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.sparse_grids_of_planes is None
+    assert preloads.sparse_image_plane_grids_of_planes is None
 
     # sparse image plane of grids are the same meaning they are fixed in the model, so do preload.
 
@@ -87,11 +171,11 @@ def test__set_sparse_grid_of_planes():
     fit_0 = MockFit(tracer=tracer_0)
     fit_1 = MockFit(tracer=tracer_1)
 
-    preloads = Preloads(sparse_grids_of_planes=1)
-    preloads.set_sparse_grid_of_planes(fit_0=fit_0, fit_1=fit_1)
+    preloads = Preloads(sparse_image_plane_grids_of_planes=1)
+    preloads.set_sparse_image_plane_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.sparse_grids_of_planes[0] is None
-    assert (preloads.sparse_grids_of_planes[1] == np.array([[1.0]])).all()
+    assert preloads.sparse_image_plane_grids_of_planes[0] is None
+    assert (preloads.sparse_image_plane_grids_of_planes[1] == np.array([[1.0]])).all()
 
 
 def test__set_mapper():
@@ -267,7 +351,9 @@ def test__info():
 
     preloads = Preloads(
         blurred_image=np.zeros(3),
-        sparse_grids_of_planes=None,
+        traced_grids_of_planes=None,
+        sparse_image_plane_grids_of_planes=None,
+        relocated_grid=None,
         mapper=None,
         blurred_mapping_matrix=None,
         curvature_matrix_sparse_preload=None,
@@ -282,17 +368,21 @@ def test__info():
     results = open(file_preloads)
     lines = results.readlines()
 
-    assert lines[0] == f"Blurred Image = False\n"
-    assert lines[1] == f"Sparse Grids of Planes = False\n"
-    assert lines[2] == f"Mapper = False\n"
-    assert lines[3] == f"Blurred Mapping Matrix = False\n"
-    assert lines[4] == f"Curvature Matrix Sparse Preload = False\n"
-    assert lines[5] == f"W Tilde = False\n"
-    assert lines[6] == f"Use W Tilde = False\n"
+    assert lines[0] == f"Traced Grids of Planes = False\n"
+    assert lines[1] == f"Blurred Image = False\n"
+    assert lines[2] == f"Sparse Image-Plane Grids of Planes = False\n"
+    assert lines[3] == f"Relocated Grid = False\n"
+    assert lines[4] == f"Mapper = False\n"
+    assert lines[5] == f"Blurred Mapping Matrix = False\n"
+    assert lines[6] == f"Curvature Matrix Sparse Preload = False\n"
+    assert lines[7] == f"W Tilde = False\n"
+    assert lines[8] == f"Use W Tilde = False\n"
 
     preloads = Preloads(
         blurred_image=1,
-        sparse_grids_of_planes=1,
+        traced_grids_of_planes=1,
+        relocated_grid=1,
+        sparse_image_plane_grids_of_planes=1,
         mapper=1,
         blurred_mapping_matrix=1,
         curvature_matrix_sparse_preload=1,
@@ -307,10 +397,12 @@ def test__info():
     results = open(file_preloads)
     lines = results.readlines()
 
-    assert lines[0] == f"Blurred Image = True\n"
-    assert lines[1] == f"Sparse Grids of Planes = True\n"
-    assert lines[2] == f"Mapper = True\n"
-    assert lines[3] == f"Blurred Mapping Matrix = True\n"
-    assert lines[4] == f"Curvature Matrix Sparse Preload = True\n"
-    assert lines[5] == f"W Tilde = True\n"
-    assert lines[6] == f"Use W Tilde = True\n"
+    assert lines[0] == f"Traced Grids of Planes = True\n"
+    assert lines[1] == f"Blurred Image = True\n"
+    assert lines[2] == f"Sparse Image-Plane Grids of Planes = True\n"
+    assert lines[3] == f"Relocated Grid = True\n"
+    assert lines[4] == f"Mapper = True\n"
+    assert lines[5] == f"Blurred Mapping Matrix = True\n"
+    assert lines[6] == f"Curvature Matrix Sparse Preload = True\n"
+    assert lines[7] == f"W Tilde = True\n"
+    assert lines[8] == f"Use W Tilde = True\n"

@@ -181,9 +181,16 @@ class MockFit:
 
 
 class MockTracer:
-    def __init__(self, sparse_image_plane_grids_of_planes=None):
+    def __init__(
+        self, traced_grids_of_planes=None, sparse_image_plane_grids_of_planes=None
+    ):
 
+        self.traced_grids_of_planes = traced_grids_of_planes
         self.sparse_image_plane_grids_of_planes = sparse_image_plane_grids_of_planes
+
+    def traced_grids_of_planes_from_grid(self, grid):
+
+        return self.traced_grids_of_planes
 
     def sparse_image_plane_grids_of_planes_from_grid(self, grid):
 
