@@ -50,7 +50,7 @@ class AnalysisImaging(AnalysisDataset):
         try:
             hyper_model_image = paths.load_object("hyper_model_image")
 
-            if not np.allclose(hyper_model_image, self.hyper_model_image):
+            if np.max(abs(hyper_model_image - self.hyper_model_image)) > 1e-8:
 
                 logger.info(
                     "ANALYSIS - Hyper image loaded from pickle different to that set in Analysis class."

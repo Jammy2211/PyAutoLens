@@ -421,9 +421,13 @@ class Preloads(aa.Preloads):
                 self.blurred_mapping_matrix = inversion_0.blurred_mapping_matrix
                 self.curvature_matrix_sparse_preload = (
                     inversion_0.curvature_matrix_sparse_preload
+                ).astype(
+                    "int"
                 )
                 self.curvature_matrix_preload_counts = (
                     inversion_0.curvature_matrix_preload_counts
+                ).astype(
+                    "int"
                 )
 
                 logger.info(

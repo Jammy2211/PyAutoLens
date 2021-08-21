@@ -276,6 +276,9 @@ def test__set_mapper():
 
 def test__set_inversion():
 
+    curvature_matrix_sparse_preload = np.array([[1.0]])
+    curvature_matrix_preload_counts = np.array([1.0])
+
     # Inversion is None thus preload it to None.
 
     fit_0 = MockFit(inversion=None)
@@ -283,8 +286,8 @@ def test__set_inversion():
 
     preloads = Preloads(
         blurred_mapping_matrix=1,
-        curvature_matrix_sparse_preload=1,
-        curvature_matrix_preload_counts=1,
+        curvature_matrix_sparse_preload=np.array([[1.0]]),
+        curvature_matrix_preload_counts=np.array([1.0]),
     )
     preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
 
@@ -310,8 +313,8 @@ def test__set_inversion():
 
     preloads = Preloads(
         blurred_mapping_matrix=1,
-        curvature_matrix_sparse_preload=1,
-        curvature_matrix_preload_counts=1,
+        curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
+        curvature_matrix_preload_counts=curvature_matrix_preload_counts,
     )
     preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
 
@@ -323,8 +326,8 @@ def test__set_inversion():
 
     inversion_0 = MockInversion(
         blurred_mapping_matrix=blurred_mapping_matrix_0,
-        curvature_matrix_sparse_preload=2,
-        curvature_matrix_preload_counts=3,
+        curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
+        curvature_matrix_preload_counts=curvature_matrix_preload_counts,
     )
     inversion_1 = MockInversion(blurred_mapping_matrix=blurred_mapping_matrix_0)
 
@@ -333,14 +336,14 @@ def test__set_inversion():
 
     preloads = Preloads(
         blurred_mapping_matrix=1,
-        curvature_matrix_sparse_preload=1,
-        curvature_matrix_preload_counts=2,
+        curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
+        curvature_matrix_preload_counts=curvature_matrix_preload_counts,
     )
     preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
 
     assert (preloads.blurred_mapping_matrix == blurred_mapping_matrix_0).all()
-    assert preloads.curvature_matrix_sparse_preload == 2
-    assert preloads.curvature_matrix_preload_counts == 3
+    assert (preloads.curvature_matrix_sparse_preload == curvature_matrix_sparse_preload.astype("int")).all()
+    assert (preloads.curvature_matrix_preload_counts == curvature_matrix_preload_counts.astype("int")).all()
 
 
 def test__set_log_det_regularization_matrix_term():

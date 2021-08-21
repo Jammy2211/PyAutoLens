@@ -21,7 +21,15 @@ class TestAnalysisImaging:
 
         model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
-        search = mock.MockSearch(name="test_search")
+        class MockInstance:
+
+            def __init__(self):
+
+                self.galaxies = [al.Galaxy(redshift=0.5)]
+
+        samples = mock.MockSamples(max_log_likelihood_instance=MockInstance())
+
+        search = mock.MockSearch(name="test_search", samples=samples)
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
