@@ -230,7 +230,7 @@ class Preloads(aa.Preloads):
 
             if (
                 traced_grids_of_planes_0[-1].shape[0]
-                == traced_grids_of_planes_0[-1].shape[0]
+                == traced_grids_of_planes_1[-1].shape[0]
             ):
 
                 if (
