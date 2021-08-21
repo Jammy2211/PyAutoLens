@@ -72,14 +72,7 @@ class AnalysisImaging(AnalysisDataset):
     ):
 
         self.output_or_check_figure_of_merit_sanity(paths=paths, result=result)
-
-        self.preloads.blurred_image = None
-        self.preloads.sparse_image_plane_grids_of_planes = None
-        self.preloads.mapper = None
-        self.preloads.blurred_mapping_matrix = None
-        self.preloads.curvature_matrix_sparse_preload = None
-        self.preloads.curvature_matrix_preload_counts = None
-        self.preloads.w_tilde = None
+        self.preloads.reset_all()
 
         return self
 
@@ -180,13 +173,7 @@ class AnalysisImaging(AnalysisDataset):
 
         conf.instance["general"]["model"]["ignore_prior_limits"] = ignore_prior_limits
 
-        self.preloads = Preloads()
-
-        self.preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
-        self.preloads.set_sparse_image_plane_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
-        self.preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
-        self.preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
-        self.preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
+        self.preloads = Preloads.setup_all_from_fits(fit_0=fit_0, fit_1=fit_1)
 
         file_preloads = path.join(paths.output_path, "preloads.summary")
 

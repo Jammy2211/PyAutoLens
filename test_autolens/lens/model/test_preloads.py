@@ -416,7 +416,7 @@ def test__info():
     assert lines[6] == f"Mapper = False\n"
     assert lines[7] == f"Blurred Mapping Matrix = False\n"
     assert lines[8] == f"Curvature Matrix Sparse = False\n"
-    assert lines[9] == f"Log Dot Regularization Matrix Term = False\n"
+    assert lines[9] == f"Log Det Regularization Matrix Term = False\n"
 
     preloads = Preloads(
         blurred_image=1,
@@ -447,4 +447,4 @@ def test__info():
     assert lines[6] == f"Mapper = True\n"
     assert lines[7] == f"Blurred Mapping Matrix = True\n"
     assert lines[8] == f"Curvature Matrix Sparse = True\n"
-    assert lines[9] == f"Log Dot Regularization Matrix Term = True\n"
+    assert lines[9] == f"Log Det Regularization Matrix Term = True\n"

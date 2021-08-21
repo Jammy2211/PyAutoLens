@@ -90,6 +90,37 @@ class Preloads(aa.Preloads):
         self.blurred_image = blurred_image
         self.traced_grids_of_planes_for_inversion = traced_grids_of_planes_for_inversion
 
+    @classmethod
+    def setup_all_from_fits(cls, fit_0, fit_1) -> "Preloads":
+        """
+        Setup the Preloads from two fits which use two different lens model of a model-fit.
+
+        Parameters
+        ----------
+        fit_0
+            The first fit corresponding to a model with a specific set of unit-values.
+        fit_1
+            The second fit corresponding to a model with a different set of unit-values.
+
+        Returns
+        -------
+        Preloads
+            Preloads which are set up based on the fit's passed in specific to a lens model.
+
+        """
+        preloads = cls()
+
+        preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_sparse_image_plane_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_log_det_regularization_matrix_term(fit_0=fit_0, fit_1=fit_1)
+
+        return preloads
+
     def set_blurred_image(self, fit_0, fit_1):
         """
         If the `LightProfile`'s in a model are all fixed parameters their corresponding image and therefore PSF blurred
@@ -110,7 +141,7 @@ class Preloads(aa.Preloads):
         """
         self.blurred_image = None
 
-        if np.allclose(fit_0.blurred_image, fit_1.blurred_image):
+        if np.max(abs(fit_0.blurred_image - fit_1.blurred_image)) < 1e-8:
 
             self.blurred_image = fit_0.blurred_image
 
@@ -140,8 +171,9 @@ class Preloads(aa.Preloads):
         self.w_tilde = None
         self.use_w_tilde = False
 
-        if fit_0.inversion is not None and np.allclose(
-            fit_0.noise_map, fit_1.noise_map
+        if (
+            fit_0.inversion is not None
+            and np.max(abs(fit_0.noise_map - fit_1.noise_map)) < 1e-8
         ):
 
             logger.info("PRELOADS - Computing W-Tilde... May take a moment.")
@@ -198,11 +230,14 @@ class Preloads(aa.Preloads):
 
             if (
                 traced_grids_of_planes_0[-1].shape[0]
-                == traced_grids_of_planes_0[-1].shape[1]
+                == traced_grids_of_planes_0[-1].shape[0]
             ):
 
-                if np.allclose(
-                    traced_grids_of_planes_0[-1], traced_grids_of_planes_1[-1]
+                if (
+                    np.max(
+                        abs(traced_grids_of_planes_0[-1] - traced_grids_of_planes_1[-1])
+                    )
+                    < 1e-8
                 ):
 
                     self.traced_grids_of_planes_for_inversion = traced_grids_of_planes_0
@@ -245,7 +280,7 @@ class Preloads(aa.Preloads):
 
             if (
                 sparse_image_plane_grids_of_planes_0[-1].shape[0]
-                == sparse_image_plane_grids_of_planes_0[-1].shape[1]
+                == sparse_image_plane_grids_of_planes_0[-1].shape[0]
             ):
 
                 if np.allclose(
@@ -290,7 +325,10 @@ class Preloads(aa.Preloads):
 
         if mapper_0.source_grid_slim.shape[0] == mapper_1.source_grid_slim.shape[0]:
 
-            if np.allclose(mapper_0.source_grid_slim, mapper_1.source_grid_slim):
+            if (
+                np.max(abs(mapper_0.source_grid_slim - mapper_1.source_grid_slim))
+                < 1.0e-8
+            ):
 
                 self.relocated_grid = mapper_0.source_grid_slim
 
@@ -371,8 +409,14 @@ class Preloads(aa.Preloads):
             == inversion_1.blurred_mapping_matrix.shape[1]
         ):
 
-            if np.allclose(
-                inversion_0.blurred_mapping_matrix, inversion_1.blurred_mapping_matrix
+            if (
+                np.max(
+                    abs(
+                        inversion_0.blurred_mapping_matrix
+                        - inversion_1.blurred_mapping_matrix
+                    )
+                )
+                < 1e-8
             ):
 
                 self.blurred_mapping_matrix = inversion_0.blurred_mapping_matrix
@@ -415,9 +459,12 @@ class Preloads(aa.Preloads):
         if inversion_0 is None:
             return
 
-        if np.allclose(
-            inversion_0.log_det_regularization_matrix_term,
-            inversion_1.log_det_regularization_matrix_term,
+        if (
+            abs(
+                inversion_0.log_det_regularization_matrix_term
+                - inversion_1.log_det_regularization_matrix_term
+            )
+            < 1e-8
         ):
 
             self.log_det_regularization_matrix_term = (
@@ -425,8 +472,23 @@ class Preloads(aa.Preloads):
             )
 
             logger.info(
-                "PRELOADS - Inversion Log[Det[Regularization Term]] preloaded for this model-fit."
+                "PRELOADS - Inversion Log Det Regularization Matrix Term preloaded for this model-fit."
             )
+
+    def reset_all(self):
+        """
+        Reset all preloads, typically done at the end of a model-fit to save memory.
+        """
+        self.blurred_image = None
+        self.w_tilde = None
+        self.traced_grids_of_planes_for_inversion = None
+        self.sparse_image_plane_grids_of_planes = None
+        self.relocated_grid = None
+        self.mapper = None
+        self.blurred_mapping_matrix = None
+        self.curvature_matrix_sparse_preload = None
+        self.curvature_matrix_preload_counts = None
+        self.log_det_regularization_matrix_term = None
 
     @property
     def info(self) -> List[str]:
@@ -455,7 +517,7 @@ class Preloads(aa.Preloads):
             f"Curvature Matrix Sparse = {self.curvature_matrix_sparse_preload is not None}\n"
         ]
         line += [
-            f"Log Dot Regularization Matrix Term = {self.log_det_regularization_matrix_term is not None}\n"
+            f"Log Det Regularization Matrix Term = {self.log_det_regularization_matrix_term is not None}\n"
         ]
 
         return line
