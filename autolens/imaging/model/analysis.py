@@ -26,6 +26,22 @@ class AnalysisImaging(AnalysisDataset):
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
 
+        try:
+            hyper_model_image = paths.load_object("hyper_model_image")
+            print("Hyper Model Image Comp:")
+            print(hyper_model_image[0:5])
+            print(self.hyper_model_image[0:5])
+        except FileNotFoundError:
+            pass
+
+        try:
+            hyper_galaxy_image_path_dict = paths.load_object("hyper_galxy_image_path_dict")
+            print("Hyper Galaxy Image Comp:")
+            print(hyper_galaxy_image_path_dict)
+            print(self.hyper_model_image)
+        except FileNotFoundError:
+            pass
+
         if not paths.is_complete:
 
             logger.info(
