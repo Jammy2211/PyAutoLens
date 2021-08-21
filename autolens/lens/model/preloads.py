@@ -280,13 +280,12 @@ class Preloads(aa.Preloads):
 
             if (
                 sparse_image_plane_grids_of_planes_0[-1].shape[0]
-                == sparse_image_plane_grids_of_planes_0[-1].shape[0]
+                == sparse_image_plane_grids_of_planes_1[-1].shape[0]
             ):
 
-                if np.allclose(
-                    sparse_image_plane_grids_of_planes_0[-1],
-                    sparse_image_plane_grids_of_planes_1[-1],
-                ):
+                if np.max(abs(sparse_image_plane_grids_of_planes_0[-1]
+                    - sparse_image_plane_grids_of_planes_1[-1],
+                )) < 1e-8:
 
                     self.sparse_image_plane_grids_of_planes = (
                         sparse_image_plane_grids_of_planes_0
