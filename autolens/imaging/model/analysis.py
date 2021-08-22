@@ -141,7 +141,7 @@ class AnalysisImaging(AnalysisDataset):
                 pass
 
             if i == preload_attempts:
-                raise exc.AnalysisException
+                raise exc.AnalysisException("Preloading Failed")
 
         return fit
 
