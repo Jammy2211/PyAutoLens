@@ -254,6 +254,22 @@ class TestAnalysisImaging:
 
         assert stochastic_log_evidences[0] != stochastic_log_evidences[1]
 
+    def test__profile_log_likelihood_function(self, masked_imaging_7x7):
+
+        lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+        source_galaxy = al.Galaxy(redshift=1.0, regularization=al.reg.Constant(coefficient=1.0), pixelization=al.pix.Rectangular(shape=(3,3)))
+
+        model = af.Collection(galaxies=af.Collection(lens=lens_galaxy, source=source_galaxy))
+
+        instance = model.instance_from_unit_vector([])
+
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
+        profiling_dict = analysis.profile_log_likelihood_function(instance=instance)
+
+        assert "regularization_term" in profiling_dict
+        assert "figure_of_merit" in profiling_dict
+
     def test__check_preloads(self, masked_imaging_7x7):
 
         conf.instance["general"]["test"]["check_preloads"] = True

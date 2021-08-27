@@ -258,6 +258,25 @@ class AnalysisImaging(AnalysisDataset):
             preloads=preloads,
         )
 
+    def profile_log_likelihood_function(self, instance):
+
+        if not conf.instance["general"]["profiling"]["perform"]:
+            return None
+
+        conf.instance["general"]["profiling"]["global"] = True
+
+        fit = self.fit_imaging_for_instance(instance=instance)
+        fit.figure_of_merit
+
+        conf.instance["general"]["profiling"]["global"] = False
+
+        profiling_dict = {}
+        if fit.inversion is not None:
+            profiling_dict = dict(profiling_dict, **fit.inversion._profiling_dict)
+        profiling_dict = dict(profiling_dict, **fit.fit._profiling_dict)
+
+        return profiling_dict
+
     def stochastic_log_evidences_for_instance(self, instance):
 
         instance = self.associate_hyper_images(instance=instance)
