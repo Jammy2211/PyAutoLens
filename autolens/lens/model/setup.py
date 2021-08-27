@@ -14,8 +14,8 @@ class SetupHyper(ag.SetupHyper):
             type(ag.hyper_data.HyperBackgroundNoise)
         ] = None,
         hyper_fixed_after_source: bool = False,
-        search_cls: Optional[af.NonLinearSearch] = None,
-        search_dict: Optional[dict] = None,
+        search_inversion_cls: Optional[af.NonLinearSearch] = None,
+        search_inversion_dict: Optional[dict] = None,
     ):
         """
         The hyper setup of a pipeline, which controls how hyper-features in PyAutoLens template pipelines run,
@@ -39,9 +39,9 @@ class SetupHyper(ag.SetupHyper):
             If `True`, the hyper parameters are fixed and not updated after a desnated pipeline in the analysis. For
             the `SLaM` pipelines this is after the `SourcePipeline`. This allow Bayesian model comparison to be
             performed objected between later searchs in a pipeline.
-        search_cls
+        search_inversion_cls
             The non-linear search used by every hyper model-fit search.
-        search_dict
+        search_inversion_dict
             The dictionary of search options for the hyper model-fit searches.
         """
         hyper_galaxies = hyper_galaxies_lens or hyper_galaxies_source
@@ -50,8 +50,8 @@ class SetupHyper(ag.SetupHyper):
             hyper_galaxies=hyper_galaxies,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
-            search_cls=search_cls,
-            search_dict=search_dict,
+            search_inversion_cls=search_inversion_cls,
+            search_inversion_dict=search_inversion_dict,
         )
 
         self.hyper_galaxies_lens = hyper_galaxies_lens

@@ -21,11 +21,11 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
         shape_native
             The shape of the observation. Note that we do not simulator a full Imaging frame (e.g. 2000 x 2000 pixels for \
             Hubble imaging), but instead just a cut-out around the strong lens.
-        pixel_scales : float
+        pixel_scales
             The size of each pixel in arc seconds.
         psf : PSF
             An arrays describing the PSF kernel of the image.
-        exposure_time_map : float
+        exposure_time_map
             The exposure time of an observation using this data.
         """
 

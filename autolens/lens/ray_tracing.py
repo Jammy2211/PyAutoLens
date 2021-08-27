@@ -467,7 +467,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
         ----------
         grid : ndsrray or aa.Grid2D
             The image-plane grid which is traced to the redshift.
-        redshift : float
+        redshift
             The redshift the image-plane grid is traced to.
         """
 
@@ -712,14 +712,14 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         ]
 
     def sparse_image_plane_grids_of_planes_from_grid(
-        self, grid, pixelization_setting=aa.SettingsPixelization()
+        self, grid, settings_pixelization=aa.SettingsPixelization()
     ):
 
         sparse_image_plane_grids_of_planes = []
 
         for plane in self.planes:
             sparse_image_plane_grid = plane.sparse_image_plane_grid_from_grid(
-                grid=grid, settings_pixelization=pixelization_setting
+                grid=grid, settings_pixelization=settings_pixelization
             )
             sparse_image_plane_grids_of_planes.append(sparse_image_plane_grid)
 
@@ -735,7 +735,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         ):
 
             sparse_image_plane_grids_of_planes = self.sparse_image_plane_grids_of_planes_from_grid(
-                grid=grid, pixelization_setting=settings_pixelization
+                grid=grid, settings_pixelization=settings_pixelization
             )
 
         else:

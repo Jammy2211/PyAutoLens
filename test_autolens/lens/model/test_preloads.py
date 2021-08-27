@@ -342,8 +342,14 @@ def test__set_inversion():
     preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
 
     assert (preloads.blurred_mapping_matrix == blurred_mapping_matrix_0).all()
-    assert (preloads.curvature_matrix_sparse_preload == curvature_matrix_sparse_preload.astype("int")).all()
-    assert (preloads.curvature_matrix_preload_counts == curvature_matrix_preload_counts.astype("int")).all()
+    assert (
+        preloads.curvature_matrix_sparse_preload
+        == curvature_matrix_sparse_preload.astype("int")
+    ).all()
+    assert (
+        preloads.curvature_matrix_preload_counts
+        == curvature_matrix_preload_counts.astype("int")
+    ).all()
 
 
 def test__set_log_det_regularization_matrix_term():

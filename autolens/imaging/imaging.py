@@ -22,18 +22,18 @@ class SimulatorImaging(aa.SimulatorImaging):
         ----------
         psf : Kernel2D
             An arrays describing the PSF kernel of the image.
-        exposure_time : float
+        exposure_time
             The exposure time of the simulated imaging.
-        background_sky_level : float
+        background_sky_level
             The level of the background sky of the simulated imaging.
         normalize_psf : bool
             If `True`, the PSF kernel is normalized so all values sum to 1.0.
-        read_noise : float
+        read_noise
             The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with
             sigma equal to the value `read_noise`.
         add_poisson_noise : bool
             Whether Poisson noise corresponding to photon count statistics on the imaging observation is added.
-        noise_if_add_noise_false : float
+        noise_if_add_noise_false
             If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives
             the value of noise assigned to every pixel in the noise-map.
         noise_seed : int

@@ -13,7 +13,7 @@ n_live_points : int
     for ~20 non-linear parameters -> 50-100 live points
     for 25+ non-linear parameters -> 75+ live points
 
-sampling_efficiency : float
+sampling_efficiency
 
     The ratio of accepted to total samples MultiNest targets. A higher efficiency will converges on the high log_likelihood
     regions of parameter space faster at the risk of missing the global maxima solution.
@@ -37,7 +37,7 @@ const_efficiency_mode : bool
 
     In your configs I would recommend this mode is switched off, switching it on for specific searchs in custom pipeliines.
 
-evidence_tolerance : float
+evidence_tolerance
 
     MultiNest will stop sampling when it estimates that continuing sampling will not increase the log evidence more than
     the evidence_tolerance value. Thus, the higher the evidence_tolerance the sooner MultiNest will stop running. Higher

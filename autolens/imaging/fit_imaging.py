@@ -19,7 +19,8 @@ class FitImaging(aa.FitImaging):
         settings_inversion=aa.SettingsInversion(),
         preloads=Preloads(),
     ):
-        """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
+        """
+        An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
 
         Parameters

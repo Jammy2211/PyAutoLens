@@ -1,7 +1,8 @@
 import autolens as al
 import numpy as np
 import pytest
-from autoarray.inversion.inversion.imaging import InversionImagingMatrix
+from autoarray.inversion.inversion.imaging import InversionImagingWTilde
+from autoarray.inversion.inversion.imaging import InversionImagingMapping
 from autogalaxy.mock.mock import MockLightProfile
 
 
@@ -936,7 +937,7 @@ class TestCompareToManualInversionOnly:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=masked_imaging_7x7.grid_inversion, sparse_grid=None
         )
-        inversion = InversionImagingMatrix.from_data_via_pixelization_convolution(
+        inversion = InversionImagingMapping(
             mapper=mapper,
             regularization=reg,
             image=masked_imaging_7x7.image,
@@ -1021,7 +1022,7 @@ class TestCompareToManualInversionOnly:
             grid=masked_imaging_7x7.grid, sparse_grid=None
         )
 
-        inversion = InversionImagingMatrix.from_data_via_pixelization_convolution(
+        inversion = InversionImagingMapping(
             mapper=mapper,
             regularization=reg,
             image=masked_imaging_7x7.image,
@@ -1087,7 +1088,7 @@ class TestCompareToManualInversionOnly:
             grid=masked_imaging_7x7.grid,
             settings=al.SettingsPixelization(use_border=False),
         )
-        inversion = InversionImagingMatrix.from_data_via_pixelization_convolution(
+        inversion = InversionImagingMapping(
             mapper=mapper,
             regularization=reg,
             image=image,
@@ -1170,12 +1171,13 @@ class TestCompareToManualInversionOnly:
             settings=al.SettingsPixelization(use_border=False),
         )
 
-        inversion = InversionImagingMatrix.from_data_via_pixelization_convolution(
-            mapper=mapper,
-            regularization=reg,
+        inversion = InversionImagingWTilde(
             image=masked_imaging_7x7.image,
             noise_map=masked_imaging_7x7.noise_map,
             convolver=masked_imaging_7x7.convolver,
+            w_tilde=masked_imaging_7x7.w_tilde,
+            mapper=mapper,
+            regularization=reg,
         )
 
         assert (fit.model_images_of_planes[0].native == np.zeros((7, 7))).all()
@@ -1260,10 +1262,11 @@ class TestCompareToManualProfilesAndInversion:
             settings=al.SettingsPixelization(use_border=False),
         )
 
-        inversion = InversionImagingMatrix.from_data_via_pixelization_convolution(
+        inversion = InversionImagingWTilde(
             image=profile_subtracted_image,
             noise_map=masked_imaging_7x7.noise_map,
             convolver=masked_imaging_7x7.convolver,
+            w_tilde=masked_imaging_7x7.w_tilde,
             mapper=mapper,
             regularization=reg,
         )
@@ -1373,10 +1376,11 @@ class TestCompareToManualProfilesAndInversion:
             settings=al.SettingsPixelization(use_border=False),
         )
 
-        inversion = InversionImagingMatrix.from_data_via_pixelization_convolution(
+        inversion = InversionImagingWTilde(
             image=profile_subtracted_image,
             noise_map=masked_imaging_7x7.noise_map,
             convolver=masked_imaging_7x7.convolver,
+            w_tilde=masked_imaging_7x7.w_tilde,
             mapper=mapper,
             regularization=reg,
         )
@@ -1463,7 +1467,7 @@ class TestCompareToManualProfilesAndInversion:
             settings=al.SettingsPixelization(use_border=False),
         )
 
-        inversion = InversionImagingMatrix.from_data_via_pixelization_convolution(
+        inversion = InversionImagingMapping(
             image=profile_subtracted_image,
             noise_map=hyper_noise_map,
             convolver=masked_imaging_7x7.convolver,
@@ -1556,10 +1560,11 @@ class TestCompareToManualProfilesAndInversion:
             settings=al.SettingsPixelization(use_border=False),
         )
 
-        inversion = InversionImagingMatrix.from_data_via_pixelization_convolution(
+        inversion = InversionImagingWTilde(
             image=profile_subtracted_image,
             noise_map=masked_imaging_7x7.noise_map,
             convolver=masked_imaging_7x7.convolver,
+            w_tilde=masked_imaging_7x7.w_tilde,
             mapper=mapper,
             regularization=reg,
         )

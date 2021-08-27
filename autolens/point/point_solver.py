@@ -215,7 +215,7 @@ class AbstractPointSolver:
             source_plane_coordinate : (y,x)
                 The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
                 for.
-            distance : float
+            distance
                 The distance within which a grid coordinate must trace to the source-plane centre to be retained.
         """
         if distance is None:

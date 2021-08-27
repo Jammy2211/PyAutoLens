@@ -283,9 +283,15 @@ class Preloads(aa.Preloads):
                 == sparse_image_plane_grids_of_planes_1[-1].shape[0]
             ):
 
-                if np.max(abs(sparse_image_plane_grids_of_planes_0[-1]
-                    - sparse_image_plane_grids_of_planes_1[-1],
-                )) < 1e-8:
+                if (
+                    np.max(
+                        abs(
+                            sparse_image_plane_grids_of_planes_0[-1]
+                            - sparse_image_plane_grids_of_planes_1[-1]
+                        )
+                    )
+                    < 1e-8
+                ):
 
                     self.sparse_image_plane_grids_of_planes = (
                         sparse_image_plane_grids_of_planes_0
@@ -421,14 +427,10 @@ class Preloads(aa.Preloads):
                 self.blurred_mapping_matrix = inversion_0.blurred_mapping_matrix
                 self.curvature_matrix_sparse_preload = (
                     inversion_0.curvature_matrix_sparse_preload
-                ).astype(
-                    "int"
-                )
+                ).astype("int")
                 self.curvature_matrix_preload_counts = (
                     inversion_0.curvature_matrix_preload_counts
-                ).astype(
-                    "int"
-                )
+                ).astype("int")
 
                 logger.info(
                     "PRELOADS - Inversion linear algebra quantities preloaded for this model-fit."

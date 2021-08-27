@@ -255,7 +255,12 @@ def make_tracer_x2_plane_7x7():
 
 @pytest.fixture(name="tracer_x2_plane_inversion_7x7")
 def make_tracer_x2_plane_inversion_7x7():
-    return fixtures.make_tracer_x2_plane_7x7()
+    return fixtures.make_tracer_x2_plane_inversion_7x7()
+
+
+@pytest.fixture(name="tracer_x2_plane_voronoi_7x7")
+def make_tracer_x2_plane_voronoi_7x7():
+    return fixtures.make_tracer_x2_plane_voronoi_7x7()
 
 
 @pytest.fixture(name="tracer_x2_plane_point")

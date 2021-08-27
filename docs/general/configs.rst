@@ -166,7 +166,7 @@ The following config sections and variables are generic across all non-linear se
         interpreter.
 
 [prior_passer]
-    sigma : float
+    sigma
         For non-linear search chaining and model prior passing, the sigma value of the inferred model parameter used
         as the sigma of the passed Gaussian prior.
     use_errors : bool

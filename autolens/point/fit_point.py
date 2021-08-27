@@ -129,7 +129,7 @@ class FitPositionsImage(aa.FitData):
         -----------
         positions : Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
-        noise_value : float
+        noise_value
             The noise-value assumed when computing the log likelihood.
         """
 
@@ -206,7 +206,7 @@ class FitPositionsSource(aa.FitData):
         -----------
         positions : Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
-        noise_value : float
+        noise_value
             The noise-value assumed when computing the log likelihood.
         """
 
@@ -358,7 +358,7 @@ class AbstractFitPositionsSourcePlane:
             are paired to galaxies in the `Tracer` using their names.
         tracer : Tracer
             The object that defines the ray-tracing of the strong lens system of galaxies.
-        noise_value : float
+        noise_value
             The noise-value assumed when computing the log likelihood.
         """
         self.positions = positions
@@ -411,7 +411,7 @@ class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
         -----------
         positions : Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
-        noise_value : float
+        noise_value
             The noise-value assumed when computing the log likelihood.
         """
         super().__init__(positions=positions, noise_map=noise_map, tracer=tracer)

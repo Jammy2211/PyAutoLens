@@ -22,7 +22,6 @@ class TestAnalysisImaging:
         model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
         class MockInstance:
-
             def __init__(self):
 
                 self.galaxies = [al.Galaxy(redshift=0.5)]

@@ -84,10 +84,10 @@ class Result(AgResult):
 
         Parameters
         ----------
-        factor : float
+        factor
             The value the computed threshold is multipled by to make the position threshold larger or smaller than the
             maximum log likelihood model's threshold.
-        minimum_threshold : float
+        minimum_threshold
             The output threshold is rounded up to this value if it is below it, to avoid extremely small threshold
             values.
 
