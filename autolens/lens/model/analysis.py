@@ -4,7 +4,7 @@ import json
 import numpy as np
 from os import path
 from scipy.stats import norm
-from typing import List
+from typing import Dict, Optional, List
 
 import autofit as af
 import autoarray as aa
@@ -25,13 +25,15 @@ class AnalysisLensing:
         self.cosmology = cosmology
         self.settings_lens = settings_lens
 
-    def tracer_for_instance(self, instance):
+    def tracer_for_instance(self, instance, profiling_dict: Optional[Dict] = None):
 
         if hasattr(instance, "perturbation"):
             instance.galaxies.subhalo = instance.perturbation
 
         return Tracer.from_galaxies(
-            galaxies=instance.galaxies, cosmology=self.cosmology
+            galaxies=instance.galaxies,
+            cosmology=self.cosmology,
+            profiling_dict=profiling_dict,
         )
 
 

@@ -140,7 +140,7 @@ with an ``EllSersic``.
     """
     lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=lens_mass_profile)
     source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=source_light_profile)
-    model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+    model = af.Collection(galaxies=af.Collection(lens=lens_galaxy_model, source=source_galaxy_model))
 
     """
     We define the non-linear search used to fit the model to the data (in this case, Dynesty).

@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Dict, Optional
 
 from autoconf import conf
 import autoarray as aa
@@ -18,6 +19,7 @@ class FitImaging(aa.FitImaging):
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
         preloads=Preloads(),
+        profiling_dict: Optional[Dict] = None,
     ):
         """
         An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
@@ -30,6 +32,8 @@ class FitImaging(aa.FitImaging):
         scaled_array_2d_from_array_1d : func
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
+
+        self.profiling_dict = profiling_dict
 
         self.tracer = tracer
 
@@ -91,9 +95,10 @@ class FitImaging(aa.FitImaging):
             mask=imaging.mask,
             inversion=inversion,
             use_mask_in_fit=False,
+            profiling_dict=profiling_dict,
         )
 
-        super().__init__(imaging=imaging, fit=fit)
+        super().__init__(imaging=imaging, fit=fit, profiling_dict=profiling_dict)
 
     @property
     def grid(self):

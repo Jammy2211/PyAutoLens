@@ -1914,7 +1914,8 @@ class TestAbstractTracerLensing:
             plane = al.Plane(galaxies=[galaxy_0, galaxy_1])
 
             tracer = al.Tracer(
-                planes=[plane, al.Plane(redshift=1.0)], cosmology=cosmo.Planck15
+                planes=[plane, al.Plane(redshift=1.0, galaxies=None)],
+                cosmology=cosmo.Planck15,
             )
 
             einstein_mass = tracer.einstein_mass_angular_from_grid(grid=grid)

@@ -3,6 +3,7 @@ from astropy import cosmology as cosmo
 import numpy as np
 from os import path
 import pickle
+from typing import Dict, Optional
 
 import autoarray as aa
 import autogalaxy as ag
@@ -17,7 +18,7 @@ from autolens.lens.model.preloads import Preloads
 
 
 class AbstractTracer(LensingObject, ABC):
-    def __init__(self, planes, cosmology):
+    def __init__(self, planes, cosmology, profiling_dict: Optional[Dict] = None):
         """
         Ray-tracer for a lens system with any number of planes.
 
@@ -45,6 +46,7 @@ class AbstractTracer(LensingObject, ABC):
         self.planes = planes
         self.plane_redshifts = [plane.redshift for plane in planes]
         self.cosmology = cosmology
+        self.profiling_dict = profiling_dict
 
     @property
     def total_planes(self):
@@ -398,6 +400,10 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         return traced_grids
 
+    @aa.profile_func
+    def traced_grids_of_inversion_from_grid(self, grid):
+        return self.traced_grids_of_planes_from_grid(grid=grid)
+
     @aa.grid_dec.grid_2d_to_structure
     def deflections_between_planes_from_grid(self, grid, plane_i=0, plane_j=-1):
 
@@ -406,6 +412,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
     @aa.grid_dec.grid_2d_to_structure
+    @aa.profile_func
     def image_2d_from_grid(self, grid):
         return sum(self.images_of_planes_from_grid(grid=grid))
 
@@ -577,7 +584,8 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         ]
 
     def blurred_image_2d_from_grid_and_convolver(self, grid, convolver, blurring_grid):
-        """Extract the 1D image and 1D blurring image of every plane and blur each with the \
+        """
+        Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a convolver (see imaging.convolution).
 
         These are summed to give the tracer's overall blurred image in 1D.
@@ -594,6 +602,13 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         image = self.image_2d_from_grid(grid=grid)
 
         blurring_image = self.image_2d_from_grid(grid=blurring_grid)
+
+        return self.convolve_via_convolver(
+            image=image, blurring_image=blurring_image, convolver=convolver
+        )
+
+    @aa.profile_func
+    def convolve_via_convolver(self, image, blurring_image, convolver):
 
         return convolver.convolve_image(image=image, blurring_image=blurring_image)
 
@@ -711,10 +726,15 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             for image in images_of_planes
         ]
 
+    @aa.profile_func
     def sparse_image_plane_grids_of_planes_from_grid(
         self, grid, settings_pixelization=aa.SettingsPixelization()
     ):
-
+        """
+        Specific pixelizations, like the `VoronoiMagnification`, begin by determining what will become its the
+        source-pixel centres by calculating them  in the image-plane. The `VoronoiBrightnessImage` pixelization
+        performs a KMeans clustering.
+        """
         sparse_image_plane_grids_of_planes = []
 
         for plane in self.planes:
@@ -725,10 +745,15 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         return sparse_image_plane_grids_of_planes
 
+    @aa.profile_func
     def traced_sparse_grids_of_planes_from_grid(
         self, grid, settings_pixelization=aa.SettingsPixelization(), preloads=Preloads()
     ):
-
+        """
+        Ray-trace the sparse image plane grid used to define the source-pixel centres by calculating the deflection
+        angles at (y,x) coordinate on the grid from the galaxy mass profiles and then ray-trace them from the
+        image-plane to the source plane.
+        """
         if (
             preloads.sparse_image_plane_grids_of_planes is None
             or settings_pixelization.is_stochastic
@@ -768,7 +793,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         mappers_of_planes = []
 
         if preloads.traced_grids_of_planes_for_inversion is None:
-            traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
+            traced_grids_of_planes = self.traced_grids_of_inversion_from_grid(grid=grid)
         else:
             traced_grids_of_planes = preloads.traced_grids_of_planes_for_inversion
 
@@ -825,6 +850,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             regularization=self.regularizations_of_planes[-1],
             settings=settings_inversion,
             preloads=preloads,
+            profiling_dict=self.profiling_dict,
         )
 
     def inversion_interferometer_from_grid_and_data(
@@ -848,6 +874,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             mapper=mappers_of_planes[-1],
             regularization=self.regularizations_of_planes[-1],
             settings=settings_inversion,
+            profiling_dict=self.profiling_dict,
         )
 
     def hyper_noise_map_from_noise_map(self, noise_map):
@@ -935,7 +962,9 @@ class Tracer(AbstractTracerData):
         return self.planes[1].galaxies[0].light_profiles[0].flux
 
     @classmethod
-    def from_galaxies(cls, galaxies, cosmology=cosmo.Planck15):
+    def from_galaxies(
+        cls, galaxies, cosmology=cosmo.Planck15, profiling_dict: Optional[Dict] = None
+    ):
 
         plane_redshifts = ag.util.plane.ordered_plane_redshifts_from(galaxies=galaxies)
 
@@ -946,9 +975,14 @@ class Tracer(AbstractTracerData):
         planes = []
 
         for plane_index in range(0, len(plane_redshifts)):
-            planes.append(ag.Plane(galaxies=galaxies_in_planes[plane_index]))
+            planes.append(
+                ag.Plane(
+                    galaxies=galaxies_in_planes[plane_index],
+                    profiling_dict=profiling_dict,
+                )
+            )
 
-        return Tracer(planes=planes, cosmology=cosmology)
+        return Tracer(planes=planes, cosmology=cosmology, profiling_dict=profiling_dict)
 
     @classmethod
     def sliced_tracer_from_lens_line_of_sight_and_source_galaxies(

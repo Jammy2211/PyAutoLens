@@ -1,6 +1,9 @@
 import json
 import logging
 import numpy as np
+import os
+import time
+from typing import Dict, Optional
 from os import path
 
 from autoconf import conf
@@ -152,6 +155,11 @@ class AnalysisImaging(AnalysisDataset):
         conf.instance["general"]["model"]["ignore_prior_limits"] = True
 
         try:
+            os.makedirs(paths.profile_path)
+        except FileExistsError:
+            pass
+
+        try:
             fit_0, fit_1 = self.preload_fit_list_from_unit_values(model=model)
         except Exception:
             try:
@@ -163,7 +171,7 @@ class AnalysisImaging(AnalysisDataset):
                     "not used."
                 )
 
-                file_preloads = path.join(paths.output_path, "preloads.summary")
+                file_preloads = path.join(paths.profile_path, "preloads.summary")
 
                 af.formatter.output_list_of_strings_to_file(
                     file=file_preloads, list_of_strings=["FAILED"]
@@ -175,7 +183,7 @@ class AnalysisImaging(AnalysisDataset):
 
         self.preloads = Preloads.setup_all_from_fits(fit_0=fit_0, fit_1=fit_1)
 
-        file_preloads = path.join(paths.output_path, "preloads.summary")
+        file_preloads = path.join(paths.profile_path, "preloads.summary")
 
         af.formatter.output_list_of_strings_to_file(
             file=file_preloads, list_of_strings=self.preloads.info
@@ -212,10 +220,13 @@ class AnalysisImaging(AnalysisDataset):
         use_hyper_scalings=True,
         preload_overwrite=None,
         check_positions=True,
+        profiling_dict: Optional[Dict] = None,
     ):
 
         self.associate_hyper_images(instance=instance)
-        tracer = self.tracer_for_instance(instance=instance)
+        tracer = self.tracer_for_instance(
+            instance=instance, profiling_dict=profiling_dict
+        )
 
         if check_positions:
             self.settings_lens.check_positions_trace_within_threshold_via_tracer(
@@ -234,6 +245,7 @@ class AnalysisImaging(AnalysisDataset):
             hyper_background_noise=hyper_background_noise,
             use_hyper_scalings=use_hyper_scalings,
             preload_overwrite=preload_overwrite,
+            profiling_dict=profiling_dict,
         )
 
     def fit_imaging_for_tracer(
@@ -243,6 +255,7 @@ class AnalysisImaging(AnalysisDataset):
         hyper_background_noise,
         use_hyper_scalings=True,
         preload_overwrite=None,
+        profiling_dict: Optional[Dict] = None,
     ):
 
         preloads = self.preloads if preload_overwrite is None else preload_overwrite
@@ -256,24 +269,54 @@ class AnalysisImaging(AnalysisDataset):
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             preloads=preloads,
+            profiling_dict=profiling_dict,
         )
 
-    def profile_log_likelihood_function(self, instance):
-
-        if not conf.instance["general"]["profiling"]["perform"]:
-            return None
-
-        conf.instance["general"]["profiling"]["global"] = True
-
-        fit = self.fit_imaging_for_instance(instance=instance)
-        fit.figure_of_merit
-
-        conf.instance["general"]["profiling"]["global"] = False
+    def profile_log_likelihood_function(
+        self, instance, paths: Optional[af.DirectoryPaths] = None
+    ):
 
         profiling_dict = {}
+        info_dict = {}
+
+        repeats = conf.instance["general"]["profiling"]["repeats"]
+        info_dict["repeats"] = repeats
+
+        start = time.time()
+
+        for i in range(repeats):
+            fit = self.fit_imaging_for_instance(instance=instance)
+            fit.figure_of_merit
+
+        fit_time = (time.time() - start) / repeats
+
+        info_dict["fit_time"] = fit_time
+
+        fit = self.fit_imaging_for_instance(
+            instance=instance, profiling_dict=profiling_dict
+        )
+        fit.figure_of_merit
+
+        info_dict["image_pixels"] = self.imaging.grid.sub_shape_slim
+        info_dict["sub_size_light_profiles"] = self.imaging.grid.sub_size
+        info_dict["sub_size_inversion"] = self.imaging.grid_inversion.sub_size
+        info_dict["psf_shape_2d"] = self.imaging.psf.shape_native
+
         if fit.inversion is not None:
-            profiling_dict = dict(profiling_dict, **fit.inversion._profiling_dict)
-        profiling_dict = dict(profiling_dict, **fit.fit._profiling_dict)
+            info_dict["source_pixels"] = len(fit.inversion.reconstruction)
+
+        if paths is not None:
+
+            try:
+                os.makedirs(paths.profile_path)
+            except FileExistsError:
+                pass
+
+            with open(path.join(paths.profile_path, "profiling_dict.json"), "w+") as f:
+                json.dump(fit.profiling_dict, f, indent=4)
+
+            with open(path.join(paths.profile_path, "info_dict.json"), "w+") as f:
+                json.dump(info_dict, f, indent=4)
 
         return profiling_dict
 

@@ -173,24 +173,12 @@ class TestResultAbstract:
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
-        mask = al.Mask2D.unmasked(
-            shape_native=(100, 100), pixel_scales=0.05, sub_size=1
-        )
-
-        result.analysis.dataset.data.mask = mask
-
         multiple_images = result.image_plane_multiple_image_positions
 
-        grid = al.Grid2D.from_mask(mask=mask)
-
-        solver = al.PointSolver(grid=grid, pixel_scale_precision=0.001)
-
-        multiple_images_manual = solver.solve(
-            lensing_obj=tracer,
-            source_plane_coordinate=result.source_plane_inversion_centre[0],
-        )
-
-        assert multiple_images.in_list[0] == multiple_images_manual.in_list[0]
+        assert multiple_images.in_list[0][0] == pytest.approx(1.20556641, 1.0e-4)
+        assert multiple_images.in_list[0][1] == pytest.approx(-1.10205078, 1.0e-4)
+        assert multiple_images.in_list[1][0] == pytest.approx(-0.19287109, 1.0e-4)
+        assert multiple_images.in_list[1][1] == pytest.approx(0.27978516, 1.0e-4)
 
     def test__image_plane_multiple_image_positions_and_threshold(
         self, analysis_imaging_7x7

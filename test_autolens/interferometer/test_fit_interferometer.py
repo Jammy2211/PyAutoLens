@@ -604,7 +604,7 @@ class TestCompareToManualInversionOnly:
         self, interferometer_7
     ):
 
-        pix = al.pix.VoronoiBrightnessImage(pixels=9)
+        pix = al.pix.VoronoiBrightnessImage(pixels=5)
         reg = al.reg.Constant(coefficient=1.0)
 
         g0 = al.Galaxy(

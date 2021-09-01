@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Dict, Optional
 
 import autoarray as aa
 import autogalaxy as ag
@@ -16,6 +17,7 @@ class FitInterferometer(aa.FitInterferometer):
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
         preloads=Preloads(),
+        profiling_dict: Optional[Dict] = None,
     ):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens dataset's hyper_galaxies.
@@ -27,6 +29,8 @@ class FitInterferometer(aa.FitInterferometer):
         scaled_array_2d_from_array_1d : func
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
+
+        self.profiling_dict = profiling_dict
 
         if use_hyper_scaling:
 
@@ -78,9 +82,12 @@ class FitInterferometer(aa.FitInterferometer):
             model_data=model_visibilities,
             inversion=inversion,
             use_mask_in_fit=False,
+            profiling_dict=profiling_dict,
         )
 
-        super().__init__(interferometer=interferometer, fit=fit)
+        super().__init__(
+            interferometer=interferometer, fit=fit, profiling_dict=profiling_dict
+        )
 
     @property
     def grid(self):
