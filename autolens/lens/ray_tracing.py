@@ -735,6 +735,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         source-pixel centres by calculating them  in the image-plane. The `VoronoiBrightnessImage` pixelization
         performs a KMeans clustering.
         """
+
         sparse_image_plane_grids_of_planes = []
 
         for plane in self.planes:

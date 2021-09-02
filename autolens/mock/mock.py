@@ -148,9 +148,9 @@ class MockResults(af.ResultsCollection):
 
 
 class MockMask:
-    def __init__(self, _native_index_for_slim_index=None):
+    def __init__(self, native_index_for_slim_index=None):
 
-        self._native_index_for_slim_index = _native_index_for_slim_index
+        self.native_index_for_slim_index = native_index_for_slim_index
 
 
 class MockDataset:
@@ -176,6 +176,7 @@ class MockFit:
         self.tracer = tracer
         self.inversion = inversion
         self.noise_map = noise_map
+        self.signal_to_noise_map = noise_map
         self.grid = grid
         self.blurred_image = blurred_image
 

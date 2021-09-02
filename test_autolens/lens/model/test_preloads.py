@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 from os import path
 
 import autofit as af
@@ -14,8 +13,6 @@ from autolens.mock.mock import MockDataset
 from autolens.mock.mock import MockTracer
 from autolens.mock.mock import MockFit
 from autolens.lens.model.preloads import Preloads
-
-from autolens import exc
 
 
 def test__set_blurred_image():
@@ -84,7 +81,7 @@ def test__set_w_tilde():
     noise_map = al.Array2D.ones(shape_native=(5, 5), pixel_scales=0.1, sub_size=1)
 
     mask = MockMask(
-        _native_index_for_slim_index=noise_map.mask._native_index_for_slim_index
+        native_index_for_slim_index=noise_map.mask.native_index_for_slim_index
     )
 
     dataset = MockDataset(psf=al.Kernel2D.no_blur(pixel_scales=1.0), mask=mask)
@@ -97,8 +94,9 @@ def test__set_w_tilde():
 
     curvature_preload, indexes, lengths = al.util.inversion.w_tilde_curvature_preload_imaging_from(
         noise_map_native=fit_0.noise_map.native,
+        signal_to_noise_map_native=fit_0.signal_to_noise_map.native,
         kernel_native=fit_0.dataset.psf.native,
-        native_index_for_slim_index=fit_0.dataset.mask._native_index_for_slim_index,
+        native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
     )
 
     assert (preloads.w_tilde.curvature_preload == curvature_preload).all()
@@ -352,7 +350,7 @@ def test__set_inversion():
     ).all()
 
 
-def test__set_log_det_regularization_matrix_term():
+def test__set_regularization_matrix_and_term():
 
     # Inversion is None thus preload log_det_regularization_matrix_term to None.
 
@@ -360,8 +358,9 @@ def test__set_log_det_regularization_matrix_term():
     fit_1 = MockFit(inversion=None)
 
     preloads = Preloads(log_det_regularization_matrix_term=1)
-    preloads.set_log_det_regularization_matrix_term(fit_0=fit_0, fit_1=fit_1)
+    preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 
+    assert preloads.regularization_matrix is None
     assert preloads.log_det_regularization_matrix_term is None
 
     # Inversion's log_det_regularization_matrix_term are different thus no preloading.
@@ -373,8 +372,9 @@ def test__set_log_det_regularization_matrix_term():
     fit_1 = MockFit(inversion=inversion_1)
 
     preloads = Preloads(log_det_regularization_matrix_term=1)
-    preloads.set_log_det_regularization_matrix_term(fit_0=fit_0, fit_1=fit_1)
+    preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 
+    assert preloads.regularization_matrix is None
     assert preloads.log_det_regularization_matrix_term is None
 
     # Inversion's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
@@ -386,8 +386,9 @@ def test__set_log_det_regularization_matrix_term():
     fit_1 = MockFit(inversion=inversion_1)
 
     preloads = Preloads(log_det_regularization_matrix_term=2)
-    preloads.set_log_det_regularization_matrix_term(fit_0=fit_0, fit_1=fit_1)
+    preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 
+    assert (preloads.regularization_matrix == np.zeros((1, 1))).all()
     assert preloads.log_det_regularization_matrix_term == 1
 
 
@@ -425,7 +426,8 @@ def test__info():
     assert lines[6] == f"Mapper = False\n"
     assert lines[7] == f"Blurred Mapping Matrix = False\n"
     assert lines[8] == f"Curvature Matrix Sparse = False\n"
-    assert lines[9] == f"Log Det Regularization Matrix Term = False\n"
+    assert lines[9] == f"Regularization Matrix = False\n"
+    assert lines[10] == f"Log Det Regularization Matrix Term = False\n"
 
     preloads = Preloads(
         blurred_image=1,
@@ -437,6 +439,7 @@ def test__info():
         mapper=1,
         blurred_mapping_matrix=1,
         curvature_matrix_sparse_preload=1,
+        regularization_matrix=1,
         log_det_regularization_matrix_term=1,
     )
 
@@ -456,4 +459,5 @@ def test__info():
     assert lines[6] == f"Mapper = True\n"
     assert lines[7] == f"Blurred Mapping Matrix = True\n"
     assert lines[8] == f"Curvature Matrix Sparse = True\n"
-    assert lines[9] == f"Log Det Regularization Matrix Term = True\n"
+    assert lines[9] == f"Regularization Matrix = True\n"
+    assert lines[10] == f"Log Det Regularization Matrix Term = True\n"

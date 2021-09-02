@@ -15,7 +15,11 @@ class SetupHyper(ag.SetupHyper):
         ] = None,
         hyper_fixed_after_source: bool = False,
         search_inversion_cls: Optional[af.NonLinearSearch] = None,
+        search_noise_cls: Optional[af.NonLinearSearch] = None,
+        search_bc_cls: Optional[af.NonLinearSearch] = None,
         search_inversion_dict: Optional[dict] = None,
+        search_noise_dict: Optional[dict] = None,
+        search_bc_dict: Optional[dict] = None,
     ):
         """
         The hyper setup of a pipeline, which controls how hyper-features in PyAutoLens template pipelines run,
@@ -51,7 +55,11 @@ class SetupHyper(ag.SetupHyper):
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
             search_inversion_cls=search_inversion_cls,
+            search_noise_cls=search_noise_cls,
+            search_bc_cls=search_bc_cls,
             search_inversion_dict=search_inversion_dict,
+            search_noise_dict=search_noise_dict,
+            search_bc_dict=search_bc_dict,
         )
 
         self.hyper_galaxies_lens = hyper_galaxies_lens

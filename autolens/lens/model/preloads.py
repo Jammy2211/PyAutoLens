@@ -22,6 +22,7 @@ class Preloads(aa.Preloads):
         blurred_mapping_matrix: Optional[np.ndarray] = None,
         curvature_matrix_sparse_preload: Optional[np.ndarray] = None,
         curvature_matrix_preload_counts: Optional[np.ndarray] = None,
+        regularization_matrix: Optional[np.ndarray] = None,
         log_det_regularization_matrix_term: Optional[float] = None,
     ):
         """
@@ -84,6 +85,7 @@ class Preloads(aa.Preloads):
             blurred_mapping_matrix=blurred_mapping_matrix,
             curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
             curvature_matrix_preload_counts=curvature_matrix_preload_counts,
+            regularization_matrix=regularization_matrix,
             log_det_regularization_matrix_term=log_det_regularization_matrix_term,
         )
 
@@ -117,7 +119,7 @@ class Preloads(aa.Preloads):
         preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
         preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
         preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
-        preloads.set_log_det_regularization_matrix_term(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 
         return preloads
 
@@ -180,8 +182,9 @@ class Preloads(aa.Preloads):
 
             preload, indexes, lengths = aa.util.inversion.w_tilde_curvature_preload_imaging_from(
                 noise_map_native=fit_0.noise_map.native,
+                signal_to_noise_map_native=fit_0.signal_to_noise_map.native,
                 kernel_native=fit_0.dataset.psf.native,
-                native_index_for_slim_index=fit_0.dataset.mask._native_index_for_slim_index,
+                native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
             )
 
             w_tilde = aa.WTildeImaging(
@@ -436,7 +439,7 @@ class Preloads(aa.Preloads):
                     "PRELOADS - Inversion linear algebra quantities preloaded for this model-fit."
                 )
 
-    def set_log_det_regularization_matrix_term(self, fit_0, fit_1):
+    def set_regularization_matrix_and_term(self, fit_0, fit_1):
         """
         If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
         source-pixels does not change during the model-fit and therefore its associated regularization matrices are
@@ -456,6 +459,7 @@ class Preloads(aa.Preloads):
         fit_1
             The second fit corresponding to a model with a different set of unit-values.
         """
+        self.regularization_matrix = None
         self.log_det_regularization_matrix_term = None
 
         inversion_0 = fit_0.inversion
@@ -472,6 +476,7 @@ class Preloads(aa.Preloads):
             < 1e-8
         ):
 
+            self.regularization_matrix = inversion_0.regularization_matrix
             self.log_det_regularization_matrix_term = (
                 inversion_0.log_det_regularization_matrix_term
             )
@@ -493,6 +498,7 @@ class Preloads(aa.Preloads):
         self.blurred_mapping_matrix = None
         self.curvature_matrix_sparse_preload = None
         self.curvature_matrix_preload_counts = None
+        self.regularization_matrix = None
         self.log_det_regularization_matrix_term = None
 
     @property
@@ -521,6 +527,7 @@ class Preloads(aa.Preloads):
         line += [
             f"Curvature Matrix Sparse = {self.curvature_matrix_sparse_preload is not None}\n"
         ]
+        line += [f"Regularization Matrix = {self.regularization_matrix is not None}\n"]
         line += [
             f"Log Det Regularization Matrix Term = {self.log_det_regularization_matrix_term is not None}\n"
         ]
