@@ -539,13 +539,20 @@ class Preloads(aa.Preloads):
 
     def check_via_fit_maker(self, fit_maker):
 
-        fom_with_preloads = fit_maker.fit_via_prior_medians().figure_of_merit
+        try:
+            fom_with_preloads = fit_maker.fit_via_prior_medians().figure_of_merit
 
-        fom_without_preloads = fit_maker.fit_via_prior_medians(
-            preload_overwrite=Preloads(use_w_tilde=False)
-        ).figure_of_merit
+            fom_without_preloads = fit_maker.fit_via_prior_medians(
+                preload_overwrite=Preloads(use_w_tilde=False)
+            ).figure_of_merit
 
-        if abs(fom_with_preloads - fom_without_preloads) > 1e-8:
+        except exc.InversionException:
+
+            logger.info("Unable to check preloads due to Inversion exception in model")
+
+            return
+
+        if abs(fom_with_preloads - fom_without_preloads) > 1e-4:
 
             raise exc.PreloadException(
                 f"The log likelihood of fits using and not using preloads are not"
