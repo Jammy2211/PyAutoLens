@@ -63,7 +63,7 @@ class AnalysisImaging(AnalysisDataset):
                 )
                 self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
 
-        except FileNotFoundError:
+        except (FileNotFoundError, AttributeError):
             pass
 
     def set_preloads(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
