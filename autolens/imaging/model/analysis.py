@@ -305,6 +305,9 @@ class AnalysisImaging(AnalysisDataset):
         if fit.inversion is not None:
             info_dict["source_pixels"] = len(fit.inversion.reconstruction)
 
+        if hasattr(fit.inversion, "w_tilde"):
+            info_dict["w_tilde_curvature_preload_size"] = fit.inversion.w_tilde.curvature_preload.shape[0]
+
         if paths is not None:
 
             try:
