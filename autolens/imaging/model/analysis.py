@@ -400,6 +400,7 @@ class AnalysisImaging(AnalysisDataset):
                 hyper_image_sky=None,
                 hyper_background_noise=None,
                 use_hyper_scalings=False,
+                preload_overwrite=Preloads(use_w_tilde=False)
             )
 
             visualizer.visualize_fit_imaging(
