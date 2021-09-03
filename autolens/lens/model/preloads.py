@@ -1,8 +1,14 @@
 import logging
 import numpy as np
+from os import path
 from typing import Optional, List
 
+from autoconf import conf
+
+import autofit as af
 import autoarray as aa
+
+from autolens import exc
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +30,7 @@ class Preloads(aa.Preloads):
         curvature_matrix_preload_counts: Optional[np.ndarray] = None,
         regularization_matrix: Optional[np.ndarray] = None,
         log_det_regularization_matrix_term: Optional[float] = None,
+        failed=False,
     ):
         """
         Class which offers a concise API for settings up the preloads, which before a model-fit are set up via
@@ -91,9 +98,10 @@ class Preloads(aa.Preloads):
 
         self.blurred_image = blurred_image
         self.traced_grids_of_planes_for_inversion = traced_grids_of_planes_for_inversion
+        self.failed = failed
 
     @classmethod
-    def setup_all_from_fits(cls, fit_0, fit_1) -> "Preloads":
+    def setup_all_from_fit_maker(cls, fit_maker) -> "Preloads":
         """
         Setup the Preloads from two fits which use two different lens model of a model-fit.
 
@@ -110,7 +118,14 @@ class Preloads(aa.Preloads):
             Preloads which are set up based on the fit's passed in specific to a lens model.
 
         """
+
         preloads = cls()
+
+        fit_0 = fit_maker.fit_via_model(unit_value=0.45)
+        fit_1 = fit_maker.fit_via_model(unit_value=0.55)
+
+        if fit_0 is None or fit_1 is None:
+            return cls(failed=True)
 
         preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
         preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
@@ -485,6 +500,27 @@ class Preloads(aa.Preloads):
                 "PRELOADS - Inversion Log Det Regularization Matrix Term preloaded for this model-fit."
             )
 
+    def output_info_to_summary(self, file_path):
+
+        file_preloads = path.join(file_path, "preloads.summary")
+
+        if self.failed:
+
+            logger.info(
+                "PRELOADS - Preloading failed as models gave too many exceptions, preloading therefore "
+                "not used."
+            )
+
+            af.formatter.output_list_of_strings_to_file(
+                file=file_preloads, list_of_strings=["FAILED"]
+            )
+
+        else:
+
+            af.formatter.output_list_of_strings_to_file(
+                file=file_preloads, list_of_strings=self.info
+            )
+
     def reset_all(self):
         """
         Reset all preloads, typically done at the end of a model-fit to save memory.
@@ -500,6 +536,23 @@ class Preloads(aa.Preloads):
         self.curvature_matrix_preload_counts = None
         self.regularization_matrix = None
         self.log_det_regularization_matrix_term = None
+
+    def check_via_fit_maker(self, fit_maker):
+
+        fom_with_preloads = fit_maker.fit_via_prior_medians().figure_of_merit
+
+        fom_without_preloads = fit_maker.fit_via_prior_medians(
+            preload_overwrite=Preloads(use_w_tilde=False)
+        ).figure_of_merit
+
+        if abs(fom_with_preloads - fom_without_preloads) > 1e-8:
+
+            raise exc.PreloadException(
+                f"The log likelihood of fits using and not using preloads are not"
+                f"consistent, indicating preloading has gone wrong."
+                f"The likelihood values are {fom_with_preloads} (with preloads) and "
+                f"{fom_without_preloads} (without preloads)"
+            )
 
     @property
     def info(self) -> List[str]:

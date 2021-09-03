@@ -8,6 +8,7 @@ import autofit as af
 import autolens as al
 
 from autolens.imaging.model.result import ResultImaging
+from autolens.imaging.model.maker import FitImagingMaker
 
 from autolens import exc
 from autolens.mock import mock
@@ -287,6 +288,7 @@ class TestAnalysisImaging:
         model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
         analysis.check_preloads(model=model)
 
         instance = model.instance_from_unit_vector([])
@@ -299,7 +301,7 @@ class TestAnalysisImaging:
 
         analysis.preloads.blurred_image = fit.blurred_image + 1.0
 
-        with pytest.raises(exc.AnalysisException):
+        with pytest.raises(exc.PreloadException):
             analysis.check_preloads(model=model)
 
         conf.instance["general"]["test"]["check_preloads"] = False

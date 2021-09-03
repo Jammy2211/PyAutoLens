@@ -13,6 +13,7 @@ import autogalaxy as ag
 
 from autolens.lens.model.analysis import AnalysisDataset
 from autolens.lens.model.preloads import Preloads
+from autolens.imaging.model.maker import FitImagingMaker
 from autolens.imaging.model.result import ResultImaging
 from autolens.imaging.model.visualizer import VisualizerImaging
 from autolens.imaging.fit_imaging import FitImaging
@@ -41,11 +42,6 @@ class AnalysisImaging(AnalysisDataset):
 
             self.set_preloads(paths=paths, model=model)
 
-            try:
-                self.check_preloads(model=model)
-            except Exception:
-                return self
-
         return self
 
     def check_and_replace_hyper_images(self, paths: af.DirectoryPaths):
@@ -70,6 +66,31 @@ class AnalysisImaging(AnalysisDataset):
         except FileNotFoundError:
             pass
 
+    def set_preloads(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
+
+        try:
+            os.makedirs(paths.profile_path)
+        except FileExistsError:
+            pass
+
+        fit_maker = FitImagingMaker(
+            model=model, fit_from_instance_func=self.fit_imaging_for_instance
+        )
+
+        self.preloads = Preloads.setup_all_from_fit_maker(fit_maker=fit_maker)
+        self.preloads.output_info_to_summary(file_path=paths.profile_path)
+
+        self.check_preloads()
+
+    def check_preloads(self, model: af.AbstractPriorModel):
+
+        fit_maker = FitImagingMaker(
+            model=model, fit_from_instance_func=self.fit_imaging_for_instance
+        )
+
+        if conf.instance["general"]["test"]["check_preloads"]:
+            self.preloads.check_via_fit_maker(fit_maker=fit_maker)
+
     def modify_after_fit(
         self, paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
     ):
@@ -78,116 +99,6 @@ class AnalysisImaging(AnalysisDataset):
         self.preloads.reset_all()
 
         return self
-
-    def check_preloads(self, model: af.AbstractPriorModel):
-
-        if not conf.instance["general"]["test"]["check_preloads"]:
-            return
-
-        instance = model.instance_from_prior_medians()
-
-        fom_with_preloads = self.fit_imaging_for_instance(
-            instance=instance
-        ).figure_of_merit
-
-        fom_without_preloads = self.fit_imaging_for_instance(
-            instance=instance, preload_overwrite=Preloads(use_w_tilde=False)
-        ).figure_of_merit
-
-        if abs(fom_with_preloads - fom_without_preloads) > 1e-8:
-
-            raise exc.AnalysisException(
-                f"The log likelihood of fits using and not using preloads are not"
-                f"consistent, indicating preloading has gone wrong."
-                f"The likelihood values are {fom_with_preloads} (with preloads) and "
-                f"{fom_without_preloads} (without preloads)"
-            )
-
-    def preload_fit_list_from_unit_values(self, model: af.AbstractPriorModel):
-
-        instance_0 = model.instance_from_unit_vector(
-            unit_vector=[0.45] * model.prior_count
-        )
-        instance_1 = model.instance_from_unit_vector(
-            unit_vector=[0.55] * model.prior_count
-        )
-
-        fit_0 = self.fit_imaging_for_instance(
-            instance=instance_0,
-            preload_overwrite=Preloads(use_w_tilde=False),
-            check_positions=False,
-        )
-        fit_1 = self.fit_imaging_for_instance(
-            instance=instance_1,
-            preload_overwrite=Preloads(use_w_tilde=False),
-            check_positions=False,
-        )
-
-        return fit_0, fit_1
-
-    def preload_fit_list_from_random_instances(self, model: af.AbstractPriorModel):
-
-        preload_attempts = conf.instance["general"]["analysis"]["preload_attempts"]
-
-        for i in range(preload_attempts):
-
-            instance = model.random_instance()
-
-            try:
-                fit = self.fit_imaging_for_instance(
-                    instance=instance,
-                    preload_overwrite=Preloads(use_w_tilde=False),
-                    check_positions=False,
-                )
-                break
-            except Exception:
-                pass
-
-            if i == preload_attempts:
-                raise exc.AnalysisException("Preloading Failed")
-
-        return fit
-
-    def set_preloads(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
-
-        ignore_prior_limits = conf.instance["general"]["model"]["ignore_prior_limits"]
-
-        conf.instance["general"]["model"]["ignore_prior_limits"] = True
-
-        try:
-            os.makedirs(paths.profile_path)
-        except FileExistsError:
-            pass
-
-        try:
-            fit_0, fit_1 = self.preload_fit_list_from_unit_values(model=model)
-        except Exception:
-            try:
-                fit_0 = self.preload_fit_list_from_random_instances(model=model)
-                fit_1 = self.preload_fit_list_from_random_instances(model=model)
-            except exc.AnalysisException:
-                logger.info(
-                    "PRELOADS - Preloading failed as models gave too many exceptions, preloading therefore "
-                    "not used."
-                )
-
-                file_preloads = path.join(paths.profile_path, "preloads.summary")
-
-                af.formatter.output_list_of_strings_to_file(
-                    file=file_preloads, list_of_strings=["FAILED"]
-                )
-
-                return
-
-        conf.instance["general"]["model"]["ignore_prior_limits"] = ignore_prior_limits
-
-        self.preloads = Preloads.setup_all_from_fits(fit_0=fit_0, fit_1=fit_1)
-
-        file_preloads = path.join(paths.profile_path, "preloads.summary")
-
-        af.formatter.output_list_of_strings_to_file(
-            file=file_preloads, list_of_strings=self.preloads.info
-        )
 
     def log_likelihood_function(self, instance):
         """
@@ -306,7 +217,9 @@ class AnalysisImaging(AnalysisDataset):
             info_dict["source_pixels"] = len(fit.inversion.reconstruction)
 
         if hasattr(fit.inversion, "w_tilde"):
-            info_dict["w_tilde_curvature_preload_size"] = fit.inversion.w_tilde.curvature_preload.shape[0]
+            info_dict[
+                "w_tilde_curvature_preload_size"
+            ] = fit.inversion.w_tilde.curvature_preload.shape[0]
 
         if paths is not None:
 
@@ -403,7 +316,7 @@ class AnalysisImaging(AnalysisDataset):
                 hyper_image_sky=None,
                 hyper_background_noise=None,
                 use_hyper_scalings=False,
-                preload_overwrite=Preloads(use_w_tilde=False)
+                preload_overwrite=Preloads(use_w_tilde=False),
             )
 
             visualizer.visualize_fit_imaging(
