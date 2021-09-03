@@ -80,7 +80,7 @@ class AnalysisImaging(AnalysisDataset):
         self.preloads = Preloads.setup_all_from_fit_maker(fit_maker=fit_maker)
         self.preloads.output_info_to_summary(file_path=paths.profile_path)
 
-        self.check_preloads()
+        self.check_preloads(model=model)
 
     def check_preloads(self, model: af.AbstractPriorModel):
 
