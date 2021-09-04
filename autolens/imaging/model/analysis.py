@@ -32,6 +32,8 @@ class AnalysisImaging(AnalysisDataset):
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
 
+        self.check_and_replace_hyper_images(paths=paths)
+
         visualizer = VisualizerImaging(visualize_path=paths.image_path)
 
         visualizer.visualize_imaging(imaging=self.imaging)
@@ -40,8 +42,6 @@ class AnalysisImaging(AnalysisDataset):
             hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
             hyper_model_image=self.hyper_model_image,
         )
-
-        self.check_and_replace_hyper_images(paths=paths)
 
         if not paths.is_complete:
 
