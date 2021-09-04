@@ -9,7 +9,7 @@ class ResultImaging(ResultDataset):
         return self.analysis.fit_imaging_for_instance(
             instance=self.instance,
             preload_overwrite=Preloads(use_w_tilde=False),
-            check_positions=False
+            check_positions=False,
         )
 
     @property

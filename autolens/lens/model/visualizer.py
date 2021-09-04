@@ -84,9 +84,7 @@ class Visualizer(AgVisualizer):
                     magnification=True,
                 )
 
-    def visualize_hyper_images(
-        self, hyper_galaxy_image_path_dict, hyper_model_image, tracer
-    ):
+    def visualize_hyper_images(self, hyper_galaxy_image_path_dict, hyper_model_image):
         def should_plot(name):
             return plot_setting(section="hyper", name=name)
 
@@ -104,6 +102,16 @@ class Visualizer(AgVisualizer):
             hyper_plotter.subplot_hyper_images_of_galaxies(
                 hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict
             )
+
+    def visualize_contribution_maps(self, tracer):
+        def should_plot(name):
+            return plot_setting(section="hyper", name=name)
+
+        mat_plot_2d = self.mat_plot_2d_from(subfolders="hyper")
+
+        hyper_plotter = aplt.HyperPlotter(
+            mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
+        )
 
         if hasattr(tracer, "contribution_maps_of_galaxies"):
             if should_plot("contribution_maps_of_galaxies"):

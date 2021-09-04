@@ -32,6 +32,15 @@ class AnalysisImaging(AnalysisDataset):
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
 
+        visualizer = VisualizerImaging(visualize_path=paths.image_path)
+
+        visualizer.visualize_imaging(imaging=self.imaging)
+
+        visualizer.visualize_hyper_images(
+            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
+            hyper_model_image=self.hyper_model_image,
+        )
+
         self.check_and_replace_hyper_images(paths=paths)
 
         if not paths.is_complete:
@@ -294,7 +303,6 @@ class AnalysisImaging(AnalysisDataset):
 
         visualizer = VisualizerImaging(visualize_path=paths.image_path)
 
-        visualizer.visualize_imaging(imaging=self.imaging)
         visualizer.visualize_fit_imaging(fit=fit, during_analysis=during_analysis)
         visualizer.visualize_tracer(
             tracer=fit.tracer, grid=fit.grid, during_analysis=during_analysis
@@ -304,11 +312,7 @@ class AnalysisImaging(AnalysisDataset):
                 inversion=fit.inversion, during_analysis=during_analysis
             )
 
-        visualizer.visualize_hyper_images(
-            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
-            hyper_model_image=self.hyper_model_image,
-            tracer=fit.tracer,
-        )
+        visualizer.visualize_contribution_maps(tracer=fit.tracer)
 
         if visualizer.plot_fit_no_hyper:
             fit = self.fit_imaging_for_tracer(
