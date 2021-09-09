@@ -87,7 +87,12 @@ class AnalysisImaging(AnalysisDataset):
         )
 
         self.preloads = Preloads.setup_all_from_fit_maker(fit_maker=fit_maker)
-        self.check_preloads(model=model)
+
+        try:
+            self.check_preloads(model=model)
+        except exc.PreloadsException:
+            self.preloads.use_w_tilde = False
+            self.check_preloads(model=model)
 
         self.preloads.output_info_to_summary(file_path=paths.profile_path)
 
