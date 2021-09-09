@@ -72,18 +72,3 @@ class FitImagingMaker:
                 ] = ignore_prior_limits
 
                 return
-
-    def fit_via_prior_medians(self, preload_overwrite=None):
-
-        ignore_prior_limits = conf.instance["general"]["model"]["ignore_prior_limits"]
-        conf.instance["general"]["model"]["ignore_prior_limits"] = True
-
-        instance = self.model.instance_from_prior_medians()
-
-        conf.instance["general"]["model"]["ignore_prior_limits"] = ignore_prior_limits
-
-        return self.fit_from_instance_func(
-            instance=instance,
-            check_positions=False,
-            preload_overwrite=preload_overwrite,
-        )

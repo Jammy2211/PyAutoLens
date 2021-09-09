@@ -99,7 +99,7 @@ class Preloads(aa.Preloads):
         self.failed = failed
 
     @classmethod
-    def setup_all_from_fit_maker(cls, fit_maker) -> "Preloads":
+    def setup_all_from_fits(cls, fit_0, fit_1) -> "Preloads":
         """
         Setup the Preloads from two fits which use two different lens model of a model-fit.
 
@@ -118,12 +118,6 @@ class Preloads(aa.Preloads):
         """
 
         preloads = cls()
-
-        fit_0 = fit_maker.fit_via_model(unit_value=0.45)
-        fit_1 = fit_maker.fit_via_model(unit_value=0.55)
-
-        if fit_0 is None or fit_1 is None:
-            return cls(failed=True)
 
         preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
 
@@ -308,20 +302,22 @@ class Preloads(aa.Preloads):
         self.regularization_matrix = None
         self.log_det_regularization_matrix_term = None
 
-    def check_via_fit_maker(self, fit_maker):
+    def check_via_fit(self, fit):
 
-        try:
-            fom_with_preloads = fit_maker.fit_via_prior_medians().figure_of_merit
+        fom_with_preloads = fit.refit_with_new_preloads(
+            preloads=self
+        ).figure_of_merit
 
-            fom_without_preloads = fit_maker.fit_via_prior_medians(
-                preload_overwrite=Preloads(use_w_tilde=False)
-            ).figure_of_merit
+        fom_without_preloads = fit.refit_with_new_preloads(
+            preloads=Preloads(use_w_tilde=False)
+        ).figure_of_merit
 
-        except exc.InversionException:
+        if abs(fom_with_preloads - fit.figure_of_merit) > 1e-8:
 
-            logger.info("Unable to check preloads due to Inversion exception in model")
-
-            return
+            raise exc.PreloadsException(
+                f"Seomthing has gone really bad."
+                f"{fom_with_preloads} {fit.figure_of_merit}"
+            )
 
         if abs(fom_with_preloads - fom_without_preloads) > 1e-4:
 

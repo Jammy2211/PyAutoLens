@@ -289,21 +289,21 @@ class TestAnalysisImaging:
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
-        analysis.check_preloads(model=model)
-
         instance = model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
+        analysis.check_preloads(fit=fit)
+
         analysis.preloads.blurred_image = fit.blurred_image
 
-        analysis.check_preloads(model=model)
+        analysis.check_preloads(fit=fit)
 
         analysis.preloads.blurred_image = fit.blurred_image + 1.0
 
         with pytest.raises(exc.PreloadsException):
-            analysis.check_preloads(model=model)
+            analysis.check_preloads(fit=fit)
 
-        conf.instance["general"]["test"]["check_preloads"] = False
-
-        analysis.check_preloads(model=model)
+        # conf.instance["general"]["test"]["check_preloads"] = False
+        #
+        # analysis.check_preloads(fit=fit)

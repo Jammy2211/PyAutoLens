@@ -86,24 +86,29 @@ class AnalysisImaging(AnalysisDataset):
             model=model, fit_from_instance_func=self.fit_imaging_for_instance
         )
 
-        self.preloads = Preloads.setup_all_from_fit_maker(fit_maker=fit_maker)
+        fit_0 = fit_maker.fit_via_model(unit_value=0.45)
+        fit_1 = fit_maker.fit_via_model(unit_value=0.55)
 
-        try:
-            self.check_preloads(model=model)
-        except exc.PreloadsException:
-            self.preloads.use_w_tilde = False
-            self.check_preloads(model=model)
+        if fit_0 is None or fit_1 is None:
+            self.preloads = Preloads(failed=True)
+        else:
+            self.preloads = Preloads.setup_all_from_fits(fit_0=fit_0, fit_1=fit_1)
+            self.check_preloads(fit=fit_0)
 
         self.preloads.output_info_to_summary(file_path=paths.profile_path)
 
-    def check_preloads(self, model: af.AbstractPriorModel):
+    def check_preloads(self, fit):
 
-        fit_maker = FitImagingMaker(
-            model=model, fit_from_instance_func=self.fit_imaging_for_instance
-        )
+    #    if conf.instance["general"]["test"]["check_preloads"]:
 
-        if conf.instance["general"]["test"]["check_preloads"]:
-            self.preloads.check_via_fit_maker(fit_maker=fit_maker)
+        try:
+            self.preloads.check_via_fit(fit=fit)
+        except exc.PreloadsException:
+            self.preloads.w_tilde = self.preloads.fit_for_snr_cut(fit=fit, snr_cut=0.0)
+            self.preloads.check_via_fit(fit=fit)
+
+            logger.info("The preloading of w_tilde with a snr_cut was unable to satisfy the likelihood threshold,"
+                        "however using a snr_cut of 0.0 did.")
 
     def modify_after_fit(
         self, paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
