@@ -24,9 +24,5 @@ class SettingsException(Exception):
     pass
 
 
-class PreloadException(Exception):
-    pass
-
-
 class PointExtractionException(Exception):
     pass

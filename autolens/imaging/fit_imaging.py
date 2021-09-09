@@ -33,9 +33,18 @@ class FitImaging(aa.FitImaging):
             A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
 
-        self.profiling_dict = profiling_dict
-
         self.tracer = tracer
+
+        self.hyper_image_sky = hyper_image_sky
+        self.hyper_background_noise = hyper_background_noise
+        self.use_hyper_saling = use_hyper_scaling
+
+        self.settings_pixelization = settings_pixelization
+        self.settings_inversion = settings_inversion
+
+        self.preloads = preloads
+
+        self.profiling_dict = profiling_dict
 
         if use_hyper_scaling:
 
@@ -188,6 +197,25 @@ class FitImaging(aa.FitImaging):
     @property
     def total_inversions(self):
         return len(list(filter(None, self.tracer.regularizations_of_planes)))
+
+    def refit_with_new_preloads(self, preloads):
+
+        if self.profiling_dict is not None:
+            profiling_dict = {}
+        else:
+            profiling_dict = None
+
+        return FitImaging(
+            imaging=self.imaging,
+            tracer=self.tracer,
+            hyper_image_sky=self.hyper_image_sky,
+            hyper_background_noise=self.hyper_background_noise,
+            use_hyper_scaling=self.use_hyper_saling,
+            settings_pixelization=self.settings_pixelization,
+            settings_inversion=self.settings_inversion,
+            preloads=preloads,
+            profiling_dict=profiling_dict,
+        )
 
 
 def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):

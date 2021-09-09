@@ -1577,6 +1577,32 @@ class TestCompareToManualProfilesAndInversion:
         )
 
 
+class TestRefit:
+    def test__refit_with_new_preloads(self, masked_imaging_7x7):
+
+        g0 = al.Galaxy(
+            redshift=0.5,
+            light_profile=al.lp.EllSersic(intensity=1.0),
+            mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        )
+
+        g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+
+        refit = fit.refit_with_new_preloads(preloads=al.Preloads())
+
+        assert fit.figure_of_merit == refit.figure_of_merit
+
+        refit = fit.refit_with_new_preloads(
+            preloads=al.Preloads(blurred_image=fit.blurred_image + 1.0)
+        )
+
+        assert fit.figure_of_merit != refit.figure_of_merit
+
+
 class TestAttributes:
     def test__subtracted_images_of_planes(self, masked_imaging_no_blur_7x7):
 

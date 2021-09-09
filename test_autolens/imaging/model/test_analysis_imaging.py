@@ -301,7 +301,7 @@ class TestAnalysisImaging:
 
         analysis.preloads.blurred_image = fit.blurred_image + 1.0
 
-        with pytest.raises(exc.PreloadException):
+        with pytest.raises(exc.PreloadsException):
             analysis.check_preloads(model=model)
 
         conf.instance["general"]["test"]["check_preloads"] = False

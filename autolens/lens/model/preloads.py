@@ -3,8 +3,6 @@ import numpy as np
 from os import path
 from typing import Optional, List
 
-from autoconf import conf
-
 import autofit as af
 import autoarray as aa
 
@@ -101,7 +99,7 @@ class Preloads(aa.Preloads):
         self.failed = failed
 
     @classmethod
-    def setup_all_from_fit_maker(cls, fit_maker, signal_to_noise_threshold=1.0e-10) -> "Preloads":
+    def setup_all_from_fit_maker(cls, fit_maker) -> "Preloads":
         """
         Setup the Preloads from two fits which use two different lens model of a model-fit.
 
@@ -127,7 +125,8 @@ class Preloads(aa.Preloads):
         if fit_0 is None or fit_1 is None:
             return cls(failed=True)
 
-        preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1, signal_to_noise_threshold=signal_to_noise_threshold)
+        preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
+
         preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
         preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
         preloads.set_sparse_image_plane_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
@@ -137,55 +136,6 @@ class Preloads(aa.Preloads):
         preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 
         return preloads
-
-    def set_w_tilde_imaging(self, fit_0, fit_1, signal_to_noise_threshold=1.0e-10):
-        """
-        The w-tilde linear algebra formalism speeds up inversions by computing beforehand quantities that enable
-        efficiently construction of the curvature matrix. These quantites can only be used if the noise-map is
-        fixed, therefore this function preloads these w-tilde quantities if the noise-map does not change.
-
-        This function compares the noise map of two fit's corresponding to two model instances, and preloads wtilde
-        if the noise maps of both fits are the same.
-
-        The preload is typically used through search chaining pipelines, as it is uncommon for the noise map to be
-        scaled during the model-fit (although it is common for a fixed but scaled noise map to be used).
-
-        Parameters
-        ----------
-        fit_0
-            The first fit corresponding to a model with a specific set of unit-values.
-        fit_1
-            The second fit corresponding to a model with a different set of unit-values.
-        """
-        self.w_tilde = None
-        self.use_w_tilde = False
-
-        if (
-            fit_0.inversion is not None
-            and np.max(abs(fit_0.noise_map - fit_1.noise_map)) < 1e-8
-        ):
-
-            logger.info("PRELOADS - Computing W-Tilde... May take a moment.")
-
-            preload, indexes, lengths = aa.util.inversion.w_tilde_curvature_preload_imaging_from(
-                noise_map_native=fit_0.noise_map.native,
-                signal_to_noise_map_native=fit_0.signal_to_noise_map.native,
-                kernel_native=fit_0.dataset.psf.native,
-                native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
-                signal_to_noise_threshold=signal_to_noise_threshold
-            )
-
-            w_tilde = aa.WTildeImaging(
-                curvature_preload=preload,
-                indexes=indexes.astype("int"),
-                lengths=lengths.astype("int"),
-                noise_map_value=fit_0.noise_map[0],
-            )
-
-            self.w_tilde = w_tilde
-            self.use_w_tilde = True
-
-            logger.info("PRELOADS - W-Tilde preloaded for this model-fit.")
 
     def set_blurred_image(self, fit_0, fit_1):
         """
@@ -320,187 +270,6 @@ class Preloads(aa.Preloads):
                         "PRELOADS - Sparse image-plane grids of planes is preloaded for this model-fit."
                     )
 
-    def set_relocated_grid(self, fit_0, fit_1):
-        """
-        If the `MassProfile`'s in a model are fixed their traced grid (which may have had coordinates relocated at
-        the border) does not change during the model=fit and can therefore be preloaded.
-
-        This function compares the relocated grids of the mappers of two fit corresponding to two model instances, and
-        preloads the grid if the grids of both fits are the same.
-
-        The preload is typically used in hyper searches, where the mass model is fixed and the hyper-parameters are
-        varied.
-
-        Parameters
-        ----------
-        fit_0
-            The first fit corresponding to a model with a specific set of unit-values.
-        fit_1
-            The second fit corresponding to a model with a different set of unit-values.
-        """
-
-        self.relocated_grid = None
-
-        if fit_0.inversion is None:
-            return
-
-        mapper_0 = fit_0.inversion.mapper
-        mapper_1 = fit_1.inversion.mapper
-
-        if mapper_0.source_grid_slim.shape[0] == mapper_1.source_grid_slim.shape[0]:
-
-            if (
-                np.max(abs(mapper_0.source_grid_slim - mapper_1.source_grid_slim))
-                < 1.0e-8
-            ):
-
-                self.relocated_grid = mapper_0.source_grid_slim
-
-                logger.info(
-                    "PRELOADS - Relocated grid of pxielization preloaded for this model-fit."
-                )
-
-    def set_mapper(self, fit_0, fit_1):
-        """
-        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
-        source-pixels does not change during the model-fit and the `Mapper` containing this information can be
-        preloaded. This includes preloading the `mapping_matrix`.
-
-        This function compares the mapping matrix of two fit's corresponding to two model instances, and preloads the
-        mapper if the mapping matrix of both fits are the same.
-
-        The preload is typically used in searches where only light profiles vary (e.g. when only the lens's light is
-        being fitted for).
-
-        Parameters
-        ----------
-        fit_0
-            The first fit corresponding to a model with a specific set of unit-values.
-        fit_1
-            The second fit corresponding to a model with a different set of unit-values.
-        """
-
-        self.mapper = None
-
-        if fit_0.inversion is None:
-            return
-
-        mapper_0 = fit_0.inversion.mapper
-        mapper_1 = fit_1.inversion.mapper
-
-        if mapper_0.mapping_matrix.shape[1] == mapper_1.mapping_matrix.shape[1]:
-
-            if np.allclose(mapper_0.mapping_matrix, mapper_1.mapping_matrix):
-
-                self.mapper = mapper_0
-
-                logger.info(
-                    "PRELOADS - Mappers of planes preloaded for this model-fit."
-                )
-
-    def set_inversion(self, fit_0, fit_1):
-        """
-        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
-        source-pixels does not change during the model-fit and matrices used to perform the linear algebra in an
-        inversion can be preloaded, which help efficiently construct the curvature matrix.
-
-        This function compares the blurred mapping matrix of two fit's corresponding to two model instances, and
-        preloads the mapper if the mapping matrix of both fits are the same.
-
-        The preload is typically used in searches where only light profiles vary (e.g. when only the lens's light is
-        being fitted for).
-
-        Parameters
-        ----------
-        fit_0
-            The first fit corresponding to a model with a specific set of unit-values.
-        fit_1
-            The second fit corresponding to a model with a different set of unit-values.
-        """
-
-        self.blurred_mapping_matrix = None
-        self.curvature_matrix_sparse_preload = None
-        self.curvature_matrix_preload_counts = None
-
-        inversion_0 = fit_0.inversion
-        inversion_1 = fit_1.inversion
-
-        if inversion_0 is None:
-            return
-
-        if (
-            inversion_0.blurred_mapping_matrix.shape[1]
-            == inversion_1.blurred_mapping_matrix.shape[1]
-        ):
-
-            if (
-                np.max(
-                    abs(
-                        inversion_0.blurred_mapping_matrix
-                        - inversion_1.blurred_mapping_matrix
-                    )
-                )
-                < 1e-8
-            ):
-
-                self.blurred_mapping_matrix = inversion_0.blurred_mapping_matrix
-                self.curvature_matrix_sparse_preload = (
-                    inversion_0.curvature_matrix_sparse_preload
-                ).astype("int")
-                self.curvature_matrix_preload_counts = (
-                    inversion_0.curvature_matrix_preload_counts
-                ).astype("int")
-
-                logger.info(
-                    "PRELOADS - Inversion linear algebra quantities preloaded for this model-fit."
-                )
-
-    def set_regularization_matrix_and_term(self, fit_0, fit_1):
-        """
-        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
-        source-pixels does not change during the model-fit and therefore its associated regularization matrices are
-        also fixed, meaning the log determinant of the regularization matrix term of the Bayesian evidence can be
-        preloaded.
-
-        This function compares the value of the log determinant of the regularization matrix of two fit's corresponding
-        to two model instances, and preloads this value if it is the same for both fits.
-
-        The preload is typically used in searches where only light profiles vary (e.g. when only the lens's light is
-        being fitted for).
-
-        Parameters
-        ----------
-        fit_0
-            The first fit corresponding to a model with a specific set of unit-values.
-        fit_1
-            The second fit corresponding to a model with a different set of unit-values.
-        """
-        self.regularization_matrix = None
-        self.log_det_regularization_matrix_term = None
-
-        inversion_0 = fit_0.inversion
-        inversion_1 = fit_1.inversion
-
-        if inversion_0 is None:
-            return
-
-        if (
-            abs(
-                inversion_0.log_det_regularization_matrix_term
-                - inversion_1.log_det_regularization_matrix_term
-            )
-            < 1e-8
-        ):
-
-            self.regularization_matrix = inversion_0.regularization_matrix
-            self.log_det_regularization_matrix_term = (
-                inversion_0.log_det_regularization_matrix_term
-            )
-
-            logger.info(
-                "PRELOADS - Inversion Log Det Regularization Matrix Term preloaded for this model-fit."
-            )
-
     def output_info_to_summary(self, file_path):
 
         file_preloads = path.join(file_path, "preloads.summary")
@@ -527,6 +296,7 @@ class Preloads(aa.Preloads):
         Reset all preloads, typically done at the end of a model-fit to save memory.
         """
         self.w_tilde = None
+
         self.blurred_image = None
         self.traced_grids_of_planes_for_inversion = None
         self.sparse_image_plane_grids_of_planes = None
@@ -555,7 +325,7 @@ class Preloads(aa.Preloads):
 
         if abs(fom_with_preloads - fom_without_preloads) > 1e-4:
 
-            raise exc.PreloadException(
+            raise exc.PreloadsException(
                 f"The log likelihood of fits using and not using preloads are not"
                 f"consistent, indicating preloading has gone wrong."
                 f"The likelihood values are {fom_with_preloads} (with preloads) and "

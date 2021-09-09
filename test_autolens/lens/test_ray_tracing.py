@@ -3482,4 +3482,3 @@ class TestDecorators:
         deflections_sub_8 = galaxy.deflections_2d_from_grid(grid=grid_sub_8).binned
 
         assert deflections[4, 0] == deflections_sub_8[4, 0]
-

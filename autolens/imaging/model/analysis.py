@@ -86,12 +86,8 @@ class AnalysisImaging(AnalysisDataset):
             model=model, fit_from_instance_func=self.fit_imaging_for_instance
         )
 
-        self.preloads = Preloads.setup_all_from_fit_maker(
-            fit_maker=fit_maker,
-            signal_to_noise_threshold=self.dataset.settings.w_tilde_signal_to_noise_threshold
-        )
+        self.preloads = Preloads.setup_all_from_fit_maker(fit_maker=fit_maker)
         self.check_preloads(model=model)
-
 
         self.preloads.output_info_to_summary(file_path=paths.profile_path)
 

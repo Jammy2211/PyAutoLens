@@ -1,6 +1,7 @@
 import autofit as af
 
 from autofit.mock.mock import MockSearch, MockSamples
+from autoarray.mock.mock import MockMask, MockDataset, MockFit as AAMockFit
 from autogalaxy.mock.mock import MockLightProfile, MockMassProfile
 
 
@@ -147,21 +148,7 @@ class MockResults(af.ResultsCollection):
         return len(self.__result_list)
 
 
-class MockMask:
-    def __init__(self, native_index_for_slim_index=None):
-
-        self.native_index_for_slim_index = native_index_for_slim_index
-
-
-class MockDataset:
-    def __init__(self, grid_inversion=None, psf=None, mask=None):
-
-        self.grid_inversion = grid_inversion
-        self.psf = psf
-        self.mask = mask
-
-
-class MockFit:
+class MockFit(AAMockFit):
     def __init__(
         self,
         tracer=None,
@@ -172,11 +159,9 @@ class MockFit:
         blurred_image=None,
     ):
 
-        self.dataset = dataset
+        super().__init__(dataset=dataset, inversion=inversion, noise_map=noise_map)
+
         self.tracer = tracer
-        self.inversion = inversion
-        self.noise_map = noise_map
-        self.signal_to_noise_map = noise_map
         self.grid = grid
         self.blurred_image = blurred_image
 
