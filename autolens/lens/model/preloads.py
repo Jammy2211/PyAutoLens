@@ -302,22 +302,21 @@ class Preloads(aa.Preloads):
         self.regularization_matrix = None
         self.log_det_regularization_matrix_term = None
 
-    def check_via_fit(self, fit):
+    def check_via_fit(self, fit, horrible=True):
 
-        fom_with_preloads = fit.refit_with_new_preloads(
-            preloads=self
-        ).figure_of_merit
+        fom_with_preloads = fit.refit_with_new_preloads(preloads=self).figure_of_merit
 
         fom_without_preloads = fit.refit_with_new_preloads(
             preloads=Preloads(use_w_tilde=False)
         ).figure_of_merit
 
-        if abs(fom_with_preloads - fit.figure_of_merit) > 1e-8:
+        if horrible:
+            if abs(fom_with_preloads - fit.figure_of_merit) > 1e-8:
 
-            raise exc.PreloadsException(
-                f"Seomthing has gone really bad."
-                f"{fom_with_preloads} {fit.figure_of_merit}"
-            )
+                raise exc.PreloadsException(
+                    f"Seomthing has gone really bad."
+                    f"{fom_with_preloads} {fit.figure_of_merit}"
+                )
 
         if abs(fom_with_preloads - fom_without_preloads) > 1e-4:
 

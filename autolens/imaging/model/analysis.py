@@ -99,16 +99,24 @@ class AnalysisImaging(AnalysisDataset):
 
     def check_preloads(self, fit):
 
-    #    if conf.instance["general"]["test"]["check_preloads"]:
+        #    if conf.instance["general"]["test"]["check_preloads"]:
 
         try:
             self.preloads.check_via_fit(fit=fit)
         except exc.PreloadsException:
-            self.preloads.w_tilde = self.preloads.fit_for_snr_cut(fit=fit, snr_cut=0.0)
-            self.preloads.check_via_fit(fit=fit)
 
-            logger.info("The preloading of w_tilde with a snr_cut was unable to satisfy the likelihood threshold,"
-                        "however using a snr_cut of 0.0 did.")
+            if fit.inversion is not None:
+                self.preloads.w_tilde = self.preloads.w_tilde_for_snr_cut(
+                    fit=fit, snr_cut=0.0
+                )
+
+            self.preloads.check_via_fit(fit=fit, horrible=False)
+
+
+            logger.info(
+                "The preloading of w_tilde with a snr_cut was unable to satisfy the likelihood threshold,"
+                "however using a snr_cut of 0.0 did."
+            )
 
     def modify_after_fit(
         self, paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
