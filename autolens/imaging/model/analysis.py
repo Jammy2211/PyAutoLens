@@ -98,7 +98,10 @@ class AnalysisImaging(AnalysisDataset):
         )
 
         if conf.instance["general"]["test"]["check_preloads"]:
-            self.preloads.check_via_fit_maker(fit_maker=fit_maker)
+            try:
+                self.preloads.check_via_fit_maker(fit_maker=fit_maker)
+            except exc.PreloadsException:
+                self.preloads.reset_all()
 
     def modify_after_fit(
         self, paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
