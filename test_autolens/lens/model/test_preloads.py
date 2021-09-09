@@ -417,17 +417,20 @@ def test__info():
     results = open(file_preloads)
     lines = results.readlines()
 
-    assert lines[0] == f"Blurred Image = False\n"
-    assert lines[1] == f"W Tilde = False\n"
-    assert lines[2] == f"Use W Tilde = False\n"
-    assert lines[3] == f"Traced Grids of Planes (For Inversion) = False\n"
-    assert lines[4] == f"Sparse Image-Plane Grids of Planes = False\n"
-    assert lines[5] == f"Relocated Grid = False\n"
-    assert lines[6] == f"Mapper = False\n"
-    assert lines[7] == f"Blurred Mapping Matrix = False\n"
-    assert lines[8] == f"Curvature Matrix Sparse = False\n"
-    assert lines[9] == f"Regularization Matrix = False\n"
-    assert lines[10] == f"Log Det Regularization Matrix Term = False\n"
+    i = 0
+
+    assert lines[i] == f"W Tilde = False\n"; i+=1
+    assert lines[i] == f"Use W Tilde = False\n"; i+=1
+    assert lines[i] == f"\n"; i+=1
+    assert lines[i] == f"Blurred Image = False\n"; i+=1
+    assert lines[i] == f"Traced Grids of Planes (For Inversion) = False\n"; i+=1
+    assert lines[i] == f"Sparse Image-Plane Grids of Planes = False\n"; i+=1
+    assert lines[i] == f"Relocated Grid = False\n"; i+=1
+    assert lines[i] == f"Mapper = False\n"; i+=1
+    assert lines[i] == f"Blurred Mapping Matrix = False\n"; i+=1
+    assert lines[i] == f"Curvature Matrix Sparse = False\n"; i+=1
+    assert lines[i] == f"Regularization Matrix = False\n"; i+=1
+    assert lines[i] == f"Log Det Regularization Matrix Term = False\n"; i+=1
 
     preloads = Preloads(
         blurred_image=1,
@@ -450,14 +453,17 @@ def test__info():
     results = open(file_preloads)
     lines = results.readlines()
 
-    assert lines[0] == f"Blurred Image = True\n"
-    assert lines[1] == f"W Tilde = True\n"
-    assert lines[2] == f"Use W Tilde = True\n"
-    assert lines[3] == f"Traced Grids of Planes (For Inversion) = True\n"
-    assert lines[4] == f"Sparse Image-Plane Grids of Planes = True\n"
-    assert lines[5] == f"Relocated Grid = True\n"
-    assert lines[6] == f"Mapper = True\n"
-    assert lines[7] == f"Blurred Mapping Matrix = True\n"
-    assert lines[8] == f"Curvature Matrix Sparse = True\n"
-    assert lines[9] == f"Regularization Matrix = True\n"
-    assert lines[10] == f"Log Det Regularization Matrix Term = True\n"
+    i = 0
+
+    assert lines[i] == f"W Tilde = True\n"; i+=1
+    assert lines[i] == f"Use W Tilde = True\n"; i+=1
+    assert lines[i] == f"\n"; i+=1
+    assert lines[i] == f"Blurred Image = True\n"; i+=1
+    assert lines[i] == f"Traced Grids of Planes (For Inversion) = True\n"; i+=1
+    assert lines[i] == f"Sparse Image-Plane Grids of Planes = True\n"; i+=1
+    assert lines[i] == f"Relocated Grid = True\n"; i+=1
+    assert lines[i] == f"Mapper = True\n"; i+=1
+    assert lines[i] == f"Blurred Mapping Matrix = True\n"; i+=1
+    assert lines[i] == f"Curvature Matrix Sparse = True\n"; i+=1
+    assert lines[i] == f"Regularization Matrix = True\n"; i+=1
+    assert lines[i] == f"Log Det Regularization Matrix Term = True\n"; i+=1

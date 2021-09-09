@@ -18,9 +18,9 @@ logger.setLevel(level="INFO")
 class Preloads(aa.Preloads):
     def __init__(
         self,
-        blurred_image: Optional[aa.Array2D] = None,
         w_tilde: Optional[aa.WTildeImaging] = None,
         use_w_tilde: Optional[bool] = None,
+        blurred_image: Optional[aa.Array2D] = None,
         traced_grids_of_planes_for_inversion: Optional[aa.Grid2D] = None,
         sparse_image_plane_grids_of_planes: Optional[aa.Grid2D] = None,
         relocated_grid: Optional[aa.Grid2D] = None,
@@ -101,7 +101,7 @@ class Preloads(aa.Preloads):
         self.failed = failed
 
     @classmethod
-    def setup_all_from_fit_maker(cls, fit_maker) -> "Preloads":
+    def setup_all_from_fit_maker(cls, fit_maker, signal_to_noise_threshold=1.0e-10) -> "Preloads":
         """
         Setup the Preloads from two fits which use two different lens model of a model-fit.
 
@@ -127,8 +127,8 @@ class Preloads(aa.Preloads):
         if fit_0 is None or fit_1 is None:
             return cls(failed=True)
 
+        preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1, signal_to_noise_threshold=signal_to_noise_threshold)
         preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
-        preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
         preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
         preloads.set_sparse_image_plane_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
         preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
@@ -138,35 +138,7 @@ class Preloads(aa.Preloads):
 
         return preloads
 
-    def set_blurred_image(self, fit_0, fit_1):
-        """
-        If the `LightProfile`'s in a model are all fixed parameters their corresponding image and therefore PSF blurred
-        image do not change during the model fit and can therefore be preloaded.
-
-        This function compares the blurred image of two fit's corresponding to two model instances, and preloads
-        the blurred image if the blurred image of both fits are the same.
-
-        The preload is typically used though out search chaining pipelines, as it is common to fix the lens light for
-        the majority of model-fits.
-
-        Parameters
-        ----------
-        fit_0
-            The first fit corresponding to a model with a specific set of unit-values.
-        fit_1
-            The second fit corresponding to a model with a different set of unit-values.
-        """
-        self.blurred_image = None
-
-        if np.max(abs(fit_0.blurred_image - fit_1.blurred_image)) < 1e-8:
-
-            self.blurred_image = fit_0.blurred_image
-
-            logger.info(
-                "PRELOADS - Blurred image (e.g. the image of all light profiles) is preloaded for this model-fit."
-            )
-
-    def set_w_tilde_imaging(self, fit_0, fit_1):
+    def set_w_tilde_imaging(self, fit_0, fit_1, signal_to_noise_threshold=1.0e-10):
         """
         The w-tilde linear algebra formalism speeds up inversions by computing beforehand quantities that enable
         efficiently construction of the curvature matrix. These quantites can only be used if the noise-map is
@@ -200,6 +172,7 @@ class Preloads(aa.Preloads):
                 signal_to_noise_map_native=fit_0.signal_to_noise_map.native,
                 kernel_native=fit_0.dataset.psf.native,
                 native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
+                signal_to_noise_threshold=signal_to_noise_threshold
             )
 
             w_tilde = aa.WTildeImaging(
@@ -213,6 +186,34 @@ class Preloads(aa.Preloads):
             self.use_w_tilde = True
 
             logger.info("PRELOADS - W-Tilde preloaded for this model-fit.")
+
+    def set_blurred_image(self, fit_0, fit_1):
+        """
+        If the `LightProfile`'s in a model are all fixed parameters their corresponding image and therefore PSF blurred
+        image do not change during the model fit and can therefore be preloaded.
+
+        This function compares the blurred image of two fit's corresponding to two model instances, and preloads
+        the blurred image if the blurred image of both fits are the same.
+
+        The preload is typically used though out search chaining pipelines, as it is common to fix the lens light for
+        the majority of model-fits.
+
+        Parameters
+        ----------
+        fit_0
+            The first fit corresponding to a model with a specific set of unit-values.
+        fit_1
+            The second fit corresponding to a model with a different set of unit-values.
+        """
+        self.blurred_image = None
+
+        if np.max(abs(fit_0.blurred_image - fit_1.blurred_image)) < 1e-8:
+
+            self.blurred_image = fit_0.blurred_image
+
+            logger.info(
+                "PRELOADS - Blurred image (e.g. the image of all light profiles) is preloaded for this model-fit."
+            )
 
     def set_traced_grids_of_planes_for_inversion(self, fit_0, fit_1):
         """
@@ -525,8 +526,8 @@ class Preloads(aa.Preloads):
         """
         Reset all preloads, typically done at the end of a model-fit to save memory.
         """
-        self.blurred_image = None
         self.w_tilde = None
+        self.blurred_image = None
         self.traced_grids_of_planes_for_inversion = None
         self.sparse_image_plane_grids_of_planes = None
         self.relocated_grid = None
@@ -570,9 +571,9 @@ class Preloads(aa.Preloads):
         -------
             A list of strings containing True and False values as to whether a quantity has been preloaded.
         """
-        line = [f"Blurred Image = {np.count_nonzero(self.blurred_image) != 0}\n"]
-        line += [f"W Tilde = {self.w_tilde is not None}\n"]
-        line += [f"Use W Tilde = {self.use_w_tilde}\n"]
+        line = [f"W Tilde = {self.w_tilde is not None}\n"]
+        line += [f"Use W Tilde = {self.use_w_tilde}\n\n"]
+        line += [f"Blurred Image = {np.count_nonzero(self.blurred_image) != 0}\n"]
         line += [
             f"Traced Grids of Planes (For Inversion) = {self.traced_grids_of_planes_for_inversion is not None}\n"
         ]

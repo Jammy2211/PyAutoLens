@@ -34,16 +34,16 @@ class AnalysisImaging(AnalysisDataset):
 
         self.check_and_replace_hyper_images(paths=paths)
 
-        visualizer = VisualizerImaging(visualize_path=paths.image_path)
-
-        visualizer.visualize_imaging(imaging=self.imaging)
-
-        visualizer.visualize_hyper_images(
-            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
-            hyper_model_image=self.hyper_model_image,
-        )
-
         if not paths.is_complete:
+
+            visualizer = VisualizerImaging(visualize_path=paths.image_path)
+
+            visualizer.visualize_imaging(imaging=self.imaging)
+
+            visualizer.visualize_hyper_images(
+                hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
+                hyper_model_image=self.hyper_model_image,
+            )
 
             logger.info(
                 "PRELOADS - Setting up preloads, may take a few minutes for fits using an inversion."
@@ -86,10 +86,14 @@ class AnalysisImaging(AnalysisDataset):
             model=model, fit_from_instance_func=self.fit_imaging_for_instance
         )
 
-        self.preloads = Preloads.setup_all_from_fit_maker(fit_maker=fit_maker)
-        self.preloads.output_info_to_summary(file_path=paths.profile_path)
-
+        self.preloads = Preloads.setup_all_from_fit_maker(
+            fit_maker=fit_maker,
+            signal_to_noise_threshold=self.dataset.settings.w_tilde_signal_to_noise_threshold
+        )
         self.check_preloads(model=model)
+
+
+        self.preloads.output_info_to_summary(file_path=paths.profile_path)
 
     def check_preloads(self, model: af.AbstractPriorModel):
 
