@@ -105,13 +105,13 @@ class AnalysisImaging(AnalysisDataset):
             self.preloads.check_via_fit(fit=fit)
         except exc.PreloadsException:
 
-            if fit.inversion is not None:
-                self.preloads.w_tilde = self.preloads.w_tilde_for_snr_cut(
-                    fit=fit, snr_cut=0.0
-                )
+            #      if fit.inversion is not None:
+            # self.preloads.w_tilde = self.preloads.w_tilde_for_snr_cut(
+            #     fit=fit, snr_cut=0.0
+            # )
 
-            self.preloads.check_via_fit(fit=fit, horrible=False)
-
+            self.preloads.use_w_tilde = False
+            self.preloads.check_via_fit(fit=fit)
 
             logger.info(
                 "The preloading of w_tilde with a snr_cut was unable to satisfy the likelihood threshold,"
