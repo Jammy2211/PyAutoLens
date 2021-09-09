@@ -98,10 +98,7 @@ class AnalysisImaging(AnalysisDataset):
         )
 
         if conf.instance["general"]["test"]["check_preloads"]:
-            try:
-                self.preloads.check_via_fit_maker(fit_maker=fit_maker)
-            except exc.PreloadsException:
-                self.preloads.reset_all()
+            self.preloads.check_via_fit_maker(fit_maker=fit_maker)
 
     def modify_after_fit(
         self, paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
@@ -232,6 +229,7 @@ class AnalysisImaging(AnalysisDataset):
             info_dict[
                 "w_tilde_curvature_preload_size"
             ] = fit.inversion.w_tilde.curvature_preload.shape[0]
+            info_dict["snr_cut"] = fit.inversion.w_tilde.snr_cut
 
         if paths is not None:
 
