@@ -33,6 +33,13 @@ class TestAnalysisImaging:
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
+        def modify_after_fit(
+            paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
+        ):
+            pass
+
+        analysis.modify_after_fit = modify_after_fit
+
         result = search.fit(model=model, analysis=analysis)
 
         assert isinstance(result, ResultImaging)
