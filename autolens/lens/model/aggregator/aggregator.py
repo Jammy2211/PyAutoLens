@@ -74,8 +74,6 @@ class AbstractAgg(ABC):
     @abstractmethod
     def make_object_for_gen(self, fit: af.Fit, galaxies: List[ag.Galaxy]) -> object:
         """
-
-
         For example, in the `TracerAgg` object, this function is overwritten such that it creates a `Tracer` from a
         `ModelInstance` that contains the galaxies of a sample from a non-linear search.
 
@@ -107,6 +105,35 @@ class AbstractAgg(ABC):
             return self.make_object_for_gen(fit=fit, galaxies=fit.instance.galaxies)
 
         return self.aggregator.map(func=func_gen)
+
+    def weights_above_gen(self, minimum_weight: float) -> List:
+        """
+        Returns a list of all weights above a minimum weight for every result.
+
+        Parameters
+        ----------
+        minimum_weight
+            The minimum weight of a non-linear sample, such that samples with a weight below this value are discarded
+            and not included in the generator.
+        """
+
+        def func_gen(fit: af.Fit, minimum_weight: float) -> List[object]:
+
+            samples = fit.value(name="samples")
+
+            weight_list = []
+
+            for sample in samples.sample_list:
+
+                if sample.weight > minimum_weight:
+
+                    weight_list.append(sample.weight)
+
+            return weight_list
+
+        func = partial(func_gen, minimum_weight=minimum_weight)
+
+        return self.aggregator.map(func=func)
 
     def all_above_weight_gen(self, minimum_weight: float) -> Generator:
         """

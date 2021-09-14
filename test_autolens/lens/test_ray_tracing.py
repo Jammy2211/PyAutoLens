@@ -1,4 +1,3 @@
-import autolens as al
 import numpy as np
 import pytest
 import os
@@ -6,6 +5,11 @@ from os import path
 import shutil
 from astropy import cosmology as cosmo
 from skimage import measure
+
+from autoarray.inversion.pixelization.abstract import AbstractPixelization
+
+import autolens as al
+
 from autoarray.mock import mock as mock_inv
 from autolens.mock import mock
 
@@ -158,7 +162,7 @@ class TestAbstractTracer:
             gal = al.Galaxy(redshift=0.5)
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pix.Pixelization(),
+                pixelization=AbstractPixelization(),
                 regularization=al.reg.Constant(),
             )
 
@@ -172,7 +176,7 @@ class TestAbstractTracer:
 
             gal_pix = al.Galaxy(
                 redshift=1.0,
-                pixelization=al.pix.Pixelization(),
+                pixelization=AbstractPixelization(),
                 regularization=al.reg.Constant(),
             )
 
@@ -182,13 +186,13 @@ class TestAbstractTracer:
 
             gal_pix_0 = al.Galaxy(
                 redshift=0.6,
-                pixelization=al.pix.Pixelization(),
+                pixelization=AbstractPixelization(),
                 regularization=al.reg.Constant(),
             )
 
             gal_pix_1 = al.Galaxy(
                 redshift=2.0,
-                pixelization=al.pix.Pixelization(),
+                pixelization=AbstractPixelization(),
                 regularization=al.reg.Constant(),
             )
 
@@ -207,7 +211,7 @@ class TestAbstractTracer:
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pix.Pixelization(),
+                pixelization=AbstractPixelization(),
                 regularization=al.reg.Constant(),
             )
 
@@ -236,7 +240,7 @@ class TestAbstractTracer:
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
             gal_reg = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pix.Pixelization(),
+                pixelization=AbstractPixelization(),
                 regularization=al.reg.Constant(),
             )
 
@@ -335,7 +339,7 @@ class TestAbstractTracer:
             gal = al.Galaxy(redshift=0.5)
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pix.Pixelization(),
+                pixelization=AbstractPixelization(),
                 regularization=al.reg.Constant(),
             )
 
@@ -349,7 +353,7 @@ class TestAbstractTracer:
 
             gal_pix = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pix.Pixelization(),
+                pixelization=AbstractPixelization(),
                 regularization=al.reg.Constant(),
                 hyper_galaxy_image=1,
             )
@@ -364,14 +368,14 @@ class TestAbstractTracer:
 
             gal_pix0 = al.Galaxy(
                 redshift=0.5,
-                pixelization=al.pix.Pixelization(),
+                pixelization=AbstractPixelization(),
                 regularization=al.reg.Constant(),
                 hyper_galaxy_image=1,
             )
 
             gal_pix1 = al.Galaxy(
                 redshift=2.0,
-                pixelization=al.pix.Pixelization(),
+                pixelization=AbstractPixelization(),
                 regularization=al.reg.Constant(),
                 hyper_galaxy_image=2,
             )

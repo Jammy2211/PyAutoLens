@@ -148,10 +148,11 @@ class TestTracerAgg:
 
         tracer_agg = al.agg.TracerAgg(aggregator=agg)
         tracer_pdf_gen = tracer_agg.all_above_weight_gen(minimum_weight=-1.0)
+        weight_pdf_gen = tracer_agg.weights_above_gen(minimum_weight=-1.0)
 
         i = 0
 
-        for tracer_gen in tracer_pdf_gen:
+        for (tracer_gen, weight_gen) in zip(tracer_pdf_gen, weight_pdf_gen):
 
             for tracer in tracer_gen:
 
@@ -168,6 +169,16 @@ class TestTracerAgg:
                     assert tracer.galaxies[0].redshift == 0.5
                     assert tracer.galaxies[0].light.centre == (10.0, 10.0)
                     assert tracer.galaxies[1].redshift == 1.0
+
+            for weight in weight_gen:
+
+                if i == 0:
+
+                    assert weight == 0.0
+
+                if i == 1:
+
+                    assert weight == 1.0
 
         assert i == 2
 

@@ -22,7 +22,7 @@ class Preloads(aa.Preloads):
         traced_grids_of_planes_for_inversion: Optional[aa.Grid2D] = None,
         sparse_image_plane_grids_of_planes: Optional[aa.Grid2D] = None,
         relocated_grid: Optional[aa.Grid2D] = None,
-        mapper: Optional[aa.Mapper] = None,
+        mapper: Optional[aa.AbstractMapper] = None,
         blurred_mapping_matrix: Optional[np.ndarray] = None,
         curvature_matrix_sparse_preload: Optional[np.ndarray] = None,
         curvature_matrix_preload_counts: Optional[np.ndarray] = None,

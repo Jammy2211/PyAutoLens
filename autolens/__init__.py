@@ -5,8 +5,9 @@ from autoarray.dataset.interferometer import Interferometer, SettingsInterferome
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
-from autoarray.inversion import pixelizations as pix, regularization as reg
-from autoarray.inversion.pixelizations import SettingsPixelization
+from autoarray.inversion import pixelizations as pix
+from autoarray.inversion import regularization as reg
+from autoarray.inversion.pixelization.settings import SettingsPixelization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.inversion.imaging import (
     inversion_imaging_from as InversionImaging,
@@ -14,7 +15,7 @@ from autoarray.inversion.inversion.imaging import (
 from autoarray.inversion.inversion.interferometer import (
     inversion_interferometer_from as InversionInterferometer,
 )
-from autoarray.inversion.mappers import mapper as Mapper
+from autoarray.inversion.mappers.abstract import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays.one_d.array_1d import Array1D
