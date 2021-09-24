@@ -142,7 +142,7 @@ def test__info():
         relocated_grid=None,
         mapper=None,
         blurred_mapping_matrix=None,
-        curvature_matrix_sparse_preload=None,
+        curvature_matrix_preload=None,
     )
 
     af.formatter.output_list_of_strings_to_file(
@@ -162,7 +162,7 @@ def test__info():
     i += 1
     assert lines[i] == f"Blurred Image = False\n"
     i += 1
-    assert lines[i] == f"Traced Grids of Planes (For Inversion) = False\n"
+    assert lines[i] == f"Traced Grids of Planes (For LinearEqn) = False\n"
     i += 1
     assert lines[i] == f"Sparse Image-Plane Grids of Planes = False\n"
     i += 1
@@ -188,7 +188,7 @@ def test__info():
         sparse_image_plane_grids_of_planes=1,
         mapper=1,
         blurred_mapping_matrix=1,
-        curvature_matrix_sparse_preload=1,
+        curvature_matrix_preload=1,
         regularization_matrix=1,
         log_det_regularization_matrix_term=1,
     )
@@ -210,7 +210,7 @@ def test__info():
     i += 1
     assert lines[i] == f"Blurred Image = True\n"
     i += 1
-    assert lines[i] == f"Traced Grids of Planes (For Inversion) = True\n"
+    assert lines[i] == f"Traced Grids of Planes (For LinearEqn) = True\n"
     i += 1
     assert lines[i] == f"Sparse Image-Plane Grids of Planes = True\n"
     i += 1

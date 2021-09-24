@@ -232,7 +232,6 @@ class AnalysisImaging(AnalysisDataset):
             info_dict[
                 "w_tilde_curvature_preload_size"
             ] = fit.inversion.w_tilde.curvature_preload.shape[0]
-            info_dict["snr_cut"] = fit.inversion.w_tilde.snr_cut
 
         if paths is not None:
 

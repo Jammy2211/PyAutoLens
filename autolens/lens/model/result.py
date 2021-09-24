@@ -40,7 +40,7 @@ class Result(AgResult):
         Return the centre of a source-plane galaxy via the following criteria:
 
         1) If the source plane contains only light profiles, return the first light's centre.
-        2) If it contains an `Inversion` return the centre of its brightest pixel instead.
+        2) If it contains an `LinearEqn` return the centre of its brightest pixel instead.
 
         These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
         (and thus tracer) by back-tracing the centres to the image plane via the mass model.
@@ -158,7 +158,7 @@ class ResultDataset(Result):
         Return the centre of a source-plane galaxy via the following criteria:
 
         1) If the source plane contains only light profiles, return the first light's centre.
-        2) If it contains an `Inversion` return the centre of its brightest pixel instead.
+        2) If it contains an `LinearEqn` return the centre of its brightest pixel instead.
 
         These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
         (and thus tracer) by back-tracing the centres to the image plane via the mass model.
@@ -171,14 +171,14 @@ class ResultDataset(Result):
     @property
     def source_plane_inversion_centre(self) -> aa.Grid2DIrregular:
         """
-        Returns the centre of the brightest source pixel(s) of an `Inversion`.
+        Returns the centre of the brightest source pixel(s) of an `LinearEqn`.
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions.
         """
-        if self.max_log_likelihood_fit.inversion is not None:
+        if self.max_log_likelihood_fit.linear_eqn is not None:
             return (
-                self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre
+                self.max_log_likelihood_fit.linear_eqn.brightest_reconstruction_pixel_centre
             )
 
     @property

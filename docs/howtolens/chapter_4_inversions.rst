@@ -1,7 +1,7 @@
-Chapter 4: Inversions
+Chapter 4: LinearEqns
 =====================
 
-In chapter 4, we use **Inversions** to reconstruct complex source galaxies on pixelized grids.
+In chapter 4, we use **LinearEqns** to reconstruct complex source galaxies on pixelized grids.
 
 The chapter contains the following tutorials:
 
@@ -11,7 +11,7 @@ The chapter contains the following tutorials:
 `Tutorial 2: Mappers <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_inversions/tutorial_2_mappers.ipynb>`_
 - How a pixelizations maps source-pixels to image-pixels.
 
-`Tutorial 3: Inversions <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_inversions/tutorial_3_inversions.ipynb>`_
+`Tutorial 3: LinearEqns <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_inversions/tutorial_3_inversions.ipynb>`_
 - Inverting the mappings to reconstruct the source's light.
 
 `Tutorial 4: Bayesian Regularization <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_inversions/tutorial_4_bayesian_regularization.ipynb>`_

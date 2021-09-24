@@ -37,7 +37,7 @@ class FitImaging(aa.FitImaging):
 
         self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
-        self.use_hyper_saling = use_hyper_scaling
+        self.use_hyper_scaling = use_hyper_scaling
 
         self.settings_pixelization = settings_pixelization
         self.settings_inversion = settings_inversion
@@ -210,7 +210,7 @@ class FitImaging(aa.FitImaging):
             tracer=self.tracer,
             hyper_image_sky=self.hyper_image_sky,
             hyper_background_noise=self.hyper_background_noise,
-            use_hyper_scaling=self.use_hyper_saling,
+            use_hyper_scaling=self.use_hyper_scaling,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             preloads=preloads,

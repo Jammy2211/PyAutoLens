@@ -24,8 +24,8 @@ class Preloads(aa.Preloads):
         relocated_grid: Optional[aa.Grid2D] = None,
         mapper: Optional[aa.AbstractMapper] = None,
         blurred_mapping_matrix: Optional[np.ndarray] = None,
-        curvature_matrix_sparse_preload: Optional[np.ndarray] = None,
-        curvature_matrix_preload_counts: Optional[np.ndarray] = None,
+        curvature_matrix_preload: Optional[np.ndarray] = None,
+        curvature_matrix_counts: Optional[np.ndarray] = None,
         regularization_matrix: Optional[np.ndarray] = None,
         log_det_regularization_matrix_term: Optional[float] = None,
         failed=False,
@@ -68,10 +68,10 @@ class Preloads(aa.Preloads):
         blurred_mapping_matrix
             A matrix containing the mappings between PSF blurred image pixels and source pixels used in the linear
             algebra of an inversion. This can be preloaded when no mass profiles and pixelizations in the model vary.
-        curvature_matrix_sparse_preload
+        curvature_matrix_preload
             A matrix containing preloaded value used to construct the curvature matrix from the blurred mapping matrix.
             This can be preloaded when no mass profiles and pixelizations in the model vary.
-        curvature_matrix_preload_counts
+        curvature_matrix_counts
             A matrix containing the length of values in the curvature matrix preloaded, which are used to construct
             the curvature matrix from the blurred mapping matrix. This can be preloaded when no mass profiles and
             pixelizations in the model vary.
@@ -88,8 +88,8 @@ class Preloads(aa.Preloads):
             sparse_image_plane_grids_of_planes=sparse_image_plane_grids_of_planes,
             mapper=mapper,
             blurred_mapping_matrix=blurred_mapping_matrix,
-            curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
-            curvature_matrix_preload_counts=curvature_matrix_preload_counts,
+            curvature_matrix_preload=curvature_matrix_preload,
+            curvature_matrix_counts=curvature_matrix_counts,
             regularization_matrix=regularization_matrix,
             log_det_regularization_matrix_term=log_det_regularization_matrix_term,
         )
@@ -297,8 +297,8 @@ class Preloads(aa.Preloads):
         self.relocated_grid = None
         self.mapper = None
         self.blurred_mapping_matrix = None
-        self.curvature_matrix_sparse_preload = None
-        self.curvature_matrix_preload_counts = None
+        self.curvature_matrix_preload = None
+        self.curvature_matrix_counts = None
         self.regularization_matrix = None
         self.log_det_regularization_matrix_term = None
 
@@ -315,7 +315,7 @@ class Preloads(aa.Preloads):
         line += [f"Use W Tilde = {self.use_w_tilde}\n\n"]
         line += [f"Blurred Image = {np.count_nonzero(self.blurred_image) != 0}\n"]
         line += [
-            f"Traced Grids of Planes (For Inversion) = {self.traced_grids_of_planes_for_inversion is not None}\n"
+            f"Traced Grids of Planes (For LinearEqn) = {self.traced_grids_of_planes_for_inversion is not None}\n"
         ]
         line += [
             f"Sparse Image-Plane Grids of Planes = {self.sparse_image_plane_grids_of_planes is not None}\n"
@@ -326,7 +326,7 @@ class Preloads(aa.Preloads):
             f"Blurred Mapping Matrix = {self.blurred_mapping_matrix is not None}\n"
         ]
         line += [
-            f"Curvature Matrix Sparse = {self.curvature_matrix_sparse_preload is not None}\n"
+            f"Curvature Matrix Sparse = {self.curvature_matrix_preload is not None}\n"
         ]
         line += [f"Regularization Matrix = {self.regularization_matrix is not None}\n"]
         line += [

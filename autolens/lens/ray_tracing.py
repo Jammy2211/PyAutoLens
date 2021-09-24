@@ -8,10 +8,8 @@ from typing import Dict, Optional
 import autoarray as aa
 import autogalaxy as ag
 
-from autoarray.inversion.inversion.imaging import inversion_imaging_unpacked_from
-from autoarray.inversion.inversion.interferometer import (
-    inversion_interferometer_unpacked_from,
-)
+from autoarray.inversion.inversion.factory import inversion_imaging_unpacked_from
+from autoarray.inversion.inversion.factory import inversion_interferometer_unpacked_from
 from autogalaxy.lensing import LensingObject
 
 from autolens.lens.model.preloads import Preloads

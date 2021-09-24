@@ -167,7 +167,7 @@ Lensing
    SettingsLens
 
 ----------
-Inversions
+LinearEqns
 ----------
 
 .. currentmodule:: autoarray.inversion.pixelizations
@@ -193,13 +193,13 @@ Inversions
 
 .. currentmodule:: autolens
 
-**Inversions:**
+**LinearEqns:**
 
 .. autosummary::
    :toctree: generated/
 
    Mapper
-   Inversion
+   LinearEqn
 
 **Settings:**
 

@@ -1,17 +1,16 @@
+from astropy import cosmology as cosmo
 import numpy as np
 import pytest
 import os
 from os import path
 import shutil
-from astropy import cosmology as cosmo
 from skimage import measure
-
-from autoarray.inversion.pixelization.abstract import AbstractPixelization
 
 import autolens as al
 
-from autoarray.mock import mock as mock_inv
-from autolens.mock import mock
+from autoarray.inversion.pixelization.abstract import AbstractPixelization
+from autoarray.mock.mock import MockPixelization, MockRegularization
+from autolens.mock.mock import MockMassProfile
 
 test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
@@ -435,94 +434,78 @@ class TestAbstractTracer:
             }
 
     class TestPixelizations:
-        def test__no_galaxy_has_regularization__returns_list_of_ones(
-            self, sub_grid_2d_7x7
-        ):
-            galaxy_no_pix = al.Galaxy(redshift=0.5)
-
-            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
-
-            assert tracer.pixelizations_of_planes == [None]
-
-        def test__source_galaxy_has_regularization__returns_list_with_none_and_regularization(
-            self, sub_grid_2d_7x7
-        ):
+        def test__pixelization__extracts_from_galaxies(self, sub_grid_2d_7x7):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(value=1),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+                pixelization=MockPixelization(mapper=1),
+                regularization=MockRegularization(),
             )
             galaxy_no_pix = al.Galaxy(redshift=0.5)
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
             assert tracer.pixelizations_of_planes[0] is None
-            assert tracer.pixelizations_of_planes[1].value == 1
+            assert tracer.pixelizations_of_planes[1].mapper == 1
 
-        def test__both_galaxies_have_pixelization__returns_both_pixelizations(
-            self, sub_grid_2d_7x7
-        ):
             galaxy_pix_0 = al.Galaxy(
                 redshift=0.5,
-                pixelization=mock_inv.MockPixelization(value=1),
-                regularization=mock_inv.MockRegularization(matrix_shape=(3, 3)),
+                pixelization=MockPixelization(mapper=1),
+                regularization=MockRegularization(),
             )
 
             galaxy_pix_1 = al.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(value=2),
-                regularization=mock_inv.MockRegularization(matrix_shape=(4, 4)),
+                pixelization=MockPixelization(mapper=2),
+                regularization=MockRegularization(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_pix_0, galaxy_pix_1])
 
-            assert tracer.pixelizations_of_planes[0].value == 1
-            assert tracer.pixelizations_of_planes[1].value == 2
+            assert tracer.pixelizations_of_planes[0].mapper == 1
+            assert tracer.pixelizations_of_planes[1].mapper == 2
 
-    class TestRegularizations:
-        def test__no_galaxy_has_regularization__returns_empty_list(
-            self, sub_grid_2d_7x7
-        ):
-            galaxy_no_reg = al.Galaxy(redshift=0.5)
+            galaxy_no_pix = al.Galaxy(redshift=0.5)
 
-            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_reg, galaxy_no_reg])
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
-            assert tracer.regularizations_of_planes == [None]
+            assert tracer.pixelizations_of_planes == [None]
 
-        def test__source_galaxy_has_regularization__returns_regularizations(
-            self, sub_grid_2d_7x7
-        ):
+        def test__regularization__extracts_from_galaxies(self, sub_grid_2d_7x7):
+
             galaxy_reg = al.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(value=1),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+                pixelization=MockPixelization(),
+                regularization=MockRegularization(regularization_matrix=1),
             )
             galaxy_no_reg = al.Galaxy(redshift=0.5)
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_reg, galaxy_reg])
 
             assert tracer.regularizations_of_planes[0] is None
-            assert tracer.regularizations_of_planes[1].shape == (1, 1)
+            assert tracer.regularizations_of_planes[1].regularization_matrix == 1
 
-        def test__both_galaxies_have_regularization__returns_both_regularizations(
-            self, sub_grid_2d_7x7
-        ):
             galaxy_reg_0 = al.Galaxy(
                 redshift=0.5,
-                pixelization=mock_inv.MockPixelization(value=1),
-                regularization=mock_inv.MockRegularization(matrix_shape=(3, 3)),
+                pixelization=MockPixelization(),
+                regularization=MockRegularization(regularization_matrix=1),
             )
 
             galaxy_reg_1 = al.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(value=2),
-                regularization=mock_inv.MockRegularization(matrix_shape=(4, 4)),
+                pixelization=MockPixelization(),
+                regularization=MockRegularization(regularization_matrix=2),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_reg_0, galaxy_reg_1])
 
-            assert tracer.regularizations_of_planes[0].shape == (3, 3)
-            assert tracer.regularizations_of_planes[1].shape == (4, 4)
+            assert tracer.regularizations_of_planes[0].regularization_matrix == 1
+            assert tracer.regularizations_of_planes[1].regularization_matrix == 2
+
+            galaxy_no_reg = al.Galaxy(redshift=0.5)
+
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_reg, galaxy_no_reg])
+
+            assert tracer.regularizations_of_planes == [None]
 
     class TestGalaxyLists:
         def test__galaxy_list__comes_in_plane_redshift_order(self, sub_grid_2d_7x7):
@@ -2392,10 +2375,8 @@ class TestAbstractTracerData:
         def test__x2_planes__traced_grid_setup_correctly(self, sub_grid_2d_7x7):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(
-                    value=1, grid=np.array([[1.0, 1.0]])
-                ),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+                pixelization=MockPixelization(sparse_grid=np.array([[1.0, 1.0]])),
+                regularization=MockRegularization(),
             )
             galaxy_no_pix = al.Galaxy(redshift=0.5)
 
@@ -2412,18 +2393,14 @@ class TestAbstractTracerData:
 
             galaxy_pix0 = al.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(
-                    value=1, grid=np.array([[1.0, 1.0]])
-                ),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+                pixelization=MockPixelization(sparse_grid=np.array([[1.0, 1.0]])),
+                regularization=MockRegularization(),
             )
 
             galaxy_pix1 = al.Galaxy(
                 redshift=2.0,
-                pixelization=mock_inv.MockPixelization(
-                    value=1, grid=np.array([[2.0, 2.0]])
-                ),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+                pixelization=MockPixelization(sparse_grid=np.array([[2.0, 2.0]])),
+                regularization=MockRegularization(),
             )
 
             galaxy_no_pix0 = al.Galaxy(redshift=0.25)
@@ -2457,13 +2434,12 @@ class TestAbstractTracerData:
 
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(
-                    value=1,
-                    grid=al.Grid2D.manual_native(
+                pixelization=MockPixelization(
+                    sparse_grid=al.Grid2D.manual_native(
                         grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)
-                    ),
+                    )
                 ),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+                regularization=MockRegularization(),
             )
             galaxy_no_pix = al.Galaxy(redshift=0.5)
 
@@ -2489,13 +2465,12 @@ class TestAbstractTracerData:
 
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(
-                    value=1,
-                    grid=al.Grid2D.manual_native(
+                pixelization=MockPixelization(
+                    sparse_grid=al.Grid2D.manual_native(
                         grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)
-                    ),
+                    )
                 ),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+                regularization=MockRegularization(),
             )
 
             tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
@@ -2513,24 +2488,22 @@ class TestAbstractTracerData:
 
             galaxy_pix0 = al.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(
-                    value=1,
-                    grid=al.Grid2D.manual_native(
+                pixelization=MockPixelization(
+                    sparse_grid=al.Grid2D.manual_native(
                         grid=[[[1.0, 1.0]]], pixel_scales=(1.0, 1.0)
-                    ),
+                    )
                 ),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+                regularization=MockRegularization(),
             )
 
             galaxy_pix1 = al.Galaxy(
                 redshift=2.0,
-                pixelization=mock_inv.MockPixelization(
-                    value=1,
-                    grid=al.Grid2D.manual_native(
+                pixelization=MockPixelization(
+                    sparse_grid=al.Grid2D.manual_native(
                         grid=[[[2.0, 2.0]]], pixel_scales=(1.0, 1.0)
-                    ),
+                    )
                 ),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+                regularization=MockRegularization(),
             )
 
             galaxy_no_pix0 = al.Galaxy(
@@ -2576,7 +2549,7 @@ class TestAbstractTracerData:
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
                 pixelization=al.pix.VoronoiMagnification(shape=(3, 3)),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+                regularization=MockRegularization(),
             )
             galaxy_no_pix = al.Galaxy(redshift=0.5)
 
@@ -2606,8 +2579,8 @@ class TestAbstractTracerData:
         ):
             galaxy_pix = al.Galaxy(
                 redshift=1.0,
-                pixelization=mock_inv.MockPixelization(value=1),
-                regularization=mock_inv.MockRegularization(matrix_shape=(1, 1)),
+                pixelization=MockPixelization(mapper=1),
+                regularization=MockRegularization(),
             )
             galaxy_no_pix = al.Galaxy(redshift=0.5)
 
@@ -2632,13 +2605,13 @@ class TestAbstractTracerData:
 
             galaxy_pix_0 = al.Galaxy(
                 redshift=0.75,
-                pixelization=mock_inv.MockPixelization(value=1),
-                regularization=mock_inv.MockRegularization(matrix_shape=(3, 3)),
+                pixelization=MockPixelization(mapper=1),
+                regularization=MockRegularization(),
             )
             galaxy_pix_1 = al.Galaxy(
                 redshift=2.0,
-                pixelization=mock_inv.MockPixelization(value=2),
-                regularization=mock_inv.MockRegularization(matrix_shape=(4, 4)),
+                pixelization=MockPixelization(mapper=2),
+                regularization=MockRegularization(),
             )
 
             tracer = al.Tracer.from_galaxies(
@@ -2655,7 +2628,7 @@ class TestAbstractTracerData:
 
             assert mappers_of_planes == [None, None, 1, None, 2]
 
-    class TestInversion:
+    class TestLinearEqn:
         def test__x1_inversion_imaging_in_tracer__performs_inversion_correctly(
             self, sub_grid_2d_7x7, masked_imaging_7x7
         ):
@@ -2979,16 +2952,12 @@ class TestTracerFixedSlices:
 class TestExtractAttribute:
     def test__extract_attribute(self):
 
-        g0 = al.Galaxy(
-            redshift=0.5, mp_0=mock.MockMassProfile(value=0.9, value1=(1.0, 1.0))
-        )
-        g1 = al.Galaxy(
-            redshift=0.5, mp_0=mock.MockMassProfile(value=0.8, value1=(2.0, 2.0))
-        )
+        g0 = al.Galaxy(redshift=0.5, mp_0=MockMassProfile(value=0.9, value1=(1.0, 1.0)))
+        g1 = al.Galaxy(redshift=0.5, mp_0=MockMassProfile(value=0.8, value1=(2.0, 2.0)))
         g2 = al.Galaxy(
             redshift=0.5,
-            mp_0=mock.MockMassProfile(value=0.7),
-            mp_1=mock.MockMassProfile(value=0.6),
+            mp_0=MockMassProfile(value=0.7),
+            mp_1=MockMassProfile(value=0.6),
         )
 
         plane_0 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
@@ -3026,16 +2995,12 @@ class TestExtractAttribute:
 
     def test__extract_attributes_of_planes(self):
 
-        g0 = al.Galaxy(
-            redshift=0.5, mp_0=mock.MockMassProfile(value=0.9, value1=(1.0, 1.0))
-        )
-        g1 = al.Galaxy(
-            redshift=0.5, mp_0=mock.MockMassProfile(value=0.8, value1=(2.0, 2.0))
-        )
+        g0 = al.Galaxy(redshift=0.5, mp_0=MockMassProfile(value=0.9, value1=(1.0, 1.0)))
+        g1 = al.Galaxy(redshift=0.5, mp_0=MockMassProfile(value=0.8, value1=(2.0, 2.0)))
         g2 = al.Galaxy(
             redshift=0.5,
-            mp_0=mock.MockMassProfile(value=0.7),
-            mp_1=mock.MockMassProfile(value=0.6),
+            mp_0=MockMassProfile(value=0.7),
+            mp_1=MockMassProfile(value=0.6),
         )
 
         plane_0 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
@@ -3093,16 +3058,12 @@ class TestExtractAttribute:
 
     def test__extract_attributes_of_galaxies(self):
 
-        g0 = al.Galaxy(
-            redshift=0.5, mp_0=mock.MockMassProfile(value=0.9, value1=(1.0, 1.0))
-        )
-        g1 = al.Galaxy(
-            redshift=0.5, mp_0=mock.MockMassProfile(value=0.8, value1=(2.0, 2.0))
-        )
+        g0 = al.Galaxy(redshift=0.5, mp_0=MockMassProfile(value=0.9, value1=(1.0, 1.0)))
+        g1 = al.Galaxy(redshift=0.5, mp_0=MockMassProfile(value=0.8, value1=(2.0, 2.0)))
         g2 = al.Galaxy(
             redshift=0.5,
-            mp_0=mock.MockMassProfile(value=0.7),
-            mp_1=mock.MockMassProfile(value=0.6),
+            mp_0=MockMassProfile(value=0.7),
+            mp_1=MockMassProfile(value=0.6),
         )
 
         plane_0 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
@@ -3162,16 +3123,12 @@ class TestExtractAttribute:
 
     def test__extract_profile(self):
 
-        g0 = al.Galaxy(
-            redshift=0.5, mp_0=mock.MockMassProfile(value=0.9, value1=(1.0, 1.0))
-        )
-        g1 = al.Galaxy(
-            redshift=0.5, mp_1=mock.MockMassProfile(value=0.8, value1=(2.0, 2.0))
-        )
+        g0 = al.Galaxy(redshift=0.5, mp_0=MockMassProfile(value=0.9, value1=(1.0, 1.0)))
+        g1 = al.Galaxy(redshift=0.5, mp_1=MockMassProfile(value=0.8, value1=(2.0, 2.0)))
         g2 = al.Galaxy(
             redshift=1.0,
-            mp_2=mock.MockMassProfile(value=0.7),
-            mp_3=mock.MockMassProfile(value=0.6),
+            mp_2=MockMassProfile(value=0.7),
+            mp_3=MockMassProfile(value=0.6),
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2], cosmology=None)
@@ -3186,16 +3143,14 @@ class TestExtractAttribute:
 
     def test__extract_plane_index_of_profile(self):
 
-        g0 = al.Galaxy(
-            redshift=0.5, mp_0=mock.MockMassProfile(value=0.9, value1=(1.0, 1.0))
-        )
+        g0 = al.Galaxy(redshift=0.5, mp_0=MockMassProfile(value=0.9, value1=(1.0, 1.0)))
         g1 = al.Galaxy(
-            redshift=0.75, mp_1=mock.MockMassProfile(value=0.8, value1=(2.0, 2.0))
+            redshift=0.75, mp_1=MockMassProfile(value=0.8, value1=(2.0, 2.0))
         )
         g2 = al.Galaxy(
             redshift=1.0,
-            mp_2=mock.MockMassProfile(value=0.7),
-            mp_3=mock.MockMassProfile(value=0.6),
+            mp_2=MockMassProfile(value=0.7),
+            mp_3=MockMassProfile(value=0.6),
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2], cosmology=None)
