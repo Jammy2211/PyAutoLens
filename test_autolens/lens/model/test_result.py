@@ -102,7 +102,7 @@ class TestResultAbstract:
 
         assert (
             result.source_plane_inversion_centre.in_list[0]
-            == result.max_log_likelihood_fit.linear_eqn.brightest_reconstruction_pixel_centre.in_list[
+            == result.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre_list[0].in_list[
                 0
             ]
         )

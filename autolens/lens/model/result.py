@@ -176,9 +176,9 @@ class ResultDataset(Result):
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions.
         """
-        if self.max_log_likelihood_fit.linear_eqn is not None:
+        if self.max_log_likelihood_fit.inversion is not None:
             return (
-                self.max_log_likelihood_fit.linear_eqn.brightest_reconstruction_pixel_centre
+                self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre_list[0]
             )
 
     @property

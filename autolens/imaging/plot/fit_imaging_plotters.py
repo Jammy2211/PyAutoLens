@@ -91,7 +91,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
     def inversion_plotter_of_plane(self, plane_index: int) -> aplt.InversionPlotter:
 
         inversion_plotter = aplt.InversionPlotter(
-            inversion=self.fit.linear_eqn,
+            inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.tracer_plotter.visuals_with_include_2d_of_plane(
                 plane_index=plane_index
@@ -202,7 +202,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
 
             if model_image:
 
-                if self.fit.linear_eqn is None or plane_index == 0:
+                if self.fit.inversion is None or plane_index == 0:
 
                     self.mat_plot_2d.plot_array(
                         array=self.fit.model_images_of_planes[plane_index],
