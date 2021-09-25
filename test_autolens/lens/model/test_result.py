@@ -4,8 +4,11 @@ import pytest
 
 import autofit as af
 import autolens as al
+
 from autolens.lens.model import result as res
 from autolens.imaging.model.result import ResultImaging
+
+from autoarray.mock.mock import MockPixelization, MockRegularization
 from autolens.mock import mock
 
 directory = os.path.dirname(os.path.realpath(__file__))
@@ -102,7 +105,9 @@ class TestResultAbstract:
 
         assert (
             result.source_plane_inversion_centre.in_list[0]
-            == result.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre_list[0].in_list[
+            == result.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre_list[
+                0
+            ].in_list[
                 0
             ]
         )
@@ -301,7 +306,7 @@ class TestResultDataset:
         assert isinstance(result.pixelization, al.pix.VoronoiBrightnessImage)
         assert result.pixelization.pixels == 6
 
-    def test__results_include_pixelization_grid__available_as_property(
+    def test__max_log_likelihood_sparse_image_plane_grid_list_of_planes(
         self, analysis_imaging_7x7
     ):
 
@@ -315,18 +320,23 @@ class TestResultDataset:
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
-        assert result.max_log_likelihood_pixelization_grids_of_planes == [None]
+        assert result.max_log_likelihood_sparse_image_plane_grid_list_of_planes == [
+            None
+        ]
 
         lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=1.0))
-        source = al.Galaxy(
+        source_0 = al.Galaxy(
+            redshift=0.75,
+            pixelization=MockPixelization(sparse_grid=1),
+            regularization=MockRegularization(),
+        )
+        source_1 = al.Galaxy(
             redshift=1.0,
-            pixelization=al.pix.VoronoiBrightnessImage(pixels=6),
-            regularization=al.reg.Constant(),
+            pixelization=MockPixelization(sparse_grid=2),
+            regularization=MockRegularization(),
         )
 
-        source.hyper_galaxy_image = np.ones(9)
-
-        tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens, source_0, source_1])
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -334,9 +344,11 @@ class TestResultDataset:
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
         )
 
-        assert result.max_log_likelihood_pixelization_grids_of_planes[-1].shape == (
-            6,
-            2,
+        assert (
+            result.max_log_likelihood_sparse_image_plane_grid_list_of_planes[1][0] == 1
+        )
+        assert (
+            result.max_log_likelihood_sparse_image_plane_grid_list_of_planes[2][0] == 2
         )
 
     def test___image_dict(self, analysis_imaging_7x7):

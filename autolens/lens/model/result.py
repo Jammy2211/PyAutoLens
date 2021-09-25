@@ -177,13 +177,13 @@ class ResultDataset(Result):
         multiple-image positions.
         """
         if self.max_log_likelihood_fit.inversion is not None:
-            return (
-                self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre_list[0]
-            )
+            return self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre_list[
+                0
+            ]
 
     @property
-    def max_log_likelihood_pixelization_grids_of_planes(self):
-        return self.max_log_likelihood_tracer.sparse_image_plane_grids_of_planes_from_grid(
+    def max_log_likelihood_sparse_image_plane_grid_list_of_planes(self):
+        return self.max_log_likelihood_tracer.sparse_image_plane_grid_list_of_planes_from(
             grid=self.analysis.dataset.grid
         )
 

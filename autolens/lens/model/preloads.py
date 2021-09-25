@@ -181,11 +181,11 @@ class Preloads(aa.Preloads):
 
         self.traced_grids_of_planes_for_inversion = None
 
-        traced_grids_of_planes_0 = fit_0.tracer.traced_grids_of_planes_from_grid(
+        traced_grids_of_planes_0 = fit_0.tracer.traced_grids_of_planes_from(
             grid=fit_0.dataset.grid_inversion
         )
 
-        traced_grids_of_planes_1 = fit_1.tracer.traced_grids_of_planes_from_grid(
+        traced_grids_of_planes_1 = fit_1.tracer.traced_grids_of_planes_from(
             grid=fit_1.dataset.grid_inversion
         )
 
@@ -231,11 +231,11 @@ class Preloads(aa.Preloads):
 
         self.sparse_image_plane_grids_of_planes = None
 
-        sparse_image_plane_grids_of_planes_0 = fit_0.tracer.sparse_image_plane_grids_of_planes_from_grid(
+        sparse_image_plane_grids_of_planes_0 = fit_0.tracer.sparse_image_plane_grid_list_of_planes_from(
             grid=fit_0.dataset.grid_inversion
         )
 
-        sparse_image_plane_grids_of_planes_1 = fit_1.tracer.sparse_image_plane_grids_of_planes_from_grid(
+        sparse_image_plane_grids_of_planes_1 = fit_1.tracer.sparse_image_plane_grid_list_of_planes_from(
             grid=fit_1.dataset.grid_inversion
         )
 

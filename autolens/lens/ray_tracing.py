@@ -332,19 +332,16 @@ class AbstractTracer(LensingObject, ABC):
         ]
 
     @property
-    def pixelizations_of_planes(self):
-        return [plane.pixelization for plane in self.planes]
+    def pixelization_list_of_planes(self):
+        return [plane.pixelization_list for plane in self.planes]
 
     @property
-    def regularizations_of_planes(self):
-        return [plane.regularization for plane in self.planes]
+    def regularization_list_of_planes(self):
+        return [plane.regularization_list for plane in self.planes]
 
     @property
-    def hyper_galaxy_image_of_planes_with_pixelizations(self):
-        return [
-            plane.hyper_galaxy_image_of_galaxy_with_pixelization
-            for plane in self.planes
-        ]
+    def hyper_galaxy_image_list_of_planes(self):
+        return [plane.hyper_galaxy_image_list for plane in self.planes]
 
     def plane_with_galaxy(self, galaxy):
         return [plane for plane in self.planes if galaxy in plane.galaxies][0]
@@ -364,7 +361,7 @@ class AbstractTracer(LensingObject, ABC):
 
 class AbstractTracerLensing(AbstractTracer, ABC):
     @aa.grid_dec.grid_2d_to_structure_list
-    def traced_grids_of_planes_from_grid(self, grid, plane_index_limit=None):
+    def traced_grids_of_planes_from(self, grid, plane_index_limit=None):
 
         traced_grids = []
         traced_deflections = []
@@ -399,13 +396,13 @@ class AbstractTracerLensing(AbstractTracer, ABC):
         return traced_grids
 
     @aa.profile_func
-    def traced_grids_of_inversion_from_grid(self, grid):
-        return self.traced_grids_of_planes_from_grid(grid=grid)
+    def traced_grids_of_inversion_from(self, grid):
+        return self.traced_grids_of_planes_from(grid=grid)
 
     @aa.grid_dec.grid_2d_to_structure
     def deflections_between_planes_from_grid(self, grid, plane_i=0, plane_j=-1):
 
-        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
+        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
 
         return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
 
@@ -417,7 +414,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
     @aa.grid_dec.grid_2d_to_structure_list
     def images_of_planes_from_grid(self, grid):
 
-        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(
+        traced_grids_of_planes = self.traced_grids_of_planes_from(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
         )
 
@@ -486,7 +483,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
         ]
 
         if plane_index_with_redshift:
-            return self.traced_grids_of_planes_from_grid(grid=grid)[
+            return self.traced_grids_of_planes_from(grid=grid)[
                 plane_index_with_redshift[0]
             ]
 
@@ -500,7 +497,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
         tracer = Tracer(planes=planes, cosmology=self.cosmology)
 
-        return tracer.traced_grids_of_planes_from_grid(grid=grid)[plane_index_insert]
+        return tracer.traced_grids_of_planes_from(grid=grid)[plane_index_insert]
 
     @property
     def contribution_map(self):
@@ -568,8 +565,8 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
-        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
-        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from_grid(
+        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
+        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from(
             grid=blurring_grid
         )
         return [
@@ -624,8 +621,8 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             Class which performs the PSF convolution of a masked image in 1D.
         """
 
-        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
-        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from_grid(
+        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
+        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from(
             grid=blurring_grid
         )
 
@@ -656,7 +653,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             kernel_shape_native=psf.shape_native
         )
 
-        traced_padded_grids = self.traced_grids_of_planes_from_grid(grid=padded_grid)
+        traced_padded_grids = self.traced_grids_of_planes_from(grid=padded_grid)
 
         unmasked_blurred_images_of_planes = []
 
@@ -681,7 +678,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             kernel_shape_native=psf.shape_native
         )
 
-        traced_padded_grids = self.traced_grids_of_planes_from_grid(grid=padded_grid)
+        traced_padded_grids = self.traced_grids_of_planes_from(grid=padded_grid)
 
         for plane, traced_padded_grid in zip(self.planes, traced_padded_grids):
             padded_image_1d_of_galaxies = plane.images_of_galaxies_from_grid(
@@ -725,7 +722,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         ]
 
     @aa.profile_func
-    def sparse_image_plane_grids_of_planes_from_grid(
+    def sparse_image_plane_grid_list_of_planes_from(
         self, grid, settings_pixelization=aa.SettingsPixelization()
     ):
         """
@@ -734,18 +731,18 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         performs a KMeans clustering.
         """
 
-        sparse_image_plane_grids_of_planes = []
+        sparse_image_plane_grid_list_of_planes = []
 
         for plane in self.planes:
-            sparse_image_plane_grid = plane.sparse_image_plane_grid_from_grid(
+            sparse_image_plane_grid_list = plane.sparse_image_plane_grid_list_from(
                 grid=grid, settings_pixelization=settings_pixelization
             )
-            sparse_image_plane_grids_of_planes.append(sparse_image_plane_grid)
+            sparse_image_plane_grid_list_of_planes.append(sparse_image_plane_grid_list)
 
-        return sparse_image_plane_grids_of_planes
+        return sparse_image_plane_grid_list_of_planes
 
     @aa.profile_func
-    def traced_sparse_grids_of_planes_from_grid(
+    def traced_sparse_grids_list_of_planes_from(
         self, grid, settings_pixelization=aa.SettingsPixelization(), preloads=Preloads()
     ):
         """
@@ -758,65 +755,88 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             or settings_pixelization.is_stochastic
         ):
 
-            sparse_image_plane_grids_of_planes = self.sparse_image_plane_grids_of_planes_from_grid(
+            sparse_image_plane_grid_list_of_planes = self.sparse_image_plane_grid_list_of_planes_from(
                 grid=grid, settings_pixelization=settings_pixelization
             )
 
         else:
 
-            sparse_image_plane_grids_of_planes = (
+            sparse_image_plane_grid_list_of_planes = (
                 preloads.sparse_image_plane_grids_of_planes
             )
 
-        traced_sparse_grids_of_planes = []
+        traced_sparse_grid_list_of_planes = []
 
         for (plane_index, plane) in enumerate(self.planes):
 
-            if sparse_image_plane_grids_of_planes[plane_index] is None:
-                traced_sparse_grids_of_planes.append(None)
+            if sparse_image_plane_grid_list_of_planes[plane_index] is None:
+                traced_sparse_grid_list_of_planes.append(None)
             else:
-                traced_sparse_grids = self.traced_grids_of_planes_from_grid(
-                    grid=sparse_image_plane_grids_of_planes[plane_index]
-                )
-                traced_sparse_grids_of_planes.append(traced_sparse_grids[plane_index])
 
-        if len(sparse_image_plane_grids_of_planes) > 1:
-            return traced_sparse_grids_of_planes, sparse_image_plane_grids_of_planes[1]
-        else:
-            return traced_sparse_grids_of_planes, sparse_image_plane_grids_of_planes[0]
+                traced_sparse_grids_list = []
 
-    def mappers_of_planes_from_grid(
+                for sparse_image_plane_grid in sparse_image_plane_grid_list_of_planes[
+                    plane_index
+                ]:
+
+                    try:
+                        traced_sparse_grids_list.append(
+                            self.traced_grids_of_planes_from(
+                                grid=sparse_image_plane_grid
+                            )[plane_index]
+                        )
+                    except AttributeError:
+                        traced_sparse_grids_list.append(None)
+
+                traced_sparse_grid_list_of_planes.append(traced_sparse_grids_list)
+
+        return traced_sparse_grid_list_of_planes, sparse_image_plane_grid_list_of_planes
+
+    def mapper_list_from(
         self, grid, settings_pixelization=aa.SettingsPixelization(), preloads=Preloads()
     ):
 
-        mappers_of_planes = []
+        mapper_list = []
 
         if preloads.traced_grids_of_planes_for_inversion is None:
-            traced_grids_of_planes = self.traced_grids_of_inversion_from_grid(grid=grid)
+            traced_grids_of_planes = self.traced_grids_of_inversion_from(grid=grid)
         else:
             traced_grids_of_planes = preloads.traced_grids_of_planes_for_inversion
 
-        traced_sparse_grids_of_planes, sparse_image_plane_grid = self.traced_sparse_grids_of_planes_from_grid(
+        traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list_of_planes = self.traced_sparse_grids_list_of_planes_from(
             grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
         )
 
         for (plane_index, plane) in enumerate(self.planes):
 
-            if not plane.has_pixelization:
-                mappers_of_planes.append(None)
-            else:
-                mapper = plane.mapper_from_grid_and_sparse_grid(
-                    grid=traced_grids_of_planes[plane_index],
-                    sparse_grid=traced_sparse_grids_of_planes[plane_index],
-                    sparse_image_plane_grid=sparse_image_plane_grid,
-                    settings_pixelization=settings_pixelization,
-                    preloads=preloads,
-                )
-                mappers_of_planes.append(mapper)
+            if plane.has_pixelization:
 
-        return mappers_of_planes
+                for mapper_index in range(
+                    len(traced_sparse_grids_list_of_planes[plane_index])
+                ):
 
-    def inversion_imaging_from_grid_and_data(
+                    mapper = plane.mapper_from(
+                        grid=traced_grids_of_planes[plane_index],
+                        sparse_grid=traced_sparse_grids_list_of_planes[plane_index][
+                            mapper_index
+                        ],
+                        sparse_image_plane_grid=sparse_image_plane_grid_list_of_planes[
+                            plane_index
+                        ][mapper_index],
+                        pixelization=self.pixelization_list_of_planes[plane_index][
+                            mapper_index
+                        ],
+                        hyper_galaxy_image=self.hyper_galaxy_image_list_of_planes[
+                            plane_index
+                        ][mapper_index],
+                        settings_pixelization=settings_pixelization,
+                        preloads=preloads,
+                    )
+                    mapper_list.append(mapper)
+
+        return mapper_list
+
+    def inversion_imaging_from(
         self,
         grid,
         image,
@@ -830,7 +850,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         if preloads.mapper is None:
 
-            mappers_of_planes = self.mappers_of_planes_from_grid(
+            mapper_list = self.mapper_list_from(
                 grid=grid,
                 settings_pixelization=settings_pixelization,
                 preloads=preloads,
@@ -838,21 +858,21 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         else:
 
-            mappers_of_planes = [preloads.mapper]
+            mapper_list = [preloads.mapper]
 
         return inversion_imaging_unpacked_from(
             image=image,
             noise_map=noise_map,
             convolver=convolver,
             w_tilde=w_tilde,
-            mapper=mappers_of_planes[-1],
-            regularization=self.regularizations_of_planes[-1],
+            mapper_list=mapper_list,
+            regularization_list=self.regularization_list_of_planes[-1],
             settings=settings_inversion,
             preloads=preloads,
             profiling_dict=self.profiling_dict,
         )
 
-    def inversion_interferometer_from_grid_and_data(
+    def inversion_interferometer_from(
         self,
         grid,
         visibilities,
@@ -862,27 +882,35 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         settings_inversion=aa.SettingsInversion(),
         preloads=Preloads(),
     ):
-        mappers_of_planes = self.mappers_of_planes_from_grid(
-            grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
-        )
+
+        if preloads.mapper is None:
+
+            mapper_list = self.mapper_list_from(
+                grid=grid,
+                settings_pixelization=settings_pixelization,
+                preloads=preloads,
+            )
+
+        else:
+
+            mapper_list = [preloads.mapper]
 
         return inversion_interferometer_unpacked_from(
             visibilities=visibilities,
             noise_map=noise_map,
             transformer=transformer,
-            mapper=mappers_of_planes[-1],
-            regularization=self.regularizations_of_planes[-1],
+            mapper_list=mapper_list,
+            regularization_list=self.regularization_list_of_planes[-1],
             settings=settings_inversion,
             profiling_dict=self.profiling_dict,
         )
 
-    def hyper_noise_map_from_noise_map(self, noise_map):
-        return sum(self.hyper_noise_maps_of_planes_from_noise_map(noise_map=noise_map))
+    def hyper_noise_map_from(self, noise_map):
+        return sum(self.hyper_noise_maps_of_planes_from(noise_map=noise_map))
 
-    def hyper_noise_maps_of_planes_from_noise_map(self, noise_map):
+    def hyper_noise_maps_of_planes_from(self, noise_map):
         return [
-            plane.hyper_noise_map_from_noise_map(noise_map=noise_map)
-            for plane in self.planes
+            plane.hyper_noise_map_from(noise_map=noise_map) for plane in self.planes
         ]
 
     def galaxy_image_dict_from_grid(self, grid) -> {ag.Galaxy: np.ndarray}:
@@ -892,7 +920,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         galaxy_image_dict = dict()
 
-        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
+        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
 
         for (plane_index, plane) in enumerate(self.planes):
             images_of_galaxies = plane.images_of_galaxies_from_grid(
@@ -912,9 +940,9 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         galaxy_blurred_image_dict = dict()
 
-        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
+        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
 
-        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from_grid(
+        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from(
             grid=blurring_grid
         )
 
@@ -940,7 +968,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         galaxy_profile_visibilities_image_dict = dict()
 
-        traced_grids_of_planes = self.traced_grids_of_planes_from_grid(grid=grid)
+        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
 
         for (plane_index, plane) in enumerate(self.planes):
             profile_visibilities_of_galaxies = plane.profile_visibilities_of_galaxies_from_grid_and_transformer(

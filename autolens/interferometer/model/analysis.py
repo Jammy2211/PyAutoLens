@@ -179,7 +179,7 @@ class AnalysisInterferometer(AnalysisDataset):
             return None
 
         if not isinstance(
-            tracer.pixelizations_of_planes[-1], aa.pix.VoronoiBrightnessImage
+            tracer.pixelization_list_of_planes[-1], aa.pix.VoronoiBrightnessImage
         ):
             return None
 

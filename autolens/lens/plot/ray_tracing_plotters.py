@@ -92,7 +92,7 @@ class TracerPlotter(LensingObjPlotter):
 
         if border is not None:
             if plane_index > 0:
-                border = self.tracer.traced_grids_of_planes_from_grid(grid=border)[
+                border = self.tracer.traced_grids_of_planes_from(grid=border)[
                     plane_index
                 ]
 
@@ -135,7 +135,7 @@ class TracerPlotter(LensingObjPlotter):
 
     def plane_plotter_from(self, plane_index: int) -> aplt.PlanePlotter:
 
-        plane_grid = self.tracer.traced_grids_of_planes_from_grid(grid=self.grid)[
+        plane_grid = self.tracer.traced_grids_of_planes_from(grid=self.grid)[
             plane_index
         ]
 

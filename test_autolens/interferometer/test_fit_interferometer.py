@@ -315,7 +315,7 @@ class TestCompareToManualProfilesOnly:
 
         fit = al.FitInterferometer(interferometer=interferometer_7_grid, tracer=tracer)
 
-        traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
+        traced_grids_of_planes = tracer.traced_grids_of_planes_from(
             grid=interferometer_7_grid.grid
         )
 
@@ -341,7 +341,7 @@ class TestCompareToManualProfilesOnly:
 
         fit = al.FitInterferometer(interferometer=interferometer_7_grid, tracer=tracer)
 
-        traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
+        traced_grids_of_planes = tracer.traced_grids_of_planes_from(
             grid=interferometer_7_grid.grid
         )
 
@@ -375,7 +375,7 @@ class TestCompareToManualProfilesOnly:
 
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        hyper_noise_map = hyper_background_noise.hyper_noise_map_from_complex_noise_map(
+        hyper_noise_map = hyper_background_noise.hyper_noise_map_complex_from(
             noise_map=interferometer_7.noise_map
         )
 
@@ -423,12 +423,10 @@ class TestCompareToManualInversionOnly:
 
         fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=interferometer_7.grid_inversion, sparse_grid=None
-        )
+        mapper = pix.mapper_from(grid=interferometer_7.grid_inversion, sparse_grid=None)
 
         inversion = al.Inversion(
-            dataset=interferometer_7, mapper=mapper, regularization=reg
+            dataset=interferometer_7, mapper_list=[mapper], regularization_list=[reg]
         )
 
         assert inversion.mapped_reconstructed_visibilities == pytest.approx(
@@ -492,7 +490,7 @@ class TestCompareToManualInversionOnly:
         assert log_evidence == fit.figure_of_merit
 
         mapped_reconstructed_image = al.util.linear_eqn.mapped_reconstructed_data_via_mapping_matrix_from(
-            mapping_matrix=fit.inversion.mapper.mapping_matrix,
+            mapping_matrix=fit.inversion.mapper_list[0].mapping_matrix,
             reconstruction=fit.inversion.reconstruction,
         )
 
@@ -513,12 +511,10 @@ class TestCompareToManualInversionOnly:
 
         fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=interferometer_7.grid, sparse_grid=None
-        )
+        mapper = pix.mapper_from(grid=interferometer_7.grid, sparse_grid=None)
 
         inversion = al.Inversion(
-            dataset=interferometer_7, mapper=mapper, regularization=reg
+            dataset=interferometer_7, mapper_list=[mapper], regularization_list=[reg]
         )
 
         assert (fit.galaxy_model_image_dict[g0].native == np.zeros((7, 7))).all()
@@ -540,12 +536,10 @@ class TestCompareToManualInversionOnly:
 
         fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=interferometer_7.grid, sparse_grid=None
-        )
+        mapper = pix.mapper_from(grid=interferometer_7.grid, sparse_grid=None)
 
         inversion = al.Inversion(
-            dataset=interferometer_7, mapper=mapper, regularization=reg
+            dataset=interferometer_7, mapper_list=[mapper], regularization_list=[reg]
         )
 
         assert (
@@ -564,7 +558,7 @@ class TestCompareToManualInversionOnly:
 
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        hyper_noise_map = hyper_background_noise.hyper_noise_map_from_complex_noise_map(
+        hyper_noise_map = hyper_background_noise.hyper_noise_map_complex_from(
             noise_map=interferometer_7.noise_map
         )
 
@@ -646,14 +640,14 @@ class TestCompareToManualInversionOnly:
             settings_inversion=al.SettingsInversion(use_linear_operators=True),
         )
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
+        mapper = pix.mapper_from(
             grid=interferometer_7_lop.grid_inversion, sparse_grid=None
         )
 
         inversion = al.Inversion(
             dataset=interferometer_7_lop,
-            mapper=mapper,
-            regularization=reg,
+            mapper_list=[mapper],
+            regularization_list=[reg],
             settings=al.SettingsInversion(use_linear_operators=True),
         )
 
@@ -718,7 +712,7 @@ class TestCompareToManualInversionOnly:
         assert log_evidence == fit.figure_of_merit
 
         mapped_reconstructed_image = al.util.linear_eqn.mapped_reconstructed_data_via_mapping_matrix_from(
-            mapping_matrix=fit.inversion.mapper.mapping_matrix,
+            mapping_matrix=fit.inversion.mapper_list[0].mapping_matrix,
             reconstruction=fit.inversion.reconstruction,
         )
 
@@ -755,7 +749,7 @@ class TestCompareToManualProfilesAndInversion:
             fit.profile_subtracted_visibilities.slim
         )
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
+        mapper = pix.mapper_from(
             grid=interferometer_7.grid,
             settings=al.SettingsPixelization(use_border=False),
         )
@@ -764,8 +758,8 @@ class TestCompareToManualProfilesAndInversion:
             visibilities=profile_subtracted_visibilities,
             noise_map=interferometer_7.noise_map,
             transformer=interferometer_7.transformer,
-            mapper=mapper,
-            regularization=reg,
+            mapper_list=[mapper],
+            regularization_list=[reg],
             settings=al.SettingsInversion(use_w_tilde=False),
         )
 
@@ -831,7 +825,7 @@ class TestCompareToManualProfilesAndInversion:
         assert log_evidence == fit.figure_of_merit
 
         mapped_reconstructed_image = al.util.linear_eqn.mapped_reconstructed_data_via_mapping_matrix_from(
-            mapping_matrix=fit.inversion.mapper.mapping_matrix,
+            mapping_matrix=fit.inversion.mapper_list[0].mapping_matrix,
             reconstruction=fit.inversion.reconstruction,
         )
 
@@ -855,7 +849,7 @@ class TestCompareToManualProfilesAndInversion:
 
         fit = al.FitInterferometer(interferometer=interferometer_7_grid, tracer=tracer)
 
-        traced_grids = tracer.traced_grids_of_planes_from_grid(
+        traced_grids = tracer.traced_grids_of_planes_from(
             grid=interferometer_7_grid.grid
         )
 
@@ -872,7 +866,7 @@ class TestCompareToManualProfilesAndInversion:
         profile_subtracted_visibilities = (
             interferometer_7_grid.visibilities - profile_visibilities
         )
-        mapper = pix.mapper_from_grid_and_sparse_grid(
+        mapper = pix.mapper_from(
             grid=interferometer_7_grid.grid,
             settings=al.SettingsPixelization(use_border=False),
         )
@@ -881,8 +875,8 @@ class TestCompareToManualProfilesAndInversion:
             visibilities=profile_subtracted_visibilities,
             noise_map=interferometer_7_grid.noise_map,
             transformer=interferometer_7_grid.transformer,
-            mapper=mapper,
-            regularization=reg,
+            mapper_list=[mapper],
+            regularization_list=[reg],
             settings=al.SettingsInversion(use_w_tilde=False),
         )
 
@@ -918,7 +912,7 @@ class TestCompareToManualProfilesAndInversion:
 
         fit = al.FitInterferometer(interferometer=interferometer_7_grid, tracer=tracer)
 
-        traced_grids = tracer.traced_grids_of_planes_from_grid(
+        traced_grids = tracer.traced_grids_of_planes_from(
             grid=interferometer_7_grid.grid
         )
 
@@ -935,7 +929,7 @@ class TestCompareToManualProfilesAndInversion:
         profile_subtracted_visibilities = (
             interferometer_7_grid.visibilities - profile_visibilities
         )
-        mapper = pix.mapper_from_grid_and_sparse_grid(
+        mapper = pix.mapper_from(
             grid=interferometer_7_grid.grid,
             settings=al.SettingsPixelization(use_border=False),
         )
@@ -944,8 +938,8 @@ class TestCompareToManualProfilesAndInversion:
             visibilities=profile_subtracted_visibilities,
             noise_map=interferometer_7_grid.noise_map,
             transformer=interferometer_7_grid.transformer,
-            mapper=mapper,
-            regularization=reg,
+            mapper_list=[mapper],
+            regularization_list=[reg],
             settings=al.SettingsInversion(use_w_tilde=False),
         )
 
@@ -974,7 +968,7 @@ class TestCompareToManualProfilesAndInversion:
 
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        hyper_noise_map = hyper_background_noise.hyper_noise_map_from_complex_noise_map(
+        hyper_noise_map = hyper_background_noise.hyper_noise_map_complex_from(
             noise_map=interferometer_7.noise_map
         )
 

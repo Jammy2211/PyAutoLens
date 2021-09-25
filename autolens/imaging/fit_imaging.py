@@ -84,7 +84,7 @@ class FitImaging(aa.FitImaging):
 
         else:
 
-            inversion = tracer.inversion_imaging_from_grid_and_data(
+            inversion = tracer.inversion_imaging_from(
                 grid=imaging.grid_inversion,
                 image=self.profile_subtracted_image,
                 noise_map=noise_map,
@@ -196,7 +196,7 @@ class FitImaging(aa.FitImaging):
 
     @property
     def total_inversions(self):
-        return len(list(filter(None, self.tracer.regularizations_of_planes)))
+        return len(list(filter(None, self.tracer.regularization_list_of_planes)))
 
     def refit_with_new_preloads(self, preloads):
 
@@ -221,7 +221,7 @@ class FitImaging(aa.FitImaging):
 def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
 
     if hyper_image_sky is not None:
-        return hyper_image_sky.hyper_image_from_image(image=image)
+        return hyper_image_sky.hyper_image_from(image=image)
     else:
         return image
 
@@ -230,12 +230,10 @@ def hyper_noise_map_from_noise_map_tracer_and_hyper_background_noise(
     noise_map, tracer, hyper_background_noise
 ):
 
-    hyper_noise_map = tracer.hyper_noise_map_from_noise_map(noise_map=noise_map)
+    hyper_noise_map = tracer.hyper_noise_map_from(noise_map=noise_map)
 
     if hyper_background_noise is not None:
-        noise_map = hyper_background_noise.hyper_noise_map_from_noise_map(
-            noise_map=noise_map
-        )
+        noise_map = hyper_background_noise.hyper_noise_map_from(noise_map=noise_map)
 
     if hyper_noise_map is not None:
         noise_map = noise_map + hyper_noise_map

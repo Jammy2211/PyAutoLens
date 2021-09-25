@@ -718,10 +718,10 @@ class TestCompareToManualProfilesOnly:
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
-        traced_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
+        traced_grids_of_planes = tracer.traced_grids_of_planes_from(
             grid=masked_imaging_7x7.grid
         )
-        traced_blurring_grids_of_planes = tracer.traced_grids_of_planes_from_grid(
+        traced_blurring_grids_of_planes = tracer.traced_grids_of_planes_from(
             grid=masked_imaging_7x7.blurring_grid
         )
 
@@ -765,7 +765,7 @@ class TestCompareToManualProfilesOnly:
 
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        image = hyper_image_sky.hyper_image_from_image(image=masked_imaging_7x7.image)
+        image = hyper_image_sky.hyper_image_from(image=masked_imaging_7x7.image)
 
         g0 = al.Galaxy(
             redshift=0.5,
@@ -791,11 +791,11 @@ class TestCompareToManualProfilesOnly:
             settings_inversion=al.SettingsInversion(use_w_tilde=False),
         )
 
-        hyper_noise_map_background = hyper_background_noise.hyper_noise_map_from_noise_map(
+        hyper_noise_map_background = hyper_background_noise.hyper_noise_map_from(
             noise_map=masked_imaging_7x7.noise_map
         )
 
-        hyper_noise = tracer.hyper_noise_map_from_noise_map(
+        hyper_noise = tracer.hyper_noise_map_from(
             noise_map=masked_imaging_7x7.noise_map
         )
 
@@ -932,11 +932,11 @@ class TestCompareToManualInversionOnly:
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
+        mapper = pix.mapper_from(
             grid=masked_imaging_7x7.grid_inversion, sparse_grid=None
         )
         inversion = al.Inversion(
-            dataset=masked_imaging_7x7, mapper=mapper, regularization=reg
+            dataset=masked_imaging_7x7, mapper_list=[mapper], regularization_list=[reg]
         )
 
         assert inversion.mapped_reconstructed_image.native == pytest.approx(
@@ -1012,14 +1012,12 @@ class TestCompareToManualInversionOnly:
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=masked_imaging_7x7.grid, sparse_grid=None
-        )
+        mapper = pix.mapper_from(grid=masked_imaging_7x7.grid, sparse_grid=None)
 
         inversion = al.Inversion(
             dataset=masked_imaging_7x7,
-            mapper=mapper,
-            regularization=reg,
+            mapper_list=[mapper],
+            regularization_list=[reg],
             settings=al.SettingsInversion(use_w_tilde=False),
         )
 
@@ -1039,9 +1037,9 @@ class TestCompareToManualInversionOnly:
 
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        image = hyper_image_sky.hyper_image_from_image(image=masked_imaging_7x7.image)
+        image = hyper_image_sky.hyper_image_from(image=masked_imaging_7x7.image)
 
-        hyper_noise_map_background = hyper_background_noise.hyper_noise_map_from_noise_map(
+        hyper_noise_map_background = hyper_background_noise.hyper_noise_map_from(
             noise_map=masked_imaging_7x7.noise_map
         )
 
@@ -1070,14 +1068,14 @@ class TestCompareToManualInversionOnly:
             settings_inversion=al.SettingsInversion(use_w_tilde=False),
         )
 
-        hyper_noise = tracer.hyper_noise_map_from_noise_map(
+        hyper_noise = tracer.hyper_noise_map_from(
             noise_map=masked_imaging_7x7.noise_map
         )
         hyper_noise_map = hyper_noise_map_background + hyper_noise
 
         assert hyper_noise_map.native == pytest.approx(fit.noise_map.native)
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
+        mapper = pix.mapper_from(
             grid=masked_imaging_7x7.grid,
             settings=al.SettingsPixelization(use_border=False),
         )
@@ -1086,8 +1084,8 @@ class TestCompareToManualInversionOnly:
             noise_map=hyper_noise_map,
             convolver=masked_imaging_7x7.convolver,
             w_tilde=masked_imaging_7x7.w_tilde,
-            mapper=mapper,
-            regularization=reg,
+            mapper_list=[mapper],
+            regularization_list=[reg],
             settings=al.SettingsInversion(use_w_tilde=False),
         )
 
@@ -1161,13 +1159,13 @@ class TestCompareToManualInversionOnly:
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
+        mapper = pix.mapper_from(
             grid=masked_imaging_7x7.grid,
             settings=al.SettingsPixelization(use_border=False),
         )
 
         inversion = al.Inversion(
-            dataset=masked_imaging_7x7, mapper=mapper, regularization=reg
+            dataset=masked_imaging_7x7, mapper_list=[mapper], regularization_list=[reg]
         )
 
         assert (fit.model_images_of_planes[0].native == np.zeros((7, 7))).all()
@@ -1247,7 +1245,7 @@ class TestCompareToManualProfilesAndInversion:
             fit.profile_subtracted_image.native
         )
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
+        mapper = pix.mapper_from(
             grid=masked_imaging_7x7.grid,
             settings=al.SettingsPixelization(use_border=False),
         )
@@ -1257,8 +1255,8 @@ class TestCompareToManualProfilesAndInversion:
             noise_map=masked_imaging_7x7.noise_map,
             convolver=masked_imaging_7x7.convolver,
             w_tilde=masked_imaging_7x7.w_tilde,
-            mapper=mapper,
-            regularization=reg,
+            mapper_list=[mapper],
+            regularization_list=[reg],
         )
 
         model_image = blurred_image + inversion.mapped_reconstructed_image
@@ -1336,10 +1334,8 @@ class TestCompareToManualProfilesAndInversion:
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
-        traced_grids = tracer.traced_grids_of_planes_from_grid(
-            grid=masked_imaging_7x7.grid
-        )
-        traced_blurring_grids = tracer.traced_grids_of_planes_from_grid(
+        traced_grids = tracer.traced_grids_of_planes_from(grid=masked_imaging_7x7.grid)
+        traced_blurring_grids = tracer.traced_grids_of_planes_from(
             grid=masked_imaging_7x7.blurring_grid
         )
 
@@ -1361,7 +1357,7 @@ class TestCompareToManualProfilesAndInversion:
 
         profile_subtracted_image = masked_imaging_7x7.image - blurred_image
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
+        mapper = pix.mapper_from(
             grid=masked_imaging_7x7.grid,
             settings=al.SettingsPixelization(use_border=False),
         )
@@ -1371,8 +1367,8 @@ class TestCompareToManualProfilesAndInversion:
             noise_map=masked_imaging_7x7.noise_map,
             convolver=masked_imaging_7x7.convolver,
             w_tilde=masked_imaging_7x7.w_tilde,
-            mapper=mapper,
-            regularization=reg,
+            mapper_list=[mapper],
+            regularization_list=[reg],
         )
 
         assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
@@ -1400,9 +1396,9 @@ class TestCompareToManualProfilesAndInversion:
 
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-        image = hyper_image_sky.hyper_image_from_image(image=masked_imaging_7x7.image)
+        image = hyper_image_sky.hyper_image_from(image=masked_imaging_7x7.image)
 
-        hyper_noise_map_background = hyper_background_noise.hyper_noise_map_from_noise_map(
+        hyper_noise_map_background = hyper_background_noise.hyper_noise_map_from(
             noise_map=masked_imaging_7x7.noise_map
         )
 
@@ -1431,7 +1427,7 @@ class TestCompareToManualProfilesAndInversion:
             settings_inversion=al.SettingsInversion(use_w_tilde=False),
         )
 
-        hyper_noise = tracer.hyper_noise_map_from_noise_map(
+        hyper_noise = tracer.hyper_noise_map_from(
             noise_map=masked_imaging_7x7.noise_map
         )
         hyper_noise_map = hyper_noise_map_background + hyper_noise
@@ -1452,7 +1448,7 @@ class TestCompareToManualProfilesAndInversion:
             fit.profile_subtracted_image.native
         )
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
+        mapper = pix.mapper_from(
             grid=masked_imaging_7x7.grid,
             settings=al.SettingsPixelization(use_border=False),
         )
@@ -1462,8 +1458,8 @@ class TestCompareToManualProfilesAndInversion:
             noise_map=hyper_noise_map,
             convolver=masked_imaging_7x7.convolver,
             w_tilde=masked_imaging_7x7.w_tilde,
-            mapper=mapper,
-            regularization=reg,
+            mapper_list=[mapper],
+            regularization_list=[reg],
             settings=al.SettingsInversion(use_w_tilde=False),
         )
 
@@ -1547,7 +1543,7 @@ class TestCompareToManualProfilesAndInversion:
 
         profile_subtracted_image = masked_imaging_7x7.image - blurred_image
 
-        mapper = pix.mapper_from_grid_and_sparse_grid(
+        mapper = pix.mapper_from(
             grid=masked_imaging_7x7.grid,
             settings=al.SettingsPixelization(use_border=False),
         )
@@ -1557,8 +1553,8 @@ class TestCompareToManualProfilesAndInversion:
             noise_map=masked_imaging_7x7.noise_map,
             convolver=masked_imaging_7x7.convolver,
             w_tilde=masked_imaging_7x7.w_tilde,
-            mapper=mapper,
-            regularization=reg,
+            mapper_list=[mapper],
+            regularization_list=[reg],
         )
 
         assert blurred_image.native == pytest.approx(

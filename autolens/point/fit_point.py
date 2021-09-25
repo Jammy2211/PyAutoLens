@@ -363,7 +363,7 @@ class AbstractFitPositionsSourcePlane:
         """
         self.positions = positions
         self.noise_map = noise_map
-        self.source_plane_positions = tracer.traced_grids_of_planes_from_grid(
+        self.source_plane_positions = tracer.traced_grids_of_planes_from(
             grid=positions
         )[-1]
 
