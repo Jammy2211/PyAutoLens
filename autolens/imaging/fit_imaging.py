@@ -48,11 +48,11 @@ class FitImaging(aa.FitImaging):
 
         if use_hyper_scaling:
 
-            image = hyper_image_from_image_and_hyper_image_sky(
+            image = hyper_image_from(
                 image=imaging.image, hyper_image_sky=hyper_image_sky
             )
 
-            noise_map = hyper_noise_map_from_noise_map_tracer_and_hyper_background_noise(
+            noise_map = hyper_noise_map_from(
                 noise_map=imaging.noise_map,
                 tracer=tracer,
                 hyper_background_noise=hyper_background_noise,
@@ -218,7 +218,7 @@ class FitImaging(aa.FitImaging):
         )
 
 
-def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
+def hyper_image_from(image, hyper_image_sky):
 
     if hyper_image_sky is not None:
         return hyper_image_sky.hyper_image_from(image=image)
@@ -226,9 +226,7 @@ def hyper_image_from_image_and_hyper_image_sky(image, hyper_image_sky):
         return image
 
 
-def hyper_noise_map_from_noise_map_tracer_and_hyper_background_noise(
-    noise_map, tracer, hyper_background_noise
-):
+def hyper_noise_map_from(noise_map, tracer, hyper_background_noise):
 
     hyper_noise_map = tracer.hyper_noise_map_from(noise_map=noise_map)
 
