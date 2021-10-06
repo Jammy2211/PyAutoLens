@@ -492,6 +492,7 @@ class TestAbstractTracer:
 
             assert tracer.regularization_list_of_planes[0] == []
             assert tracer.regularization_list_of_planes[1][0].regularization_matrix == 1
+            assert tracer.regularization_list[0].regularization_matrix == 1
 
             galaxy_reg_0 = al.Galaxy(
                 redshift=0.5,
@@ -518,6 +519,9 @@ class TestAbstractTracer:
             assert tracer.regularization_list_of_planes[0][0].regularization_matrix == 1
             assert tracer.regularization_list_of_planes[1][0].regularization_matrix == 2
             assert tracer.regularization_list_of_planes[1][1].regularization_matrix == 3
+            assert tracer.regularization_list[0].regularization_matrix == 1
+            assert tracer.regularization_list[1].regularization_matrix == 2
+            assert tracer.regularization_list[2].regularization_matrix == 3
 
             galaxy_no_reg = al.Galaxy(redshift=0.5)
 

@@ -167,7 +167,9 @@ class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
 
             elif self.tracer.planes[plane_index].has_pixelization:
 
-                self.inversion_plotter.figures_2d(reconstruction=True)
+                self.inversion_plotter.figures_2d_of_mapper(
+                    mapper_index=0, reconstruction=True
+                )
 
     def subplot_fit_real_space(self):
 
@@ -179,8 +181,16 @@ class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
 
         elif self.fit.inversion is not None:
 
-            self.inversion_plotter.subplot(
-                reconstructed_image=True,
-                reconstruction=True,
-                auto_filename="subplot_fit_real_space",
+            self.open_subplot_figure(number_subplots=2)
+
+            self.inversion_plotter.figures_2d_of_mapper(
+                mapper_index=0, reconstructed_image=True
             )
+            self.inversion_plotter.figures_2d_of_mapper(
+                mapper_index=0, reconstruction=True
+            )
+
+            self.mat_plot_2d.output.subplot_to_figure(
+                auto_filename="subplot_fit_real_space"
+            )
+            self.close_subplot_figure()

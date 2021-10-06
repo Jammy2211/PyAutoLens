@@ -1,5 +1,7 @@
 import copy
 
+from autoconf import conf
+
 from autolens.point.fit_point import FitPositionsSourceMaxSeparation
 
 from autolens import exc
@@ -36,6 +38,10 @@ class SettingsLens:
             if not positions_fit.max_separation_within_threshold(
                 self.positions_threshold
             ):
+
+                if conf.instance["general"]["test"]["test_mode"]:
+                    return
+
                 raise exc.RayTracingException
 
     def modify_positions_threshold(self, positions_threshold):

@@ -281,7 +281,6 @@ class TestAnalysisImaging:
 
         profiling_dict = analysis.profile_log_likelihood_function(instance=instance)
 
-        assert "mapped_reconstructed_image_0" in profiling_dict
         assert "regularization_term_0" in profiling_dict
         assert "log_det_regularization_matrix_term_0" in profiling_dict
         assert "figure_of_merit_0" in profiling_dict

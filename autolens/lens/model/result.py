@@ -48,7 +48,7 @@ class Result(AgResult):
         return self.source_plane_light_profile_centre
 
     @property
-    def image_plane_multiple_image_positions(self,) -> aa.Grid2DIrregular:
+    def image_plane_multiple_image_positions(self) -> aa.Grid2DIrregular:
         """
         Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
         the multiple image position of the source(s) in the image-plane.

@@ -20,10 +20,10 @@ class Preloads(aa.Preloads):
         use_w_tilde: Optional[bool] = None,
         blurred_image: Optional[aa.Array2D] = None,
         traced_grids_of_planes_for_inversion: Optional[aa.Grid2D] = None,
-        sparse_image_plane_grids_of_planes: Optional[aa.Grid2D] = None,
+        sparse_image_plane_grid_list_of_planes: Optional[aa.Grid2D] = None,
         relocated_grid: Optional[aa.Grid2D] = None,
-        mapper: Optional[aa.AbstractMapper] = None,
-        blurred_mapping_matrix: Optional[np.ndarray] = None,
+        mapper_list: Optional[aa.AbstractMapper] = None,
+        operated_mapping_matrix: Optional[np.ndarray] = None,
         curvature_matrix_preload: Optional[np.ndarray] = None,
         curvature_matrix_counts: Optional[np.ndarray] = None,
         regularization_matrix: Optional[np.ndarray] = None,
@@ -55,17 +55,17 @@ class Preloads(aa.Preloads):
         traced_grids_of_planes_for_inversion
             The two dimensional grids corresponding to the traced grids in a lens fit. This can be preloaded when no
              mass profiles in the model vary.
-        sparse_image_plane_grids_of_planes
+        sparse_image_plane_grid_list_of_planes
             The two dimensional grids corresponding to the sparse image plane grids in a lens fit, that is ray-traced to
             the source plane to form the source pixelization. This can be preloaded when no pixelizations in the model
             vary.
         relocated_grid
             The two dimensional grids corresponding to the grid that has had its border pixels relocated for a
             pixelization in a lens fit. This can be preloaded when no mass profiles in the model vary.
-        mapper
+        mapper_list
             The mapper of a fit, which preloading avoids recalculation of the mapping matrix and image to source
             pixel mappings. This can be preloaded when no pixelizations in the model vary.
-        blurred_mapping_matrix
+        operated_mapping_matrix
             A matrix containing the mappings between PSF blurred image pixels and source pixels used in the linear
             algebra of an inversion. This can be preloaded when no mass profiles and pixelizations in the model vary.
         curvature_matrix_preload
@@ -85,9 +85,9 @@ class Preloads(aa.Preloads):
             w_tilde=w_tilde,
             use_w_tilde=use_w_tilde,
             relocated_grid=relocated_grid,
-            sparse_image_plane_grids_of_planes=sparse_image_plane_grids_of_planes,
-            mapper=mapper,
-            blurred_mapping_matrix=blurred_mapping_matrix,
+            sparse_image_plane_grid_list_of_planes=sparse_image_plane_grid_list_of_planes,
+            mapper_list=mapper_list,
+            operated_mapping_matrix=operated_mapping_matrix,
             curvature_matrix_preload=curvature_matrix_preload,
             curvature_matrix_counts=curvature_matrix_counts,
             regularization_matrix=regularization_matrix,
@@ -123,10 +123,10 @@ class Preloads(aa.Preloads):
 
         preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
         preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
-        preloads.set_sparse_image_plane_grids_of_planes(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_sparse_image_plane_grid_list_of_planes(fit_0=fit_0, fit_1=fit_1)
         preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
-        preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
-        preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
         preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 
         return preloads
@@ -209,7 +209,7 @@ class Preloads(aa.Preloads):
                         "PRELOADS - Traced grid of planes (for inversion) preloaded for this model-fit."
                     )
 
-    def set_sparse_image_plane_grids_of_planes(self, fit_0, fit_1):
+    def set_sparse_image_plane_grid_list_of_planes(self, fit_0, fit_1):
         """
         If the `Pixelization`'s in a model are fixed their image-plane sparse grid (which defines the set of pixels
         that are ray-traced to construct the source-plane pixelization) do not change during the model=fit and
@@ -229,40 +229,42 @@ class Preloads(aa.Preloads):
             The second fit corresponding to a model with a different set of unit-values.
         """
 
-        self.sparse_image_plane_grids_of_planes = None
+        self.sparse_image_plane_grid_list_of_planes = None
 
-        sparse_image_plane_grids_of_planes_0 = fit_0.tracer.sparse_image_plane_grid_list_of_planes_from(
+        sparse_image_plane_grid_list_of_planes_0 = fit_0.tracer.sparse_image_plane_grid_list_of_planes_from(
             grid=fit_0.dataset.grid_inversion
         )
 
-        sparse_image_plane_grids_of_planes_1 = fit_1.tracer.sparse_image_plane_grid_list_of_planes_from(
+        sparse_image_plane_grid_list_of_planes_1 = fit_1.tracer.sparse_image_plane_grid_list_of_planes_from(
             grid=fit_1.dataset.grid_inversion
         )
 
-        if sparse_image_plane_grids_of_planes_0[-1] is not None:
+        if sparse_image_plane_grid_list_of_planes_0[-1] is not None:
 
-            if (
-                sparse_image_plane_grids_of_planes_0[-1].shape[0]
-                == sparse_image_plane_grids_of_planes_1[-1].shape[0]
-            ):
+            if sparse_image_plane_grid_list_of_planes_0[-1][0] is not None:
 
                 if (
-                    np.max(
-                        abs(
-                            sparse_image_plane_grids_of_planes_0[-1]
-                            - sparse_image_plane_grids_of_planes_1[-1]
-                        )
-                    )
-                    < 1e-8
+                    sparse_image_plane_grid_list_of_planes_0[-1][0].shape[0]
+                    == sparse_image_plane_grid_list_of_planes_1[-1][0].shape[0]
                 ):
 
-                    self.sparse_image_plane_grids_of_planes = (
-                        sparse_image_plane_grids_of_planes_0
-                    )
+                    if (
+                        np.max(
+                            abs(
+                                sparse_image_plane_grid_list_of_planes_0[-1][0]
+                                - sparse_image_plane_grid_list_of_planes_1[-1][0]
+                            )
+                        )
+                        < 1e-8
+                    ):
 
-                    logger.info(
-                        "PRELOADS - Sparse image-plane grids of planes is preloaded for this model-fit."
-                    )
+                        self.sparse_image_plane_grid_list_of_planes = (
+                            sparse_image_plane_grid_list_of_planes_0
+                        )
+
+                        logger.info(
+                            "PRELOADS - Sparse image-plane grids of planes is preloaded for this model-fit."
+                        )
 
     def output_info_to_summary(self, file_path):
 
@@ -293,7 +295,7 @@ class Preloads(aa.Preloads):
 
         self.blurred_image = None
         self.traced_grids_of_planes_for_inversion = None
-        self.sparse_image_plane_grids_of_planes = None
+        self.sparse_image_plane_grid_list_of_planes = None
         self.relocated_grid = None
         self.mapper = None
         self.blurred_mapping_matrix = None
@@ -318,12 +320,12 @@ class Preloads(aa.Preloads):
             f"Traced Grids of Planes (For LinearEqn) = {self.traced_grids_of_planes_for_inversion is not None}\n"
         ]
         line += [
-            f"Sparse Image-Plane Grids of Planes = {self.sparse_image_plane_grids_of_planes is not None}\n"
+            f"Sparse Image-Plane Grids of Planes = {self.sparse_image_plane_grid_list_of_planes is not None}\n"
         ]
         line += [f"Relocated Grid = {self.relocated_grid is not None}\n"]
-        line += [f"Mapper = {self.mapper is not None}\n"]
+        line += [f"Mapper = {self.mapper_list is not None}\n"]
         line += [
-            f"Blurred Mapping Matrix = {self.blurred_mapping_matrix is not None}\n"
+            f"Blurred Mapping Matrix = {self.operated_mapping_matrix is not None}\n"
         ]
         line += [
             f"Curvature Matrix Sparse = {self.curvature_matrix_preload is not None}\n"

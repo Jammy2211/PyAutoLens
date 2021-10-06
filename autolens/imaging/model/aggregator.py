@@ -58,7 +58,7 @@ def _fit_imaging_from(
 
         if sparse_grids_of_planes is not None:
             preloads = Preloads(
-                sparse_image_plane_grids_of_planes=sparse_grids_of_planes
+                sparse_image_plane_grid_list_of_planes=sparse_grids_of_planes
             )
 
     return FitImaging(

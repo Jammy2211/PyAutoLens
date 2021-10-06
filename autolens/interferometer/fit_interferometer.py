@@ -73,7 +73,7 @@ class FitInterferometer(aa.FitInterferometer):
             )
 
             model_visibilities = (
-                self.profile_visibilities + inversion.mapped_reconstructed_visibilities
+                self.profile_visibilities + inversion.mapped_reconstructed_data
             )
 
         fit = aa.FitDataComplex(
@@ -136,7 +136,7 @@ class FitInterferometer(aa.FitInterferometer):
                 {
                     self.tracer.planes[plane_index].galaxies[
                         0
-                    ]: self.inversion.mapped_reconstructed_visibilities
+                    ]: self.inversion.mapped_reconstructed_data
                 }
             )
 
@@ -157,5 +157,5 @@ class FitInterferometer(aa.FitInterferometer):
         return model_visibilities_of_planes
 
     @property
-    def total_inversions(self):
+    def total_mappers(self):
         return len(list(filter(None, self.tracer.regularization_list_of_planes)))

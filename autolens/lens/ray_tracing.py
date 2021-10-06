@@ -336,8 +336,22 @@ class AbstractTracer(LensingObject, ABC):
         return [plane.pixelization_list for plane in self.planes]
 
     @property
+    def pixelization_list(self):
+        return [
+            galaxy.pixelization for galaxy in self.galaxies if galaxy.has_pixelization
+        ]
+
+    @property
     def regularization_list_of_planes(self):
         return [plane.regularization_list for plane in self.planes]
+
+    @property
+    def regularization_list(self):
+        return [
+            galaxy.regularization
+            for galaxy in self.galaxies
+            if galaxy.has_regularization
+        ]
 
     @property
     def hyper_galaxy_image_list_of_planes(self):
@@ -751,7 +765,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         image-plane to the source plane.
         """
         if (
-            preloads.sparse_image_plane_grids_of_planes is None
+            preloads.sparse_image_plane_grid_list_of_planes is None
             or settings_pixelization.is_stochastic
         ):
 
@@ -762,7 +776,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         else:
 
             sparse_image_plane_grid_list_of_planes = (
-                preloads.sparse_image_plane_grids_of_planes
+                preloads.sparse_image_plane_grid_list_of_planes
             )
 
         traced_sparse_grid_list_of_planes = []
@@ -848,7 +862,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         preloads=Preloads(),
     ):
 
-        if preloads.mapper is None:
+        if preloads.mapper_list is None:
 
             mapper_list = self.mapper_list_from(
                 grid=grid,
@@ -858,7 +872,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         else:
 
-            mapper_list = [preloads.mapper]
+            mapper_list = preloads.mapper_list
 
         return inversion_imaging_unpacked_from(
             image=image,
@@ -866,7 +880,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             convolver=convolver,
             w_tilde=w_tilde,
             mapper_list=mapper_list,
-            regularization_list=self.regularization_list_of_planes[-1],
+            regularization_list=self.regularization_list,
             settings=settings_inversion,
             preloads=preloads,
             profiling_dict=self.profiling_dict,
@@ -883,7 +897,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         preloads=Preloads(),
     ):
 
-        if preloads.mapper is None:
+        if preloads.mapper_list is None:
 
             mapper_list = self.mapper_list_from(
                 grid=grid,
@@ -893,14 +907,14 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         else:
 
-            mapper_list = [preloads.mapper]
+            mapper_list = preloads.mapper_list
 
         return inversion_interferometer_unpacked_from(
             visibilities=visibilities,
             noise_map=noise_map,
             transformer=transformer,
             mapper_list=mapper_list,
-            regularization_list=self.regularization_list_of_planes[-1],
+            regularization_list=self.regularization_list,
             settings=settings_inversion,
             profiling_dict=self.profiling_dict,
         )

@@ -99,8 +99,6 @@ class AnalysisImaging(AnalysisDataset):
 
     def check_preloads(self, fit):
 
-        #    if conf.instance["general"]["test"]["check_preloads"]:
-
         self.preloads.check_via_fit(fit=fit)
 
     def modify_after_fit(
@@ -256,8 +254,11 @@ class AnalysisImaging(AnalysisDataset):
         if not tracer.has_pixelization:
             return
 
-        if not isinstance(
-            tracer.pixelization_list_of_planes[-1], aa.pix.VoronoiBrightnessImage
+        if not any(
+            [
+                isinstance(pix, aa.pix.VoronoiBrightnessImage)
+                for pix in tracer.pixelization_list
+            ]
         ):
             return
 
@@ -358,8 +359,8 @@ class AnalysisImaging(AnalysisDataset):
         paths.save_object("psf", self.dataset.psf_unormalized)
         paths.save_object("mask", self.dataset.mask)
         paths.save_object("positions", self.positions)
-        if self.preloads.sparse_image_plane_grids_of_planes is not None:
+        if self.preloads.sparse_image_plane_grid_list_of_planes is not None:
             paths.save_object(
                 "preload_sparse_grids_of_planes",
-                self.preloads.sparse_image_plane_grids_of_planes,
+                self.preloads.sparse_image_plane_grid_list_of_planes,
             )

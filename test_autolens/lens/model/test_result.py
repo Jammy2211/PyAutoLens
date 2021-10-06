@@ -53,7 +53,7 @@ class TestResultAbstract:
 
         assert result.source_plane_light_profile_centre.in_list == [(1.0, 2.0)]
 
-        source = al.Galaxy(
+        source_0 = al.Galaxy(
             redshift=1.0,
             light=al.lp.SphSersic(centre=(1.0, 2.0), intensity=2.0),
             light1=al.lp.SphSersic(centre=(3.0, 4.0), intensity=2.0),
@@ -63,7 +63,7 @@ class TestResultAbstract:
             redshift=1.0, light=al.lp.SphSersic(centre=(5.0, 6.0), intensity=2.0)
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens, source, source_1])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens, source_0, source_1])
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -72,6 +72,24 @@ class TestResultAbstract:
         )
 
         assert result.source_plane_light_profile_centre.in_list == [(1.0, 2.0)]
+
+        source_0 = al.Galaxy(
+            redshift=1.0, light=al.lp.SphSersic(centre=(1.0, 2.0), intensity=2.0)
+        )
+
+        source_1 = al.Galaxy(
+            redshift=2.0, light=al.lp.SphSersic(centre=(5.0, 6.0), intensity=2.0)
+        )
+
+        tracer = al.Tracer.from_galaxies(galaxies=[lens, source_0, source_1])
+
+        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+
+        result = res.Result(
+            samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
+        )
+
+        assert result.source_plane_light_profile_centre.in_list == [(5.0, 6.0)]
 
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5)])
 

@@ -178,10 +178,13 @@ class AnalysisInterferometer(AnalysisDataset):
         if not tracer.has_pixelization:
             return None
 
-        if not isinstance(
-            tracer.pixelization_list_of_planes[-1], aa.pix.VoronoiBrightnessImage
+        if not any(
+            [
+                isinstance(pix, aa.pix.VoronoiBrightnessImage)
+                for pix in tracer.pixelization_list
+            ]
         ):
-            return None
+            return
 
         hyper_background_noise = self.hyper_background_noise_for_instance(
             instance=instance

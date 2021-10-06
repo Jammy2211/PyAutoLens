@@ -5,12 +5,11 @@ from autoarray.dataset.interferometer import Interferometer, SettingsInterferome
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
-from autoarray.inversion.pixelization import pixelizations as pix
+from autoarray.inversion.pixelizations import pixelizations as pix
 from autoarray.inversion.regularization import regularization as reg
-from autoarray.inversion import regularization as reg_bc
-from autoarray.inversion.pixelization.abstract import AbstractPixelization
+from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.inversion.pixelization.settings import SettingsPixelization
+from autoarray.inversion.pixelizations.settings import SettingsPixelization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.inversion.factory import inversion_from as Inversion
 from autoarray.inversion.inversion.factory import (

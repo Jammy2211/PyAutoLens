@@ -168,11 +168,13 @@ class MockFit(AAMockFit):
 
 class MockTracer:
     def __init__(
-        self, traced_grids_of_planes=None, sparse_image_plane_grids_of_planes=None
+        self, traced_grids_of_planes=None, sparse_image_plane_grid_list_of_planes=None
     ):
 
         self.traced_grids_of_planes = traced_grids_of_planes
-        self.sparse_image_plane_grids_of_planes = sparse_image_plane_grids_of_planes
+        self.sparse_image_plane_grid_list_of_planes = (
+            sparse_image_plane_grid_list_of_planes
+        )
 
     def traced_grids_of_planes_from(self, grid):
 
@@ -180,13 +182,13 @@ class MockTracer:
 
     def sparse_image_plane_grid_list_of_planes_from(self, grid):
 
-        return self.sparse_image_plane_grids_of_planes
+        return self.sparse_image_plane_grid_list_of_planes
 
 
 class MockTracerPoint(MockTracer):
     def __init__(
         self,
-        sparse_image_plane_grids_of_planes=None,
+        sparse_image_plane_grid_list_of_planes=None,
         traced_grid=None,
         attribute=None,
         profile=None,
@@ -196,7 +198,7 @@ class MockTracerPoint(MockTracer):
     ):
 
         super().__init__(
-            sparse_image_plane_grids_of_planes=sparse_image_plane_grids_of_planes
+            sparse_image_plane_grid_list_of_planes=sparse_image_plane_grid_list_of_planes
         )
 
         self.positions = traced_grid

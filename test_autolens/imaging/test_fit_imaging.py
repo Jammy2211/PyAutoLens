@@ -5,7 +5,7 @@ from autogalaxy.mock.mock import MockLightProfile
 
 
 class TestFitProperties:
-    def test__total_inversions(self, masked_imaging_7x7):
+    def test__total_mappers(self, masked_imaging_7x7):
 
         g0 = al.Galaxy(redshift=0.5)
 
@@ -17,7 +17,7 @@ class TestFitProperties:
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
-        assert fit.total_inversions == 0
+        assert fit.total_mappers == 0
 
         g2 = al.Galaxy(
             redshift=2.0,
@@ -29,7 +29,7 @@ class TestFitProperties:
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
-        assert fit.total_inversions == 1
+        assert fit.total_mappers == 1
 
         g0 = al.Galaxy(
             redshift=0.5,
@@ -51,9 +51,13 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(
+            imaging=masked_imaging_7x7,
+            tracer=tracer,
+            settings_inversion=al.SettingsInversion(use_w_tilde=False),
+        )
 
-        assert fit.total_inversions == 3
+        assert fit.total_mappers == 3
 
 
 class TestLikelihood:

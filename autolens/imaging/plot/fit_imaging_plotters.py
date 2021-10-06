@@ -229,7 +229,9 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
                 elif self.tracer.planes[plane_index].has_pixelization:
 
                     inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
-                    inversion_plotter.figures_2d(reconstruction=True)
+                    inversion_plotter.figures_2d_of_mapper(
+                        mapper_index=0, reconstruction=True
+                    )
 
     def subplot_of_planes(self, plane_index: Optional[int] = None):
         """Plot the model data of an analysis, using the *Fitter* class object.

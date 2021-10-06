@@ -195,15 +195,18 @@ class FitImaging(aa.FitImaging):
         )
 
     @property
-    def total_inversions(self):
+    def total_mappers(self):
         return len(list(filter(None, self.tracer.regularization_list_of_planes)))
 
-    def refit_with_new_preloads(self, preloads):
+    def refit_with_new_preloads(self, preloads, settings_inversion=None):
 
         if self.profiling_dict is not None:
             profiling_dict = {}
         else:
             profiling_dict = None
+
+        if settings_inversion is None:
+            settings_inversion = self.settings_inversion
 
         return FitImaging(
             imaging=self.imaging,
@@ -212,7 +215,7 @@ class FitImaging(aa.FitImaging):
             hyper_background_noise=self.hyper_background_noise,
             use_hyper_scaling=self.use_hyper_scaling,
             settings_pixelization=self.settings_pixelization,
-            settings_inversion=self.settings_inversion,
+            settings_inversion=settings_inversion,
             preloads=preloads,
             profiling_dict=profiling_dict,
         )
