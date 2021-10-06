@@ -1,5 +1,33 @@
 {
-    "Rectangular": {
+    "rectangular.Rectangular": {
+        "shape_0": {
+            "type": "Uniform",
+            "lower_limit": 32.1,
+            "upper_limit": 45.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 8.0
+            },
+            "gaussian_limits": {
+                "lower": 3.0,
+                "upper": "inf"
+            }
+        },
+        "shape_1": {
+            "type": "Uniform",
+            "lower_limit": 20.0,
+            "upper_limit": 45.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 8.0
+            },
+            "gaussian_limits": {
+                "lower": 3.0,
+                "upper": "inf"
+            }
+        }
+    },
+    "voronoi.VoronoiMagnification": {
         "shape_0": {
             "type": "Uniform",
             "lower_limit": 20.0,
@@ -27,35 +55,7 @@
             }
         }
     },
-    "VoronoiMagnification": {
-        "shape_0": {
-            "type": "Uniform",
-            "lower_limit": 20.0,
-            "upper_limit": 45.0,
-            "width_modifier": {
-                "type": "Absolute",
-                "value": 8.0
-            },
-            "gaussian_limits": {
-                "lower": 3.0,
-                "upper": "inf"
-            }
-        },
-        "shape_1": {
-            "type": "Uniform",
-            "lower_limit": 20.0,
-            "upper_limit": 45.0,
-            "width_modifier": {
-                "type": "Absolute",
-                "value": 8.0
-            },
-            "gaussian_limits": {
-                "lower": 3.0,
-                "upper": "inf"
-            }
-        }
-    },
-    "VoronoiBrightnessImage": {
+    "voronoi.VoronoiBrightnessImage": {
         "pixels": {
             "type": "Uniform",
             "lower_limit": 50.0,
