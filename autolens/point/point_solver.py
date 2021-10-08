@@ -11,22 +11,22 @@ class AbstractPointSolver:
         use_upscaling=True,
         upscale_factor=2,
         magnification_threshold=0.1,
-        distance_from_source_centre=None,
-        distance_from_mass_profile_centre=None,
+        distance_to_source_centre=None,
+        distance_to_mass_profile_centre=None,
     ):
 
         self.use_upscaling = use_upscaling
         self.upscale_factor = upscale_factor
         self.magnification_threshold = magnification_threshold
-        self.distance_from_source_centre = distance_from_source_centre
-        self.distance_from_mass_profile_centre = distance_from_mass_profile_centre
+        self.distance_to_source_centre = distance_to_source_centre
+        self.distance_to_mass_profile_centre = distance_to_mass_profile_centre
 
     def grid_with_points_below_magnification_threshold_removed(
         self, lensing_obj, deflections_func, grid
     ):
 
         magnifications = np.abs(
-            lensing_obj.magnification_via_hessian_from_grid(
+            lensing_obj.magnification_via_hessian_from(
                 grid=grid, buffer=grid.pixel_scale, deflections_func=deflections_func
             )
         )
@@ -39,8 +39,8 @@ class AbstractPointSolver:
 
         return aa.Grid2DIrregularUniform(grid=grid_mag, pixel_scales=grid.pixel_scales)
 
-    def grid_with_coordinates_from_mass_profile_centre_removed(self, lensing_obj, grid):
-        """Remove all coordinates from a grid which are within the distance_from_mass_profile_centre attribute of any
+    def grid_with_coordinates_to_mass_profile_centre_removed_from(self, lensing_obj, grid):
+        """Remove all coordinates from a grid which are within the distance_to_mass_profile_centre attribute of any
         mass profile of the lensing object.
 
         The `PositionFinder` often finds multiple unphyiscal solutions near a mass profile due to the high levels of
@@ -53,13 +53,13 @@ class AbstractPointSolver:
         Parameters
         ----------
         lensing_obj : autogalaxy.LensingObject
-            An object which has a deflection_from_grid method for performing lensing calculations, for example a
+            An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         grid : autoarray.Grid2DIrregularUniform or ndarray
             A gridd of (y,x) Cartesian coordinates for which their distances to the mass profile centres are computed,
             with points within the threshold removed.
         """
-        if self.distance_from_mass_profile_centre is not None:
+        if self.distance_to_mass_profile_centre is not None:
 
             pixel_scales = grid.pixel_scales
 
@@ -77,7 +77,7 @@ class AbstractPointSolver:
                 grid = grid_outside_distance_mask_from(
                     distances_1d=distances_1d,
                     grid_slim=grid,
-                    outside_distance=self.distance_from_mass_profile_centre,
+                    outside_distance=self.distance_to_mass_profile_centre,
                 )
 
             return aa.Grid2DIrregularUniform(grid=grid, pixel_scales=pixel_scales)
@@ -156,7 +156,7 @@ class AbstractPointSolver:
         Parameters
         ----------
         lensing_obj : autogalaxy.LensingObject
-            An object which has a deflection_from_grid method for performing lensing calculations, for example a
+            An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         grid : autoarray.Grid2DIrregularUniform or ndarray
             A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
@@ -167,9 +167,9 @@ class AbstractPointSolver:
         """
 
         deflections = deflections_func(grid=grid)
-        source_plane_grid = grid.grid_from_deflection_grid(deflection_grid=deflections)
+        source_plane_grid = grid.grid_via_deflection_grid_from(deflection_grid=deflections)
 
-        source_plane_distances = source_plane_grid.distances_from_coordinate(
+        source_plane_distances = source_plane_grid.distances_to_coordinate(
             coordinate=source_plane_coordinate
         )
 
@@ -207,7 +207,7 @@ class AbstractPointSolver:
             Parameters
             ----------
             lensing_obj : autogalaxy.LensingObject
-                An object which has a deflection_from_grid method for performing lensing calculations, for example a
+                An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
                 `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
             grid : autoarray.Grid2DIrregularUniform or ndarray
                 A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
@@ -222,8 +222,8 @@ class AbstractPointSolver:
             return grid
 
         deflections = deflection_func(grid=grid)
-        source_plane_grid = grid.grid_from_deflection_grid(deflection_grid=deflections)
-        source_plane_distances = source_plane_grid.distances_from_coordinate(
+        source_plane_grid = grid.grid_via_deflection_grid_from(deflection_grid=deflections)
+        source_plane_distances = source_plane_grid.distances_to_coordinate(
             coordinate=source_plane_coordinate
         )
 
@@ -246,11 +246,11 @@ class PointSolver(AbstractPointSolver):
         pixel_scale_precision=None,
         upscale_factor=2,
         magnification_threshold=0.0,
-        distance_from_source_centre=None,
-        distance_from_mass_profile_centre=None,
+        distance_to_source_centre=None,
+        distance_to_mass_profile_centre=None,
     ):
         """Given a `LensingObject` (e.g. a _MassProfile, `Galaxy`, `Plane` or `Tracer`) this class uses their
-        deflections_2d_from_grid method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
+        deflections_2d_from method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
         source-centre coordinate in the source-plane.
 
         This is performed as follows:
@@ -277,14 +277,14 @@ class PointSolver(AbstractPointSolver):
             use_upscaling=use_upscaling,
             upscale_factor=upscale_factor,
             magnification_threshold=magnification_threshold,
-            distance_from_source_centre=distance_from_source_centre,
-            distance_from_mass_profile_centre=distance_from_mass_profile_centre,
+            distance_to_source_centre=distance_to_source_centre,
+            distance_to_mass_profile_centre=distance_to_mass_profile_centre,
         )
 
         self.grid = grid.binned
         self.pixel_scale_precision = pixel_scale_precision
 
-    def refined_coordinates_from_coordinate(
+    def refined_coordinates_from(
         self, deflections_func, coordinate, pixel_scale, source_plane_coordinate
     ):
         """
@@ -302,7 +302,7 @@ class PointSolver(AbstractPointSolver):
             The pixel-scale resolution of the buffed and upscaled grid that is formed around the input coordinate. If
             upscale > 1, the pixel_scales are reduced to pixel_scale / upscale_factor.
         lensing_obj : autogalaxy.LensingObject
-            An object which has a deflection_from_grid method for performing lensing calculations, for example a
+            An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         source_plane_coordinate : (float, float)
             The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
@@ -330,10 +330,10 @@ class PointSolver(AbstractPointSolver):
     def solve(self, lensing_obj, source_plane_coordinate, upper_plane_index=None):
 
         if upper_plane_index is None:
-            deflections_func = lensing_obj.deflections_2d_from_grid
+            deflections_func = lensing_obj.deflections_2d_from
         else:
             deflections_func = partial(
-                lensing_obj.deflections_between_planes_from_grid,
+                lensing_obj.deflections_between_planes_from,
                 plane_i=0,
                 plane_j=upper_plane_index,
             )
@@ -344,7 +344,7 @@ class PointSolver(AbstractPointSolver):
             deflections_func=deflections_func,
         )
 
-        coordinates_list = self.grid_with_coordinates_from_mass_profile_centre_removed(
+        coordinates_list = self.grid_with_coordinates_to_mass_profile_centre_removed_from(
             lensing_obj=lensing_obj, grid=coordinates_list
         )
 
@@ -362,7 +362,7 @@ class PointSolver(AbstractPointSolver):
                     grid=coordinates_list, pixel_scales=self.grid.pixel_scales
                 ),
                 source_plane_coordinate=source_plane_coordinate,
-                distance=self.distance_from_source_centre,
+                distance=self.distance_to_source_centre,
             )
 
             return aa.Grid2DIrregular(grid=coordinates_list)
@@ -375,7 +375,7 @@ class PointSolver(AbstractPointSolver):
 
             for coordinate in coordinates_list:
 
-                refined_coordinates = self.refined_coordinates_from_coordinate(
+                refined_coordinates = self.refined_coordinates_from(
                     deflections_func=deflections_func,
                     coordinate=coordinate,
                     pixel_scale=pixel_scale,
@@ -399,7 +399,7 @@ class PointSolver(AbstractPointSolver):
                 grid=coordinates_list, pixel_scales=(pixel_scale, pixel_scale)
             ),
             source_plane_coordinate=source_plane_coordinate,
-            distance=self.distance_from_source_centre,
+            distance=self.distance_to_source_centre,
         )
 
         coordinates_list = self.grid_with_points_below_magnification_threshold_removed(

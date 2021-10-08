@@ -25,10 +25,10 @@ class TestSimulatorInterferometer:
             noise_seed=1,
         )
 
-        interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
+        interferometer = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
-        interferometer_via_image = simulator.from_image(
-            image=tracer.image_2d_from_grid(grid=grid)
+        interferometer_via_image = simulator.via_image_from(
+            image=tracer.image_2d_from(grid=grid)
         )
 
         assert (
@@ -39,7 +39,7 @@ class TestSimulatorInterferometer:
         ).all()
         assert (interferometer.noise_map == interferometer_via_image.noise_map).all()
 
-    def test__from_deflections_and_galaxies__same_as_calculation_using_tracer(self):
+    def test__via_deflections_and_galaxies_from__same_as_calculation_using_tracer(self):
 
         grid = al.Grid2D.uniform(shape_native=(20, 20), pixel_scales=0.05, sub_size=1)
 
@@ -58,13 +58,13 @@ class TestSimulatorInterferometer:
             noise_seed=1,
         )
 
-        interferometer = simulator.from_deflections_and_galaxies(
-            deflections=tracer.deflections_2d_from_grid(grid=grid),
+        interferometer = simulator.via_deflections_and_galaxies_from(
+            deflections=tracer.deflections_2d_from(grid=grid),
             galaxies=[source_galaxy],
         )
 
-        interferometer_via_image = simulator.from_image(
-            image=tracer.image_2d_from_grid(grid=grid)
+        interferometer_via_image = simulator.via_image_from(
+            image=tracer.image_2d_from(grid=grid)
         )
 
         assert (
@@ -106,14 +106,14 @@ class TestSimulatorInterferometer:
             noise_seed=1,
         )
 
-        interferometer = simulator.from_galaxies_and_grid(
+        interferometer = simulator.via_galaxies_from(
             galaxies=[lens_galaxy, source_galaxy], grid=grid
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-        interferometer_via_image = simulator.from_image(
-            image=tracer.image_2d_from_grid(grid=grid)
+        interferometer_via_image = simulator.via_image_from(
+            image=tracer.image_2d_from(grid=grid)
         )
 
         assert interferometer.visibilities == pytest.approx(

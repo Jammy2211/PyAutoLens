@@ -666,7 +666,7 @@ class TestCompareToManualProfilesOnly:
             fit.noise_map.native
         )
 
-        model_image = tracer.blurred_image_2d_from_grid_and_convolver(
+        model_image = tracer.blurred_image_2d_via_convolver_from(
             grid=masked_imaging_7x7.grid,
             convolver=masked_imaging_7x7.convolver,
             blurring_grid=masked_imaging_7x7.blurring_grid,
@@ -729,8 +729,8 @@ class TestCompareToManualProfilesOnly:
             grid=masked_imaging_7x7.blurring_grid
         )
 
-        g0_image = g0.image_2d_from_grid(grid=traced_grids_of_planes[0])
-        g0_blurring_image = g0.image_2d_from_grid(
+        g0_image = g0.image_2d_from(grid=traced_grids_of_planes[0])
+        g0_blurring_image = g0.image_2d_from(
             grid=traced_blurring_grids_of_planes[0]
         )
 
@@ -738,8 +738,8 @@ class TestCompareToManualProfilesOnly:
             image=g0_image, blurring_image=g0_blurring_image
         )
 
-        g1_image = g1.image_2d_from_grid(grid=traced_grids_of_planes[1])
-        g1_blurring_image = g1.image_2d_from_grid(
+        g1_image = g1.image_2d_from(grid=traced_grids_of_planes[1])
+        g1_blurring_image = g1.image_2d_from(
             grid=traced_blurring_grids_of_planes[1]
         )
 
@@ -807,7 +807,7 @@ class TestCompareToManualProfilesOnly:
 
         assert hyper_noise_map.native == pytest.approx(fit.noise_map.native)
 
-        model_image = tracer.blurred_image_2d_from_grid_and_convolver(
+        model_image = tracer.blurred_image_2d_via_convolver_from(
             grid=masked_imaging_7x7.grid,
             convolver=masked_imaging_7x7.convolver,
             blurring_grid=masked_imaging_7x7.blurring_grid,
@@ -874,7 +874,7 @@ class TestCompareToManualProfilesOnly:
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
-        blurred_images_of_planes = tracer.blurred_images_of_planes_from_grid_and_convolver(
+        blurred_images_of_planes = tracer.blurred_images_of_planes_via_convolver_from(
             grid=masked_imaging_7x7.grid,
             convolver=masked_imaging_7x7.convolver,
             blurring_grid=masked_imaging_7x7.blurring_grid,
@@ -888,13 +888,13 @@ class TestCompareToManualProfilesOnly:
             fit.model_images_of_planes[1].native, 1.0e-4
         )
 
-        unmasked_blurred_image = tracer.unmasked_blurred_image_2d_from_grid_and_psf(
+        unmasked_blurred_image = tracer.unmasked_blurred_image_2d_via_psf_from(
             grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
         )
 
         assert (unmasked_blurred_image == fit.unmasked_blurred_image).all()
 
-        unmasked_blurred_image_of_planes = tracer.unmasked_blurred_image_of_planes_from_grid_and_psf(
+        unmasked_blurred_image_of_planes = tracer.unmasked_blurred_image_of_planes_via_psf_from(
             grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
         )
 
@@ -907,7 +907,7 @@ class TestCompareToManualProfilesOnly:
             == fit.unmasked_blurred_image_of_planes[1]
         ).all()
 
-        unmasked_blurred_image_of_galaxies = tracer.unmasked_blurred_image_of_planes_and_galaxies_from_grid_and_psf(
+        unmasked_blurred_image_of_galaxies = tracer.unmasked_blurred_image_of_planes_and_galaxies_via_psf_from(
             grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
         )
 
@@ -1235,7 +1235,7 @@ class TestCompareToManualProfilesAndInversion:
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
-        blurred_image = tracer.blurred_image_2d_from_grid_and_convolver(
+        blurred_image = tracer.blurred_image_2d_via_convolver_from(
             grid=masked_imaging_7x7.grid,
             convolver=masked_imaging_7x7.convolver,
             blurring_grid=masked_imaging_7x7.blurring_grid,
@@ -1343,15 +1343,15 @@ class TestCompareToManualProfilesAndInversion:
             grid=masked_imaging_7x7.blurring_grid
         )
 
-        g0_image = g0.image_2d_from_grid(grid=traced_grids[0])
-        g0_blurring_image = g0.image_2d_from_grid(grid=traced_blurring_grids[0])
+        g0_image = g0.image_2d_from(grid=traced_grids[0])
+        g0_blurring_image = g0.image_2d_from(grid=traced_blurring_grids[0])
 
         g0_blurred_image = masked_imaging_7x7.convolver.convolve_image(
             image=g0_image, blurring_image=g0_blurring_image
         )
 
-        g1_image = g1.image_2d_from_grid(grid=traced_grids[1])
-        g1_blurring_image = g1.image_2d_from_grid(grid=traced_blurring_grids[1])
+        g1_image = g1.image_2d_from(grid=traced_grids[1])
+        g1_blurring_image = g1.image_2d_from(grid=traced_blurring_grids[1])
 
         g1_blurred_image = masked_imaging_7x7.convolver.convolve_image(
             image=g1_image, blurring_image=g1_blurring_image
@@ -1438,7 +1438,7 @@ class TestCompareToManualProfilesAndInversion:
 
         assert hyper_noise_map.native == pytest.approx(fit.noise_map.native, 1.0e-4)
 
-        blurred_image = tracer.blurred_image_2d_from_grid_and_convolver(
+        blurred_image = tracer.blurred_image_2d_via_convolver_from(
             grid=masked_imaging_7x7.grid,
             convolver=masked_imaging_7x7.convolver,
             blurring_grid=masked_imaging_7x7.blurring_grid,
@@ -1539,7 +1539,7 @@ class TestCompareToManualProfilesAndInversion:
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
 
-        blurred_image = tracer.blurred_image_2d_from_grid_and_convolver(
+        blurred_image = tracer.blurred_image_2d_via_convolver_from(
             grid=masked_imaging_7x7.grid,
             convolver=masked_imaging_7x7.convolver,
             blurring_grid=masked_imaging_7x7.blurring_grid,

@@ -99,7 +99,7 @@ class Preloads(aa.Preloads):
         self.failed = failed
 
     @classmethod
-    def setup_all_from_fits(cls, fit_0, fit_1) -> "Preloads":
+    def setup_all_via_fits(cls, fit_0, fit_1) -> "Preloads":
         """
         Setup the Preloads from two fits which use two different lens model of a model-fit.
 

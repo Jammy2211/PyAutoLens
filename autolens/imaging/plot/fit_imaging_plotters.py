@@ -69,7 +69,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
             ),
             critical_curves=self.extract_2d(
                 "critical_curves",
-                self.tracer.critical_curves_from_grid(grid=self.fit.grid),
+                self.tracer.critical_curves_from(grid=self.fit.grid),
                 "critical_curves",
             ),
         )
@@ -136,7 +136,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
             chi_squared_map=chi_squared_map,
         )
 
-    def plane_indexes_from_plane_index(self, plane_index: int):
+    def plane_indexes_from(self, plane_index: int):
 
         if plane_index is None:
             return range(len(self.fit.tracer.planes))
@@ -165,7 +165,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
             in the python interpreter window.
         """
 
-        plane_indexes = self.plane_indexes_from_plane_index(plane_index=plane_index)
+        plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
 
@@ -251,7 +251,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
             in the python interpreter window.
         """
 
-        plane_indexes = self.plane_indexes_from_plane_index(plane_index=plane_index)
+        plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
 

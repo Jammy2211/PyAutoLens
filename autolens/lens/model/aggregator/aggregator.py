@@ -96,7 +96,7 @@ class AbstractAgg(ABC):
 
         This generator creates a list containing the maximum log instance of every result loaded in the aggregator.
 
-        For example, in **PyAutoLens**, by overwriting the `make_gen_from_object` method this returns a generator
+        For example, in **PyAutoLens**, by overwriting the `make_gen_from` method this returns a generator
         of `Tracer` objects from a PyAutoFit aggregator. This generator then generates a list of the maximum log
         likelihood `Tracer` objects for all aggregator results.
         """
@@ -146,7 +146,7 @@ class AbstractAgg(ABC):
         `minimum_weight`, a list of 10 entries will be returned, where each entry in this list contains 100 object's
         paired with each non-linear sample.
 
-        For example, in **PyAutoLens**, by overwriting the `make_gen_from_object` method this returns a generator
+        For example, in **PyAutoLens**, by overwriting the `make_gen_from` method this returns a generator
         of `Tracer` objects from a PyAutoFit aggregator. This generator then generates lists of `Tracer` objects
         corresponding to all non-linear search samples above the `minimum_weight`.
 
@@ -178,7 +178,7 @@ class AbstractAgg(ABC):
 
         return self.aggregator.map(func=func)
 
-    def randomly_drawn_from_pdf_gen(self, total_samples: int):
+    def randomly_drawn_via_pdf_gen_from(self, total_samples: int):
         """
         Returns a generator which for every result generates a list of objects whose parameter values are drawn
         randomly from the PDF. This enables straight forward error estimation.
@@ -188,7 +188,7 @@ class AbstractAgg(ABC):
         entries will be returned, where each entry in this list contains 100 object's paired with non-linear samples
         randomly drawn from the PDF.
 
-        For example, in **PyAutoLens**, by overwriting the `make_gen_from_object` method this returns a generator
+        For example, in **PyAutoLens**, by overwriting the `make_gen_from` method this returns a generator
         of `Tracer` objects from a PyAutoFit aggregator. This generator then generates lists of `Tracer` objects
         corresponding to non-linear search samples randomly drawn from the PDF.
 

@@ -214,7 +214,7 @@ class MockTracerPoint(MockTracer):
     def planes(self):
         return [0, 1]
 
-    def deflections_2d_from_grid(self):
+    def deflections_2d_from(self):
         pass
 
     @property
@@ -230,13 +230,13 @@ class MockTracerPoint(MockTracer):
     def traced_grids_of_planes_from(self, grid, plane_index_limit=None):
         return [self.positions]
 
-    def magnification_via_hessian_from_grid(self, grid, deflections_func=None):
+    def magnification_via_hessian_from(self, grid, deflections_func=None):
         return self.magnification
 
-    def einstein_radius_from_grid(self, grid):
+    def einstein_radius_from(self, grid):
         return self.einstein_radius
 
-    def einstein_mass_angular_from_grid(self, grid):
+    def einstein_mass_angular_from(self, grid):
         return self.einstein_mass
 
 

@@ -52,7 +52,7 @@ class TestVisualizer:
         assert path.join(plot_path, "deflections_x_2d.png") not in plot_patch.paths
         assert path.join(plot_path, "magnification_2d.png") in plot_patch.paths
 
-        convergence = al.util.array_2d.numpy_array_2d_from_fits(
+        convergence = al.util.array_2d.numpy_array_2d_via_fits_from(
             file_path=path.join(plot_path, "fits", "convergence_2d.fits"), hdu=0
         )
 

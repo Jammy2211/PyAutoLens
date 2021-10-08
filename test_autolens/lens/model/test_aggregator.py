@@ -87,7 +87,7 @@ class TestTracerAgg:
     #
     #     clean(database_file=database_file, result_path=result_path)
 
-    def test__tracer_randomly_drawn_from_pdf_gen(
+    def test__tracer_randomly_drawn_via_pdf_gen_from(
         self, masked_imaging_7x7, samples, model
     ):
 
@@ -109,7 +109,7 @@ class TestTracerAgg:
         agg.add_directory(directory=result_path)
 
         tracer_agg = al.agg.TracerAgg(aggregator=agg)
-        tracer_pdf_gen = tracer_agg.randomly_drawn_from_pdf_gen(total_samples=2)
+        tracer_pdf_gen = tracer_agg.randomly_drawn_via_pdf_gen_from(total_samples=2)
 
         i = 0
 
@@ -204,7 +204,7 @@ class MockAggregator:
         return self.grid_search_results
 
 
-# def test__results_array_from_results_file(path):
+# def test__results_array_froms_file(path):
 #
 #     results = [
 #         MockResult(log_likelihood=1.0),

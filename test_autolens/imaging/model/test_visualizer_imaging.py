@@ -59,7 +59,7 @@ class TestVisualizerImaging:
         assert path.join(plot_path, "plane_image_of_plane_0.png") in plot_patch.paths
         assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
 
-        image = al.util.array_2d.numpy_array_2d_from_fits(
+        image = al.util.array_2d.numpy_array_2d_via_fits_from(
             file_path=path.join(plot_path, "fits", "image_2d.fits"), hdu=0
         )
 

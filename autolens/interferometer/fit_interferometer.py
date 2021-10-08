@@ -26,8 +26,6 @@ class FitInterferometer(aa.FitInterferometer):
         -----------
         tracer : Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
-        scaled_array_2d_from_array_1d : func
-            A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
 
         self.profiling_dict = profiling_dict
@@ -47,7 +45,7 @@ class FitInterferometer(aa.FitInterferometer):
 
         self.tracer = tracer
 
-        self.profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
+        self.profile_visibilities = tracer.profile_visibilities_via_transformer_from(
             grid=interferometer.grid, transformer=interferometer.transformer
         )
 
@@ -98,7 +96,7 @@ class FitInterferometer(aa.FitInterferometer):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_model_image_dict = self.tracer.galaxy_image_dict_from_grid(
+        galaxy_model_image_dict = self.tracer.galaxy_image_dict_from(
             grid=self.grid
         )
 
@@ -124,7 +122,7 @@ class FitInterferometer(aa.FitInterferometer):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_model_visibilities_dict = self.tracer.galaxy_profile_visibilities_dict_from_grid_and_transformer(
+        galaxy_model_visibilities_dict = self.tracer.galaxy_profile_visibilities_dict_via_transformer_from(
             grid=self.interferometer.grid, transformer=self.interferometer.transformer
         )
 
@@ -144,7 +142,7 @@ class FitInterferometer(aa.FitInterferometer):
 
     def model_visibilities_of_planes(self):
 
-        model_visibilities_of_planes = self.tracer.profile_visibilities_of_planes_from_grid_and_transformer(
+        model_visibilities_of_planes = self.tracer.profile_visibilities_of_planes_via_transformer_from(
             grid=self.interferometer.grid, transformer=self.interferometer.transformer
         )
 

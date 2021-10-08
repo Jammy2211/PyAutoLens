@@ -91,7 +91,7 @@ class TestAnalysisInterferometer:
 
         assert fit.log_likelihood == analysis_log_likelihood
 
-    def test__sets_up_hyper_galaxy_visibiltiies__from_results(self, interferometer_7):
+    def test__sets_up_hyper_galaxy_visibiltiies__froms(self, interferometer_7):
 
         hyper_galaxy_image_path_dict = {
             ("galaxies", "lens"): al.Array2D.ones(

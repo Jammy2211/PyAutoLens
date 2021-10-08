@@ -11,19 +11,19 @@ logger.setLevel(level="INFO")
 
 
 class FitImagingMaker:
-    def __init__(self, model, fit_from_instance_func):
+    def __init__(self, model, fit_func):
 
         self.model = model
-        self.fit_from_instance_func = fit_from_instance_func
+        self.fit_func = fit_func
 
     def fit_via_model(self, unit_value):
 
         try:
-            return self.fit_from_unit_instance(unit_value=unit_value)
+            return self.fit_unit_instance_from(unit_value=unit_value)
         except Exception:
-            return self.fit_from_random_instance()
+            return self.fit_random_instance_from()
 
-    def fit_from_unit_instance(self, unit_value):
+    def fit_unit_instance_from(self, unit_value):
 
         ignore_prior_limits = conf.instance["general"]["model"]["ignore_prior_limits"]
         conf.instance["general"]["model"]["ignore_prior_limits"] = True
@@ -34,13 +34,13 @@ class FitImagingMaker:
 
         conf.instance["general"]["model"]["ignore_prior_limits"] = ignore_prior_limits
 
-        return self.fit_from_instance_func(
+        return self.fit_func(
             instance=instance,
             preload_overwrite=Preloads(use_w_tilde=False),
             check_positions=False,
         )
 
-    def fit_from_random_instance(self):
+    def fit_random_instance_from(self):
 
         preload_attempts = conf.instance["general"]["analysis"]["preload_attempts"]
 
@@ -57,7 +57,7 @@ class FitImagingMaker:
                     "ignore_prior_limits"
                 ] = ignore_prior_limits
 
-                return self.fit_from_instance_func(
+                return self.fit_func(
                     instance=instance,
                     preload_overwrite=Preloads(use_w_tilde=False),
                     check_positions=False,

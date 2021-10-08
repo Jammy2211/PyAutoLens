@@ -99,7 +99,7 @@ class TracerPlotter(LensingObjPlotter):
         if plane_index == 0:
             critical_curves = self.extract_2d(
                 "critical_curves",
-                self.tracer.critical_curves_from_grid(grid=self.grid),
+                self.tracer.critical_curves_from(grid=self.grid),
                 "critical_curves",
             )
         else:
@@ -107,7 +107,7 @@ class TracerPlotter(LensingObjPlotter):
 
         if plane_index == 1:
             caustics = self.extract_2d(
-                "caustics", self.tracer.caustics_from_grid(grid=self.grid), "caustics"
+                "caustics", self.tracer.caustics_from(grid=self.grid), "caustics"
             )
         else:
             caustics = None
@@ -177,7 +177,7 @@ class TracerPlotter(LensingObjPlotter):
         if image:
 
             self.mat_plot_2d.plot_array(
-                array=self.tracer.image_2d_from_grid(grid=self.grid),
+                array=self.tracer.image_2d_from(grid=self.grid),
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=aplt.AutoLabels(title="Image", filename="image_2d"),
             )
@@ -205,7 +205,7 @@ class TracerPlotter(LensingObjPlotter):
                 ),
             )
 
-    def plane_indexes_from_plane_index(self, plane_index: int) -> List[int]:
+    def plane_indexes_from(self, plane_index: int) -> List[int]:
 
         if plane_index is None:
             return list(range(len(self.tracer.planes)))
@@ -219,7 +219,7 @@ class TracerPlotter(LensingObjPlotter):
         plane_index: Optional[int] = None,
     ):
 
-        plane_indexes = self.plane_indexes_from_plane_index(plane_index=plane_index)
+        plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
 

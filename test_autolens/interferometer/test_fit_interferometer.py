@@ -119,9 +119,9 @@ class TestLikelihood:
 
         g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=0.001))
 
-        image = g0.image_2d_from_grid(grid=interferometer.grid)
+        image = g0.image_2d_from(grid=interferometer.grid)
 
-        model_visibilities_manual = transformer.visibilities_from_image(image=image)
+        model_visibilities_manual = transformer.visibilities_from(image=image)
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
@@ -235,7 +235,7 @@ class TestCompareToManualProfilesOnly:
 
         assert interferometer_7.noise_map == pytest.approx(fit.noise_map)
 
-        model_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
+        model_visibilities = tracer.profile_visibilities_via_transformer_from(
             grid=interferometer_7.grid, transformer=interferometer_7.transformer
         )
 
@@ -295,9 +295,9 @@ class TestCompareToManualProfilesOnly:
             grid=interferometer_7_grid.grid
         )
 
-        g0_image = g0.image_2d_from_grid(grid=traced_grids_of_planes[0])
+        g0_image = g0.image_2d_from(grid=traced_grids_of_planes[0])
 
-        g1_image = g1.image_2d_from_grid(grid=traced_grids_of_planes[1])
+        g1_image = g1.image_2d_from(grid=traced_grids_of_planes[1])
 
         assert fit.galaxy_model_image_dict[g0].slim == pytest.approx(g0_image, 1.0e-4)
         assert fit.galaxy_model_image_dict[g1].slim == pytest.approx(g1_image, 1.0e-4)
@@ -321,12 +321,12 @@ class TestCompareToManualProfilesOnly:
             grid=interferometer_7_grid.grid
         )
 
-        g0_profile_visibilities = g0.profile_visibilities_from_grid_and_transformer(
+        g0_profile_visibilities = g0.profile_visibilities_via_transformer_from(
             grid=traced_grids_of_planes[0],
             transformer=interferometer_7_grid.transformer,
         )
 
-        g1_profile_visibilities = g1.profile_visibilities_from_grid_and_transformer(
+        g1_profile_visibilities = g1.profile_visibilities_via_transformer_from(
             grid=traced_grids_of_planes[1],
             transformer=interferometer_7_grid.transformer,
         )
@@ -711,7 +711,7 @@ class TestCompareToManualProfilesAndInversion:
 
         fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
 
-        profile_visibilities = tracer.profile_visibilities_from_grid_and_transformer(
+        profile_visibilities = tracer.profile_visibilities_via_transformer_from(
             grid=interferometer_7.grid, transformer=interferometer_7.transformer
         )
 
@@ -827,11 +827,11 @@ class TestCompareToManualProfilesAndInversion:
             grid=interferometer_7_grid.grid
         )
 
-        g0_visibilities = g0.profile_visibilities_from_grid_and_transformer(
+        g0_visibilities = g0.profile_visibilities_via_transformer_from(
             grid=traced_grids[0], transformer=interferometer_7_grid.transformer
         )
 
-        g1_visibilities = g1.profile_visibilities_from_grid_and_transformer(
+        g1_visibilities = g1.profile_visibilities_via_transformer_from(
             grid=traced_grids[1], transformer=interferometer_7_grid.transformer
         )
 
@@ -854,9 +854,9 @@ class TestCompareToManualProfilesAndInversion:
             settings=al.SettingsInversion(use_w_tilde=False),
         )
 
-        g0_image = g0.image_2d_from_grid(grid=traced_grids[0])
+        g0_image = g0.image_2d_from(grid=traced_grids[0])
 
-        g1_image = g1.image_2d_from_grid(grid=traced_grids[1])
+        g1_image = g1.image_2d_from(grid=traced_grids[1])
 
         assert (fit.galaxy_model_image_dict[g2].native == np.zeros((7, 7))).all()
 
@@ -890,11 +890,11 @@ class TestCompareToManualProfilesAndInversion:
             grid=interferometer_7_grid.grid
         )
 
-        g0_visibilities = g0.profile_visibilities_from_grid_and_transformer(
+        g0_visibilities = g0.profile_visibilities_via_transformer_from(
             grid=traced_grids[0], transformer=interferometer_7_grid.transformer
         )
 
-        g1_visibilities = g1.profile_visibilities_from_grid_and_transformer(
+        g1_visibilities = g1.profile_visibilities_via_transformer_from(
             grid=traced_grids[1], transformer=interferometer_7_grid.transformer
         )
 

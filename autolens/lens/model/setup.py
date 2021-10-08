@@ -76,7 +76,7 @@ class SetupHyper(ag.SetupHyper):
 
         self.hyper_fixed_after_source = hyper_fixed_after_source
 
-    def hyper_galaxy_lens_from_result(
+    def hyper_galaxy_lens_from(
         self, result: af.Result, noise_factor_is_model=False
     ):
         """
@@ -109,19 +109,19 @@ class SetupHyper(ag.SetupHyper):
             return None
 
         if hasattr(result, "hyper"):
-            return self.hyper_galaxy_from_galaxy_model_and_instance(
+            return self.hyper_galaxy_via_galaxy_model_from(
                 galaxy_model=result.hyper.model.galaxies.lens,
                 galaxy_instance=result.hyper.instance.galaxies.lens,
                 noise_factor_is_model=noise_factor_is_model,
             )
 
-        return self.hyper_galaxy_from_galaxy_model_and_instance(
+        return self.hyper_galaxy_via_galaxy_model_from(
             galaxy_model=result.model.galaxies.lens,
             galaxy_instance=result.instance.galaxies.lens,
             noise_factor_is_model=noise_factor_is_model,
         )
 
-    def hyper_galaxy_source_from_result(
+    def hyper_galaxy_source_from(
         self, result: af.Result, noise_factor_is_model=False
     ):
         """
@@ -154,19 +154,19 @@ class SetupHyper(ag.SetupHyper):
             return None
 
         if hasattr(result, "hyper"):
-            return self.hyper_galaxy_from_galaxy_model_and_instance(
+            return self.hyper_galaxy_via_galaxy_model_from(
                 galaxy_model=result.hyper.model.galaxies.source,
                 galaxy_instance=result.hyper.instance.galaxies.source,
                 noise_factor_is_model=noise_factor_is_model,
             )
 
-        return self.hyper_galaxy_from_galaxy_model_and_instance(
+        return self.hyper_galaxy_via_galaxy_model_from(
             galaxy_model=result.model.galaxies.source,
             galaxy_instance=result.instance.galaxies.source,
             noise_factor_is_model=noise_factor_is_model,
         )
 
-    def hyper_galaxy_from_galaxy_model_and_instance(
+    def hyper_galaxy_via_galaxy_model_from(
         self, galaxy_model, galaxy_instance, noise_factor_is_model=False
     ):
 

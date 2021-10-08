@@ -166,7 +166,7 @@ class TestAnalysisImaging:
         assert (fit.tracer.galaxies[0].hyper_galaxy_image == lens_hyper_image).all()
         assert analysis_log_likelihood == fit.log_likelihood
 
-    def test__sets_up_hyper_galaxy_images__from_results(self, masked_imaging_7x7):
+    def test__sets_up_hyper_galaxy_images__froms(self, masked_imaging_7x7):
 
         hyper_galaxy_image_path_dict = {
             ("galaxies", "lens"): al.Array2D.ones(

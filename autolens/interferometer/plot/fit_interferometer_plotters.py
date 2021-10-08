@@ -74,7 +74,7 @@ class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
             ),
             critical_curves=self.extract_2d(
                 "critical_curves",
-                self.tracer.critical_curves_from_grid(grid=self.fit.grid),
+                self.tracer.critical_curves_from(grid=self.fit.grid),
                 "critical_curves",
             ),
         )

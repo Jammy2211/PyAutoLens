@@ -86,7 +86,7 @@ class TestFitImagingAgg:
     #     clean(database_file=database_file, result_path=result_path)
     #
 
-    def test__fit_imaging_randomly_drawn_from_pdf_gen(
+    def test__fit_imaging_randomly_drawn_via_pdf_gen_from(
         self, masked_imaging_7x7, samples, model
     ):
 
@@ -108,7 +108,7 @@ class TestFitImagingAgg:
         agg.add_directory(directory=result_path)
 
         fit_imaging_agg = al.agg.FitImagingAgg(aggregator=agg)
-        fit_imaging_pdf_gen = fit_imaging_agg.randomly_drawn_from_pdf_gen(
+        fit_imaging_pdf_gen = fit_imaging_agg.randomly_drawn_via_pdf_gen_from(
             total_samples=2
         )
 

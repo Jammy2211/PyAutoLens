@@ -161,7 +161,7 @@ class FitPositionsImage(aa.FitData):
             upper_plane_index=upper_plane_index,
         )
 
-        model_positions = model_positions.grid_of_closest_from_grid_pair(
+        model_positions = model_positions.grid_of_closest_from(
             grid_pair=positions
         )
 
@@ -186,7 +186,7 @@ class FitPositionsImage(aa.FitData):
 
         residual_positions = self.positions - self.model_positions
 
-        return residual_positions.distances_from_coordinate(coordinate=(0.0, 0.0))
+        return residual_positions.distances_to_coordinate(coordinate=(0.0, 0.0))
 
 
 class FitPositionsSource(aa.FitData):
@@ -227,17 +227,17 @@ class FitPositionsSource(aa.FitData):
 
         if len(tracer.planes) <= 2:
 
-            deflections = tracer.deflections_2d_from_grid(grid=positions)
+            deflections = tracer.deflections_2d_from(grid=positions)
 
         else:
 
             upper_plane_index = tracer.extract_plane_index_of_profile(profile_name=name)
 
-            deflections = tracer.deflections_between_planes_from_grid(
+            deflections = tracer.deflections_between_planes_from(
                 grid=positions, plane_i=0, plane_j=upper_plane_index
             )
 
-        model_positions = positions.grid_from_deflection_grid(
+        model_positions = positions.grid_via_deflection_grid_from(
             deflection_grid=deflections
         )
 
@@ -260,7 +260,7 @@ class FitPositionsSource(aa.FitData):
     @property
     def residual_map(self) -> aa.ValuesIrregular:
 
-        return self.model_positions.distances_from_coordinate(
+        return self.model_positions.distances_to_coordinate(
             coordinate=self.source_plane_coordinate
         )
 
@@ -300,15 +300,15 @@ class FitFluxes(aa.FitData):
         if len(tracer.planes) > 2:
             upper_plane_index = tracer.extract_plane_index_of_profile(profile_name=name)
             deflections_func = partial(
-                tracer.deflections_between_planes_from_grid,
+                tracer.deflections_between_planes_from,
                 plane_i=0,
                 plane_j=upper_plane_index,
             )
         else:
-            deflections_func = tracer.deflections_2d_from_grid
+            deflections_func = tracer.deflections_2d_from
 
         self.magnifications = abs(
-            tracer.magnification_via_hessian_from_grid(
+            tracer.magnification_via_hessian_from(
                 grid=positions, deflections_func=deflections_func
             )
         )
@@ -387,7 +387,7 @@ class AbstractFitPositionsSourcePlane:
             The further distances of every set of grouped source-plane coordinates the other source-plane coordinates
             that it is grouped with.
         """
-        return self.source_plane_positions.furthest_distances_from_other_coordinates
+        return self.source_plane_positions.furthest_distances_to_other_coordinates
 
     @property
     def max_separation_of_source_plane_positions(self) -> float:

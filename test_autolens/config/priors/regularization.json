@@ -1,12 +1,12 @@
 {
-    "Constant": {
+    "constant.Constant": {
         "coefficient": {
             "type": "Uniform",
             "lower_limit": 0.0,
             "upper_limit": 1.0
         }
     },
-    "AdaptiveBrightness": {
+    "adaptive_brightness.AdaptiveBrightness": {
         "inner_coefficient": {
             "type": "Uniform",
             "lower_limit": 0.0,

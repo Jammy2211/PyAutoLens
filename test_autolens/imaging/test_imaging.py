@@ -3,7 +3,7 @@ import numpy as np
 
 
 class TestSimulatorImaging:
-    def test__from_tracer_and_grid__same_as_tracer_image(self):
+    def test__via_tracer_from__same_as_tracer_image(self):
         psf = al.Kernel2D.from_gaussian(
             shape_native=(7, 7), sigma=0.5, pixel_scales=1.0
         )
@@ -27,10 +27,10 @@ class TestSimulatorImaging:
             add_poisson_noise=False,
         )
 
-        imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
+        imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
-        imaging_via_image = simulator.from_image(
-            image=tracer.image_2d_from_grid(grid=grid)
+        imaging_via_image = simulator.via_image_from(
+            image=tracer.image_2d_from(grid=grid)
         )
 
         assert imaging.shape_native == (20, 20)
@@ -39,7 +39,7 @@ class TestSimulatorImaging:
         assert (imaging.psf == imaging_via_image.psf).all()
         assert (imaging.noise_map == imaging_via_image.noise_map).all()
 
-    def test__from_deflections_and_galaxies__same_as_calculation_using_tracer(self):
+    def test__via_deflections_and_galaxies_from__same_as_calculation_using_tracer(self):
 
         psf = al.Kernel2D.no_blur(pixel_scales=0.05)
 
@@ -60,13 +60,13 @@ class TestSimulatorImaging:
             add_poisson_noise=False,
         )
 
-        imaging = simulator.from_deflections_and_galaxies(
-            deflections=tracer.deflections_2d_from_grid(grid=grid),
+        imaging = simulator.via_deflections_and_galaxies_from(
+            deflections=tracer.deflections_2d_from(grid=grid),
             galaxies=[source_galaxy],
         )
 
-        imaging_via_image = simulator.from_image(
-            image=tracer.image_2d_from_grid(grid=grid)
+        imaging_via_image = simulator.via_image_from(
+            image=tracer.image_2d_from(grid=grid)
         )
 
         assert imaging.shape_native == (20, 20)
@@ -106,14 +106,14 @@ class TestSimulatorImaging:
             noise_seed=1,
         )
 
-        imaging = simulator.from_galaxies_and_grid(
+        imaging = simulator.via_galaxies_from(
             galaxies=[lens_galaxy, source_galaxy], grid=grid
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-        imaging_via_image = simulator.from_image(
-            image=tracer.image_2d_from_grid(grid=grid)
+        imaging_via_image = simulator.via_image_from(
+            image=tracer.image_2d_from(grid=grid)
         )
 
         assert imaging.shape_native == (11, 11)

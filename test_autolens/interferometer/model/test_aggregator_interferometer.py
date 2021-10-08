@@ -88,7 +88,7 @@ class TestFitInterferometerAgg:
     #
     #     clean(database_file=database_file, result_path=result_path)
 
-    def test__fit_interferometer_randomly_drawn_from_pdf_gen(
+    def test__fit_interferometer_randomly_drawn_via_pdf_gen_from(
         self, interferometer_7, samples, model
     ):
 
@@ -112,7 +112,7 @@ class TestFitInterferometerAgg:
         agg.add_directory(directory=result_path)
 
         fit_interferometer_agg = al.agg.FitInterferometerAgg(aggregator=agg)
-        fit_interferometer_pdf_gen = fit_interferometer_agg.randomly_drawn_from_pdf_gen(
+        fit_interferometer_pdf_gen = fit_interferometer_agg.randomly_drawn_via_pdf_gen_from(
             total_samples=2
         )
 

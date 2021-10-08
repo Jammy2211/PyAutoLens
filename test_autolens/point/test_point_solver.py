@@ -11,7 +11,7 @@ from autolens.point import point_solver as pos
 
 
 class TestAbstractPointSolver:
-    def test__solver_with_remove_distance_from_mass_profile_centre__remove_pixels_from_initial_grid(
+    def test__solver_with_remove_distance_to_mass_profile_centre__remove_pixels_from_initial_grid(
         self,
     ):
 
@@ -23,9 +23,9 @@ class TestAbstractPointSolver:
 
         sis = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 
-        solver = AbstractPointSolver(distance_from_mass_profile_centre=0.01)
+        solver = AbstractPointSolver(distance_to_mass_profile_centre=0.01)
 
-        grid = solver.grid_with_coordinates_from_mass_profile_centre_removed(
+        grid = solver.grid_with_coordinates_to_mass_profile_centre_removed_from(
             grid=grid, lensing_obj=sis
         )
 
@@ -90,7 +90,7 @@ class TestAbstractPointSolver:
         )
 
         magnification = np.abs(
-            sis.magnification_via_hessian_from_grid(grid=grid, buffer=grid.pixel_scale)
+            sis.magnification_via_hessian_from(grid=grid, buffer=grid.pixel_scale)
         )
 
         assert magnification[0] > 1000.0
@@ -99,7 +99,7 @@ class TestAbstractPointSolver:
         solver = AbstractPointSolver(magnification_threshold=1000.0)
 
         positions = solver.grid_with_points_below_magnification_threshold_removed(
-            lensing_obj=sis, grid=grid, deflections_func=sis.deflections_2d_from_grid
+            lensing_obj=sis, grid=grid, deflections_func=sis.deflections_2d_from
         )
 
         assert positions.in_list == [(1.0, 0.0)]
@@ -108,7 +108,7 @@ class TestAbstractPointSolver:
         solver = AbstractPointSolver(magnification_threshold=0.0)
 
         positions = solver.grid_with_points_below_magnification_threshold_removed(
-            lensing_obj=sis, grid=grid, deflections_func=sis.deflections_2d_from_grid
+            lensing_obj=sis, grid=grid, deflections_func=sis.deflections_2d_from
         )
 
         assert positions.in_list == [(1.0, 0.0), (0.1, 0.0)]

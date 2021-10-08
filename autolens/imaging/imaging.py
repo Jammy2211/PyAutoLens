@@ -15,7 +15,8 @@ class SimulatorImaging(aa.SimulatorImaging):
         noise_if_add_noise_false: float = 0.1,
         noise_seed: int = -1,
     ):
-        """A class representing a Imaging observation, using the shape of the image, the pixel scale,
+        """
+        A class representing a Imaging observation, using the shape of the image, the pixel scale,
         psf, exposure time, etc.
 
         Parameters
@@ -51,7 +52,7 @@ class SimulatorImaging(aa.SimulatorImaging):
             noise_seed=noise_seed,
         )
 
-    def from_tracer_and_grid(self, tracer, grid, name=None):
+    def via_tracer_from(self, tracer, grid, name=None):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
 
@@ -75,18 +76,19 @@ class SimulatorImaging(aa.SimulatorImaging):
             A seed for random noise_maps generation
         """
 
-        image = tracer.padded_image_2d_from_grid_and_psf_shape(
+        image = tracer.padded_image_2d_from(
             grid=grid, psf_shape_2d=self.psf.shape_native
         )
 
-        imaging = self.from_image(image=image.binned, name=name)
+        imaging = self.via_image_from(image=image.binned, name=name)
 
         return imaging.trimmed_after_convolution_from(
             kernel_shape=self.psf.shape_native
         )
 
-    def from_galaxies_and_grid(self, galaxies, grid, name=None):
-        """Simulate imaging data for this data, as follows:
+    def via_galaxies_from(self, galaxies, grid, name=None):
+        """
+        Simulate imaging data for this data, as follows:
 
         1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
 
@@ -99,13 +101,14 @@ class SimulatorImaging(aa.SimulatorImaging):
         4) Plot the image using Matplotlib, if the plot_imaging bool is True.
 
         5) Output the dataset to .fits format if a dataset_path and data_name are specified. Otherwise, return the simulated \
-           imaging data instance."""
+           imaging data instance.
+        """
 
         tracer = Tracer.from_galaxies(galaxies=galaxies)
 
-        return self.from_tracer_and_grid(tracer=tracer, grid=grid, name=name)
+        return self.via_tracer_from(tracer=tracer, grid=grid, name=name)
 
-    def from_deflections_and_galaxies(self, deflections, galaxies, name=None):
+    def via_deflections_and_galaxies_from(self, deflections, galaxies, name=None):
 
         grid = aa.Grid2D.uniform(
             shape_native=deflections.shape_native,
@@ -115,6 +118,6 @@ class SimulatorImaging(aa.SimulatorImaging):
 
         deflected_grid = grid - deflections.binned
 
-        image = sum(map(lambda g: g.image_2d_from_grid(grid=deflected_grid), galaxies))
+        image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxies))
 
-        return self.from_image(image=image, name=name)
+        return self.via_image_from(image=image, name=name)

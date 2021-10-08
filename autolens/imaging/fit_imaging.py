@@ -29,8 +29,6 @@ class FitImaging(aa.FitImaging):
         -----------
         tracer : Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
-        scaled_array_2d_from_array_1d : func
-            A function which maps the 1D lens hyper_galaxies to its unmasked 2D arrays.
         """
 
         self.tracer = tracer
@@ -65,7 +63,7 @@ class FitImaging(aa.FitImaging):
 
         if preloads.blurred_image is None:
 
-            self.blurred_image = tracer.blurred_image_2d_from_grid_and_convolver(
+            self.blurred_image = tracer.blurred_image_2d_via_convolver_from(
                 grid=imaging.grid,
                 convolver=imaging.convolver,
                 blurring_grid=imaging.blurring_grid,
@@ -118,7 +116,7 @@ class FitImaging(aa.FitImaging):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_model_image_dict = self.tracer.galaxy_blurred_image_dict_from_grid_and_convolver(
+        galaxy_model_image_dict = self.tracer.galaxy_blurred_image_dict_via_convolver_from(
             grid=self.grid,
             convolver=self.imaging.convolver,
             blurring_grid=self.imaging.blurring_grid,
@@ -141,7 +139,7 @@ class FitImaging(aa.FitImaging):
     @property
     def model_images_of_planes(self):
 
-        model_images_of_planes = self.tracer.blurred_images_of_planes_from_grid_and_psf(
+        model_images_of_planes = self.tracer.blurred_images_of_planes_via_psf_from(
             grid=self.grid,
             psf=self.imaging.psf,
             blurring_grid=self.imaging.blurring_grid,
@@ -178,19 +176,19 @@ class FitImaging(aa.FitImaging):
 
     @property
     def unmasked_blurred_image(self):
-        return self.tracer.unmasked_blurred_image_2d_from_grid_and_psf(
+        return self.tracer.unmasked_blurred_image_2d_via_psf_from(
             grid=self.grid, psf=self.imaging.psf
         )
 
     @property
     def unmasked_blurred_image_of_planes(self):
-        return self.tracer.unmasked_blurred_image_of_planes_from_grid_and_psf(
+        return self.tracer.unmasked_blurred_image_of_planes_via_psf_from(
             grid=self.grid, psf=self.imaging.psf
         )
 
     @property
     def unmasked_blurred_image_of_planes_and_galaxies(self):
-        return self.tracer.unmasked_blurred_image_of_planes_and_galaxies_from_grid_and_psf(
+        return self.tracer.unmasked_blurred_image_of_planes_and_galaxies_via_psf_from(
             grid=self.grid, psf=self.imaging.psf
         )
 

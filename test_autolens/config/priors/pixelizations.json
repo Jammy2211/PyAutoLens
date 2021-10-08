@@ -1,5 +1,5 @@
 {
-    "Rectangular": {
+    "rectangular.Rectangular": {
         "shape_0": {
             "type": "Uniform",
             "lower_limit": 20.0,
@@ -27,7 +27,7 @@
             }
         }
     },
-    "VoronoiMagnification": {
+    "voronoi.VoronoiMagnification": {
         "shape_0": {
             "type": "Uniform",
             "lower_limit": 20.0,
@@ -55,7 +55,7 @@
             }
         }
     },
-    "VoronoiBrightnessImage": {
+    "voronoi.VoronoiBrightnessImage": {
         "pixels": {
             "type": "Uniform",
             "lower_limit": 50.0,

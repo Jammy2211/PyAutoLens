@@ -32,7 +32,7 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
         exposure_time=300.0, psf=psf, add_poisson_noise=False
     )
 
-    imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
+    imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
     imaging.noise_map = al.Array2D.ones(
         shape_native=imaging.image.shape_native, pixel_scales=grid.pixel_scales
@@ -110,7 +110,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
 
     imaging = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
-    imaging = imaging.from_tracer_and_grid(tracer=tracer, grid=grid)
+    imaging = imaging.via_tracer_from(tracer=tracer, grid=grid)
     imaging.noise_map = al.Array2D.ones(
         shape_native=imaging.image.shape_native, pixel_scales=0.2
     )
@@ -189,7 +189,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         noise_sigma=None,
     )
 
-    interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
+    interferometer = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
     file_path = path.join(
         "{}".format(path.dirname(path.realpath(__file__))),

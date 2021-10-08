@@ -11,6 +11,8 @@ import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
+from autoarray.exc import PixelizationException
+
 from autolens.lens.model.analysis import AnalysisDataset
 from autolens.lens.model.preloads import Preloads
 from autolens.imaging.model.maker import FitImagingMaker
@@ -83,7 +85,7 @@ class AnalysisImaging(AnalysisDataset):
             pass
 
         fit_maker = FitImagingMaker(
-            model=model, fit_from_instance_func=self.fit_imaging_for_instance
+            model=model, fit_func=self.fit_imaging_for_instance
         )
 
         fit_0 = fit_maker.fit_via_model(unit_value=0.45)
@@ -92,7 +94,7 @@ class AnalysisImaging(AnalysisDataset):
         if fit_0 is None or fit_1 is None:
             self.preloads = Preloads(failed=True)
         else:
-            self.preloads = Preloads.setup_all_from_fits(fit_0=fit_0, fit_1=fit_1)
+            self.preloads = Preloads.setup_all_via_fits(fit_0=fit_0, fit_1=fit_1)
             self.check_preloads(fit=fit_0)
 
         self.preloads.output_info_to_summary(file_path=paths.profile_path)
@@ -128,6 +130,7 @@ class AnalysisImaging(AnalysisDataset):
         try:
             return self.fit_imaging_for_instance(instance=instance).figure_of_merit
         except (
+            PixelizationException,
             exc.PixelizationException,
             exc.InversionException,
             exc.GridException,
