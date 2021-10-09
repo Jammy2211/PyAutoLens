@@ -76,6 +76,12 @@ class SimulatorImaging(aa.SimulatorImaging):
             A seed for random noise_maps generation
         """
 
+        tracer.set_snr_of_snr_light_profiles(
+            grid=grid,
+            exposure_time=self.exposure_time,
+            background_sky_level=self.background_sky_level,
+        )
+
         image = tracer.padded_image_2d_from(
             grid=grid, psf_shape_2d=self.psf.shape_native
         )

@@ -3141,6 +3141,41 @@ class TestExtractAttribute:
         assert plane_index == 2
 
 
+class TestSNRLightProfiles:
+    def test__signal_to_noise_via_simulator_correct(self):
+
+        background_sky_level = 10.0
+        exposure_time = 300.0
+
+        grid = al.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
+
+        mass = al.mp.SphIsothermal(einstein_radius=1.0)
+
+        sersic = al.lp_snr.EllSersic(signal_to_noise_ratio=10.0, effective_radius=0.01)
+
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[
+                al.Galaxy(redshift=0.5, mass=mass),
+                al.Galaxy(redshift=1.0, light=sersic),
+            ]
+        )
+
+        simulator = al.SimulatorImaging(
+            exposure_time=exposure_time,
+            noise_seed=1,
+            background_sky_level=background_sky_level,
+        )
+
+        imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)
+
+        print(imaging.signal_to_noise_map)
+
+        assert 8.0 < imaging.signal_to_noise_map.native[0, 1] < 12.0
+        assert 8.0 < imaging.signal_to_noise_map.native[1, 0] < 12.0
+        assert 8.0 < imaging.signal_to_noise_map.native[1, 2] < 12.0
+        assert 8.0 < imaging.signal_to_noise_map.native[2, 1] < 12.0
+
+
 class TestRegression:
     def test__centre_of_profile_in_right_place(self):
 

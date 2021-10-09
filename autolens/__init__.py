@@ -51,6 +51,7 @@ from autogalaxy.profiles import (
     light_and_mass_profiles as lmp,
     scaling_relations as sr,
 )
+from autogalaxy.profiles.light_profiles import snr_light_profiles as lp_snr
 from autogalaxy import convert
 
 from . import plot
