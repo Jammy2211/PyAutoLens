@@ -449,9 +449,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
     def padded_image_2d_from(self, grid, psf_shape_2d):
 
-        padded_grid = grid.padded_grid_from(
-            kernel_shape_native=psf_shape_2d
-        )
+        padded_grid = grid.padded_grid_from(kernel_shape_native=psf_shape_2d)
 
         return self.image_2d_from(grid=padded_grid)
 
@@ -651,9 +649,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
     def unmasked_blurred_image_2d_via_psf_from(self, grid, psf):
 
-        padded_grid = grid.padded_grid_from(
-            kernel_shape_native=psf.shape_native
-        )
+        padded_grid = grid.padded_grid_from(kernel_shape_native=psf.shape_native)
 
         padded_image = self.image_2d_from(grid=padded_grid)
 
@@ -663,9 +659,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
     def unmasked_blurred_image_of_planes_via_psf_from(self, grid, psf):
 
-        padded_grid = grid.padded_grid_from(
-            kernel_shape_native=psf.shape_native
-        )
+        padded_grid = grid.padded_grid_from(kernel_shape_native=psf.shape_native)
 
         traced_padded_grids = self.traced_grids_of_planes_from(grid=padded_grid)
 
@@ -682,15 +676,11 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         return unmasked_blurred_images_of_planes
 
-    def unmasked_blurred_image_of_planes_and_galaxies_via_psf_from(
-        self, grid, psf
-    ):
+    def unmasked_blurred_image_of_planes_and_galaxies_via_psf_from(self, grid, psf):
 
         unmasked_blurred_images_of_planes_and_galaxies = []
 
-        padded_grid = grid.padded_grid_from(
-            kernel_shape_native=psf.shape_native
-        )
+        padded_grid = grid.padded_grid_from(kernel_shape_native=psf.shape_native)
 
         traced_padded_grids = self.traced_grids_of_planes_from(grid=padded_grid)
 
@@ -725,14 +715,11 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
 
         return transformer.visibilities_from(image=image)
 
-    def profile_visibilities_of_planes_via_transformer_from(
-        self, grid, transformer
-    ):
+    def profile_visibilities_of_planes_via_transformer_from(self, grid, transformer):
 
         images_of_planes = self.image_2d_of_planes_from(grid=grid)
         return [
-            transformer.visibilities_from(image=image)
-            for image in images_of_planes
+            transformer.visibilities_from(image=image) for image in images_of_planes
         ]
 
     @aa.profile_func

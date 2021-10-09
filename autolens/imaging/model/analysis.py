@@ -84,9 +84,7 @@ class AnalysisImaging(AnalysisDataset):
         except FileExistsError:
             pass
 
-        fit_maker = FitImagingMaker(
-            model=model, fit_func=self.fit_imaging_for_instance
-        )
+        fit_maker = FitImagingMaker(model=model, fit_func=self.fit_imaging_for_instance)
 
         fit_0 = fit_maker.fit_via_model(unit_value=0.45)
         fit_1 = fit_maker.fit_via_model(unit_value=0.55)

@@ -161,9 +161,7 @@ class FitPositionsImage(aa.FitData):
             upper_plane_index=upper_plane_index,
         )
 
-        model_positions = model_positions.grid_of_closest_from(
-            grid_pair=positions
-        )
+        model_positions = model_positions.grid_of_closest_from(grid_pair=positions)
 
         super().__init__(
             data=positions,

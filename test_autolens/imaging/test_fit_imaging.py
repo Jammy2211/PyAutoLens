@@ -730,18 +730,14 @@ class TestCompareToManualProfilesOnly:
         )
 
         g0_image = g0.image_2d_from(grid=traced_grids_of_planes[0])
-        g0_blurring_image = g0.image_2d_from(
-            grid=traced_blurring_grids_of_planes[0]
-        )
+        g0_blurring_image = g0.image_2d_from(grid=traced_blurring_grids_of_planes[0])
 
         g0_blurred_image = masked_imaging_7x7.convolver.convolve_image(
             image=g0_image, blurring_image=g0_blurring_image
         )
 
         g1_image = g1.image_2d_from(grid=traced_grids_of_planes[1])
-        g1_blurring_image = g1.image_2d_from(
-            grid=traced_blurring_grids_of_planes[1]
-        )
+        g1_blurring_image = g1.image_2d_from(grid=traced_blurring_grids_of_planes[1])
 
         g1_blurred_image = masked_imaging_7x7.convolver.convolve_image(
             image=g1_image, blurring_image=g1_blurring_image

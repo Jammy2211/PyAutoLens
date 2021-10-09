@@ -1198,9 +1198,7 @@ class TestAbstractTracerLensing:
         def test__x1_plane__padded_image__compare_to_galaxy_images_using_padded_grids(
             self, sub_grid_2d_7x7
         ):
-            padded_grid = sub_grid_2d_7x7.padded_grid_from(
-                kernel_shape_native=(3, 3)
-            )
+            padded_grid = sub_grid_2d_7x7.padded_grid_from(kernel_shape_native=(3, 3))
 
             g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
             g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=2.0))
@@ -1226,9 +1224,7 @@ class TestAbstractTracerLensing:
         def test__x3_planes__padded_2d_image_from_plane__mapped_correctly(
             self, sub_grid_2d_7x7
         ):
-            padded_grid = sub_grid_2d_7x7.padded_grid_from(
-                kernel_shape_native=(3, 3)
-            )
+            padded_grid = sub_grid_2d_7x7.padded_grid_from(kernel_shape_native=(3, 3))
 
             g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.EllSersic(intensity=0.1))
             g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.2))
@@ -1408,9 +1404,7 @@ class TestAbstractTracerLensing:
                 grid=grid_2d_irregular_7x7
             )
 
-            tracer_convergence = tracer.convergence_2d_from(
-                grid=grid_2d_irregular_7x7
-            )
+            tracer_convergence = tracer.convergence_2d_from(grid=grid_2d_irregular_7x7)
 
             assert image_plane_convergence.in_list[0] == pytest.approx(
                 g0_convergence.in_list[0] + g1_convergence.in_list[0], 1.0e-4
@@ -1453,9 +1447,7 @@ class TestAbstractTracerLensing:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            image_plane_potential = image_plane.potential_2d_from(
-                grid=sub_grid_2d_7x7
-            )
+            image_plane_potential = image_plane.potential_2d_from(grid=sub_grid_2d_7x7)
 
             tracer_potential = tracer.potential_2d_from(grid=sub_grid_2d_7x7)
 
@@ -2195,39 +2187,29 @@ class TestAbstractTracerData:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, g3])
 
-        padded_grid = grid.padded_grid_from(
-            kernel_shape_native=psf.shape_native
-        )
+        padded_grid = grid.padded_grid_from(kernel_shape_native=psf.shape_native)
 
         traced_padded_grids = tracer.traced_grids_of_planes_from(grid=padded_grid)
 
         manual_blurred_image_0 = tracer.image_plane.images_of_galaxies_from(
             grid=traced_padded_grids[0]
         )[0]
-        manual_blurred_image_0 = psf.convolved_array_from(
-            array=manual_blurred_image_0
-        )
+        manual_blurred_image_0 = psf.convolved_array_from(array=manual_blurred_image_0)
 
         manual_blurred_image_1 = tracer.image_plane.images_of_galaxies_from(
             grid=traced_padded_grids[0]
         )[1]
-        manual_blurred_image_1 = psf.convolved_array_from(
-            array=manual_blurred_image_1
-        )
+        manual_blurred_image_1 = psf.convolved_array_from(array=manual_blurred_image_1)
 
         manual_blurred_image_2 = tracer.source_plane.images_of_galaxies_from(
             grid=traced_padded_grids[1]
         )[0]
-        manual_blurred_image_2 = psf.convolved_array_from(
-            array=manual_blurred_image_2
-        )
+        manual_blurred_image_2 = psf.convolved_array_from(array=manual_blurred_image_2)
 
         manual_blurred_image_3 = tracer.source_plane.images_of_galaxies_from(
             grid=traced_padded_grids[1]
         )[1]
-        manual_blurred_image_3 = psf.convolved_array_from(
-            array=manual_blurred_image_3
-        )
+        manual_blurred_image_3 = psf.convolved_array_from(array=manual_blurred_image_3)
 
         unmasked_blurred_image = tracer.unmasked_blurred_image_2d_via_psf_from(
             grid=grid, psf=psf

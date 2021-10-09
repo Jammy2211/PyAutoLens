@@ -39,7 +39,9 @@ class AbstractPointSolver:
 
         return aa.Grid2DIrregularUniform(grid=grid_mag, pixel_scales=grid.pixel_scales)
 
-    def grid_with_coordinates_to_mass_profile_centre_removed_from(self, lensing_obj, grid):
+    def grid_with_coordinates_to_mass_profile_centre_removed_from(
+        self, lensing_obj, grid
+    ):
         """Remove all coordinates from a grid which are within the distance_to_mass_profile_centre attribute of any
         mass profile of the lensing object.
 
@@ -167,7 +169,9 @@ class AbstractPointSolver:
         """
 
         deflections = deflections_func(grid=grid)
-        source_plane_grid = grid.grid_via_deflection_grid_from(deflection_grid=deflections)
+        source_plane_grid = grid.grid_via_deflection_grid_from(
+            deflection_grid=deflections
+        )
 
         source_plane_distances = source_plane_grid.distances_to_coordinate(
             coordinate=source_plane_coordinate
@@ -222,7 +226,9 @@ class AbstractPointSolver:
             return grid
 
         deflections = deflection_func(grid=grid)
-        source_plane_grid = grid.grid_via_deflection_grid_from(deflection_grid=deflections)
+        source_plane_grid = grid.grid_via_deflection_grid_from(
+            deflection_grid=deflections
+        )
         source_plane_distances = source_plane_grid.distances_to_coordinate(
             coordinate=source_plane_coordinate
         )

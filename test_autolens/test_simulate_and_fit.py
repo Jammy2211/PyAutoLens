@@ -165,6 +165,48 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
         shutil.rmtree(file_path)
 
 
+def test__simulate_imaging_data_and_fit__known_likelihood():
+
+    grid = al.Grid2D.uniform(shape_native=(31, 31), pixel_scales=0.2, sub_size=1)
+
+    psf = al.Kernel2D.from_gaussian(
+        shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
+    )
+
+    lens_galaxy = al.Galaxy(
+        redshift=0.5,
+        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+    )
+    source_galaxy_0 = al.Galaxy(
+        redshift=1.0,
+        pixelization=al.pix.Rectangular(shape=(16, 16)),
+        regularization=al.reg.Constant(coefficient=(1.0)),
+    )
+    source_galaxy_1 = al.Galaxy(
+        redshift=2.0,
+        pixelization=al.pix.Rectangular(shape=(16, 16)),
+        regularization=al.reg.Constant(coefficient=(1.0)),
+    )
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1]
+    )
+
+    imaging = al.SimulatorImaging(exposure_time=300.0, psf=psf, noise_seed=1)
+
+    imaging = imaging.via_tracer_from(tracer=tracer, grid=grid)
+
+    mask = al.Mask2D.circular(
+        shape_native=imaging.image.shape_native, pixel_scales=0.2, radius=2.0
+    )
+
+    masked_imaging = imaging.apply_mask(mask=mask)
+
+    fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
+
+    assert fit.figure_of_merit == pytest.approx(609.0653285500165, 1.0e-8)
+
+
 def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normalization_correct():
 
     grid = al.Grid2D.uniform(shape_native=(51, 51), pixel_scales=0.1, sub_size=1)
@@ -262,3 +304,48 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
 
     if path.exists(file_path) is True:
         shutil.rmtree(file_path)
+
+
+def test__simulate_interferometer_data_and_fit__known_likelihood():
+
+    mask = al.Mask2D.circular(
+        radius=3.0, shape_native=(31, 31), pixel_scales=0.2, sub_size=1
+    )
+
+    grid = al.Grid2D.from_mask(mask=mask)
+
+    lens_galaxy = al.Galaxy(
+        redshift=0.5,
+        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+    )
+    source_galaxy_0 = al.Galaxy(
+        redshift=1.0,
+        pixelization=al.pix.Rectangular(shape=(16, 16)),
+        regularization=al.reg.Constant(coefficient=(1.0)),
+    )
+    source_galaxy_1 = al.Galaxy(
+        redshift=2.0,
+        pixelization=al.pix.Rectangular(shape=(16, 16)),
+        regularization=al.reg.Constant(coefficient=(1.0)),
+    )
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1]
+    )
+
+    simulator = al.SimulatorInterferometer(
+        uv_wavelengths=np.ones(shape=(7, 2)),
+        transformer_class=al.TransformerDFT,
+        exposure_time=300.0,
+        noise_seed=1,
+    )
+
+    interferometer = simulator.via_tracer_from(tracer=tracer, grid=grid)
+
+    interferometer = interferometer.apply_settings(
+        settings=al.SettingsInterferometer(transformer_class=al.TransformerDFT)
+    )
+
+    fit = al.FitInterferometer(interferometer=interferometer, tracer=tracer)
+
+    assert fit.figure_of_merit == pytest.approx(-5.433894158056919, 1.0e-8)

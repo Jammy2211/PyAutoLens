@@ -61,8 +61,7 @@ class TestSimulatorImaging:
         )
 
         imaging = simulator.via_deflections_and_galaxies_from(
-            deflections=tracer.deflections_2d_from(grid=grid),
-            galaxies=[source_galaxy],
+            deflections=tracer.deflections_2d_from(grid=grid), galaxies=[source_galaxy]
         )
 
         imaging_via_image = simulator.via_image_from(
