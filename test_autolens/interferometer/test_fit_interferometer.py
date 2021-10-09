@@ -65,7 +65,9 @@ class TestLikelihood:
 
         # Setup as a ray trace instance, using a light profile for the lens
 
-        g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
+        g0 = al.Galaxy(
+            redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
+        )
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         fit = al.FitInterferometer(interferometer=interferometer, tracer=tracer)
@@ -199,7 +201,9 @@ class TestLikelihood:
 
         # Setup as a ray trace instance, using a light profile for the lens
 
-        g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
+        g0 = al.Galaxy(
+            redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
+        )
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)

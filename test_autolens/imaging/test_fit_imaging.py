@@ -93,7 +93,9 @@ class TestLikelihood:
 
         # Setup as a ray trace instance, using a light profile for the lens
 
-        g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
+        g0 = al.Galaxy(
+            redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
+        )
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
@@ -195,7 +197,9 @@ class TestLikelihood:
 
         # Setup as a ray trace instance, using a light profile for the lens
 
-        g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
+        g0 = al.Galaxy(
+            redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
+        )
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
@@ -302,7 +306,7 @@ class TestLikelihood:
 
         g0 = al.Galaxy(
             redshift=0.5,
-            light_profile=MockLightProfile(value=1.0, size=2),
+            light_profile=MockLightProfile(image_2d=np.ones(2)),
             hyper_galaxy=al.HyperGalaxy(
                 contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
             ),
@@ -408,7 +412,9 @@ class TestLikelihood:
 
         # Setup as a ray trace instance, using a light profile for the lens
 
-        g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
+        g0 = al.Galaxy(
+            redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
+        )
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
@@ -512,7 +518,9 @@ class TestLikelihood:
 
         # Setup as a ray trace instance, using a light profile for the lens
 
-        g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0, size=2))
+        g0 = al.Galaxy(
+            redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
+        )
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
@@ -626,7 +634,7 @@ class TestLikelihood:
 
         g0 = al.Galaxy(
             redshift=0.5,
-            light_profile=MockLightProfile(value=1.0, size=2),
+            light_profile=MockLightProfile(image_2d=np.ones(2)),
             hyper_galaxy=al.HyperGalaxy(
                 contribution_factor=1.0, noise_factor=1.0e9, noise_power=1.0
             ),
@@ -1594,11 +1602,17 @@ class TestRefit:
 class TestAttributes:
     def test__subtracted_images_of_planes(self, masked_imaging_no_blur_7x7):
 
-        g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0))
+        g0 = al.Galaxy(
+            redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(1))
+        )
 
-        g1 = al.Galaxy(redshift=0.75, light_profile=MockLightProfile(value=2.0))
+        g1 = al.Galaxy(
+            redshift=0.75, light_profile=MockLightProfile(image_2d=2.0 * np.ones(1))
+        )
 
-        g2 = al.Galaxy(redshift=1.0, light_profile=MockLightProfile(value=3.0))
+        g2 = al.Galaxy(
+            redshift=1.0, light_profile=MockLightProfile(image_2d=3.0 * np.ones(1))
+        )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
@@ -1608,11 +1622,17 @@ class TestAttributes:
         assert fit.subtracted_images_of_planes[1].slim[0] == -3.0
         assert fit.subtracted_images_of_planes[2].slim[0] == -2.0
 
-        g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0))
+        g0 = al.Galaxy(
+            redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(1))
+        )
 
-        g1 = al.Galaxy(redshift=1.0, light_profile=MockLightProfile(value=2.0))
+        g1 = al.Galaxy(
+            redshift=1.0, light_profile=MockLightProfile(image_2d=2.0 * np.ones(1))
+        )
 
-        g2 = al.Galaxy(redshift=1.0, light_profile=MockLightProfile(value=3.0))
+        g2 = al.Galaxy(
+            redshift=1.0, light_profile=MockLightProfile(image_2d=3.0 * np.ones(1))
+        )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
@@ -1625,7 +1645,9 @@ class TestAttributes:
 class TestPreload:
     def test__blurred_image_uses_preload_when_passed(self, masked_imaging_no_blur_7x7):
 
-        g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(value=1.0))
+        g0 = al.Galaxy(
+            redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(1))
+        )
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
