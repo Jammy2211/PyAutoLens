@@ -1,7 +1,9 @@
 from astropy import cosmology as cosmo
 import copy
 import json
+import logging
 import numpy as np
+import os
 from os import path
 from scipy.stats import norm
 from typing import Dict, Optional, List
@@ -14,9 +16,14 @@ from autogalaxy.analysis.analysis import AnalysisDataset as AgAnalysisDataset
 from autolens.lens.model.preloads import Preloads
 
 from autolens import exc
+from autolens.lens.model.maker import FitMaker
 from autolens.lens.model.visualizer import Visualizer
 from autolens.lens.ray_tracing import Tracer
 from autolens.lens.model.settings import SettingsLens
+
+logger = logging.getLogger(__name__)
+
+logger.setLevel(level="INFO")
 
 
 class AnalysisLensing:
@@ -81,6 +88,57 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         self.settings_lens = settings_lens
 
         self.preloads = Preloads()
+
+    def set_preloads(self, paths: af.DirectoryPaths, model: af.Collection):
+
+        try:
+            os.makedirs(paths.profile_path)
+        except FileExistsError:
+            pass
+
+        fit_maker = FitMaker(model=model, fit_func=self.fit_func)
+
+        fit_0 = fit_maker.fit_via_model(unit_value=0.45)
+        fit_1 = fit_maker.fit_via_model(unit_value=0.55)
+
+        if fit_0 is None or fit_1 is None:
+            self.preloads = Preloads(failed=True)
+        else:
+            self.preloads = Preloads.setup_all_via_fits(fit_0=fit_0, fit_1=fit_1)
+            self.preloads.check_via_fit(fit=fit_0)
+
+        self.preloads.output_info_to_summary(file_path=paths.profile_path)
+
+    def check_and_replace_hyper_images(self, paths: af.DirectoryPaths):
+
+        try:
+            hyper_model_image = paths.load_object("hyper_model_image")
+
+            if np.max(abs(hyper_model_image - self.hyper_model_image)) > 1e-8:
+
+                logger.info(
+                    "ANALYSIS - Hyper image loaded from pickle different to that set in Analysis class."
+                    "Overwriting hyper images with values loaded from pickles."
+                )
+
+                self.hyper_model_image = hyper_model_image
+
+                hyper_galaxy_image_path_dict = paths.load_object(
+                    "hyper_galaxy_image_path_dict"
+                )
+                self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
+
+        except (FileNotFoundError, AttributeError):
+            pass
+
+    def modify_after_fit(
+        self, paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
+    ):
+
+        self.output_or_check_figure_of_merit_sanity(paths=paths, result=result)
+        self.preloads.reset_all()
+
+        return self
 
     def log_likelihood_cap_from(self, stochastic_log_evidences_json_file):
 
@@ -169,3 +227,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         analysis.settings_lens.positions_threshold = None
 
         return analysis
+
+    @property
+    def fit_func(self):
+        raise NotImplementedError

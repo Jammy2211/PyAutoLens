@@ -1,4 +1,5 @@
 from astropy import cosmology as cosmo
+import logging
 
 from autoconf import conf
 import autofit as af
@@ -8,11 +9,15 @@ import autogalaxy as ag
 from autolens.lens.model.analysis import AnalysisDataset
 from autolens.lens.model.preloads import Preloads
 from autolens.interferometer.model.result import ResultInterferometer
-from autolens.lens.model.visualizer import Visualizer
+from autolens.interferometer.model.visualizer import VisualizerInterferometer
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.lens.model.settings import SettingsLens
 
 from autolens import exc
+
+logger = logging.getLogger(__name__)
+
+logger.setLevel(level="INFO")
 
 
 class AnalysisInterferometer(AnalysisDataset):
@@ -49,6 +54,29 @@ class AnalysisInterferometer(AnalysisDataset):
     @property
     def interferometer(self):
         return self.dataset
+
+    def modify_before_fit(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
+
+        self.check_and_replace_hyper_images(paths=paths)
+
+        if not paths.is_complete:
+
+            visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
+
+            visualizer.visualize_interferometer(interferometer=self.interferometer)
+
+            visualizer.visualize_hyper_images(
+                hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
+                hyper_model_image=self.hyper_model_image,
+            )
+
+            logger.info(
+                "PRELOADS - Setting up preloads, may take a few minutes for fits using an inversion."
+            )
+
+            self.set_preloads(paths=paths, model=model)
+
+        return self
 
     def set_hyper_dataset(self, result):
 
@@ -170,6 +198,10 @@ class AnalysisInterferometer(AnalysisDataset):
             preloads=preloads,
         )
 
+    @property
+    def fit_func(self):
+        return self.fit_interferometer_for_instance
+
     def stochastic_log_evidences_for_instance(self, instance):
 
         instance = self.associate_hyper_images(instance=instance)
@@ -222,19 +254,12 @@ class AnalysisInterferometer(AnalysisDataset):
 
     def visualize(self, paths: af.DirectoryPaths, instance, during_analysis):
 
-        self.associate_hyper_images(instance=instance)
-        tracer = self.tracer_for_instance(instance=instance)
+        instance = self.associate_hyper_images(instance=instance)
 
-        hyper_background_noise = self.hyper_background_noise_for_instance(
-            instance=instance
-        )
+        fit = self.fit_interferometer_for_instance(instance=instance)
 
-        fit = self.fit_interferometer_for_tracer(
-            tracer=tracer, hyper_background_noise=hyper_background_noise
-        )
+        visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
 
-        visualizer = Visualizer(visualize_path=paths.image_path)
-        visualizer.visualize_interferometer(interferometer=self.interferometer)
         visualizer.visualize_fit_interferometer(
             fit=fit, during_analysis=during_analysis
         )
@@ -246,16 +271,14 @@ class AnalysisInterferometer(AnalysisDataset):
                 inversion=fit.inversion, during_analysis=during_analysis
             )
 
-        visualizer.visualize_hyper_images(
-            hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
-            hyper_model_image=self.hyper_model_image,
-            tracer=tracer,
-        )
+        visualizer.visualize_contribution_maps(tracer=fit.tracer)
 
         if visualizer.plot_fit_no_hyper:
-
             fit = self.fit_interferometer_for_tracer(
-                tracer=tracer, hyper_background_noise=None, use_hyper_scalings=False
+                tracer=fit.tracer,
+                hyper_background_noise=None,
+                use_hyper_scalings=False,
+                preload_overwrite=Preloads(use_w_tilde=False),
             )
 
             visualizer.visualize_fit_interferometer(

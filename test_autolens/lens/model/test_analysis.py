@@ -1,9 +1,11 @@
-from os import path
 import numpy as np
+from os import path
+import pytest
 
+from autoconf import conf
 import autofit as af
 import autolens as al
-import pytest
+from autolens import exc
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -84,3 +86,32 @@ class TestAnalysisDataset:
 
         assert analysis.no_positions.positions == None
         assert analysis.no_positions.settings_lens.positions_threshold == None
+
+    def test__check_preloads(self, masked_imaging_7x7):
+
+        conf.instance["general"]["test"]["check_preloads"] = True
+
+        lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+
+        model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
+
+        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
+        instance = model.instance_from_unit_vector([])
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+
+        analysis.preloads.check_via_fit(fit=fit)
+
+        analysis.preloads.blurred_image = fit.blurred_image
+
+        analysis.preloads.check_via_fit(fit=fit)
+
+        analysis.preloads.blurred_image = fit.blurred_image + 1.0
+
+        with pytest.raises(exc.PreloadsException):
+            analysis.preloads.check_via_fit(fit=fit)
+
+        # conf.instance["general"]["test"]["check_preloads"] = False
+        #
+        # analysis.check_preloads(fit=fit)

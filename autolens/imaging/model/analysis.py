@@ -15,7 +15,6 @@ from autoarray.exc import PixelizationException
 
 from autolens.lens.model.analysis import AnalysisDataset
 from autolens.lens.model.preloads import Preloads
-from autolens.imaging.model.maker import FitImagingMaker
 from autolens.imaging.model.result import ResultImaging
 from autolens.imaging.model.visualizer import VisualizerImaging
 from autolens.imaging.fit_imaging import FitImaging
@@ -52,61 +51,6 @@ class AnalysisImaging(AnalysisDataset):
             )
 
             self.set_preloads(paths=paths, model=model)
-
-        return self
-
-    def check_and_replace_hyper_images(self, paths: af.DirectoryPaths):
-
-        try:
-            hyper_model_image = paths.load_object("hyper_model_image")
-
-            if np.max(abs(hyper_model_image - self.hyper_model_image)) > 1e-8:
-
-                logger.info(
-                    "ANALYSIS - Hyper image loaded from pickle different to that set in Analysis class."
-                    "Overwriting hyper images with values loaded from pickles."
-                )
-
-                self.hyper_model_image = hyper_model_image
-
-                hyper_galaxy_image_path_dict = paths.load_object(
-                    "hyper_galaxy_image_path_dict"
-                )
-                self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
-
-        except (FileNotFoundError, AttributeError):
-            pass
-
-    def set_preloads(self, paths: af.DirectoryPaths, model: af.AbstractPriorModel):
-
-        try:
-            os.makedirs(paths.profile_path)
-        except FileExistsError:
-            pass
-
-        fit_maker = FitImagingMaker(model=model, fit_func=self.fit_imaging_for_instance)
-
-        fit_0 = fit_maker.fit_via_model(unit_value=0.45)
-        fit_1 = fit_maker.fit_via_model(unit_value=0.55)
-
-        if fit_0 is None or fit_1 is None:
-            self.preloads = Preloads(failed=True)
-        else:
-            self.preloads = Preloads.setup_all_via_fits(fit_0=fit_0, fit_1=fit_1)
-            self.check_preloads(fit=fit_0)
-
-        self.preloads.output_info_to_summary(file_path=paths.profile_path)
-
-    def check_preloads(self, fit):
-
-        self.preloads.check_via_fit(fit=fit)
-
-    def modify_after_fit(
-        self, paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
-    ):
-
-        self.output_or_check_figure_of_merit_sanity(paths=paths, result=result)
-        self.preloads.reset_all()
 
         return self
 
@@ -193,6 +137,10 @@ class AnalysisImaging(AnalysisDataset):
             preloads=preloads,
             profiling_dict=profiling_dict,
         )
+
+    @property
+    def fit_func(self):
+        return self.fit_imaging_for_instance
 
     def profile_log_likelihood_function(
         self, instance, paths: Optional[af.DirectoryPaths] = None

@@ -16,9 +16,23 @@ class TestAnalysisInterferometer:
 
         model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
-        search = mock.MockSearch(name="test_search")
+        class MockInstance:
+            def __init__(self):
+
+                self.galaxies = [al.Galaxy(redshift=0.5)]
+
+        samples = mock.MockSamples(max_log_likelihood_instance=MockInstance())
+
+        search = mock.MockSearch(name="test_search", samples=samples)
 
         analysis = al.AnalysisInterferometer(dataset=interferometer_7)
+
+        def modify_after_fit(
+            paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
+        ):
+            pass
+
+        analysis.modify_after_fit = modify_after_fit
 
         result = search.fit(model=model, analysis=analysis)
 

@@ -290,3 +290,27 @@ class TracerPlotter(LensingObjPlotter):
             deflections_y=True,
             deflections_x=True,
         )
+
+    def subplot_plane_images(self):
+
+        number_subplots = 2 * self.tracer.total_planes - 1
+
+        self.open_subplot_figure(number_subplots=number_subplots)
+
+        plane_plotter = self.plane_plotter_from(plane_index=0)
+        plane_plotter.figures_2d(image=True, title_suffix=" Of Plane 0")
+
+        self.mat_plot_2d.subplot_index += 1
+
+        for plane_index in range(1, self.tracer.total_planes):
+
+            plane_plotter = self.plane_plotter_from(plane_index=plane_index)
+            plane_plotter.figures_2d(
+                image=True, title_suffix=f" Of Plane {plane_index}"
+            )
+            plane_plotter.figures_2d(
+                plane_image=True, title_suffix=f" Of Plane {plane_index}"
+            )
+
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_plane_images")
+        self.close_subplot_figure()

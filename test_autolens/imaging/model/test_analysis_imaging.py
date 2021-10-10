@@ -2,7 +2,6 @@ import numpy as np
 from os import path
 import pytest
 
-from autoconf import conf
 import autofit as af
 
 import autolens as al
@@ -283,32 +282,3 @@ class TestAnalysisImaging:
         assert "regularization_term_0" in profiling_dict
         assert "log_det_regularization_matrix_term_0" in profiling_dict
         assert "figure_of_merit_0" in profiling_dict
-
-    def test__check_preloads(self, masked_imaging_7x7):
-
-        conf.instance["general"]["test"]["check_preloads"] = True
-
-        lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
-
-        model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
-
-        analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-
-        instance = model.instance_from_unit_vector([])
-        tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
-
-        analysis.check_preloads(fit=fit)
-
-        analysis.preloads.blurred_image = fit.blurred_image
-
-        analysis.check_preloads(fit=fit)
-
-        analysis.preloads.blurred_image = fit.blurred_image + 1.0
-
-        with pytest.raises(exc.PreloadsException):
-            analysis.check_preloads(fit=fit)
-
-        # conf.instance["general"]["test"]["check_preloads"] = False
-        #
-        # analysis.check_preloads(fit=fit)

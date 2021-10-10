@@ -37,6 +37,10 @@ class Visualizer(AgVisualizer):
 
             tracer_plotter.subplot_tracer()
 
+        if should_plot("subplot_plane_images"):
+
+            tracer_plotter.subplot_plane_images()
+
         tracer_plotter.figures_2d(
             image=should_plot("image"),
             source_plane=should_plot("source_plane_image"),

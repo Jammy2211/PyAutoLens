@@ -28,6 +28,16 @@ class FitInterferometer(aa.FitInterferometer):
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
 
+        self.tracer = tracer
+
+        self.hyper_background_noise = hyper_background_noise
+        self.use_hyper_scaling = use_hyper_scaling
+
+        self.settings_pixelization = settings_pixelization
+        self.settings_inversion = settings_inversion
+
+        self.preloads = preloads
+
         self.profiling_dict = profiling_dict
 
         if use_hyper_scaling:
@@ -155,3 +165,24 @@ class FitInterferometer(aa.FitInterferometer):
     @property
     def total_mappers(self):
         return len(list(filter(None, self.tracer.regularization_list_of_planes)))
+
+    def refit_with_new_preloads(self, preloads, settings_inversion=None):
+
+        if self.profiling_dict is not None:
+            profiling_dict = {}
+        else:
+            profiling_dict = None
+
+        if settings_inversion is None:
+            settings_inversion = self.settings_inversion
+
+        return FitInterferometer(
+            interferometer=self.interferometer,
+            tracer=self.tracer,
+            hyper_background_noise=self.hyper_background_noise,
+            use_hyper_scaling=self.use_hyper_scaling,
+            settings_pixelization=self.settings_pixelization,
+            settings_inversion=settings_inversion,
+            preloads=preloads,
+            profiling_dict=profiling_dict,
+        )

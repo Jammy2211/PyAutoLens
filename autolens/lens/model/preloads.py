@@ -6,8 +6,6 @@ from typing import Optional, List
 import autofit as af
 import autoarray as aa
 
-from autolens import exc
-
 logger = logging.getLogger(__name__)
 
 logger.setLevel(level="INFO")
@@ -119,9 +117,10 @@ class Preloads(aa.Preloads):
 
         preloads = cls()
 
-        preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
+        if isinstance(fit_0, aa.FitImaging):
+            preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
+            preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
 
-        preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
         preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
         preloads.set_sparse_image_plane_grid_list_of_planes(fit_0=fit_0, fit_1=fit_1)
         preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
