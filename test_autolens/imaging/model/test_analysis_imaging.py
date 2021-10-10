@@ -8,7 +8,6 @@ import autofit as af
 import autolens as al
 
 from autolens.imaging.model.result import ResultImaging
-from autolens.imaging.model.maker import FitImagingMaker
 
 from autolens import exc
 from autolens.mock import mock
