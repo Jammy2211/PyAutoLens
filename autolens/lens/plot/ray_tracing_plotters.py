@@ -13,7 +13,7 @@ class TracerPlotter(LensingObjPlotter):
     def __init__(
         self,
         tracer: Tracer,
-        grid: aa.Grid2D,
+        grid: aa.type.Grid2DLike,
         mat_plot_1d: aplt.MatPlot1D = aplt.MatPlot1D(),
         visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),
         include_1d: aplt.Include1D = aplt.Include1D(),
