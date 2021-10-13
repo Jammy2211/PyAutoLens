@@ -12,7 +12,7 @@ from autoarray.inversion.inversion.factory import inversion_imaging_unpacked_fro
 from autoarray.inversion.inversion.factory import inversion_interferometer_unpacked_from
 
 from autogalaxy.lensing import LensingObject
-from autogalaxy.profiles.light_profiles.snr_light_profiles import LightProfileSNR
+from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSNR
 
 from autolens.lens.model.preloads import Preloads
 
