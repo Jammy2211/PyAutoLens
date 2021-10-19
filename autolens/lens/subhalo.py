@@ -52,9 +52,7 @@ class SubhaloResult:
             values_native = self.grid_search_result.log_likelihoods_native
 
             print(self.result_no_subhalo)
-            print(self.result_no_subhalo[
-                    "samples"
-                ])
+            print(self.result_no_subhalo["samples"])
 
             if relative_to_no_subhalo:
                 values_native -= self.result_no_subhalo[
