@@ -10,14 +10,17 @@ import autogalaxy as ag
 
 from autoarray.inversion.inversion.factory import inversion_imaging_unpacked_from
 from autoarray.inversion.inversion.factory import inversion_interferometer_unpacked_from
+from autoconf.dictable import Dictable
+from autogalaxy import Plane
 
 from autogalaxy.lensing import LensingObject
+from autogalaxy.plane.plane import AbstractPlane
 from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSNR
 
 from autolens.lens.model.preloads import Preloads
 
 
-class AbstractTracer(LensingObject, ABC):
+class AbstractTracer(LensingObject, ABC, Dictable):
     def __init__(self, planes, cosmology, profiling_dict: Optional[Dict] = None):
         """
         Ray-tracer for a lens system with any number of planes.
@@ -47,6 +50,34 @@ class AbstractTracer(LensingObject, ABC):
         self.plane_redshifts = [plane.redshift for plane in planes]
         self.cosmology = cosmology
         self.profiling_dict = profiling_dict
+
+    def dict(self) -> dict:
+        tracer_dict = super().dict()
+        tracer_dict["cosmology"] = self.cosmology.name
+        tracer_dict["planes"] = [
+            plane.dict()
+            for plane
+            in self.planes
+        ]
+        return tracer_dict
+
+    @staticmethod
+    def from_dict(
+            profile_dict
+    ):
+        profile_dict["cosmology"] = getattr(
+            cosmo,
+            profile_dict[
+                "cosmology"
+            ]
+        )
+        profile_dict["planes"] = list(map(
+            AbstractPlane.from_dict,
+            profile_dict["planes"]
+        ))
+        return Dictable.from_dict(
+            profile_dict
+        )
 
     @property
     def total_planes(self):
