@@ -38,6 +38,12 @@ def make_tracer_dict():
             {
                 'galaxies': [{
                     'hyper_galaxy': None,
+                    'mass': {
+                        'centre': (0.0, 0.0),
+                        'einstein_radius': 1.6,
+                        'elliptical_comps': (0.1, 0.05),
+                        'type': 'autogalaxy.profiles.mass_profiles.total_mass_profiles.EllIsothermal'
+                    },
                     'pixelization': None,
                     'redshift': 0.5,
                     'regularization': None,
@@ -49,6 +55,13 @@ def make_tracer_dict():
             },
             {
                 'galaxies': [{
+                    'disk': {
+                        'centre': (0.3, 0.2),
+                        'effective_radius': 0.5,
+                        'elliptical_comps': (0.05, 0.25),
+                        'intensity': 0.05,
+                        'type': 'autogalaxy.profiles.light_profiles.light_profiles.EllExponential'
+                    },
                     'hyper_galaxy': None,
                     'pixelization': None,
                     'redshift': 1.0,
@@ -58,7 +71,8 @@ def make_tracer_dict():
                 'profiling_dict': None,
                 'redshift': 1.0,
                 'type': 'autogalaxy.plane.plane.Plane'
-            }],
+            }
+        ],
         'profiling_dict': None,
         'type': 'autolens.lens.ray_tracing.Tracer'
     }
