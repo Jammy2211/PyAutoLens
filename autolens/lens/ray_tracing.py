@@ -49,6 +49,25 @@ class AbstractTracer(LensingObject, ABC, Dictable):
         self.cosmology = cosmology
         self.profiling_dict = profiling_dict
 
+    def dict(self) -> dict:
+        tracer_dict = super().dict()
+        tracer_dict["cosmology"] = self.cosmology.name
+        return tracer_dict
+
+    @staticmethod
+    def from_dict(
+            profile_dict
+    ):
+        profile_dict["cosmology"] = getattr(
+            cosmo,
+            profile_dict[
+                "cosmology"
+            ]
+        )
+        return Dictable.from_dict(
+            profile_dict
+        )
+
     @property
     def total_planes(self):
         return len(self.plane_redshifts)

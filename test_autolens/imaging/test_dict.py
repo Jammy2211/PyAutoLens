@@ -33,16 +33,7 @@ def make_tracer():
 )
 def make_tracer_dict():
     return {
-        'cosmology': {
-            'H0': {'type': 'astropy.units.quantity.Quantity'},
-            'Neff': 3.046,
-            'Ob0': 0.0486,
-            'Om0': 0.3075,
-            'Tcmb0': {'type': 'astropy.units.quantity.Quantity'},
-            'm_nu': {'type': 'astropy.units.quantity.Quantity'},
-            'name': 'Planck15',
-            'type': 'astropy.cosmology.core.FlatLambdaCDM'
-        },
+        'cosmology': 'Planck15',
         'planes': [
             {
                 'galaxies': [{
