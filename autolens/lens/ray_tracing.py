@@ -10,6 +10,7 @@ import autogalaxy as ag
 
 from autoarray.inversion.inversion.factory import inversion_imaging_unpacked_from
 from autoarray.inversion.inversion.factory import inversion_interferometer_unpacked_from
+from autoconf.dictable import Dictable
 
 from autogalaxy.lensing import LensingObject
 from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSNR
@@ -17,7 +18,7 @@ from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSN
 from autolens.lens.model.preloads import Preloads
 
 
-class AbstractTracer(LensingObject, ABC):
+class AbstractTracer(LensingObject, ABC, Dictable):
     def __init__(self, planes, cosmology, profiling_dict: Optional[Dict] = None):
         """
         Ray-tracer for a lens system with any number of planes.
