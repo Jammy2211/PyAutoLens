@@ -1,5 +1,6 @@
 from abc import ABC
 from astropy import cosmology as cosmo
+import json
 import numpy as np
 from os import path
 import pickle
@@ -51,33 +52,24 @@ class AbstractTracer(LensingObject, ABC, Dictable):
         self.cosmology = cosmology
         self.profiling_dict = profiling_dict
 
+    def output_to_json(self, file_path: str):
+
+        with open(file_path, "w+") as f:
+            json.dump(self.dict(), f, indent=4)
+
     def dict(self) -> dict:
         tracer_dict = super().dict()
         tracer_dict["cosmology"] = self.cosmology.name
-        tracer_dict["planes"] = [
-            plane.dict()
-            for plane
-            in self.planes
-        ]
+        tracer_dict["planes"] = [plane.dict() for plane in self.planes]
         return tracer_dict
 
     @staticmethod
-    def from_dict(
-            profile_dict
-    ):
-        profile_dict["cosmology"] = getattr(
-            cosmo,
-            profile_dict[
-                "cosmology"
-            ]
+    def from_dict(profile_dict):
+        profile_dict["cosmology"] = getattr(cosmo, profile_dict["cosmology"])
+        profile_dict["planes"] = list(
+            map(AbstractPlane.from_dict, profile_dict["planes"])
         )
-        profile_dict["planes"] = list(map(
-            AbstractPlane.from_dict,
-            profile_dict["planes"]
-        ))
-        return Dictable.from_dict(
-            profile_dict
-        )
+        return Dictable.from_dict(profile_dict)
 
     @property
     def total_planes(self):

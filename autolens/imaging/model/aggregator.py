@@ -50,7 +50,7 @@ def _fit_imaging_from(
     )
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
-    preloads = Preloads()
+    preloads = Preloads(use_w_tilde=False)
 
     if use_preloaded_grid:
 
@@ -59,7 +59,8 @@ def _fit_imaging_from(
         if sparse_grids_of_planes is not None:
 
             preloads = Preloads(
-                sparse_image_plane_grid_list_of_planes=sparse_grids_of_planes
+                sparse_image_plane_grid_list_of_planes=sparse_grids_of_planes,
+                use_w_tilde=False,
             )
 
             if len(preloads.sparse_image_plane_grid_list_of_planes) == 2:
