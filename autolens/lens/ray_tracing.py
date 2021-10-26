@@ -1014,6 +1014,12 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         background_sky_level: float = 0.0,
     ):
 
+        grid = aa.Grid2D.uniform(
+            shape_native=grid.shape_native,
+            pixel_scales=grid.pixel_scales,
+            sub_size=1
+        )
+
         traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
 
         for plane_index, plane in enumerate(self.planes):
