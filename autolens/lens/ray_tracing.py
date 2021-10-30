@@ -1015,9 +1015,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
     ):
 
         grid = aa.Grid2D.uniform(
-            shape_native=grid.shape_native,
-            pixel_scales=grid.pixel_scales,
-            sub_size=1
+            shape_native=grid.shape_native, pixel_scales=grid.pixel_scales, sub_size=1
         )
 
         traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
