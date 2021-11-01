@@ -28,12 +28,47 @@ logger.setLevel(level="INFO")
 
 class AnalysisLensing:
     def __init__(self, settings_lens=SettingsLens(), cosmology=cosmo.Planck15):
+        """
+        Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
 
+        This abstract Analysis class has attributes and methods for all model-fits which include lensing calculations,
+        but does not perform a model-fit by itself (and is therefore only inherited from).
+
+        This class stores the Cosmology used for the analysis and settings that control specific aspects of the lensing
+        calculation, for example how close the brightest pixels in the lensed source have to trace within one another
+        in the source plane for the model to not be discarded.
+
+        Parameters
+        ----------
+        settings_lens
+            Settings controlling the lens calculation, for example how close the lensed source's multiple images have
+            to trace within one another in the source plane for the model to not be discarded.
+        cosmology
+            The Cosmology assumed for this analysis.
+        """
         self.cosmology = cosmology
         self.settings_lens = settings_lens
 
-    def tracer_for_instance(self, instance, profiling_dict: Optional[Dict] = None):
+    def tracer_for_instance(
+        self, instance: af.ModelInstance, profiling_dict: Optional[Dict] = None
+    ) -> Tracer:
+        """
+        Create a `Tracer` from the galaxies contained in a model instance.
 
+        If PyAutoFit's profiling tools are used with the analsyis class, this function may receive a `profiling_dict`
+        which times how long each set of the model-fit takes to perform.
+
+        Parameters
+        ----------
+        instance
+            An instance of the model that is fitted to the data by this analysis (whose parameters may have been set
+            via a non-linear search).
+
+        Returns
+        -------
+        Tracer
+            An instance of the Tracer class that is used to then fit the dataset.
+        """
         if hasattr(instance, "perturbation"):
             instance.galaxies.subhalo = instance.perturbation
 
@@ -56,19 +91,33 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         settings_lens=SettingsLens(),
     ):
         """
+        Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
+
+        This abstract Analysis class has attributes and methods for all model-fits which fit the model to a dataset
+        (e.g. imaging or interferometer data).
+
+        This class stores the Cosmology used for the analysis and settings that control aspects of the calculation,
+        including how pixelizations, inversions and lensing calculations are performed.
 
         Parameters
         ----------
         dataset
-        positions : aa.Grid2DIrregular
-            Image-pixel coordinates in arc-seconds of bright regions of the lensed source that will map close to one
-            another in the source-plane(s) for an accurate mass model, which can be used to discard unphysical mass
-            models during model-fitting.
+            The imaging, interferometer or other dataset that the model if fitted too.
+        positions
+            Image-pixel coordinates in arc-seconds corresponding to the multiple images of the lensed source galaxy.
+            If the `settings_lens` attribute has a `positions_threshold`, these positions must trace within this
+            threshold of one another in the source-plane or else the model is discarded.
         cosmology
+            The AstroPy Cosmology assumed for this analysis.
         settings_pixelization
+            settings controlling how a pixelization is fitted during the model-fit, for example if a border is used
+            when creating the pixelization.
         settings_inversion
+            Settings controlling how an inversion is fitted during the model-fit, for example which linear algebra
+            formalism is used.
         settings_lens
-        preloads
+            Settings controlling the lens calculation, for example how close the lensed source's multiple images have
+            to trace within one another in the source plane for the model to not be discarded.
         """
 
         super().__init__(
@@ -90,7 +139,28 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         self.preloads = Preloads()
 
     def set_preloads(self, paths: af.DirectoryPaths, model: af.Collection):
+        """
+        It is common for the model to have components whose parameters are all fixed, and thus the way that component
+        fits the data does not change. For example, if all parameter associated with the light profiles of galaxies
+        in the model are fixed, the image generated from these galaxies will not change irrespective of the model
+        parameters chosen by the non-linear search.
 
+        Preloading exploits this to speed up the log likelihood function, by inspecting the model and storing in memory
+        quantities that do not change. For the example above, the image of all galaxies would be stored in memory and
+        to perform every fit in the `log_likelihood_funtion`.
+
+        This function sets up all preload quantities, which are described fully in the `preloads` modules. This
+        occurs directly before the non-linear search begins, to ensure the model parameterization is fixed.
+
+        Parameters
+        ----------
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        model
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            the imaging data.
+        """
         try:
             os.makedirs(paths.profile_path)
         except FileExistsError:
@@ -110,7 +180,20 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         self.preloads.output_info_to_summary(file_path=paths.profile_path)
 
     def check_and_replace_hyper_images(self, paths: af.DirectoryPaths):
+        """
+        Using a the result of a previous model-fit, a hyper-dataset can be set up which adapts aspects of the model
+        (e.g. the pixelization, regularization scheme) to the properties of the dataset being fitted.
 
+        If the model-fit is being resumed from a previous run, this function checks that the model image and galaxy
+        images used to set up the hyper-dataset are identical to those used previously. If they are not, it replaces
+        them with the previous hyper image. This ensures consistency in the log likelihood function.
+
+        Parameters
+        ----------
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        """
         try:
             hyper_model_image = paths.load_object("hyper_model_image")
 
@@ -133,15 +216,52 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
     def modify_after_fit(
         self, paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
-    ):
+    ) -> "AnalysisDataset":
+        """
+        Call functions that perform tasks after a model-fit is completed, for example ensuring the figure of merit
+        has not changed from previous estimates and resetting preloads.
+
+        Parameters
+        ----------
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        model
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            the imaging data.
+        result
+            The result of the model fit that has just been completed.
+        """
 
         self.output_or_check_figure_of_merit_sanity(paths=paths, result=result)
         self.preloads.reset_all()
 
         return self
 
-    def log_likelihood_cap_from(self, stochastic_log_evidences_json_file):
+    def log_likelihood_cap_from(self, stochastic_log_evidences_json_file: str) -> float:
+        """
+        Certain `Inversion`'s have stochasticity in their log likelihood estimate (e.g. due to how different KMeans
+        seeds change the pixelization constructed by a `VoronoiBrightnessImage` pixelization).
 
+        A log likelihood cap can be applied to model-fits performed using these `Inversion`'s to improve error and
+        posterior estimates. This log likelihood cap is estimated from a list of stochastic log likelihoods, where
+        these log likelihoods are computed using the same model but with different KMeans seeds.
+
+        This function computes the log likelihood cap of a model-fit by loading a set of stochastic log likelihoods
+        from a .json file and fitting them with a 1D Gaussian. The cap is the mean value of this Gaussian.
+
+        Parameters
+        ----------
+        stochastic_log_evidences_json_file
+            A .json file which loads an ndarray of stochastic log likelihoods, which are likelihoods computed using the
+            same model but with different KMeans seeds.
+
+        Returns
+        -------
+        float
+            A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
+            estimates.
+        """
         try:
             with open(stochastic_log_evidences_json_file, "r") as f:
                 stochastic_log_evidences = np.asarray(json.load(f))
@@ -159,16 +279,30 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
     def stochastic_log_evidences_for_instance(self, instance) -> List[float]:
         raise NotImplementedError()
 
-    def save_settings(self, paths: af.DirectoryPaths):
-
-        super().save_settings(paths=paths)
-
-        paths.save_object("settings_lens", self.settings_lens)
-
     def save_stochastic_outputs(
         self, paths: af.DirectoryPaths, samples: af.OptimizerSamples
     ):
+        """
+        Certain `Inversion`'s have stochasticity in their log likelihood estimate (e.g. due to how different KMeans
+        seeds change the pixelization constructed by a `VoronoiBrightnessImage` pixelization).
 
+        This function computes the stochastic log likelihoods of such a model, which are the log likelihoods computed
+        using the same model but with different KMeans seeds.
+
+        It outputs these stochastic likelihoods to a format which can be loaded via PyAutoFit's database tools, and
+        may also be loaded if this analysis is extended with a stochastic model-fit that applies a log likelihood cap.
+
+        This function also outputs visualization showing a histogram of the stochastic likelihood distribution.
+
+        Parameters
+        ----------
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        samples
+            A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
+            run of samples of the nested sampler.
+        """
         stochastic_log_evidences_json_file = path.join(
             paths.output_path, "stochastic_log_evidences.json"
         )
@@ -202,24 +336,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
     @property
     def no_positions(self):
-
-        # settings_lens = SettingsLens(
-        # positions_threshold=None,
-        # stochastic_likelihood_resamples=self.settings_lens.stochastic_likelihood_resamples,
-        # stochastic_samples = self.settings_lens.stochastic_samples,
-        # stochastic_histogram_bins = self.settings_lens.stochastic_histogram_bins
-        # )
-        #
-        # return self.__class__(
-        #     dataset=self.dataset,
-        #     positions = None,
-        #     hyper_dataset_result=self.hyper_result,
-        #     cosmology=self.cosmology,
-        #     settings_pixelization=self.settings_pixelization,
-        #     settings_inversion=self.settings_inversion,
-        #     settings_lens=settings_lens,
-        #     preloads=self.preloads
-        # )
 
         analysis = copy.deepcopy(self)
 
