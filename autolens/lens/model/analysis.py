@@ -238,7 +238,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         return self
 
-    def log_likelihood_cap_from(self, stochastic_log_evidences_json_file: str) -> float:
+    def log_likelihood_cap_from(
+        self, stochastic_log_likelihoods_json_file: str
+    ) -> float:
         """
         Certain `Inversion`'s have stochasticity in their log likelihood estimate (e.g. due to how different KMeans
         seeds change the pixelization constructed by a `VoronoiBrightnessImage` pixelization).
@@ -252,7 +254,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         Parameters
         ----------
-        stochastic_log_evidences_json_file
+        stochastic_log_likelihoods_json_file
             A .json file which loads an ndarray of stochastic log likelihoods, which are likelihoods computed using the
             same model but with different KMeans seeds.
 
@@ -263,20 +265,20 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             estimates.
         """
         try:
-            with open(stochastic_log_evidences_json_file, "r") as f:
-                stochastic_log_evidences = np.asarray(json.load(f))
+            with open(stochastic_log_likelihoods_json_file, "r") as f:
+                stochastic_log_likelihoods = np.asarray(json.load(f))
         except FileNotFoundError:
             raise exc.AnalysisException(
-                "The file 'stochastic_log_evidences.json' could not be found in the output of the model-fitting results"
+                "The file 'stochastic_log_likelihoods.json' could not be found in the output of the model-fitting results"
                 "in the analysis before the stochastic analysis. Rerun PyAutoLens with `stochastic_outputs=True` in the"
                 "`general.ini` configuration file."
             )
 
-        mean, sigma = norm.fit(stochastic_log_evidences)
+        mean, sigma = norm.fit(stochastic_log_likelihoods)
 
         return mean
 
-    def stochastic_log_evidences_for_instance(self, instance) -> List[float]:
+    def stochastic_log_likelihoods_for_instance(self, instance) -> List[float]:
         raise NotImplementedError()
 
     def save_stochastic_outputs(
@@ -303,33 +305,33 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
             run of samples of the nested sampler.
         """
-        stochastic_log_evidences_json_file = path.join(
-            paths.output_path, "stochastic_log_evidences.json"
+        stochastic_log_likelihoods_json_file = path.join(
+            paths.output_path, "stochastic_log_likelihoods.json"
         )
 
         try:
-            with open(stochastic_log_evidences_json_file, "r") as f:
-                stochastic_log_evidences = np.asarray(json.load(f))
+            with open(stochastic_log_likelihoods_json_file, "r") as f:
+                stochastic_log_likelihoods = np.asarray(json.load(f))
         except FileNotFoundError:
             instance = samples.max_log_likelihood_instance
-            stochastic_log_evidences = self.stochastic_log_evidences_for_instance(
+            stochastic_log_likelihoods = self.stochastic_log_likelihoods_for_instance(
                 instance=instance
             )
 
-        if stochastic_log_evidences is None:
+        if stochastic_log_likelihoods is None:
             return
 
-        with open(stochastic_log_evidences_json_file, "w") as outfile:
+        with open(stochastic_log_likelihoods_json_file, "w") as outfile:
             json.dump(
-                [float(evidence) for evidence in stochastic_log_evidences], outfile
+                [float(evidence) for evidence in stochastic_log_likelihoods], outfile
             )
 
-        paths.save_object("stochastic_log_evidences", stochastic_log_evidences)
+        paths.save_object("stochastic_log_likelihoods", stochastic_log_likelihoods)
 
         visualizer = Visualizer(visualize_path=paths.image_path)
 
         visualizer.visualize_stochastic_histogram(
-            log_evidences=stochastic_log_evidences,
+            stochastic_log_likelihoods=stochastic_log_likelihoods,
             max_log_evidence=np.max(samples.log_likelihood_list),
             histogram_bins=self.settings_lens.stochastic_histogram_bins,
         )

@@ -307,7 +307,7 @@ class AnalysisImaging(AnalysisDataset):
 
         return profiling_dict
 
-    def stochastic_log_evidences_for_instance(self, instance: af.ModelInstance):
+    def stochastic_log_likelihoods_for_instance(self, instance: af.ModelInstance):
         """
         Certain `Inversion`'s have stochasticity in their log likelihood estimate.
 
@@ -323,7 +323,7 @@ class AnalysisImaging(AnalysisDataset):
 
         Parameters
         ----------
-       instance
+        instance
             The maximum log likelihood instance of a model that is has finished being fitted to the dataset.
 
         Returns

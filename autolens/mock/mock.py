@@ -26,7 +26,7 @@ class MockResult(af.MockResult):
         positions=None,
         updated_positions=None,
         updated_positions_threshold=None,
-        stochastic_log_evidences=None,
+        stochastic_log_likelihoods=None,
     ):
 
         super().__init__(
@@ -59,10 +59,10 @@ class MockResult(af.MockResult):
             updated_positions if updated_positions is not None else []
         )
         self.updated_positions_threshold = updated_positions_threshold
-        self._stochastic_log_evidences = stochastic_log_evidences
+        self._stochastic_log_likelihoods = stochastic_log_likelihoods
 
-    def stochastic_log_evidences(self):
-        return self._stochastic_log_evidences
+    def stochastic_log_likelihoods(self):
+        return self._stochastic_log_likelihoods
 
     @property
     def image_plane_multiple_image_positions_of_source_plane_centres(self):
@@ -88,7 +88,7 @@ class MockResults(af.ResultsCollection):
         positions=None,
         updated_positions=None,
         updated_positions_threshold=None,
-        stochastic_log_evidences=None,
+        stochastic_log_likelihoods=None,
     ):
         """
         A collection of results from previous searchs. Results can be obtained using an index or the name of the search
@@ -114,7 +114,7 @@ class MockResults(af.ResultsCollection):
             positions=positions,
             updated_positions=updated_positions,
             updated_positions_threshold=updated_positions_threshold,
-            stochastic_log_evidences=stochastic_log_evidences,
+            stochastic_log_likelihoods=stochastic_log_likelihoods,
         )
 
         self.__result_list = [result]

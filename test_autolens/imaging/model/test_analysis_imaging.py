@@ -198,7 +198,7 @@ class TestAnalysisImaging:
 
         assert (analysis.hyper_model_image.native == 3.0 * np.ones((3, 3))).all()
 
-    def test__stochastic_log_evidences_for_instance(self, masked_imaging_7x7):
+    def test__stochastic_log_likelihoods_for_instance(self, masked_imaging_7x7):
 
         lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         lens_hyper_image[4] = 10.0
@@ -235,11 +235,11 @@ class TestAnalysisImaging:
             dataset=masked_imaging_7x7, hyper_dataset_result=result
         )
 
-        stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
+        stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_for_instance(
             instance=instance
         )
 
-        assert stochastic_log_evidences is None
+        assert stochastic_log_likelihoods is None
 
         galaxies.source = al.Galaxy(
             redshift=1.0,
@@ -254,11 +254,11 @@ class TestAnalysisImaging:
             dataset=masked_imaging_7x7, hyper_dataset_result=result
         )
 
-        stochastic_log_evidences = analysis.stochastic_log_evidences_for_instance(
+        stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_for_instance(
             instance=instance
         )
 
-        assert stochastic_log_evidences[0] != stochastic_log_evidences[1]
+        assert stochastic_log_likelihoods[0] != stochastic_log_likelihoods[1]
 
     def test__profile_log_likelihood_function(self, masked_imaging_7x7):
 

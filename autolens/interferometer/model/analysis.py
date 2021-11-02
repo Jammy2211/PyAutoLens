@@ -347,7 +347,7 @@ class AnalysisInterferometer(AnalysisDataset):
     def fit_func(self):
         return self.fit_interferometer_for_instance
 
-    def stochastic_log_evidences_for_instance(self, instance):
+    def stochastic_log_likelihoods_for_instance(self, instance):
         """
         Certain `Inversion`'s have stochasticity in their log likelihood estimate.
 

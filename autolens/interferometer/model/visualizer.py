@@ -1,3 +1,4 @@
+from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.interferometer.plot.fit_interferometer_plotters import (
     FitInterferometerPlotter,
 )
@@ -8,8 +9,34 @@ from autolens.lens.model.visualizer import plot_setting
 
 class VisualizerInterferometer(Visualizer):
     def visualize_fit_interferometer(
-        self, fit, during_analysis, subfolders="fit_interferometer"
+        self,
+        fit: FitInterferometer,
+        during_analysis: bool,
+        subfolders: str = "fit_interferometer",
     ):
+        """
+        Visualizes a `FitInterferometer` object, which fits an interferometer dataset.
+
+        Images are output to the `image` folder of the `visualize_path` in a subfolder called `fit`. When
+        used with a non-linear search the `visualize_path` points to the search's results folder.
+
+        Visualization includes individual images of attributes of the `FitInterferometer` (e.g. the model data,
+        residual map) and a subplot of all `FitInterferometer`'s images on the same figure.
+
+        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        [fit] header.
+
+        Parameters
+        ----------
+        fit
+            The maximum log likelihood `FitInterferometer` of the non-linear search which is used to plot the fit.
+        during_analysis
+            Whether visualization is performed during a non-linear search or once it is completed.
+        visuals_2d
+            An object containing attributes which may be plotted over the figure (e.g. the centres of mass and light
+            profiles).
+        """
+
         def should_plot(name):
             return plot_setting(section="fit", name=name)
 

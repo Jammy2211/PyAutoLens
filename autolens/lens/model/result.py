@@ -266,7 +266,7 @@ class ResultDataset(Result):
         return hyper_model_image
 
     @property
-    def stochastic_log_evidences(self) -> np.ndarray:
+    def stochastic_log_likelihoods(self) -> np.ndarray:
         """
         Certain `Inversion`'s have stochasticity in their log likelihood estimate.
 
@@ -278,25 +278,25 @@ class ResultDataset(Result):
         these log likelihoods are computed using the same model but with different KMeans seeds.
 
         This function loads existing stochastic log likelihoods from the hard disk via a .json file. If the .json
-        file is not presented, then the log likelihoods are computed via the `stochastic_log_evidences_for_instance`
+        file is not presented, then the log likelihoods are computed via the `stochastic_log_likelihoods_for_instance`
         function of the associated Analysis class.
         """
-        stochastic_log_evidences_json_file = path.join(
-            self.search.paths.output_path, "stochastic_log_evidences.json"
+        stochastic_log_likelihoods_json_file = path.join(
+            self.search.paths.output_path, "stochastic_log_likelihoods.json"
         )
 
         self.search.paths.restore()
 
         try:
-            with open(stochastic_log_evidences_json_file, "r") as f:
-                stochastic_log_evidences = np.asarray(json.load(f))
+            with open(stochastic_log_likelihoods_json_file, "r") as f:
+                stochastic_log_likelihoods = np.asarray(json.load(f))
         except FileNotFoundError:
             self.analysis.save_stochastic_outputs(
                 paths=self.search.paths, samples=self.samples
             )
-            with open(stochastic_log_evidences_json_file, "r") as f:
-                stochastic_log_evidences = np.asarray(json.load(f))
+            with open(stochastic_log_likelihoods_json_file, "r") as f:
+                stochastic_log_likelihoods = np.asarray(json.load(f))
 
         self.search.paths.zip_remove()
 
-        return stochastic_log_evidences
+        return stochastic_log_likelihoods

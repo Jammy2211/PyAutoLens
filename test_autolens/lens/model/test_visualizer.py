@@ -66,7 +66,8 @@ class TestVisualizer:
         visualizer = vis.Visualizer(visualize_path=plot_path)
 
         visualizer.visualize_stochastic_histogram(
-            log_evidences=[1.0, 2.0, 1.0, 2.0, 3.0, 2.5], max_log_evidence=3.0
+            stochastic_log_likelihoods=[1.0, 2.0, 1.0, 2.0, 3.0, 2.5],
+            max_log_evidence=3.0,
         )
         assert (
             path.join(plot_path, "other", "stochastic_histogram.png")
