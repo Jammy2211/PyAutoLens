@@ -27,7 +27,9 @@ logger.setLevel(level="INFO")
 
 
 class AnalysisLensing:
-    def __init__(self, settings_lens=SettingsLens(), cosmology=cosmo.Planck15):
+    def __init__(
+        self, settings_lens: SettingsLens = SettingsLens(), cosmology=cosmo.Planck15
+    ):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
 
@@ -86,9 +88,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         positions: aa.Grid2DIrregular = None,
         hyper_dataset_result=None,
         cosmology=cosmo.Planck15,
-        settings_pixelization=aa.SettingsPixelization(),
-        settings_inversion=aa.SettingsInversion(),
-        settings_lens=SettingsLens(),
+        settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
+        settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
+        settings_lens: SettingsLens = SettingsLens(),
     ):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.

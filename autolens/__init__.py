@@ -53,6 +53,8 @@ from autogalaxy.profiles import (
 )
 from autogalaxy.profiles.light_profiles import light_profiles_init as lp_init
 from autogalaxy.profiles.light_profiles import light_profiles_snr as lp_snr
+from autogalaxy.quantity.fit_quantity import FitQuantity
+from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy import convert
 
 from . import plot
@@ -80,6 +82,7 @@ from .point.fit_point import (
 )
 from .point.model.analysis import AnalysisPoint
 from .point.point_solver import PointSolver
+from .quantity.model.analysis import AnalysisQuantity
 
 
 from autoconf import conf
