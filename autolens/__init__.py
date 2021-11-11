@@ -39,8 +39,10 @@ from autoarray.structures.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autogalaxy import util
+
 # from autogalaxy.quantity.fit_quantity import FitQuantity
 from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
+
 # from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy.hyper import hyper_data
 from autogalaxy.plane.plane import Plane
