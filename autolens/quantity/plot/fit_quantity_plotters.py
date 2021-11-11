@@ -1,5 +1,5 @@
 import autoarray.plot as aplt
-from autoarray.fit.plot.fit_imaging_plotters import AbstractFitImagingPlotter
+from autoarray.fit.plot.fit_imaging_plotters import FitImagingMetaPlotter
 
 from autogalaxy.quantity.fit_quantity import FitQuantity
 
@@ -8,7 +8,7 @@ from autogalaxy.plot.mat_wrap.visuals import Visuals2D
 from autogalaxy.plot.mat_wrap.include import Include2D
 
 
-class FitQuantityPlotter(AbstractFitImagingPlotter):
+class FitQuantityPlotter(FitImagingMetaPlotter):
     def __init__(
         self,
         fit: FitQuantity,

@@ -4,13 +4,13 @@ from typing import Optional
 import autogalaxy as ag
 import autogalaxy.plot as aplt
 
-from autoarray.fit.plot.fit_imaging_plotters import AbstractFitImagingPlotter
+from autoarray.fit.plot.fit_imaging_plotters import FitImagingMetaPlotter
 
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
 
 
-class FitImagingPlotter(AbstractFitImagingPlotter):
+class FitImagingPlotter(FitImagingMetaPlotter):
     def __init__(
         self,
         fit: FitImaging,
