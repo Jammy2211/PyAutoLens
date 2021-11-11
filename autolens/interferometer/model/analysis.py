@@ -334,7 +334,7 @@ class AnalysisInterferometer(AnalysisDataset):
         preloads = self.preloads if preload_overwrite is None else preload_overwrite
 
         return FitInterferometer(
-            interferometer=self.dataset,
+            dataset=self.dataset,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
             use_hyper_scaling=use_hyper_scalings,
@@ -400,7 +400,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
             try:
                 log_evidence = FitInterferometer(
-                    interferometer=self.dataset,
+                    dataset=self.dataset,
                     tracer=tracer,
                     hyper_background_noise=hyper_background_noise,
                     settings_pixelization=settings_pixelization,

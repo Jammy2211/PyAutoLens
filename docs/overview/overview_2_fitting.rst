@@ -76,7 +76,7 @@ provides a like-with-like comparison.
 
 .. code-block:: bash
 
-    fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_imaging, tracer=tracer)
 
     fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
     fit_imaging_plotter.figures_2d(model_image=True)

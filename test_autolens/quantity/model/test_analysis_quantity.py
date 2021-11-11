@@ -35,11 +35,12 @@ class TestAnalysisQuantity:
         instance = model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
 
-        plane = analysis.plane_for_instance(instance=instance)
+        tracer = analysis.tracer_for_instance(instance=instance)
 
         fit = al.FitQuantity(
-            dataset_quantity=dataset_quantity_7x7_array_2d,
-            model_func=plane.convergence_2d_from,
+            dataset=dataset_quantity_7x7_array_2d,
+            tracer=tracer,
+            func_str="convergence_2d_from",
         )
 
         assert fit.log_likelihood == fit_figure_of_merit

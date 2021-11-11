@@ -15,7 +15,7 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         assert fit.total_mappers == 0
 
@@ -27,7 +27,7 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         assert fit.total_mappers == 1
 
@@ -52,7 +52,7 @@ class TestFitProperties:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.FitImaging(
-            imaging=masked_imaging_7x7,
+            dataset=masked_imaging_7x7,
             tracer=tracer,
             settings_inversion=al.SettingsInversion(use_w_tilde=False),
         )
@@ -98,7 +98,7 @@ class TestLikelihood:
         )
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         assert (
             fit.mask
@@ -202,7 +202,7 @@ class TestLikelihood:
         )
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         assert (
             fit.mask
@@ -317,7 +317,7 @@ class TestLikelihood:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         assert (
             fit.mask
@@ -420,7 +420,7 @@ class TestLikelihood:
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
 
         fit = al.FitImaging(
-            imaging=masked_imaging_7x7, tracer=tracer, hyper_image_sky=hyper_image_sky
+            dataset=masked_imaging_7x7, tracer=tracer, hyper_image_sky=hyper_image_sky
         )
 
         assert (
@@ -526,7 +526,7 @@ class TestLikelihood:
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
         fit = al.FitImaging(
-            imaging=masked_imaging_7x7,
+            dataset=masked_imaging_7x7,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
             settings_inversion=al.SettingsInversion(use_w_tilde=False),
@@ -645,7 +645,7 @@ class TestLikelihood:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         assert (
             fit.noise_map.native
@@ -668,7 +668,7 @@ class TestCompareToManualProfilesOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         assert masked_imaging_7x7.noise_map.native == pytest.approx(
             fit.noise_map.native
@@ -728,7 +728,7 @@ class TestCompareToManualProfilesOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         traced_grids_of_planes = tracer.traced_grids_of_planes_from(
             grid=masked_imaging_7x7.grid
@@ -791,7 +791,7 @@ class TestCompareToManualProfilesOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.FitImaging(
-            imaging=masked_imaging_7x7,
+            dataset=masked_imaging_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -851,7 +851,7 @@ class TestCompareToManualProfilesOnly:
         assert log_likelihood == fit.figure_of_merit
 
         fit = al.FitImaging(
-            imaging=masked_imaging_7x7,
+            dataset=masked_imaging_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -876,7 +876,7 @@ class TestCompareToManualProfilesOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         blurred_images_of_planes = tracer.blurred_images_of_planes_via_convolver_from(
             grid=masked_imaging_7x7.grid,
@@ -938,7 +938,7 @@ class TestCompareToManualInversionOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         mapper = pix.mapper_from(
             grid=masked_imaging_7x7.grid_inversion, sparse_grid=None
@@ -1018,7 +1018,7 @@ class TestCompareToManualInversionOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         mapper = pix.mapper_from(grid=masked_imaging_7x7.grid, sparse_grid=None)
 
@@ -1069,7 +1069,7 @@ class TestCompareToManualInversionOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.FitImaging(
-            imaging=masked_imaging_7x7,
+            dataset=masked_imaging_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -1165,7 +1165,7 @@ class TestCompareToManualInversionOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         mapper = pix.mapper_from(
             grid=masked_imaging_7x7.grid,
@@ -1199,12 +1199,12 @@ class TestCompareToManualInversionOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit_0 = al.FitImaging(
-            imaging=masked_imaging_7x7,
+            dataset=masked_imaging_7x7,
             tracer=tracer,
             settings_pixelization=al.SettingsPixelization(is_stochastic=False),
         )
         fit_1 = al.FitImaging(
-            imaging=masked_imaging_7x7,
+            dataset=masked_imaging_7x7,
             tracer=tracer,
             settings_pixelization=al.SettingsPixelization(is_stochastic=False),
         )
@@ -1212,12 +1212,12 @@ class TestCompareToManualInversionOnly:
         assert fit_0.log_evidence == fit_1.log_evidence
 
         fit_0 = al.FitImaging(
-            imaging=masked_imaging_7x7,
+            dataset=masked_imaging_7x7,
             tracer=tracer,
             settings_pixelization=al.SettingsPixelization(is_stochastic=True),
         )
         fit_1 = al.FitImaging(
-            imaging=masked_imaging_7x7,
+            dataset=masked_imaging_7x7,
             tracer=tracer,
             settings_pixelization=al.SettingsPixelization(is_stochastic=True),
         )
@@ -1237,7 +1237,7 @@ class TestCompareToManualProfilesAndInversion:
 
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         blurred_image = tracer.blurred_image_2d_via_convolver_from(
             grid=masked_imaging_7x7.grid,
@@ -1340,7 +1340,7 @@ class TestCompareToManualProfilesAndInversion:
 
         masked_imaging_7x7.image[0] = 3.0
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         traced_grids = tracer.traced_grids_of_planes_from(grid=masked_imaging_7x7.grid)
         traced_blurring_grids = tracer.traced_grids_of_planes_from(
@@ -1428,7 +1428,7 @@ class TestCompareToManualProfilesAndInversion:
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
         fit = al.FitImaging(
-            imaging=masked_imaging_7x7,
+            dataset=masked_imaging_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -1541,7 +1541,7 @@ class TestCompareToManualProfilesAndInversion:
 
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         blurred_image = tracer.blurred_image_2d_via_convolver_from(
             grid=masked_imaging_7x7.grid,
@@ -1586,7 +1586,7 @@ class TestRefit:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         refit = fit.refit_with_new_preloads(preloads=al.Preloads())
 
@@ -1616,7 +1616,7 @@ class TestAttributes:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitImaging(imaging=masked_imaging_no_blur_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_no_blur_7x7, tracer=tracer)
 
         assert fit.subtracted_images_of_planes[0].slim[0] == -4.0
         assert fit.subtracted_images_of_planes[1].slim[0] == -3.0
@@ -1636,7 +1636,7 @@ class TestAttributes:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitImaging(imaging=masked_imaging_no_blur_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_no_blur_7x7, tracer=tracer)
 
         assert fit.subtracted_images_of_planes[0].slim[0] == -4.0
         assert fit.subtracted_images_of_planes[1].slim[0] == -0.0
@@ -1651,7 +1651,7 @@ class TestPreload:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.FitImaging(imaging=masked_imaging_no_blur_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_no_blur_7x7, tracer=tracer)
 
         assert (fit.blurred_image == np.array([1.0])).all()
 
@@ -1659,7 +1659,7 @@ class TestPreload:
         preloads = al.Preloads(blurred_image=blurred_image)
 
         fit = al.FitImaging(
-            imaging=masked_imaging_no_blur_7x7, tracer=tracer, preloads=preloads
+            dataset=masked_imaging_no_blur_7x7, tracer=tracer, preloads=preloads
         )
 
         assert (fit.blurred_image == np.array([2.0])).all()

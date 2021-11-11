@@ -77,7 +77,7 @@ class TestAnalysisImaging:
 
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         assert fit.log_likelihood == analysis_log_likelihood
 
@@ -102,7 +102,7 @@ class TestAnalysisImaging:
 
         tracer = analysis.tracer_for_instance(instance=instance)
         fit = al.FitImaging(
-            imaging=masked_imaging_7x7,
+            dataset=masked_imaging_7x7,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -159,7 +159,7 @@ class TestAnalysisImaging:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         assert (fit.tracer.galaxies[0].hyper_galaxy_image == lens_hyper_image).all()
         assert analysis_log_likelihood == fit.log_likelihood

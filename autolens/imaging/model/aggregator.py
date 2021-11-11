@@ -70,7 +70,7 @@ def _fit_imaging_from(
                     ]
 
     return FitImaging(
-        imaging=imaging,
+        dataset=imaging,
         tracer=tracer,
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,

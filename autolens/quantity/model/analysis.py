@@ -4,11 +4,11 @@ import autofit as af
 import autogalaxy as ag
 
 from autogalaxy.quantity.model.visualizer import VisualizerQuantity
-from autogalaxy.quantity.model.result import ResultQuantity
 
 from autolens.lens.model.visualizer import Visualizer
 from autolens.lens.model.analysis import AnalysisLensing
 from autolens.lens.model.settings import SettingsLens
+from autolens.quantity.fit_quantity import FitQuantity
 
 
 class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
@@ -49,7 +49,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
             self=self, settings_lens=settings_lens, cosmology=cosmology
         )
 
-    def fit_quantity_for_instance(self, instance: af.ModelInstance) -> ag.FitQuantity:
+    def fit_quantity_for_instance(self, instance: af.ModelInstance) -> FitQuantity:
         """
         Given a model instance create a `FitImaging` object.
 
@@ -70,8 +70,8 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
 
         tracer = self.tracer_for_instance(instance=instance)
 
-        return ag.FitQuantity(
-            dataset_quantity=self.dataset, model_func=tracer.convergence_2d_from
+        return FitQuantity(
+            dataset=self.dataset, tracer=tracer, func_str="convergence_2d_from"
         )
 
     def visualize(
@@ -107,14 +107,12 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
             which may change which images are output.
         """
 
-        tracer = self.tracer_for_instance(instance=instance)
-
-        visualizer = Visualizer(visualize_path=paths.image_path)
-        visualizer.visualize_tracer(
-            tracer=tracer, grid=self.dataset.grid, during_analysis=during_analysis
-        )
-
         fit = self.fit_quantity_for_instance(instance=instance)
 
         visualizer = VisualizerQuantity(visualize_path=paths.image_path)
         visualizer.visualize_fit_quantity(fit=fit)
+
+        visualizer = Visualizer(visualize_path=paths.image_path)
+        visualizer.visualize_tracer(
+            tracer=fit.tracer, grid=self.dataset.grid, during_analysis=during_analysis
+        )

@@ -219,7 +219,7 @@ class AnalysisImaging(AnalysisDataset):
         preloads = self.preloads if preload_overwrite is None else preload_overwrite
 
         return FitImaging(
-            imaging=self.dataset,
+            dataset=self.dataset,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -362,7 +362,7 @@ class AnalysisImaging(AnalysisDataset):
 
             try:
                 log_evidence = FitImaging(
-                    imaging=self.dataset,
+                    dataset=self.dataset,
                     tracer=tracer,
                     hyper_image_sky=hyper_image_sky,
                     hyper_background_noise=hyper_background_noise,
