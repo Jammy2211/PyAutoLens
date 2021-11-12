@@ -4,12 +4,12 @@ import autoarray as aa
 import autogalaxy as ag
 import autogalaxy.plot as aplt
 
-from autogalaxy.plot.light_mass_plotter import LightMassPlotter
+from autogalaxy.plot.mass_plotter import MassPlotter
 
 from autolens.lens.ray_tracing import Tracer
 
 
-class TracerPlotter(LightMassPlotter):
+class TracerPlotter(MassPlotter):
     def __init__(
         self,
         tracer: Tracer,
