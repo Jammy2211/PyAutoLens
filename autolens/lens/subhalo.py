@@ -50,6 +50,7 @@ class SubhaloResult:
         if (not use_log_evidences) and (not use_stochastic_log_evidences):
 
             values_native = self.grid_search_result.log_likelihoods_native
+            values_native[values_native == None] = np.nan
 
             if relative_to_no_subhalo:
                 values_native -= self.result_no_subhalo[
@@ -59,6 +60,7 @@ class SubhaloResult:
         elif use_log_evidences and not use_stochastic_log_evidences:
 
             values_native = self.grid_search_result.log_evidences_native
+            values_native[values_native == None] = np.nan
 
             if relative_to_no_subhalo:
                 values_native -= self.result_no_subhalo["samples"].log_evidence
@@ -66,6 +68,7 @@ class SubhaloResult:
         else:
 
             values_native = self.stochastic_log_likelihoods_native
+            values_native[values_native == None] = np.nan
 
             if relative_to_no_subhalo:
                 values_native -= np.median(
@@ -84,17 +87,34 @@ class SubhaloResult:
             lst=self.stochastic_log_evidences
         )
 
+    def instance_list_via_results_from(self, results):
+        return [
+            None
+            if result.samples.median_pdf_instance is None
+            else result.samples.median_pdf_instance
+            for result in results
+        ]
+
     @property
     def masses_native(self) -> List[float]:
+
+        instance_list = self.instance_list_via_results_from(
+            results=self.grid_search_result.results
+        )
+
         return self.grid_search_result._list_to_native(
-            lst=[
-                result.samples.median_pdf_instance.galaxies.subhalo.mass.mass_at_200
-                for result in self.grid_search_result.results
+            [
+                None if instance is None else instance.galaxies.subhalo.mass.mass_at_200
+                for instance in instance_list
             ]
         )
 
     @property
     def centres_native(self) -> List[Tuple[float]]:
+
+        instance_list = self.instance_list_via_results_from(
+            results=self.grid_search_result.results
+        )
 
         centres_native = np.zeros(
             (self.grid_search_result.shape[0], self.grid_search_result.shape[1], 2)
@@ -102,15 +122,15 @@ class SubhaloResult:
 
         centres_native[:, :, 0] = self.grid_search_result._list_to_native(
             lst=[
-                result.samples.median_pdf_instance.galaxies.subhalo.mass.centre[0]
-                for result in self.grid_search_result.results
+                None if instance is None else instance.galaxies.subhalo.mass.centre[0]
+                for instance in instance_list
             ]
         )
 
         centres_native[:, :, 1] = self.grid_search_result._list_to_native(
             lst=[
-                result.samples.median_pdf_instance.galaxies.subhalo.mass.centre[1]
-                for result in self.grid_search_result.results
+                None if instance is None else instance.galaxies.subhalo.mass.centre[1]
+                for instance in instance_list
             ]
         )
 
