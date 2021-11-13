@@ -8,6 +8,7 @@ from autogalaxy.quantity.model.visualizer import VisualizerQuantity
 from autolens.lens.model.visualizer import Visualizer
 from autolens.lens.model.analysis import AnalysisLensing
 from autolens.lens.model.settings import SettingsLens
+from autolens.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
 from autolens.quantity.fit_quantity import FitQuantity
 
 
@@ -110,7 +111,9 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         fit = self.fit_quantity_for_instance(instance=instance)
 
         visualizer = VisualizerQuantity(visualize_path=paths.image_path)
-        visualizer.visualize_fit_quantity(fit=fit)
+        visualizer.visualize_fit_quantity(
+            fit=fit, fit_quanaity_plotter_cls=FitQuantityPlotter
+        )
 
         visualizer = Visualizer(visualize_path=paths.image_path)
         visualizer.visualize_tracer(

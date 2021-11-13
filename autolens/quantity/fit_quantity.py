@@ -52,5 +52,9 @@ class FitQuantity(aa.FitDataset):
         return self.dataset
 
     @property
+    def mask(self):
+        return self.fit.mask
+
+    @property
     def grid(self):
         return self.quantity_dataset.grid
