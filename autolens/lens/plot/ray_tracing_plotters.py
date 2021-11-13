@@ -6,10 +6,11 @@ import autogalaxy.plot as aplt
 
 from autogalaxy.plot.mass_plotter import MassPlotter
 
+from autolens.plot.abstract_plotters import Plotter
 from autolens.lens.ray_tracing import Tracer
 
 
-class TracerPlotter(MassPlotter):
+class TracerPlotter(Plotter):
     def __init__(
         self,
         tracer: Tracer,
@@ -33,104 +34,21 @@ class TracerPlotter(MassPlotter):
         self.tracer = tracer
         self.grid = grid
 
-    @property
-    def lensing_obj(self) -> Tracer:
-        return self.tracer
-
-    @property
-    def visuals_with_include_2d(self) -> aplt.Visuals2D:
-        """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
-        return self.visuals_with_include_2d_of_plane(plane_index=0)
-
-    def visuals_with_include_2d_of_plane(self, plane_index) -> aplt.Visuals2D:
-        """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
-        border = self.extract_2d(
-            "border", value=self.grid.mask.border_grid_sub_1.binned
+        self._mass_plotter = MassPlotter(
+            mass_obj=self.tracer,
+            grid=self.grid,
+            get_visuals_2d=self.get_visuals_2d,
+            mat_plot_2d=self.mat_plot_2d,
+            include_2d=self.include_2d,
+            visuals_2d=self.visuals_2d,
         )
 
-        if border is not None:
-            if plane_index > 0:
-                border = self.tracer.traced_grids_of_planes_from(grid=border)[
-                    plane_index
-                ]
+    def get_visuals_2d(self) -> aplt.Visuals2D:
+        return self.get_visuals_2d_of_plane(plane_index=0)
 
-        if plane_index == 0:
-            critical_curves = self.extract_2d(
-                "critical_curves",
-                self.tracer.critical_curves_from(grid=self.grid),
-                "critical_curves",
-            )
-        else:
-            critical_curves = None
-
-        if plane_index == 1:
-            caustics = self.extract_2d(
-                "caustics", self.tracer.caustics_from(grid=self.grid), "caustics"
-            )
-        else:
-            caustics = None
-
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin", value=aa.Grid2DIrregular(grid=[self.grid.origin])
-            ),
-            border=border,
-            light_profile_centres=self.extract_2d(
-                "light_profile_centres",
-                self.tracer.planes[plane_index].extract_attribute(
-                    cls=ag.lp.LightProfile, attr_name="centre"
-                ),
-            ),
-            mass_profile_centres=self.extract_2d(
-                "mass_profile_centres",
-                self.tracer.planes[plane_index].extract_attribute(
-                    cls=ag.mp.MassProfile, attr_name="centre"
-                ),
-            ),
-            critical_curves=critical_curves,
-            caustics=caustics,
+    def get_visuals_2d_of_plane(self, plane_index: int) -> aplt.Visuals2D:
+        return self.get_2d.via_tracer_from(
+            tracer=self.tracer, grid=self.grid, plane_index=plane_index
         )
 
     def plane_plotter_from(self, plane_index: int) -> aplt.PlanePlotter:
@@ -143,7 +61,7 @@ class TracerPlotter(MassPlotter):
             plane=self.tracer.planes[plane_index],
             grid=plane_grid,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.visuals_with_include_2d_of_plane(plane_index=plane_index),
+            visuals_2d=self.get_visuals_2d_of_plane(plane_index=plane_index),
             include_2d=self.include_2d,
         )
 
@@ -178,7 +96,7 @@ class TracerPlotter(MassPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.tracer.image_2d_from(grid=self.grid),
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=aplt.AutoLabels(title="Image", filename="image_2d"),
             )
 
@@ -187,7 +105,7 @@ class TracerPlotter(MassPlotter):
                 plane_image=True, plane_index=len(self.tracer.planes) - 1
             )
 
-        super().figures_2d(
+        self._mass_plotter.figures_2d(
             convergence=convergence,
             potential=potential,
             deflections_y=deflections_y,
@@ -199,7 +117,7 @@ class TracerPlotter(MassPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.tracer.contribution_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=aplt.AutoLabels(
                     title="Contribution Map", filename="contribution_map_2d"
                 ),
@@ -209,8 +127,7 @@ class TracerPlotter(MassPlotter):
 
         if plane_index is None:
             return list(range(len(self.tracer.planes)))
-        else:
-            return [plane_index]
+        return [plane_index]
 
     def figures_2d_of_planes(
         self,

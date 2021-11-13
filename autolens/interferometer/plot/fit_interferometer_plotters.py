@@ -4,12 +4,15 @@ import autoarray as aa
 import autogalaxy as ag
 import autogalaxy.plot as aplt
 
+from autoarray.fit.plot.fit_interferometer_plotters import FitInterferometerPlotterMeta
+
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.lens.ray_tracing import Tracer
 from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
+from autolens.plot.abstract_plotters import Plotter
 
 
-class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
+class FitInterferometerPlotter(Plotter):
     def __init__(
         self,
         fit: FitInterferometer,
@@ -22,7 +25,6 @@ class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
     ):
 
         super().__init__(
-            fit=fit,
             mat_plot_1d=mat_plot_1d,
             include_1d=include_1d,
             visuals_1d=visuals_1d,
@@ -31,53 +33,29 @@ class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
             visuals_2d=visuals_2d,
         )
 
-    @property
-    def visuals_with_include_2d(self) -> aplt.Visuals2D:
-        """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
+        self.fit = fit
 
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
-        visuals_2d = super(FitInterferometerPlotter, self).visuals_with_include_2d
-
-        visuals_2d.mask = None
-
-        return visuals_2d + visuals_2d.__class__(
-            light_profile_centres=self.extract_2d(
-                "light_profile_centres",
-                self.tracer.planes[0].extract_attribute(
-                    cls=ag.lp.LightProfile, attr_name="centre"
-                ),
-            ),
-            mass_profile_centres=self.extract_2d(
-                "mass_profile_centres",
-                self.tracer.planes[0].extract_attribute(
-                    cls=ag.mp.MassProfile, attr_name="centre"
-                ),
-            ),
-            critical_curves=self.extract_2d(
-                "critical_curves",
-                self.tracer.critical_curves_from(grid=self.fit.grid),
-                "critical_curves",
-            ),
+        self._fit_interferometer_meta_plotter = FitInterferometerPlotterMeta(
+            fit=self.fit,
+            get_visuals_2d_real_space=self.get_visuals_2d_real_space,
+            mat_plot_1d=self.mat_plot_1d,
+            include_1d=self.include_1d,
+            visuals_1d=self.visuals_1d,
+            mat_plot_2d=self.mat_plot_2d,
+            include_2d=self.include_2d,
+            visuals_2d=self.visuals_2d,
         )
+
+        self.subplot = self._fit_interferometer_meta_plotter.subplot
+        self.subplot_fit_interferometer = (
+            self._fit_interferometer_meta_plotter.subplot_fit_interferometer
+        )
+        self.subplot_fit_dirty_images = (
+            self._fit_interferometer_meta_plotter.subplot_fit_dirty_images
+        )
+
+    def get_visuals_2d_real_space(self) -> aplt.Visuals2D:
+        return self.get_2d.via_mask_from(mask=self.fit.interferometer.real_space_mask)
 
     @property
     def tracer(self) -> Tracer:
@@ -98,9 +76,7 @@ class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
         return aplt.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.tracer_plotter.visuals_with_include_2d_of_plane(
-                plane_index=1
-            ),
+            visuals_2d=self.tracer_plotter.get_visuals_2d_of_plane(plane_index=1),
             include_2d=self.include_2d,
         )
 
@@ -126,7 +102,7 @@ class FitInterferometerPlotter(aplt.FitInterferometerPlotter):
         dirty_chi_squared_map: bool = False,
     ):
 
-        super().figures_2d(
+        self._fit_interferometer_meta_plotter.figures_2d(
             visibilities=visibilities,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
