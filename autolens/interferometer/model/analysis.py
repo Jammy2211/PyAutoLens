@@ -1,5 +1,6 @@
 from astropy import cosmology as cosmo
 import logging
+import numpy as np
 from typing import Optional
 
 from autoconf import conf
@@ -232,7 +233,6 @@ class AnalysisInterferometer(AnalysisDataset):
         float
             The log likelihood indicating how well this model instance fitted the interferometer data.
         """
-
         try:
             return self.fit_interferometer_for_instance(
                 instance=instance
@@ -241,6 +241,8 @@ class AnalysisInterferometer(AnalysisDataset):
             exc.PixelizationException,
             exc.InversionException,
             exc.GridException,
+            ValueError,
+            np.linalg.LinAlgError,
             OverflowError,
         ) as e:
             raise exc.FitException from e

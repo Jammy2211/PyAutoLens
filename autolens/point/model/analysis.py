@@ -11,6 +11,7 @@ from autolens.point.model.result import ResultPoint
 from autolens.point.point_solver import PointSolver
 from autolens.lens.model.settings import SettingsLens
 
+from autolens import exc
 
 class AnalysisPoint(af.Analysis, AnalysisLensing):
     def __init__(
@@ -70,9 +71,13 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
             A fractional value indicating how well this model fit and the model masked_imaging itself
         """
 
-        fit = self.fit_positions_for(instance=instance)
-
-        return fit.log_likelihood
+        try:
+            fit = self.fit_positions_for(instance=instance)
+            return fit.log_likelihood
+        except (
+                ValueError,
+        ) as e:
+            raise exc.FitException from e
 
     def fit_positions_for(self, instance):
 
