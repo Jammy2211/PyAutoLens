@@ -1,5 +1,6 @@
 from astropy import cosmology as cosmo
 import logging
+import numpy as np
 
 from autoconf import conf
 import autofit as af
@@ -139,7 +140,6 @@ class AnalysisInterferometer(AnalysisDataset):
         fit : Fit
             A fractional value indicating how well this model fit and the model interferometer itself
         """
-
         try:
             return self.fit_interferometer_for_instance(
                 instance=instance
@@ -148,6 +148,8 @@ class AnalysisInterferometer(AnalysisDataset):
             exc.PixelizationException,
             exc.InversionException,
             exc.GridException,
+            ValueError,
+            np.linalg.LinAlgError,
             OverflowError,
         ) as e:
             raise exc.FitException from e
