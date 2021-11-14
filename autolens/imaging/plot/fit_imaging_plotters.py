@@ -132,7 +132,7 @@ class FitImagingPlotter(Plotter):
         plane_image: bool = False,
     ):
         """
-        Plots images representing each individual `Plane` in the plotter's `Tracer` in 2D, which are computed via the
+        Plots images representing each individual `Plane` in the fit's `Tracer` in 2D, which are computed via the
         plotter's 2D grid object.
 
         These images subtract or omit the contribution of other planes in the plane, such that plots showing

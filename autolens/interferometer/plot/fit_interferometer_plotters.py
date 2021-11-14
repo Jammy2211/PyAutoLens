@@ -23,7 +23,36 @@ class FitInterferometerPlotter(Plotter):
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
     ):
+        """
+        Plots the attributes of `FitInterferometer` objects using the matplotlib method `imshow()` and many
+        other matplotlib functions which customize the plot's appearance.
 
+        The `mat_plot_1d` and `mat_plot_2d` attributes wrap matplotlib function calls to make the figure. By default,
+        the settings passed to every matplotlib function called are those specified in
+        the `config/visualize/mat_wrap/*.ini` files, but a user can manually input values into `MatPlot2d` to
+        customize the figure's appearance.
+
+        Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
+        extracted from the `FitInterferometer` and plotted via the visuals object, if the corresponding entry is `True` in
+        the `Include1D` or `Include2D` object or the `config/visualize/include.ini` file.
+
+        Parameters
+        ----------
+        fit
+            The fit to an interferometer dataset the plotter plots.
+        mat_plot_1d
+            Contains objects which wrap the matplotlib function calls that make 1D plots.
+        visuals_1d
+            Contains 1D visuals that can be overlaid on 1D plots.
+        include_1d
+            Specifies which attributes of the `FitInterferometer` are extracted and plotted as visuals for 1D plots.
+        mat_plot_2d
+            Contains objects which wrap the matplotlib function calls that make 2D plots.
+        visuals_2d
+            Contains 2D visuals that can be overlaid on 2D plots.
+        include_2d
+            Specifies which attributes of the `FitInterferometer` are extracted and plotted as visuals for 2D plots.
+        """
         super().__init__(
             mat_plot_1d=mat_plot_1d,
             include_1d=include_1d,
@@ -63,6 +92,9 @@ class FitInterferometerPlotter(Plotter):
 
     @property
     def tracer_plotter(self) -> TracerPlotter:
+        """
+        Returns an `TracerPlotter` corresponding to the `Tracer` in the `FitImaging`.
+        """
         return TracerPlotter(
             tracer=self.tracer,
             grid=self.fit.interferometer.grid,
@@ -71,12 +103,27 @@ class FitInterferometerPlotter(Plotter):
             include_2d=self.include_2d,
         )
 
-    @property
-    def inversion_plotter(self) -> aplt.InversionPlotter:
+    def inversion_plotter_of_plane(self, plane_index: int) -> aplt.InversionPlotter:
+        """
+        Returns an `InversionPlotter` corresponding to one of the `Inversion`'s in the fit, which is specified via
+        the index of the `Plane` that inversion was performed on.
+
+        Parameters
+        ----------
+        plane_index
+            The index of the inversion in the inversion which is used to create the `InversionPlotter`.
+
+        Returns
+        -------
+        InversionPlotter
+            An object that plots inversions which is used for plotting attributes of the inversion.
+        """
         return aplt.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.tracer_plotter.get_visuals_2d_of_plane(plane_index=1),
+            visuals_2d=self.tracer_plotter.get_visuals_2d_of_plane(
+                plane_index=plane_index
+            ),
             include_2d=self.include_2d,
         )
 
@@ -101,7 +148,49 @@ class FitInterferometerPlotter(Plotter):
         dirty_normalized_residual_map: bool = False,
         dirty_chi_squared_map: bool = False,
     ):
+        """
+        Plots the individual attributes of the plotter's `FitInterferometer` object in 1D and 2D.
 
+        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type
+        bool of the function, which if switched to `True` means that it is plotted.
+
+        Parameters
+        ----------
+        visibilities
+            Whether or not to make a 2D plot (via `scatter`) of the visibility data.
+        noise_map
+            Whether or not to make a 2D plot (via `scatter`) of the noise-map.
+        signal_to_noise_map
+            Whether or not to make a 2D plot (via `scatter`) of the signal-to-noise-map.
+        model_visibilities
+            Whether or not to make a 2D plot (via `scatter`) of the model visibility data.
+        residual_map_real
+            Whether or not to make a 1D plot (via `plot`) of the real component of the residual map.
+        residual_map_imag
+            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the residual map.
+        normalized_residual_map_real
+            Whether or not to make a 1D plot (via `plot`) of the real component of the normalized residual map.
+        normalized_residual_map_imag
+            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the normalized residual map.
+        chi_squared_map_real
+            Whether or not to make a 1D plot (via `plot`) of the real component of the chi-squared map.
+        chi_squared_map_imag
+            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the chi-squared map.
+        image
+            Whether or not to make a 2D plot (via `imshow`) of the source-plane image.
+        dirty_image
+            Whether or not to make a 2D plot (via `imshow`) of the dirty image.
+        dirty_noise_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty noise map.
+        dirty_model_image
+            Whether or not to make a 2D plot (via `imshow`) of the dirty model image.
+        dirty_residual_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty residual map.
+        dirty_normalized_residual_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty normalized residual map.
+        dirty_chi_squared_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty chi-squared map.
+        """
         self._fit_interferometer_meta_plotter.figures_2d(
             visibilities=visibilities,
             noise_map=noise_map,
@@ -127,12 +216,31 @@ class FitInterferometerPlotter(Plotter):
             if self.fit.inversion is None:
                 self.tracer_plotter.figures_2d(image=True)
             else:
-                self.inversion_plotter.figures_2d(reconstructed_image=True)
+                inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
+                inversion_plotter.figures_2d(reconstructed_image=True)
 
     def figures_2d_of_planes(
-        self, plane_image: aa.Array2D, plane_index: Optional[int] = None
+        self, plane_index: Optional[int] = None, plane_image: bool = False
     ):
+        """
+        Plots images representing each individual `Plane` in the fit's `Tracer` in 2D, which are computed via the
+        plotter's 2D grid object.
 
+        These images subtract or omit the contribution of other planes in the plane, such that plots showing
+        each individual plane are made.
+
+        The API is such that every plottable attribute of the `Plane` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is plotted.
+
+        Parameters
+        ----------
+        plane_index
+            The index of the plane which figures are plotted for.
+        plane_image
+            Whether or not to make a 2D plot (via `imshow`) of the image of a plane in its source-plane (e.g. unlensed).
+            Depending on how the fit is performed, this could either be an image of light profiles of the reconstruction
+            of an `Inversion`.
+        """
         if plane_image:
 
             if not self.tracer.planes[plane_index].has_pixelization:
@@ -143,12 +251,18 @@ class FitInterferometerPlotter(Plotter):
 
             elif self.tracer.planes[plane_index].has_pixelization:
 
-                self.inversion_plotter.figures_2d_of_mapper(
+                inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
+                inversion_plotter.figures_2d_of_mapper(
                     mapper_index=0, reconstruction=True
                 )
 
     def subplot_fit_real_space(self):
+        """
+        Standard subplot of the real-space attributes of the plotter's `FitInterferometer` object.
 
+        Depending on whether `LightProfile`'s or an `Inversion` are used to represent galaxies in the `Tracer`,
+        different methods are called to create these real-space images.
+        """
         if self.fit.inversion is None:
 
             self.tracer_plotter.subplot(
@@ -159,12 +273,12 @@ class FitInterferometerPlotter(Plotter):
 
             self.open_subplot_figure(number_subplots=2)
 
-            self.inversion_plotter.figures_2d_of_mapper(
+            inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
+
+            inversion_plotter.figures_2d_of_mapper(
                 mapper_index=0, reconstructed_image=True
             )
-            self.inversion_plotter.figures_2d_of_mapper(
-                mapper_index=0, reconstruction=True
-            )
+            inversion_plotter.figures_2d_of_mapper(mapper_index=0, reconstruction=True)
 
             self.mat_plot_2d.output.subplot_to_figure(
                 auto_filename="subplot_fit_real_space"
