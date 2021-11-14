@@ -35,7 +35,9 @@ class FitQuantity(aa.FitDataset):
         self.tracer = tracer
         self.quantity_str = func_str
 
-        model_data = tracer.convergence_2d_from(grid=dataset.grid)
+        func = getattr(tracer, func_str)
+
+        model_data = func(grid=dataset.grid)
 
         fit = aa.FitData(
             data=dataset.data,

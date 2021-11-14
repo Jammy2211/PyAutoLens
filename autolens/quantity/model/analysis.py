@@ -16,6 +16,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
     def __init__(
         self,
         dataset: ag.DatasetQuantity,
+        func_str: str,
         cosmology=cosmo.Planck15,
         settings_lens=SettingsLens(),
     ):
@@ -31,6 +32,10 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         convergence, potential or deflection angles, to another model for that quantity. For example, one could find
         the `EllPowerLaw` mass profile model that best fits the deflection angles of an `EllNFW` mass profile.
 
+        The `func_str` input defines what quantity is fitted, it corresponds to the function of the model `Plane`
+        objects that is called to create the model quantity. For example, if `func_str="convergence_2d_from"`, the
+        convergence is computed from each model `Plane`.
+
         This class stores the settings used to perform the model-fit for certain components of the model (e.g. the 
         Cosmology used for the analysis).
 
@@ -38,13 +43,16 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         ----------
         dataset
             The `DatasetQuantity` dataset that the model is fitted too.
+        func_str
+            A string giving the name of the method of the input `Plane` used to compute the quantity that fits
+            the dataset.
         cosmology
             The Cosmology assumed for this analysis.
         settings_lens
             Settings controlling the lens calculation, for example how close the lensed source's multiple images have
             to trace within one another in the source plane for the model to not be discarded.
         """
-        super().__init__(dataset=dataset, cosmology=cosmology)
+        super().__init__(dataset=dataset, func_str=func_str, cosmology=cosmology)
 
         AnalysisLensing.__init__(
             self=self, settings_lens=settings_lens, cosmology=cosmology
@@ -72,7 +80,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         tracer = self.tracer_for_instance(instance=instance)
 
         return FitQuantity(
-            dataset=self.dataset, tracer=tracer, func_str="convergence_2d_from"
+            dataset=self.dataset, tracer=tracer, func_str=self.func_str
         )
 
     def visualize(

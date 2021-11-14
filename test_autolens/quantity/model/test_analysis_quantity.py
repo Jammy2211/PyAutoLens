@@ -15,7 +15,7 @@ class TestAnalysisQuantity:
 
         model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
-        analysis = al.AnalysisQuantity(dataset=dataset_quantity_7x7_array_2d)
+        analysis = al.AnalysisQuantity(dataset=dataset_quantity_7x7_array_2d, func_str="convergence_2d_from")
 
         search = mock.MockSearch(name="test_search")
 
@@ -30,7 +30,7 @@ class TestAnalysisQuantity:
 
         model = af.Collection(galaxies=af.Collection(galaxy=galaxy))
 
-        analysis = al.AnalysisQuantity(dataset=dataset_quantity_7x7_array_2d)
+        analysis = al.AnalysisQuantity(dataset=dataset_quantity_7x7_array_2d, func_str="convergence_2d_from")
 
         instance = model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
@@ -44,3 +44,11 @@ class TestAnalysisQuantity:
         )
 
         assert fit.log_likelihood == fit_figure_of_merit
+
+        fit = al.FitQuantity(
+            dataset=dataset_quantity_7x7_array_2d,
+            tracer=tracer,
+            func_str="potential_2d_from",
+        )
+
+        assert fit.log_likelihood != fit_figure_of_merit
