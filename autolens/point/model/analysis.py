@@ -13,6 +13,7 @@ from autolens.lens.model.settings import SettingsLens
 
 from autolens import exc
 
+
 class AnalysisPoint(af.Analysis, AnalysisLensing):
     def __init__(
         self,
@@ -74,9 +75,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         try:
             fit = self.fit_positions_for(instance=instance)
             return fit.log_likelihood
-        except (
-                ValueError,
-        ) as e:
+        except (ValueError,) as e:
             raise exc.FitException from e
 
     def fit_positions_for(self, instance):

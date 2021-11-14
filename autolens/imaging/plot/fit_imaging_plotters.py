@@ -56,7 +56,20 @@ class FitImagingPlotter(Plotter):
         )
 
     def inversion_plotter_of_plane(self, plane_index: int) -> aplt.InversionPlotter:
+        """
+        Returns an `InversionPlotter` corresponding to one of the `Inversion`'s in the fit, which is specified via
+        the index of the `Plane` that inversion was performed on..
 
+        Parameters
+        ----------
+        inversion_index
+            The index of the inversion in the inversion which is used to create the `InversionPlotter`.
+
+        Returns
+        -------
+        InversionPlotter
+            An object that plots inversions which is used for plotting attributes of the inversion.
+        """
         inversion_plotter = aplt.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,

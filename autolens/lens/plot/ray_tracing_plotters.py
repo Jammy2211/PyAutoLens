@@ -22,6 +22,38 @@ class TracerPlotter(Plotter):
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
     ):
+        """
+        Plots the attributes of `Tracer` objects using the matplotlib methods `plot()` and `imshow()` and many 
+        other matplotlib functions which customize the plot's appearance.
+
+        The `mat_plot_1d` and `mat_plot_2d` attributes wrap matplotlib function calls to make the figure. By default, 
+        the settings passed to every matplotlib function called are those specified in 
+        the `config/visualize/mat_wrap/*.ini` files, but a user can manually input values into `MatPlot2D` to 
+        customize the figure's appearance.
+
+        Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be 
+        extracted from the `MassProfile` and plotted via the visuals object, if the corresponding entry is `True` in 
+        the `Include1D` or `Include2D` object or the `config/visualize/include.ini` file.
+
+        Parameters
+        ----------
+        tracer
+            The tracer the plotter plots.
+        grid
+            The 2D (y,x) grid of coordinates used to evaluate the tracer's light and mass quantities that are plotted.
+        mat_plot_1d
+            Contains objects which wrap the matplotlib function calls that make 1D plots.
+        visuals_1d
+            Contains 1D visuals that can be overlaid on 1D plots.
+        include_1d
+            Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 1D plots.
+        mat_plot_2d
+            Contains objects which wrap the matplotlib function calls that make 2D plots.
+        visuals_2d
+            Contains 2D visuals that can be overlaid on 2D plots.
+        include_2d
+            Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 2D plots.
+        """
         super().__init__(
             mat_plot_1d=mat_plot_1d,
             visuals_1d=visuals_1d,
@@ -52,7 +84,14 @@ class TracerPlotter(Plotter):
         )
 
     def plane_plotter_from(self, plane_index: int) -> aplt.PlanePlotter:
+        """
+        Returns an `PlanePlotter` corresponding to a `Plane` in the `Tracer`.
 
+        Returns
+        -------
+        plane_index
+            The index of the plane in the `Tracer` used to make the `PlanePlotter`.
+        """
         plane_grid = self.tracer.traced_grids_of_planes_from(grid=self.grid)[
             plane_index
         ]
@@ -76,20 +115,33 @@ class TracerPlotter(Plotter):
         magnification: bool = False,
         contribution_map: bool = False,
     ):
-        """Plot the observed _tracer of an analysis, using the `Imaging` class object.
-    
-        The visualization and output type can be fully customized.
-    
+        """
+        Plots the individual attributes of the plotter's `Tracer` object in 2D, which are computed via the plotter's 2D
+        grid object.
+
+        The API is such that every plottable attribute of the `Tracer` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is plotted.
+
         Parameters
-        -----------
-        tracer : autolens.imaging.tracer.Imaging
-            Class containing the _tracer, noise_mappers and PSF that are to be plotted.
-            The font size of the figure ylabel.
-        output_path : str
-            The path where the _tracer is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the _tracer is output. File formats (e.g. png, fits) output the _tracer to harddisk. 'show' displays the _tracer \
-            in the python interpreter window.
+        ----------
+        image
+            Whether or not to make a 2D plot (via `imshow`) of the image of tracer in its image-plane (e.g. after
+            lensing).
+        source_plane
+            Whether or not to make a 2D plot (via `imshow`) of the image of the tracer in the source-plane (e.g. its
+            unlensed light).
+        convergence
+            Whether or not to make a 2D plot (via `imshow`) of the convergence.
+        potential
+            Whether or not to make a 2D plot (via `imshow`) of the potential.
+        deflections_y
+            Whether or not to make a 2D plot (via `imshow`) of the y component of the deflection angles.
+        deflections_x
+            Whether or not to make a 2D plot (via `imshow`) of the x component of the deflection angles.
+        magnification
+            Whether or not to make a 2D plot (via `imshow`) of the magnification.
+        contribution_map
+            Whether or not to make a 2D plot (via `imshow`) of the contribution map.
         """
 
         if image:
@@ -123,8 +175,21 @@ class TracerPlotter(Plotter):
                 ),
             )
 
-    def plane_indexes_from(self, plane_index: int) -> List[int]:
+    def plane_indexes_from(self, plane_index: Optional[int]) -> List[int]:
+        """
+        Returns a list of all indexes of the planes in the fit, which is iterated over in figures that plot
+        individual figures of each plane in a tracer.
 
+        Parameters
+        ----------
+        plane_index
+            A specific plane index which when input means that only a single plane index is returned.
+
+        Returns
+        -------
+        list
+            A list of galaxy indexes corresponding to planes in the plane.
+        """
         if plane_index is None:
             return list(range(len(self.tracer.planes)))
         return [plane_index]
@@ -135,7 +200,24 @@ class TracerPlotter(Plotter):
         plane_grid: bool = False,
         plane_index: Optional[int] = None,
     ):
+        """
+        Plots source-plane images (e.g. the unlensed light) each individual `Plane` in the plotter's `Tracer` in 2D, 
+        which are computed via the plotter's 2D grid object.
 
+        The API is such that every plottable attribute of the `Plane` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is plotted.
+
+        Parameters
+        ----------
+        plane_image
+            Whether or not to make a 2D plot (via `imshow`) of the image of the plane in the soure-plane (e.g. its
+            unlensed light).
+        plane_grid
+            Whether or not to make a 2D plot (via `scatter`) of the lensed (y,x) coordinates of the plane in the 
+            source-plane.
+        plane_index
+            If input, plots for only a single plane based on its index in the tracer are created.
+        """
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
@@ -170,20 +252,35 @@ class TracerPlotter(Plotter):
         contribution_map: bool = False,
         auto_filename: str = "subplot_tracer",
     ):
-        """Plot the observed _tracer of an analysis, using the `Imaging` class object.
+        """
+        Plots the individual attributes of the plotter's `Tracer` object in 2D on a subplot, which are computed via 
+        the plotter's 2D grid object.
 
-        The visualization and output type can be fully customized.
+        The API is such that every plottable attribute of the `Tracer` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is included on the subplot.
 
         Parameters
-        -----------
-        tracer : autolens.imaging.tracer.Imaging
-            Class containing the _tracer,  noise_mappers and PSF that are to be plotted.
-            The font size of the figure ylabel.
-        output_path : str
-            The path where the _tracer is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the _tracer is output. File formats (e.g. png, fits) output the _tracer to harddisk. 'show' displays the _tracer \
-            in the python interpreter window.
+        ----------
+        image
+            Whether or not to include a 2D plot (via `imshow`) of the image of tracer in its image-plane (e.g. after
+            lensing).
+        source_plane
+            Whether or not to include a 2D plot (via `imshow`) of the image of the tracer in the source-plane (e.g. its
+            unlensed light).
+        convergence
+            Whether or not to include a 2D plot (via `imshow`) of the convergence.
+        potential
+            Whether or not to include a 2D plot (via `imshow`) of the potential.
+        deflections_y
+            Whether or not to include a 2D plot (via `imshow`) of the y component of the deflection angles.
+        deflections_x
+            Whether or not to include a 2D plot (via `imshow`) of the x component of the deflection angles.
+        magnification
+            Whether or not to include a 2D plot (via `imshow`) of the magnification.
+        contribution_map
+            Whether or not to include a 2D plot (via `imshow`) of the contribution map.
+        auto_filename
+            The default filename of the output subplot if written to hard-disk.
         """
 
         self._subplot_custom_plot(
@@ -199,6 +296,9 @@ class TracerPlotter(Plotter):
         )
 
     def subplot_tracer(self):
+        """
+        Standard subplot of the attributes of the plotter's `Tracer` object.
+        """
         return self.subplot(
             image=True,
             source_plane=True,
@@ -209,7 +309,13 @@ class TracerPlotter(Plotter):
         )
 
     def subplot_plane_images(self):
+        """
+        Subplot of the image of every plane in its own plane.
 
+        For example, for a 2 plane `Tracer`, this creates a subplot with 2 panels, one for the image-plane image
+        and one for the source-plane (e.g. unlensed) image. If there are 3 planes, 3 panels are created, showing
+        images at each plane.
+        """
         number_subplots = 2 * self.tracer.total_planes - 1
 
         self.open_subplot_figure(number_subplots=number_subplots)

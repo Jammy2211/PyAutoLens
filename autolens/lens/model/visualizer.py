@@ -208,7 +208,7 @@ class Visualizer(AgVisualizer):
         if hasattr(tracer, "contribution_maps_of_galaxies"):
             if should_plot("contribution_maps_of_galaxies"):
                 hyper_plotter.subplot_contribution_maps_of_galaxies(
-                    contribution_maps_of_galaxies=tracer.contribution_maps_of_galaxies
+                    contribution_maps_of_galaxies_list=tracer.contribution_maps_of_galaxies
                 )
 
     def visualize_stochastic_histogram(
