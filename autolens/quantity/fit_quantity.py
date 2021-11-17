@@ -1,10 +1,11 @@
 import autoarray as aa
+import autogalaxy as ag
 
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autolens.lens.ray_tracing import Tracer
 
 
-class FitQuantity(aa.FitDataset):
+class FitQuantity(ag.FitQuantity):
     def __init__(self, dataset: DatasetQuantity, tracer: Tracer, func_str: str):
         """
         Fits a `DatasetQuantity` object with model data.
@@ -32,31 +33,8 @@ class FitQuantity(aa.FitDataset):
             the dataset.          
         """
 
-        self.tracer = tracer
-        self.quantity_str = func_str
-
-        func = getattr(tracer, func_str)
-
-        model_data = func(grid=dataset.grid)
-
-        fit = aa.FitData(
-            data=dataset.data,
-            noise_map=dataset.noise_map,
-            model_data=model_data.binned,
-            mask=dataset.mask,
-            use_mask_in_fit=False,
-        )
-
-        super().__init__(dataset=dataset, fit=fit)
+        super().__init__(dataset=dataset, light_mass_obj=tracer, func_str=func_str)
 
     @property
-    def quantity_dataset(self):
-        return self.dataset
-
-    @property
-    def mask(self):
-        return self.fit.mask
-
-    @property
-    def grid(self):
-        return self.quantity_dataset.grid
+    def tracer(self):
+        return self.light_mass_obj
