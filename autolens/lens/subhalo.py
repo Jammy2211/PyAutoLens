@@ -67,7 +67,7 @@ class SubhaloResult:
 
         else:
 
-            values_native = self.stochastic_log_likelihoods_native
+            values_native = self.stochastic_log_evidences_native
             values_native[values_native == None] = np.nan
 
             if relative_to_no_subhalo:
@@ -81,7 +81,7 @@ class SubhaloResult:
         return self._subhalo_array_from(values_native=self.masses_native)
 
     @property
-    def stochastic_log_likelihoods_native(self) -> List[float]:
+    def stochastic_log_evidences_native(self) -> List[float]:
 
         return self.grid_search_result._list_to_native(
             lst=self.stochastic_log_likelihoods
