@@ -27,10 +27,10 @@ logger.setLevel(level="INFO")
 
 
 class AnalysisLensing:
-    def __init__(self, settings_lens=SettingsLens(), cosmology=cosmo.Planck15):
+    def __init__(self, settings_lens, cosmology=cosmo.Planck15):
 
         self.cosmology = cosmology
-        self.settings_lens = settings_lens
+        self.settings_lens = settings_lens or SettingsLens()
 
     def tracer_for_instance(self, instance, profiling_dict: Optional[Dict] = None):
 
@@ -51,9 +51,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         positions: aa.Grid2DIrregular = None,
         hyper_dataset_result=None,
         cosmology=cosmo.Planck15,
-        settings_pixelization=aa.SettingsPixelization(),
-        settings_inversion=aa.SettingsInversion(),
-        settings_lens=SettingsLens(),
+        settings_pixelization:aa.SettingsPixelization=None,
+        settings_inversion:aa.SettingsInversion=None,
+        settings_lens:SettingsLens=None,
     ):
         """
 
@@ -85,16 +85,13 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         self.positions = positions
 
-        self.settings_lens = settings_lens
+        self.settings_lens = settings_lens or SettingsLens()
 
         self.preloads = Preloads()
 
     def set_preloads(self, paths: af.DirectoryPaths, model: af.Collection):
 
-        try:
-            os.makedirs(paths.profile_path)
-        except FileExistsError:
-            pass
+        os.makedirs(paths.profile_path, exist_ok=True)
 
         fit_maker = FitMaker(model=model, fit_func=self.fit_func)
 

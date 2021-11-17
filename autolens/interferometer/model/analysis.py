@@ -28,9 +28,9 @@ class AnalysisInterferometer(AnalysisDataset):
         positions: aa.Grid2DIrregular = None,
         hyper_dataset_result=None,
         cosmology=cosmo.Planck15,
-        settings_pixelization=aa.SettingsPixelization(),
-        settings_inversion=aa.SettingsInversion(),
-        settings_lens=SettingsLens(),
+        settings_pixelization:aa.SettingsPixelization=None,
+        settings_inversion:aa.SettingsInversion=None,
+        settings_lens:SettingsLens=None,
     ):
 
         super().__init__(
