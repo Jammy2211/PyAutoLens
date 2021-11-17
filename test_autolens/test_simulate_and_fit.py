@@ -79,7 +79,7 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_imaging, tracer=tracer)
 
     assert fit.chi_squared == 0.0
 
@@ -153,7 +153,7 @@ def test__simulate_imaging_data_and_fit__include_psf_blurring__chi_squared_is_0_
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_imaging, tracer=tracer)
 
     assert fit.chi_squared == pytest.approx(0.0, 1e-4)
 
@@ -202,7 +202,7 @@ def test__simulate_imaging_data_and_fit__known_likelihood():
 
     masked_imaging = imaging.apply_mask(mask=mask)
 
-    fit = al.FitImaging(imaging=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_imaging, tracer=tracer)
 
     assert fit.figure_of_merit == pytest.approx(609.0653285500165, 1.0e-2)
 
@@ -270,7 +270,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitInterferometer(
-        interferometer=interferometer,
+        dataset=interferometer,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(use_border=False),
     )
@@ -292,7 +292,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitInterferometer(
-        interferometer=interferometer,
+        dataset=interferometer,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(use_border=False),
     )
@@ -346,6 +346,6 @@ def test__simulate_interferometer_data_and_fit__known_likelihood():
         settings=al.SettingsInterferometer(transformer_class=al.TransformerDFT)
     )
 
-    fit = al.FitInterferometer(interferometer=interferometer, tracer=tracer)
+    fit = al.FitInterferometer(dataset=interferometer, tracer=tracer)
 
     assert fit.figure_of_merit == pytest.approx(-5.433894158056919, 1.0e-2)

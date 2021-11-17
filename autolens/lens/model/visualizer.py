@@ -1,13 +1,17 @@
-from scipy.stats import norm
 import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import norm
 from os import path
 import os
 
 from autoconf import conf
+
+import autoarray as aa
 import autogalaxy.plot as aplt
 
 from autogalaxy.analysis.visualizer import Visualizer as AgVisualizer
 
+from autolens.lens.ray_tracing import Tracer
 from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
 
 
@@ -20,7 +24,47 @@ def plot_setting(section, name):
 
 
 class Visualizer(AgVisualizer):
-    def visualize_tracer(self, tracer, grid, during_analysis):
+    """
+    Visualizes the maximum log likelihood model of a model-fit, including components of the model and fit objects.
+
+    The methods of the `Visualizer` are called throughout a non-linear search using the `Analysis`
+    classes `visualize` method.
+
+    The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini`.
+
+    Parameters
+    ----------
+    visualize_path
+        The path on the hard-disk to the `image` folder of the non-linear searches results.
+    """
+
+    def visualize_tracer(
+        self, tracer: Tracer, grid: aa.type.Grid2DLike, during_analysis: bool
+    ):
+        """
+        Visualizes a `Tracer` object.
+
+        Images are output to the `image` folder of the `visualize_path` in a subfolder called `ray_tracing`. When
+        used with a non-linear search the `visualize_path` points to the search's results folder and this function
+        visualizes the maximum log likelihood `Tracer` inferred by the search so far.
+
+        Visualization includes individual images of attributes of the tracer (e.g. its image, convergence, deflection
+        angles) and a subplot of all these attributes on the same figure.
+
+        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        [ray_tracing] header.
+
+        Parameters
+        ----------
+        tracer
+            The maximum log likelihood `Tracer` of the non-linear search.
+        grid
+            A 2D grid of (y,x) arc-second coordinates used to perform ray-tracing, which is the masked grid tied to
+            the dataset.
+        during_analysis
+            Whether visualization is performed during a non-linear search or once it is completed.
+        """
+
         def should_plot(name):
             return plot_setting(section="ray_tracing", name=name)
 
@@ -88,7 +132,31 @@ class Visualizer(AgVisualizer):
                     magnification=True,
                 )
 
-    def visualize_hyper_images(self, hyper_galaxy_image_path_dict, hyper_model_image):
+    def visualize_hyper_images(
+        self,
+        hyper_galaxy_image_path_dict: {str, aa.Array2D},
+        hyper_model_image: aa.Array2D,
+    ):
+        """
+        Visualizes the hyper-images and hyper dataset inferred by a model-fit.
+
+        Images are output to the `image` folder of the `visualize_path` in a subfolder called `hyper`. When
+        used with a non-linear search the `visualize_path` points to the search's results folder.
+
+        Visualization includes individual images of attributes of the hyper dataset (e.g. the hyper model image) and
+        a subplot of all hyper galaxy images on the same figure.
+
+        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        [hyper] header.
+
+        Parameters
+        ----------
+        hyper_galaxy_image_path_dict
+            A dictionary mapping the path to each galaxy (e.g. its name) to its corresponding hyper galaxy image.
+        hyper_model_image
+            The hyper model image which corresponds to the sum of hyper galaxy images.
+        """
+
         def should_plot(name):
             return plot_setting(section="hyper", name=name)
 
@@ -107,7 +175,27 @@ class Visualizer(AgVisualizer):
                 hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict
             )
 
-    def visualize_contribution_maps(self, tracer):
+    def visualize_contribution_maps(self, tracer: Tracer):
+        """
+        Visualizes the contribution maps that are used for hyper features which adapt a model to the dataset it is
+        fitting.
+
+        Images are output to the `image` folder of the `visualize_path` in a subfolder called `hyper`. When
+        used with a non-linear search the `visualize_path` points to the search's results folder and this function
+        visualizes the maximum log likelihood contribution maps inferred by the search so far.
+
+        Visualization includes individual images of attributes of the hyper dataset (e.g. the contribution map of
+        each galaxy) and a subplot of all contribution maps on the same figure.
+
+        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        [hyper] header.
+
+        Parameters
+        ----------
+        tracer
+            The maximum log likelihood `Tracer` of the non-linear search which is used to plot the contribution maps.
+        """
+
         def should_plot(name):
             return plot_setting(section="hyper", name=name)
 
@@ -120,14 +208,46 @@ class Visualizer(AgVisualizer):
         if hasattr(tracer, "contribution_maps_of_galaxies"):
             if should_plot("contribution_maps_of_galaxies"):
                 hyper_plotter.subplot_contribution_maps_of_galaxies(
-                    contribution_maps_of_galaxies=tracer.contribution_maps_of_galaxies
+                    contribution_maps_of_galaxies_list=tracer.contribution_maps_of_galaxies
                 )
 
     def visualize_stochastic_histogram(
-        self, log_evidences, max_log_evidence, histogram_bins=10
+        self,
+        stochastic_log_likelihoods: np.ndarray,
+        max_log_evidence: float,
+        histogram_bins: int = 10,
     ):
+        """
+        Certain `Inversion`'s have stochasticity in their log likelihood estimate.
 
-        if log_evidences is None:
+        For example, the `VoronoiBrightnessImage` pixelization, which changes the likelihood depending on how different
+        KMeans seeds change the pixel-grid.
+
+        A log likelihood cap can be applied to model-fits performed using these `Inversion`'s to improve error and
+        posterior estimates. This log likelihood cap is estimated from a list of stochastic log likelihoods, where
+        these log likelihoods are computed using the same model but with different KMeans seeds.
+
+        This function plots a histogram representing the distribution of these stochastic log likelihoods with a 1D
+        Gaussian fit to the likelihoods overlaid. This figure can be used to determine how subject the fit to this
+        dataset is to the stochastic likelihood effect.
+
+        Parameters
+        ----------
+        stochastic_log_likelihoods
+            The stochastic log likelihood which are used to plot the histogram and Gaussian.
+        max_log_evidence
+            The maximum log likelihood value of the non-linear search, which will likely be much larger than any of the
+            stochastic log likelihoods as it will be boosted high relative to most samples.
+        histogram_bins
+            The number of bins in the histogram used to visualize the distribution of stochastic log likelihoods.
+
+        Returns
+        -------
+        float
+            A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
+            estimates.
+        """
+        if stochastic_log_likelihoods is None:
             return
 
         if plot_setting("other", "stochastic_histogram"):
@@ -147,8 +267,10 @@ class Visualizer(AgVisualizer):
                 except Exception:
                     pass
 
-            (mu, sigma) = norm.fit(log_evidences)
-            n, bins, patches = plt.hist(x=log_evidences, bins=histogram_bins, density=1)
+            (mu, sigma) = norm.fit(stochastic_log_likelihoods)
+            n, bins, patches = plt.hist(
+                x=stochastic_log_likelihoods, bins=histogram_bins, density=1
+            )
             y = norm.pdf(bins, mu, sigma)
             plt.plot(bins, y, "--")
             plt.xlabel("log evidence")

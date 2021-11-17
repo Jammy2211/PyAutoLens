@@ -10,7 +10,7 @@ from autolens.lens.model.preloads import Preloads
 class FitInterferometer(aa.FitInterferometer):
     def __init__(
         self,
-        interferometer,
+        dataset,
         tracer,
         hyper_background_noise=None,
         use_hyper_scaling=True,
@@ -44,23 +44,23 @@ class FitInterferometer(aa.FitInterferometer):
 
             if hyper_background_noise is not None:
                 noise_map = hyper_background_noise.hyper_noise_map_complex_from(
-                    noise_map=interferometer.noise_map
+                    noise_map=dataset.noise_map
                 )
             else:
-                noise_map = interferometer.noise_map
+                noise_map = dataset.noise_map
 
         else:
 
-            noise_map = interferometer.noise_map
+            noise_map = dataset.noise_map
 
         self.tracer = tracer
 
         self.profile_visibilities = tracer.profile_visibilities_via_transformer_from(
-            grid=interferometer.grid, transformer=interferometer.transformer
+            grid=dataset.grid, transformer=dataset.transformer
         )
 
         self.profile_subtracted_visibilities = (
-            interferometer.visibilities - self.profile_visibilities
+            dataset.visibilities - self.profile_visibilities
         )
 
         if not tracer.has_pixelization:
@@ -71,10 +71,10 @@ class FitInterferometer(aa.FitInterferometer):
         else:
 
             inversion = tracer.inversion_interferometer_from(
-                grid=interferometer.grid_inversion,
+                grid=dataset.grid_inversion,
                 visibilities=self.profile_subtracted_visibilities,
                 noise_map=noise_map,
-                transformer=interferometer.transformer,
+                transformer=dataset.transformer,
                 settings_pixelization=settings_pixelization,
                 settings_inversion=settings_inversion,
                 preloads=preloads,
@@ -85,7 +85,7 @@ class FitInterferometer(aa.FitInterferometer):
             )
 
         fit = aa.FitDataComplex(
-            data=interferometer.visibilities,
+            data=dataset.visibilities,
             noise_map=noise_map,
             model_data=model_visibilities,
             inversion=inversion,
@@ -93,9 +93,7 @@ class FitInterferometer(aa.FitInterferometer):
             profiling_dict=profiling_dict,
         )
 
-        super().__init__(
-            interferometer=interferometer, fit=fit, profiling_dict=profiling_dict
-        )
+        super().__init__(dataset=dataset, fit=fit, profiling_dict=profiling_dict)
 
     @property
     def grid(self):
@@ -177,7 +175,7 @@ class FitInterferometer(aa.FitInterferometer):
             settings_inversion = self.settings_inversion
 
         return FitInterferometer(
-            interferometer=self.interferometer,
+            dataset=self.interferometer,
             tracer=self.tracer,
             hyper_background_noise=self.hyper_background_noise,
             use_hyper_scaling=self.use_hyper_scaling,

@@ -40,10 +40,9 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autogalaxy import util
 
-# from autogalaxy.quantity.fit_quantity import FitQuantity
 from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
 
-# from autogalaxy.quantity.dataset_quantity import DatasetQuantity
+from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy.hyper import hyper_data
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles import (
@@ -55,6 +54,7 @@ from autogalaxy.profiles import (
 )
 from autogalaxy.profiles.light_profiles import light_profiles_init as lp_init
 from autogalaxy.profiles.light_profiles import light_profiles_snr as lp_snr
+from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy import convert
 
 from . import plot
@@ -82,6 +82,8 @@ from .point.fit_point import (
 )
 from .point.model.analysis import AnalysisPoint
 from .point.point_solver import PointSolver
+from .quantity.fit_quantity import FitQuantity
+from .quantity.model.analysis import AnalysisQuantity
 
 
 from autoconf import conf

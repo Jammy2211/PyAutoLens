@@ -15,7 +15,7 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
         assert fit.total_mappers == 0
 
@@ -27,7 +27,7 @@ class TestFitProperties:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
         assert fit.total_mappers == 1
 
@@ -70,7 +70,7 @@ class TestLikelihood:
         )
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.FitInterferometer(interferometer=interferometer, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer, tracer=tracer)
 
         assert (fit.visibilities.slim == np.array([5.0 + 4.0j])).all()
         assert (fit.noise_map.slim == np.array([1.0 + 1.0j])).all()
@@ -127,7 +127,7 @@ class TestLikelihood:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.FitInterferometer(interferometer=interferometer, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer, tracer=tracer)
 
         assert (
             fit.visibilities.slim == np.array([5.0 + 5.0j, 5.0 + 5.0j, 5.0 + 5.0j])
@@ -209,7 +209,7 @@ class TestLikelihood:
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
         fit = al.FitInterferometer(
-            interferometer=interferometer,
+            dataset=interferometer,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
@@ -235,7 +235,7 @@ class TestCompareToManualProfilesOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
         assert interferometer_7.noise_map == pytest.approx(fit.noise_map)
 
@@ -293,7 +293,7 @@ class TestCompareToManualProfilesOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitInterferometer(interferometer=interferometer_7_grid, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
         traced_grids_of_planes = tracer.traced_grids_of_planes_from(
             grid=interferometer_7_grid.grid
@@ -319,7 +319,7 @@ class TestCompareToManualProfilesOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitInterferometer(interferometer=interferometer_7_grid, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
         traced_grids_of_planes = tracer.traced_grids_of_planes_from(
             grid=interferometer_7_grid.grid
@@ -370,7 +370,7 @@ class TestCompareToManualProfilesOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.FitInterferometer(
-            interferometer=interferometer_7,
+            dataset=interferometer_7,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
@@ -378,7 +378,7 @@ class TestCompareToManualProfilesOnly:
         assert hyper_noise_map.slim == pytest.approx(fit.noise_map.slim)
 
         fit = al.FitInterferometer(
-            interferometer=interferometer_7,
+            dataset=interferometer_7,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
             use_hyper_scaling=False,
@@ -401,7 +401,7 @@ class TestCompareToManualInversionOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-        fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
         mapper = pix.mapper_from(grid=interferometer_7.grid_inversion, sparse_grid=None)
 
@@ -489,7 +489,7 @@ class TestCompareToManualInversionOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
         mapper = pix.mapper_from(grid=interferometer_7.grid, sparse_grid=None)
 
@@ -514,7 +514,7 @@ class TestCompareToManualInversionOnly:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-        fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
         mapper = pix.mapper_from(grid=interferometer_7.grid, sparse_grid=None)
 
@@ -550,7 +550,7 @@ class TestCompareToManualInversionOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.FitInterferometer(
-            interferometer=interferometer_7,
+            dataset=interferometer_7,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
@@ -577,12 +577,12 @@ class TestCompareToManualInversionOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit_0 = al.FitInterferometer(
-            interferometer=interferometer_7,
+            dataset=interferometer_7,
             tracer=tracer,
             settings_pixelization=al.SettingsPixelization(is_stochastic=False),
         )
         fit_1 = al.FitInterferometer(
-            interferometer=interferometer_7,
+            dataset=interferometer_7,
             tracer=tracer,
             settings_pixelization=al.SettingsPixelization(is_stochastic=False),
         )
@@ -590,12 +590,12 @@ class TestCompareToManualInversionOnly:
         assert fit_0.log_evidence == fit_1.log_evidence
 
         fit_0 = al.FitInterferometer(
-            interferometer=interferometer_7,
+            dataset=interferometer_7,
             tracer=tracer,
             settings_pixelization=al.SettingsPixelization(is_stochastic=True),
         )
         fit_1 = al.FitInterferometer(
-            interferometer=interferometer_7,
+            dataset=interferometer_7,
             tracer=tracer,
             settings_pixelization=al.SettingsPixelization(is_stochastic=True),
         )
@@ -615,7 +615,7 @@ class TestCompareToManualInversionOnly:
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.FitInterferometer(
-            interferometer=interferometer_7_lop,
+            dataset=interferometer_7_lop,
             tracer=tracer,
             settings_inversion=al.SettingsInversion(use_linear_operators=True),
         )
@@ -713,7 +713,7 @@ class TestCompareToManualProfilesAndInversion:
 
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-        fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
         profile_visibilities = tracer.profile_visibilities_via_transformer_from(
             grid=interferometer_7.grid, transformer=interferometer_7.transformer
@@ -825,7 +825,7 @@ class TestCompareToManualProfilesAndInversion:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
-        fit = al.FitInterferometer(interferometer=interferometer_7_grid, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
         traced_grids = tracer.traced_grids_of_planes_from(
             grid=interferometer_7_grid.grid
@@ -888,7 +888,7 @@ class TestCompareToManualProfilesAndInversion:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
-        fit = al.FitInterferometer(interferometer=interferometer_7_grid, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
         traced_grids = tracer.traced_grids_of_planes_from(
             grid=interferometer_7_grid.grid
@@ -961,7 +961,7 @@ class TestCompareToManualProfilesAndInversion:
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
         fit = al.FitInterferometer(
-            interferometer=interferometer_7,
+            dataset=interferometer_7,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )

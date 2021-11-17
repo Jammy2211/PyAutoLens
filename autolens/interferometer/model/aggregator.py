@@ -66,7 +66,7 @@ def _fit_interferometer_from(
             )
 
     return FitInterferometer(
-        interferometer=interferometer,
+        dataset=interferometer,
         tracer=tracer,
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,

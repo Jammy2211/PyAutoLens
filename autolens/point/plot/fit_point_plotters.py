@@ -27,63 +27,17 @@ class FitPointDatasetPlotter(AbstractPlotter):
 
         self.fit = fit
 
-    @property
-    def visuals_with_include_1d(self) -> aplt.Visuals1D:
-        """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
+    def get_visuals_1d(self) -> aplt.Visuals1D:
         return self.visuals_1d
 
-    @property
-    def visuals_with_include_2d(self) -> aplt.Visuals2D:
-        """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
+    def get_visuals_2d(self) -> aplt.Visuals2D:
         return self.visuals_2d
 
     def figures_2d(self, positions: bool = False, fluxes: bool = False):
 
         if positions:
 
-            visuals_2d = self.visuals_with_include_2d
+            visuals_2d = self.get_visuals_2d()
 
             visuals_2d += visuals_2d.__class__(
                 positions=self.fit.positions.model_positions
@@ -117,7 +71,7 @@ class FitPointDatasetPlotter(AbstractPlotter):
 
             if self.fit.point_dataset.fluxes is not None:
 
-                visuals_1d = self.visuals_with_include_1d
+                visuals_1d = self.get_visuals_1d()
 
                 visuals_1d += visuals_1d.__class__(
                     model_fluxes=self.fit.flux.model_fluxes

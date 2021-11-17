@@ -1,16 +1,16 @@
 import numpy as np
 from typing import Optional
 
-import autogalaxy as ag
 import autogalaxy.plot as aplt
 
-from autoarray.fit.plot.fit_imaging_plotters import AbstractFitImagingPlotter
+from autoarray.fit.plot.fit_imaging_plotters import FitImagingPlotterMeta
 
+from autolens.plot.abstract_plotters import Plotter
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
 
 
-class FitImagingPlotter(AbstractFitImagingPlotter):
+class FitImagingPlotter(Plotter):
     def __init__(
         self,
         fit: FitImaging,
@@ -18,61 +18,49 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
     ):
-
-        super().__init__(
-            fit=fit,
-            mat_plot_2d=mat_plot_2d,
-            include_2d=include_2d,
-            visuals_2d=visuals_2d,
-        )
-
-    @property
-    def visuals_with_include_2d(self) -> aplt.Visuals2D:
         """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
+        Plots the attributes of `FitImaging` objects using the matplotlib method `imshow()` and many other matplotlib
+        functions which customize the plot's appearance.
 
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
+        The `mat_plot_2d` attribute wraps matplotlib function calls to make the figure. By default, the settings
+        passed to every matplotlib function called are those specified in the `config/visualize/mat_wrap/*.ini` files,
+        but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
+        Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
+        the `FitImaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
+        object or the `config/visualize/include.ini` file.
 
         Parameters
         ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
+        fit
+            The fit to an imaging dataset the plotter plots.
+        mat_plot_2d
+            Contains objects which wrap the matplotlib function calls that make the plot.
+        visuals_2d
+            Contains visuals that can be overlaid on the plot.
+        include_2d
+            Specifies which attributes of the `Array2D` are extracted and plotted as visuals.
         """
-
-        visuals_2d = super().visuals_with_include_2d
-
-        #      visuals_2d.mask = None
-
-        return visuals_2d + visuals_2d.__class__(
-            light_profile_centres=self.extract_2d(
-                "light_profile_centres",
-                self.tracer.planes[0].extract_attribute(
-                    cls=ag.lp.LightProfile, attr_name="centre"
-                ),
-            ),
-            mass_profile_centres=self.extract_2d(
-                "mass_profile_centres",
-                self.tracer.planes[0].extract_attribute(
-                    cls=ag.mp.MassProfile, attr_name="centre"
-                ),
-            ),
-            critical_curves=self.extract_2d(
-                "critical_curves",
-                self.tracer.critical_curves_from(grid=self.fit.grid),
-                "critical_curves",
-            ),
+        super().__init__(
+            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
+
+        self.fit = fit
+
+        self._fit_imaging_meta_plotter = FitImagingPlotterMeta(
+            fit=self.fit,
+            get_visuals_2d=self.get_visuals_2d,
+            mat_plot_2d=self.mat_plot_2d,
+            include_2d=self.include_2d,
+            visuals_2d=self.visuals_2d,
+        )
+
+        self.figures_2d = self._fit_imaging_meta_plotter.figures_2d
+        self.subplot = self._fit_imaging_meta_plotter.subplot
+        self.subplot_fit_imaging = self._fit_imaging_meta_plotter.subplot_fit_imaging
+
+    def get_visuals_2d(self) -> aplt.Visuals2D:
+        return self.get_2d.via_fit_imaging_from(fit=self.fit)
 
     @property
     def tracer(self):
@@ -80,6 +68,9 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
 
     @property
     def tracer_plotter(self) -> TracerPlotter:
+        """
+        Returns an `TracerPlotter` corresponding to the `Tracer` in the `FitImaging`.
+        """
         return TracerPlotter(
             tracer=self.tracer,
             grid=self.fit.grid,
@@ -89,11 +80,24 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
         )
 
     def inversion_plotter_of_plane(self, plane_index: int) -> aplt.InversionPlotter:
+        """
+        Returns an `InversionPlotter` corresponding to one of the `Inversion`'s in the fit, which is specified via
+        the index of the `Plane` that inversion was performed on.
 
+        Parameters
+        ----------
+        plane_index
+            The index of the inversion in the inversion which is used to create the `InversionPlotter`.
+
+        Returns
+        -------
+        InversionPlotter
+            An object that plots inversions which is used for plotting attributes of the inversion.
+        """
         inversion_plotter = aplt.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.tracer_plotter.visuals_with_include_2d_of_plane(
+            visuals_2d=self.tracer_plotter.get_visuals_2d_of_plane(
                 plane_index=plane_index
             ),
             include_2d=self.include_2d,
@@ -101,47 +105,24 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
         inversion_plotter.visuals_2d.border = None
         return inversion_plotter
 
-    def figures_2d(
-        self,
-        image: bool = False,
-        noise_map: bool = False,
-        signal_to_noise_map: bool = False,
-        model_image: bool = False,
-        residual_map: bool = False,
-        normalized_residual_map: bool = False,
-        chi_squared_map: bool = False,
-    ):
-        """Plot the model data of an analysis, using the *Fitter* class object.
-
-        The visualization and output type can be fully customized.
+    def plane_indexes_from(self, plane_index: int):
+        """
+        Returns a list of all indexes of the planes in the fit, which is iterated over in figures that plot
+        individual figures of each plane in a tracer.
 
         Parameters
-        -----------
-        fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
-        output_path : str
-            The path where the data is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data \
-            in the python interpreter window.
+        ----------
+        plane_index
+            A specific plane index which when input means that only a single plane index is returned.
+
+        Returns
+        -------
+        list
+            A list of galaxy indexes corresponding to planes in the plane.
         """
-
-        super().figures_2d(
-            image=image,
-            noise_map=noise_map,
-            signal_to_noise_map=signal_to_noise_map,
-            model_image=model_image,
-            residual_map=residual_map,
-            normalized_residual_map=normalized_residual_map,
-            chi_squared_map=chi_squared_map,
-        )
-
-    def plane_indexes_from(self, plane_index: int):
-
         if plane_index is None:
             return range(len(self.fit.tracer.planes))
-        else:
-            return [plane_index]
+        return [plane_index]
 
     def figures_2d_of_planes(
         self,
@@ -150,19 +131,31 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
         model_image: bool = False,
         plane_image: bool = False,
     ):
-        """Plot the model data of an analysis, using the *Fitter* class object.
+        """
+        Plots images representing each individual `Plane` in the fit's `Tracer` in 2D, which are computed via the
+        plotter's 2D grid object.
 
-        The visualization and output type can be fully customized.
+        These images subtract or omit the contribution of other planes in the plane, such that plots showing
+        each individual plane are made.
+
+        The API is such that every plottable attribute of the `Plane` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is plotted.
 
         Parameters
-        -----------
-        fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
-        output_path : str
-            The path where the data is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data \
-            in the python interpreter window.
+        ----------
+        plane_index
+            The index of the plane which figures are plotted for.
+        subtracted_image
+            Whether or not to make a 2D plot (via `imshow`) of the subtracted image of a plane, where this image is
+            the fit's `data` minus the model images of all other planes, thereby showing an individual plane in the
+            data.
+        model_image
+            Whether or not to make a 2D plot (via `imshow`) of the model image of a plane, where this image is the
+            model image of one plane, thereby showing how much it contributes to the overall model image.
+        plane_image
+            Whether or not to make a 2D plot (via `imshow`) of the image of a plane in its source-plane (e.g. unlensed).
+            Depending on how the fit is performed, this could either be an image of light profiles of the reconstruction
+            of an `Inversion`.
         """
 
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
@@ -187,7 +180,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
 
                 self.mat_plot_2d.plot_array(
                     array=self.fit.subtracted_images_of_planes[plane_index],
-                    visuals_2d=self.visuals_with_include_2d,
+                    visuals_2d=self.get_visuals_2d(),
                     auto_labels=aplt.AutoLabels(
                         title=f"Subtracted Image of Plane {plane_index}",
                         filename=f"subtracted_image_of_plane_{plane_index}",
@@ -206,7 +199,7 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
 
                     self.mat_plot_2d.plot_array(
                         array=self.fit.model_images_of_planes[plane_index],
-                        visuals_2d=self.visuals_with_include_2d,
+                        visuals_2d=self.get_visuals_2d(),
                         auto_labels=aplt.AutoLabels(
                             title=f"Model Image of Plane {plane_index}",
                             filename=f"model_image_of_plane_{plane_index}",
@@ -234,21 +227,20 @@ class FitImagingPlotter(AbstractFitImagingPlotter):
                     )
 
     def subplot_of_planes(self, plane_index: Optional[int] = None):
-        """Plot the model data of an analysis, using the *Fitter* class object.
+        """
+        Plots images representing each individual `Plane` in the plotter's `Tracer` in 2D on a subplot, which are
+        computed via the plotter's 2D grid object.
 
-        The visualization and output type can be fully customized.
+        These images subtract or omit the contribution of other planes in the plane, such that plots showing
+        each individual plane are made.
+
+        The subplot plots the subtracted image, model image and plane image of each plane, where are described in the
+        `figures_2d_of_planes` function.
 
         Parameters
-        -----------
-        fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
-        output_path : str
-            The path where the data is output if the output_type is a file format (e.g. png, fits)
-        output_filename : str
-            The name of the file that is output, if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data \
-            in the python interpreter window.
+        ----------
+        plane_index
+            The index of the plane whose images are included on the subplot.
         """
 
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)

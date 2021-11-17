@@ -1,12 +1,11 @@
-from autoarray.plot.abstract_plotters import AbstractPlotter
-
 import autogalaxy.plot as aplt
 
 from autolens.point.point_dataset import PointDataset
 from autolens.point.point_dataset import PointDict
+from autolens.plot.abstract_plotters import Plotter
 
 
-class PointDictPlotter(AbstractPlotter):
+class PointDictPlotter(Plotter):
     def __init__(
         self,
         point_dict: PointDict,
@@ -28,56 +27,10 @@ class PointDictPlotter(AbstractPlotter):
 
         self.point_dict = point_dict
 
-    @property
-    def visuals_with_include_1d(self) -> aplt.Visuals1D:
-        """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
+    def get_visuals_1d(self) -> aplt.Visuals1D:
         return self.visuals_1d
 
-    @property
-    def visuals_with_include_2d(self) -> aplt.Visuals2D:
-        """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
+    def get_visuals_2d(self) -> aplt.Visuals2D:
         return self.visuals_2d
 
     def point_dataset_plotter_from(self, name):
@@ -139,7 +92,7 @@ class PointDictPlotter(AbstractPlotter):
         self.close_subplot_figure()
 
 
-class PointDatasetPlotter(AbstractPlotter):
+class PointDatasetPlotter(Plotter):
     def __init__(
         self,
         point_dataset: PointDataset,
@@ -161,56 +114,10 @@ class PointDatasetPlotter(AbstractPlotter):
 
         self.point_dataset = point_dataset
 
-    @property
-    def visuals_with_include_1d(self) -> aplt.Visuals1D:
-        """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
+    def get_visuals_1d(self) -> aplt.Visuals1D:
         return self.visuals_1d
 
-    @property
-    def visuals_with_include_2d(self) -> aplt.Visuals2D:
-        """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
+    def get_visuals_2d(self) -> aplt.Visuals2D:
         return self.visuals_2d
 
     def figures_2d(self, positions: bool = False, fluxes: bool = False):
@@ -221,7 +128,7 @@ class PointDatasetPlotter(AbstractPlotter):
                 grid=self.point_dataset.positions,
                 y_errors=self.point_dataset.positions_noise_map,
                 x_errors=self.point_dataset.positions_noise_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=aplt.AutoLabels(
                     title=f"{self.point_dataset.name} Positions",
                     filename="point_dataset_positions",
@@ -248,7 +155,7 @@ class PointDatasetPlotter(AbstractPlotter):
                 self.mat_plot_1d.plot_yx(
                     y=self.point_dataset.fluxes,
                     y_errors=self.point_dataset.fluxes_noise_map,
-                    visuals_1d=self.visuals_with_include_1d,
+                    visuals_1d=self.get_visuals_1d(),
                     auto_labels=aplt.AutoLabels(
                         title=f" {self.point_dataset.name} Fluxes",
                         filename="point_dataset_fluxes",

@@ -74,7 +74,7 @@ class TestAnalysisInterferometer:
 
         tracer = analysis.tracer_for_instance(instance=instance)
 
-        fit = al.FitInterferometer(interferometer=interferometer_7, tracer=tracer)
+        fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
         assert fit.log_likelihood == analysis_log_likelihood
 
@@ -98,7 +98,7 @@ class TestAnalysisInterferometer:
         tracer = analysis.tracer_for_instance(instance=instance)
 
         fit = al.FitInterferometer(
-            interferometer=interferometer_7,
+            dataset=interferometer_7,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
         )
@@ -164,7 +164,7 @@ class TestAnalysisInterferometer:
 
         assert (analysis.hyper_model_visibilities == (6.0 + 6.0j) * np.ones((7,))).all()
 
-    def test__stochastic_log_evidences_for_instance(self, interferometer_7):
+    def test__stochastic_log_likelihoods_for_instance(self, interferometer_7):
 
         galaxies = af.ModelInstance()
         galaxies.lens = al.Galaxy(
@@ -203,7 +203,7 @@ class TestAnalysisInterferometer:
             hyper_dataset_result=result,
         )
 
-        log_evidences = analysis.stochastic_log_evidences_for_instance(
+        log_evidences = analysis.stochastic_log_likelihoods_for_instance(
             instance=instance
         )
 

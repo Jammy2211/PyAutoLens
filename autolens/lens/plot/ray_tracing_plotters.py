@@ -4,12 +4,13 @@ import autoarray as aa
 import autogalaxy as ag
 import autogalaxy.plot as aplt
 
-from autogalaxy.plot.lensing_obj_plotter import LensingObjPlotter
+from autogalaxy.plot.mass_plotter import MassPlotter
 
+from autolens.plot.abstract_plotters import Plotter
 from autolens.lens.ray_tracing import Tracer
 
 
-class TracerPlotter(LensingObjPlotter):
+class TracerPlotter(Plotter):
     def __init__(
         self,
         tracer: Tracer,
@@ -21,6 +22,38 @@ class TracerPlotter(LensingObjPlotter):
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
     ):
+        """
+        Plots the attributes of `Tracer` objects using the matplotlib methods `plot()` and `imshow()` and many 
+        other matplotlib functions which customize the plot's appearance.
+
+        The `mat_plot_1d` and `mat_plot_2d` attributes wrap matplotlib function calls to make the figure. By default, 
+        the settings passed to every matplotlib function called are those specified in 
+        the `config/visualize/mat_wrap/*.ini` files, but a user can manually input values into `MatPlot2D` to 
+        customize the figure's appearance.
+
+        Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be 
+        extracted from the `MassProfile` and plotted via the visuals object, if the corresponding entry is `True` in 
+        the `Include1D` or `Include2D` object or the `config/visualize/include.ini` file.
+
+        Parameters
+        ----------
+        tracer
+            The tracer the plotter plots.
+        grid
+            The 2D (y,x) grid of coordinates used to evaluate the tracer's light and mass quantities that are plotted.
+        mat_plot_1d
+            Contains objects which wrap the matplotlib function calls that make 1D plots.
+        visuals_1d
+            Contains 1D visuals that can be overlaid on 1D plots.
+        include_1d
+            Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 1D plots.
+        mat_plot_2d
+            Contains objects which wrap the matplotlib function calls that make 2D plots.
+        visuals_2d
+            Contains 2D visuals that can be overlaid on 2D plots.
+        include_2d
+            Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 2D plots.
+        """
         super().__init__(
             mat_plot_1d=mat_plot_1d,
             visuals_1d=visuals_1d,
@@ -33,108 +66,32 @@ class TracerPlotter(LensingObjPlotter):
         self.tracer = tracer
         self.grid = grid
 
-    @property
-    def lensing_obj(self) -> Tracer:
-        return self.tracer
-
-    @property
-    def visuals_with_include_2d(self) -> aplt.Visuals2D:
-        """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
-        return self.visuals_with_include_2d_of_plane(plane_index=0)
-
-    def visuals_with_include_2d_of_plane(self, plane_index) -> aplt.Visuals2D:
-        """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
-        border = self.extract_2d(
-            "border", value=self.grid.mask.border_grid_sub_1.binned
+        self._mass_plotter = MassPlotter(
+            mass_obj=self.tracer,
+            grid=self.grid,
+            get_visuals_2d=self.get_visuals_2d,
+            mat_plot_2d=self.mat_plot_2d,
+            include_2d=self.include_2d,
+            visuals_2d=self.visuals_2d,
         )
 
-        if border is not None:
-            if plane_index > 0:
-                border = self.tracer.traced_grids_of_planes_from(grid=border)[
-                    plane_index
-                ]
+    def get_visuals_2d(self) -> aplt.Visuals2D:
+        return self.get_visuals_2d_of_plane(plane_index=0)
 
-        if plane_index == 0:
-            critical_curves = self.extract_2d(
-                "critical_curves",
-                self.tracer.critical_curves_from(grid=self.grid),
-                "critical_curves",
-            )
-        else:
-            critical_curves = None
-
-        if plane_index == 1:
-            caustics = self.extract_2d(
-                "caustics", self.tracer.caustics_from(grid=self.grid), "caustics"
-            )
-        else:
-            caustics = None
-
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin", value=aa.Grid2DIrregular(grid=[self.grid.origin])
-            ),
-            border=border,
-            light_profile_centres=self.extract_2d(
-                "light_profile_centres",
-                self.tracer.planes[plane_index].extract_attribute(
-                    cls=ag.lp.LightProfile, attr_name="centre"
-                ),
-            ),
-            mass_profile_centres=self.extract_2d(
-                "mass_profile_centres",
-                self.tracer.planes[plane_index].extract_attribute(
-                    cls=ag.mp.MassProfile, attr_name="centre"
-                ),
-            ),
-            critical_curves=critical_curves,
-            caustics=caustics,
+    def get_visuals_2d_of_plane(self, plane_index: int) -> aplt.Visuals2D:
+        return self.get_2d.via_tracer_from(
+            tracer=self.tracer, grid=self.grid, plane_index=plane_index
         )
 
     def plane_plotter_from(self, plane_index: int) -> aplt.PlanePlotter:
+        """
+        Returns an `PlanePlotter` corresponding to a `Plane` in the `Tracer`.
 
+        Returns
+        -------
+        plane_index
+            The index of the plane in the `Tracer` used to make the `PlanePlotter`.
+        """
         plane_grid = self.tracer.traced_grids_of_planes_from(grid=self.grid)[
             plane_index
         ]
@@ -143,7 +100,7 @@ class TracerPlotter(LensingObjPlotter):
             plane=self.tracer.planes[plane_index],
             grid=plane_grid,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.visuals_with_include_2d_of_plane(plane_index=plane_index),
+            visuals_2d=self.get_visuals_2d_of_plane(plane_index=plane_index),
             include_2d=self.include_2d,
         )
 
@@ -158,27 +115,40 @@ class TracerPlotter(LensingObjPlotter):
         magnification: bool = False,
         contribution_map: bool = False,
     ):
-        """Plot the observed _tracer of an analysis, using the `Imaging` class object.
-    
-        The visualization and output type can be fully customized.
-    
+        """
+        Plots the individual attributes of the plotter's `Tracer` object in 2D, which are computed via the plotter's 2D
+        grid object.
+
+        The API is such that every plottable attribute of the `Tracer` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is plotted.
+
         Parameters
-        -----------
-        tracer : autolens.imaging.tracer.Imaging
-            Class containing the _tracer, noise_mappers and PSF that are to be plotted.
-            The font size of the figure ylabel.
-        output_path : str
-            The path where the _tracer is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the _tracer is output. File formats (e.g. png, fits) output the _tracer to harddisk. 'show' displays the _tracer \
-            in the python interpreter window.
+        ----------
+        image
+            Whether or not to make a 2D plot (via `imshow`) of the image of tracer in its image-plane (e.g. after
+            lensing).
+        source_plane
+            Whether or not to make a 2D plot (via `imshow`) of the image of the tracer in the source-plane (e.g. its
+            unlensed light).
+        convergence
+            Whether or not to make a 2D plot (via `imshow`) of the convergence.
+        potential
+            Whether or not to make a 2D plot (via `imshow`) of the potential.
+        deflections_y
+            Whether or not to make a 2D plot (via `imshow`) of the y component of the deflection angles.
+        deflections_x
+            Whether or not to make a 2D plot (via `imshow`) of the x component of the deflection angles.
+        magnification
+            Whether or not to make a 2D plot (via `imshow`) of the magnification.
+        contribution_map
+            Whether or not to make a 2D plot (via `imshow`) of the contribution map.
         """
 
         if image:
 
             self.mat_plot_2d.plot_array(
                 array=self.tracer.image_2d_from(grid=self.grid),
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=aplt.AutoLabels(title="Image", filename="image_2d"),
             )
 
@@ -187,7 +157,7 @@ class TracerPlotter(LensingObjPlotter):
                 plane_image=True, plane_index=len(self.tracer.planes) - 1
             )
 
-        super().figures_2d(
+        self._mass_plotter.figures_2d(
             convergence=convergence,
             potential=potential,
             deflections_y=deflections_y,
@@ -199,18 +169,30 @@ class TracerPlotter(LensingObjPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.tracer.contribution_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=aplt.AutoLabels(
                     title="Contribution Map", filename="contribution_map_2d"
                 ),
             )
 
-    def plane_indexes_from(self, plane_index: int) -> List[int]:
+    def plane_indexes_from(self, plane_index: Optional[int]) -> List[int]:
+        """
+        Returns a list of all indexes of the planes in the fit, which is iterated over in figures that plot
+        individual figures of each plane in a tracer.
 
+        Parameters
+        ----------
+        plane_index
+            A specific plane index which when input means that only a single plane index is returned.
+
+        Returns
+        -------
+        list
+            A list of galaxy indexes corresponding to planes in the plane.
+        """
         if plane_index is None:
             return list(range(len(self.tracer.planes)))
-        else:
-            return [plane_index]
+        return [plane_index]
 
     def figures_2d_of_planes(
         self,
@@ -218,7 +200,24 @@ class TracerPlotter(LensingObjPlotter):
         plane_grid: bool = False,
         plane_index: Optional[int] = None,
     ):
+        """
+        Plots source-plane images (e.g. the unlensed light) each individual `Plane` in the plotter's `Tracer` in 2D, 
+        which are computed via the plotter's 2D grid object.
 
+        The API is such that every plottable attribute of the `Plane` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is plotted.
+
+        Parameters
+        ----------
+        plane_image
+            Whether or not to make a 2D plot (via `imshow`) of the image of the plane in the soure-plane (e.g. its
+            unlensed light).
+        plane_grid
+            Whether or not to make a 2D plot (via `scatter`) of the lensed (y,x) coordinates of the plane in the 
+            source-plane.
+        plane_index
+            If input, plots for only a single plane based on its index in the tracer are created.
+        """
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
@@ -253,20 +252,35 @@ class TracerPlotter(LensingObjPlotter):
         contribution_map: bool = False,
         auto_filename: str = "subplot_tracer",
     ):
-        """Plot the observed _tracer of an analysis, using the `Imaging` class object.
+        """
+        Plots the individual attributes of the plotter's `Tracer` object in 2D on a subplot, which are computed via 
+        the plotter's 2D grid object.
 
-        The visualization and output type can be fully customized.
+        The API is such that every plottable attribute of the `Tracer` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is included on the subplot.
 
         Parameters
-        -----------
-        tracer : autolens.imaging.tracer.Imaging
-            Class containing the _tracer,  noise_mappers and PSF that are to be plotted.
-            The font size of the figure ylabel.
-        output_path : str
-            The path where the _tracer is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the _tracer is output. File formats (e.g. png, fits) output the _tracer to harddisk. 'show' displays the _tracer \
-            in the python interpreter window.
+        ----------
+        image
+            Whether or not to include a 2D plot (via `imshow`) of the image of tracer in its image-plane (e.g. after
+            lensing).
+        source_plane
+            Whether or not to include a 2D plot (via `imshow`) of the image of the tracer in the source-plane (e.g. its
+            unlensed light).
+        convergence
+            Whether or not to include a 2D plot (via `imshow`) of the convergence.
+        potential
+            Whether or not to include a 2D plot (via `imshow`) of the potential.
+        deflections_y
+            Whether or not to include a 2D plot (via `imshow`) of the y component of the deflection angles.
+        deflections_x
+            Whether or not to include a 2D plot (via `imshow`) of the x component of the deflection angles.
+        magnification
+            Whether or not to include a 2D plot (via `imshow`) of the magnification.
+        contribution_map
+            Whether or not to include a 2D plot (via `imshow`) of the contribution map.
+        auto_filename
+            The default filename of the output subplot if written to hard-disk.
         """
 
         self._subplot_custom_plot(
@@ -282,6 +296,9 @@ class TracerPlotter(LensingObjPlotter):
         )
 
     def subplot_tracer(self):
+        """
+        Standard subplot of the attributes of the plotter's `Tracer` object.
+        """
         return self.subplot(
             image=True,
             source_plane=True,
@@ -292,7 +309,13 @@ class TracerPlotter(LensingObjPlotter):
         )
 
     def subplot_plane_images(self):
+        """
+        Subplot of the image of every plane in its own plane.
 
+        For example, for a 2 plane `Tracer`, this creates a subplot with 2 panels, one for the image-plane image
+        and one for the source-plane (e.g. unlensed) image. If there are 3 planes, 3 panels are created, showing
+        images at each plane.
+        """
         number_subplots = 2 * self.tracer.total_planes - 1
 
         self.open_subplot_figure(number_subplots=number_subplots)

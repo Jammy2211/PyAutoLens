@@ -1,11 +1,38 @@
 from autolens.lens.model.visualizer import Visualizer
+from autolens.imaging.fit_imaging import FitImaging
 from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
 
 from autolens.lens.model.visualizer import plot_setting
 
 
 class VisualizerImaging(Visualizer):
-    def visualize_fit_imaging(self, fit, during_analysis, subfolders="fit_imaging"):
+    def visualize_fit_imaging(
+        self, fit: FitImaging, during_analysis: bool, subfolders: bool = "fit_imaging"
+    ):
+        """
+        Visualizes a `FitImaging` object, which fits an imaging dataset.
+
+        Images are output to the `image` folder of the `visualize_path` in a subfolder called `fit`. When
+        used with a non-linear search the `visualize_path` points to the search's results folder and this function
+        visualizes the maximum log likelihood `FitImaging` inferred by the search so far.
+
+        Visualization includes individual images of attributes of the `FitImaging` (e.g. the model data, residual map)
+        and a subplot of all `FitImaging`'s images on the same figure.
+
+        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        [fit] header.
+
+        Parameters
+        ----------
+        fit
+            The maximum log likelihood `FitImaging` of the non-linear search which is used to plot the fit.
+        during_analysis
+            Whether visualization is performed during a non-linear search or once it is completed.
+        visuals_2d
+            An object containing attributes which may be plotted over the figure (e.g. the centres of mass and light
+            profiles).
+        """
+
         def should_plot(name):
             return plot_setting(section="fit", name=name)
 

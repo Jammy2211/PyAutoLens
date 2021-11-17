@@ -99,7 +99,7 @@ class TestAnalysisDataset:
 
         instance = model.instance_from_unit_vector([])
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = al.FitImaging(imaging=masked_imaging_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         analysis.preloads.check_via_fit(fit=fit)
 

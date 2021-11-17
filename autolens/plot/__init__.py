@@ -52,7 +52,7 @@ from autoarray.dataset.plot.interferometer_plotters import InterferometerPlotter
 from autoarray.plot.multi_plotters import MultiFigurePlotter
 from autoarray.plot.multi_plotters import MultiYX1DPlotter
 
-from autogalaxy.plot.mat_wrap.lensing_wrap import (
+from autogalaxy.plot.mat_wrap.wrap import (
     HalfLightRadiusAXVLine,
     EinsteinRadiusAXVLine,
     LightProfileCentresScatter,
@@ -62,9 +62,9 @@ from autogalaxy.plot.mat_wrap.lensing_wrap import (
     MultipleImagesScatter,
 )
 
-from autogalaxy.plot.mat_wrap.lensing_mat_plot import MatPlot1D, MatPlot2D
-from autogalaxy.plot.mat_wrap.lensing_include import Include1D, Include2D
-from autogalaxy.plot.mat_wrap.lensing_visuals import Visuals1D, Visuals2D
+from autogalaxy.plot.mat_wrap.mat_plot import MatPlot1D, MatPlot2D
+from autogalaxy.plot.mat_wrap.include import Include1D, Include2D
+from autogalaxy.plot.mat_wrap.visuals import Visuals1D, Visuals2D
 
 from autogalaxy.profiles.plot.light_profile_plotters import LightProfilePlotter
 from autogalaxy.profiles.plot.light_profile_plotters import LightProfilePDFPlotter
@@ -73,7 +73,6 @@ from autogalaxy.profiles.plot.mass_profile_plotters import MassProfilePDFPlotter
 from autogalaxy.galaxy.plot.galaxy_plotters import GalaxyPlotter
 from autogalaxy.galaxy.plot.galaxy_plotters import GalaxyPDFPlotter
 
-# from autogalaxy.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
 from autogalaxy.imaging.plot.fit_imaging_plotters import FitImagingPlotter
 from autogalaxy.interferometer.plot.fit_interferometer_plotters import (
     FitInterferometerPlotter,
@@ -89,3 +88,4 @@ from autolens.interferometer.plot.fit_interferometer_plotters import (
 )
 from autolens.point.plot.fit_point_plotters import FitPointDatasetPlotter
 from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
+from autolens.quantity.plot.fit_quantity_plotters import FitQuantityPlotter

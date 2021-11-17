@@ -14,12 +14,12 @@ from autolens.imaging.model.aggregator import _fit_imaging_from
 
 class SubhaloResult:
     def __init__(
-        self, grid_search_result, result_no_subhalo, stochastic_log_evidences=None
+        self, grid_search_result, result_no_subhalo, stochastic_log_likelihoods=None
     ):
 
         self.grid_search_result = grid_search_result
         self.result_no_subhalo = result_no_subhalo
-        self.stochastic_log_evidences = stochastic_log_evidences
+        self.stochastic_log_likelihoods = stochastic_log_likelihoods
 
     @property
     def fit_imaging_before(self):
@@ -43,11 +43,11 @@ class SubhaloResult:
     def subhalo_detection_array_from(
         self,
         use_log_evidences: bool = True,
-        use_stochastic_log_evidences: bool = False,
+        use_stochastic_log_likelihoods: bool = False,
         relative_to_no_subhalo: bool = True,
     ) -> aa.Array2D:
 
-        if (not use_log_evidences) and (not use_stochastic_log_evidences):
+        if (not use_log_evidences) and (not use_stochastic_log_likelihoods):
 
             values_native = self.grid_search_result.log_likelihoods_native
             values_native[values_native == None] = np.nan
@@ -57,7 +57,7 @@ class SubhaloResult:
                     "samples"
                 ].max_log_likelihood_sample.log_likelihood
 
-        elif use_log_evidences and not use_stochastic_log_evidences:
+        elif use_log_evidences and not use_stochastic_log_likelihoods:
 
             values_native = self.grid_search_result.log_evidences_native
             values_native[values_native == None] = np.nan
@@ -67,12 +67,12 @@ class SubhaloResult:
 
         else:
 
-            values_native = self.stochastic_log_likelihoods_native
+            values_native = self.stochastic_log_evidences_native
             values_native[values_native == None] = np.nan
 
             if relative_to_no_subhalo:
                 values_native -= np.median(
-                    self.result_no_subhalo["stochastic_log_evidences"]
+                    self.result_no_subhalo["stochastic_log_likelihoods"]
                 )
 
         return self._subhalo_array_from(values_native=values_native)
@@ -81,10 +81,10 @@ class SubhaloResult:
         return self._subhalo_array_from(values_native=self.masses_native)
 
     @property
-    def stochastic_log_likelihoods_native(self) -> List[float]:
+    def stochastic_log_evidences_native(self) -> List[float]:
 
         return self.grid_search_result._list_to_native(
-            lst=self.stochastic_log_evidences
+            lst=self.stochastic_log_likelihoods
         )
 
     def instance_list_via_results_from(self, results):
@@ -146,7 +146,7 @@ class SubhaloPlotter(AbstractPlotter):
         subhalo_result: SubhaloResult,
         fit_imaging_detect,
         use_log_evidences: bool = True,
-        use_stochastic_log_evidences: bool = False,
+        use_stochastic_log_likelihoods: bool = False,
         mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
@@ -158,7 +158,7 @@ class SubhaloPlotter(AbstractPlotter):
         self.subhalo_result = subhalo_result
         self.fit_imaging_detect = fit_imaging_detect
         self.use_log_evidences = use_log_evidences
-        self.use_stochastic_log_evidences = use_stochastic_log_evidences
+        self.use_stochastic_log_likelihoods = use_stochastic_log_likelihoods
 
     @property
     def fit_imaging_before(self):
@@ -189,7 +189,7 @@ class SubhaloPlotter(AbstractPlotter):
 
         detection_array = self.subhalo_result.subhalo_detection_array_from(
             use_log_evidences=self.use_log_evidences,
-            use_stochastic_log_evidences=self.use_stochastic_log_evidences,
+            use_stochastic_log_likelihoods=self.use_stochastic_log_likelihoods,
             relative_to_no_subhalo=True,
         )
 

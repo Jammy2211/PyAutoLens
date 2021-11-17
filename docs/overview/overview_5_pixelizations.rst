@@ -47,7 +47,7 @@ the lensed source's light using the ``LinearEqn``:
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.FitImaging(imaging=imaging, tracer=tracer)
+    fit = al.FitImaging(dataset=imaging, tracer=tracer)
 
 Here is what our reconstructed source galaxy looks like:
 

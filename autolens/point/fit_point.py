@@ -399,7 +399,7 @@ class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
     def __init__(
         self,
         positions: aa.Grid2DIrregular,
-        noise_map: aa.ValuesIrregular,
+        noise_map: Optional[aa.ValuesIrregular],
         tracer: Tracer,
     ):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \

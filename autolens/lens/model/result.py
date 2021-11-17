@@ -1,6 +1,7 @@
 from os import path
 import numpy as np
 import json
+from typing import Dict
 
 from autoconf import conf
 import autoarray as aa
@@ -16,14 +17,16 @@ from autolens.point.point_solver import PointSolver
 class Result(AgResult):
     @property
     def max_log_likelihood_tracer(self) -> Tracer:
-
+        """
+        An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
+        """
         return self.analysis.tracer_for_instance(instance=self.instance)
 
     @property
     def source_plane_light_profile_centre(self) -> aa.Grid2DIrregular:
         """
-        Return a light profile centres of a galaxy in the most-likely tracer's source-plane. If there are multiple
-        light profiles, the first light profile's centre is returned.
+        Return a light profile centre of one of the a galaxies in the maximum log likelihood `Tracer`'s source-plane.
+        If there are multiple light profiles, the first light profile's centre is returned.
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions.
@@ -125,7 +128,11 @@ class Result(AgResult):
 class ResultDataset(Result):
     @property
     def max_log_likelihood_tracer(self) -> Tracer:
+        """
+        An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
 
+        If a dataset is fitted the hyper images of the hyper dataset must first be associated with each galaxy.
+        """
         instance = self.analysis.associate_hyper_images(instance=self.instance)
 
         return self.analysis.tracer_for_instance(instance=instance)
@@ -135,22 +142,26 @@ class ResultDataset(Result):
         raise NotImplementedError
 
     @property
-    def mask(self):
+    def mask(self) -> aa.Mask2D:
+        """
+        The 2D mask applied to the dataset for the model-fit.
+        """
         return self.analysis.dataset.mask
 
     @property
-    def grid(self):
+    def grid(self) -> aa.Grid2D:
+        """
+        The masked 2D grid used by the dataset in the model-fit.
+        """
         return self.analysis.dataset.grid
 
     @property
     def positions(self):
+        """
+        The (y,x) arc-second coordinates of the lensed sources brightest pixels, which are used for discarding mass
+        models which do not trace within a threshold in the source-plane of one another.
+        """
         return self.analysis.positions
-
-    @property
-    def pixelization(self):
-        for galaxy in self.max_log_likelihood_tracer.galaxies:
-            if galaxy.pixelization is not None:
-                return galaxy.pixelization
 
     @property
     def source_plane_centre(self) -> aa.Grid2DIrregular:
@@ -181,30 +192,32 @@ class ResultDataset(Result):
                 0
             ]
 
-    @property
-    def max_log_likelihood_sparse_image_plane_grid_list_of_planes(self):
-        return self.max_log_likelihood_tracer.sparse_image_plane_grid_list_of_planes_from(
-            grid=self.analysis.dataset.grid
-        )
-
     def image_for_galaxy(self, galaxy: ag.Galaxy) -> np.ndarray:
         """
+        Given an instance of a `Galaxy` object, return an image of the galaxy via the the maximum log likelihood fit.
+
+        This image is extracted via the fit's `galaxy_model_image_dict`, which is necessary to make it straight
+        forward to use the image as hyper-images.
+
         Parameters
         ----------
         galaxy
-            A galaxy used in this search
+            A galaxy used by the model-fit.
 
         Returns
         -------
         ndarray or None
-            A numpy arrays giving the model image of that galaxy
+            A numpy arrays giving the model image of that galaxy.
         """
         return self.max_log_likelihood_fit.galaxy_model_image_dict[galaxy]
 
     @property
     def image_galaxy_dict(self) -> {str: ag.Galaxy}:
         """
-        A dictionary associating galaxy names with model images of those galaxies
+        A dictionary associating galaxy names with model images of those galaxies.
+
+        This is used for creating the hyper-dataset used by Analysis objects to adapt aspects of a model to the dataset
+        being fitted.
         """
         return {
             galaxy_path: self.image_for_galaxy(galaxy)
@@ -212,9 +225,9 @@ class ResultDataset(Result):
         }
 
     @property
-    def hyper_galaxy_image_path_dict(self):
+    def hyper_galaxy_image_path_dict(self) -> Dict[str, aa.Array2D]:
         """
-        A dictionary associating 1D hyper_galaxies galaxy images with their names.
+        A dictionary associating 1D hyper galaxy images with their names.
         """
 
         hyper_minimum_percent = conf.instance["general"]["hyper"][
@@ -236,8 +249,12 @@ class ResultDataset(Result):
         return hyper_galaxy_image_path_dict
 
     @property
-    def hyper_model_image(self):
+    def hyper_model_image(self) -> aa.Array2D:
+        """
+         The hyper model image used by Analysis objects to adapt aspects of a model to the dataset being fitted.
 
+         The hyper model image is the sum of the hyper galaxy image of every individual galaxy.
+         """
         hyper_model_image = aa.Array2D.manual_mask(
             array=np.zeros(self.mask.mask_sub_1.pixels_in_mask),
             mask=self.mask.mask_sub_1,
@@ -249,24 +266,37 @@ class ResultDataset(Result):
         return hyper_model_image
 
     @property
-    def stochastic_log_evidences(self):
+    def stochastic_log_likelihoods(self) -> np.ndarray:
+        """
+        Certain `Inversion`'s have stochasticity in their log likelihood estimate.
 
-        stochastic_log_evidences_json_file = path.join(
-            self.search.paths.output_path, "stochastic_log_evidences.json"
+        For example, the `VoronoiBrightnessImage` pixelization, which changes the likelihood depending on how different
+        KMeans seeds change the pixel-grid.
+
+        A log likelihood cap can be applied to model-fits performed using these `Inversion`'s to improve error and
+        posterior estimates. This log likelihood cap is estimated from a list of stochastic log likelihoods, where
+        these log likelihoods are computed using the same model but with different KMeans seeds.
+
+        This function loads existing stochastic log likelihoods from the hard disk via a .json file. If the .json
+        file is not presented, then the log likelihoods are computed via the `stochastic_log_likelihoods_for_instance`
+        function of the associated Analysis class.
+        """
+        stochastic_log_likelihoods_json_file = path.join(
+            self.search.paths.output_path, "stochastic_log_likelihoods.json"
         )
 
         self.search.paths.restore()
 
         try:
-            with open(stochastic_log_evidences_json_file, "r") as f:
-                stochastic_log_evidences = np.asarray(json.load(f))
+            with open(stochastic_log_likelihoods_json_file, "r") as f:
+                stochastic_log_likelihoods = np.asarray(json.load(f))
         except FileNotFoundError:
             self.analysis.save_stochastic_outputs(
                 paths=self.search.paths, samples=self.samples
             )
-            with open(stochastic_log_evidences_json_file, "r") as f:
-                stochastic_log_evidences = np.asarray(json.load(f))
+            with open(stochastic_log_likelihoods_json_file, "r") as f:
+                stochastic_log_likelihoods = np.asarray(json.load(f))
 
         self.search.paths.zip_remove()
 
-        return stochastic_log_evidences
+        return stochastic_log_likelihoods
