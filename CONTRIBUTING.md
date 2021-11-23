@@ -15,25 +15,25 @@ reporting it including:
 * Any details about your Python environment.
 * Detailed steps to reproduce the bug.
 
-### Propose New non-linear search or Features
+### Propose New Features
 
 The best way to send feedback is to open an issue at
 https://github.com/Jammy2211/PyAutoLens
 with tag *enhancement*.
 
-If you are proposing a new non-linear search or a new feature:
+If you are proposing a nnew feature:
 
 * Explain in detail how it should work.
 * Keep the scope as narrow as possible, to make it easier to implement.
 
-### Implement non-linear search or Features
+### Implement Features
 Look through the Git issues for operator or feature requests.
 Anything tagged with *enhancement* is open to whoever wants to
 implement it.
 
 ### Add Examples or improve Documentation
 Writing new features is not the only way to get involved and
-contribute. Create examples with existing non-linear searches as well 
+contribute. Create examples with existing features as well 
 as improving the documentation of existing operators is as important
 as making new non-linear searches and very much encouraged.
 
@@ -42,27 +42,26 @@ as making new non-linear searches and very much encouraged.
 
 Ready to contribute?
 
-1. Follow the installation instructions for installing **PyAutoLens** from source root on our 
-[readthedocs](https://pyautolens.readthedocs.io/en/latest/general/installation.html#forking-cloning>).
+1. Follow the installation instructions for installing **PyAutoLens** (and parent projects) from source root 
+on our [readthedocs](https://pyautolens.readthedocs.io/en/latest/installation/source.html).
 
-2. Create a branch for local development:
+2. Create a feature branch for local development (for **PyAutoLens** and every parent project where changes are implemented):
     ```
-    git checkout -b name-of-your-branch
+    git checkout -b feature/name-of-your-branch
     ```
     Now you can make your changes locally.
 
-3. When you're done making changes, check that old and new tests pass
-succesfully:
+3. When you're done making changes, check that old and new tests pass succesfully:
     ```
     cd PyAutoLens/test_autolens
     python3 -m pytest
     ```
 
-4. Commit your changes and push your branch to GitLab::
+4. Commit your changes and push your branch to GitHub::
     ```
     git add .
     git commit -m "Your detailed description of your changes."
-    git push origin name-of-your-branch
+    git push origin feature/name-of-your-branch
     ```
     Remember to add ``-u`` when pushing the branch for the first time.
 
