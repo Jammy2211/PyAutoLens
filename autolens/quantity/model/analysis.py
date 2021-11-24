@@ -79,9 +79,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
 
         tracer = self.tracer_for_instance(instance=instance)
 
-        return FitQuantity(
-            dataset=self.dataset, tracer=tracer, func_str=self.func_str
-        )
+        return FitQuantity(dataset=self.dataset, tracer=tracer, func_str=self.func_str)
 
     def visualize(
         self,

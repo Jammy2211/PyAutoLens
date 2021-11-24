@@ -842,11 +842,11 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
                 ):
 
                     mapper = plane.mapper_from(
-                        grid=traced_grids_of_planes[plane_index],
-                        sparse_grid=traced_sparse_grids_list_of_planes[plane_index][
-                            mapper_index
-                        ],
-                        sparse_image_plane_grid=sparse_image_plane_grid_list_of_planes[
+                        source_grid_slim=traced_grids_of_planes[plane_index],
+                        source_pixelization_grid=traced_sparse_grids_list_of_planes[
+                            plane_index
+                        ][mapper_index],
+                        data_pixelization_grid=sparse_image_plane_grid_list_of_planes[
                             plane_index
                         ][mapper_index],
                         pixelization=self.pixelization_list_of_planes[plane_index][

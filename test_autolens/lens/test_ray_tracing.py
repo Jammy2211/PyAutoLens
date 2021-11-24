@@ -2371,7 +2371,9 @@ class TestAbstractTracerData:
     ):
         galaxy_pix = al.Galaxy(
             redshift=1.0,
-            pixelization=MockPixelization(sparse_grid=np.array([[1.0, 1.0]])),
+            pixelization=MockPixelization(
+                data_pixelization_grid=np.array([[1.0, 1.0]])
+            ),
             regularization=MockRegularization(),
         )
         galaxy_no_pix = al.Galaxy(redshift=0.5)
@@ -2391,13 +2393,17 @@ class TestAbstractTracerData:
 
         galaxy_pix0 = al.Galaxy(
             redshift=1.0,
-            pixelization=MockPixelization(sparse_grid=np.array([[1.0, 1.0]])),
+            pixelization=MockPixelization(
+                data_pixelization_grid=np.array([[1.0, 1.0]])
+            ),
             regularization=MockRegularization(),
         )
 
         galaxy_pix1 = al.Galaxy(
             redshift=2.0,
-            pixelization=MockPixelization(sparse_grid=np.array([[2.0, 2.0]])),
+            pixelization=MockPixelization(
+                data_pixelization_grid=np.array([[2.0, 2.0]])
+            ),
             regularization=MockRegularization(),
         )
 
@@ -2430,7 +2436,7 @@ class TestAbstractTracerData:
         galaxy_pix = al.Galaxy(
             redshift=1.0,
             pixelization=MockPixelization(
-                sparse_grid=al.Grid2D.manual_native(
+                data_pixelization_grid=al.Grid2D.manual_native(
                     grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)
                 )
             ),
@@ -2455,7 +2461,7 @@ class TestAbstractTracerData:
         galaxy_pix_0 = al.Galaxy(
             redshift=1.0,
             pixelization=MockPixelization(
-                sparse_grid=al.Grid2D.manual_native(
+                data_pixelization_grid=al.Grid2D.manual_native(
                     grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)
                 )
             ),
@@ -2465,7 +2471,7 @@ class TestAbstractTracerData:
         galaxy_pix_1 = al.Galaxy(
             redshift=1.0,
             pixelization=MockPixelization(
-                sparse_grid=al.Grid2D.manual_native(
+                data_pixelization_grid=al.Grid2D.manual_native(
                     grid=[[[2.0, 0.0]]], pixel_scales=(1.0, 1.0)
                 )
             ),
@@ -2495,7 +2501,7 @@ class TestAbstractTracerData:
         galaxy_pix_0 = al.Galaxy(
             redshift=1.0,
             pixelization=MockPixelization(
-                sparse_grid=al.Grid2D.manual_native(
+                data_pixelization_grid=al.Grid2D.manual_native(
                     grid=[[[1.0, 1.0]]], pixel_scales=(1.0, 1.0)
                 )
             ),
@@ -2505,7 +2511,7 @@ class TestAbstractTracerData:
         galaxy_pix_1 = al.Galaxy(
             redshift=2.0,
             pixelization=MockPixelization(
-                sparse_grid=al.Grid2D.manual_native(
+                data_pixelization_grid=al.Grid2D.manual_native(
                     grid=[[[2.0, 2.0]]], pixel_scales=(1.0, 1.0)
                 )
             ),
@@ -2558,18 +2564,24 @@ class TestAbstractTracerData:
         galaxy_no_pix = al.Galaxy(redshift=0.5)
         galaxy_pix_0 = al.Galaxy(
             redshift=0.5,
-            pixelization=MockPixelization(mapper=1, sparse_grid=sub_grid_2d_7x7),
+            pixelization=MockPixelization(
+                mapper=1, data_pixelization_grid=sub_grid_2d_7x7
+            ),
             regularization=MockRegularization(),
         )
 
         galaxy_pix_1 = al.Galaxy(
             redshift=1.0,
-            pixelization=MockPixelization(mapper=2, sparse_grid=sub_grid_2d_7x7),
+            pixelization=MockPixelization(
+                mapper=2, data_pixelization_grid=sub_grid_2d_7x7
+            ),
             regularization=MockRegularization(),
         )
         galaxy_pix_2 = al.Galaxy(
             redshift=1.0,
-            pixelization=MockPixelization(mapper=3, sparse_grid=sub_grid_2d_7x7),
+            pixelization=MockPixelization(
+                mapper=3, data_pixelization_grid=sub_grid_2d_7x7
+            ),
             regularization=MockRegularization(),
         )
 
@@ -2592,12 +2604,16 @@ class TestAbstractTracerData:
 
         galaxy_pix_0 = al.Galaxy(
             redshift=0.75,
-            pixelization=MockPixelization(mapper=1, sparse_grid=sub_grid_2d_7x7),
+            pixelization=MockPixelization(
+                mapper=1, data_pixelization_grid=sub_grid_2d_7x7
+            ),
             regularization=MockRegularization(),
         )
         galaxy_pix_1 = al.Galaxy(
             redshift=2.0,
-            pixelization=MockPixelization(mapper=2, sparse_grid=sub_grid_2d_7x7),
+            pixelization=MockPixelization(
+                mapper=2, data_pixelization_grid=sub_grid_2d_7x7
+            ),
             regularization=MockRegularization(),
         )
 
