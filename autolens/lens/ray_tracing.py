@@ -9,13 +9,14 @@ from typing import Dict, Optional
 import autoarray as aa
 import autogalaxy as ag
 
+from autoconf.dictable import Dictable
+
 from autoarray.inversion.inversion.factory import inversion_imaging_unpacked_from
 from autoarray.inversion.inversion.factory import inversion_interferometer_unpacked_from
-from autoconf.dictable import Dictable
-from autogalaxy import Plane
 
 from autogalaxy.lensing import LensingObject
 from autogalaxy.plane.plane import AbstractPlane
+from autogalaxy.profiles.light_profiles.calc_image import CalcImage
 from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSNR
 
 from autolens.lens.model.preloads import Preloads
@@ -70,6 +71,24 @@ class AbstractTracer(LensingObject, ABC, Dictable):
             map(AbstractPlane.from_dict, profile_dict["planes"])
         )
         return Dictable.from_dict(profile_dict)
+
+    @property
+    def _calc_image(self) -> CalcImage:
+        return CalcImage(image_2d_from=self.image_2d_from)
+
+    def __getattr__(self, item):
+        """
+        This dynamically passes all functions of the `_calc_image` property to the `LightProfile`.
+
+        This means that instead of having to call a function using the full path:
+
+        `light_profile._calc_image.blurred_image_2d_via_psf_from`
+
+        We can simply call it using the path:
+
+        `light_profile.blurred_image_2d_via_psf_from`
+        """
+        return getattr(self._calc_image, item)
 
     @property
     def total_planes(self):
@@ -567,29 +586,6 @@ class AbstractTracerLensing(AbstractTracer, ABC):
 
 
 class AbstractTracerData(AbstractTracerLensing, ABC):
-    def blurred_image_2d_via_psf_from(self, grid, psf, blurring_grid):
-        """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a psf (see imaging.convolution).
-
-        These are summed to give the tracer's overall blurred image in 1D.
-
-        Parameters
-        ----------
-        psf : hyper_galaxies.imaging.convolution.ConvolverImage
-            Class which performs the PSF convolution of a masked image in 1D.
-        """
-
-        if not self.has_light_profile:
-            return np.zeros(shape=grid.shape_slim)
-
-        image = self.image_2d_from(grid=grid)
-
-        blurring_image = self.image_2d_from(grid=blurring_grid)
-
-        return psf.convolved_array_with_mask_from(
-            array=image.binned.native + blurring_image.binned.native, mask=grid.mask
-        )
-
     def blurred_images_of_planes_via_psf_from(self, grid, psf, blurring_grid):
         """Extract the 1D image and 1D blurring image of every plane and blur each with the \
         PSF using a psf (see imaging.convolution).
@@ -614,30 +610,6 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             )
             for (plane_index, plane) in enumerate(self.planes)
         ]
-
-    def blurred_image_2d_via_convolver_from(self, grid, convolver, blurring_grid):
-        """
-        Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a convolver (see imaging.convolution).
-
-        These are summed to give the tracer's overall blurred image in 1D.
-
-        Parameters
-        ----------
-        convolver : hyper_galaxies.imaging.convolution.ConvolverImage
-            Class which performs the PSF convolution of a masked image in 1D.
-        """
-
-        if not self.has_light_profile:
-            return np.zeros(shape=grid.shape_slim)
-
-        image = self.image_2d_from(grid=grid)
-
-        blurring_image = self.image_2d_from(grid=blurring_grid)
-
-        return self.convolve_via_convolver(
-            image=image, blurring_image=blurring_image, convolver=convolver
-        )
 
     @aa.profile_func
     def convolve_via_convolver(self, image, blurring_image, convolver):
@@ -730,15 +702,6 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             )
 
         return unmasked_blurred_images_of_planes_and_galaxies
-
-    def profile_visibilities_via_transformer_from(self, grid, transformer):
-
-        if not self.has_light_profile:
-            return np.zeros(shape=transformer.uv_wavelengths.shape[0])
-
-        image = self.image_2d_from(grid=grid)
-
-        return transformer.visibilities_from(image=image)
 
     def profile_visibilities_of_planes_via_transformer_from(self, grid, transformer):
 
