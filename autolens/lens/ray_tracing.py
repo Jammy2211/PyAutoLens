@@ -14,7 +14,7 @@ from autoconf.dictable import Dictable
 from autoarray.inversion.inversion.factory import inversion_imaging_unpacked_from
 from autoarray.inversion.inversion.factory import inversion_interferometer_unpacked_from
 
-from autogalaxy.lensing import LensingObject
+from autogalaxy.profiles.mass_profiles.calc_lens import CalcLens
 from autogalaxy.plane.plane import AbstractPlane
 from autogalaxy.profiles.light_profiles.calc_image import CalcImage
 from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSNR
@@ -22,7 +22,7 @@ from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSN
 from autolens.lens.model.preloads import Preloads
 
 
-class AbstractTracer(LensingObject, ABC, Dictable):
+class AbstractTracer(CalcLens, ABC, Dictable):
     def __init__(self, planes, cosmology, profiling_dict: Optional[Dict] = None):
         """
         Ray-tracer for a lens system with any number of planes.
@@ -51,6 +51,7 @@ class AbstractTracer(LensingObject, ABC, Dictable):
         self.planes = planes
         self.plane_redshifts = [plane.redshift for plane in planes]
         self.cosmology = cosmology
+
         self.profiling_dict = profiling_dict
 
     def output_to_json(self, file_path: str):
@@ -71,24 +72,6 @@ class AbstractTracer(LensingObject, ABC, Dictable):
             map(AbstractPlane.from_dict, profile_dict["planes"])
         )
         return Dictable.from_dict(profile_dict)
-
-    @property
-    def _calc_image(self) -> CalcImage:
-        return CalcImage(image_2d_from=self.image_2d_from)
-
-    def __getattr__(self, item):
-        """
-        This dynamically passes all functions of the `_calc_image` property to the `LightProfile`.
-
-        This means that instead of having to call a function using the full path:
-
-        `light_profile._calc_image.blurred_image_2d_via_psf_from`
-
-        We can simply call it using the path:
-
-        `light_profile.blurred_image_2d_via_psf_from`
-        """
-        return getattr(self._calc_image, item)
 
     @property
     def total_planes(self):
@@ -418,6 +401,18 @@ class AbstractTracer(LensingObject, ABC, Dictable):
 
 
 class AbstractTracerLensing(AbstractTracer, ABC):
+    def __init__(self, planes, cosmology, profiling_dict: Optional[Dict] = None):
+
+        super().__init__(
+            planes=planes, cosmology=cosmology, profiling_dict=profiling_dict
+        )
+
+        self._calc_image = CalcImage(image_2d_from=self.image_2d_from)
+        self._calc_image.add_functions(obj=self)
+
+        self._calc_lens = CalcLens(deflections_2d_from=self.deflections_2d_from)
+        self._calc_lens.add_functions(obj=self)
+
     @aa.grid_dec.grid_2d_to_structure_list
     def traced_grids_of_planes_from(self, grid, plane_index_limit=None):
 

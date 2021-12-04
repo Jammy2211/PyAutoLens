@@ -1890,7 +1890,7 @@ class TestAbstractTracerLensing:
 
             assert tracer.contribution_maps_of_planes[1] == None
 
-    class TestLensingObject:
+    class TestCalcLens:
         def test__correct_einstein_mass_caclulated_for_multiple_mass_profiles__means_all_innherited_methods_work(
             self,
         ):
