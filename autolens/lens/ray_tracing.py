@@ -410,7 +410,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
         self._calc_image = CalcImage(image_2d_from=self.image_2d_from)
         self._calc_image.add_functions(obj=self)
 
-        self._calc_lens = CalcLens(deflections_2d_from=self.deflections_2d_from)
+        self._calc_lens = CalcLens(deflections_yx_2d_from=self.deflections_yx_2d_from)
         self._calc_lens.add_functions(obj=self)
 
     @aa.grid_dec.grid_2d_to_structure_list
@@ -444,7 +444,7 @@ class AbstractTracerLensing(AbstractTracer, ABC):
                 if plane_index == plane_index_limit:
                     return traced_grids
 
-            traced_deflections.append(plane.deflections_2d_from(grid=scaled_grid))
+            traced_deflections.append(plane.deflections_yx_2d_from(grid=scaled_grid))
 
         return traced_grids
 
@@ -501,12 +501,12 @@ class AbstractTracerLensing(AbstractTracer, ABC):
         return sum([plane.potential_2d_from(grid=grid) for plane in self.planes])
 
     @aa.grid_dec.grid_2d_to_structure
-    def deflections_2d_from(self, grid):
+    def deflections_yx_2d_from(self, grid):
         return self.deflections_between_planes_from(grid=grid)
 
     @aa.grid_dec.grid_2d_to_structure
     def deflections_of_planes_summed_from(self, grid):
-        return sum([plane.deflections_2d_from(grid=grid) for plane in self.planes])
+        return sum([plane.deflections_yx_2d_from(grid=grid) for plane in self.planes])
 
     def grid_at_redshift_from(self, grid, redshift):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \

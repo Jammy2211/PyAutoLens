@@ -256,7 +256,7 @@ class PointSolver(AbstractPointSolver):
         distance_to_mass_profile_centre=None,
     ):
         """Given a `CalcLens` (e.g. a _MassProfile, `Galaxy`, `Plane` or `Tracer`) this class uses their
-        deflections_2d_from method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
+        deflections_yx_2d_from method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
         source-centre coordinate in the source-plane.
 
         This is performed as follows:
@@ -336,7 +336,7 @@ class PointSolver(AbstractPointSolver):
     def solve(self, lensing_obj, source_plane_coordinate, upper_plane_index=None):
 
         if upper_plane_index is None:
-            deflections_func = lensing_obj.deflections_2d_from
+            deflections_func = lensing_obj.deflections_yx_2d_from
         else:
             deflections_func = partial(
                 lensing_obj.deflections_between_planes_from,

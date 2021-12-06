@@ -51,7 +51,7 @@ def caustics_via_magnification_via_tracer_from(tracer, grid):
     for i in range(len(critical_curves)):
         critical_curve = critical_curves[i]
 
-        deflections_1d = tracer.deflections_2d_from(grid=critical_curve)
+        deflections_1d = tracer.deflections_yx_2d_from(grid=critical_curve)
 
         caustic = critical_curve - deflections_1d
 
@@ -781,10 +781,10 @@ class TestAbstractTracerLensing:
                 np.array([(1.0 - beta_01 * 1.0), 0.0]), 1e-4
             )
 
-            defl11 = g0.deflections_2d_from(
+            defl11 = g0.deflections_yx_2d_from(
                 grid=np.array([[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]])
             )
-            defl12 = g0.deflections_2d_from(
+            defl12 = g0.deflections_yx_2d_from(
                 grid=np.array([[(1.0 - beta_01 * 1.0), 0.0]])
             )
 
@@ -1298,7 +1298,7 @@ class TestAbstractTracerLensing:
             g1_image = g1.image_2d_from(grid=sub_grid_2d_7x7)
             g2_image = g2.image_2d_from(grid=sub_grid_2d_7x7)
 
-            g1_deflections = g1.deflections_2d_from(grid=sub_grid_2d_7x7)
+            g1_deflections = g1.deflections_yx_2d_from(grid=sub_grid_2d_7x7)
 
             source_grid_2d_7x7 = sub_grid_2d_7x7 - g1_deflections
 
@@ -1564,7 +1564,7 @@ class TestAbstractTracerLensing:
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            image_plane_deflections = image_plane.deflections_2d_from(
+            image_plane_deflections = image_plane.deflections_yx_2d_from(
                 grid=sub_grid_2d_7x7
             )
 
@@ -1589,19 +1589,19 @@ class TestAbstractTracerLensing:
                 redshift=1.0, mass_profile=al.mp.SphIsothermal(einstein_radius=3.0)
             )
 
-            g0_deflections = g0.deflections_2d_from(grid=sub_grid_2d_7x7)
+            g0_deflections = g0.deflections_yx_2d_from(grid=sub_grid_2d_7x7)
 
-            g1_deflections = g1.deflections_2d_from(grid=sub_grid_2d_7x7)
+            g1_deflections = g1.deflections_yx_2d_from(grid=sub_grid_2d_7x7)
 
-            g2_deflections = g2.deflections_2d_from(grid=sub_grid_2d_7x7)
+            g2_deflections = g2.deflections_yx_2d_from(grid=sub_grid_2d_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-            image_plane_deflections = tracer.image_plane.deflections_2d_from(
+            image_plane_deflections = tracer.image_plane.deflections_yx_2d_from(
                 grid=sub_grid_2d_7x7
             )
 
-            source_plane_deflections = tracer.source_plane.deflections_2d_from(
+            source_plane_deflections = tracer.source_plane.deflections_yx_2d_from(
                 grid=sub_grid_2d_7x7
             )
 
@@ -1628,13 +1628,13 @@ class TestAbstractTracerLensing:
                 redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=2.0)
             )
 
-            g0_deflections = g0.deflections_2d_from(grid=grid_2d_irregular_7x7)
+            g0_deflections = g0.deflections_yx_2d_from(grid=grid_2d_irregular_7x7)
 
-            g1_deflections = g1.deflections_2d_from(grid=grid_2d_irregular_7x7)
+            g1_deflections = g1.deflections_yx_2d_from(grid=grid_2d_irregular_7x7)
 
             tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            image_plane_deflections = tracer.image_plane.deflections_2d_from(
+            image_plane_deflections = tracer.image_plane.deflections_yx_2d_from(
                 grid=grid_2d_irregular_7x7
             )
 
@@ -2011,11 +2011,11 @@ class TestAbstractTracerData:
             blurring_grid=blurring_grid_2d_7x7,
         )
 
-        g1_deflections = g1.deflections_2d_from(grid=sub_grid_2d_7x7)
+        g1_deflections = g1.deflections_yx_2d_from(grid=sub_grid_2d_7x7)
 
         source_grid_2d_7x7 = sub_grid_2d_7x7 - g1_deflections
 
-        g1_blurring_deflections = g1.deflections_2d_from(grid=blurring_grid_2d_7x7)
+        g1_blurring_deflections = g1.deflections_yx_2d_from(grid=blurring_grid_2d_7x7)
 
         source_blurring_grid_2d_7x7 = blurring_grid_2d_7x7 - g1_blurring_deflections
 
@@ -2191,7 +2191,7 @@ class TestAbstractTracerData:
             grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
         )
 
-        g1_deflections = g1.deflections_2d_from(grid=sub_grid_2d_7x7)
+        g1_deflections = g1.deflections_yx_2d_from(grid=sub_grid_2d_7x7)
 
         source_grid_2d_7x7 = sub_grid_2d_7x7 - g1_deflections
 
@@ -2760,10 +2760,10 @@ class TestTracerFixedSlices:
 
         #  Galaxies in this plane, so multiply by 3
 
-        defl11 = 3.0 * lens_g0.deflections_2d_from(
+        defl11 = 3.0 * lens_g0.deflections_yx_2d_from(
             grid=np.array([[(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]])
         )
-        defl12 = 3.0 * lens_g0.deflections_2d_from(
+        defl12 = 3.0 * lens_g0.deflections_yx_2d_from(
             grid=np.array([[(1.0 - beta_01 * 2.0 * 1.0), 0.0]])
         )
 
@@ -3063,7 +3063,7 @@ class TestRegression:
         )
         assert max_indexes == (1, 4)
 
-        deflections = tracer.deflections_2d_from(grid=grid)
+        deflections = tracer.deflections_yx_2d_from(grid=grid)
         assert deflections.native[1, 4, 0] > 0
         assert deflections.native[2, 4, 0] < 0
         assert deflections.native[1, 4, 1] > 0
@@ -3089,7 +3089,7 @@ class TestRegression:
         )
         assert max_indexes == (1, 4)
 
-        deflections = tracer.deflections_2d_from(grid=grid)
+        deflections = tracer.deflections_yx_2d_from(grid=grid)
         assert deflections.native[1, 4, 0] > 0
         assert deflections.native[2, 4, 0] < 0
         assert deflections.native[1, 4, 1] > 0
@@ -3122,7 +3122,7 @@ class TestRegression:
         )
         assert max_indexes == (1, 4)
 
-        deflections = tracer.deflections_2d_from(grid=grid)
+        deflections = tracer.deflections_yx_2d_from(grid=grid)
         assert deflections.native[1, 4, 0] >= -1e-8
         assert deflections.native[2, 4, 0] <= 0
         assert deflections.native[1, 4, 1] >= 0
@@ -3147,7 +3147,7 @@ class TestRegression:
         )
         assert max_indexes == (1, 4)
 
-        deflections = tracer.deflections_2d_from(grid=grid)
+        deflections = tracer.deflections_yx_2d_from(grid=grid)
         assert deflections.native[1, 4, 0] >= -1e-8
         assert deflections.native[2, 4, 0] <= 0
         assert deflections.native[1, 4, 1] >= 0
@@ -3279,11 +3279,11 @@ class TestDecorators:
 
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
 
-        deflections = tracer.deflections_2d_from(grid=grid)
+        deflections = tracer.deflections_yx_2d_from(grid=grid)
 
         mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = al.Grid2D.from_mask(mask=mask_sub_2)
-        deflections_sub_2 = tracer.deflections_2d_from(grid=grid_sub_2).binned
+        deflections_sub_2 = tracer.deflections_yx_2d_from(grid=grid_sub_2).binned
 
         assert (deflections == deflections_sub_2).all()
 
@@ -3298,17 +3298,17 @@ class TestDecorators:
 
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
 
-        deflections = tracer.deflections_2d_from(grid=grid)
+        deflections = tracer.deflections_yx_2d_from(grid=grid)
 
         mask_sub_4 = mask.mask_new_sub_size_from(mask=mask, sub_size=4)
         grid_sub_4 = al.Grid2D.from_mask(mask=mask_sub_4)
-        deflections_sub_4 = tracer.deflections_2d_from(grid=grid_sub_4).binned
+        deflections_sub_4 = tracer.deflections_yx_2d_from(grid=grid_sub_4).binned
 
         assert deflections[0, 0] == deflections_sub_4[0, 0]
 
         mask_sub_8 = mask.mask_new_sub_size_from(mask=mask, sub_size=8)
         grid_sub_8 = al.Grid2D.from_mask(mask=mask_sub_8)
-        deflections_sub_8 = galaxy.deflections_2d_from(grid=grid_sub_8).binned
+        deflections_sub_8 = galaxy.deflections_yx_2d_from(grid=grid_sub_8).binned
 
         assert deflections[4, 0] == deflections_sub_8[4, 0]
 
@@ -3370,7 +3370,7 @@ class TestCalc:
 
         g0_image_2d = g0.image_2d_from(grid=sub_grid_2d_7x7)
 
-        deflections = g0.deflections_2d_from(grid=sub_grid_2d_7x7)
+        deflections = g0.deflections_yx_2d_from(grid=sub_grid_2d_7x7)
 
         source_grid_2d_7x7 = sub_grid_2d_7x7 - deflections
 

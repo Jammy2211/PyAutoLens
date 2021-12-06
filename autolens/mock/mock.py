@@ -214,7 +214,7 @@ class MockTracerPoint(MockTracer):
     def planes(self):
         return [0, 1]
 
-    def deflections_2d_from(self):
+    def deflections_yx_2d_from(self):
         pass
 
     @property

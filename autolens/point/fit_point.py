@@ -225,7 +225,7 @@ class FitPositionsSource(aa.FitData):
 
         if len(tracer.planes) <= 2:
 
-            deflections = tracer.deflections_2d_from(grid=positions)
+            deflections = tracer.deflections_yx_2d_from(grid=positions)
 
         else:
 
@@ -303,7 +303,7 @@ class FitFluxes(aa.FitData):
                 plane_j=upper_plane_index,
             )
         else:
-            deflections_func = tracer.deflections_2d_from
+            deflections_func = tracer.deflections_yx_2d_from
 
         self.magnifications = abs(
             tracer.magnification_2d_via_hessian_from(
