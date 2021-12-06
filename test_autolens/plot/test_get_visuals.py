@@ -20,7 +20,7 @@ def make_profile_plotter_setup():
 
 def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
 
-    visuals_2d = aplt.Visuals2D(vector_field=2)
+    visuals_2d = aplt.Visuals2D(vectors=2)
 
     include_2d = aplt.Include2D(
         origin=True,
@@ -48,7 +48,7 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
         visuals_2d_via.critical_curves[0]
         == tracer_x2_plane_7x7.critical_curves_from(grid=grid_2d_7x7)[0]
     ).all()
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.vectors == 2
 
     include_2d = aplt.Include2D(
         origin=True,
@@ -97,12 +97,12 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
     assert visuals_2d_via.light_profile_centres == None
     assert visuals_2d_via.mass_profile_centres == None
     assert visuals_2d_via.critical_curves == None
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.vectors == 2
 
 
 def test__via_fit_imaging_from(fit_imaging_x2_plane_7x7, grid_2d_7x7):
 
-    visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
+    visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vectors=2)
     include_2d = aplt.Include2D(
         origin=True,
         mask=True,
@@ -127,7 +127,7 @@ def test__via_fit_imaging_from(fit_imaging_x2_plane_7x7, grid_2d_7x7):
         visuals_2d_via.critical_curves[0]
         == fit_imaging_x2_plane_7x7.tracer.critical_curves_from(grid=grid_2d_7x7)[0]
     ).all()
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.vectors == 2
 
     include_2d = aplt.Include2D(
         origin=False,
@@ -148,4 +148,4 @@ def test__via_fit_imaging_from(fit_imaging_x2_plane_7x7, grid_2d_7x7):
     assert visuals_2d_via.light_profile_centres == None
     assert visuals_2d_via.mass_profile_centres == None
     assert visuals_2d_via.critical_curves == None
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.vectors == 2

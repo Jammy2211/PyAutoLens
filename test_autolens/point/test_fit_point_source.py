@@ -328,7 +328,7 @@ class TestFitFluxes:
             tracer.deflections_between_planes_from, plane_i=0, plane_j=1
         )
 
-        magnification_0 = tracer.magnification_via_hessian_from(
+        magnification_0 = tracer.magnification_2d_via_hessian_from(
             grid=positions, deflections_func=deflections_func
         )
 
@@ -346,7 +346,7 @@ class TestFitFluxes:
             tracer.deflections_between_planes_from, plane_i=0, plane_j=2
         )
 
-        magnification_1 = tracer.magnification_via_hessian_from(
+        magnification_1 = tracer.magnification_2d_via_hessian_from(
             grid=positions, deflections_func=deflections_func
         )
 

@@ -26,7 +26,7 @@ class AbstractPointSolver:
     ):
 
         magnifications = np.abs(
-            lensing_obj.magnification_via_hessian_from(
+            lensing_obj.magnification_2d_via_hessian_from(
                 grid=grid, buffer=grid.pixel_scale, deflections_func=deflections_func
             )
         )

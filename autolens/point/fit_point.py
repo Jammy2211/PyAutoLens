@@ -306,7 +306,7 @@ class FitFluxes(aa.FitData):
             deflections_func = tracer.deflections_2d_from
 
         self.magnifications = abs(
-            tracer.magnification_via_hessian_from(
+            tracer.magnification_2d_via_hessian_from(
                 grid=positions, deflections_func=deflections_func
             )
         )

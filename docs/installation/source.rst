@@ -27,6 +27,15 @@ First, clone (or fork) the **PyAutoLens** GitHub repository:
 
     git clone https://github.com/Jammy2211/PyAutoLens
 
+Next, install the **PyAuto** parent projects via pip:
+
+.. code-block:: bash
+
+   pip install autoconf
+   pip install autofit
+   pip install autoarray
+   pip install autogalaxy
+
 Next, install the **PyAutoLens** dependencies via pip:
 
 .. code-block:: bash
@@ -65,6 +74,12 @@ First, clone (or fork) all 4 GitHub repositories:
     git clone https://github.com/Jammy2211/PyAutoArray
     git clone https://github.com/Jammy2211/PyAutoGalaxy
     git clone https://github.com/Jammy2211/PyAutoLens
+
+Next, install **PyAutoConf** via pip:
+
+.. code-block:: bash
+
+   pip install autoconf
 
 Next, install the source build dependencies of each project via pip:
 

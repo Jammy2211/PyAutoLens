@@ -90,7 +90,7 @@ class TestAbstractPointSolver:
         )
 
         magnification = np.abs(
-            sis.magnification_via_hessian_from(grid=grid, buffer=grid.pixel_scale)
+            sis.magnification_2d_via_hessian_from(grid=grid, buffer=grid.pixel_scale)
         )
 
         assert magnification[0] > 1000.0
