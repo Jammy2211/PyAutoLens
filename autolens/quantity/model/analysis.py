@@ -9,6 +9,7 @@ from autolens.lens.model.visualizer import Visualizer
 from autolens.lens.model.analysis import AnalysisLensing
 from autolens.lens.model.settings import SettingsLens
 from autolens.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
+from autolens.quantity.model.result import ResultQuantity
 from autolens.quantity.fit_quantity import FitQuantity
 
 
@@ -124,4 +125,41 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         visualizer = Visualizer(visualize_path=paths.image_path)
         visualizer.visualize_tracer(
             tracer=fit.tracer, grid=self.dataset.grid, during_analysis=during_analysis
+        )
+
+    def make_result(
+        self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
+    ) -> ResultQuantity:
+        """
+        After the non-linear search is complete create its `ResultQuantity`, which includes:
+
+        - The samples of the non-linear search (E.g. MCMC chains, nested sampling samples) which are used to compute
+        the maximum likelihood model, posteriors and other properties.
+
+        - The model used to fit the data, which uses the samples to create specific instances of the model (e.g.
+        an instance of the maximum log likelihood model).
+
+        - The non-linear search used to perform the model fit.
+
+        The `ResultQuantity` object contains a number of methods which use the above objects to create the max
+        log likelihood `Tracer`, `FitQuantity`,etc.
+
+        Parameters
+        ----------
+        samples
+            A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
+            run of samples of the nested sampler.
+        model
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            the imaging data.
+        search
+            The non-linear search used to perform this model-fit.
+
+        Returns
+        -------
+        ResultQuantity
+            The result of fitting the model to the imaging dataset, via a non-linear search.
+        """
+        return ResultQuantity(
+            samples=samples, model=model, analysis=self, search=search
         )

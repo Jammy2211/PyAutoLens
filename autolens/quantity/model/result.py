@@ -1,5 +1,7 @@
+import autoarray as aa
 import autogalaxy as ag
 
+from autolens.lens.ray_tracing import Tracer
 from autolens.lens.model.result import Result
 
 
@@ -35,6 +37,22 @@ class ResultQuantity(Result):
     ResultQuantity
         The result of fitting the model to the imaging dataset, via a non-linear search.
     """
+
+    @property
+    def grid(self) -> aa.Grid2D:
+        """
+        The masked 2D grid used by the dataset in the model-fit.
+        """
+        return self.analysis.dataset.grid
+
+    @property
+    def max_log_likelihood_tracer(self) -> Tracer:
+        """
+        An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
+
+        If a dataset is fitted the hyper images of the hyper dataset must first be associated with each galaxy.
+        """
+        return self.analysis.tracer_for_instance(instance=self.instance)
 
     @property
     def max_log_likelihood_fit(self) -> ag.FitQuantity:

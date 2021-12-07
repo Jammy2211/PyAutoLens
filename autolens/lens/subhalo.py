@@ -200,7 +200,11 @@ class SubhaloPlotter(AbstractPlotter):
         return detection_array
 
     def figure_with_detection_overlay(
-        self, image: bool = False, remove_zeros: bool = False, show_median: bool = True
+        self,
+        image: bool = False,
+        remove_zeros: bool = False,
+        show_median: bool = True,
+        overwrite_title=False,
     ):
 
         median_detection = np.round(np.median(self.detection_array_from()), 2)
@@ -215,7 +219,8 @@ class SubhaloPlotter(AbstractPlotter):
         )
 
         if show_median:
-            fit_imaging_plotter.set_title(label=f"Image {median_detection}")
+            if overwrite_title:
+                fit_imaging_plotter.set_title(label=f"Image {median_detection}")
             fit_imaging_plotter.figures_2d(image=image)
 
     def subplot_detection_imaging(self, remove_zeros: bool = False):
