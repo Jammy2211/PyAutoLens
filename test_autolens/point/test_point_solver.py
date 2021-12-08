@@ -89,8 +89,12 @@ class TestAbstractPointSolver:
             grid=[(1.0, 0.0), (0.1, 0.0)], pixel_scales=0.01
         )
 
+        operate_lens = al.OperateLens.from_mass_obj(mass_obj=sis)
+
         magnification = np.abs(
-            sis.magnification_2d_via_hessian_from(grid=grid, buffer=grid.pixel_scale)
+            operate_lens.magnification_2d_via_hessian_from(
+                grid=grid, buffer=grid.pixel_scale
+            )
         )
 
         assert magnification[0] > 1000.0

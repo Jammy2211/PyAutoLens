@@ -4,6 +4,7 @@ import pytest
 
 import autolens as al
 
+from autogalaxy.mock.mock import MockOperateLens
 from autolens.mock.mock import MockTracerPoint
 from autolens.mock.mock import MockPointSolver
 
@@ -256,16 +257,20 @@ class TestFitPositionsSource:
 class TestFitFluxes:
     def test__one_set_of_fluxes__residuals_likelihood_correct(self):
 
-        tracer = MockTracerPoint(
-            magnification=al.ValuesIrregular([2.0, 2.0]),
-            profile=al.ps.PointFlux(flux=2.0),
-        )
+        operate_lens = MockOperateLens(magnification=al.ValuesIrregular([2.0, 2.0]))
+
+        tracer = MockTracerPoint(profile=al.ps.PointFlux(flux=2.0))
 
         fluxes = al.ValuesIrregular([1.0, 2.0])
         noise_map = al.ValuesIrregular([3.0, 1.0])
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
 
-        fit = al.FitFluxes(
+        class MockFitFluxes(al.FitFluxes):
+            @property
+            def operate_lens(self):
+                return operate_lens
+
+        fit = MockFitFluxes(
             name="point_0",
             fluxes=fluxes,
             noise_map=noise_map,
@@ -328,7 +333,9 @@ class TestFitFluxes:
             tracer.deflections_between_planes_from, plane_i=0, plane_j=1
         )
 
-        magnification_0 = tracer.magnification_2d_via_hessian_from(
+        operate_lens = al.OperateLens.from_mass_obj(mass_obj=tracer)
+
+        magnification_0 = operate_lens.magnification_2d_via_hessian_from(
             grid=positions, deflections_func=deflections_func
         )
 
@@ -346,7 +353,9 @@ class TestFitFluxes:
             tracer.deflections_between_planes_from, plane_i=0, plane_j=2
         )
 
-        magnification_1 = tracer.magnification_2d_via_hessian_from(
+        operate_lens = al.OperateLens.from_mass_obj(mass_obj=tracer)
+
+        magnification_1 = operate_lens.magnification_2d_via_hessian_from(
             grid=positions, deflections_func=deflections_func
         )
 

@@ -36,6 +36,8 @@ class FitPointDict(dict):
             are the corresponding fits to the `PointDataset` it contained.
         """
 
+        self.tracer = tracer
+
         super().__init__()
 
         for key, point_dataset in point_dict.items():
@@ -274,6 +276,8 @@ class FitFluxes(aa.FitData):
         point_profile: Optional[ag.ps.Point] = None,
     ):
 
+        self.tracer = tracer
+
         self.name = name
         self.positions = positions
 
@@ -306,7 +310,7 @@ class FitFluxes(aa.FitData):
             deflections_func = tracer.deflections_yx_2d_from
 
         self.magnifications = abs(
-            tracer.magnification_2d_via_hessian_from(
+            self.operate_lens.magnification_2d_via_hessian_from(
                 grid=positions, deflections_func=deflections_func
             )
         )
@@ -325,6 +329,10 @@ class FitFluxes(aa.FitData):
             mask=None,
             inversion=None,
         )
+
+    @property
+    def operate_lens(self) -> ag.OperateLens:
+        return ag.OperateLens.from_mass_obj(mass_obj=self.tracer)
 
     @property
     def fluxes(self) -> aa.ValuesIrregular:

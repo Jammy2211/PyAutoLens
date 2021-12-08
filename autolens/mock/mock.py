@@ -2,7 +2,7 @@ import autofit as af
 
 from autofit.mock.mock import MockSearch, MockSamples
 from autoarray.mock.mock import MockMask, MockDataset, MockFit as AAMockFit
-from autogalaxy.mock.mock import MockLightProfile, MockMassProfile
+from autogalaxy.mock.mock import MockLightProfile, MockMassProfile, MockOperateLens
 
 
 class MockResult(af.MockResult):
@@ -192,9 +192,6 @@ class MockTracerPoint(MockTracer):
         traced_grid=None,
         attribute=None,
         profile=None,
-        magnification=None,
-        einstein_radius=None,
-        einstein_mass=None,
     ):
 
         super().__init__(
@@ -202,13 +199,9 @@ class MockTracerPoint(MockTracer):
         )
 
         self.positions = traced_grid
-        self.magnification = magnification
 
         self.attribute = attribute
         self.profile = profile
-
-        self.einstein_radius = einstein_radius
-        self.einstein_mass = einstein_mass
 
     @property
     def planes(self):
@@ -229,15 +222,6 @@ class MockTracerPoint(MockTracer):
 
     def traced_grids_of_planes_from(self, grid, plane_index_limit=None):
         return [self.positions]
-
-    def magnification_2d_via_hessian_from(self, grid, deflections_func=None):
-        return self.magnification
-
-    def einstein_radius_from(self, grid):
-        return self.einstein_radius
-
-    def einstein_mass_angular_from(self, grid):
-        return self.einstein_mass
 
 
 class MockPointSolver:

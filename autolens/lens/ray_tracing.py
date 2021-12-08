@@ -16,7 +16,6 @@ from autoarray.inversion.inversion.factory import inversion_interferometer_unpac
 
 from autogalaxy.plane.plane import AbstractPlane
 from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSNR
-from autogalaxy.operate.lens import OperateLens
 from autogalaxy.operate.image import OperateImage
 
 from autolens.lens.model.preloads import Preloads

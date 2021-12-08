@@ -25,8 +25,10 @@ class AbstractPointSolver:
         self, lensing_obj, deflections_func, grid
     ):
 
+        operate_lens = ag.OperateLens.from_mass_obj(mass_obj=lensing_obj)
+
         magnifications = np.abs(
-            lensing_obj.magnification_2d_via_hessian_from(
+            operate_lens.magnification_2d_via_hessian_from(
                 grid=grid, buffer=grid.pixel_scale, deflections_func=deflections_func
             )
         )

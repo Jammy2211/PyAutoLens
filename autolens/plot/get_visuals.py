@@ -114,17 +114,22 @@ class GetVisuals2D(gv.GetVisuals2D):
             ),
         )
 
+        operate_lens = ag.OperateLens.from_mass_obj(mass_obj=tracer)
+
         if plane_index == 0:
+
             critical_curves = self.get(
                 "critical_curves",
-                tracer.critical_curves_from(grid=grid),
+                operate_lens.critical_curves_from(grid=grid),
                 "critical_curves",
             )
         else:
             critical_curves = None
 
         if plane_index == 1:
-            caustics = self.get("caustics", tracer.caustics_from(grid=grid), "caustics")
+            caustics = self.get(
+                "caustics", operate_lens.caustics_from(grid=grid), "caustics"
+            )
         else:
             caustics = None
 
