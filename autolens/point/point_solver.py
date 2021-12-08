@@ -54,7 +54,7 @@ class AbstractPointSolver:
 
         Parameters
         ----------
-        lensing_obj : autogalaxy.CalcLens
+        lensing_obj : autogalaxy.OperateLens
             An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         grid : autoarray.Grid2DIrregularUniform or ndarray
@@ -157,7 +157,7 @@ class AbstractPointSolver:
 
         Parameters
         ----------
-        lensing_obj : autogalaxy.CalcLens
+        lensing_obj : autogalaxy.OperateLens
             An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         grid : autoarray.Grid2DIrregularUniform or ndarray
@@ -210,7 +210,7 @@ class AbstractPointSolver:
 
             Parameters
             ----------
-            lensing_obj : autogalaxy.CalcLens
+            lensing_obj : autogalaxy.OperateLens
                 An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
                 `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
             grid : autoarray.Grid2DIrregularUniform or ndarray
@@ -255,7 +255,7 @@ class PointSolver(AbstractPointSolver):
         distance_to_source_centre=None,
         distance_to_mass_profile_centre=None,
     ):
-        """Given a `CalcLens` (e.g. a _MassProfile, `Galaxy`, `Plane` or `Tracer`) this class uses their
+        """Given a `OperateLens` (e.g. a _MassProfile, `Galaxy`, `Plane` or `Tracer`) this class uses their
         deflections_yx_2d_from method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
         source-centre coordinate in the source-plane.
 
@@ -307,7 +307,7 @@ class PointSolver(AbstractPointSolver):
         pixel_scales : (float, float)
             The pixel-scale resolution of the buffed and upscaled grid that is formed around the input coordinate. If
             upscale > 1, the pixel_scales are reduced to pixel_scale / upscale_factor.
-        lensing_obj : autogalaxy.CalcLens
+        lensing_obj : autogalaxy.OperateLens
             An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         source_plane_coordinate : (float, float)

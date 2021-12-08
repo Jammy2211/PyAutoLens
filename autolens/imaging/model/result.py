@@ -64,12 +64,3 @@ class ResultImaging(ResultDataset):
         without using a mask.
         """
         return self.max_log_likelihood_fit.unmasked_blurred_image_of_planes
-
-    @property
-    def unmasked_model_image_of_planes_and_galaxies(self):
-        """
-        A list of the model image of every galaxy in every plane in the maximum log likelihood model, where all images
-        are created without using a mask.
-        """
-        fit = self.max_log_likelihood_fit
-        return fit.unmasked_blurred_image_of_planes_and_galaxies

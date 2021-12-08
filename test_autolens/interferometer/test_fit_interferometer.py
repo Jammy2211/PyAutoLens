@@ -239,7 +239,9 @@ class TestCompareToManualProfilesOnly:
 
         assert interferometer_7.noise_map == pytest.approx(fit.noise_map)
 
-        model_visibilities = tracer.profile_visibilities_via_transformer_from(
+        operate_image = al.OperateImage.from_light_obj(light_obj=tracer)
+
+        model_visibilities = operate_image.visibilities_via_transformer_from(
             grid=interferometer_7.grid, transformer=interferometer_7.transformer
         )
 
@@ -325,12 +327,16 @@ class TestCompareToManualProfilesOnly:
             grid=interferometer_7_grid.grid
         )
 
-        g0_profile_visibilities = g0.profile_visibilities_via_transformer_from(
+        operate_image = al.OperateImage.from_light_obj(light_obj=g0)
+
+        g0_profile_visibilities = operate_image.visibilities_via_transformer_from(
             grid=traced_grids_of_planes[0],
             transformer=interferometer_7_grid.transformer,
         )
 
-        g1_profile_visibilities = g1.profile_visibilities_via_transformer_from(
+        operate_image = al.OperateImage.from_light_obj(light_obj=g1)
+
+        g1_profile_visibilities = operate_image.visibilities_via_transformer_from(
             grid=traced_grids_of_planes[1],
             transformer=interferometer_7_grid.transformer,
         )
@@ -723,7 +729,9 @@ class TestCompareToManualProfilesAndInversion:
 
         fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
-        profile_visibilities = tracer.profile_visibilities_via_transformer_from(
+        operate_image = al.OperateImage.from_light_obj(light_obj=tracer)
+
+        profile_visibilities = operate_image.visibilities_via_transformer_from(
             grid=interferometer_7.grid, transformer=interferometer_7.transformer
         )
 
@@ -839,11 +847,15 @@ class TestCompareToManualProfilesAndInversion:
             grid=interferometer_7_grid.grid
         )
 
-        g0_visibilities = g0.profile_visibilities_via_transformer_from(
+        operate_image = al.OperateImage.from_light_obj(light_obj=g0)
+
+        g0_visibilities = operate_image.visibilities_via_transformer_from(
             grid=traced_grids[0], transformer=interferometer_7_grid.transformer
         )
 
-        g1_visibilities = g1.profile_visibilities_via_transformer_from(
+        operate_image = al.OperateImage.from_light_obj(light_obj=g1)
+
+        g1_visibilities = operate_image.visibilities_via_transformer_from(
             grid=traced_grids[1], transformer=interferometer_7_grid.transformer
         )
 
@@ -902,11 +914,15 @@ class TestCompareToManualProfilesAndInversion:
             grid=interferometer_7_grid.grid
         )
 
-        g0_visibilities = g0.profile_visibilities_via_transformer_from(
+        operate_image = al.OperateImage.from_light_obj(light_obj=g0)
+
+        g0_visibilities = operate_image.visibilities_via_transformer_from(
             grid=traced_grids[0], transformer=interferometer_7_grid.transformer
         )
 
-        g1_visibilities = g1.profile_visibilities_via_transformer_from(
+        operate_image = al.OperateImage.from_light_obj(light_obj=g1)
+
+        g1_visibilities = operate_image.visibilities_via_transformer_from(
             grid=traced_grids[1], transformer=interferometer_7_grid.transformer
         )
 
