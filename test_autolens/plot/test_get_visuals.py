@@ -69,7 +69,7 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
     assert visuals_2d_via.light_profile_centres.in_list == [
         tracer_x2_plane_7x7.galaxies[1].light_profile_0.centre
     ]
-    assert visuals_2d_via.mass_profile_centres == None
+    assert visuals_2d_via.mass_profile_centres is None
     assert (
         visuals_2d_via.caustics[0]
         == tracer_x2_plane_7x7.caustics_from(grid=grid_2d_7x7)[0]
@@ -89,11 +89,11 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
         tracer=tracer_x2_plane_7x7, grid=grid_2d_7x7, plane_index=0
     )
 
-    assert visuals_2d_via.origin == None
-    assert visuals_2d_via.border == None
-    assert visuals_2d_via.light_profile_centres == None
-    assert visuals_2d_via.mass_profile_centres == None
-    assert visuals_2d_via.critical_curves == None
+    assert visuals_2d_via.origin is None
+    assert visuals_2d_via.border is None
+    assert visuals_2d_via.light_profile_centres is None
+    assert visuals_2d_via.mass_profile_centres is None
+    assert visuals_2d_via.critical_curves is None
     assert visuals_2d_via.vectors == 2
 
 
@@ -140,9 +140,9 @@ def test__via_fit_imaging_from(fit_imaging_x2_plane_7x7, grid_2d_7x7):
     visuals_2d_via = get_visuals.via_fit_imaging_from(fit=fit_imaging_x2_plane_7x7)
 
     assert visuals_2d_via.origin == (1.0, 1.0)
-    assert visuals_2d_via.mask == None
-    assert visuals_2d_via.border == None
-    assert visuals_2d_via.light_profile_centres == None
-    assert visuals_2d_via.mass_profile_centres == None
-    assert visuals_2d_via.critical_curves == None
+    assert visuals_2d_via.mask is None
+    assert visuals_2d_via.border is None
+    assert visuals_2d_via.light_profile_centres is None
+    assert visuals_2d_via.mass_profile_centres is None
+    assert visuals_2d_via.critical_curves is None
     assert visuals_2d_via.vectors == 2

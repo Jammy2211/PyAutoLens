@@ -298,7 +298,7 @@ Plots
     ArrayOverlay
     GridScatter
     GridPlot
-    VectorFieldQuiver
+    VectorYXQuiver
     PatchOverlay
     VoronoiDrawer
     OriginScatter

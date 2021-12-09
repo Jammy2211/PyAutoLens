@@ -27,7 +27,7 @@ from autoarray.plot.wrap.wrap_2d import (
     ArrayOverlay,
     GridScatter,
     GridPlot,
-    VectorFieldQuiver,
+    VectorYXQuiver,
     PatchOverlay,
     VoronoiDrawer,
     OriginScatter,
